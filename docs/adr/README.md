@@ -17,6 +17,7 @@ olarak anar.
 | [0002](0002-modul-yapisi.md) | Modül yapısı, klasör düzeni ve modül kayıtları | Kabul edildi |
 | [0003](0003-gezinme-iskeleti.md) | Gezinme iskeleti ve yönlendirme | Kabul edildi |
 | [0004](0004-tema-ve-bilesen-dili.md) | Tema, token'lar ve bileşen dili | Kabul edildi |
+| [0005](0005-api-istemcisi.md) | API istemcisi, kod üretimi, token yenileme ve hata eşlemesi | Kabul edildi |
 
 ## Şablon
 
