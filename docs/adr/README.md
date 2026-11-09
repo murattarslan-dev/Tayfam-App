@@ -20,6 +20,7 @@ olarak anar.
 | [0005](0005-api-istemcisi.md) | API istemcisi, kod üretimi, token yenileme ve hata eşlemesi | Kabul edildi |
 | [0006](0006-onbellek-ve-cevrimdisi-kuyruk.md) | Önbellek ve çevrimdışı kuyruk: yalnızca bellekte | Kabul edildi |
 | [0007](0007-websocket.md) | WebSocket bağlantısı, abonelikler ve mesaj gönderimi | Kabul edildi |
+| [0008](0008-ceviri-ve-yerel-ayar.md) | Çeviri dosyaları, yerel ayar ve Türkçe metin işleme | Kabul edildi |
 
 ## Şablon
 
