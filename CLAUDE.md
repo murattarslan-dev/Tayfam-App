@@ -165,6 +165,25 @@ doldurulur. Sıradaki kararlar (Notion: "İstemci Geçiş Özeti", §4):
 
 Karar verilmemiş bir konuda kod yazılmaz; önce ADR.
 
+## Arayüz ve kullanıcı deneyimi
+
+UI/UX işi mimarinin parçasıdır; ekran akışları, bileşenler ve tasarım
+kuralları da soru-cevapla alınır ve ADR'ye yazılır.
+
+- **Kaynak sırası.** Notion'daki **Marka** ve **Tasarım Standartları**
+  sayfaları (Tropik palet, tipografi, logo, ton) ve bu repodaki ADR'ler
+  bağlayıcıdır. `ui-ux-pro-max` skill'i (`.claude/skills/ui-ux-pro-max/`)
+  erişilebilirlik, dokunma, düzen, hareket ve Flutter'a özgü uygulama için
+  **danışma kaynağıdır**; önerisi Notion'daki bir kararla çelişirse Notion
+  geçerlidir, çelişki platform sahibine söylenir. Skill'in ürettiği palet veya
+  font önerisi onaysız uygulanmaz.
+- **Ne zaman kullanılır.** Ekran, bileşen, akış veya tema işinde; arama
+  yaparken `--stack flutter` ve ilgili `--domain` kullanılır. Bir arayüz
+  PR'ı açılmadan önce skill'in `references/pro-rules.md`'deki teslim öncesi
+  kontrol listesinden geçirilir.
+- **Gizlilik.** Skill aramalarına kullanıcı verisi veya iç bilgi yazılmaz.
+  `--persist` ve `--force` platform sahibinin onayı olmadan kullanılmaz.
+
 ## Test beklentileri
 
 Test stratejisi ADR ile netleşir. Şimdiden geçerli olanlar:
