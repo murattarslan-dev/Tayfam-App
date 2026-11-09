@@ -1,6 +1,6 @@
 # ADR-0004: Tema, token'lar ve bileşen dili
 
-- **Durum:** Kabul edildi (koyu tema renkleri: Önerildi, platform sahibinin onayını bekliyor)
+- **Durum:** Kabul edildi
 - **Tarih:** 2026-11-09
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0003](0003-gezinme-iskeleti.md); Notion: Tasarım Standartları, Marka
@@ -30,7 +30,7 @@ Standartlar'ın açık bıraktığı noktaları belirler.
 - Standartlar'daki "surface → ink, metin → beyaz, logo gövdesi → teal"
   kuralı uygulanır. `ink-muted` koyu zeminde 2.47:1 kaldığı ve `brand` ink
   üzerinde 2.44:1 olduğu için koyu tema şu ek token'ları kullanır
-  (**öneri, onay bekliyor**):
+  (platform sahibi onayladı, 2026-11-09):
 
 | Token (koyu) | Hex | Rol | Kontrast (ink #1B1036 / card-dark) |
 | --- | --- | --- | --- |
@@ -41,14 +41,39 @@ Standartlar'ın açık bıraktığı noktaları belirler.
 | text-body-dark | #DCD6EE | Uzun gövde metni | 12.69 / 11.28 |
 | text-muted-dark | #B4ABD1 | İkincil metin, giriş alanı kenarı | 8.25 / 7.33 |
 | brand-dark | #A98BFF | Seçili durum, bağlantı, etkin sekme; üzerinde ink metin (6.66) | 6.66 / 5.92 |
+| tint-brand-dark | #3B2A70 | Etiket zemini; üzerinde #CDBBFF metin (6.94) | — |
+| tint-mango-dark | #4A3A1A | Vurgulu sayaç/balon zemini; üzerinde #FFD27A metin (7.72) | — |
+| bubble-in-dark | #33255C | Gelen sohbet balonu; beyaz metin (13.46) | — |
 
 - Vurgu renkleri (teal, mango, nar) koyu zeminde de aynıdır; hepsi ink
   üzerinde 4.5:1'in üstündedir (5.21–9.76). Giden sohbet balonu iki temada
   da `brand` zemin + beyaz metindir (~7:1).
+- Açık temaya eklenen token: **honey** `#7A5A1E`, `tint-mango` üzerinde
+  metin (5.62); tayfam.app'teki "faydalı" sayacından alındı.
 - Giriş alanı kenarı gibi etkileşimli öğelerin sınırı en az 3:1 olmalıdır;
   `line-dark` yalnızca süs ayırıcıdır.
 - Her renk çifti bir birim testinde WCAG kontrast eşiğine karşı denetlenir
   (metin 4.5:1, büyük metin ve arayüz öğesi 3:1).
+
+### 2a. Marka yüzeyi ve tanıtım sayfasıyla birlik
+
+tayfam.app incelendi (2026-11-09). Tanıtım sayfası morla tam yüzey
+(giriş ve gizlilik bölümleri) kullanır ve özellik kartları uygulamanın
+bileşenlerini gösterir. Buna göre:
+
+- **Tayfa ana sayfasının üst bölümü mordur:** `brand` zemin, beyaz tayfa
+  adı ve metin, birincil eylem mango zemin + ink metin. İki temada da aynı.
+  Diğer ekranların üst çubuğu sade (`surface`) kalır; tam yüzey mor yalnızca
+  tayfanın kendi ana sayfasındadır.
+- **Bileşenler tanıtım sayfasındaki kartlarla aynıdır:** etkinlik kartı
+  (tür etiketi, zorluk, baş harf avatarları, katılım satırı, nar zemin + ink
+  metin "Buradayım"), soru-cevap kartı (honey "faydalı" sayacı), anket
+  çubukları, sohbet balonları ve "Uçtan uca şifreli" satırı. Uygulama ile
+  tanıtım sayfası aynı ürün gibi görünür.
+- **Çok renkli kelime vurgusu** (tür adlarının brand/nar/mango hap içinde
+  yazılması) yalnızca karşılama ve boş durum ekranlarında kullanılır.
+- Dalga geçişleri ve uçuşan noktalar tanıtım sayfasına özgüdür; uygulamada
+  kullanılmaz (Standartlar: süs hareketi yok).
 
 ### 3. Temel yapı
 
@@ -108,8 +133,8 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
 
 ## Sonuçlar
 
-- Koyu tema renkleri onaylanınca Notion'daki Tasarım Standartları'na
-  "Koyu tema" bölümü olarak eklenir.
+- Koyu tema token'ları, honey ve marka yüzeyi kuralı Notion'daki Tasarım
+  Standartları'na eklendi.
 - Kontrast testi ve token kontrol betiği CI'ın parçası olur.
 - Bağımlılık eklenmez (Material 3 Flutter'la gelir).
 
