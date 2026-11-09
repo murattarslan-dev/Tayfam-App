@@ -1,0 +1,22 @@
+# Hassas alanlar (Tayfam-Api ADR-0010 ile aynı model). Bu yollara dokunan
+# PR'ları yalnızca platform sahibi birleştirir. main'in kural setinde onay
+# zorunluluğu olmadığı için bu dosya GitHub tarafından zorlanmaz; inceleme ve
+# iş akışı bu listeye göre yapılır.
+#
+# Modül yapısı ADR ile belirlenince şu alanların kod yolları eklenir:
+# kimlik/oturum ve token saklama, API istemcisinin kimlik katmanı,
+# E2E (Signal) ve anahtar saklama, derin link işleme.
+
+# Süreç, CI ve kurallar (güven zincirinin kökü)
+/.github/                               @murattarslan-dev
+/CLAUDE.md                              @murattarslan-dev
+/docs/adr/                              @murattarslan-dev
+/SECURITY.md                            @murattarslan-dev
+/LICENSE                                @murattarslan-dev
+
+# Platform imzalama ve kimlik yapılandırması
+/android/app/build.gradle*              @murattarslan-dev
+/android/app/src/main/AndroidManifest.xml @murattarslan-dev
+/ios/Runner/Info.plist                  @murattarslan-dev
+/ios/Runner/*.entitlements              @murattarslan-dev
+/web/index.html                         @murattarslan-dev
