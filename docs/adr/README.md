@@ -18,6 +18,7 @@ olarak anar.
 | [0003](0003-gezinme-iskeleti.md) | Gezinme iskeleti ve yönlendirme | Kabul edildi |
 | [0004](0004-tema-ve-bilesen-dili.md) | Tema, token'lar ve bileşen dili | Kabul edildi |
 | [0005](0005-api-istemcisi.md) | API istemcisi, kod üretimi, token yenileme ve hata eşlemesi | Kabul edildi |
+| [0006](0006-onbellek-ve-cevrimdisi-kuyruk.md) | Önbellek ve çevrimdışı kuyruk: yalnızca bellekte | Kabul edildi |
 
 ## Şablon
 
