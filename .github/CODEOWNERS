@@ -14,6 +14,9 @@
 /SECURITY.md                            @murattarslan-dev
 /LICENSE                                @murattarslan-dev
 
+# Ajan talimatları (skill'ler, ayarlar)
+/.claude/                               @murattarslan-dev
+
 # Platform imzalama ve kimlik yapılandırması
 /android/app/build.gradle*              @murattarslan-dev
 /android/app/src/main/AndroidManifest.xml @murattarslan-dev
