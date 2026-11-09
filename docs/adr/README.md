@@ -14,6 +14,7 @@ olarak anar.
 | No | Başlık | Durum |
 |----|--------|-------|
 | [0001](0001-durum-yonetimi-riverpod.md) | Durum yönetimi ve bağımlılık enjeksiyonu: Riverpod | Kabul edildi |
+| [0002](0002-modul-yapisi.md) | Modül yapısı, klasör düzeni ve modül kayıtları | Kabul edildi |
 
 ## Şablon
 
