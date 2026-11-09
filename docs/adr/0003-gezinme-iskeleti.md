@@ -70,8 +70,12 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
 - Bağımlılık: `go_router`.
 - Tayfa geçişi aktif tayfa provider'ını değiştirir; tayfaya bağlı durum
   `autoDispose` ile bırakılır (ADR-0001).
-- Keşfet ve herkese açık tayfa sayfası ayrı bir ürün kararı olarak
-  konuşuluyor; iskelete nasıl gireceği o kararla bu ADR'ye eklenir.
+- Keşfet ve etkinlik fotoğrafları Faz 2'dedir (platform sahibi, 2026-11-09;
+  MVP kapsamı değişmedi, herkese açık vitrin sayfası da eklenmedi). Faz 2'de
+  ayrı bir sekme yerine tayfası olmayan kullanıcının karşılama ekranına ve
+  tayfa değiştirme paneline girmesi öneridir; yeri o fazın ADR'sinde
+  kesinleşir. Keşfette yaşa göre ek kısıt yoktur (Notion: Kötüye Kullanım,
+  §3).
 
 ## Değerlendirilen alternatifler
 
