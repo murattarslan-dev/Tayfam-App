@@ -11,10 +11,27 @@ WebSocket'iyle yapılır.
 
 ```
 Flutter istemcisi (Android / iOS / web)
+  shell/      gezinme, tayfa geçişi, derin linkler, modül kayıtları
+  features/   tayfa · duyuru · etkinlik · soru_cevap · anket · sohbet · bildirim · profil · hesap
+  core/       ApiClient + üretilmiş uçlar · SessionStore · realtime · kuyruk · tema · çeviri
         │  HTTPS (REST, problem+json)  ·  WebSocket
         ▼
 gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 ```
 
-Bu belge mimari kararlar alındıkça genişler. Kararlar ve gerekçeleri:
-[docs/adr/](docs/adr/README.md).
+## Kararlar
+
+| ADR | Konu | Özet |
+| --- | --- | --- |
+| [0001](docs/adr/0001-durum-yonetimi-riverpod.md) | Durum ve DI | Riverpod 3, kod üretimi yok, tayfa kapsamı `family` + `autoDispose` |
+| [0002](docs/adr/0002-modul-yapisi.md) | Modüller | Tek paket; `core/`, `shell/`, `features/`; iki kayıt (tayfa modülleri, etkinlik türleri) |
+| [0003](docs/adr/0003-gezinme-iskeleti.md) | Gezinme | Tayfa merkezli, 4 sabit sekme, `go_router` |
+| [0004](docs/adr/0004-tema-ve-bilesen-dili.md) | Tema | Token'lar, gömülü font, açık ve koyu tema, mor tayfa üst bölümü |
+| [0005](docs/adr/0005-api-istemcisi.md) | API istemcisi | Repodaki üretici, tek `ApiClient`, tek uçuşlu token yenileme |
+| [0006](docs/adr/0006-onbellek-ve-cevrimdisi-kuyruk.md) | Önbellek | Diske içerik yazılmaz; önbellek ve kuyruk bellekte |
+| [0007](docs/adr/0007-websocket.md) | WebSocket | Tek bağlantı, aktif tayfa abonelikleri, WebSocket önce, REST yedek |
+| [0008](docs/adr/0008-ceviri-ve-yerel-ayar.md) | Çeviri | `gen_l10n`, `tr_TR`, Türkçe harf yardımcısı |
+| [0009](docs/adr/0009-test-ci-ve-ios.md) | Test ve CI | Önerildi |
+| [0010](docs/adr/0010-signal-kutuphanesi.md) | Signal | Önerildi |
+
+Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).

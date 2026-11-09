@@ -148,22 +148,66 @@ ADR-0014'tür. Özet:
   `4001 session_ended` → oturum kapanmıştır, girişe dönülür. `rate_limited`
   çerçevesinde gönderim yavaşlatılır.
 
-## Klasör yapısı, durum yönetimi ve kodlama kuralları
+## Klasör yapısı
 
-Mimari kararlar soru-cevapla alınıp `docs/adr/`'ye yazıldıkça bu bölüm
-doldurulur. Sıradaki kararlar (Notion: "İstemci Geçiş Özeti", §4):
+Tek Flutter paketi (ADR-0002):
 
-- Modül yapısı ve modül kaydı (registry)
-- Durum yönetimi ve navigasyon (davet ve referans derin linkleri)
-- API istemcisi (OpenAPI'den üretim mi elle mi), token yenileme, hata eşlemesi
-- Çevrimdışı kuyruk
-- Güvenli token ve anahtar saklama
-- WebSocket yeniden bağlanma ve abonelik yönetimi
-- Signal kütüphanesi seçimi (mobil + web)
-- Tema token'ları ve çeviri dosyaları
-- CI ve iOS derlemesi (GitHub Actions macOS runner'ı ya da Codemagic)
+```
+lib/
+  main.dart
+  core/            oturum, API istemcisi (gen/ dahil), realtime, kuyruk,
+                   güvenli depo, tema, bileşenler, çeviri, metin yardımcıları
+  shell/           gezinme iskeleti, tayfa geçişi, derin linkler, modül kayıtları
+  features/<özellik>/
+    <özellik>.dart   tek dışa açık dosya
+    data/            API çağrıları ve dönüştürme
+    application/     notifier'lar ve servisler
+    presentation/    ekranlar ve widget'lar
+  l10n/app_tr.arb    çeviri kaynağı
+tool/              OpenAPI üreticisi, kural betiği
+test/              lib/ ile aynı yapı
+```
 
-Karar verilmemiş bir konuda kod yazılmaz; önce ADR.
+- `core/` özellik veya `shell/` import edemez; bir özellik başka bir
+  özelliğin yalnızca `<özellik>.dart` dosyasını import edebilir; döngü yok.
+- Tayfa modülleri (`announcements`, `events`, `qa`, `polls`) ve etkinlik
+  türleri kayıtla eklenir; görünürlüğe sunucunun `modules` alanı karar verir.
+
+## Kodlama kuralları
+
+- **Durum ve DI (ADR-0001):** Riverpod 3; yalnızca `Notifier` /
+  `AsyncNotifier` / `StreamNotifier` ve `Provider`; kod üretimi yok; tayfaya
+  bağlı durum `family(tayfaId)` + `autoDispose`; kalıcı servisler açıkça
+  `keepAlive`; widget'ta iş mantığı yok; oturum kapanınca kullanıcıya bağlı
+  her provider sıfırlanır; `ProviderObserver` yalnızca provider adı ve hata
+  türünü loglar.
+- **Gezinme (ADR-0003):** `go_router`, dört sabit sekme (Tayfa, Sohbet,
+  Bildirimler, Profil) `StatefulShellRoute` ile; tayfaya bağlı adresler
+  `/t/<tayfaId>/…`; adresteki kimlik girdi kabul edilir.
+- **Tema (ADR-0004):** Material 3 + `TayfamColors` / `TayfamSpacing` /
+  `TayfamRadii` / `TayfamMotion` token'ları; ekranlarda sabit renk, boşluk,
+  yarıçap yok; font gömülü (`google_fonts` yok); açık ve koyu tema; tayfa ana
+  sayfasının üst bölümü mor; bileşenler tanıtım sayfasındaki kartlarla aynı.
+- **API (ADR-0005):** bütün istekler tek `ApiClient`'tan; uç ve modeller
+  `lib/core/api/gen/` altında üretilir, elle düzenlenmez; token yalnızca
+  `SessionStore`'da; yenileme tek uçuşta; problem `type` → `ProblemType`
+  → çeviri anahtarı, `title`/`detail` gösterilmez.
+- **Diske yazma (ADR-0006):** token ve kullanıcı ayarları dışında hiçbir
+  içerik diske yazılmaz; önbellek ve çevrimdışı kuyruk yalnızca bellekte.
+- **WebSocket (ADR-0007):** tek bağlantı `core/realtime/`'da; mesaj bağlantı
+  açıkken WebSocket'ten, değilse aynı `client_request_id` ile REST'ten;
+  çerçeve içeriği loglanmaz.
+- **Metin (ADR-0008):** `gen_l10n` ve ARB; kodda sabit kullanıcı metni yok;
+  arayüzde `toUpperCase`/`toLowerCase` yok, arama ve tekillik için
+  `turkceKucukHarf()`.
+- **Bağımlılık:** her yeni paket PR'da gerekçelenir (kesin kural 8);
+  ADR'lerde adı geçen paketler: `flutter_riverpod`, `go_router`, `http`,
+  `flutter_secure_storage`, `web_socket_channel`, `flutter_localizations`,
+  `intl`; geliştirmede `yaml`.
+
+Açık kararlar: ADR-0009 (test, CI, iOS) ve ADR-0010 (Signal kütüphanesi)
+"Önerildi" durumunda; kabul edilmeden bu konularda kod yazılmaz. Karar
+verilmemiş bir konuda kod yazılmaz; önce ADR.
 
 ## Arayüz ve kullanıcı deneyimi
 
@@ -186,9 +230,10 @@ kuralları da soru-cevapla alınır ve ADR'ye yazılır.
 
 ## Test beklentileri
 
-Test stratejisi ADR ile netleşir. Şimdiden geçerli olanlar:
+Ayrıntı ADR-0009'da (önerildi). Şimdiden geçerli olanlar:
 
-- Her PR testleriyle gelir.
+- Her PR testleriyle gelir; testlerde gerçek ağ yoktur.
+- Her ekran açık ve koyu temada, 2× yazı ölçeğinde widget testiyle gelir.
 - Token yenileme, hata `type` eşlemesi, derin link ayrıştırma ve çevrimdışı
   kuyruk birim testleriyle korunur.
 - Hata düzeltmesi, hatayı yeniden üreten bir testle gelir.
