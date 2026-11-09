@@ -13,6 +13,7 @@ olarak anar.
 
 | No | Başlık | Durum |
 |----|--------|-------|
+| [0001](0001-durum-yonetimi-riverpod.md) | Durum yönetimi ve bağımlılık enjeksiyonu: Riverpod | Kabul edildi |
 
 ## Şablon
 
