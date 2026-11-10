@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
-import 'package:tayfam/features/hesap/application/hesap_hatasi.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 import 'package:tayfam/features/hesap/data/nonce.dart';
+import 'package:tayfam/features/hesap/presentation/hesap_ortak.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
 
 import 'sahteler.dart';
 
@@ -168,25 +170,24 @@ void main() {
     });
   });
 
-  test('hata eşlemesi', () {
-    final beklenen = <Object, HesapHatasi>{
-      const ApiOffline(): HesapHatasi.baglantiYok,
-      const ApiTimeout(): HesapHatasi.baglantiYok,
-      problem(ProblemType.rateLimited, 429): HesapHatasi.cokFazlaDeneme,
-      problem(ProblemType.invalidCredentials, 401): HesapHatasi.googleGirisi,
-      problem(ProblemType.consentOutdated, 409):
-          HesapHatasi.metinlerGuncellendi,
-      problem(ProblemType.invalidBirthDate): HesapHatasi.gecersizDogumTarihi,
-      problem(ProblemType.invalidDisplayName): HesapHatasi.gecersizAd,
-      problem(ProblemType.unknown, 500): HesapHatasi.genel,
-      problem(ProblemType.internal, 500): HesapHatasi.genel,
-      const GoogleGirisHatasi(): HesapHatasi.googleGirisi,
-      const GoogleGirisHatasi(desteklenmiyor: true):
-          HesapHatasi.webDesteklenmiyor,
-      const FormatException('x'): HesapHatasi.genel,
+  test('hata metni: Google hataları kendi, diğerleri ortak eşlemeden', () {
+    final m = lookupAppLocalizations(const Locale('tr'));
+    final beklenen = <Object, String>{
+      const ApiOffline(): m.hata_baglanti_yok,
+      const ApiTimeout(): m.hata_zaman_asimi,
+      problem(ProblemType.rateLimited, 429): m.hata_rate_limited,
+      problem(ProblemType.invalidCredentials, 401): m.hata_invalid_credentials,
+      problem(ProblemType.consentOutdated, 409): m.hata_consent_outdated,
+      problem(ProblemType.invalidBirthDate): m.hata_invalid_birth_date,
+      problem(ProblemType.invalidDisplayName): m.hata_invalid_display_name,
+      problem(ProblemType.unknown, 500): m.hata_genel,
+      problem(ProblemType.internal, 500): m.hata_internal,
+      const GoogleGirisHatasi(): m.hesap_hata_google,
+      const GoogleGirisHatasi(desteklenmiyor: true): m.hesap_hata_web,
+      const FormatException('x'): m.hata_genel,
     };
-    beklenen.forEach((hata, tur) {
-      expect(hesapHatasiOku(hata), tur, reason: '$hata');
+    beklenen.forEach((hata, metin) {
+      expect(hesapHatasiMetni(m, hata), metin, reason: '$hata');
     });
   });
 }

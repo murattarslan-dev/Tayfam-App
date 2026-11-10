@@ -257,37 +257,13 @@
   "@hesap_cikis_yap": {
     "description": "Kayıt ve yeniden onay ekranlarının üst çubuğundaki düğme; başka bir Google hesabıyla girmek için oturumu kapatır."
   },
-  "hesap_hata_baglanti_yok": "Bağlantı yok. İnternet bağlantını kontrol edip tekrar dene.",
-  "@hesap_hata_baglanti_yok": {
-    "description": "Giriş, kayıt veya onay sırasında sunucuya ulaşılamadığında görünen hata."
-  },
-  "hesap_hata_cok_fazla_deneme": "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.",
-  "@hesap_hata_cok_fazla_deneme": {
-    "description": "Sunucu hız sınırına takılındığında (rate-limited) görünen hata."
-  },
   "hesap_hata_web": "Google ile giriş bu geliştirme derlemesinde açılamıyor. Android uygulamasını kullan.",
   "@hesap_hata_web": {
     "description": "Yalnızca web geliştirme derlemesinde, Google giriş penceresi açılamadığında görünen hata."
   },
   "hesap_hata_google": "Google ile giriş tamamlanamadı. Tekrar dene.",
   "@hesap_hata_google": {
-    "description": "Google girişi başlatılamadığında ya da sunucu Google kimliğini doğrulayamadığında görünen hata."
-  },
-  "hesap_hata_metinler_guncellendi": "Metinler az önce güncellendi. Güncel sürümleri okuyup yeniden onayla.",
-  "@hesap_hata_metinler_guncellendi": {
-    "description": "Kayıt veya onay gönderilirken metinlerin yeni sürümü yayımlanmışsa görünen uyarı; onay kutuları temizlenir."
-  },
-  "hesap_hata_dogum_tarihi": "Doğum tarihi kabul edilmedi. Kontrol edip tekrar dene.",
-  "@hesap_hata_dogum_tarihi": {
-    "description": "Sunucu doğum tarihini geçersiz bulduğunda kayıt formunda görünen hata."
-  },
-  "hesap_hata_ad": "Bu ad kullanılamıyor. Başka bir ad dene.",
-  "@hesap_hata_ad": {
-    "description": "Sunucu görünen adı kabul etmediğinde kayıt formunda görünen hata."
-  },
-  "hesap_hata_genel": "Bir sorun oluştu. Tekrar dene.",
-  "@hesap_hata_genel": {
-    "description": "Giriş, kayıt veya onayda beklenmeyen bir hata olduğunda görünen genel hata."
+    "description": "Giriş ekranında Google giriş penceresi başlatılamadığında ya da tamamlanamadığında görünen hata (sunucuya gitmeden önce)."
   },
   "hesap_kayit_baslik": "Hesabını oluştur",
   "@hesap_kayit_baslik": {
@@ -410,5 +386,405 @@
         "example": "2009-03-12"
       }
     }
+  },
+  "hata_genel": "Bir sorun oluştu. Tekrar dene.",
+  "@hata_genel": {
+    "description": "Sunucunun tanınmayan bir hata kodu döndürdüğü ya da beklenmeyen bir hata olduğu her yerde görünen genel hata."
+  },
+  "hata_baglanti_yok": "Bağlantı yok. İnternet bağlantını kontrol edip tekrar dene.",
+  "@hata_baglanti_yok": {
+    "description": "Sunucuya ulaşılamadığında ya da bağlantı koptuğunda görünen hata."
+  },
+  "hata_zaman_asimi": "Yanıt gecikti. Bağlantını kontrol edip tekrar dene.",
+  "@hata_zaman_asimi": {
+    "description": "Sunucunun yanıtı zaman aşımı süresinde gelmediğinde görünen hata."
+  },
+  "hata_invalid_request": "Girdiğin bilgilerden biri geçersiz. Kontrol edip tekrar dene.",
+  "@hata_invalid_request": {
+    "description": "Hata kodu `invalid-request`. Sunucu isteğin bir alanını geçersiz bulduğunda (biçim, uzunluk, aralık) görünen hata; hangi değerin reddedildiği söylenmez."
+  },
+  "hata_missing_client_header": "Uygulama bu isteği gönderemedi. Uygulamayı güncelleyip tekrar dene.",
+  "@hata_missing_client_header": {
+    "description": "Hata kodu `missing-client-header`. Durum değiştiren istekte istemci başlığı (X-Tayfam-Client) eksik ya da kabul edilmediğinde görünen hata. Uygulamanın kendi hatasıdır; kullanıcıya teknik ayrıntı verilmez."
+  },
+  "hata_client_outdated": "Uygulamanın yeni bir sürümü var. Devam etmek için güncelle.",
+  "@hata_client_outdated": {
+    "description": "Hata kodu `client-outdated`. Uygulama sürümü platformun en düşük desteklenen sürümünün altında kaldığında (426) görünen hata. Normalde \"Güncelleme gerekli\" ekranını açar (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_invalid_client_version": "Uygulamanın bu sürümü desteklenmiyor. Mağazadan güncelle.",
+  "@hata_invalid_client_version": {
+    "description": "Hata kodu `invalid-client-version`. Sürüm başlığı bozuk ya da bu ortamda hizmet verilmeyen bir platformdan geldiğinde görünen hata."
+  },
+  "hata_unauthenticated": "Oturumun sona erdi. Yeniden giriş yap.",
+  "@hata_unauthenticated": {
+    "description": "Hata kodu `unauthenticated`. Erişim token'ı eksik ya da geçersiz olduğunda görünen hata. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_not_found": "Aradığın şey bulunamadı.",
+  "@hata_not_found": {
+    "description": "Hata kodu `not-found`. Sunucu bilinmeyen bir adres için genel 'bulunamadı' döndürdüğünde görünen hata."
+  },
+  "hata_rate_limited": "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.",
+  "@hata_rate_limited": {
+    "description": "Hata kodu `rate-limited`. Sunucunun hız sınırına takılındığında (429; giriş, katılım, check-in, mesaj gönderme ve benzeri) görünen hata. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_unavailable": "Tayfam şu an yanıt veremiyor. Biraz sonra tekrar dene.",
+  "@hata_unavailable": {
+    "description": "Hata kodu `unavailable`. Sunucunun bir servisi geçici olarak ulaşılamaz olduğunda (503) görünen hata."
+  },
+  "hata_internal": "Bir sorun oluştu. Biraz sonra tekrar dene.",
+  "@hata_internal": {
+    "description": "Hata kodu `internal`. Sunucuda beklenmeyen bir hata olduğunda (500) görünen hata; sebep söylenmez."
+  },
+  "hata_invalid_credentials": "Google ile giriş doğrulanamadı. Tekrar dene.",
+  "@hata_invalid_credentials": {
+    "description": "Hata kodu `invalid-credentials`. Giriş ekranında sunucu Google kimliğini doğrulayamadığında görünen hata."
+  },
+  "hata_unsupported_provider": "Bu giriş yöntemi desteklenmiyor. Google ile devam et.",
+  "@hata_unsupported_provider": {
+    "description": "Hata kodu `unsupported-provider`. Giriş isteği desteklenmeyen bir kimlik sağlayıcıyla geldiğinde görünen hata."
+  },
+  "hata_age_blocked": "Girdiğin bilgilere göre bu hesapla Tayfam'ı kullanamazsın.",
+  "@hata_age_blocked": {
+    "description": "Hata kodu `age-blocked`. Kayıtta girilen doğum tarihi yaş sınırının altında kaldığında hesap kalıcı olarak kapanır. Normalde giriş ekranı kendi bilgi metnini gösterir (ADR-0012 §3); bu metin yedektir. Yaş sınırı söylenmez."
+  },
+  "hata_account_sanctioned": "Bu hesapla şu an Tayfam'a giriş yapılamıyor.",
+  "@hata_account_sanctioned": {
+    "description": "Hata kodu `account-sanctioned`. Hesap platform genelinde askıya alındığında ya da banlandığında görünen hata. Normalde giriş ekranı kendi bilgi metnini gösterir (ADR-0012 §2); bu metin yedektir."
+  },
+  "hata_reason_required": "Bir gerekçe yaz; en az 10 karakter olmalı.",
+  "@hata_reason_required": {
+    "description": "Hata kodu `reason-required`. Platform yönetiminde bir değişiklik 10–1000 karakterlik gerekçe olmadan gönderildiğinde görünen hata."
+  },
+  "hata_sanction_conflict": "Hesabın durumu bu işlemle uyuşmuyor. Güncel durumu yenileyip tekrar dene.",
+  "@hata_sanction_conflict": {
+    "description": "Hata kodu `sanction-conflict`. Platform yönetiminde bir hesap yaptırımı, hesabın şu anki durumuyla çeliştiğinde görünen hata."
+  },
+  "hata_decision_not_applicable": "Bu karar bu şikâyete uygulanamıyor. Başka bir karar seç.",
+  "@hata_decision_not_applicable": {
+    "description": "Hata kodu `decision-not-applicable`. Platform yönetiminde şikâyete uymayan bir karar verildiğinde ya da şikâyet platforma iletilmemişken görünen hata."
+  },
+  "hata_tayfa_state_conflict": "Tayfa zaten bu durumda.",
+  "@hata_tayfa_state_conflict": {
+    "description": "Hata kodu `tayfa-state-conflict`. Platform yönetiminde tayfa zaten istenen durumdayken (askıda, askıda değil, silinmiş) görünen hata."
+  },
+  "hata_invalid_refresh": "Oturumun sona erdi. Yeniden giriş yap.",
+  "@hata_invalid_refresh": {
+    "description": "Hata kodu `invalid-refresh`. Yenileme token'ı geçersiz ya da süresi geçmiş olduğunda görünen hata; oturum kapanır. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_refresh_conflict": "Oturumun yenileniyor. Tekrar dene.",
+  "@hata_refresh_conflict": {
+    "description": "Hata kodu `refresh-conflict`. Aynı anda iki token yenilemesi denendiğinde görünen hata; oturum kapanmaz. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_invalid_birth_date": "Doğum tarihi kabul edilmedi. Kontrol edip tekrar dene.",
+  "@hata_invalid_birth_date": {
+    "description": "Hata kodu `invalid-birth-date`. Kayıt formunda sunucu doğum tarihini geçersiz bulduğunda görünen hata."
+  },
+  "hata_consent_outdated": "Metinler az önce güncellendi. Güncel sürümleri okuyup yeniden onayla.",
+  "@hata_consent_outdated": {
+    "description": "Hata kodu `consent-outdated`. Kayıt veya yeniden onay gönderilirken aydınlatma metninin ya da kullanım koşullarının yeni sürümü yayımlanmışsa görünen uyarı; sürümler yeniden okunur ve onay kutuları temizlenir."
+  },
+  "hata_already_registered": "Kaydın zaten tamamlanmış.",
+  "@hata_already_registered": {
+    "description": "Hata kodu `already-registered`. Kaydı tamamlanmış bir hesap yeniden kayıt göndermeye çalıştığında görünen hata. Normalde kayıt akışı oturumu yenileyip devam eder (ADR-0012 §3); bu metin yedektir."
+  },
+  "hata_invalid_display_name": "Bu ad kullanılamıyor. Başka bir ad dene.",
+  "@hata_invalid_display_name": {
+    "description": "Hata kodu `invalid-display-name`. Sunucu görünen adı kabul etmediğinde (kayıt ve profil formu) görünen hata."
+  },
+  "hata_tayfa_not_found": "Bu tayfa bulunamadı.",
+  "@hata_tayfa_not_found": {
+    "description": "Hata kodu `tayfa-not-found`. Tayfa yoksa, silinmişse ya da kullanıcı onun etkin üyesi değilse görünen hata. Sunucu bu durumları bilerek ayırmaz; metin de tayfanın var olup olmadığını ima etmez."
+  },
+  "hata_permission_denied": "Bu işlem için yetkin yok.",
+  "@hata_permission_denied": {
+    "description": "Hata kodu `permission-denied`. Kullanıcı tayfanın etkin üyesi olduğu halde rolü bu işleme izin vermediğinde görünen hata."
+  },
+  "hata_muted": "Bu tayfada şu an yazamazsın; okumaya devam edebilirsin.",
+  "@hata_muted": {
+    "description": "Hata kodu `muted`. Tayfada susturulmuş üye yazmaya, oy vermeye ya da benzeri bir işleme çalıştığında görünen hata."
+  },
+  "hata_tayfa_read_only": "Bu tayfa şu an salt okunur; değişiklik yapılamıyor.",
+  "@hata_tayfa_read_only": {
+    "description": "Hata kodu `tayfa-read-only`. Tayfa askıya alınmış, arşivlenmiş ya da silinmeyi bekliyorken bir değişiklik denendiğinde görünen hata; okuma sürer."
+  },
+  "hata_tayfa_create_limit": "Son 24 saatte zaten bir tayfa açtın. Daha sonra tekrar dene.",
+  "@hata_tayfa_create_limit": {
+    "description": "Hata kodu `tayfa-create-limit`. Kullanıcı 24 saat içinde ikinci tayfayı açmaya çalıştığında görünen hata (kullanıcı başına günde bir tayfa)."
+  },
+  "hata_deletion_already_requested": "Bu tayfa için silme isteği zaten var.",
+  "@hata_deletion_already_requested": {
+    "description": "Hata kodu `deletion-already-requested`. Silinmeyi bekleyen tayfa için yeniden silme istendiğinde görünen hata."
+  },
+  "hata_deletion_not_requested": "Bu tayfa için bekleyen bir silme isteği yok.",
+  "@hata_deletion_not_requested": {
+    "description": "Hata kodu `deletion-not-requested`. Silme isteği olmayan tayfada silme iptal edilmeye çalışıldığında görünen hata."
+  },
+  "hata_invalid_join_code": "Bu katılım kodu geçerli değil. Kodu kontrol edip tekrar dene.",
+  "@hata_invalid_join_code": {
+    "description": "Hata kodu `invalid-join-code`. Katılım kodu bozuk, bilinmeyen ya da yenilenmiş olduğunda görünen hata. Sunucu banlı olunan ya da salt okunur tayfayı da aynı cevapla verir; metin sebebi ayırmaz."
+  },
+  "hata_invite_invalid": "Bu davet bağlantısı geçerli değil.",
+  "@hata_invite_invalid": {
+    "description": "Hata kodu `invite-invalid`. Davet bağlantısı bozuk ya da bilinmeyen olduğunda veya tayfası kullanılamaz durumdayken görünen hata."
+  },
+  "hata_invite_expired": "Bu davet bağlantısının süresi dolmuş. Daveti gönderenden yeni bir bağlantı iste.",
+  "@hata_invite_expired": {
+    "description": "Hata kodu `invite-expired`. Süresi geçmiş davet bağlantısı açıldığında görünen hata."
+  },
+  "hata_invite_revoked": "Bu davet bağlantısı artık geçerli değil. Daveti gönderenden yeni bir bağlantı iste.",
+  "@hata_invite_revoked": {
+    "description": "Hata kodu `invite-revoked`. İptal edilmiş davet bağlantısı açıldığında görünen hata."
+  },
+  "hata_invite_exhausted": "Bu davet bağlantısının kullanım sınırı dolmuş. Daveti gönderenden yeni bir bağlantı iste.",
+  "@hata_invite_exhausted": {
+    "description": "Hata kodu `invite-exhausted`. Kullanım sayısı sınırına ulaşmış davet bağlantısı açıldığında görünen hata."
+  },
+  "hata_invite_not_found": "Bu davet bağlantısı bulunamadı.",
+  "@hata_invite_not_found": {
+    "description": "Hata kodu `invite-not-found`. Yönetici tayfada olmayan bir davet bağlantısını iptal etmeye çalıştığında görünen hata."
+  },
+  "hata_already_member": "Bu tayfanın zaten üyesisin.",
+  "@hata_already_member": {
+    "description": "Hata kodu `already-member`. Kullanıcı zaten etkin üyesi olduğu tayfaya katılmaya çalıştığında görünen hata."
+  },
+  "hata_already_pending": "Katılım isteğin zaten onay bekliyor.",
+  "@hata_already_pending": {
+    "description": "Hata kodu `already-pending`. Kullanıcının bekleyen bir katılım isteği varken yeniden katılmaya çalıştığında görünen hata."
+  },
+  "hata_banned": "Bu tayfaya katılamazsın.",
+  "@hata_banned": {
+    "description": "Hata kodu `banned`. Tayfadan banlanmış kullanıcı davetle katılmaya çalıştığında görünen hata."
+  },
+  "hata_member_not_found": "Bu üye bulunamadı.",
+  "@hata_member_not_found": {
+    "description": "Hata kodu `member-not-found`. Hedef kişinin üyeliği işlemin gerektirdiği durumda olmadığında (örneğin onay bekleyen üye değilken onaylama) görünen hata."
+  },
+  "hata_role_hierarchy": "Bu işlem için rolün yeterli değil.",
+  "@hata_role_hierarchy": {
+    "description": "Hata kodu `role-hierarchy`. Hedef kişinin ya da içeriğin yazarının rolü kullanıcınınkinden düşük olmadığında veya verilmek istenen rol kendi rolünden düşük olmadığında görünen hata."
+  },
+  "hata_last_admin": "Tayfanın en az bir yöneticisi olmalı. Önce başka birini yönetici yap.",
+  "@hata_last_admin": {
+    "description": "Hata kodu `last-admin`. Değişiklik tayfayı etkin yöneticisiz bırakacaksa (son yöneticinin ayrılması ya da rolünü düşürmesi) görünen hata."
+  },
+  "hata_module_disabled": "Bu bölüm bu tayfada kapalı.",
+  "@hata_module_disabled": {
+    "description": "Hata kodu `module-disabled`. Tayfanın duyuru, etkinlik, soru-cevap ya da anket modülü kapalıyken o modüle erişildiğinde görünen hata. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_announcement_not_found": "Bu duyuru bulunamadı.",
+  "@hata_announcement_not_found": {
+    "description": "Hata kodu `announcement-not-found`. Duyuru yoksa, silinmişse, süresi geçmişse ya da artık geri alınamıyorsa görünen hata."
+  },
+  "hata_event_not_found": "Bu etkinlik bulunamadı.",
+  "@hata_event_not_found": {
+    "description": "Hata kodu `event-not-found`. Etkinlik bu tayfada yoksa ya da silinmişse görünen hata."
+  },
+  "hata_event_cancelled": "Bu etkinlik iptal edildi; artık değişiklik yapılamıyor.",
+  "@hata_event_cancelled": {
+    "description": "Hata kodu `event-cancelled`. İptal edilmiş etkinlikte ya da katılım cevabında değişiklik denendiğinde görünen hata."
+  },
+  "hata_event_ended": "Bu etkinlik bitti; artık değişiklik yapılamıyor.",
+  "@hata_event_ended": {
+    "description": "Hata kodu `event-ended`. Bitmiş etkinlikte ya da katılım cevabında değişiklik denendiğinde görünen hata."
+  },
+  "hata_event_not_going": "Bunun için önce etkinlikte \"Geliyorum\" seç.",
+  "@hata_event_not_going": {
+    "description": "Hata kodu `event-not-going`. Konvoya araç ekleme ya da check-in gibi işlemler 'katılıyorum' cevabı olmadan denendiğinde görünen hata."
+  },
+  "hata_event_item_not_found": "Bu kayıt bulunamadı.",
+  "@hata_event_item_not_found": {
+    "description": "Hata kodu `event-item-not-found`. Etkinlikteki kamp malzemesi, konvoy aracı ya da av kaydı yoksa veya kullanıcı onu kaldıramıyorsa görünen hata."
+  },
+  "hata_event_limit": "Bu etkinliğin listesi dolu.",
+  "@hata_event_limit": {
+    "description": "Hata kodu `event-limit`. Etkinliğin listesi (kamp malzemesi, av kaydı) sınırına ulaştığında görünen hata."
+  },
+  "hata_event_type_mismatch": "Bu işlem bu etkinlik türünde yapılamıyor.",
+  "@hata_event_type_mismatch": {
+    "description": "Hata kodu `event-type-mismatch`. Bir etkinlik türüne özgü işlem (kamp malzemesi, konvoy aracı, yürüyüş) başka türdeki etkinlikte denendiğinde görünen hata."
+  },
+  "hata_check_in_closed": "Varış bildirimi şu an kapalı. Etkinlik başlamadan 30 dakika önce açılır, etkinlik bitince kapanır.",
+  "@hata_check_in_closed": {
+    "description": "Hata kodu `check-in-closed`. Check-in penceresinin dışında check-in denendiğinde görünen hata."
+  },
+  "hata_check_in_too_far": "Buluşma noktasına yeterince yakın değilsin. Yaklaşıp tekrar dene.",
+  "@hata_check_in_too_far": {
+    "description": "Hata kodu `check-in-too-far`. Check-in'de gönderilen konum buluşma noktasından uzak olduğunda görünen hata. Deneme hakkından sayılır; uzaklık söylenmez."
+  },
+  "hata_check_in_attempts_exhausted": "Bu etkinlik için varış bildirme hakkın doldu. Katılımını etkinlik bitince etkinliği düzenleyen kişi ekleyebilir.",
+  "@hata_check_in_attempts_exhausted": {
+    "description": "Hata kodu `check-in-attempts-exhausted`. Kullanıcı etkinlik için konumla check-in hakkının tamamını (beş deneme) kullandığında görünen hata."
+  },
+  "hata_correction_closed": "Katılım düzeltme süresi doldu.",
+  "@hata_correction_closed": {
+    "description": "Hata kodu `correction-closed`. Düzenleyen, etkinlik bitiminden sonraki yedi günlük düzeltme süresinin dışında katılımı değiştirmeye çalıştığında görünen hata."
+  },
+  "hata_hike_not_started": "Önce yürüyüşe başladığını bildir.",
+  "@hata_hike_not_started": {
+    "description": "Hata kodu `hike-not-started`. Yürüyüşe başlama bildirilmeden dönüş bildirildiğinde görünen hata."
+  },
+  "hata_not_attended": "Bunun için etkinliğe katıldığın doğrulanmış olmalı.",
+  "@hata_not_attended": {
+    "description": "Hata kodu `not-attended`. Av kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
+  },
+  "hata_event_series_not_found": "Bu etkinlik serisi bulunamadı.",
+  "@hata_event_series_not_found": {
+    "description": "Hata kodu `event-series-not-found`. Tekrarlayan etkinlik serisi bu tayfada yoksa görünen hata."
+  },
+  "hata_event_series_ended": "Bu seri sona erdi; artık değiştirilemiyor.",
+  "@hata_event_series_ended": {
+    "description": "Hata kodu `event-series-ended`. Sona erdirilmiş tekrarlayan seride değişiklik denendiğinde görünen hata."
+  },
+  "hata_question_not_found": "Bu soru bulunamadı.",
+  "@hata_question_not_found": {
+    "description": "Hata kodu `question-not-found`. Soru bu tayfada yoksa, silinmişse ya da artık geri alınamıyorsa görünen hata."
+  },
+  "hata_answer_not_found": "Bu cevap bulunamadı.",
+  "@hata_answer_not_found": {
+    "description": "Hata kodu `answer-not-found`. Cevap yoksa, silinmişse ya da sorusu silinmişse görünen hata."
+  },
+  "hata_tag_not_found": "Bu etiket bulunamadı.",
+  "@hata_tag_not_found": {
+    "description": "Hata kodu `tag-not-found`. Soru-cevaptaki etiket bu tayfada yoksa görünen hata."
+  },
+  "hata_own_answer_vote": "Kendi cevabına oy veremezsin.",
+  "@hata_own_answer_vote": {
+    "description": "Hata kodu `own-answer-vote`. Kullanıcı kendi cevabını faydalı bulmaya çalıştığında görünen hata."
+  },
+  "hata_tag_limit": "Bu tayfada etiket sınırına ulaşıldı. Var olan bir etiketi seç.",
+  "@hata_tag_limit": {
+    "description": "Hata kodu `tag-limit`. Soru yeni bir etiket açmak isterken tayfanın etiket sayısı sınırda (200) olduğunda görünen hata."
+  },
+  "hata_poll_not_found": "Bu anket bulunamadı.",
+  "@hata_poll_not_found": {
+    "description": "Hata kodu `poll-not-found`. Anket bu tayfada yoksa ya da silinmişse görünen hata."
+  },
+  "hata_poll_closed": "Bu anket kapandı; oylar artık değişmiyor.",
+  "@hata_poll_closed": {
+    "description": "Hata kodu `poll-closed`. Kapanmış ankette oy verilmeye ya da oy değiştirilmeye çalışıldığında görünen hata."
+  },
+  "hata_poll_anonymous": "Bu gizli bir anket; kimin neye oy verdiği gösterilmez.",
+  "@hata_poll_anonymous": {
+    "description": "Hata kodu `poll-anonymous`. Gizli ankette oy verenler listelenmeye çalışıldığında görünen hata. Yöneticiler dahil kimse oy verenleri göremez."
+  },
+  "hata_user_not_found": "Bu kişi bulunamadı.",
+  "@hata_user_not_found": {
+    "description": "Hata kodu `user-not-found`. Kişi yoksa ya da iki taraftan biri diğerini engellediyse görünen hata. Sunucu bu durumları bilerek ayırmaz; metin engeli ima etmez."
+  },
+  "hata_friend_request_limit": "Arkadaşlık isteği sınırına ulaştın. Daha sonra tekrar dene.",
+  "@hata_friend_request_limit": {
+    "description": "Hata kodu `friend-request-limit`. Kullanıcı son 24 saatte izin verilen sayıda (20) arkadaşlık isteği gönderdiğinde görünen hata; reddedilen istekler de sayılır."
+  },
+  "hata_friend_request_not_found": "Bu arkadaşlık isteği bulunamadı.",
+  "@hata_friend_request_not_found": {
+    "description": "Hata kodu `friend-request-not-found`. Bu kişiden yanıt bekleyen bir arkadaşlık isteği olmadığında görünen hata."
+  },
+  "hata_already_friends": "Zaten arkadaşsınız.",
+  "@hata_already_friends": {
+    "description": "Hata kodu `already-friends`. Arkadaş olunan kişiye arkadaşlık isteği gönderildiğinde görünen hata."
+  },
+  "hata_friend_request_pending": "Arkadaşlık isteğin yanıt bekliyor.",
+  "@hata_friend_request_pending": {
+    "description": "Hata kodu `friend-request-pending`. Kullanıcının bu kişiye gönderdiği istek yanıt beklerken yeniden istek gönderildiğinde görünen hata."
+  },
+  "hata_not_friends": "Yalnızca arkadaşlarını doğrudan davet edebilirsin.",
+  "@hata_not_friends": {
+    "description": "Hata kodu `not-friends`. Arkadaş olunmayan kişi tayfaya doğrudan davet edilmeye çalışıldığında görünen hata."
+  },
+  "hata_direct_invite_limit": "Davet sınırına ulaştın. Daha sonra tekrar dene.",
+  "@hata_direct_invite_limit": {
+    "description": "Hata kodu `direct-invite-limit`. Kullanıcı son 24 saatte bütün tayfalarda toplam 10 doğrudan davet gönderdiğinde görünen hata."
+  },
+  "hata_invitation_not_found": "Bu davet bulunamadı.",
+  "@hata_invitation_not_found": {
+    "description": "Hata kodu `invitation-not-found`. Bu tayfada yanıtlanmamış bir doğrudan davet olmadığında görünen hata."
+  },
+  "hata_already_invited": "Bu kişi bu tayfaya zaten davet edildi.",
+  "@hata_already_invited": {
+    "description": "Hata kodu `already-invited`. Kişinin bu tayfaya yanıtlanmamış bir daveti varken yeniden davet edildiğinde görünen hata."
+  },
+  "hata_invite_not_allowed": "Bu kişi bu tayfaya davet edilemiyor.",
+  "@hata_invite_not_allowed": {
+    "description": "Hata kodu `invite-not-allowed`. Kişi tayfaya davet edilemediğinde (örneğin banlı ya da katılım isteği bekliyor) görünen hata. Sunucu sebebi söylemez; metin de söylemez."
+  },
+  "hata_report_not_found": "Bu şikâyet bulunamadı.",
+  "@hata_report_not_found": {
+    "description": "Hata kodu `report-not-found`. Şikâyet yoksa ya da kullanıcı onu göremiyorsa görünen hata."
+  },
+  "hata_report_target_not_found": "Şikâyet etmek istediğin içerik bulunamadı.",
+  "@hata_report_target_not_found": {
+    "description": "Hata kodu `report-target-not-found`. Şikâyet edilen kişi ya da içerik yoksa veya kullanıcı onu göremiyorsa görünen hata. Sunucu sebebi söylemez; metin de söylemez."
+  },
+  "hata_report_limit": "Şikâyet sınırına ulaştın. Daha sonra tekrar dene.",
+  "@hata_report_limit": {
+    "description": "Hata kodu `report-limit`. Kullanıcı son 24 saatte izin verilen sayıda (20) şikâyet gönderdiğinde görünen hata."
+  },
+  "hata_report_already_resolved": "Bu şikâyet zaten sonuçlandı.",
+  "@hata_report_already_resolved": {
+    "description": "Hata kodu `report-already-resolved`. Sonuçlanmış şikâyet yeniden sonuçlandırılmaya çalışıldığında görünen hata."
+  },
+  "hata_report_action_missing": "Seçtiğin işlem henüz yapılmadı. Önce işlemi yap, sonra şikâyeti sonuçlandır.",
+  "@hata_report_action_missing": {
+    "description": "Hata kodu `report-action-missing`. Moderasyon kuyruğunda şikâyet, henüz yapılmamış bir işlemle (içerik kaldırma, üyeye yaptırım) sonuçlandırılmaya çalışıldığında görünen hata."
+  },
+  "hata_referral_code_not_found": "Bu referans kodu bulunamadı. Kodu kontrol et ya da boş bırak.",
+  "@hata_referral_code_not_found": {
+    "description": "Hata kodu `referral-code-not-found`. Kayıt formunda ya da referans aramasında girilen kod bulunamadığında görünen hata."
+  },
+  "hata_reauthentication_required": "Bu işlem için yeniden giriş yapman gerekiyor.",
+  "@hata_reauthentication_required": {
+    "description": "Hata kodu `reauthentication-required`. Hesap silme gibi bir işlem son dakikalarda Google ile yeniden giriş gerektirdiğinde görünen hata. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
+  },
+  "hata_session_not_found": "Bu oturum bulunamadı; zaten kapanmış olabilir.",
+  "@hata_session_not_found": {
+    "description": "Hata kodu `session-not-found`. Oturumlar listesinden kapatılmak istenen oturum yoksa ya da zaten kapanmışsa görünen hata."
+  },
+  "hata_notification_not_found": "Bu bildirim bulunamadı.",
+  "@hata_notification_not_found": {
+    "description": "Hata kodu `notification-not-found`. Bildirim yoksa ya da kullanıcıya ait değilse görünen hata."
+  },
+  "hata_channel_not_found": "Bu kanal bulunamadı.",
+  "@hata_channel_not_found": {
+    "description": "Hata kodu `channel-not-found`. Kanal yoksa ya da kullanıcı onu göremiyorsa (başka tayfanın ya da yönetim kanalı) görünen hata. Sunucu bu durumları bilerek ayırmaz."
+  },
+  "hata_message_not_found": "Bu mesaj bulunamadı.",
+  "@hata_message_not_found": {
+    "description": "Hata kodu `message-not-found`. Mesaj bu kanalda ya da konuşmada yoksa veya artık geri alınamıyorsa görünen hata."
+  },
+  "hata_channel_archived": "Bu kanal arşivlendi; yeni mesaj yazılamıyor.",
+  "@hata_channel_archived": {
+    "description": "Hata kodu `channel-archived`. Arşivlenmiş kanala mesaj gönderilmeye çalışıldığında görünen hata."
+  },
+  "hata_channel_name_taken": "Bu adda bir kanal zaten var. Başka bir ad seç.",
+  "@hata_channel_name_taken": {
+    "description": "Hata kodu `channel-name-taken`. Tayfada arşivlenmemiş aynı adlı bir kanal varken kanal açıldığında ya da arşivden çıkarıldığında görünen hata."
+  },
+  "hata_slow_mode": "Bu kanalda yavaş mod açık. Biraz bekleyip tekrar gönder.",
+  "@hata_slow_mode": {
+    "description": "Hata kodu `slow-mode`. Yavaş modlu kanalda bekleme süresi dolmadan mesaj gönderildiğinde görünen hata."
+  },
+  "hata_forbidden_origin": "Bağlantı kurulamadı. Uygulamayı yeniden açıp tekrar dene.",
+  "@hata_forbidden_origin": {
+    "description": "Hata kodu `forbidden-origin`. Gerçek zamanlı bağlantı isteği izin verilmeyen bir kaynaktan geldiğinde görünen hata. Uygulamanın kendi hatasıdır; kullanıcıya teknik ayrıntı verilmez."
+  },
+  "hata_conversation_not_found": "Bu konuşma bulunamadı.",
+  "@hata_conversation_not_found": {
+    "description": "Hata kodu `conversation-not-found`. Kullanıcının tarafı olmadığı ya da reddettiği birebir konuşma açıldığında görünen hata."
+  },
+  "hata_direct_message_not_allowed": "Bu kişiye mesaj gönderemezsin.",
+  "@hata_direct_message_not_allowed": {
+    "description": "Hata kodu `direct-message-not-allowed`. Kişiye birebir mesaj gönderilemediğinde (engel, ortak tayfa ya da arkadaşlık yok, bilinmeyen kişi) görünen hata. Sunucu sebebi söylemez; metin de söylemez."
+  },
+  "hata_message_request_pending": "Karşı taraf yanıt verene kadar yalnızca bir mesaj gönderebilirsin.",
+  "@hata_message_request_pending": {
+    "description": "Hata kodu `message-request-pending`. Mesaj isteği yanıt beklerken ikinci mesaj gönderildiğinde görünen hata. İsteğin reddedildiği gönderene söylenmez; metin bunu ima etmez."
+  },
+  "hata_message_request_limit": "Mesaj isteği sınırına ulaştın. Daha sonra tekrar dene.",
+  "@hata_message_request_limit": {
+    "description": "Hata kodu `message-request-limit`. Kullanıcı son 24 saatte izin verilen sayıda mesaj isteği açtığında görünen hata; reddedilen istekler de sayılır."
+  },
+  "hata_message_request_not_found": "Bekleyen bir mesaj isteği yok.",
+  "@hata_message_request_not_found": {
+    "description": "Hata kodu `message-request-not-found`. Bu konuşmada kullanıcıyı bekleyen bir mesaj isteği olmadığında (kabul ya da ret denendiğinde) görünen hata."
   }
 }

@@ -7,7 +7,6 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
-import 'package:tayfam/features/hesap/application/hesap_hatasi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 
@@ -113,8 +112,9 @@ final class KayitDurumu {
   /// Kayıt isteği sürüyor.
   final bool gonderiliyor;
 
-  /// Son gönderimin hatası; yoksa `null`.
-  final HesapHatasi? hata;
+  /// Son gönderimin hatası (API ya da bağlantı hatası); yoksa `null`.
+  /// Metni ekranda `hesapHatasiMetni` verir.
+  final Object? hata;
 }
 
 /// Kayıt akışı (ADR-0012 §3): gereksinimler okunur, form gönderilir,
@@ -151,8 +151,7 @@ class KayitNotifier extends AsyncNotifier<KayitDurumu> {
             return;
           case ProblemType.consentOutdated:
             final yeni = await depo.kayitGereksinimleri();
-            const hata = HesapHatasi.metinlerGuncellendi;
-            _bitir(KayitDurumu(surumler: yeni, hata: hata));
+            _bitir(KayitDurumu(surumler: yeni, hata: problem));
             return;
           case ProblemType.alreadyRegistered:
             // Kayıt zaten tamam (ör. önceki deneme yanıtı gelmeden koptu):
@@ -167,7 +166,7 @@ class KayitNotifier extends AsyncNotifier<KayitDurumu> {
     } on OturumYok {
       oturumDurumu.ayarla(OturumDurumu.girisYok);
     } on Exception catch (hata) {
-      _bitir(KayitDurumu(surumler: surumler, hata: hesapHatasiOku(hata)));
+      _bitir(KayitDurumu(surumler: surumler, hata: hata));
     }
   }
 

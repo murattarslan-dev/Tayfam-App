@@ -5,7 +5,6 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
-import 'package:tayfam/features/hesap/application/hesap_hatasi.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 
@@ -17,8 +16,9 @@ final class GirisDurumu {
   /// Google penceresi açık ya da giriş isteği sürüyor.
   final bool suruyor;
 
-  /// Son denemenin hatası; yoksa `null`.
-  final HesapHatasi? hata;
+  /// Son denemenin hatası (API, bağlantı ya da Google girişi hatası);
+  /// yoksa `null`. Metni ekranda `hesapHatasiMetni` verir.
+  final Object? hata;
 
   @override
   bool operator ==(Object other) =>
@@ -64,9 +64,9 @@ class GirisNotifier extends Notifier<GirisDurumu> {
         _bitir(const GirisDurumu());
         return;
       }
-      _bitir(GirisDurumu(hata: hesapHatasiOku(problem)));
+      _bitir(GirisDurumu(hata: problem));
     } on Exception catch (hata) {
-      _bitir(GirisDurumu(hata: hesapHatasiOku(hata)));
+      _bitir(GirisDurumu(hata: hata));
     }
   }
 
