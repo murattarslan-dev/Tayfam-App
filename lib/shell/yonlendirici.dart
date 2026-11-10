@@ -129,7 +129,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
     ),
     GoRoute(
       path: Adresler.tayfaOlustur,
-      builder: (context, state) => const YerTutucuSayfa(baslik: _olusturBasligi),
+      builder: (context, state) =>
+          const YerTutucuSayfa(baslik: _olusturBasligi),
     ),
   ];
 }

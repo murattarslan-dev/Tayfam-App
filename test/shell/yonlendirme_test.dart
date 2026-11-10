@@ -20,10 +20,7 @@ String? _yonlendir(
 void main() {
   group('oturum korumaları', () {
     test('giriş yoksa giriş ekranına gidiliyor', () {
-      expect(
-        _yonlendir('/sohbet', oturum: OturumDurumu.girisYok),
-        '/giris',
-      );
+      expect(_yonlendir('/sohbet', oturum: OturumDurumu.girisYok), '/giris');
       expect(_yonlendir('/giris', oturum: OturumDurumu.girisYok), isNull);
     });
 
@@ -36,10 +33,7 @@ void main() {
     });
 
     test('yeniden onay gerekiyorsa onay ekranına gidiliyor', () {
-      expect(
-        _yonlendir('/profil', oturum: OturumDurumu.onayGerekli),
-        '/onay',
-      );
+      expect(_yonlendir('/profil', oturum: OturumDurumu.onayGerekli), '/onay');
       expect(_yonlendir('/onay', oturum: OturumDurumu.onayGerekli), isNull);
     });
 

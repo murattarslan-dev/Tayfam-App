@@ -64,8 +64,7 @@ class TayfaUstBolumu extends StatelessWidget {
     final metinler = AppLocalizations.of(context);
     final renkler = Theme.of(context).colorScheme;
     final durumCubugu =
-        ThemeData.estimateBrightnessForColor(renkler.primary) ==
-            Brightness.dark
+        ThemeData.estimateBrightnessForColor(renkler.primary) == Brightness.dark
         ? SystemUiOverlayStyle.light
         : SystemUiOverlayStyle.dark;
     return AnnotatedRegion<SystemUiOverlayStyle>(

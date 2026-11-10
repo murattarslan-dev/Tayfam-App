@@ -49,20 +49,18 @@ void main() {
     expect(zeminler.length, greaterThan(1));
   });
 
-  testWidgets('"Tayfa kodum var" kodla katılma akışını açıyor', (
-    tester,
-  ) async {
+  testWidgets('"Tayfa kodum var" kodla katılma akışını açıyor', (tester) async {
     ekranBoyutu(tester);
     await uygulamayiAc(tester);
 
     await tester.tap(find.text(arbMetni('karsilama_kodum_var')));
     await tester.pumpAndSettle();
 
+    // Akış kabuğun üstüne itilen tam ekran bir sayfadır.
     expect(
-      yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
-      '/tayfa-katil',
+      find.widgetWithText(AppBar, arbMetni('tayfa_kodla_katil')),
+      findsOneWidget,
     );
-    expect(find.text(arbMetni('tayfa_kodla_katil')), findsOneWidget);
   });
 
   testWidgets('"Tayfa oluştur" oluşturma akışını açıyor', (tester) async {
@@ -72,9 +70,10 @@ void main() {
     await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
     await tester.pumpAndSettle();
 
+    // Akış kabuğun üstüne itilen tam ekran bir sayfadır.
     expect(
-      yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
-      '/tayfa-olustur',
+      find.widgetWithText(AppBar, arbMetni('tayfa_olustur')),
+      findsOneWidget,
     );
   });
 

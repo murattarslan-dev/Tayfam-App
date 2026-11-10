@@ -139,9 +139,8 @@ class _TurHapi extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Text(
           metin,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: yaziRengi,
-          ),
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(color: yaziRengi),
         ),
       ),
     );

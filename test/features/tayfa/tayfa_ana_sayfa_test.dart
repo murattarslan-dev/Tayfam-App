@@ -21,9 +21,7 @@ void main() {
     expect(find.text(arbMetni('tayfa_ana_sayfa_bos')), findsOneWidget);
   });
 
-  testWidgets('üst bölüm mor (primary) zemin, onPrimary metin', (
-    tester,
-  ) async {
+  testWidgets('üst bölüm mor (primary) zemin, onPrimary metin', (tester) async {
     ekranBoyutu(tester);
     await widgetAc(
       tester,
@@ -82,9 +80,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(TayfaDegistirmePaneli), findsNothing);
+    // Akış kabuğun üstüne itilen tam ekran bir sayfadır.
     expect(
-      yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
-      '/tayfa-katil',
+      find.widgetWithText(AppBar, arbMetni('tayfa_kodla_katil')),
+      findsOneWidget,
     );
 
     // Geri dönünce tayfanın ana sayfası yerinde.
@@ -106,9 +105,10 @@ void main() {
     await tester.tap(find.text(arbMetni('tayfa_olustur')));
     await tester.pumpAndSettle();
 
+    // Akış kabuğun üstüne itilen tam ekran bir sayfadır.
     expect(
-      yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
-      '/tayfa-olustur',
+      find.widgetWithText(AppBar, arbMetni('tayfa_olustur')),
+      findsOneWidget,
     );
   });
 

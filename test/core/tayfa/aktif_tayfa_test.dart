@@ -36,9 +36,7 @@ void main() {
     final container = ProviderContainer.test();
     container.read(aktifTayfaIdProvider.notifier).sec(ornekTayfaId);
 
-    container
-        .read(oturumDurumuProvider.notifier)
-        .ayarla(OturumDurumu.girisYok);
+    container.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
 
     expect(container.read(aktifTayfaIdProvider), isNull);
   });
