@@ -64,8 +64,8 @@ void kodKurallariniUygula(String yol, TaranmisKaynak t, BulguEkle ekle) {
     ekle(
       Kurallar.riverpodApi,
       ofset,
-      '`$parca`: eski Riverpod API\'si; Notifier / AsyncNotifier / '
-      'StreamNotifier veya Provider kullan.',
+      '`$parca`: izin verilmeyen Riverpod API\'si; Notifier / '
+      'AsyncNotifier / StreamNotifier veya Provider kullan.',
     );
   });
   _kaliplar(t.kod, _kodUretimiKaliplari, (ofset, parca) {
@@ -348,7 +348,8 @@ final List<RegExp> _rastgeleKaliplari = [RegExp(r'(?<![\w$])Random\s*\(')];
 final List<RegExp> _riverpodKaliplari = [
   RegExp(
     r'(?<![\w$])(?:StateNotifierProvider|StateNotifier|'
-    r'ChangeNotifierProvider|StateProvider)(?![\w$])',
+    r'ChangeNotifierProvider|StateProvider|FutureProvider|StreamProvider)'
+    r'(?![\w$])',
   ),
 ];
 

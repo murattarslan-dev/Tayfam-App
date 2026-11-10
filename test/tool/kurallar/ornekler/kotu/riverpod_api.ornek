@@ -1,5 +1,5 @@
 // yol: lib/core/oturum/sayac.dart
-// beklenen: riverpod-api 4
+// beklenen: riverpod-api 6
 import 'package:flutter_riverpod/legacy.dart';
 
 final sayacProvider = StateProvider<int>((ref) => 0);
@@ -9,3 +9,8 @@ class Sayac extends StateNotifier<int> {
 }
 
 final ayarProvider = ChangeNotifierProvider((ref) => Ayar());
+
+// CLAUDE.md "Durum ve DI": FutureProvider / StreamProvider de kullanılmaz;
+// tek seferlik veya akış durumu AsyncNotifier / StreamNotifier ile yazılır.
+final profilProvider = FutureProvider<int>((ref) async => 1);
+final olaylarProvider = StreamProvider<int>((ref) => const Stream.empty());

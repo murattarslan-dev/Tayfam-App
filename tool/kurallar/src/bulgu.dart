@@ -183,10 +183,11 @@ abstract final class Kurallar {
 
   static const riverpodApi = KuralTanimi(
     ad: 'riverpod-api',
-    dayanak: 'ADR-0001 kural 1',
+    dayanak: 'ADR-0001 kural 1, CLAUDE.md "Durum ve DI"',
     aciklama:
         'StateNotifier, StateNotifierProvider, ChangeNotifierProvider, '
-        'StateProvider ve legacy.dart kullanılmaz.',
+        'StateProvider, FutureProvider, StreamProvider ve legacy.dart '
+        'kullanılmaz.',
   );
 
   static const kodUretimi = KuralTanimi(
