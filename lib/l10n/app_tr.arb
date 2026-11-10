@@ -387,6 +387,14 @@
   "@karsilama_tayfa_olustur": {
     "description": "Karşılama ekranındaki ikincil düğme; yeni tayfa kurma akışını açar."
   },
+  "bilesen_logo_yazisi": "tayfam",
+  "@bilesen_logo_yazisi": {
+    "description": "Ortak bileşen: logoda monogramın yanındaki marka adı (açılış ve giriş ekranı). Markada küçük harfle yazılır; çevrilmez."
+  },
+  "bilesen_logo_etiketi": "Tayfam",
+  "@bilesen_logo_etiketi": {
+    "description": "Ortak bileşen: logonun (monogram, yanında yazı olsun olmasın) ekran okuyucuda okunan adı. Ekranda görünmez; çevrilmez."
+  },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {
     "description": "Ortak bileşen: birebir sohbetin üstündeki kilit ikonlu bilgi satırı. Mesajların uçtan uca şifrelendiğini söyler."
@@ -444,10 +452,6 @@
         "example": "64"
       }
     }
-  },
-  "hesap_yazi_logo": "tayfam",
-  "@hesap_yazi_logo": {
-    "description": "Yazı logo: açılış ve giriş ekranındaki marka adı. Markada küçük harfle yazılır; çevrilmez."
   },
   "hesap_slogan": "Birlikte yapınca güzel.",
   "@hesap_slogan": {

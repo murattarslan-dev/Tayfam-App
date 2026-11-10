@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- tool/ikon/ikon_uret.py ile üretildi; elle düzenleme, betiği çalıştır. -->
+<!-- Uyarlanabilir ikonun ön planı: tanıtım sitesindeki app-icon.svg'nin
+     monogramı (viewBox 64), 108 dp tuvalin ortasında, görünen 72 dp'nin
+     %70'i. Güvenli bölge (66 dp çap) dışına taşmaz. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.7875"
+        android:scaleY="0.7875"
+        android:translateX="28.8"
+        android:translateY="28.8">
+        <path
+            android:pathData="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7"
+            android:strokeColor="@color/ic_launcher_govde"
+            android:strokeWidth="10"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M14 27c10 0 22-2 34-6"
+            android:strokeColor="@color/ic_launcher_cizgi"
+            android:strokeWidth="10"
+            android:strokeLineCap="round" />
+        <path
+            android:pathData="M47.5,13a4.5,4.5 0 1,0 9,0a4.5,4.5 0 1,0 -9,0"
+            android:fillColor="@color/ic_launcher_nokta" />
+    </group>
+</vector>
