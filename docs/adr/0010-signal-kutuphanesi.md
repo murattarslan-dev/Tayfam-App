@@ -1,6 +1,6 @@
 # ADR-0010: Uçtan uca şifreleme için Signal kütüphanesi
 
-- **Durum:** Önerildi (anahtar saklama kararlaştırıldı; AGPL kabulü bekleniyor)
+- **Durum:** Kabul edildi
 - **Tarih:** 2026-11-09, güncelleme 2026-11-10
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0011](0011-yalnizca-mobil.md); Tayfam-Api ADR-0005 (E2E tasarımı), ADR-0011; CLAUDE.md kesin kural 4; Notion: Proje Planı §6, Açık Kararlar ("Signal için Dart/Flutter kütüphanesi seçimi")
@@ -30,8 +30,8 @@ tartışmalı.
 
 ## Karar
 
-1. **Signal'in resmi Rust çekirdeği kullanılır** (öneri; AGPL kabulüne
-   bağlı). Başlangıçta `libsignal` bağlaması sürümü sabitlenerek kullanılır;
+1. **Signal'in resmi Rust çekirdeği kullanılır.** AGPL-3.0 lisansı kabul
+   edildi (platform sahibi, 2026-11-10). Başlangıçta `libsignal` bağlaması sürümü sabitlenerek kullanılır;
    bağlama kodu (Rust ve Dart tarafı) eklenmeden önce satır satır incelenir,
    sürüm yükseltmeleri de aynı incelemeden geçer (hassas alan). Bağlamanın
    bakımı bırakılırsa ya da inceleme güven vermezse aynı arayüzle kendi
@@ -53,13 +53,7 @@ tartışmalı.
    - Oturum kapanınca ve hesap silinince bu kayıtların hepsi silinir.
    - Web geliştirme derlemesinde E2E yüklenmez (ADR-0011).
 
-## Açık soru (platform sahibi)
-
-- Uygulamada AGPL-3.0 bağımlılık kabul ediliyor mu? Kabul edilmezse Signal
-  ile E2E'nin lisans açısından temiz bir yolu yoktur; protokol kararı
-  yeniden açılır.
-
-## Sonuçlar (kabul edilirse)
+## Sonuçlar
 
 - Bağımlılık: `libsignal` (sabit sürüm, hassas alan). `flutter_secure_storage`
   zaten var.
