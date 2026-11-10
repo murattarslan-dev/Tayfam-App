@@ -1,0 +1,27 @@
+# Katı analiz (issue #4). CI `flutter analyze --fatal-infos` ile çalışır:
+# info düzeyindeki bulgular da hata sayılır. Bir uyarıyı kural kapatarak
+# değil kodu düzelterek gider.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    # Üretilen kod elle düzenlenmez (ADR-0005, ADR-0008).
+    - lib/l10n/app_localizations*.dart
+    - lib/core/api/gen/**
+
+linter:
+  rules:
+    - avoid_print
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+    - unawaited_futures
+    - always_use_package_imports
