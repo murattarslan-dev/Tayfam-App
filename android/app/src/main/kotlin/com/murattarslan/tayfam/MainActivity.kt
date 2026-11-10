@@ -1,4 +1,4 @@
-package app.tayfam
+package com.murattarslan.tayfam
 
 import io.flutter.embedding.android.FlutterActivity
 

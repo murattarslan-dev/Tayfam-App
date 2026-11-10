@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
@@ -209,7 +210,7 @@ void main() {
         .ayarla(OturumDurumu.girisYok);
     await tester.pumpAndSettle();
 
-    expect(find.text(arbMetni('gezinme_giris_baslik')), findsOneWidget);
+    expect(find.byType(GirisEkrani), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
     expect(
       yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,

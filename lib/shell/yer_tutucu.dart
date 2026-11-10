@@ -8,9 +8,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Henüz yapılmamış bir ekranın yerini tutan sade sayfa.
 ///
-/// Sekme kökleri (Sohbet, Bildirimler, Profil), oturum korumalarının
-/// gönderdiği ekranlar ve tayfa akışları kendi paketlerinde gelene kadar
-/// bunu gösterir. Üst çubuk sadedir (`surface`, ADR-0004 §2a).
+/// Sekme kökleri (Sohbet, Bildirimler, Profil) ve tayfa akışları kendi
+/// paketlerinde gelene kadar bunu gösterir. Üst çubuk sadedir (`surface`,
+/// ADR-0004 §2a).
 class YerTutucuSayfa extends StatelessWidget {
   const YerTutucuSayfa({super.key, required this.baslik});
 

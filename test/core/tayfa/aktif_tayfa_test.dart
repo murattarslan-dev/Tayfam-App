@@ -6,15 +6,24 @@ import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 
 import '../../yardimcilar.dart';
 
+/// Oturum durumu güvenli depoya bağlanmadan açık başlar.
+ProviderContainer _kap() => ProviderContainer.test(
+  overrides: [
+    oturumDurumuProvider.overrideWith(
+      () => SabitOturumDurumu(OturumDurumu.acik),
+    ),
+  ],
+);
+
 void main() {
   test('aktif tayfa yokla (null) başlıyor; sahte veri yok', () {
-    final container = ProviderContainer.test();
+    final container = _kap();
     expect(container.read(aktifTayfaIdProvider), isNull);
     expect(container.read(tayfaAdiProvider(ornekTayfaId)), isNull);
   });
 
   test('geçerli kimlik seçiliyor, temizle seçimi kaldırıyor', () {
-    final container = ProviderContainer.test();
+    final container = _kap();
     final notifier = container.read(aktifTayfaIdProvider.notifier);
 
     notifier.sec(ornekTayfaId);
@@ -25,7 +34,7 @@ void main() {
   });
 
   test('UUID biçiminde olmayan kimlik reddediliyor', () {
-    final container = ProviderContainer.test();
+    final container = _kap();
     final notifier = container.read(aktifTayfaIdProvider.notifier);
 
     expect(() => notifier.sec('abc'), throwsArgumentError);
@@ -33,16 +42,11 @@ void main() {
   });
 
   test('oturum durumu değişince aktif tayfa sıfırlanıyor', () {
-    final container = ProviderContainer.test();
+    final container = _kap();
     container.read(aktifTayfaIdProvider.notifier).sec(ornekTayfaId);
 
     container.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
 
     expect(container.read(aktifTayfaIdProvider), isNull);
-  });
-
-  test('oturum varsayılan olarak açık başlıyor (#7 gelene kadar)', () {
-    final container = ProviderContainer.test();
-    expect(container.read(oturumDurumuProvider), OturumDurumu.acik);
   });
 }

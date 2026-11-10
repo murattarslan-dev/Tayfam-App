@@ -335,4 +335,70 @@ void main() {
       }
     });
   });
+
+  group('istemci sürümü (ADR-0012 §1)', () {
+    HttpTasima tasima(
+      List<http.Request> istekler,
+      String? surum, {
+      int durum = 200,
+    }) => HttpTasima(
+      istemci: MockClient((istek) async {
+        istekler.add(istek);
+        return durum == 200
+            ? _json({'ok': true})
+            : _problem('client-outdated', durum);
+      }),
+      tabanAdres: Uri.parse('https://api.ornek.test'),
+      istemciAdi: 'android',
+      surumBasligi: surum,
+    );
+
+    test('sürüm başlığı GET dahil her istekte gönderiliyor', () async {
+      final istekler = <http.Request>[];
+      final t = tasima(istekler, 'android/0.1.0+1');
+      await t.gonder(method: 'GET', pathTemplate: '/v1/status');
+      await t.gonder(
+        method: 'POST',
+        pathTemplate: '/v1/auth/sign-out',
+        expect: ResponseKind.none,
+      );
+      for (final istek in istekler) {
+        expect(istek.headers['X-Tayfam-Client-Version'], 'android/0.1.0+1');
+      }
+    });
+
+    test('sürüm verilmezse başlık yok', () async {
+      final istekler = <http.Request>[];
+      await tasima(
+        istekler,
+        null,
+      ).gonder(method: 'GET', pathTemplate: '/v1/status');
+      final basliklar = istekler.single.headers;
+      expect(basliklar, isNot(contains('X-Tayfam-Client-Version')));
+    });
+
+    test('geçersiz sürüm başlığı reddediliyor', () {
+      expect(() => tasima([], 'android/v1'), throwsArgumentError);
+      expect(() => tasima([], 'masaustu/1.0.0'), throwsArgumentError);
+    });
+
+    test('client-outdated olay olarak bildiriliyor', () async {
+      final t = tasima([], 'android/0.1.0', durum: 426);
+      var olay = 0;
+      final abonelik = t.eskiSurumOlaylari.listen((_) => olay++);
+      addTearDown(abonelik.cancel);
+      await expectLater(
+        t.gonder(method: 'GET', pathTemplate: '/v1/status'),
+        throwsA(
+          isA<ApiProblem>().having(
+            (p) => p.type,
+            'type',
+            ProblemType.clientOutdated,
+          ),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(olay, 1);
+    });
+  });
 }

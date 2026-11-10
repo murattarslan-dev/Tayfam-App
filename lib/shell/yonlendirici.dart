@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
@@ -18,8 +20,8 @@ const String tayfaIdParametresi = 'tayfaId';
 /// Uygulamanın yönlendiricisi (ADR-0003).
 ///
 /// Uygulama boyunca yaşar (Riverpod 3'te `autoDispose` olmayan provider
-/// kalıcıdır). Oturum durumu veya aktif tayfa değişince korumalar
-/// ([yonlendir]) yeniden çalışır.
+/// kalıcıdır). Oturum durumu, aktif tayfa veya güncelleme durumu değişince
+/// korumalar ([yonlendir]) yeniden çalışır.
 ///
 /// `debugLogDiagnostics` kapalıdır: go_router açıkken tam adresleri
 /// loglar (CLAUDE.md, kesin kural 3).
@@ -29,6 +31,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
   final yenile = ValueNotifier<int>(0);
   ref.listen(oturumDurumuProvider, (_, _) => yenile.value++);
   ref.listen(aktifTayfaIdProvider, (_, _) => yenile.value++);
+  ref.listen(guncellemeProvider, (_, _) => yenile.value++);
 
   final yonlendirici = GoRouter(
     initialLocation: Adresler.kok,
@@ -37,6 +40,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
       oturum: ref.read(oturumDurumuProvider),
       aktifTayfaId: ref.read(aktifTayfaIdProvider),
       konum: state.uri,
+      guncellemeGerekli: ref.read(guncellemeProvider),
     ),
     errorBuilder: (context, state) => const BulunamadiSayfasi(),
     routes: rotalariOlustur(moduller),
@@ -108,18 +112,26 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
         ),
       ],
     ),
-    // Oturum korumalarının gönderdiği ekranlar; kendi paketlerinde gelir.
+    // Açılış ve oturum korumalarının gönderdiği ekranlar (ADR-0012).
+    GoRoute(
+      path: Adresler.acilis,
+      builder: (context, state) => const AcilisEkrani(),
+    ),
+    GoRoute(
+      path: Adresler.guncelleme,
+      builder: (context, state) => const GuncellemeEkrani(),
+    ),
     GoRoute(
       path: Adresler.giris,
-      builder: (context, state) => const YerTutucuSayfa(baslik: _girisBasligi),
+      builder: (context, state) => const GirisEkrani(),
     ),
     GoRoute(
       path: Adresler.kayit,
-      builder: (context, state) => const YerTutucuSayfa(baslik: _kayitBasligi),
+      builder: (context, state) => const KayitEkrani(),
     ),
     GoRoute(
       path: Adresler.onay,
-      builder: (context, state) => const YerTutucuSayfa(baslik: _onayBasligi),
+      builder: (context, state) => const OnayEkrani(),
     ),
     // Tayfa akışları; kabuğun üstünde tam ekran açılır, kendi paketlerinde
     // gelir.
@@ -138,8 +150,5 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
 String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
 String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
 String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;
-String _girisBasligi(AppLocalizations m) => m.gezinme_giris_baslik;
-String _kayitBasligi(AppLocalizations m) => m.gezinme_kayit_baslik;
-String _onayBasligi(AppLocalizations m) => m.gezinme_onay_baslik;
 String _katilBasligi(AppLocalizations m) => m.tayfa_kodla_katil;
 String _olusturBasligi(AppLocalizations m) => m.tayfa_olustur;

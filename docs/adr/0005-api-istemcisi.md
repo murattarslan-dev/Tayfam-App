@@ -169,8 +169,9 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
      yönlendirme için `registration_pending` / `consent_required`
      bayrakları. `X-Tayfam-Client` sözleşmedeki gibi GET dışındaki
      isteklere eklenir (web geliştirme derlemesinde `web`). Yönlendirme
-     izlenmez. `X-Tayfam-Client-Version` sözleşmede isteğe bağlıdır;
-     sürümün kaynağı kararlaştırılınca eklenir. `/v1/status` yoklaması ve
+     izlenmez. `X-Tayfam-Client-Version: <platform>/<sürüm>` her istekte
+     gönderilir; sürüm derlemede `--dart-define=TAYFAM_SURUM` ile
+     `pubspec.yaml`'dan gelir (ADR-0012 §1, PR #26). `/v1/status` yoklaması ve
      yenileme yanıtı alınamayınca oturumun kapanması platform sahibince
      onaylandı (2026-11-10): bedeli, yenileme sırasında bağlantı koparsa
      yeniden giriştir; "yenileme token'ı iki kez gönderilmez" kuralından

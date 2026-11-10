@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/surum/uygulama_surumu.dart';
 
 /// API taban adresi: derleme zamanında `--dart-define=TAYFAM_API=...`
 /// (ADR-0005). Verilmezse dev ortamı. Yalnızca `https` kabul edilir
@@ -32,11 +33,22 @@ http.Client _httpClientOlustur(Ref ref) {
 }
 
 /// Ham HTTP katmanı. Özellikler bunu değil `apiClientProvider`'ı kullanır.
+///
+/// Her istekte `X-Tayfam-Client-Version` gönderilir ([uygulamaSurumu]
+/// verilmişse; ADR-0012 §1.3).
 final httpTasimaProvider = Provider<HttpTasima>(
-  (ref) => HttpTasima(
-    istemci: ref.watch(httpClientProvider),
-    tabanAdres: Uri.parse(apiTabanAdresi),
-    istemciAdi: istemciAdi(web: kIsWeb, platform: defaultTargetPlatform),
-  ),
+  _httpTasimaOlustur,
   name: 'httpTasimaProvider',
 );
+
+HttpTasima _httpTasimaOlustur(Ref ref) {
+  final ad = istemciAdi(web: kIsWeb, platform: defaultTargetPlatform);
+  final tasima = HttpTasima(
+    istemci: ref.watch(httpClientProvider),
+    tabanAdres: Uri.parse(apiTabanAdresi),
+    istemciAdi: ad,
+    surumBasligi: surumBasligi(istemciAdi: ad, surum: uygulamaSurumu),
+  );
+  ref.onDispose(tasima.dispose);
+  return tasima;
+}

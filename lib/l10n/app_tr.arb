@@ -53,19 +53,7 @@
   },
   "gezinme_yer_tutucu_aciklama": "Bu bölüm hazırlanıyor.",
   "@gezinme_yer_tutucu_aciklama": {
-    "description": "Henüz yapılmamış ekranların (sekme sayfaları, giriş, kayıt, onay, kodla katılma, tayfa oluşturma) ortasında görünen geçici açıklama."
-  },
-  "gezinme_giris_baslik": "Giriş",
-  "@gezinme_giris_baslik": {
-    "description": "Oturum yokken yönlendirilen giriş ekranının başlığı (ekran ayrı pakette gelir; şimdilik yer tutucu)."
-  },
-  "gezinme_kayit_baslik": "Kayıt",
-  "@gezinme_kayit_baslik": {
-    "description": "Google girişinden sonra kaydı tamamlanmamış kullanıcının yönlendirildiği kayıt ekranının başlığı (yer tutucu)."
-  },
-  "gezinme_onay_baslik": "Koşullar güncellendi",
-  "@gezinme_onay_baslik": {
-    "description": "Onay sürümleri değiştiğinde yönlendirilen yeniden onay ekranının başlığı (yer tutucu)."
+    "description": "Henüz yapılmamış ekranların (sekme sayfaları, kodla katılma, tayfa oluşturma) ortasında görünen geçici açıklama."
   },
   "gezinme_bulunamadi_baslik": "Sayfa bulunamadı",
   "@gezinme_bulunamadi_baslik": {
@@ -206,6 +194,220 @@
       "yuzde": {
         "type": "int",
         "example": "64"
+      }
+    }
+  },
+  "hesap_yazi_logo": "tayfam",
+  "@hesap_yazi_logo": {
+    "description": "Yazı logo: açılış ve giriş ekranındaki marka adı. Markada küçük harfle yazılır; çevrilmez."
+  },
+  "hesap_slogan": "Birlikte yapınca güzel.",
+  "@hesap_slogan": {
+    "description": "Giriş ekranında yazı logonun altındaki slogan (Notion: Marka)."
+  },
+  "hesap_acilis_yukleniyor": "Açılıyor",
+  "@hesap_acilis_yukleniyor": {
+    "description": "Açılış ekranındaki ilerleme göstergesinin ekran okuyucu etiketi; oturum bilgisi okunurken."
+  },
+  "hesap_google_ile_devam": "Google ile devam et",
+  "@hesap_google_ile_devam": {
+    "description": "Giriş ekranındaki Google ile giriş düğmesi (Google'ın marka kurallarına uyan düğme)."
+  },
+  "hesap_giris_suruyor": "Giriş yapılıyor",
+  "@hesap_giris_suruyor": {
+    "description": "Google girişi sürerken düğmenin yerinde görünen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "hesap_engel_yas_baslik": "Hesabın kapatıldı",
+  "@hesap_engel_yas_baslik": {
+    "description": "Kayıtta girilen doğum tarihi nedeniyle hesap kalıcı olarak kapandığında giriş ekranında görünen başlık. Yaş sınırı söylenmez."
+  },
+  "hesap_engel_yas_aciklama": "Girdiğin bilgilere göre bu hesapla Tayfam'ı kullanamazsın. Hesap kapatıldı.",
+  "@hesap_engel_yas_aciklama": {
+    "description": "Hesap yaş nedeniyle kalıcı kapandığında başlığın altındaki açıklama. Yeniden deneme yolu yoktur; yaş sınırı söylenmez."
+  },
+  "hesap_engel_kisit_baslik": "Hesabın kısıtlandı",
+  "@hesap_engel_kisit_baslik": {
+    "description": "Hesap platform genelinde askıya alındığında ya da banlandığında giriş ekranında görünen başlık."
+  },
+  "hesap_engel_kisit_aciklama": "Bu hesapla şu an Tayfam'a giriş yapılamıyor.",
+  "@hesap_engel_kisit_aciklama": {
+    "description": "Hesap kısıtlandığında başlığın altındaki açıklama; yeniden deneme düğmesi yoktur."
+  },
+  "hesap_guncelleme_baslik": "Güncelleme gerekli",
+  "@hesap_guncelleme_baslik": {
+    "description": "Uygulamanın sürümü artık desteklenmediğinde gösterilen ekranın başlığı."
+  },
+  "hesap_guncelleme_aciklama": "Bu sürüm artık desteklenmiyor. Devam etmek için Tayfam'ı güncelle.",
+  "@hesap_guncelleme_aciklama": {
+    "description": "Güncelleme gerekli ekranında başlığın altındaki açıklama."
+  },
+  "hesap_guncelleme_magaza": "Google Play'de güncelle",
+  "@hesap_guncelleme_magaza": {
+    "description": "Güncelleme gerekli ekranında uygulamanın Google Play sayfasını açan düğme (yalnızca Android)."
+  },
+  "hesap_baglanti_acilamadi": "Sayfa açılamadı. Tekrar dene.",
+  "@hesap_baglanti_acilamadi": {
+    "description": "Hukuki metin veya mağaza sayfası tarayıcıda açılamadığında ekranın altında kısa süre görünen bildirim."
+  },
+  "hesap_tekrar_dene": "Tekrar dene",
+  "@hesap_tekrar_dene": {
+    "description": "Bilgiler (metin sürümleri) yüklenemediğinde görünen yeniden deneme düğmesi."
+  },
+  "hesap_cikis_yap": "Çıkış yap",
+  "@hesap_cikis_yap": {
+    "description": "Kayıt ve yeniden onay ekranlarının üst çubuğundaki düğme; başka bir Google hesabıyla girmek için oturumu kapatır."
+  },
+  "hesap_hata_baglanti_yok": "Bağlantı yok. İnternet bağlantını kontrol edip tekrar dene.",
+  "@hesap_hata_baglanti_yok": {
+    "description": "Giriş, kayıt veya onay sırasında sunucuya ulaşılamadığında görünen hata."
+  },
+  "hesap_hata_cok_fazla_deneme": "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.",
+  "@hesap_hata_cok_fazla_deneme": {
+    "description": "Sunucu hız sınırına takılındığında (rate-limited) görünen hata."
+  },
+  "hesap_hata_web": "Google ile giriş bu geliştirme derlemesinde açılamıyor. Android uygulamasını kullan.",
+  "@hesap_hata_web": {
+    "description": "Yalnızca web geliştirme derlemesinde, Google giriş penceresi açılamadığında görünen hata."
+  },
+  "hesap_hata_google": "Google ile giriş tamamlanamadı. Tekrar dene.",
+  "@hesap_hata_google": {
+    "description": "Google girişi başlatılamadığında ya da sunucu Google kimliğini doğrulayamadığında görünen hata."
+  },
+  "hesap_hata_metinler_guncellendi": "Metinler az önce güncellendi. Güncel sürümleri okuyup yeniden onayla.",
+  "@hesap_hata_metinler_guncellendi": {
+    "description": "Kayıt veya onay gönderilirken metinlerin yeni sürümü yayımlanmışsa görünen uyarı; onay kutuları temizlenir."
+  },
+  "hesap_hata_dogum_tarihi": "Doğum tarihi kabul edilmedi. Kontrol edip tekrar dene.",
+  "@hesap_hata_dogum_tarihi": {
+    "description": "Sunucu doğum tarihini geçersiz bulduğunda kayıt formunda görünen hata."
+  },
+  "hesap_hata_ad": "Bu ad kullanılamıyor. Başka bir ad dene.",
+  "@hesap_hata_ad": {
+    "description": "Sunucu görünen adı kabul etmediğinde kayıt formunda görünen hata."
+  },
+  "hesap_hata_genel": "Bir sorun oluştu. Tekrar dene.",
+  "@hesap_hata_genel": {
+    "description": "Giriş, kayıt veya onayda beklenmeyen bir hata olduğunda görünen genel hata."
+  },
+  "hesap_kayit_baslik": "Hesabını oluştur",
+  "@hesap_kayit_baslik": {
+    "description": "Kayıt ekranının başlığı; Google girişinden sonra kaydı tamamlanmamış kullanıcı görür."
+  },
+  "hesap_kayit_aciklama": "Başlamak için birkaç bilgi yeterli.",
+  "@hesap_kayit_aciklama": {
+    "description": "Kayıt ekranında başlığın altındaki kısa açıklama."
+  },
+  "hesap_kayit_ad": "Adın",
+  "@hesap_kayit_ad": {
+    "description": "Kayıt formundaki ad alanının etiketi; Google hesabındaki adla önceden doludur."
+  },
+  "hesap_kayit_ad_yardim": "Tayfandakiler seni bu adla görür.",
+  "@hesap_kayit_ad_yardim": {
+    "description": "Kayıt formundaki ad alanının altındaki yardım metni."
+  },
+  "hesap_kayit_ad_hata": "Ad 1 ile 40 karakter arasında olmalı.",
+  "@hesap_kayit_ad_hata": {
+    "description": "Kayıt formunda ad boş ya da çok uzunsa alanın altında görünen hata."
+  },
+  "hesap_kayit_dogum_tarihi": "Doğum tarihin",
+  "@hesap_kayit_dogum_tarihi": {
+    "description": "Kayıt formundaki doğum tarihi alanının etiketi; dokununca tarih seçici açılır."
+  },
+  "hesap_kayit_dogum_tarihi_bos": "Seçmek için dokun",
+  "@hesap_kayit_dogum_tarihi_bos": {
+    "description": "Kayıt formunda doğum tarihi henüz seçilmemişken alanda görünen metin."
+  },
+  "hesap_kayit_dogum_tarihi_hata": "Doğum tarihini seç.",
+  "@hesap_kayit_dogum_tarihi_hata": {
+    "description": "Kayıt formunda doğum tarihi seçilmeden gönderilmek istenince görünen hata."
+  },
+  "hesap_kayit_referans": "Referans kodu (isteğe bağlı)",
+  "@hesap_kayit_referans": {
+    "description": "Kayıt formundaki isteğe bağlı referans kodu alanının etiketi; seni uygulamaya getiren kişinin kodu."
+  },
+  "hesap_kayit_referans_hata": "Referans kodu en fazla 32 karakter olabilir.",
+  "@hesap_kayit_referans_hata": {
+    "description": "Kayıt formunda referans kodu çok uzunsa görünen hata."
+  },
+  "hesap_kayit_gonder": "Devam et",
+  "@hesap_kayit_gonder": {
+    "description": "Kayıt formunu gönderen birincil düğme; önce doğum tarihi teyit penceresi açılır."
+  },
+  "hesap_aydinlatma_onay": "Aydınlatma metnini okudum.",
+  "@hesap_aydinlatma_onay": {
+    "description": "Kayıt formunda aydınlatma metni onay kutusunun etiketi."
+  },
+  "hesap_kosullar_onay": "Kullanım koşullarını kabul ediyorum.",
+  "@hesap_kosullar_onay": {
+    "description": "Kayıt formunda kullanım koşulları onay kutusunun etiketi."
+  },
+  "hesap_aydinlatma_ac": "Aydınlatma metnini oku",
+  "@hesap_aydinlatma_ac": {
+    "description": "Onay kutusunun altındaki bağlantı; aydınlatma metninin gösterilen sürümünü tarayıcıda açar."
+  },
+  "hesap_kosullar_ac": "Kullanım koşullarını oku",
+  "@hesap_kosullar_ac": {
+    "description": "Onay kutusunun altındaki bağlantı; kullanım koşullarının gösterilen sürümünü tarayıcıda açar."
+  },
+  "hesap_aydinlatma_hata": "Devam etmek için aydınlatma metnini onayla.",
+  "@hesap_aydinlatma_hata": {
+    "description": "Kayıt formunda aydınlatma metni onaylanmadan gönderilmek istenince görünen hata."
+  },
+  "hesap_kosullar_hata": "Devam etmek için kullanım koşullarını kabul et.",
+  "@hesap_kosullar_hata": {
+    "description": "Kayıt formunda kullanım koşulları kabul edilmeden gönderilmek istenince görünen hata."
+  },
+  "hesap_teyit_baslik": "Doğum tarihini kontrol et",
+  "@hesap_teyit_baslik": {
+    "description": "Kayıt gönderilmeden önce açılan doğum tarihi teyit penceresinin başlığı."
+  },
+  "hesap_teyit_duzelt": "Düzelt",
+  "@hesap_teyit_duzelt": {
+    "description": "Doğum tarihi teyit penceresinde forma geri dönen düğme."
+  },
+  "hesap_teyit_devam": "Doğru, devam et",
+  "@hesap_teyit_devam": {
+    "description": "Doğum tarihi teyit penceresinde kaydı gönderen düğme."
+  },
+  "hesap_onay_baslik": "Koşullar güncellendi",
+  "@hesap_onay_baslik": {
+    "description": "Aydınlatma metni veya kullanım koşulları yeni sürümle yayımlandığında açılan yeniden onay ekranının başlığı."
+  },
+  "hesap_onay_aciklama": "Aydınlatma metni veya kullanım koşulları güncellendi. Devam etmek için güncel metinleri oku ve onayla.",
+  "@hesap_onay_aciklama": {
+    "description": "Yeniden onay ekranında başlığın altındaki açıklama."
+  },
+  "hesap_onay_kutusu": "Güncel aydınlatma metnini okudum ve kullanım koşullarını kabul ediyorum.",
+  "@hesap_onay_kutusu": {
+    "description": "Yeniden onay ekranındaki tek onay kutusunun etiketi."
+  },
+  "hesap_onay_kutusu_hata": "Devam etmek için güncel metinleri onayla.",
+  "@hesap_onay_kutusu_hata": {
+    "description": "Yeniden onay ekranında kutu işaretlenmeden gönderilmek istenince görünen hata."
+  },
+  "hesap_onay_gonder": "Onayla ve devam et",
+  "@hesap_onay_gonder": {
+    "description": "Yeniden onay ekranındaki birincil düğme."
+  },
+  "hesap_teyit_metin": "Doğum tarihin {tarih}. Doğru mu?",
+  "@hesap_teyit_metin": {
+    "description": "Doğum tarihi teyit penceresinin metni; girilen tarih uzun biçimde (12 Mart 2009) gösterilir. Yaş sınırı veya sonucu söylenmez.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2009-03-12"
+      }
+    }
+  },
+  "hesap_kayit_dogum_tarihi_deger": "{tarih}",
+  "@hesap_kayit_dogum_tarihi_deger": {
+    "description": "Kayıt formunda seçilen doğum tarihinin alandaki gösterimi (12 Mart 2009).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2009-03-12"
       }
     }
   }

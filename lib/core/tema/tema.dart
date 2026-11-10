@@ -1,6 +1,7 @@
 /// Tema token'ları ve `ThemeData` (ADR-0004).
 library;
 
+export 'package:tayfam/core/tema/google_marka.dart';
 export 'package:tayfam/core/tema/kontrast.dart';
 export 'package:tayfam/core/tema/tayfam_colors.dart';
 export 'package:tayfam/core/tema/tayfam_motion.dart';

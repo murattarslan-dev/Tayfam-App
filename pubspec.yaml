@@ -14,8 +14,13 @@ dependencies:
   flutter_riverpod: ^3.5.0
   flutter_secure_storage: ^11.2.0
   go_router: ^18.1.4
+  # Google ile giriş (ADR-0012 §2); yayıncı flutter.dev.
+  google_sign_in: ^7.2.0
   http: ^1.6.0
   intl: ^0.20.3
+  # Hukuki metinleri ve mağaza sayfasını sistem tarayıcısında açmak için
+  # (ADR-0012 §1, §4); yayıncı flutter.dev.
+  url_launcher: ^6.3.3
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
@@ -28,6 +33,10 @@ flutter:
   uses-material-design: true
   # gen_l10n: lib/l10n/app_tr.arb → AppLocalizations (ADR-0008, l10n.yaml)
   generate: true
+  # Google'ın resmi "G" işareti (ADR-0012 §2; kaynak: assets/marka/KAYNAK.md).
+  # 2.0x/ ve 3.0x/ çözünürlükleri Flutter kendisi seçer.
+  assets:
+    - assets/marka/google_g.png
   # Gömülü font (ADR-0004 §1): Bricolage Grotesque, SIL OFL 1.1
   # (assets/fonts/OFL.txt). google/fonts reposundaki değişken fonttan
   # tool/font/bricolage_ornekle.py ile üretilen statik örnekler; yalnızca
