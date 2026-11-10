@@ -119,9 +119,7 @@ void main() {
     expect(yazi.left - simge.right, moreOrLessEquals(bosluk));
   });
 
-  testWidgets('dar alanda bütün logo orantılı küçülür, taşmaz', (
-    tester,
-  ) async {
+  testWidgets('dar alanda bütün logo orantılı küçülür, taşmaz', (tester) async {
     await bileseniAc(
       tester,
       const Center(child: TayfamMonogram.yazili()),
