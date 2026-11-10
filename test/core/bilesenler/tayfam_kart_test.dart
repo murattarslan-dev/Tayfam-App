@@ -80,7 +80,7 @@ void main() {
         expect(sayac, 1);
         expect(
           tester.getSemantics(find.byType(InkWell)),
-          containsSemantics(isButton: true, hasTapAction: true),
+          isSemantics(isButton: true, hasTapAction: true),
         );
         dokunmaAlaniEnAz44(tester, find.byType(InkWell));
         kulp.dispose();

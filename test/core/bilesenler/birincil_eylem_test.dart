@@ -73,7 +73,7 @@ void main() {
         );
         expect(
           tester.getSemantics(find.byType(FilledButton)),
-          containsSemantics(isButton: true, isEnabled: false),
+          isSemantics(isButton: true, isEnabled: false),
         );
         expect(_zemin(tester), renklerOf(mod).pasif);
         kulp.dispose();

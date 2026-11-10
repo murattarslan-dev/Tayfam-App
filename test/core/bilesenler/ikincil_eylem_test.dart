@@ -57,7 +57,7 @@ void main() {
         );
         expect(
           tester.getSemantics(find.byType(FilledButton)),
-          containsSemantics(isButton: true, isEnabled: false),
+          isSemantics(isButton: true, isEnabled: false),
         );
         kulp.dispose();
       });

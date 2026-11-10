@@ -80,7 +80,7 @@ void main() {
         expect(beklenen, contains('64'));
         expect(
           tester.getSemantics(find.byType(AnketCubugu)),
-          containsSemantics(label: beklenen),
+          isSemantics(label: beklenen),
         );
         kulp.dispose();
       });

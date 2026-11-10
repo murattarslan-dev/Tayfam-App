@@ -48,7 +48,7 @@ void main() {
         );
         expect(
           tester.getSemantics(find.byType(InkWell)),
-          containsSemantics(
+          isSemantics(
             label: metinler.bilesen_faydali_anlam(4),
             isButton: true,
             hasToggledState: true,
