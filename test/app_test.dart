@@ -34,23 +34,25 @@ Future<void> uygulamayiAc(
 }
 
 void main() {
-  testWidgets('uygulama açılıyor ve karşılama metni çeviri dosyasından geliyor',
-      (tester) async {
-    telefonEkrani(tester);
-    await uygulamayiAc(tester);
+  testWidgets(
+    'uygulama açılıyor ve karşılama metni çeviri dosyasından geliyor',
+    (tester) async {
+      telefonEkrani(tester);
+      await uygulamayiAc(tester);
 
-    expect(find.text(arbMetni('karsilama_metni')), findsOneWidget);
+      expect(find.text(arbMetni('karsilama_metni')), findsOneWidget);
 
-    final context = tester.element(find.byType(Scaffold));
-    expect(Localizations.localeOf(context).languageCode, 'tr');
-  });
+      final context = tester.element(find.byType(Scaffold));
+      expect(Localizations.localeOf(context).languageCode, 'tr');
+    },
+  );
 
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {
-    final beklenen =
-        mod == ThemeMode.dark ? Brightness.dark : Brightness.light;
+    final beklenen = mod == ThemeMode.dark ? Brightness.dark : Brightness.light;
 
-    testWidgets('${mod.name} temada 2× yazı ölçeğinde taşma yok',
-        (tester) async {
+    testWidgets('${mod.name} temada 2× yazı ölçeğinde taşma yok', (
+      tester,
+    ) async {
       telefonEkrani(tester);
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
