@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/bilesenler/hata_satiri.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_radii.dart';

@@ -338,9 +338,23 @@ void main() {
           .read(davetKisayoluProvider.notifier)
           .goster(ornekTayfaId);
       await tester.pumpAndSettle();
-      expect(find.byType(DavetKisayolu), findsOneWidget);
       expect(find.byType(TayfaDurumSeridi), findsOneWidget);
       expect(tester.takeException(), isNull);
+
+      // Üst bölüm içerikle birlikte kayar; kısayola kaydırılarak ulaşılır.
+      await tester.dragUntilVisible(
+        find.byType(DavetKisayolu),
+        find.byType(ListView),
+        const Offset(0, -200),
+      );
+      expect(find.byType(DavetKisayolu), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.dragUntilVisible(
+        find.byType(TayfaUstBolumu),
+        find.byType(ListView),
+        const Offset(0, 200),
+      );
+      await tester.pumpAndSettle();
 
       await tester.tap(_tayfaAdiDugmesi);
       await tester.pumpAndSettle();

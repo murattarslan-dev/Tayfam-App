@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/bilesenler/hata_satiri.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -57,7 +56,12 @@ void main() {
     );
     expect(find.text(arbMetni('tayfa_onay_bekliyor')), findsOneWidget);
     // Aktif tayfa işaretli; ekran okuyucu "Seçili tayfa" der.
-    expect(find.bySemanticsLabel(arbMetni('tayfa_secili')), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Icon && w.semanticLabel == arbMetni('tayfa_secili'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text(arbMetni('tayfa_tayfalarim_bos')), findsNothing);
   });
 

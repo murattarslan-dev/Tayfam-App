@@ -6,7 +6,6 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/hata_satiri.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
-import 'package:tayfam/features/tayfa/presentation/olusturma_ekrani.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
 import '../../yardimcilar.dart';

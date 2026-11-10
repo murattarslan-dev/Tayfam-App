@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/bilesenler/hata_satiri.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tema/tema.dart';
