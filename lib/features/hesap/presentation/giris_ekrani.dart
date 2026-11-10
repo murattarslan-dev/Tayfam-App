@@ -74,7 +74,7 @@ class GirisEkrani extends ConsumerWidget {
           ),
         if (hata != null) ...[
           const SizedBox(height: TayfamSpacing.s16),
-          HataMetni(
+          HataSatiri(
             metin: hesapHatasiMetni(metinler, hata),
             renk: r.markaYuzeyUstu,
           ),

@@ -9,7 +9,6 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/application/giris_notifier.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
-import 'package:tayfam/features/hesap/application/hesap_hatasi.dart';
 import 'package:tayfam/features/hesap/application/kayit_notifier.dart';
 import 'package:tayfam/features/hesap/application/onay_notifier.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
@@ -19,6 +18,10 @@ import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 import 'sahteler.dart';
 
 Future<void> _bekle() => Future<void>.delayed(Duration.zero);
+
+/// [type] kodlu [ApiProblem].
+Matcher _problemOlan(ProblemType type) =>
+    isA<ApiProblem>().having((p) => p.type, 'type', type);
 
 final class _Kurulum {
   _Kurulum({Map<String, Object? Function()>? yanitlar, SahteGoogle? google})
@@ -102,10 +105,16 @@ void main() {
     });
 
     test('hatalar ekranda gösterilecek türe çevriliyor', () async {
-      final durumlar = <(Object, HesapHatasi)>[
-        (problem(ProblemType.rateLimited, 429), HesapHatasi.cokFazlaDeneme),
-        (const ApiOffline(), HesapHatasi.baglantiYok),
-        (problem(ProblemType.invalidCredentials), HesapHatasi.googleGirisi),
+      final durumlar = <(Object, Matcher)>[
+        (
+          problem(ProblemType.rateLimited, 429),
+          _problemOlan(ProblemType.rateLimited),
+        ),
+        (const ApiOffline(), isA<ApiOffline>()),
+        (
+          problem(ProblemType.invalidCredentials),
+          _problemOlan(ProblemType.invalidCredentials),
+        ),
       ];
       for (final (yanit, beklenen) in durumlar) {
         final k = _Kurulum(yanitlar: {'POST /v1/auth/sign-in': () => yanit});
@@ -128,7 +137,14 @@ void main() {
 
       await k.kap.read(girisProvider.notifier).girisYap();
 
-      expect(k.kap.read(girisProvider).hata, HesapHatasi.webDesteklenmiyor);
+      expect(
+        k.kap.read(girisProvider).hata,
+        isA<GoogleGirisHatasi>().having(
+          (h) => h.desteklenmiyor,
+          'desteklenmiyor',
+          isTrue,
+        ),
+      );
     });
 
     test('giriş sürerken ikinci dokunuş yok sayılıyor', () async {
@@ -207,7 +223,7 @@ void main() {
 
       final durum = k.kap.read(kayitProvider).value!;
       expect(durum.surumler.aydinlatma, '2026-12-01');
-      expect(durum.hata, HesapHatasi.metinlerGuncellendi);
+      expect(durum.hata, _problemOlan(ProblemType.consentOutdated));
       expect(durum.gonderiliyor, isFalse);
       expect(k.tasima.sayi('GET', '/v1/registration/requirements'), 2);
     });
@@ -233,7 +249,7 @@ void main() {
       await k.kap.read(kayitProvider.notifier).gonder(_bilgi());
 
       final durum = k.kap.read(kayitProvider).value!;
-      expect(durum.hata, HesapHatasi.gecersizDogumTarihi);
+      expect(durum.hata, _problemOlan(ProblemType.invalidBirthDate));
       expect(durum.gonderiliyor, isFalse);
       expect(k.durum, OturumDurumu.kayitBekliyor);
     });
@@ -285,7 +301,7 @@ void main() {
       await k.kap.read(onayProvider.notifier).onayla();
 
       final durum = k.kap.read(onayProvider).value!;
-      expect(durum.hata, HesapHatasi.metinlerGuncellendi);
+      expect(durum.hata, _problemOlan(ProblemType.consentOutdated));
       expect(k.tasima.sayi('GET', '/v1/me/consents'), 2);
       expect(k.oturum.yenilemeSayisi, 0);
       expect(k.durum, OturumDurumu.onayGerekli);
@@ -298,7 +314,7 @@ void main() {
 
       await k.kap.read(onayProvider.notifier).onayla();
 
-      expect(k.kap.read(onayProvider).value!.hata, HesapHatasi.baglantiYok);
+      expect(k.kap.read(onayProvider).value!.hata, isA<ApiOffline>());
     });
   });
 }

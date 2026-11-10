@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/hesap/presentation/hesap_ortak.dart';
 
@@ -50,7 +51,7 @@ class HukukiOnay extends StatelessWidget {
           DisBaglantiDugmesi(etiket: etiket, adres: adres),
         if (hata != null) ...[
           const SizedBox(height: TayfamSpacing.s4),
-          HataMetni(metin: hata),
+          HataSatiri(metin: hata),
         ],
       ],
     );
