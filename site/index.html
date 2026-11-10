@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tayfam – Birlikte yapınca güzel.</title>
+<meta name="description" content="Kulüplerin ve arkadaş gruplarının etkinliklerini, duyurularını, sorularını ve sohbetlerini grup sohbetinin karmaşasından kurtarıp tek yerde toplayan uygulama.">
+<meta name="theme-color" content="#5B2BE0">
+<meta property="og:title" content="Tayfam – Birlikte yapınca güzel.">
+<meta property="og:description" content="Konvoy, kamp, yürüyüş, balık, oyun ya da halısaha. Tayfanın her şeyi tek yerde.">
+<meta property="og:url" content="https://tayfam.app">
+<meta property="og:type" content="website">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --turkuaz: #00C2A8;
+    --mercan: #FF3D68;
+    --mor: #5B2BE0;
+    --gece: #1B1036;
+    --safak: #FFB000;
+    --krem: #FAF8FF;
+    --lavanta: #5A5275;
+    --cizgi: #E6E1F5;
+    --kart: #FFFFFF;
+    --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --genislik: 1120px;
+    --kenar: clamp(16px, 5vw, 48px);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--krem);
+    color: var(--gece);
+    font-family: var(--font);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-optical-sizing: auto;
+  }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--safak); outline-offset: 3px; border-radius: 6px; }
+
+  .kap { max-width: var(--genislik); margin: 0 auto; padding: 0 var(--kenar); }
+
+  h1, h2, h3 { line-height: 1.08; margin: 0; letter-spacing: -0.02em; }
+  h2 { font-size: clamp(2rem, 4.6vw, 3.2rem); font-weight: 750; }
+  h3 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  .giris { font-size: 1.2rem; color: var(--lavanta); max-width: 36rem; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    color: var(--krem);
+    background: var(--mor);
+    overflow: hidden;
+  }
+  .ust {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 22px; padding-bottom: 22px;
+  }
+  .marka { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 1.45rem; letter-spacing: -0.03em; }
+  .marka svg { width: 36px; height: 36px; }
+  .ust .kucuk { font-size: 0.98rem; font-weight: 600; text-decoration: none; padding: 8px 14px; border-radius: 999px; border: 1.5px solid rgba(250,248,255,.45); }
+
+  .hero-metin { padding-top: clamp(28px, 7vw, 72px); }
+  .hero-metin > * { max-width: 44rem; }
+  .hero h1 {
+    font-size: clamp(3rem, 10vw, 6.6rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+  }
+  .hero-alt { margin-top: 22px; font-size: clamp(1.1rem, 2.2vw, 1.3rem); max-width: 34rem; color: rgba(250,248,255,.88); }
+  .hero-eylem { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+  .rozet {
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: 48px; padding: 12px 22px; border-radius: 999px;
+    font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em;
+    background: var(--safak); color: var(--gece);
+  }
+  .rozet::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--mercan); }
+  .rozet.koyu { background: var(--mor); color: #FFFFFF; }
+  .rozet.koyu::before { background: var(--safak); }
+  @media (prefers-reduced-motion: no-preference) {
+    .rozet::before { animation: nabiz 1.6s ease-in-out infinite; }
+  }
+  @keyframes nabiz { 50% { transform: scale(.6); opacity: .55; } }
+  .yakinda { font-size: 0.98rem; color: rgba(250,248,255,.8); }
+
+  .sahne { margin-top: clamp(8px, 3vw, 24px); height: clamp(250px, 42vw, 470px); }
+  .sahne svg { width: 100%; height: 100%; }
+
+  .ciz { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .ciz-nokta { transform-box: fill-box; transform-origin: center; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ciz { animation: ciz 1.1s cubic-bezier(.6,0,.3,1) both; }
+    .ciz.iki { animation-delay: .7s; }
+    .ciz-nokta { animation: zipla .5s cubic-bezier(.3,1.6,.5,1) both; animation-delay: 1.5s; }
+  }
+  @keyframes ciz { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes zipla { from { transform: scale(0); } to { transform: scale(1); } }
+
+  /* ---------- Bölümler ---------- */
+  section { padding: clamp(64px, 10vw, 120px) 0; }
+
+  /* Sorun */
+  .sorun { display: grid; gap: 40px; align-items: center; }
+  .sohbet { display: grid; gap: 10px; max-width: 26rem; }
+  .balon {
+    background: var(--kart); border: 1px solid var(--cizgi);
+    padding: 12px 16px; border-radius: 18px 18px 18px 6px;
+    font-size: 1rem; box-shadow: 0 1px 0 var(--cizgi);
+  }
+  .balon small { display: block; font-size: .82rem; color: var(--lavanta); font-weight: 600; margin-bottom: 2px; }
+  .balon.soluk { opacity: .45; }
+  .balon.kayip { background: #FFF0CC; border-color: #FFD98A; }
+  .sorun-metin p + p { margin-top: 14px; }
+  .sorun-metin p { max-width: 32rem; }
+  .sorun-metin h2 { margin-bottom: 18px; }
+
+  /* Türler */
+  .turler { padding-top: 0; }
+  .tur-satiri {
+    font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; line-height: 1.45; letter-spacing: -0.02em;
+    max-width: 58rem;
+  }
+  .tur {
+    display: inline-block; padding: 0 .38em; border-radius: .4em;
+    background: var(--mor); color: var(--krem); line-height: 1.25; margin: .05em 0;
+  }
+  .tur:nth-child(2n) { background: var(--mercan); color: var(--gece); }
+  .tur:nth-child(3n) { background: var(--safak); color: var(--gece); }
+
+  /* Özellikler */
+  .ozellikler h2 { max-width: 40rem; margin-bottom: clamp(36px, 6vw, 64px); }
+  .satir { display: grid; gap: 28px; align-items: center; padding: clamp(28px, 4vw, 44px) 0; border-top: 1px solid var(--cizgi); }
+  .satir-metin h3 { margin-bottom: 10px; }
+  .satir-metin p { color: #3F3758; max-width: 30rem; }
+  .satir-metin ul { margin: 14px 0 0; padding-left: 1.1em; color: #3F3758; }
+  .satir-metin li { margin: 4px 0; }
+
+  .mock {
+    background: var(--kart); border: 1px solid var(--cizgi); border-radius: 22px;
+    padding: 20px; max-width: 25rem; width: 100%;
+    box-shadow: 0 18px 40px -24px rgba(91,43,224,.35);
+  }
+  .mock-ust { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .etiket { font-size: .8rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #ECE4FF; color: var(--mor); }
+  .mock h4 { margin: 12px 0 4px; font-size: 1.2rem; letter-spacing: -0.01em; }
+  .mock .gri { color: var(--lavanta); font-size: .95rem; }
+  .yuzler { display: flex; margin-top: 14px; }
+  .yuzler span {
+    width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--kart);
+    margin-left: -8px; display: grid; place-items: center; font-size: .75rem; font-weight: 700; color: var(--gece);
+  }
+  .yuzler span:first-child { margin-left: 0; }
+  .mock-dugme {
+    margin-top: 16px; width: 100%; min-height: 44px; border: 0; border-radius: 12px;
+    background: var(--mercan); color: var(--gece); font: inherit; font-weight: 700; font-size: 1rem;
+  }
+  .oy { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--cizgi); }
+  .oy:first-of-type { border-top: 0; }
+  .oy b { display: grid; place-items: center; min-width: 46px; padding: 6px 0; border-radius: 10px; background: #FFF0CC; font-size: 1rem; }
+  .oy b small { display: block; font-size: .7rem; font-weight: 600; color: #7A5A1E; }
+  .oy p { font-size: .97rem; }
+  .secenek { margin-top: 12px; }
+  .secenek div { display: flex; justify-content: space-between; font-size: .95rem; font-weight: 600; }
+  .bar { height: 10px; border-radius: 999px; background: #EEEAF8; margin-top: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 999px; background: var(--mor); }
+  .bar i.ikinci { background: var(--mercan); }
+  .mesaj { display: grid; gap: 8px; margin-top: 14px; }
+  .mesaj p { padding: 10px 14px; border-radius: 16px; font-size: .97rem; max-width: 85%; }
+  .mesaj .gelen { background: #EEEAF8; border-bottom-left-radius: 6px; }
+  .mesaj .giden { background: var(--mor); color: var(--krem); justify-self: end; border-bottom-right-radius: 6px; }
+  .kilit { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: .88rem; color: var(--lavanta); }
+  .kilit svg { width: 16px; height: 16px; flex: none; }
+
+  /* Gizlilik */
+  .gizlilik { background: var(--mor); color: var(--krem); }
+  .gizlilik .giris { color: rgba(250,248,255,.78); margin-top: 16px; }
+  .soz-listesi { display: grid; gap: 28px 40px; margin-top: clamp(36px, 6vw, 56px); }
+  .soz { border-left: 3px solid var(--safak); padding-left: 18px; }
+  .soz h3 { margin-bottom: 6px; }
+  .soz p { color: rgba(250,248,255,.8); }
+
+  /* Kimler için */
+  .kimler p.buyuk { font-size: clamp(1.5rem, 3.6vw, 2.3rem); font-weight: 650; line-height: 1.3; letter-spacing: -0.02em; max-width: 50rem; }
+  .kimler p.buyuk + p { margin-top: 18px; }
+
+  /* Kapanış */
+  .kapanis {
+    background: linear-gradient(180deg, var(--krem) 0%, #ECE4FF 100%);
+    text-align: left;
+  }
+  .kapanis-kutu { display: grid; gap: 22px; }
+  .kapanis h2 { max-width: 34rem; }
+  .kapanis .rozet { justify-self: start; }
+
+  footer { background: var(--gece); color: rgba(250,248,255,.75); padding: 32px 0; font-size: .95rem; }
+  footer .kap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+  footer .marka { color: var(--krem); font-size: 1.2rem; }
+  footer .marka svg { width: 28px; height: 28px; }
+
+  @media (min-width: 820px) {
+    .sorun { grid-template-columns: 1.1fr .9fr; }
+    .satir { grid-template-columns: 1fr 1fr; gap: 56px; }
+    .satir.ters .satir-metin { order: 2; }
+    .satir .mock { justify-self: center; }
+    .soz-listesi { grid-template-columns: 1fr 1fr; }
+    .kapanis-kutu { grid-template-columns: 1.3fr auto; align-items: end; }
+    .kapanis .rozet { justify-self: end; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kap ust">
+    <a class="marka" href="#" aria-label="Tayfam ana sayfa">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7" fill="none" stroke="#00C2A8" stroke-width="10" stroke-linecap="round"/><path d="M14 27c10 0 22-2 34-6" fill="none" stroke="#FFB000" stroke-width="10" stroke-linecap="round"/><circle cx="52" cy="13" r="4.5" fill="#FF3D68"/></svg>
+      tayfam
+    </a>
+  </div>
+
+  <div class="kap hero-metin">
+    <h1>Birlikte yapınca güzel.</h1>
+    <p class="hero-alt">Konvoy, kamp, yürüyüş, balık, oyun ya da halısaha. Tayfam, tayfanın planlarını, duyurularını, sorularını ve sohbetlerini grup sohbetinin karmaşasından çıkarıp tek bir yerde toplar.</p>
+    <div class="hero-eylem">
+      <span class="rozet">Çok yakında</span>
+      <span class="yakinda">iOS, Android ve web'de.</span>
+    </div>
+  </div>
+
+  <div class="sahne" aria-hidden="true">
+    <svg viewBox="0 0 1200 520" preserveAspectRatio="xMidYMax slice">
+      <g transform="translate(760 250) scale(6.4) translate(-32 -32)">
+        <path class="ciz" pathLength="1" d="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7" fill="none" stroke="#00C2A8" stroke-width="10" stroke-linecap="round"/>
+        <path class="ciz iki" pathLength="1" d="M14 27c10 0 22-2 34-6" fill="none" stroke="#FFB000" stroke-width="10" stroke-linecap="round"/>
+        <circle class="ciz-nokta" cx="52" cy="13" r="4.5" fill="#FF3D68"/>
+      </g>
+      <path d="M0 478 C 210 446 390 462 570 486 S 930 506 1200 474 L1200 520 L0 520 Z" fill="#FAF8FF"/>
+    </svg>
+  </div>
+</header>
+
+<main>
+
+  <section aria-labelledby="sorun-baslik">
+    <div class="kap sorun">
+      <div class="sorun-metin">
+        <h2 id="sorun-baslik">Grup sohbetinde kaybolanlar</h2>
+        <p>Pazar günkü konvoyun saati 300 mesajın altında kaldı. Kimin geleceği belli değil. Aynı karbüratör sorusu bu ay üçüncü kez soruldu, cevabı ise geçen yılın mesajlarının arasında bir yerde.</p>
+        <p>Tayfam bunları ayrı ayrı yerlere koyar: etkinlik etkinlik olarak, duyuru duyuru olarak, soru da cevabıyla birlikte kalıcı olarak.</p>
+      </div>
+      <div class="sohbet" aria-hidden="true">
+        <div class="balon soluk"><small>Hakan</small>Pazar kaçta çıkıyoruz?</div>
+        <div class="balon soluk"><small>Selin</small>Ben bu hafta yokum 🙏</div>
+        <div class="balon kayip"><small>Kulüp Başkanı</small>Pazar 08:00, benzinlikte buluşuyoruz. Herkes yazsın kim geliyor.</div>
+        <div class="balon soluk"><small>Mert</small>😂😂😂</div>
+        <div class="balon soluk"><small>Hakan</small>Pazar kaçta çıkıyoruz?</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="turler" aria-label="Etkinlik türleri">
+    <div class="kap">
+      <p class="tur-satiri">
+        <span class="tur">Konvoy</span>, <span class="tur">kamp</span>, <span class="tur">doğa yürüyüşü</span>, <span class="tur">balık</span>, <span class="tur">oyun</span>, <span class="tur">halısaha</span> ya da sadece bir araya gelmek. Her etkinlik türü kendi ihtiyaçlarıyla gelir.
+      </p>
+    </div>
+  </section>
+
+  <section class="ozellikler" aria-labelledby="ozellik-baslik">
+    <div class="kap">
+      <h2 id="ozellik-baslik">Tayfanın ihtiyacı olan her şey, bir arada</h2>
+
+      <div class="satir">
+        <div class="satir-metin">
+          <h3>Etkinlikler kimin geldiğini bilir</h3>
+          <p>Geliyorum, belki ya da gelmiyorum. Kontenjan dolunca bekleme listesi kendiliğinden işler. Etkinlik günü "Buradayım" demek yeterli, yoklama tutan kimse olmaz.</p>
+          <ul>
+            <li>Kamp için ortak malzeme listesi</li>
+            <li>Yürüyüşte dönmeyen olursa organizatöre uyarı</li>
+            <li>Tek dokunuşla telefon takvimine ekleme</li>
+          </ul>
+        </div>
+        <div class="mock" aria-label="Örnek etkinlik kartı">
+          <div class="mock-ust"><span class="etiket">Doğa yürüyüşü</span><span class="gri">Zorluk 3/5</span></div>
+          <h4>Kaz Dağları yürüyüşü</h4>
+          <p class="gri">Cumartesi, 07:30</p>
+          <div class="yuzler" aria-hidden="true">
+            <span style="background:#FFB000">A</span><span style="background:#FF3D68">S</span><span style="background:#7FE3D4">M</span><span style="background:#D8CCFF">E</span><span style="background:#EEEAF8">+10</span>
+          </div>
+          <p class="gri" style="margin-top:8px">14 kişi geliyor, 2 kişi bekleme listesinde</p>
+          <button class="mock-dugme" type="button" tabindex="-1">Buradayım</button>
+        </div>
+      </div>
+
+      <div class="satir ters">
+        <div class="satir-metin">
+          <h3>Sorulan soru kaybolmaz</h3>
+          <p>Teknik sorular ve cevapları tayfanın bilgi birikimine dönüşür. En faydalı cevap en üste çıkar, Türkçe arama doğru sonucu bulur.</p>
+        </div>
+        <div class="mock" aria-label="Örnek soru ve cevaplar">
+          <div class="mock-ust"><span class="etiket">Motor</span><span class="gri">3 cevap</span></div>
+          <h4>Rölantide tekleme neden olur?</h4>
+          <div class="oy"><b>12<small>faydalı</small></b><p>Önce buji kablolarına bak, sonra karbüratör hava ayarına. Bizimkinde kablo çıkmıştı.</p></div>
+          <div class="oy"><b>4<small>faydalı</small></b><p>Vakum hortumlarını da kontrol et, çatlak olabilir.</p></div>
+        </div>
+      </div>
+
+      <div class="satir">
+        <div class="satir-metin">
+          <h3>Kararlar anketle verilir</h3>
+          <p>"Kamp hangi hafta sonu?" sorusu 40 mesajlık bir tartışmaya dönüşmez. Anketi açan, oyların herkese açık mı yoksa gizli mi olacağını seçer.</p>
+        </div>
+        <div class="mock" aria-label="Örnek anket">
+          <div class="mock-ust"><span class="etiket">Anket</span><span class="gri">14 oy</span></div>
+          <h4>Kamp hangi hafta sonu?</h4>
+          <div class="secenek"><div><span>14–15 Haziran</span><span>9</span></div><div class="bar"><i style="width:64%"></i></div></div>
+          <div class="secenek"><div><span>21–22 Haziran</span><span>5</span></div><div class="bar"><i class="ikinci" style="width:36%"></i></div></div>
+        </div>
+      </div>
+
+      <div class="satir ters">
+        <div class="satir-metin">
+          <h3>Sohbet de var, düzenli haliyle</h3>
+          <p>Konulara göre kanallar, yönetim için ayrı bir kanal ve birebir mesajlaşma. Birebir mesajlar uçtan uca şifrelidir, onları biz bile okuyamayız.</p>
+        </div>
+        <div class="mock" aria-label="Örnek birebir mesajlaşma">
+          <div class="mock-ust"><span class="etiket">Birebir mesaj</span></div>
+          <div class="mesaj">
+            <p class="gelen">Cumartesi termosu ben getiriyorum.</p>
+            <p class="giden">Süper, ben de ocağı alırım.</p>
+          </div>
+          <p class="kilit"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 7V5a4 4 0 1 1 8 0v2h.5A1.5 1.5 0 0 1 14 8.5v5A1.5 1.5 0 0 1 12.5 15h-9A1.5 1.5 0 0 1 2 13.5v-5A1.5 1.5 0 0 1 3.5 7H4zm2 0h4V5a2 2 0 1 0-4 0v2z" fill="currentColor"/></svg>Uçtan uca şifreli</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gizlilik" aria-labelledby="gizlilik-baslik">
+    <div class="kap">
+      <h2 id="gizlilik-baslik">Tayfanın bilgisi tayfada kalır</h2>
+      <p class="giris">Bir topluluk uygulaması, kimin nerede ve ne zaman olacağını bilir. Bu yüzden bu bilgiyi en az tutacak şekilde tasarladık.</p>
+      <div class="soz-listesi">
+        <div class="soz"><h3>Konumun saklanmaz</h3><p>Etkinlik yerinde olduğunu doğrulamak için konumun yalnızca o an kullanılır, hiçbir yere kaydedilmez.</p></div>
+        <div class="soz"><h3>Buluşma noktası sadece üyelere</h3><p>Tayfanın dışındaki kimse etkinliğin tam yerini ve katılanların kim olduğunu göremez.</p></div>
+        <div class="soz"><h3>Fotoğraflar konum taşımaz</h3><p>Yüklediğin fotoğraftaki GPS bilgisi silinir. Gizli tuttuğun balık merası fotoğraftan sızmaz.</p></div>
+        <div class="soz"><h3>Mesajlar uçtan uca şifreli</h3><p>Birebir mesajların içeriğini yalnızca sen ve yazıştığın kişi görür.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kimler" aria-labelledby="kimler-baslik">
+    <div class="kap">
+      <h2 id="kimler-baslik" style="margin-bottom:24px">Kimler için?</h2>
+      <p class="buyuk">Klasik otomobil kulüpleri, kamp ve yürüyüş grupları, balıkçı ekipleri, hafta sonu halısahacıları ve birlikte bir şeyler yapmayı seven her arkadaş grubu.</p>
+      <p class="giris">Bir kişi tayfayı açar, diğerlerini davet linkiyle çağırır. Uygulamaya Google ya da Apple hesabınla saniyeler içinde girersin.</p>
+    </div>
+  </section>
+
+  <section class="kapanis" aria-labelledby="kapanis-baslik">
+    <div class="kap kapanis-kutu">
+      <div>
+        <h2 id="kapanis-baslik">Tayfanı şimdiden hazırla</h2>
+        <p class="giris" style="margin-top:16px">Tayfam çok yakında iOS, Android ve web'de. O gün geldiğinde tek yapman gereken tayfanı açıp davet linkini grup sohbetine bırakmak.</p>
+      </div>
+      <span class="rozet koyu">Çok yakında</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="kap">
+    <span class="marka">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7" fill="none" stroke="#00C2A8" stroke-width="10" stroke-linecap="round"/><path d="M14 27c10 0 22-2 34-6" fill="none" stroke="#FFB000" stroke-width="10" stroke-linecap="round"/><circle cx="52" cy="13" r="4.5" fill="#FF3D68"/></svg>
+      tayfam
+    </span>
+    <span>Birlikte yapınca güzel.</span>
+    <span>© 2026 Tayfam</span>
+  </div>
+</footer>
+
+</body>
+</html>
