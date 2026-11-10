@@ -1,0 +1,5 @@
+// yol: lib/core/metin/TurkceMetin.dart
+// beklenen: dosya-adi 2
+const int sinir = 3;
+// yol: lib/core/Ortak/ornek.dart
+const int sinir2 = 3;

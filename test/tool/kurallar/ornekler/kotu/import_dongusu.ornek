@@ -1,0 +1,11 @@
+// yol: lib/features/anket/anket.dart
+// beklenen: import-dongusu 1
+export 'package:tayfam/features/anket/data/anket_deposu.dart';
+// yol: lib/features/anket/data/anket_deposu.dart
+import 'package:tayfam/features/etkinlik/etkinlik.dart';
+// yol: lib/features/etkinlik/etkinlik.dart
+import 'package:tayfam/features/sohbet/sohbet.dart';
+// yol: lib/features/sohbet/sohbet.dart
+import 'package:tayfam/features/anket/anket.dart';
+// yol: lib/features/profil/profil.dart
+import 'package:tayfam/features/anket/anket.dart';

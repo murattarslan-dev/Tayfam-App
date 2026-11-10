@@ -190,3 +190,62 @@ jobs:
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  kurallar:
+    name: kurallar
+    # CLAUDE.md ve ADR kuralları (ADR-0009 zorunlu kontrol 4): import
+    # sınırları, sabit renk/boşluk/yarıçap, sabit metin, log, diske yazma…
+    # Kural listesi: dart run tool/kurallar/bin/kurallar.dart --liste
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Kural betiği
+        run: dart run tool/kurallar/bin/kurallar.dart
+
+  bagimliliklar:
+    name: bagimliliklar
+    # Bağımlılık ve lisans raporu (ADR-0009 zorunlu kontrol 5). PR'da taban
+    # dalın, main'e push'ta bir önceki commit'in pubspec.lock'uyla
+    # karşılaştırır; rapor iş özetine yazılır, PR'a yorum yazılmaz. İzin
+    # verici olmayan lisans uyarıdır; iş yalnızca dosyalar okunamazsa kırılır.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Önceki pubspec.lock
+        env:
+          TABAN_DAL: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          onceki="$RUNNER_TEMP/onceki.lock"
+          if [ -n "$TABAN_DAL" ]; then
+            kaynak="origin/$TABAN_DAL"
+          else
+            kaynak="HEAD^"
+          fi
+          # Önceki sürümde kilit yoksa boş dosya: bütün paketler "eklendi".
+          git show "$kaynak:pubspec.lock" > "$onceki" 2>/dev/null || : > "$onceki"
+          echo "ONCEKI_KILIT=$onceki" >> "$GITHUB_ENV"
+      - name: Bağımlılık ve lisans raporu
+        run: dart run tool/kurallar/bin/bagimlilik_raporu.dart --onceki "$ONCEKI_KILIT" --sonraki pubspec.lock
+

@@ -1,0 +1,14 @@
+// yol: lib/core/kuyruk/kuyruk.dart
+// beklenen: api-tek-istemci 4
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+Future<void> gonder() async {
+  final istemci = HttpClient();
+  await WebSocket.connect('wss://ornek.invalid');
+  http.Client().close();
+  istemci.close();
+  WebSocketChannel;
+}

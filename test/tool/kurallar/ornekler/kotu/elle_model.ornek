@@ -1,0 +1,21 @@
+// yol: lib/core/model/tayfa.dart
+// beklenen: elle-model 5
+class Tayfa {
+  const Tayfa(this.ad);
+
+  factory Tayfa.fromJson(Map<String, Object?> json) =>
+      Tayfa(json['ad']! as String);
+
+  static Tayfa oku(Map<String, Object?> json) => Tayfa.fromJson(json);
+
+  final String ad;
+
+  Map<String, Object?> toJson() => {'ad': ad};
+
+  Object? fromJson(Object? json) => json;
+}
+// yol: lib/shell/ornek.dart
+import 'dart:convert';
+
+Object? coz(String metin) => jsonDecode(metin);
+String yaz(Object? deger) => json.encode(deger);

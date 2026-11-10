@@ -24,7 +24,7 @@ class KarsilamaEkrani extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            // TODO(#6): TayfamSpacing
+            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
             padding: const EdgeInsets.all(16),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: _icerikGenisligi),
@@ -39,20 +39,20 @@ class KarsilamaEkrani extends StatelessWidget {
                       style: yazi.headlineMedium,
                     ),
                   ),
-                  // TODO(#6): TayfamSpacing
+                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
                   const SizedBox(height: 16),
                   const TurVurgusu(),
-                  // TODO(#6): TayfamSpacing
+                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
                   const SizedBox(height: 16),
                   Text(metinler.karsilama_aciklama, style: yazi.bodyLarge),
-                  // TODO(#6): TayfamSpacing
+                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: () =>
                         unawaited(context.push<void>(Adresler.tayfaKatil)),
                     child: Text(metinler.karsilama_kodum_var),
                   ),
-                  // TODO(#6): TayfamSpacing
+                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
                   const SizedBox(height: 8),
                   OutlinedButton(
                     onPressed: () =>
@@ -99,8 +99,9 @@ class TurVurgusu extends StatelessWidget {
       container: true,
       label: metinler.karsilama_turler_etiketi,
       child: Wrap(
-        // TODO(#6): TayfamSpacing
+        // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
         spacing: 8,
+        // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
         runSpacing: 8,
         children: [
           for (var i = 0; i < turler.length; i++)
@@ -131,11 +132,11 @@ class _TurHapi extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: zemin,
-        // TODO(#6): TayfamRadii
+        // kural-istisnası: sabit-yaricap — TODO(#6): TayfamRadii
         borderRadius: const BorderRadius.all(Radius.circular(999)),
       ),
       child: Padding(
-        // TODO(#6): TayfamSpacing
+        // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Text(
           metin,

@@ -1,0 +1,9 @@
+// yol: lib/core/tema/tayfam_colors.dart
+import 'package:flutter/material.dart';
+
+abstract final class TayfamRenkleri {
+  static const Color brand = Color(0xFF5B2BE0);
+  static const Color seffaf = Colors.transparent;
+  static const BorderRadius kart = BorderRadius.all(Radius.circular(22));
+  static const EdgeInsets kenar = EdgeInsets.all(16);
+}

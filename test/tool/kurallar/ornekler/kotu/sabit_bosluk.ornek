@@ -1,0 +1,25 @@
+// yol: lib/shell/ornek.dart
+// beklenen: sabit-bosluk 6
+import 'package:flutter/material.dart';
+
+Widget yerlesim(Widget cocuk) {
+  return Column(
+    spacing: 8,
+    children: [
+      Padding(padding: const EdgeInsets.all(16), child: cocuk),
+      Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(8, 0, 8, 4),
+        child: cocuk,
+      ),
+      Padding(padding: EdgeInsets.all(TayfamSpacing.s16), child: cocuk),
+      const Padding(padding: EdgeInsets.zero),
+      const Padding(padding: EdgeInsets.all(0)),
+      const SizedBox(height: 24),
+      const SizedBox(width: 12.5, height: 0),
+      SizedBox(width: 200, child: cocuk),
+      const SizedBox(height: TayfamSpacing.s8),
+      const SizedBox.shrink(),
+      Wrap(runSpacing: 4, spacing: 0, children: [cocuk]),
+    ],
+  );
+}

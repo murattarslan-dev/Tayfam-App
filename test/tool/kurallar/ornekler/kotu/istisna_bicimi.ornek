@@ -1,0 +1,10 @@
+// yol: lib/shell/ornek.dart
+// beklenen: istisna-bicimi 3
+// beklenen: sabit-renk 2
+import 'package:flutter/material.dart';
+
+// kural-istisnası: sabit-renk
+const Color a = Colors.black;
+const Color b = Colors.white; // kural-istisnası: olmayan-kural — gerekçe
+// kural-istisnası: istisna-bicimi — kendini kapatamaz
+const int c = 1;
