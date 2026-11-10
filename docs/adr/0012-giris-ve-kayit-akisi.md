@@ -88,7 +88,15 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   kutusu, `POST /v1/me/consents` gösterilen sürümlerle. `consent-outdated`
   (409) → sürümler yeniden okunur. Onaydan sonra `yenile()`.
 
-### 6. Android geliştirme imzası
+### 6. Uygulama kimliği
+
+- Android `applicationId` ve iOS bundle kimliği **`com.murattarslan.tayfam`**
+  (platform sahibi, 2026-11-10). Proje iskeletindeki `app.tayfam` bu işle
+  değişir. Geliştirme (dev'e bağlı) ve yayın (prod'a bağlı) sürümleri aynı
+  kimliği kullanır; bir telefonda aynı anda yalnızca biri kuruludur.
+  Kimlik Play'de yayımlandıktan sonra değiştirilemez.
+
+### 7. Android geliştirme imzası
 
 - Google girişi Android'de uygulamanın imza parmak izine bağlıdır. CI'daki
   geliştirme APK'sı bir kez üretilen **sabit geliştirme anahtarıyla**
@@ -111,7 +119,7 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   gerekçe). Bu ortamda pub.dev'e erişim yok; `pubspec.lock` CI'da üretilir.
 - Platform sahibinin işleri (bir kez, tek listede): geliştirme imza
   anahtarı ve secret'ları, Google Cloud'da Android OAuth istemcisi
-  (`app.tayfam` + geliştirme anahtarının SHA-1'i), tayfam.app'te iki sürümlü
+  (`com.murattarslan.tayfam` + geliştirme anahtarının SHA-1'i), tayfam.app'te iki sürümlü
   sayfa, Google oturum açma düğmesi varlıkları.
 - iOS'ta giriş, Apple ile giriş ve iOS derlemesiyle birlikte gelir.
 - Profil tamamlama formu ve hesap silmedeki yeniden giriş ayrı işlerdir.
