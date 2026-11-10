@@ -26,7 +26,8 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
   - Şemalar için değişmez model sınıfları (`fromJson` / `toJson`,
     `==`/`hashCode`), enum'lar ve `oneOf`/`anyOf` için mühürlü (sealed)
     sınıflar.
-  - Etiket (tag) başına bir uç sınıfı; her `operationId` bir metod.
+  - Yol kaynağına göre gruplanmış uç sınıfları (sözleşmede tag yok);
+    her `operationId` bir metod.
   - `x-problem-types`'tan `ProblemType` enum'u (bilinmeyen kod için
     `unknown` değeri).
 - Üretilen kod commit edilir ve elle düzenlenmez. Sözleşmenin hangi
@@ -134,3 +135,41 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
   `build_runner` ve kod üretim zinciri.
 - **dio:** hazır ara katmanlar; daha büyük bağımlılık ve bizim yazacağımız
   ara katmanı zaten karşılamıyor.
+
+## Notlar
+
+- **2026-11-10 (issue #5):** Sözleşmede hiç `tags` olmadığı için uç
+  sınıfları etiket yerine yol kaynağına göre gruplanır: `/v1/<x>/…` ve
+  `/v1/tayfas/{tayfa_id}/<x>/…` → `<X>Api` (`apis/<x>_api.dart`).
+  Sözleşmede `oneOf`/`anyOf` da yok; mühürlü sınıf üretimi, bu yapılar
+  sözleşmeye girdiğinde eklenir, o zamana kadar üretici bunlarda hata
+  verir. `GET /v1/realtime` (WebSocket, ADR-0007) üretilmez.
+- **2026-11-10 (issue #7, mimari oturumu):**
+  1. **`client_request_id`:** sözleşmede istek modelinin zorunlu alanı
+     olduğu için `ApiClient` koyamaz (§2'deki madde bununla düzelir).
+     `core/api/istek_kimligi.dart`'taki tek yardımcı (`yeniIstekKimligi()`)
+     `Random.secure()` ile UUID v4 üretir; id'yi işi oluşturan katman
+     (application / çevrimdışı kuyruk) iş oluşturulurken bir kez üretir,
+     aynı iş tekrar gönderilirken aynı id kullanılır.
+  2. **Kimlik doğrulamasız uçlar yoldan tahmin edilmez.** Üretici her
+     çağrıya işlemin geçerli `security`'sini (işleminki, yoksa kökteki)
+     `ApiTransport.send(authenticated: …)` olarak yazar; `security: []`
+     uçlarında `ApiClient` token eklemez ve yenileme denemez. Kökte de
+     işlemde de `security` yoksa, isteğe bağlı kimlik doğrulaması (`{}`)
+     ya da tanımsız şema varsa üretici hata verir.
+  3. **Uygulama ayrıntıları (§3):** `HttpTasima` (ham HTTP: adres,
+     başlıklar, problem, zaman aşımı, günlük) yalnızca kimliksiz uçları
+     gönderir; `SessionStore` yenilemeyi onunla yapar, `ApiClient` kimlikli
+     uçlarda token'ı ekler. Gönderilmiş bir yenileme token'ı hiçbir
+     koşulda ikinci kez gönderilmez: göndermeden önce `GET /v1/status` ile
+     bağlantı yoklanır (bağlantı yoksa token harcanmaz, oturum açık kalır),
+     sonra kayıt depodan silinir; yeni çift alınamazsa (`invalid-refresh`,
+     ağ kopması, sunucu hatası, depoda yenisi olmayan `refresh-conflict`)
+     oturum kapanır. Depoda tek kayıt tutulur: token çifti, süreleri ve
+     yönlendirme için `registration_pending` / `consent_required`
+     bayrakları. `X-Tayfam-Client` sözleşmedeki gibi GET dışındaki
+     isteklere eklenir (web geliştirme derlemesinde `web`). Yönlendirme
+     izlenmez. `X-Tayfam-Client-Version` sözleşmede isteğe bağlıdır;
+     sürümün kaynağı kararlaştırılınca eklenir. `/v1/status` yoklaması ve
+     yenileme yanıtı alınamayınca oturumun kapanması #7'nin PR'ında
+     platform sahibinin onayına sunuldu.

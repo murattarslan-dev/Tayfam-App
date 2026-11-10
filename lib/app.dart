@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
 
 /// Uygulamanın kökü.
 ///
-/// Gezinme iskeleti (ADR-0003) `shell/yonlendirici.dart`'tan gelir; tema
-/// ayrı iş paketinde (#6) gelir.
+/// Gezinme iskeleti (ADR-0003) `shell/yonlendirici.dart`'tan, tema
+/// (ADR-0004) `core/tema/`'dan gelir.
 class TayfamApp extends ConsumerWidget {
   const TayfamApp({super.key, this.themeMode = ThemeMode.system});
 
@@ -26,8 +27,8 @@ class TayfamApp extends ConsumerWidget {
       locale: yerelAyar,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(useMaterial3: true),
-      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+      theme: TayfamTheme.acik(),
+      darkTheme: TayfamTheme.koyu(),
       themeMode: themeMode,
       routerConfig: ref.watch(yonlendiriciProvider),
     );
