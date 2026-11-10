@@ -100,12 +100,16 @@ void ortakTestler(Widget Function() kur) {
   }
 }
 
-/// Klavyeyle (Tab) ilk odaklanabilir öğeye geçer ve 3 px mango odak
-/// çerçevesinin çizildiğini denetler.
+/// Klavyeyle (Tab) ilk odaklanabilir öğeye geçer ve 3 px kalınlıkta, 3 px
+/// dış boşluklu odak çerçevesinin çizildiğini denetler.
+///
+/// Beklenen renk temanın `odak` token'ıdır (açık temada brand, koyu temada
+/// mango); mor marka yüzeyindeki öğe için [beklenenRenk] verilir.
 Future<void> odakCercevesiDenetle(
   WidgetTester tester,
   Widget bilesen, {
   required ThemeMode mod,
+  Color? beklenenRenk,
 }) async {
   FocusManager.instance.highlightStrategy =
       FocusHighlightStrategy.alwaysTraditional;
@@ -122,8 +126,9 @@ Future<void> odakCercevesiDenetle(
   expect(cerceve, findsOneWidget);
   final boya = tester.widget<CustomPaint>(cerceve);
   final boyaci = boya.foregroundPainter! as OdakBoyaci;
-  expect(boyaci.renk, renklerOf(mod).mango);
+  expect(boyaci.renk, beklenenRenk ?? renklerOf(mod).odak);
   expect(boyaci.kalinlik, 3);
+  expect(boyaci.bosluk, 3);
 }
 
 bool _odakCercevesiMi(Widget w) {

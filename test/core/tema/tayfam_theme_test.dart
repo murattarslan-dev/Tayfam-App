@@ -93,15 +93,27 @@ void main() {
         }
       });
 
-      test('dokunma alanı 48 dp, düğme odağında 3 px mango', () {
+      test('dokunma alanı 48 dp, düğme odağında 3 px odak rengi', () {
         expect(tema.materialTapTargetSize, MaterialTapTargetSize.padded);
         final stil = tema.filledButtonTheme.style!;
         final enAz = stil.minimumSize!.resolve(<WidgetState>{})!;
         expect(enAz.height, greaterThanOrEqualTo(48));
         final odak = stil.side!.resolve({WidgetState.focused})!;
-        expect(odak.color, r.mango);
+        // Açık temada brand, koyu temada mango (ADR-0004 Notlar).
+        expect(odak.color, r.odak);
+        expect(odak.color, parlaklik == Brightness.dark ? r.mango : r.marka);
         expect(odak.width, 3);
         expect(stil.side!.resolve(<WidgetState>{}), isNull);
+      });
+
+      test('marka yüzeyi teması: odak mango, diğer renkler aynı', () {
+        final yuzey = TayfamTheme.markaYuzeyi(tema);
+        final yr = yuzey.extension<TayfamColors>()!;
+        expect(yr.odak, r.mango);
+        expect(yr.markaYuzey, r.markaYuzey);
+        expect(yuzey.brightness, parlaklik);
+        final kenar = yuzey.textButtonTheme.style!.side!;
+        expect(kenar.resolve({WidgetState.focused})!.color, r.mango);
       });
     });
   }
@@ -115,6 +127,7 @@ void main() {
     expect(TayfamRadii.balon, inInclusiveRange(16, 18));
     expect(TayfamRadii.balonKuyruk, 6);
     expect(TayfamSizes.odakKalinligi, 3);
+    expect(TayfamSizes.odakBoslugu, 3);
     expect(TayfamSizes.dokunmaMin, greaterThanOrEqualTo(44));
   });
 

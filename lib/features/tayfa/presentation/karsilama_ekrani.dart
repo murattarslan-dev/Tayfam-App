@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfası olmayan kullanıcının Tayfa sekmesinde gördüğü karşılama ekranı
@@ -12,22 +14,19 @@ import 'package:tayfam/l10n/app_localizations.dart';
 class KarsilamaEkrani extends StatelessWidget {
   const KarsilamaEkrani({super.key});
 
-  /// İçeriğin en fazla genişliği; geniş ekranda okunabilir satır boyu.
-  // TODO(#6): içerik genişliği tema token'ından gelecek.
-  static const double _icerikGenisligi = 560;
-
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final yazi = Theme.of(context).textTheme;
+    final yazi = context.yazi;
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: _icerikGenisligi),
+              constraints: const BoxConstraints(
+                maxWidth: TayfamSizes.okumaGenisligi,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -39,25 +38,28 @@ class KarsilamaEkrani extends StatelessWidget {
                       style: yazi.headlineMedium,
                     ),
                   ),
-                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-                  const SizedBox(height: 16),
+                  const SizedBox(height: TayfamSpacing.s16),
                   const TurVurgusu(),
-                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-                  const SizedBox(height: 16),
-                  Text(metinler.karsilama_aciklama, style: yazi.bodyLarge),
-                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-                  const SizedBox(height: 24),
-                  FilledButton(
+                  const SizedBox(height: TayfamSpacing.s16),
+                  Text(
+                    metinler.karsilama_aciklama,
+                    style: yazi.bodyLarge?.copyWith(
+                      color: context.renkler.metinGovde,
+                    ),
+                  ),
+                  const SizedBox(height: TayfamSpacing.s24),
+                  BirincilEylem(
+                    etiket: metinler.karsilama_kodum_var,
+                    ikon: Icons.vpn_key_outlined,
                     onPressed: () =>
                         unawaited(context.push<void>(Adresler.tayfaKatil)),
-                    child: Text(metinler.karsilama_kodum_var),
                   ),
-                  // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-                  const SizedBox(height: 8),
-                  OutlinedButton(
+                  const SizedBox(height: TayfamSpacing.s12),
+                  IkincilEylem(
+                    etiket: metinler.karsilama_tayfa_olustur,
+                    ikon: Icons.add_circle_outline,
                     onPressed: () =>
                         unawaited(context.push<void>(Adresler.tayfaOlustur)),
-                    child: Text(metinler.karsilama_tayfa_olustur),
                   ),
                 ],
               ),
@@ -72,20 +74,19 @@ class KarsilamaEkrani extends StatelessWidget {
 /// Etkinlik türlerinin renkli haplar içinde yazıldığı vurgu (ADR-0004 §2a;
 /// yalnızca karşılama ve boş durum ekranlarında).
 ///
-/// Renkler şimdilik `colorScheme`'in zemin/metin çiftlerinden sırayla
-/// gelir; tema (#6) brand/nar/mango çiftlerini getirir.
-// TODO(#6): TayfamColors brand/nar/mango hap renkleri ve TayfamRadii.
+/// Haplar sırayla brand (beyaz metin), nar ve mango (ink metin) zeminlidir;
+/// renkler iki temada da aynıdır.
 class TurVurgusu extends StatelessWidget {
   const TurVurgusu({super.key});
 
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final renkler = Theme.of(context).colorScheme;
+    final r = context.renkler;
     final ciftler = [
-      (renkler.primary, renkler.onPrimary),
-      (renkler.tertiary, renkler.onTertiary),
-      (renkler.secondary, renkler.onSecondary),
+      (r.markaYuzey, r.markaYuzeyUstu),
+      (r.nar, r.vurguUstu),
+      (r.mango, r.vurguUstu),
     ];
     final turler = [
       metinler.karsilama_tur_konvoy,
@@ -99,10 +100,8 @@ class TurVurgusu extends StatelessWidget {
       container: true,
       label: metinler.karsilama_turler_etiketi,
       child: Wrap(
-        // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-        spacing: 8,
-        // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-        runSpacing: 8,
+        spacing: TayfamSpacing.s8,
+        runSpacing: TayfamSpacing.s8,
         children: [
           for (var i = 0; i < turler.length; i++)
             _TurHapi(
@@ -132,16 +131,16 @@ class _TurHapi extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: zemin,
-        // kural-istisnası: sabit-yaricap — TODO(#6): TayfamRadii
-        borderRadius: const BorderRadius.all(Radius.circular(999)),
+        borderRadius: TayfamRadii.hapKoseleri,
       ),
       child: Padding(
-        // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: TayfamSpacing.s12,
+          vertical: TayfamSpacing.s4,
+        ),
         child: Text(
           metin,
-          style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(color: yaziRengi),
+          style: context.yazi.titleMedium?.copyWith(color: yaziRengi),
         ),
       ),
     );

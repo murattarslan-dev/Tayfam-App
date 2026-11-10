@@ -5,12 +5,13 @@ abstract final class TayfamSizes {
   /// varsayılanı korunur (ADR-0004).
   static const double dokunmaMin = 48;
 
-  /// Odak çerçevesi kalınlığı (3 px mango).
+  /// Odak çerçevesi kalınlığı (3 px; renk `TayfamColors.odak`).
   static const double odakKalinligi = 3;
 
-  /// Odak çerçevesi ile öğe arasındaki boşluk; mango zeminli birincil
-  /// eylemde çerçevenin öğeden ayrılması için.
-  static const double odakBoslugu = 2;
+  /// Odak çerçevesi ile öğe arasındaki dış boşluk (Standartlar: 3 px).
+  /// Çerçeve öğenin kendi zemininden ayrışır; brand zeminli öğede brand
+  /// çerçeve de görünür kalır.
+  static const double odakBoslugu = 3;
 
   /// Kart ve süs kenarı kalınlığı.
   static const double kenar = 1;
@@ -29,6 +30,17 @@ abstract final class TayfamSizes {
 
   /// Düğme ikonu.
   static const double ikon = 20;
+
+  /// Bu genişlikten (dp) itibaren alt gezinme çubuğu yerine solda dikey
+  /// gezinme çubuğu gösterilir (ADR-0004 §5).
+  static const double genisEkranEsigi = 600;
+
+  /// Sayfa içeriğinin en fazla genişliği (ADR-0004 §5).
+  static const double icerikEnFazla = 1120;
+
+  /// Karşılama ve boş durum gibi tek sütun metinli ekranların en fazla
+  /// genişliği; geniş ekranda okunabilir satır boyu.
+  static const double okumaGenisligi = 560;
 
   /// Sohbet balonunun en fazla genişliği, kullanılabilir genişliğe oranla.
   static const double balonEnFazlaOran = .78;

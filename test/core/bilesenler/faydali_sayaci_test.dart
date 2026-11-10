@@ -61,7 +61,7 @@ void main() {
         kulp.dispose();
       });
 
-      testWidgets('klavye odağında mango çerçeve', (tester) async {
+      testWidgets('klavye odağında temanın odak çerçevesi', (tester) async {
         await odakCercevesiDenetle(
           tester,
           FaydaliSayaci(sayi: 4, onPressed: () {}),

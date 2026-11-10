@@ -65,7 +65,19 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('nar (ikincil eylem) / kart', r.nar, r.kart, _arayuz),
     _Cift('anket önde (marka) / kart', r.marka, r.kart, _arayuz),
     _Cift('anket diğer (nar) / kart', r.nar, r.kart, _arayuz),
-    _Cift('odak / markaYuzey', r.odak, r.markaYuzey, _arayuz),
+    // Odak çerçevesi (3:1; ADR-0004 Notlar, 2026-11-10). Çerçeve öğenin
+    // dışında, 3 px boşlukla çizilir; komşu renk öğenin bulunduğu yüzeydir.
+    _Cift('odak / zemin', r.odak, r.zemin, _arayuz),
+    _Cift('odak / kart', r.odak, r.kart, _arayuz),
+    _Cift('odak / tintMarka', r.odak, r.tintMarka, _arayuz),
+    _Cift('odak / tintMango', r.odak, r.tintMango, _arayuz),
+    _Cift('odak / gelenBalon', r.odak, r.gelenBalon, _arayuz),
+    _Cift(
+      'markaYuzeyOdak / markaYuzey',
+      r.markaYuzeyOdak,
+      r.markaYuzey,
+      _arayuz,
+    ),
   ];
 }
 
@@ -95,6 +107,12 @@ void main() {
       ('beyaz / bubble-in-dark', k.gelenBalonUstu, k.gelenBalon, 13.46),
       ('ink / nar', k.vurguUstu, k.nar, 5.21),
       ('ink / mango', k.vurguUstu, k.mango, 9.76),
+      // ADR-0004 Notlar (2026-11-10): odak çerçevesi.
+      ('odak (brand) / surface', a.odak, a.zemin, 6.95),
+      ('odak (brand) / card', a.odak, a.kart, 7.33),
+      ('odak (brand) / tint-brand', a.odak, a.tintMarka, 5.97),
+      ('odak (brand) / tint-mango', a.odak, a.tintMango, 6.48),
+      ('mango odak / brand', a.markaYuzeyOdak, a.markaYuzey, 4.0),
     ];
     for (final (ad, on, arka, beklenen) in adr) {
       test('ADR-0004: $ad = $beklenen', () {
@@ -113,23 +131,5 @@ void main() {
         });
       }
     });
-  }
-
-  // Odak çerçevesi (3 px mango) koyu zeminde ve mor yüzeyde 3:1'i geçer;
-  // açık zeminde (surface/card) 1.74–1.83:1 kalır. Standartlar'daki
-  // "odak çerçevesi 3 px mango" kuralı ile WCAG 2.2 odak görünümü (AAA)
-  // arasındaki bu çelişki platform sahibine soruldu; karar gelene kadar
-  // test atlanır ve CI çıktısında görünür kalır.
-  for (final MapEntry(key: tema, value: r) in temalar.entries) {
-    for (final (ad, arka) in [('zemin', r.zemin), ('kart', r.kart)]) {
-      final oran = kontrastOrani(r.odak, arka);
-      test(
-        '$tema tema: odak / $ad ≥ 3 (${oran.toStringAsFixed(2)})',
-        () => expect(oran, greaterThanOrEqualTo(_arayuz)),
-        skip: tema == 'açık'
-            ? 'Açık zeminde mango odak çerçevesi 3:1 altında; karar bekleniyor'
-            : false,
-      );
-    }
   }
 }
