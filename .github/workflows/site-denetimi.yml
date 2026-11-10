@@ -1,0 +1,44 @@
+name: Site denetimi
+
+# tayfam.app tanıtım sitesi (site/) denetimi — ADR-0013 §5, issue #25.
+# Hem CI'dan (ci.yml, `site` işi) hem yayından önce (site-yayin.yml)
+# çağrılır; iki yerde aynı denetim çalışır. Actions commit SHA'sıyla
+# sabittir (CLAUDE.md kesin kural 8).
+#
+# Denetimler:
+#   - HTML geçerliliği: html-validate, sürümü package-lock.json ile kilitli
+#     (npm ci). Kurallar: .github/site-denetimi/htmlvalidate.json.
+#   - .github/site-denetimi/denetle.py (yalnızca standart kütüphane):
+#     JavaScript yok (<script>, on* öznitelikleri, javascript:), dış kaynak
+#     yalnızca Google Fonts, iç bağlantılar ve #parçalar, _redirects,
+#     _headers'ta zorunlu güvenlik başlıkları, .well-known JSON geçerliliği.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  denetim:
+    name: denetim
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # html-validate 11: Node ^22.22 || >=24.8
+          node-version: 24
+      - name: html-validate (package-lock.json'a birebir)
+        working-directory: .github/site-denetimi
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: HTML geçerliliği
+        # aria-label-misuse yalnızca uyarı: yayındaki index.html'deki örnek
+        # kartlar (<div class="mock" aria-label=…>) birebir alındı; düzeltme
+        # ayrı bir site değişikliğinde yapılır, sonra kural hataya döner.
+        run: .github/site-denetimi/node_modules/.bin/html-validate --config .github/site-denetimi/htmlvalidate.json site
+      - name: JavaScript, bağlantılar, başlıklar, .well-known
+        run: python3 -I .github/site-denetimi/denetle.py site

@@ -322,3 +322,11 @@ jobs:
       - name: Bağımlılık ve lisans raporu
         run: dart run tool/kurallar/bin/bagimlilik_raporu.dart --onceki "$ONCEKI_KILIT" --sonraki pubspec.lock
 
+
+  site:
+    name: site
+    # tayfam.app tanıtım sitesi (site/) denetimi (ADR-0013 §5). Yayından
+    # önce de aynı iş akışı çalışır (site-yayin.yml). Bir dakikadan kısa
+    # sürdüğü için her PR'da çalışır; site/ değişmeyen PR'da da yeşil
+    # kalması, ileride zorunlu kontrol yapılmasını kolaylaştırır.
+    uses: ./.github/workflows/site-denetimi.yml

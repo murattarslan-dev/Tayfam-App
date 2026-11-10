@@ -1,0 +1,7 @@
+{
+  "root": true,
+  "extends": ["html-validate:standard"],
+  "rules": {
+    "aria-label-misuse": "warn"
+  }
+}
