@@ -21,7 +21,10 @@ ilkesi: tutmadığın veri çalınamaz).
 
 **Uygulama, token dışında hiçbir kullanıcı içeriğini diske yazmaz.** Mobilde
 güvenli depodaki token'lar (ADR-0005) ve kullanıcı ayarları (tema, dil)
-dışında kalıcı veri yoktur. Web geliştirme derlemesi tarayıcı deposuna hiçbir
+dışında kalıcı veri yoktur. Token kaydıyla birlikte güvenli depoda
+yalnızca yönlendirme için iki oturum bayrağı (`registration_pending`,
+`consent_required`) tutulur; bunlar içerik değildir (platform sahibi,
+2026-11-10). Web geliştirme derlemesi tarayıcı deposuna hiçbir
 şey yazmaz (ADR-0011). Signal anahtarları için ADR-0010'a bakın.
 
 ### Okuma önbelleği

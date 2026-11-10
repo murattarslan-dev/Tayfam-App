@@ -117,7 +117,7 @@ içindir. Uygulamada:
 
 Standartlar'daki kurallar aynen geçerlidir: geçişler 150–250 ms, süs
 animasyonu yok, "hareketi azalt" açıkken süs animasyonları kapalı, odak
-çerçevesi 3 px mango, dokunma alanı en az 44 × 44 px (Material'in 48 dp
+çerçevesi 3 px (renk aşağıdaki nota göre), dokunma alanı en az 44 × 44 px (Material'in 48 dp
 varsayılanı korunur), 320 px genişlikte yatay kaydırma yok. Arayüz PR'ları
 ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
 
@@ -146,3 +146,23 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
   olmadan yazılmış ekranlarda pahalı olurdu.
 - **Material'den bağımsız kendi bileşen kütüphanesi:** tam kontrol, ama
   erişilebilirlik ve platform davranışlarını yeniden yazmak gerekir.
+
+## Notlar
+
+- **2026-11-10 (platform sahibi, issue #6 / PR #16):**
+  1. **Odak çerçevesi rengi.** Mango, açık zeminde (surface, card) yalnızca
+     1.74–1.83:1 verir; WCAG 2.2 odak görünümü 3:1 ister. Bu yüzden
+     **açık temada açık zeminlerde odak çerçevesi `brand` (#5B2BE0)**:
+     surface 6.95, card 7.33, tint-brand 5.97, tint-mango 6.48. **Koyu
+     temada ve iki temada da mor yüzeyde (tayfa üst bölümü) mango**
+     kalır (koyu zeminde 8.7–9.8, mor yüzeyde 4.0). Kalınlık 3 px, öğeden
+     2 px boşlukla çizilir. Tasarım Standartları'na da işlendi.
+  2. **Büyük başlık 750.** Gömülü font, google/fonts'taki değişken
+     fonttan üretilen statik örneklerdir (`tool/font/bricolage_ornekle.py`);
+     wght 750 örneği pubspec'te 800 ağırlık yuvasındadır.
+  3. **"Çok yakında" rozetindeki nabız** süs değil durum göstergesi
+     sayılır; "hareketi azalt" açıkken kapalıdır.
+  4. **Beşinci token sınıfı `TayfamSizes`:** dokunma alanı, odak kalınlığı,
+     ikon boyutu gibi temaya göre değişmeyen ölçüler. Ekranlarda bu sayılar
+     da sabit yazılmaz. (CLAUDE.md'deki "Tema" satırı dört sınıf sayar;
+     platform sahibi güncelleyecek.)
