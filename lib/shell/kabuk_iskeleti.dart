@@ -2,24 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
 /// Dört sabit sekmeli uygulama kabuğu (ADR-0003): Tayfa, Sohbet,
 /// Bildirimler, Profil.
 ///
-/// Dar ekranda alt gezinme çubuğu, en az [genisEkranEsigi] genişlikte solda
-/// dikey gezinme çubuğu gösterilir (ADR-0004 §5). Sekmelerin sırası
-/// `yonlendirici.dart`'taki dalların sırasıyla aynıdır.
+/// Dar ekranda alt gezinme çubuğu, en az [TayfamSizes.genisEkranEsigi]
+/// genişlikte solda dikey gezinme çubuğu gösterilir (ADR-0004 §5).
+/// Sekmelerin sırası `yonlendirici.dart`'taki dalların sırasıyla aynıdır.
 class KabukIskeleti extends ConsumerWidget {
   const KabukIskeleti({super.key, required this.navigationShell});
 
   /// go_router'ın sekme dallarını tutan kabuğu.
   final StatefulNavigationShell navigationShell;
-
-  /// Dikey gezinme çubuğuna geçilen genişlik (ADR-0004 §5).
-  // TODO(#6): kırılım noktası tema token'ından gelecek.
-  static const double genisEkranEsigi = 600;
 
   void _sekmeyeGit(int index) {
     // Seçili sekmeye yeniden dokunmak o sekmenin köküne döndürür.
@@ -62,7 +59,7 @@ class KabukIskeleti extends ConsumerWidget {
       ),
     ];
 
-    if (MediaQuery.sizeOf(context).width >= genisEkranEsigi) {
+    if (MediaQuery.sizeOf(context).width >= TayfamSizes.genisEkranEsigi) {
       return Scaffold(
         body: Row(
           children: [

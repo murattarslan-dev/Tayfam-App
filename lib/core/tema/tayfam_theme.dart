@@ -17,6 +17,14 @@ abstract final class TayfamTheme {
   /// Koyu tema (ADR-0004 §2).
   static ThemeData koyu() => _olustur(TayfamColors.koyu, Brightness.dark);
 
+  /// Mor marka yüzeyinin (tayfa ana sayfasının üst bölümü, ADR-0004 §2a)
+  /// altında geçerli tema: odak çerçevesi iki temada da mango
+  /// ([TayfamColors.markaYuzeyOdak]). `MarkaYuzeyi` bileşeni kullanır.
+  static ThemeData markaYuzeyi(ThemeData tema) {
+    final r = tema.extension<TayfamColors>()!;
+    return _olustur(r.markaYuzeyIcin(), tema.brightness);
+  }
+
   static ThemeData _olustur(TayfamColors r, Brightness parlaklik) {
     final renkSemasi = ColorScheme(
       brightness: parlaklik,
@@ -68,7 +76,9 @@ abstract final class TayfamTheme {
         RoundedRectangleBorder(borderRadius: TayfamRadii.dugmeKoseleri),
       ),
       textStyle: WidgetStatePropertyAll(metinTemasi.labelLarge),
-      // Odak çerçevesi: 3 px mango (ADR-0004, Hareket ve erişilebilirlik).
+      // Odak çerçevesi: 3 px, renk yüzeye göre `odak` (ADR-0004 Notlar,
+      // 2026-11-10). Dış boşluklu çerçeveyi ortak bileşenlerde
+      // OdakCercevesi çizer; bu, bileşensiz Material düğmeleri içindir.
       side: WidgetStateProperty.resolveWith(
         (durum) => durum.contains(WidgetState.focused)
             ? BorderSide(

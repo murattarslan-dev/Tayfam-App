@@ -39,6 +39,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.pasif,
     required this.pasifUstu,
     required this.odak,
+    required this.markaYuzeyOdak,
     required this.golge,
   });
 
@@ -118,8 +119,15 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
   /// [pasif] üzerindeki metin.
   final Color pasifUstu;
 
-  /// Odak çerçevesi (3 px mango).
+  /// Odak çerçevesi, açık ve koyu zeminde (zemin, kart, tint'ler): açık
+  /// temada brand, koyu temada mango (ADR-0004 Notlar, 2026-11-10). Mango
+  /// açık zeminde 3:1'i geçmediği için açık temada brand kullanılır.
   final Color odak;
+
+  /// Mor marka yüzeyindeki ([markaYuzey]) odak çerçevesi; iki temada da
+  /// mango (ADR-0004 Notlar, 2026-11-10). `MarkaYuzeyi` bileşeni altındaki
+  /// öğelerde [odak] bu değeri alır.
+  final Color markaYuzeyOdak;
 
   /// Öne çıkan kartın tek gölgesinin rengi.
   final Color golge;
@@ -133,6 +141,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       spreadRadius: -24,
     ),
   ];
+
+  /// Mor marka yüzeyinin altında geçerli token'lar: [odak] yerine
+  /// [markaYuzeyOdak]. Diğer token'lar değişmez.
+  TayfamColors markaYuzeyIcin() => copyWith(odak: markaYuzeyOdak);
 
   /// Açık tema (Notion: Tasarım Standartları).
   static const TayfamColors acik = TayfamColors(
@@ -161,7 +173,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     vurguUstu: _Palet.ink,
     pasif: _Palet.line,
     pasifUstu: _Palet.inkMuted,
-    odak: _Palet.mango,
+    odak: _Palet.brand,
+    markaYuzeyOdak: _Palet.mango,
     golge: _Palet.golge,
   );
 
@@ -193,6 +206,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     pasif: _Palet.lineDark,
     pasifUstu: _Palet.textMutedDark,
     odak: _Palet.mango,
+    markaYuzeyOdak: _Palet.mango,
     golge: _Palet.golge,
   );
 
@@ -224,6 +238,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? pasif,
     Color? pasifUstu,
     Color? odak,
+    Color? markaYuzeyOdak,
     Color? golge,
   }) {
     return TayfamColors(
@@ -253,6 +268,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       pasif: pasif ?? this.pasif,
       pasifUstu: pasifUstu ?? this.pasifUstu,
       odak: odak ?? this.odak,
+      markaYuzeyOdak: markaYuzeyOdak ?? this.markaYuzeyOdak,
       golge: golge ?? this.golge,
     );
   }
@@ -290,6 +306,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       pasif: l(pasif, other.pasif),
       pasifUstu: l(pasifUstu, other.pasifUstu),
       odak: l(odak, other.odak),
+      markaYuzeyOdak: l(markaYuzeyOdak, other.markaYuzeyOdak),
       golge: l(golge, other.golge),
     );
   }

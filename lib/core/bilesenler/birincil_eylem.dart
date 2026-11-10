@@ -10,8 +10,9 @@ import 'package:tayfam/core/tema/tema_baglami.dart';
 /// Birincil eylem: hap biçimli, en az 48 px yüksek düğme (ADR-0004).
 ///
 /// Açık zeminde brand + beyaz, koyu zeminde mango + ink. Mor marka
-/// yüzeyinde (tayfa ana sayfasının üst bölümü, ADR-0004 §2a) temadan
-/// bağımsız olarak mango + ink için [markaYuzeyinde] verilir.
+/// yüzeyinde (`MarkaYuzeyi`, tayfa ana sayfasının üst bölümü, ADR-0004
+/// §2a) temadan bağımsız olarak mango + ink için [markaYuzeyinde] verilir;
+/// odak çerçevesinin rengini yüzey kendisi seçer.
 /// [onPressed] `null` ise düğme devre dışıdır.
 class BirincilEylem extends StatelessWidget {
   const BirincilEylem({

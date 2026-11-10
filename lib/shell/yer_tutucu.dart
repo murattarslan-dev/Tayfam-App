@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Henüz yapılmamış bir ekranın yerini tutan sade sayfa.
@@ -23,12 +25,11 @@ class YerTutucuSayfa extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
             child: Text(
               metinler.gezinme_yer_tutucu_aciklama,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: context.yazi.bodyLarge,
             ),
           ),
         ),
@@ -52,21 +53,19 @@ class BulunamadiSayfasi extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   metinler.gezinme_bulunamadi_aciklama,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: context.yazi.bodyLarge,
                 ),
-                // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-                const SizedBox(height: 16),
-                FilledButton(
+                const SizedBox(height: TayfamSpacing.s24),
+                BirincilEylem(
+                  etiket: metinler.gezinme_ana_sayfaya_don,
                   onPressed: () => context.go(Adresler.kok),
-                  child: Text(metinler.gezinme_ana_sayfaya_don),
                 ),
               ],
             ),

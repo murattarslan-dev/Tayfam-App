@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/core/tema/tema_baglami.dart';
 
-/// Klavye/anahtar erişimiyle odaklanan öğenin çevresine 3 px mango çerçeve
-/// çizer (ADR-0004, Hareket ve erişilebilirlik).
+/// Klavye/anahtar erişimiyle odaklanan öğenin çevresine 3 px odak çerçevesi
+/// çizer (ADR-0004, Hareket ve erişilebilirlik; Notlar 2026-11-10).
 ///
-/// Çerçeve yalnızca odak vurgusu gösterilecekken (klavye, anahtar erişimi;
-/// `FocusHighlightMode.traditional`) görünür; dokunmayla görünmez. Öğe ile
-/// çerçeve arasında [TayfamSizes.odakBoslugu] kadar boşluk bırakılır ki
-/// mango zeminli öğede de çerçeve ayrışsın.
+/// Renk `context.renkler.odak`: açık temada açık zeminlerde brand, koyu
+/// temada mango; mor marka yüzeyinde (`MarkaYuzeyi` altında) iki temada da
+/// mango. Çerçeve yalnızca odak vurgusu gösterilecekken (klavye, anahtar
+/// erişimi; `FocusHighlightMode.traditional`) görünür; dokunmayla görünmez.
+/// Öğe ile çerçeve arasında [TayfamSizes.odakBoslugu] (3 px) dış boşluk
+/// bırakılır ki çerçeve, öğenin kendi zemini çerçeveyle aynı renkte olsa da
+/// ayrışsın.
 class OdakCercevesi extends StatefulWidget {
   const OdakCercevesi({super.key, required this.koseler, required this.child});
 
@@ -70,9 +73,12 @@ class OdakBoyaci extends CustomPainter {
   /// Çerçeve kalınlığı (3 px).
   double get kalinlik => TayfamSizes.odakKalinligi;
 
+  /// Öğe ile çerçeve arasındaki dış boşluk (3 px).
+  double get bosluk => TayfamSizes.odakBoslugu;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final disari = TayfamSizes.odakBoslugu + kalinlik / 2;
+    final disari = bosluk + kalinlik / 2;
     final kutu = koseler.toRRect(Offset.zero & size).inflate(disari);
     final firca = Paint()
       ..color = renk
