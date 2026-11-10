@@ -30,16 +30,13 @@ void varsayilanApiGunlugu(String satir) =>
 /// yapar.
 final class HttpTasima implements ApiTransport {
   HttpTasima({
-    required http.Client istemci,
+    required this._istemci,
     required Uri tabanAdres,
     required String istemciAdi,
-    Duration zamanAsimi = const Duration(seconds: 30),
-    ApiGunlugu gunluk = varsayilanApiGunlugu,
-  }) : _istemci = istemci,
-       _taban = _tabanDogrula(tabanAdres),
-       _istemciAdi = _istemciAdiDogrula(istemciAdi),
-       _zamanAsimi = zamanAsimi,
-       _gunluk = gunluk;
+    this._zamanAsimi = const Duration(seconds: 30),
+    this._gunluk = varsayilanApiGunlugu,
+  }) : _taban = _tabanDogrula(tabanAdres),
+       _istemciAdi = _istemciAdiDogrula(istemciAdi);
 
   final http.Client _istemci;
   final Uri _taban;

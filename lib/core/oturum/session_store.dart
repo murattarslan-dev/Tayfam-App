@@ -106,18 +106,14 @@ typedef BaglantiYoklayici = Future<void> Function();
 ///   (ADR-0001 kural 8).
 final class SessionStore {
   SessionStore({
-    required TokenDeposu depo,
-    required TokenYenileyici yenileyici,
-    required BaglantiYoklayici yoklayici,
+    required this._depo,
+    required this._yenileyici,
+    required this._yoklayici,
     DateTime Function()? saat,
     Future<void> Function(Duration sure)? bekle,
-    ApiGunlugu gunluk = varsayilanApiGunlugu,
-  }) : _depo = depo,
-       _yenileyici = yenileyici,
-       _yoklayici = yoklayici,
-       _saat = saat ?? DateTime.now,
-       _bekle = bekle ?? Future<void>.delayed,
-       _gunluk = gunluk;
+    this._gunluk = varsayilanApiGunlugu,
+  }) : _saat = saat ?? DateTime.now,
+       _bekle = bekle ?? Future<void>.delayed;
 
   /// Erişim token'ının bitmesine bu kadar kala istekten önce yenilenir.
   static const Duration erkenYenileme = Duration(seconds: 60);

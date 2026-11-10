@@ -20,9 +20,7 @@ import 'package:tayfam/core/oturum/session_store.dart';
 ///   ve istek bir kez tekrarlanır; ikinci `unauthenticated` oturumu kapatır.
 /// - Başlıklar, problem ayrıştırma, zaman aşımı ve günlük [HttpTasima]'dadır.
 final class ApiClient implements ApiTransport {
-  ApiClient({required HttpTasima tasima, required SessionStore oturum})
-    : _tasima = tasima,
-      _oturum = oturum;
+  ApiClient({required this._tasima, required this._oturum});
 
   final HttpTasima _tasima;
   final SessionStore _oturum;
