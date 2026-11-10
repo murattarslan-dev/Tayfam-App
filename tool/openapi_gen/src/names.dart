@@ -189,8 +189,7 @@ String alanAdi(String jsonAdi) =>
     guvenliAd(camelCase(jsonAdi), classMemberNames);
 
 /// Enum değeri adı: `not_going` → `notGoing`, `switch` → `switch_`.
-String enumDegerAdi(String wire) =>
-    guvenliAd(camelCase(wire), enumMemberNames);
+String enumDegerAdi(String wire) => guvenliAd(camelCase(wire), enumMemberNames);
 
 /// Dart tek tırnaklı dize sabiti.
 String dartString(String deger) {

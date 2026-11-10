@@ -140,7 +140,10 @@ void main() {
     test('dizi, harita ve satır içi tipler', () {
       expect(models, contains('final List<Tag> tags;'));
       expect(models, contains('final List<String>? names;'));
-      expect(models, contains('final Map<String, ThingServicesValue> services;'));
+      expect(
+        models,
+        contains('final Map<String, ThingServicesValue> services;'),
+      );
       expect(models, contains('enum ThingServicesValue {'));
       expect(models, contains('final ThingInner? inner;'));
       expect(models, contains('final class ThingInner {'));
@@ -331,10 +334,7 @@ void main() {
       final spec = jsonDecode(_spec()) as Map<String, Object?>;
       final components = spec['components']! as Map<String, Object?>;
       components['responses'] = <String, Object?>{};
-      expect(
-        () => _generate(jsonEncode(spec)),
-        throwsA(isA<GenException>()),
-      );
+      expect(() => _generate(jsonEncode(spec)), throwsA(isA<GenException>()));
     });
   });
 
@@ -362,7 +362,10 @@ void main() {
         result.warnings.single,
         allOf(contains('starts_at'), contains('en fazla iki yıl ileri.')),
       );
-      expect(result.files['models.dart'], contains('final DateTime? startsAt;'));
+      expect(
+        result.files['models.dart'],
+        contains('final DateTime? startsAt;'),
+      );
     });
   });
 
@@ -517,15 +520,12 @@ void main() {
     setUpAll(() => result = _generate(spec));
 
     test('yol kaynağına göre gruplanır; WebSocket ucu üretilmez', () {
-      expect(
-        result.files.keys.where((p) => p.startsWith('apis/')),
-        [
-          'apis/client_config_api.dart',
-          'apis/events_api.dart',
-          'apis/me_api.dart',
-          'apis/tayfas_api.dart',
-        ],
-      );
+      expect(result.files.keys.where((p) => p.startsWith('apis/')), [
+        'apis/client_config_api.dart',
+        'apis/events_api.dart',
+        'apis/me_api.dart',
+        'apis/tayfas_api.dart',
+      ]);
       expect(result.operationCount, 6);
       expect(result.skippedOperations.single, contains('connectRealtime'));
       expect(
@@ -673,10 +673,7 @@ void main() {
         ),
       );
       expect(files['transport.dart'], contains('abstract interface class'));
-      expect(
-        files['api.dart'],
-        contains('show ApiTransport, ResponseKind;'),
-      );
+      expect(files['api.dart'], contains('show ApiTransport, ResponseKind;'));
     });
   });
 }

@@ -129,7 +129,9 @@ void _enum(
     ..writeln()
     ..writeln('  final String? _wire;')
     ..writeln()
-    ..writeln('  /// JSON\'daki değer. Sözleşmede olmayan [unknown] gönderilemez;')
+    ..writeln(
+      '  /// JSON\'daki değer. Sözleşmede olmayan [unknown] gönderilemez;',
+    )
     ..writeln('  /// [StateError] fırlatır.')
     ..writeln('  String get wire =>')
     ..writeln(
@@ -200,13 +202,17 @@ void _class(StringBuffer out, ClassDef def) {
     ..writeln()
     ..writeln('  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.')
     ..writeln('  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]')
-    ..writeln('  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).');
+    ..writeln(
+      '  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).',
+    );
   if (def.fields.isEmpty) {
     out.writeln(
       '  factory $name.fromJson(Map<String, Object?> json) => const $name();',
     );
   } else {
-    out.writeln('  factory $name.fromJson(Map<String, Object?> json) => $name(');
+    out.writeln(
+      '  factory $name.fromJson(Map<String, Object?> json) => $name(',
+    );
     for (final field in def.fields) {
       final at = dartString('$name.${field.jsonName}');
       final raw = 'json[${dartString(field.jsonName)}]';
@@ -271,7 +277,8 @@ void _class(StringBuffer out, ClassDef def) {
   out.write(
     def.fields
         .map(
-          (f) => _isCollection(f.type) ? '_deepHash(${f.dartName})' : f.dartName,
+          (f) =>
+              _isCollection(f.type) ? '_deepHash(${f.dartName})' : f.dartName,
         )
         .join(', '),
   );
@@ -547,9 +554,7 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
         .join(', ');
     args.add('pathParams: {$entries}');
   }
-  final queryParams = op.params.where(
-    (p) => p.location == ParamLocation.query,
-  );
+  final queryParams = op.params.where((p) => p.location == ParamLocation.query);
   if (queryParams.isNotEmpty) {
     final entries = queryParams
         .map((p) {
@@ -585,7 +590,8 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
 
 // --------------------------------------------------------------- transport
 
-const String _transport = '''
+const String _transport =
+    '''
 $generatedHeader
 
 /// Üretilen uç sınıflarının istek gönderdiği taşıma arayüzü (ADR-0005).

@@ -85,14 +85,7 @@ Future<void> _run(List<String> args) async {
 }
 
 Map<String, String> _parseArgs(List<String> args) {
-  const known = {
-    'spec',
-    'out',
-    'commit',
-    'repo',
-    'spec-path',
-    'import-base',
-  };
+  const known = {'spec', 'out', 'commit', 'repo', 'spec-path', 'import-base'};
   final options = <String, String>{};
   for (var i = 0; i < args.length; i++) {
     final arg = args[i];

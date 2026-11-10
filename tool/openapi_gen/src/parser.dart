@@ -149,7 +149,9 @@ final class _Parser {
   ApiModel parse() {
     final version = root['openapi'];
     if (version is! String || !version.startsWith('3.1.')) {
-      throw GenException('yalnızca OpenAPI 3.1 desteklenir (openapi: $version)');
+      throw GenException(
+        'yalnızca OpenAPI 3.1 desteklenir (openapi: $version)',
+      );
     }
     final components = _asMap(root['components'], 'components');
     _schemas = _asMap(components['schemas'], 'components.schemas');
@@ -570,7 +572,9 @@ final class _Parser {
       };
       for (final key in param.keys) {
         if (knownKeys.contains(key) || key.startsWith('x-')) continue;
-        throw GenException('$paramAt: desteklenmeyen parametre anahtarı "$key"');
+        throw GenException(
+          '$paramAt: desteklenmeyen parametre anahtarı "$key"',
+        );
       }
       if (location == 'header') {
         // Başlıkları ApiClient ekler (ADR-0005); metoda girmez.
@@ -632,7 +636,9 @@ final class _Parser {
     }
     final content = _asMap(requestBody['content'], '$bodyAt.content');
     if (content.length != 1 || !content.containsKey('application/json')) {
-      throw GenException('$bodyAt: yalnızca application/json gövde desteklenir');
+      throw GenException(
+        '$bodyAt: yalnızca application/json gövde desteklenir',
+      );
     }
     final media = _asMap(content['application/json'], '$bodyAt.content');
     final schema = _asMap(media['schema'], '$bodyAt.content.schema');
@@ -650,9 +656,7 @@ final class _Parser {
     for (final entry in responses.entries) {
       final code = entry.key;
       final responseAt = '$at.responses.$code';
-      if (code == 'default' ||
-          code.startsWith('4') ||
-          code.startsWith('5')) {
+      if (code == 'default' || code.startsWith('4') || code.startsWith('5')) {
         // Hata yanıtları tipli dönmez; taşıma katmanı ApiProblem fırlatır.
         continue;
       }
@@ -679,7 +683,9 @@ final class _Parser {
         continue;
       }
       if (content.length != 1) {
-        throw GenException('$responseAt: birden çok içerik türü desteklenmiyor');
+        throw GenException(
+          '$responseAt: birden çok içerik türü desteklenmiyor',
+        );
       }
       final contentType = content.keys.single;
       final media = _asMap(content[contentType], '$responseAt.content');
@@ -768,7 +774,9 @@ final class _Parser {
     final lines = <String>[];
     final description = schema['description'];
     if (description is String && description.trim().isNotEmpty) {
-      lines.addAll(description.trimRight().split('\n').map((l) => l.trimRight()));
+      lines.addAll(
+        description.trimRight().split('\n').map((l) => l.trimRight()),
+      );
     }
     final constraints = <String>[
       for (final key in _constraintKeys)
@@ -787,6 +795,5 @@ final class _Parser {
     return lines;
   }
 
-  String _docValue(Object? value) =>
-      value is String ? '`$value`' : '$value';
+  String _docValue(Object? value) => value is String ? '`$value`' : '$value';
 }
