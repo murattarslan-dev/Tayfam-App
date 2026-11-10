@@ -124,6 +124,56 @@ jobs:
       - name: Web derlemesi (yayınlanmaz)
         run: flutter build web
 
+  api-kodu:
+    name: api-kodu
+    # ADR-0005: lib/core/api/gen/ sözleşmeden üretilir ve commit edilir.
+    # Üretici SOURCE'taki commit'le yeniden çalıştırılır; repodakiyle fark
+    # varsa iş başarısız olur. Bu iş dala yazmaz.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Sözleşme (SOURCE'taki commit)
+        run: |
+          set -euo pipefail
+          kaynak=lib/core/api/gen/SOURCE
+          repo=$(sed -n 's/^repo: //p' "$kaynak")
+          commit=$(sed -n 's/^commit: //p' "$kaynak")
+          yol=$(sed -n 's/^path: //p' "$kaynak")
+          [[ "$repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$yol" =~ ^[A-Za-z0-9_./-]+$ && "$yol" != *..* ]]
+          hedef="$RUNNER_TEMP/sozlesme"
+          git clone --quiet --filter=blob:none --no-checkout "https://github.com/$repo.git" "$hedef"
+          git -C "$hedef" checkout --quiet "$commit" -- "$yol"
+          echo "SPEC=$hedef/$yol" >> "$GITHUB_ENV"
+      - name: Üretici
+        run: dart run tool/openapi_gen/bin/openapi_gen.dart --spec "$SPEC" --out lib/core/api/gen
+      - name: Üretilen kod güncel mi
+        run: |
+          git add --intent-to-add lib/core/api/gen
+          if git diff --quiet -- lib/core/api/gen; then
+            echo "Üretilen kod güncel."
+            exit 0
+          fi
+          git diff --stat -- lib/core/api/gen
+          git diff -- lib/core/api/gen
+          # Aynı fark, `git apply` ile birebir uygulanabilir biçimde.
+          echo "----- BEGIN GEN PATCH (gzip+base64) -----"
+          git diff --binary -- lib/core/api/gen | gzip -9n | base64 -w 76
+          echo "----- END GEN PATCH -----"
+          echo "::error::lib/core/api/gen sözleşmeden üretilenle aynı değil; üreticiyi çalıştırıp sonucu commit et."
+          exit 1
+
   gizli-bilgi:
     name: gizli-bilgi
     runs-on: ubuntu-24.04
