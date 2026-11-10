@@ -210,8 +210,7 @@ test/              lib/ ile aynı yapı
 - **Platform (ADR-0011):** yalnızca Android ve iOS; web derlemesi yalnızca
   geliştirme için, yayınlanmaz; `kIsWeb` dalları en az tutulur.
 
-Açık karar: ADR-0009 (test, CI, iOS) "Önerildi" durumunda; kabul edilmeden bu konularda kod yazılmaz. Karar
-verilmemiş bir konuda kod yazılmaz; önce ADR.
+Karar verilmemiş bir konuda kod yazılmaz; önce ADR.
 
 ## Arayüz ve kullanıcı deneyimi
 
@@ -234,7 +233,7 @@ kuralları da soru-cevapla alınır ve ADR'ye yazılır.
 
 ## Test beklentileri
 
-Ayrıntı ADR-0009'da (önerildi). Şimdiden geçerli olanlar:
+Ayrıntı ADR-0009'da. Özet:
 
 - Her PR testleriyle gelir; testlerde gerçek ağ yoktur.
 - Her ekran açık ve koyu temada, 2× yazı ölçeğinde widget testiyle gelir.
