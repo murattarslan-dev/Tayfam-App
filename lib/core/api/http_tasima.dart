@@ -185,7 +185,7 @@ final class HttpTasima implements ApiTransport {
     // Durum değiştiren her istekte zorunlu (sözleşme: ClientHeader).
     if (method != 'GET' && method != 'HEAD') 'X-Tayfam-Client': _istemciAdi,
     // Her istekte (sözleşme: ClientVersionHeader, Tayfam-Api ADR-0016).
-    if (_surumBasligi case final surum?) 'X-Tayfam-Client-Version': surum,
+    'X-Tayfam-Client-Version': ?_surumBasligi,
     if (erisimTokeni != null) 'Authorization': 'Bearer $erisimTokeni',
   };
 
