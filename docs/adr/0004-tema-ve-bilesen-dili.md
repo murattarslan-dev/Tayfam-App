@@ -167,3 +167,32 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
      ikon boyutu gibi temaya göre değişmeyen ölçüler. Ekranlarda bu sayılar
      da sabit yazılmaz. (CLAUDE.md'deki "Tema" satırı dört sınıf sayar;
      platform sahibi güncelleyecek.)
+- **2026-11-10 (platform sahibi, PR #31): etkinlik türü renkleri.** Her
+  etkinlik türünün kendi rengi ve ikonu vardır (Notion: Tasarım
+  Standartları). Renk tek başına bilgi taşımaz; tür her zaman ikon ve adla
+  gösterilir.
+
+  | Tür (`EventType`) | Dolgu | Metin/ikon | İkon (Material) |
+  | --- | --- | --- | --- |
+  | konvoy (`convoy`) | mango #FFB000 | ink | `directions_car` |
+  | kamp (`camp`) | orman yeşili #2F9E5B | ink | `cabin` |
+  | yürüyüş (`hike`) | turkuaz #00C2A8 | ink | `hiking` |
+  | balık (`fishing`) | deniz mavisi #3D8BEA | ink | `phishing` |
+  | oyun (`gaming`) | açık: brand #5B2BE0; koyu: brand-dark #A98BFF | açık: beyaz; koyu: ink | `sports_esports` |
+  | spor (`sports`) | nar #FF3D68 | ink | `sports_soccer` |
+  | genel (`general`) | lavanta gri #8A7FA8 | ink | `event` |
+
+  - Renkler `TayfamTurRenkleri` tema uzantısındadır
+    (`core/tema/tayfam_tur_renkleri.dart`, `context.turRenkleri`); ham hex
+    yalnızca orada. Her çift kontrast testinde 4.5:1'e karşı denetlenir.
+  - Tür → görünüm eşlemesi `core/moduller/etkinlik_turu_kaydi.dart`'taki
+    `default`'suz `switch`'tedir (API değeri, ARB ad anahtarı, renk
+    anahtarı, ikon). Sunucunun henüz tanımadığımız türü
+    (`EventType.unknown`) "genel" görünür.
+  - Çipler, karşılamadaki tür hapları (§2a'daki brand/nar/mango sırası
+    yerine) ve etkinlik kartları bu kayıttan beslenir; `CipVurgusu`
+    kaldırıldı.
+  - **Yeni tür ekleme:** Tayfam-Api'de sözleşme → üretici
+    (`lib/core/api/gen/`) → kayıt girdisi + `TurRengi` anahtarı ve iki
+    temada renk çifti + ARB adı (`etkinlik_turu_<değer>`) + kontrast
+    testi. Derleyici, girdisi olmayan türü `switch`'te gösterir.

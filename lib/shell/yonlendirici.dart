@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,8 +22,11 @@ const String tayfaIdParametresi = 'tayfaId';
 /// Uygulamanın yönlendiricisi (ADR-0003).
 ///
 /// Uygulama boyunca yaşar (Riverpod 3'te `autoDispose` olmayan provider
-/// kalıcıdır). Oturum durumu, aktif tayfa veya güncelleme durumu değişince
-/// korumalar ([yonlendir]) yeniden çalışır.
+/// kalıcıdır). Oturum durumu, aktif tayfa, tayfa listesi veya güncelleme
+/// durumu değişince korumalar ([yonlendir]) yeniden çalışır.
+///
+/// Adresteki `/t/<id>` aktif tayfa değilse ve etkin üyeliklerdeyse aktif
+/// tayfa adrese göre değişir (ADR-0014 §1; [adresleEsitle]).
 ///
 /// `debugLogDiagnostics` kapalıdır: go_router açıkken tam adresleri
 /// loglar (CLAUDE.md, kesin kural 3).
@@ -32,6 +37,8 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
   ref.listen(oturumDurumuProvider, (_, _) => yenile.value++);
   ref.listen(aktifTayfaIdProvider, (_, _) => yenile.value++);
   ref.listen(guncellemeProvider, (_, _) => yenile.value++);
+  ref.listen(etkinTayfaIdleriProvider, (_, _) => yenile.value++);
+  ref.listen(tayfalarYukleniyorProvider, (_, _) => yenile.value++);
 
   final yonlendirici = GoRouter(
     initialLocation: Adresler.kok,
@@ -41,12 +48,34 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
       aktifTayfaId: ref.read(aktifTayfaIdProvider),
       konum: state.uri,
       guncellemeGerekli: ref.read(guncellemeProvider),
+      etkinTayfalar: ref.read(etkinTayfaIdleriProvider),
+      tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
     ),
     errorBuilder: (context, state) => const BulunamadiSayfasi(),
     routes: rotalariOlustur(moduller),
   );
 
+  var kapandi = false;
+  void esitle() {
+    if (kapandi) return;
+    final konum = yonlendirici.routerDelegate.currentConfiguration.uri;
+    final tayfaId = adresleEsitle(
+      konum: konum,
+      aktifTayfaId: ref.read(aktifTayfaIdProvider),
+      etkinTayfalar: ref.read(etkinTayfaIdleriProvider),
+    );
+    if (tayfaId != null) ref.read(aktifTayfaIdProvider.notifier).sec(tayfaId);
+  }
+
+  // Gezinme bildirimi çizim sırasında gelebilir; provider değişikliği
+  // sonraya bırakılır.
+  void esitlemeyiPlanla() => scheduleMicrotask(esitle);
+  yonlendirici.routerDelegate.addListener(esitlemeyiPlanla);
+  ref.listen(etkinTayfaIdleriProvider, (_, _) => esitlemeyiPlanla());
+
   ref.onDispose(() {
+    kapandi = true;
+    yonlendirici.routerDelegate.removeListener(esitlemeyiPlanla);
     yonlendirici.dispose();
     yenile.dispose();
   });
@@ -133,16 +162,11 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
       path: Adresler.onay,
       builder: (context, state) => const OnayEkrani(),
     ),
-    // Tayfa akışları; kabuğun üstünde tam ekran açılır, kendi paketlerinde
-    // gelir.
-    GoRoute(
-      path: Adresler.tayfaKatil,
-      builder: (context, state) => const YerTutucuSayfa(baslik: _katilBasligi),
-    ),
+    // Tayfa oluşturma sihirbazı kabuğun üstünde tam ekran açılır
+    // (ADR-0014 §4). Kodla katılım alttan açılan bir sayfadır, rotası yok.
     GoRoute(
       path: Adresler.tayfaOlustur,
-      builder: (context, state) =>
-          const YerTutucuSayfa(baslik: _olusturBasligi),
+      builder: (context, state) => const OlusturmaEkrani(),
     ),
   ];
 }
@@ -150,5 +174,3 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
 String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
 String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
 String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;
-String _katilBasligi(AppLocalizations m) => m.tayfa_kodla_katil;
-String _olusturBasligi(AppLocalizations m) => m.tayfa_olustur;

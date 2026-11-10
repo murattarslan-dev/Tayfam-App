@@ -130,3 +130,13 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
   yönlendirici olan sihirbazı seçti.
 - **Yalnızca panoya kopyalama:** paket gerektirmez, ama WhatsApp'a
   paylaşım bir adım uzar.
+
+## Notlar
+
+- **2026-11-10 (PR #31):** Tayfa listesi ilk kez okunurken kök ve
+  karşılama adresinde açılış ekranı gösterilir (karşılama boş görünüp
+  sonra tayfaya atlamasın diye). Üye olunmayan `/t/<id>` adresi karşılamaya
+  döner; ADR-0003'teki "katılım ekranına döner" ifadesinin yerine budur.
+  Kodla katılım ayrı bir rota değil, alttan açılan sayfadır. İlgi alanı
+  çiplerinin tür başına rengi ve ikonu için ADR-0004 Notlar'a bakın.
+

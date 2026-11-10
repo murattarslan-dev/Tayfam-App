@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 
 /// Token'lara kısa erişim: `context.renkler.marka`, `context.yazi.bodySmall`.
 ///
@@ -9,6 +10,10 @@ import 'package:tayfam/core/tema/tayfam_colors.dart';
 extension TemaBaglami on BuildContext {
   /// Etkin temanın renk token'ları.
   TayfamColors get renkler => Theme.of(this).extension<TayfamColors>()!;
+
+  /// Etkin temanın etkinlik türü renkleri.
+  TayfamTurRenkleri get turRenkleri =>
+      Theme.of(this).extension<TayfamTurRenkleri>()!;
 
   /// Etkin temanın yazı ölçeği (ADR-0004 §4).
   TextTheme get yazi => Theme.of(this).textTheme;

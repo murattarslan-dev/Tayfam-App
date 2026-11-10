@@ -4,12 +4,14 @@ import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_radii.dart';
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/core/tema/tayfam_spacing.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 import 'package:tayfam/core/tema/tayfam_typography.dart';
 
 /// Açık ve koyu `ThemeData` (Material 3, ADR-0004).
 ///
 /// `ColorScheme` ve `TextTheme` token'lardan kurulur; [TayfamColors]
-/// tema uzantısı olarak eklenir ve `context.renkler` ile okunur.
+/// tema uzantısı olarak eklenir ve `context.renkler` ile okunur. Etkinlik
+/// türü renkleri [TayfamTurRenkleri] uzantısındadır (`context.turRenkleri`).
 abstract final class TayfamTheme {
   /// Açık tema.
   static ThemeData acik() => _olustur(TayfamColors.acik, Brightness.light);
@@ -93,7 +95,13 @@ abstract final class TayfamTheme {
     return ThemeData(
       brightness: parlaklik,
       colorScheme: renkSemasi,
-      extensions: [r],
+      extensions: [
+        r,
+        if (parlaklik == Brightness.dark)
+          TayfamTurRenkleri.koyu
+        else
+          TayfamTurRenkleri.acik,
+      ],
       fontFamily: TayfamTypography.aile,
       textTheme: metinTemasi,
       scaffoldBackgroundColor: r.zemin,

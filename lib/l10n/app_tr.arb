@@ -83,9 +83,9 @@
   "@tayfa_tayfalarim_bos": {
     "description": "Tayfa değiştirme panelinde, listelenecek tayfa yokken Tayfalarım bölümünde görünen boş durum metni."
   },
-  "tayfa_kodla_katil": "Kodla katıl",
+  "tayfa_kodla_katil": "Tayfa kodum var",
   "@tayfa_kodla_katil": {
-    "description": "Tayfa değiştirme panelinde, tayfa koduyla bir tayfaya katılma akışını açan seçenek; o akışın başlığı olarak da görünür."
+    "description": "Tayfa değiştirme panelinde, tayfa koduyla katılma sayfasını alttan açan seçenek."
   },
   "tayfa_olustur": "Tayfa oluştur",
   "@tayfa_olustur": {
@@ -95,6 +95,250 @@
   "@tayfa_ana_sayfa_bos": {
     "description": "Tayfa ana sayfasının mor üst bölümünün altında, gösterilecek içerik yokken görünen metin."
   },
+  "tayfa_onay_bekliyor": "Onay bekliyor",
+  "@tayfa_onay_bekliyor": {
+    "description": "Tayfa değiştirme panelinde, katılma isteği yönetici onayı bekleyen tayfanın adının yanındaki etiket. Dokununca isteği geri çekme onayı açılır."
+  },
+  "tayfa_secili": "Seçili tayfa",
+  "@tayfa_secili": {
+    "description": "Tayfa değiştirme panelinde, şu an açık olan tayfanın satırındaki onay ikonunun ekran okuyucu etiketi."
+  },
+  "tayfa_yukleniyor": "Tayfaların yükleniyor",
+  "@tayfa_yukleniyor": {
+    "description": "Tayfa değiştirme panelinde tayfa listesi yüklenirken görünen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "tayfa_tekrar_dene": "Tekrar dene",
+  "@tayfa_tekrar_dene": {
+    "description": "Tayfa listesi yüklenemediğinde (panelde ve karşılama ekranında) hatanın altındaki düğme."
+  },
+  "tayfa_geri_cek_baslik": "İsteğin geri çekilsin mi?",
+  "@tayfa_geri_cek_baslik": {
+    "description": "Panelde onay bekleyen bir tayfaya dokununca açılan pencerenin başlığı."
+  },
+  "tayfa_geri_cek_aciklama": "{ad} tayfasına katılma isteğin geri çekilecek. Yeniden katılmak için kodu tekrar girmen gerekir.",
+  "@tayfa_geri_cek_aciklama": {
+    "description": "Katılma isteğini geri çekme penceresinin açıklaması; ad, isteğin gönderildiği tayfanın adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      }
+    }
+  },
+  "tayfa_geri_cek_onayla": "Geri çek",
+  "@tayfa_geri_cek_onayla": {
+    "description": "Katılma isteğini geri çekme penceresindeki onay düğmesi."
+  },
+  "tayfa_vazgec": "Vazgeç",
+  "@tayfa_vazgec": {
+    "description": "Katılma isteğini geri çekme penceresindeki, pencereyi değişiklik yapmadan kapatan düğme."
+  },
+  "tayfa_geri_cekildi": "Katılma isteğin geri çekildi.",
+  "@tayfa_geri_cekildi": {
+    "description": "Katılma isteği geri çekilince ekranın altında kısa süre görünen bildirim."
+  },
+  "tayfa_uye_sayisi": "{sayi, plural, other{{sayi} üye}}",
+  "@tayfa_uye_sayisi": {
+    "description": "Tayfa ana sayfasının mor üst bölümünde, tayfa adının altında tayfanın üye sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "142"
+      }
+    }
+  },
+  "tayfa_durum_uyari": "Tayfa hareketsiz. 7 gün içinde etkinlik olmazsa arşivlenecek.",
+  "@tayfa_durum_uyari": {
+    "description": "Tayfa ana sayfasının mor üst bölümündeki bilgi şeridi; tayfa uzun süredir hareketsizken (warned) görünür."
+  },
+  "tayfa_durum_arsiv": "Tayfa arşivlendi; yalnızca okunabilir.",
+  "@tayfa_durum_arsiv": {
+    "description": "Tayfa ana sayfasının mor üst bölümündeki bilgi şeridi; tayfa arşivlenmişken görünür."
+  },
+  "tayfa_durum_askida": "Tayfa askıya alındı; yalnızca okunabilir.",
+  "@tayfa_durum_askida": {
+    "description": "Tayfa ana sayfasının mor üst bölümündeki bilgi şeridi; platform tayfayı askıya almışken görünür. Sebep gösterilmez."
+  },
+  "tayfa_durum_silinecek": "Tayfa {tarih}, {saat} sonrasında silinecek.",
+  "@tayfa_durum_silinecek": {
+    "description": "Tayfa ana sayfasının mor üst bölümündeki bilgi şeridi; tayfa silinmeyi beklerken silinme günü ve saati (cihazın saatine göre) gösterilir.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-12-01"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-12-01T09:00"
+      }
+    }
+  },
+  "tayfa_kodu_paylas": "Kodu paylaş",
+  "@tayfa_kodu_paylas": {
+    "description": "Tayfa ana sayfasının mor üst bölümünde ve davet kısayolunda, tayfa kodunu sistem paylaşım menüsüyle paylaşan düğme. Yalnızca kodu gören yöneticiye görünür."
+  },
+  "tayfa_kodu_kopyala": "Kodu kopyala",
+  "@tayfa_kodu_kopyala": {
+    "description": "Tayfa ana sayfasının mor üst bölümünde ve davet kısayolunda, tayfa kodunu panoya kopyalayan düğme."
+  },
+  "tayfa_kod_kopyalandi": "Tayfa kodu kopyalandı.",
+  "@tayfa_kod_kopyalandi": {
+    "description": "Tayfa kodu panoya kopyalanınca ekranın altında kısa süre görünen bildirim."
+  },
+  "tayfa_paylasim_metni": "{ad} tayfasına Tayfam'da katıl. Tayfa kodu: {kod}\nhttps://tayfam.app",
+  "@tayfa_paylasim_metni": {
+    "description": "Tayfa kodu paylaşılırken sistem paylaşım menüsüne verilen metin (ör. WhatsApp mesajı). Bağlantı tanıtım sayfasıdır, çevrilmez.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      },
+      "kod": {
+        "type": "String",
+        "example": "K7M2Q9XA"
+      }
+    }
+  },
+  "tayfa_davet_baslik": "Tayfan hazır",
+  "@tayfa_davet_baslik": {
+    "description": "Yeni oluşturulan tayfanın ana sayfasında görünen davet kısayolu kartının başlığı."
+  },
+  "tayfa_davet_aciklama": "Tayfa kodunu paylaş, arkadaşların katılsın.",
+  "@tayfa_davet_aciklama": {
+    "description": "Davet kısayolu kartında başlığın altındaki açıklama."
+  },
+  "tayfa_davet_kod": "Tayfa kodu: {kod}",
+  "@tayfa_davet_kod": {
+    "description": "Davet kısayolu kartında paylaşılacak tayfa kodu.",
+    "placeholders": {
+      "kod": {
+        "type": "String",
+        "example": "K7M2Q9XA"
+      }
+    }
+  },
+  "tayfa_davet_kapat": "Davet kısayolunu kapat",
+  "@tayfa_davet_kapat": {
+    "description": "Davet kısayolu kartını kapatan ikon düğmesinin ekran okuyucu etiketi ve ipucu."
+  },
+  "katilim_baslik": "Tayfaya kodla katıl",
+  "@katilim_baslik": {
+    "description": "Kodla katılma için alttan açılan sayfanın başlığı."
+  },
+  "katilim_aciklama": "Tayfanın yöneticisinden aldığın kodu yaz.",
+  "@katilim_aciklama": {
+    "description": "Kodla katılma sayfasında başlığın altındaki açıklama."
+  },
+  "katilim_kod_etiketi": "Tayfa kodu",
+  "@katilim_kod_etiketi": {
+    "description": "Kodla katılma sayfasındaki kod alanının etiketi."
+  },
+  "katilim_kod_hata": "Tayfa kodunu yaz.",
+  "@katilim_kod_hata": {
+    "description": "Kodla katılma sayfasında kod alanı boşken gönderilmek istenince alanın altında görünen hata."
+  },
+  "katilim_gonder": "Katıl",
+  "@katilim_gonder": {
+    "description": "Kodla katılma sayfasındaki, kodu gönderen birincil düğme."
+  },
+  "katilim_gonderildi_baslik": "İsteğin gönderildi",
+  "@katilim_gonderildi_baslik": {
+    "description": "Onaylı katılımlı bir tayfaya kodla katılma isteği gönderilince sayfada görünen başlık."
+  },
+  "katilim_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın. İsteğini tayfa panelinde \"Onay bekliyor\" olarak görebilirsin.",
+  "@katilim_gonderildi_aciklama": {
+    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+  },
+  "katilim_tamam": "Tamam",
+  "@katilim_tamam": {
+    "description": "Katılma isteği gönderildikten sonra sayfayı kapatan düğme."
+  },
+  "olusturma_adim": "Adım {adim} / {toplam}",
+  "@olusturma_adim": {
+    "description": "Tayfa oluşturma sihirbazının üstünde hangi adımda olunduğunu gösteren metin.",
+    "placeholders": {
+      "adim": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "olusturma_ad_baslik": "Tayfanın adı ne?",
+  "@olusturma_ad_baslik": {
+    "description": "Tayfa oluşturma sihirbazının ilk adımının (ad) başlığı."
+  },
+  "olusturma_ad_etiketi": "Tayfa adı",
+  "@olusturma_ad_etiketi": {
+    "description": "Tayfa oluşturma sihirbazındaki ad alanının etiketi."
+  },
+  "olusturma_ad_hata": "Tayfa adı 3 ile 50 karakter arasında olmalı.",
+  "@olusturma_ad_hata": {
+    "description": "Tayfa oluşturma sihirbazında ad çok kısa ya da çok uzunken alanın altında görünen hata."
+  },
+  "olusturma_ilgi_baslik": "Tayfan neler yapıyor?",
+  "@olusturma_ilgi_baslik": {
+    "description": "Tayfa oluşturma sihirbazının ikinci adımının (ilgi alanları) başlığı."
+  },
+  "olusturma_ilgi_aciklama": "İstediğin kadarını seç ya da bu adımı geç.",
+  "@olusturma_ilgi_aciklama": {
+    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında başlığın altındaki açıklama; seçim isteğe bağlıdır."
+  },
+  "olusturma_katilim_baslik": "Kimler katılabilir?",
+  "@olusturma_katilim_baslik": {
+    "description": "Tayfa oluşturma sihirbazının üçüncü adımının (katılım ve açıklama) başlığı."
+  },
+  "olusturma_onayli": "Onaylı katılım",
+  "@olusturma_onayli": {
+    "description": "Tayfa oluşturma sihirbazında varsayılan katılım seçeneği."
+  },
+  "olusturma_onayli_aciklama": "Kodu girenler, onaylandıktan sonra tayfaya katılır.",
+  "@olusturma_onayli_aciklama": {
+    "description": "Onaylı katılım seçeneğinin altında ne anlama geldiğini söyleyen cümle."
+  },
+  "olusturma_acik": "Açık katılım",
+  "@olusturma_acik": {
+    "description": "Tayfa oluşturma sihirbazında ikinci katılım seçeneği."
+  },
+  "olusturma_acik_aciklama": "Kodu giren herkes hemen tayfaya katılır.",
+  "@olusturma_acik_aciklama": {
+    "description": "Açık katılım seçeneğinin altında ne anlama geldiğini söyleyen cümle."
+  },
+  "olusturma_aciklama_etiketi": "Açıklama (isteğe bağlı)",
+  "@olusturma_aciklama_etiketi": {
+    "description": "Tayfa oluşturma sihirbazının son adımındaki açıklama alanının etiketi."
+  },
+  "olusturma_ileri": "İleri",
+  "@olusturma_ileri": {
+    "description": "Tayfa oluşturma sihirbazında sonraki adıma geçen düğme."
+  },
+  "olusturma_geri": "Geri",
+  "@olusturma_geri": {
+    "description": "Tayfa oluşturma sihirbazında önceki adıma dönen düğme; girilenler korunur."
+  },
+  "olusturma_gonder": "Tayfayı oluştur",
+  "@olusturma_gonder": {
+    "description": "Tayfa oluşturma sihirbazının son adımında tayfayı oluşturan birincil düğme."
+  },
+  "karsilama_bekleyen_baslik": "Katılma isteğin onay bekliyor",
+  "@karsilama_bekleyen_baslik": {
+    "description": "Etkin tayfası olmayan ama onay bekleyen katılma isteği olan kullanıcının karşılama ekranındaki bilgi kartının başlığı."
+  },
+  "karsilama_bekleyen_aciklama": "{ad} tayfasının yöneticisi onaylayınca tayfan burada açılır.",
+  "@karsilama_bekleyen_aciklama": {
+    "description": "Karşılama ekranındaki bekleyen istek kartının açıklaması; ad, isteğin gönderildiği tayfanın adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      }
+    }
+  },
   "karsilama_baslik": "Tayfanı bul, birlikte yola çık.",
   "@karsilama_baslik": {
     "description": "Tayfası olmayan kullanıcının Tayfa sekmesinde gördüğü karşılama ekranının büyük başlığı."
@@ -102,6 +346,34 @@
   "karsilama_aciklama": "Bir tayfaya kodla katıl ya da kendi tayfanı kur.",
   "@karsilama_aciklama": {
     "description": "Karşılama ekranında başlığın ve tür vurgusunun altındaki açıklama."
+  },
+  "etkinlik_turu_convoy": "Konvoy",
+  "@etkinlik_turu_convoy": {
+    "description": "Etkinlik türünün adı: konvoy (convoy). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_camp": "Kamp",
+  "@etkinlik_turu_camp": {
+    "description": "Etkinlik türünün adı: kamp (camp). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_hike": "Yürüyüş",
+  "@etkinlik_turu_hike": {
+    "description": "Etkinlik türünün adı: yürüyüş (hike). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_fishing": "Balık",
+  "@etkinlik_turu_fishing": {
+    "description": "Etkinlik türünün adı: balık (fishing). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_gaming": "Oyun",
+  "@etkinlik_turu_gaming": {
+    "description": "Etkinlik türünün adı: oyun (gaming). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_sports": "Spor",
+  "@etkinlik_turu_sports": {
+    "description": "Etkinlik türünün adı: spor (sports). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_general": "Genel",
+  "@etkinlik_turu_general": {
+    "description": "Etkinlik türünün adı: genel (belirli bir türe girmeyen buluşmalar; sunucunun henüz tanımadığı türler de bu adla görünür) (general). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
   },
   "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
   "@karsilama_turler_etiketi": {
@@ -114,30 +386,6 @@
   "karsilama_tayfa_olustur": "Tayfa oluştur",
   "@karsilama_tayfa_olustur": {
     "description": "Karşılama ekranındaki ikincil düğme; yeni tayfa kurma akışını açar."
-  },
-  "karsilama_tur_konvoy": "Konvoy",
-  "@karsilama_tur_konvoy": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda konvoy (convoy) etkinlik türünün adı."
-  },
-  "karsilama_tur_kamp": "Kamp",
-  "@karsilama_tur_kamp": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda kamp (camp) etkinlik türünün adı."
-  },
-  "karsilama_tur_yuruyus": "Yürüyüş",
-  "@karsilama_tur_yuruyus": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda yürüyüş (hike) etkinlik türünün adı."
-  },
-  "karsilama_tur_balik": "Balık",
-  "@karsilama_tur_balik": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda balık (fishing) etkinlik türünün adı."
-  },
-  "karsilama_tur_oyun": "Oyun",
-  "@karsilama_tur_oyun": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda oyun (gaming) etkinlik türünün adı."
-  },
-  "karsilama_tur_spor": "Spor",
-  "@karsilama_tur_spor": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda spor (sports) etkinlik türünün adı."
   },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {

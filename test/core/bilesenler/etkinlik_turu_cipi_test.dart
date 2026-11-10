@@ -1,42 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
+import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 
 import 'bilesen_test_yardimcisi.dart';
 
 void main() {
-  for (final vurgu in CipVurgusu.values) {
-    ortakTestler(() {
-      return EtkinlikTuruCipi(
-        etiket: 'Doğa yürüyüşü',
-        vurgu: vurgu,
-        ikon: Icons.terrain_outlined,
-      );
-    });
+  for (final tur in EventType.values) {
+    ortakTestler(() => EtkinlikTuruCipi(tur: tur));
   }
 
   for (final mod in temalar) {
-    for (final vurgu in CipVurgusu.values) {
-      testWidgets('${mod.name}: ${vurgu.name} zemin + ink', (tester) async {
-        final r = renklerOf(mod);
-        await bileseniAc(
-          tester,
-          EtkinlikTuruCipi(etiket: 'Kamp', vurgu: vurgu),
-          mod: mod,
-        );
+    final renkler = mod == ThemeMode.dark
+        ? TayfamTurRenkleri.koyu
+        : TayfamTurRenkleri.acik;
+    for (final tur in EventType.values) {
+      testWidgets('${mod.name}: ${tur.name} kendi rengi, ikonu ve adı', (
+        tester,
+      ) async {
+        await bileseniAc(tester, EtkinlikTuruCipi(tur: tur), mod: mod);
+        final girdi = etkinlikTuruGirdisi(tur);
+        final cift = renkler.cift(girdi.renk);
+
         final kutu = tester.widget<DecoratedBox>(
           find.descendant(
             of: find.byType(EtkinlikTuruCipi),
             matching: find.byType(DecoratedBox),
           ),
         );
-        final zemin = (kutu.decoration as BoxDecoration).color;
-        expect(zemin, EtkinlikTuruCipi.zeminRengi(r, vurgu));
-        expect(zemin, isNot(r.marka));
-        // Vurgu renkleri metin rengi olmaz.
-        expect(cizilenStil(tester, find.text('Kamp')).color, r.vurguUstu);
+        expect((kutu.decoration as BoxDecoration).color, cift.dolgu);
+        final ad = arbMetni(girdi.adAnahtari);
+        expect(cizilenStil(tester, find.text(ad)).color, cift.ustu);
+        // Renk tek başına bilgi taşımaz: ikon ve ad her zaman var.
+        final ikon = tester.widget<Icon>(find.byIcon(girdi.ikon));
+        expect(ikon.color, cift.ustu);
       });
     }
   }
+
+  testWidgets('tanınmayan tür genel görünüyor', (tester) async {
+    await bileseniAc(
+      tester,
+      const EtkinlikTuruCipi(tur: EventType.unknown),
+      mod: ThemeMode.light,
+    );
+    expect(find.text(arbMetni('etkinlik_turu_general')), findsOneWidget);
+    expect(find.byIcon(Icons.event), findsOneWidget);
+  });
 }

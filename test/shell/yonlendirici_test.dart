@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
+import '../features/tayfa/sahteler.dart';
 import '../yardimcilar.dart';
 
 Finder _sekme(String anahtar) => find.descendant(
@@ -19,6 +22,9 @@ Finder _sekme(String anahtar) => find.descendant(
 Finder _semantikEtiketi(String etiket) => find.byWidgetPredicate(
   (widget) => widget is Semantics && widget.properties.label == etiket,
 );
+
+String _yol(WidgetTester tester) =>
+    yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path;
 
 Future<void> _aktifTayfaSec(WidgetTester tester, String tayfaId) async {
   tester.container().read(aktifTayfaIdProvider.notifier).sec(tayfaId);
@@ -53,16 +59,12 @@ void main() {
     tester,
   ) async {
     ekranBoyutu(tester);
-    await uygulamayiAc(
-      tester,
-      overrides: [
-        tayfaAdiProvider.overrideWith((ref, tayfaId) => 'Klasikçiler'),
-      ],
-    );
+    await uygulamayiAc(tester);
 
     await _aktifTayfaSec(tester, ornekTayfaId);
 
     expect(find.byType(TayfaAnaSayfa), findsOneWidget);
+    // Ad tayfa sunucudan tazelenince gelir (sahte yanıt).
     expect(find.text('Klasikçiler'), findsOneWidget);
     expect(
       yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
@@ -139,6 +141,67 @@ void main() {
 
     expect(find.text(DenemeModulu.sayfaMetni), findsNothing);
     expect(find.byType(TayfaAnaSayfa), findsOneWidget);
+  });
+
+  group('tayfa listesi ve adres (ADR-0014 §1)', () {
+    const ucuncuTayfaId = '5e6f7a8b-9c0d-4e1f-a2b3-c4d5e6f7a8b9';
+
+    List<Override> ikiTayfa() => tayfaOverridelari(
+      tasima: SahteTayfaTasima({
+        'GET /v1/tayfas': (_) => listeJson([
+          etkinJson(ornekTayfaId),
+          etkinJson(ikinciTayfaId, ad: 'Balıkçılar'),
+        ]),
+      }),
+    );
+
+    testWidgets('açılışta ilk etkin tayfanın ana sayfası', (tester) async {
+      ekranBoyutu(tester);
+      await uygulamayiAc(tester, tayfa: ikiTayfa());
+
+      expect(find.byType(TayfaAnaSayfa), findsOneWidget);
+      expect(_yol(tester), '/t/$ornekTayfaId');
+    });
+
+    testWidgets('son kullanılan tayfa hatırlanıyor', (tester) async {
+      ekranBoyutu(tester);
+      await uygulamayiAc(
+        tester,
+        tayfa: tayfaOverridelari(
+          tasima: SahteTayfaTasima({
+            'GET /v1/tayfas': (_) =>
+                listeJson([etkinJson(ornekTayfaId), etkinJson(ikinciTayfaId)]),
+          }),
+          sonTayfa: BellekSonTayfaDeposu(ikinciTayfaId),
+        ),
+      );
+
+      expect(_yol(tester), '/t/$ikinciTayfaId');
+    });
+
+    testWidgets('adresteki etkin tayfa aktif oluyor', (tester) async {
+      ekranBoyutu(tester);
+      await uygulamayiAc(tester, tayfa: ikiTayfa());
+
+      yonlendiriciyiAl(tester).go('/t/$ikinciTayfaId');
+      await tester.pumpAndSettle();
+
+      expect(_yol(tester), '/t/$ikinciTayfaId');
+      expect(tester.container().read(aktifTayfaIdProvider), ikinciTayfaId);
+    });
+
+    testWidgets('üye olunmayan tayfa adresi ana adrese dönüyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await uygulamayiAc(tester, tayfa: ikiTayfa());
+
+      yonlendiriciyiAl(tester).go('/t/$ucuncuTayfaId');
+      await tester.pumpAndSettle();
+
+      expect(_yol(tester), '/t/$ornekTayfaId');
+      expect(tester.container().read(aktifTayfaIdProvider), ornekTayfaId);
+    });
   });
 
   testWidgets('400 px genişlikte alt gezinme çubuğu', (tester) async {

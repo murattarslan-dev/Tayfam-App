@@ -2,20 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_radii.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
+import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
 import '../../yardimcilar.dart';
+import 'sahteler.dart';
+
+const String _bekleyenId = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
 
 const _turAnahtarlari = [
-  'karsilama_tur_konvoy',
-  'karsilama_tur_kamp',
-  'karsilama_tur_yuruyus',
-  'karsilama_tur_balik',
-  'karsilama_tur_oyun',
-  'karsilama_tur_spor',
+  'etkinlik_turu_convoy',
+  'etkinlik_turu_camp',
+  'etkinlik_turu_hike',
+  'etkinlik_turu_fishing',
+  'etkinlik_turu_gaming',
+  'etkinlik_turu_sports',
 ];
 
 void main() {
@@ -39,8 +48,10 @@ void main() {
   });
 
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {
-    testWidgets('${mod.name}: tür hapları brand, nar ve mango', (tester) async {
-      final r = mod == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
+    testWidgets('${mod.name}: her tür hapı kendi renginde', (tester) async {
+      final t = mod == ThemeMode.dark
+          ? TayfamTurRenkleri.koyu
+          : TayfamTurRenkleri.acik;
       ekranBoyutu(tester);
       await widgetAc(tester, const KarsilamaEkrani(), themeMode: mod);
 
@@ -50,10 +61,28 @@ void main() {
           matching: find.byType(DecoratedBox),
         ),
       );
-      final zeminler = {
+      final zeminler = [
         for (final kutu in kutular) (kutu.decoration as BoxDecoration).color,
-      };
-      expect(zeminler, {r.markaYuzey, r.nar, r.mango});
+      ];
+      expect(zeminler, [
+        for (final tur in [
+          EventType.convoy,
+          EventType.camp,
+          EventType.hike,
+          EventType.fishing,
+          EventType.gaming,
+          EventType.sports,
+        ])
+          t.cift(etkinlikTuruGirdisi(tur).renk).dolgu,
+      ]);
+      // Renk tek başına bilgi taşımaz: her hapta türün ikonu var.
+      expect(
+        find.descendant(
+          of: find.byType(TurVurgusu),
+          matching: find.byType(Icon),
+        ),
+        findsNWidgets(6),
+      );
       for (final kutu in kutular) {
         expect(
           (kutu.decoration as BoxDecoration).borderRadius,
@@ -92,32 +121,68 @@ void main() {
     });
   }
 
-  testWidgets('"Tayfa kodum var" kodla katılma akışını açıyor', (tester) async {
+  testWidgets('"Tayfa kodum var" katılım sayfasını alttan açıyor', (
+    tester,
+  ) async {
     ekranBoyutu(tester);
     await uygulamayiAc(tester);
 
     await tester.tap(find.text(arbMetni('karsilama_kodum_var')));
     await tester.pumpAndSettle();
 
-    // Akış kabuğun üstüne itilen tam ekran bir sayfadır.
-    expect(
-      find.widgetWithText(AppBar, arbMetni('tayfa_kodla_katil')),
-      findsOneWidget,
-    );
+    expect(find.byType(KodlaKatilmaSayfasi), findsOneWidget);
+    expect(find.byType(BottomSheet), findsOneWidget);
   });
 
-  testWidgets('"Tayfa oluştur" oluşturma akışını açıyor', (tester) async {
+  testWidgets('"Tayfa oluştur" sihirbazı açıyor', (tester) async {
     ekranBoyutu(tester);
     await uygulamayiAc(tester);
 
     await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
     await tester.pumpAndSettle();
 
-    // Akış kabuğun üstüne itilen tam ekran bir sayfadır.
+    // Sihirbaz kabuğun üstüne itilen tam ekran bir sayfadır.
+    expect(find.byType(OlusturmaEkrani), findsOneWidget);
     expect(
       find.widgetWithText(AppBar, arbMetni('tayfa_olustur')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('bekleyen istek için bilgi kartı; yalnızca ad', (tester) async {
+    ekranBoyutu(tester);
+    final tasima = SahteTayfaTasima({
+      'GET /v1/tayfas': (_) =>
+          listeJson([bekleyenJson(_bekleyenId, ad: 'Kampçılar')]),
+    });
+    await uygulamayiAc(tester, tayfa: tayfaOverridelari(tasima: tasima));
+
+    expect(find.byType(KarsilamaEkrani), findsOneWidget);
+    expect(find.byType(BekleyenIstekKarti), findsOneWidget);
+    expect(find.text(arbMetni('karsilama_bekleyen_baslik')), findsOneWidget);
+    expect(find.textContaining('Kampçılar'), findsOneWidget);
+    // Bekleyen tayfanın içeriği istenmez.
+    expect(tasima.giden('GET', '/v1/tayfas/{tayfa_id}'), isEmpty);
+  });
+
+  testWidgets('liste alınamazsa hata ve "Tekrar dene"', (tester) async {
+    ekranBoyutu(tester);
+    var cagri = 0;
+    final tasima = SahteTayfaTasima({
+      'GET /v1/tayfas': (_) => cagri++ == 0
+          ? const ApiOffline()
+          : listeJson([bekleyenJson(_bekleyenId)]),
+    });
+    await uygulamayiAc(tester, tayfa: tayfaOverridelari(tasima: tasima));
+
+    expect(find.byType(KarsilamaEkrani), findsOneWidget);
+    expect(find.byType(HataSatiri), findsOneWidget);
+
+    await tester.tap(find.text(arbMetni('tayfa_tekrar_dene')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HataSatiri), findsNothing);
+    expect(find.byType(BekleyenIstekKarti), findsOneWidget);
   });
 
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {
@@ -127,7 +192,24 @@ void main() {
         (tester) async {
           ekranBoyutu(tester, genislik: genislik);
           ikiKatYazi(tester);
-          await widgetAc(tester, const KarsilamaEkrani(), themeMode: mod);
+          await widgetAc(
+            tester,
+            const KarsilamaEkrani(),
+            themeMode: mod,
+            overrides: [
+              oturumDurumuProvider.overrideWith(
+                () => SabitOturumDurumu(OturumDurumu.acik),
+              ),
+            ],
+            tayfa: tayfaOverridelari(
+              tasima: SahteTayfaTasima({
+                'GET /v1/tayfas': (_) => listeJson([
+                  bekleyenJson(_bekleyenId, ad: 'Kamp ve doğa yürüyüşü'),
+                ]),
+              }),
+            ),
+          );
+          expect(find.byType(BekleyenIstekKarti), findsOneWidget);
 
           final context = tester.element(find.byType(KarsilamaEkrani));
           expect(

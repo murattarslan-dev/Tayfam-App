@@ -15,6 +15,8 @@ import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
 
+import 'features/tayfa/sahteler.dart';
+
 /// Testlerde kullanılan, biçimi geçerli örnek tayfa kimlikleri.
 const String ornekTayfaId = '0b8f6a52-3c1d-4e7a-9f20-6d5b4c3a2e10';
 const String ikinciTayfaId = 'A3C9E1F0-7B2D-4C6E-8A1F-0E9D8C7B6A54';
@@ -74,17 +76,20 @@ final class SahteSurumDenetleyici implements SurumDenetleyici {
 ///
 /// Oturum [oturum] ile başlar (`null` ise override edilmez; test kendi
 /// override'ını verir); sürüm denetimi [surumDenetleyici] ile (verilmezse
-/// güncelleme gerekmez). Gerçek güvenli depo ve ağ kullanılmaz.
+/// güncelleme gerekmez). Tayfa uçları ve son tayfa deposu [tayfa] ile
+/// (verilmezse tayfa listesi boş). Gerçek güvenli depo ve ağ kullanılmaz.
 Future<void> uygulamayiAc(
   WidgetTester tester, {
   ThemeMode themeMode = ThemeMode.light,
   List<Override> overrides = const [],
   OturumDurumu? oturum = OturumDurumu.acik,
   SurumDenetleyici? surumDenetleyici,
+  List<Override>? tayfa,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        ...tayfa ?? tayfaOverridelari(),
         if (oturum != null)
           oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
         surumDenetleyiciProvider.overrideWithValue(
@@ -104,17 +109,19 @@ GoRouter yonlendiriciyiAl(WidgetTester tester) =>
 
 /// Tek bir widget'ı uygulamanın çeviri ve tema ayarlarıyla açar (ekran ve
 /// bileşen testleri için; yönlendirici yok). [dur] `false` ise animasyonun
-/// bitmesi beklenmez (dönen ilerleme göstergesi).
+/// bitmesi beklenmez (dönen ilerleme göstergesi). Tayfa uçları [tayfa] ile
+/// (verilmezse tayfa listesi boş); gerçek ağ yok.
 Future<void> widgetAc(
   WidgetTester tester,
   Widget widget, {
   ThemeMode themeMode = ThemeMode.light,
   List<Override> overrides = const [],
   bool dur = true,
+  List<Override>? tayfa,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: overrides,
+      overrides: [...tayfa ?? tayfaOverridelari(), ...overrides],
       child: MaterialApp(
         locale: TayfamApp.yerelAyar,
         localizationsDelegates: AppLocalizations.localizationsDelegates,

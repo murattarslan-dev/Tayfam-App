@@ -9,5 +9,6 @@ export 'package:tayfam/core/tema/tayfam_radii.dart';
 export 'package:tayfam/core/tema/tayfam_sizes.dart';
 export 'package:tayfam/core/tema/tayfam_spacing.dart';
 export 'package:tayfam/core/tema/tayfam_theme.dart';
+export 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 export 'package:tayfam/core/tema/tayfam_typography.dart';
 export 'package:tayfam/core/tema/tema_baglami.dart';

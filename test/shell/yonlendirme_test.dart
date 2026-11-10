@@ -10,14 +10,20 @@ String? _yonlendir(
   OturumDurumu oturum = OturumDurumu.acik,
   String? aktifTayfaId,
   bool guncellemeGerekli = false,
+  Set<String>? etkinTayfalar,
+  bool tayfalarBekleniyor = false,
 }) {
   return yonlendir(
     oturum: oturum,
     aktifTayfaId: aktifTayfaId,
     konum: Uri.parse(adres),
     guncellemeGerekli: guncellemeGerekli,
+    etkinTayfalar: etkinTayfalar,
+    tayfalarBekleniyor: tayfalarBekleniyor,
   );
 }
+
+const String _ucuncuTayfaId = '5e6f7a8b-9c0d-4e1f-a2b3-c4d5e6f7a8b9';
 
 void main() {
   group('açılış ve güncelleme', () {
@@ -127,7 +133,101 @@ void main() {
     expect(_yonlendir('/sohbet'), isNull);
     expect(_yonlendir('/bildirimler'), isNull);
     expect(_yonlendir('/profil'), isNull);
-    expect(_yonlendir('/tayfa-katil'), isNull);
+    expect(_yonlendir('/tayfa-olustur'), isNull);
     expect(_yonlendir('/bilinmeyen'), isNull);
+  });
+
+  group('tayfa listesi (ADR-0014 §1)', () {
+    test('liste ilk kez okunurken ana adres açılış ekranı', () {
+      for (final adres in ['/', '/karsilama', '/giris']) {
+        expect(
+          _yonlendir(adres, tayfalarBekleniyor: true),
+          '/acilis',
+          reason: adres,
+        );
+      }
+      expect(_yonlendir('/acilis', tayfalarBekleniyor: true), isNull);
+      // Aktif tayfa biliniyorsa beklenmez.
+      expect(
+        _yonlendir('/', aktifTayfaId: ornekTayfaId, tayfalarBekleniyor: true),
+        '/t/$ornekTayfaId',
+      );
+      // Liste gelince açılış ekranı ana adrese döner.
+      expect(_yonlendir('/acilis'), '/karsilama');
+    });
+
+    test('üye olunmayan tayfa adresi karşılamaya dönüyor', () {
+      expect(
+        _yonlendir(
+          '/t/$_ucuncuTayfaId/deneme',
+          aktifTayfaId: ornekTayfaId,
+          etkinTayfalar: {ornekTayfaId, ikinciTayfaId},
+        ),
+        '/karsilama',
+      );
+      // Karşılama da ana adrese çevrilir.
+      expect(
+        _yonlendir('/karsilama', aktifTayfaId: ornekTayfaId),
+        '/t/$ornekTayfaId',
+      );
+    });
+
+    test('etkin üyelikteki ya da aktif tayfa adresi açılıyor', () {
+      final etkin = {ornekTayfaId, ikinciTayfaId};
+      expect(
+        _yonlendir(
+          '/t/$ikinciTayfaId',
+          aktifTayfaId: ornekTayfaId,
+          etkinTayfalar: etkin,
+        ),
+        isNull,
+      );
+      // Aktif tayfa listede olmasa da döngü olmaz.
+      expect(
+        _yonlendir(
+          '/t/$ornekTayfaId',
+          aktifTayfaId: ornekTayfaId,
+          etkinTayfalar: const {},
+        ),
+        isNull,
+      );
+    });
+
+    test('liste bilinmiyorken (yükleniyor, hata) adres denetlenmiyor', () {
+      expect(
+        _yonlendir('/t/$_ucuncuTayfaId', aktifTayfaId: ornekTayfaId),
+        isNull,
+      );
+    });
+
+    test('adresle eşitleme: yalnızca etkin ve farklı tayfa', () {
+      final etkin = {ornekTayfaId, ikinciTayfaId};
+      String? esitle(String adres, {String? aktif, Set<String>? liste}) =>
+          adresleEsitle(
+            konum: Uri.parse(adres),
+            aktifTayfaId: aktif,
+            etkinTayfalar: liste,
+          );
+
+      expect(
+        esitle('/t/$ikinciTayfaId/deneme', aktif: ornekTayfaId, liste: etkin),
+        ikinciTayfaId,
+      );
+      expect(
+        esitle('/t/$ornekTayfaId', aktif: ornekTayfaId, liste: etkin),
+        isNull,
+      );
+      expect(esitle('/t/$_ucuncuTayfaId', liste: etkin), isNull);
+      expect(esitle('/t/$ikinciTayfaId'), isNull);
+      expect(esitle('/sohbet', liste: etkin), isNull);
+      expect(esitle('/t/abc', liste: etkin), isNull);
+    });
+
+    test('adresteki tayfa kimliği', () {
+      expect(adrestekiTayfaId(Uri.parse('/t/$ornekTayfaId/x')), ornekTayfaId);
+      expect(adrestekiTayfaId(Uri.parse('/t/abc')), isNull);
+      expect(adrestekiTayfaId(Uri.parse('/t')), isNull);
+      expect(adrestekiTayfaId(Uri.parse('/profil')), isNull);
+    });
   });
 }

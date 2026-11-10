@@ -22,11 +22,16 @@ const Set<String> _oturumAdresleri = {
 ///    kayıt bekliyor → kayıt; yeniden onay → onay). Bu kontrol yetki
 ///    değildir; yetki sunucudadır (CLAUDE.md, kesin kural 5).
 /// 2. Kök, oturum ekranları, açılış ve karşılama, kullanıcının ana
-///    adresine çevrilir: aktif tayfa varsa `/t/<tayfaId>`, yoksa karşılama.
+///    adresine çevrilir: aktif tayfa varsa `/t/<tayfaId>`; yoksa tayfa
+///    listesi ilk kez okunurken ([tayfalarBekleniyor]) açılış ekranı,
+///    okunduktan sonra karşılama.
 /// 3. `/t/<tayfaId>/…` adresindeki kimlik girdi kabul edilir: UUID
-///    biçiminde değilse karşılamaya gidilir. Biçim uygunsa içerik
-///    varsayılmaz; tayfanın var olup olmadığına ve kullanıcının üye olup
-///    olmadığına sunucunun cevabı karar verir (kesin kural 5, 9).
+///    biçiminde değilse karşılamaya gidilir. Liste biliniyorsa
+///    ([etkinTayfalar]) ve kimlik ne aktif tayfa ne de etkin üyeliklerden
+///    biriyse karşılamaya dönülür (ADR-0014 §1); karşılama da ana adrese
+///    çevrilir. Etkin üyelikteki kimlikte aktif tayfa adrese göre değişir
+///    (yönlendiricideki dinleyici). Bu bir kolaylıktır; erişim kararını
+///    sunucu verir (kesin kural 5, 9).
 ///
 /// Derin link adresleri (`/davet`, `/r/<kod>`) bu fonksiyona dokunmadan
 /// kendi rotalarıyla eklenebilir; bilinmeyen adresler değiştirilmez ve
@@ -36,6 +41,8 @@ String? yonlendir({
   required String? aktifTayfaId,
   required Uri konum,
   bool guncellemeGerekli = false,
+  Set<String>? etkinTayfalar,
+  bool tayfalarBekleniyor = false,
 }) {
   final yol = konum.path;
 
@@ -54,9 +61,11 @@ String? yonlendir({
     return yol == oturumAdresi ? null : oturumAdresi;
   }
 
-  final anaAdres = aktifTayfaId == null
-      ? Adresler.karsilama
-      : Adresler.tayfa(aktifTayfaId);
+  final anaAdres = aktifTayfaId != null
+      ? Adresler.tayfa(aktifTayfaId)
+      : tayfalarBekleniyor
+      ? Adresler.acilis
+      : Adresler.karsilama;
   if (yol.isEmpty ||
       yol == Adresler.kok ||
       yol == Adresler.karsilama ||
@@ -66,9 +75,38 @@ String? yonlendir({
 
   final parcalar = konum.pathSegments;
   if (parcalar.isNotEmpty && parcalar.first == Adresler.tayfaOneki) {
-    if (parcalar.length < 2 || !uuidBicimindeMi(parcalar[1])) {
+    final tayfaId = adrestekiTayfaId(konum);
+    if (tayfaId == null) return Adresler.karsilama;
+    if (tayfaId != aktifTayfaId &&
+        etkinTayfalar != null &&
+        !etkinTayfalar.contains(tayfaId)) {
       return Adresler.karsilama;
     }
   }
   return null;
+}
+
+/// `/t/<tayfaId>/…` adresindeki tayfa kimliği; adres tayfa adresi değilse
+/// ya da kimlik UUID biçiminde değilse `null`.
+String? adrestekiTayfaId(Uri konum) {
+  final parcalar = konum.pathSegments;
+  if (parcalar.length < 2 || parcalar.first != Adresler.tayfaOneki) {
+    return null;
+  }
+  final tayfaId = parcalar[1];
+  return uuidBicimindeMi(tayfaId) ? tayfaId : null;
+}
+
+/// Adresteki tayfa aktif tayfa değilse ve etkin üyeliklerdeyse ([etkinTayfalar]
+/// biliniyorsa) aktif yapılacak kimliği döndürür; aksi halde `null`
+/// (ADR-0014 §1).
+String? adresleEsitle({
+  required Uri konum,
+  required String? aktifTayfaId,
+  required Set<String>? etkinTayfalar,
+}) {
+  final tayfaId = adrestekiTayfaId(konum);
+  if (tayfaId == null || tayfaId == aktifTayfaId) return null;
+  if (etkinTayfalar == null || !etkinTayfalar.contains(tayfaId)) return null;
+  return tayfaId;
 }
