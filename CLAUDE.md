@@ -210,8 +210,7 @@ test/              lib/ ile aynı yapı
 - **Platform (ADR-0011):** yalnızca Android ve iOS; web derlemesi yalnızca
   geliştirme için, yayınlanmaz; `kIsWeb` dalları en az tutulur.
 
-Açık kararlar: ADR-0009 (test, CI, iOS) ve ADR-0010 (Signal kütüphanesi,
-AGPL kabulü bekleniyor) "Önerildi" durumunda; kabul edilmeden bu konularda kod yazılmaz. Karar
+Açık karar: ADR-0009 (test, CI, iOS) "Önerildi" durumunda; kabul edilmeden bu konularda kod yazılmaz. Karar
 verilmemiş bir konuda kod yazılmaz; önce ADR.
 
 ## Arayüz ve kullanıcı deneyimi
