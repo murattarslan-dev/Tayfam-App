@@ -45,3 +45,6 @@ build/
 # Python (skill betikleri)
 __pycache__/
 *.pyc
+
+# gen_l10n çıktısı (ADR-0008); `flutter pub get` / `flutter gen-l10n` üretir
+/lib/l10n/app_localizations*.dart

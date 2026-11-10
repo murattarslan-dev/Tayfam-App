@@ -1,0 +1,142 @@
+name: CI
+
+# ADR-0009 (önerildi), issue #9. Tüm Actions commit SHA'sıyla sabitlenmiştir
+# (CLAUDE.md kesin kural 8); yorumdaki sürüm yalnızca okunabilirlik içindir.
+# pull_request_target ve self-hosted runner kullanılmaz; fork PR'ları secret
+# görmez (Tayfam-Api ADR-0010 ile aynı).
+
+on:
+  pull_request:
+  push:
+    branches: [main, feat/proje-iskeleti] # GEÇİCİ: dal yalnızca PR açılmadan önceki denemeler için
+
+permissions:
+  contents: read
+
+# Aynı daldaki yeni push eski çalışmayı iptal eder. main'de iptal edilmez:
+# main'deki her commit'in kendi sonucu olsun.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' || github.ref != 'refs/heads/main' }}
+
+env:
+  # Flutter sürümü yalnızca burada (ADR-0009). Yükseltme bu satır ve
+  # pubspec.lock ile birlikte tek PR'da yapılır.
+  FLUTTER_VERSION: 3.47.9
+
+jobs:
+  analiz:
+    name: analiz
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Çeviri kodu (gen_l10n)
+        run: flutter gen-l10n
+      - name: Biçim
+        # Yalnızca repodaki (elle yazılan) Dart dosyaları; üretilen çeviri
+        # kodu .gitignore'da olduğu için listeye girmez.
+        run: |
+          git ls-files -z -- 'lib/*.dart' 'test/*.dart' 'tool/*.dart' \
+            | xargs -0 --no-run-if-empty dart format --output=none --set-exit-if-changed
+      - name: Biçim farkı (yalnızca biçim hatasında)
+        if: failure()
+        run: |
+          git ls-files -z -- 'lib/*.dart' 'test/*.dart' 'tool/*.dart' \
+            | xargs -0 --no-run-if-empty dart format > /dev/null
+          git diff
+      - name: Analiz (bilgi düzeyi dahil hata)
+        run: flutter analyze --fatal-infos
+
+  test:
+    name: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Çeviri kodu (gen_l10n)
+        run: flutter gen-l10n
+      - name: flutter test
+        run: flutter test --reporter github
+
+  android:
+    name: android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Java 17
+        run: echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> "$GITHUB_ENV"
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Android debug derlemesi
+        run: flutter build apk --debug
+      - name: Ana manifestte yalnızca INTERNET izni
+        # Birleştirilmiş sürüm manifesti değil, ana manifest denetlenir;
+        # eklenti paketlerinin getirdiği izinler ayrıca incelenir.
+        run: |
+          izinler=$(grep -o 'android:name="android.permission[^"]*"' android/app/src/main/AndroidManifest.xml | sort -u)
+          echo "$izinler"
+          test "$izinler" = 'android:name="android.permission.INTERNET"'
+
+  web:
+    name: web
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      # Yalnızca geliştirme derlemesinin bozulmadığını görmek için; çıktı
+      # yayınlanmaz ve artifact olarak yüklenmez (ADR-0011).
+      - name: Web derlemesi (yayınlanmaz)
+        run: flutter build web
+
+  gizli-bilgi:
+    name: gizli-bilgi
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read # gitleaks, PR'daki commit'leri listelemek için
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

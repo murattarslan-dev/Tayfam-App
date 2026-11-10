@@ -1,5 +1,5 @@
 name: tayfam
-description: "A new Flutter project."
+description: "Tayfam: kulüp ve etkinlik uygulaması (Android, iOS)."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -26,3 +26,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # gen_l10n: lib/l10n/app_tr.arb → AppLocalizations (ADR-0008, l10n.yaml)
+  generate: true

@@ -1,6 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Uygulamanın tek izni (CLAUDE.md, En az izin). flutter create bunu
+         yalnızca debug/profile manifestine koyar; sürüm derlemesi de API'ye
+         bağlanacağı için ana manifestte. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- allowBackup="false": token'lar ve anahtarlar cihaz yedeğine gitmesin
+         (ADR-0005, ADR-0006, ADR-0010). -->
     <application
-        android:label="tayfam"
+        android:label="Tayfam"
+        android:allowBackup="false"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

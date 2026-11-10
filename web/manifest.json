@@ -1,11 +1,11 @@
 {
-    "name": "tayfam",
-    "short_name": "tayfam",
+    "name": "Tayfam (geliştirme)",
+    "short_name": "Tayfam (geliştirme)",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Tayfam geliştirme derlemesi; yayınlanmaz (ADR-0011).",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,0 +1,7 @@
+# gen_l10n yapılandırması (ADR-0008). Üretilen dosyalar lib/l10n/ altına
+# yazılır, commit edilmez (.gitignore) ve `flutter pub get` ile yeniden üretilir.
+arb-dir: lib/l10n
+template-arb-file: app_tr.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
