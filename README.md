@@ -1,6 +1,6 @@
 # Tayfam
 
-Tayfam'ın Flutter istemcisi (Android, iOS ve web): kulüplerin ve arkadaş
+Tayfam'ın Flutter mobil uygulaması (Android ve iOS): kulüplerin ve arkadaş
 gruplarının etkinlik, duyuru, soru-cevap ve sohbet uygulaması.
 
 Sunucu tarafı ayrı repodadır:

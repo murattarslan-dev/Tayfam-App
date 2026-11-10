@@ -18,7 +18,9 @@ girmez.
 
 Tayfam; kulüplerin ve arkadaş gruplarının (tayfaların) etkinlik, duyuru,
 soru-cevap ve sohbet ihtiyaçlarını tek uygulamada karşılar. Bu repo Flutter
-istemcisidir: Android, iOS ve tam web sürümü. İlk hedef platform Android.
+istemcisidir: yalnızca Android ve iOS; web istemcisi yoktur, web derlemesi
+yalnızca geliştirme kolaylığıdır ve yayınlanmaz (ADR-0011). İlk hedef
+platform Android.
 
 - Mimari özet: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - Kararlar ve gerekçeleri: [`docs/adr/`](docs/adr/README.md)
@@ -57,10 +59,9 @@ Hedef: sisteme sızmak olabildiğince zor olmalı; **sızılsa bile verilebilece
 hasar en aza inmeli** (Tayfam-Api ADR-0011). İstemci için bunun anlamı:
 
 - **İstemci güvenilmez bir ortamdır.** Cihaz kaybolabilir, root'lanabilir,
-  uygulama tersine mühendislikle açılabilir, web sayfasına zararlı betik
-  enjekte edilebilir. Güvenlik kararı istemcide verilmez; arayüzde bir düğmeyi
+  uygulama tersine mühendislikle açılabilir, trafiği izlenebilir. Güvenlik kararı istemcide verilmez; arayüzde bir düğmeyi
   gizlemek kolaylıktır, yetki kontrolü değildir.
-- **Hasarı sınırla.** "Bu cihaz veya bu tarayıcı oturumu ele geçirilirse
+- **Hasarı sınırla.** "Bu cihaz ele geçirilirse
   saldırgan neye ulaşır?" sorusunun cevabı dar olmalı: kısa ömürlü token'lar,
   güvenli depoda anahtarlar, diskte gereğinden fazla veri yok.
 - **Tutmadığın veri çalınamaz.** Gerekmeyen veriyi önbelleğe alma, diske
@@ -81,9 +82,8 @@ Bunların ihlali PR'ın reddedilmesi için yeterlidir.
 2. **Token'lar güvenli saklanır.** Mobilde erişim ve yenileme token'ları
    yalnızca platformun güvenli deposunda (Android Keystore / iOS Keychain)
    tutulur; düz dosyaya, `SharedPreferences`'a veya veritabanına yazılmaz.
-   Web'de token'lar HttpOnly çerezlerdedir (`tayfam_at`, `tayfam_rt`);
-   JavaScript/Dart tarafı token görmez, `localStorage`/IndexedDB'ye token
-   yazılmaz. Token yenileme tek noktadan yapılır (ayrıntı: aşağıda "API ile
+   Web geliştirme derlemesinde token yalnızca bellektedir, tarayıcı deposuna
+   yazılmaz (ADR-0011). Token yenileme tek noktadan yapılır (ayrıntı: aşağıda "API ile
    konuşma").
 3. **Kişisel veri log'a girmez.** Log, analitik, hata raporu ve hata
    ayıklama çıktısına mesaj metni, konum, e-posta, doğum tarihi, token,
@@ -94,7 +94,8 @@ Bunların ihlali PR'ın reddedilmesi için yeterlidir.
 4. **Kendi kriptografini yazma.** Birebir mesajlarda E2E için Signal protokolü,
    ADR ile seçilen kütüphaneyle kullanılır. Rastgele değerler yalnızca
    kriptografik üreteçle (`Random.secure()` veya platform CSPRNG'si) üretilir.
-   Web'de anahtarlar WebCrypto ile dışa aktarılamaz (non-extractable) üretilir.
+   Signal anahtarları ve protokol durumu token gibi yalnızca güvenli depoda
+   tutulur (ADR-0010).
 5. **Yetki sunucudadır.** İstemci rol veya üyeliğe göre arayüzü
    sadeleştirebilir, ama bir işlemin yapılabileceğine kendisi karar vermez;
    sunucunun cevabına (`forbidden` vb. hata `type`'larına) göre davranır.
@@ -111,7 +112,7 @@ Bunların ihlali PR'ın reddedilmesi için yeterlidir.
 8. **Bağımlılıklar sabitlenir ve gerekçelenir.** `pubspec.lock` commit edilir.
    Yeni paket eklemeden önce Flutter/Dart standart kütüphanesinin yetip
    yetmediğine bak; eklediğin her paketi PR'da gerekçele (yayıncı, bakım
-   durumu, izinler, web desteği). GitHub Actions commit SHA'sıyla sabitlenir.
+   durumu, izinler, Android/iOS desteği). GitHub Actions commit SHA'sıyla sabitlenir.
 9. **Derin linkler doğrulanır.** Davet linki `https://tayfam.app/davet#<token>`
    biçimindedir: token fragment'tadır, sunucuya URL ile gitmez; istemci onu
    yalnızca istek gövdesinde API'ye iletir ve hiçbir yere yazmaz. Referans linki
@@ -129,7 +130,8 @@ ADR-0014'tür. Özet:
   kullanımda değişir; eski token 10 saniyelik tolerans dışında yeniden
   kullanılırsa sunucu oturumu güvenlik gereği iptal eder. Bu yüzden yenileme
   tek noktadan yapılır, eşzamanlı istekler yenileme bitene kadar kuyruklanır.
-- **CSRF:** Durum değiştiren her istekte `X-Tayfam-Client: android | ios | web`.
+- **İstemci başlığı:** Durum değiştiren her istekte `X-Tayfam-Client: android | ios`
+  (web geliştirme derlemesinin değeri Tayfam-Api'de kararlaştırılır).
 - **Hatalar:** RFC 9457 `application/problem+json`. İstemci `type` alanındaki
   koda (`https://tayfam.app/problems/<kod>`) göre davranır; `title` metni
   kullanıcıya gösterilmez. Bilinmeyen `type` için genel bir hata metni
@@ -143,27 +145,74 @@ ADR-0014'tür. Özet:
   kullanılır. Çevrimdışı kuyruk buna dayanır.
 - **Hesap silme:** Son 10 dakikada yeniden Google girişi gerekir
   (`reauthentication-required`); akış: yeniden giriş → `DELETE /v1/me`.
-- **WebSocket:** `GET /v1/realtime`; mobilde `Authorization: Bearer`, web'de
-  çerez. `4003 token_expired` → token yenilenir, sessizce yeniden bağlanılır.
+- **WebSocket:** `GET /v1/realtime`, `Authorization: Bearer` ile (web
+  geliştirme derlemesinde kurulmaz). `4003 token_expired` → token yenilenir, sessizce yeniden bağlanılır.
   `4001 session_ended` → oturum kapanmıştır, girişe dönülür. `rate_limited`
   çerçevesinde gönderim yavaşlatılır.
 
-## Klasör yapısı, durum yönetimi ve kodlama kuralları
+## Klasör yapısı
 
-Mimari kararlar soru-cevapla alınıp `docs/adr/`'ye yazıldıkça bu bölüm
-doldurulur. Sıradaki kararlar (Notion: "İstemci Geçiş Özeti", §4):
+Tek Flutter paketi (ADR-0002):
 
-- Modül yapısı ve modül kaydı (registry)
-- Durum yönetimi ve navigasyon (davet ve referans derin linkleri)
-- API istemcisi (OpenAPI'den üretim mi elle mi), token yenileme, hata eşlemesi
-- Çevrimdışı kuyruk
-- Güvenli token ve anahtar saklama
-- WebSocket yeniden bağlanma ve abonelik yönetimi
-- Signal kütüphanesi seçimi (mobil + web)
-- Tema token'ları ve çeviri dosyaları
-- CI ve iOS derlemesi (GitHub Actions macOS runner'ı ya da Codemagic)
+```
+lib/
+  main.dart
+  core/            oturum, API istemcisi (gen/ dahil), realtime, kuyruk,
+                   güvenli depo, tema, bileşenler, çeviri, metin yardımcıları
+  shell/           gezinme iskeleti, tayfa geçişi, derin linkler, modül kayıtları
+  features/<özellik>/
+    <özellik>.dart   tek dışa açık dosya
+    data/            API çağrıları ve dönüştürme
+    application/     notifier'lar ve servisler
+    presentation/    ekranlar ve widget'lar
+  l10n/app_tr.arb    çeviri kaynağı
+tool/              OpenAPI üreticisi, kural betiği
+test/              lib/ ile aynı yapı
+```
 
-Karar verilmemiş bir konuda kod yazılmaz; önce ADR.
+- `core/` özellik veya `shell/` import edemez; bir özellik başka bir
+  özelliğin yalnızca `<özellik>.dart` dosyasını import edebilir; döngü yok.
+- Tayfa modülleri (`announcements`, `events`, `qa`, `polls`) ve etkinlik
+  türleri kayıtla eklenir; görünürlüğe sunucunun `modules` alanı karar verir.
+
+## Kodlama kuralları
+
+- **Durum ve DI (ADR-0001):** Riverpod 3; yalnızca `Notifier` /
+  `AsyncNotifier` / `StreamNotifier` ve `Provider`; kod üretimi yok; tayfaya
+  bağlı durum `family(tayfaId)` + `autoDispose`; kalıcı servisler açıkça
+  `keepAlive`; widget'ta iş mantığı yok; oturum kapanınca kullanıcıya bağlı
+  her provider sıfırlanır; `ProviderObserver` yalnızca provider adı ve hata
+  türünü loglar.
+- **Gezinme (ADR-0003):** `go_router`, dört sabit sekme (Tayfa, Sohbet,
+  Bildirimler, Profil) `StatefulShellRoute` ile; tayfaya bağlı adresler
+  `/t/<tayfaId>/…`; adresteki kimlik girdi kabul edilir.
+- **Tema (ADR-0004):** Material 3 + `TayfamColors` / `TayfamSpacing` /
+  `TayfamRadii` / `TayfamMotion` token'ları; ekranlarda sabit renk, boşluk,
+  yarıçap yok; font gömülü (`google_fonts` yok); açık ve koyu tema; tayfa ana
+  sayfasının üst bölümü mor; bileşenler tanıtım sayfasındaki kartlarla aynı.
+- **API (ADR-0005):** bütün istekler tek `ApiClient`'tan; uç ve modeller
+  `lib/core/api/gen/` altında üretilir, elle düzenlenmez; token yalnızca
+  `SessionStore`'da; yenileme tek uçuşta; problem `type` → `ProblemType`
+  → çeviri anahtarı, `title`/`detail` gösterilmez.
+- **Diske yazma (ADR-0006):** token ve kullanıcı ayarları dışında hiçbir
+  içerik diske yazılmaz; önbellek ve çevrimdışı kuyruk yalnızca bellekte.
+- **WebSocket (ADR-0007):** tek bağlantı `core/realtime/`'da; mesaj bağlantı
+  açıkken WebSocket'ten, değilse aynı `client_request_id` ile REST'ten;
+  çerçeve içeriği loglanmaz.
+- **Metin (ADR-0008):** `gen_l10n` ve ARB; kodda sabit kullanıcı metni yok;
+  arayüzde `toUpperCase`/`toLowerCase` yok, arama ve tekillik için
+  `turkceKucukHarf()`.
+- **Bağımlılık:** her yeni paket PR'da gerekçelenir (kesin kural 8);
+  ADR'lerde adı geçen paketler: `flutter_riverpod`, `go_router`, `http`,
+  `flutter_secure_storage`, `web_socket_channel`, `flutter_localizations`,
+  `intl`; geliştirmede `yaml`.
+
+- **Platform (ADR-0011):** yalnızca Android ve iOS; web derlemesi yalnızca
+  geliştirme için, yayınlanmaz; `kIsWeb` dalları en az tutulur.
+
+Açık kararlar: ADR-0009 (test, CI, iOS) ve ADR-0010 (Signal kütüphanesi,
+AGPL kabulü bekleniyor) "Önerildi" durumunda; kabul edilmeden bu konularda kod yazılmaz. Karar
+verilmemiş bir konuda kod yazılmaz; önce ADR.
 
 ## Arayüz ve kullanıcı deneyimi
 
@@ -186,9 +235,10 @@ kuralları da soru-cevapla alınır ve ADR'ye yazılır.
 
 ## Test beklentileri
 
-Test stratejisi ADR ile netleşir. Şimdiden geçerli olanlar:
+Ayrıntı ADR-0009'da (önerildi). Şimdiden geçerli olanlar:
 
-- Her PR testleriyle gelir.
+- Her PR testleriyle gelir; testlerde gerçek ağ yoktur.
+- Her ekran açık ve koyu temada, 2× yazı ölçeğinde widget testiyle gelir.
 - Token yenileme, hata `type` eşlemesi, derin link ayrıştırma ve çevrimdışı
   kuyruk birim testleriyle korunur.
 - Hata düzeltmesi, hatayı yeniden üreten bir testle gelir.

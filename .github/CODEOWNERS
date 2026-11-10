@@ -3,9 +3,6 @@
 # zorunluluğu olmadığı için bu dosya GitHub tarafından zorlanmaz; inceleme ve
 # iş akışı bu listeye göre yapılır.
 #
-# Modül yapısı ADR ile belirlenince şu alanların kod yolları eklenir:
-# kimlik/oturum ve token saklama, API istemcisinin kimlik katmanı,
-# E2E (Signal) ve anahtar saklama, derin link işleme.
 
 # Süreç, CI ve kurallar (güven zincirinin kökü)
 /.github/                               @murattarslan-dev
@@ -22,4 +19,17 @@
 /android/app/src/main/AndroidManifest.xml @murattarslan-dev
 /ios/Runner/Info.plist                  @murattarslan-dev
 /ios/Runner/*.entitlements              @murattarslan-dev
-/web/index.html                         @murattarslan-dev
+
+# Oturum, token saklama, API istemcisi ve üretici (ADR-0005)
+/lib/core/oturum/                       @murattarslan-dev
+/lib/core/api/                          @murattarslan-dev
+/tool/openapi_gen/                      @murattarslan-dev
+
+# Uçtan uca şifreleme ve anahtar saklama (ADR-0010)
+/lib/core/e2e/                          @murattarslan-dev
+
+# Derin linkler ve yönlendirme korumaları (ADR-0003)
+/lib/shell/derin_link/                  @murattarslan-dev
+
+# CI kural betiği (ADR-0009)
+/tool/kurallar/                         @murattarslan-dev
