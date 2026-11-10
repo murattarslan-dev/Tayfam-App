@@ -8,7 +8,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, feat/proje-iskeleti] # GEÇİCİ: dal yalnızca PR açılmadan önceki denemeler için
+    branches: [main]
 
 permissions:
   contents: read
