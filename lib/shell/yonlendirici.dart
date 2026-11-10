@@ -1,0 +1,145 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/tayfa_module.dart';
+import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
+import 'package:tayfam/shell/kabuk_iskeleti.dart';
+import 'package:tayfam/shell/yer_tutucu.dart';
+import 'package:tayfam/shell/yonlendirme.dart';
+
+/// Tayfa sekmesinin kökündeki rota parametresi.
+const String tayfaIdParametresi = 'tayfaId';
+
+/// Uygulamanın yönlendiricisi (ADR-0003).
+///
+/// Uygulama boyunca yaşar (Riverpod 3'te `autoDispose` olmayan provider
+/// kalıcıdır). Oturum durumu veya aktif tayfa değişince korumalar
+/// ([yonlendir]) yeniden çalışır.
+///
+/// `debugLogDiagnostics` kapalıdır: go_router açıkken tam adresleri
+/// loglar (CLAUDE.md, kesin kural 3).
+final yonlendiriciProvider = Provider<GoRouter>((ref) {
+  final moduller = ref.watch(tayfaModulleriProvider);
+
+  final yenile = ValueNotifier<int>(0);
+  ref.listen(oturumDurumuProvider, (_, _) => yenile.value++);
+  ref.listen(aktifTayfaIdProvider, (_, _) => yenile.value++);
+
+  final yonlendirici = GoRouter(
+    initialLocation: Adresler.kok,
+    refreshListenable: yenile,
+    redirect: (context, state) => yonlendir(
+      oturum: ref.read(oturumDurumuProvider),
+      aktifTayfaId: ref.read(aktifTayfaIdProvider),
+      konum: state.uri,
+    ),
+    errorBuilder: (context, state) => const BulunamadiSayfasi(),
+    routes: rotalariOlustur(moduller),
+  );
+
+  ref.onDispose(() {
+    yonlendirici.dispose();
+    yenile.dispose();
+  });
+  return yonlendirici;
+}, name: 'yonlendiriciProvider');
+
+/// Uygulamanın rota ağacı.
+///
+/// Dört sekme `StatefulShellRoute.indexedStack` ile kurulur; her sekmenin
+/// kendi gezinme yığını vardır, sekme değişince geçmiş ve kaydırma durumu
+/// korunur, Android geri tuşu önce açık sekmenin yığınında geri gider.
+///
+/// [moduller]'ün rotaları `/t/:tayfaId` altına eklenir. Derin link
+/// rotaları (`/davet`, `/r/:kod`) ayrı pakette bu listenin üst düzeyine
+/// eklenir.
+List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
+  return [
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          KabukIskeleti(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Adresler.karsilama,
+              builder: (context, state) => const KarsilamaEkrani(),
+            ),
+            GoRoute(
+              path: '/${Adresler.tayfaOneki}/:$tayfaIdParametresi',
+              builder: (context, state) => TayfaAnaSayfa(
+                tayfaId: state.pathParameters[tayfaIdParametresi]!,
+              ),
+              routes: [for (final modul in moduller) ...modul.rotalar],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Adresler.sohbet,
+              builder: (context, state) =>
+                  const YerTutucuSayfa(baslik: _sohbetBasligi),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Adresler.bildirimler,
+              builder: (context, state) =>
+                  const YerTutucuSayfa(baslik: _bildirimlerBasligi),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Adresler.profil,
+              builder: (context, state) =>
+                  const YerTutucuSayfa(baslik: _profilBasligi),
+            ),
+          ],
+        ),
+      ],
+    ),
+    // Oturum korumalarının gönderdiği ekranlar; kendi paketlerinde gelir.
+    GoRoute(
+      path: Adresler.giris,
+      builder: (context, state) => const YerTutucuSayfa(baslik: _girisBasligi),
+    ),
+    GoRoute(
+      path: Adresler.kayit,
+      builder: (context, state) => const YerTutucuSayfa(baslik: _kayitBasligi),
+    ),
+    GoRoute(
+      path: Adresler.onay,
+      builder: (context, state) => const YerTutucuSayfa(baslik: _onayBasligi),
+    ),
+    // Tayfa akışları; kabuğun üstünde tam ekran açılır, kendi paketlerinde
+    // gelir.
+    GoRoute(
+      path: Adresler.tayfaKatil,
+      builder: (context, state) => const YerTutucuSayfa(baslik: _katilBasligi),
+    ),
+    GoRoute(
+      path: Adresler.tayfaOlustur,
+      builder: (context, state) =>
+          const YerTutucuSayfa(baslik: _olusturBasligi),
+    ),
+  ];
+}
+
+String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
+String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
+String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;
+String _girisBasligi(AppLocalizations m) => m.gezinme_giris_baslik;
+String _kayitBasligi(AppLocalizations m) => m.gezinme_kayit_baslik;
+String _onayBasligi(AppLocalizations m) => m.gezinme_onay_baslik;
+String _katilBasligi(AppLocalizations m) => m.tayfa_kodla_katil;
+String _olusturBasligi(AppLocalizations m) => m.tayfa_olustur;

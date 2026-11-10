@@ -33,8 +33,8 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0006](docs/adr/0006-onbellek-ve-cevrimdisi-kuyruk.md) | Önbellek | Diske içerik yazılmaz; önbellek ve kuyruk bellekte |
 | [0007](docs/adr/0007-websocket.md) | WebSocket | Tek bağlantı, aktif tayfa abonelikleri, WebSocket önce, REST yedek |
 | [0008](docs/adr/0008-ceviri-ve-yerel-ayar.md) | Çeviri | `gen_l10n`, `tr_TR`, Türkçe harf yardımcısı |
-| [0009](docs/adr/0009-test-ci-ve-ios.md) | Test ve CI | Önerildi |
-| [0010](docs/adr/0010-signal-kutuphanesi.md) | Signal | Önerildi: resmi Rust çekirdeği, anahtarlar güvenli depoda; AGPL kabulü bekleniyor |
+| [0009](docs/adr/0009-test-ci-ve-ios.md) | Test ve CI | Birim/widget/golden testler, GitHub Actions CI, iOS için ileride macOS runner |
+| [0010](docs/adr/0010-signal-kutuphanesi.md) | Signal | Resmi Rust çekirdeği (AGPL-3.0), anahtarlar güvenli depoda |
 | [0011](docs/adr/0011-yalnizca-mobil.md) | Platform | Yalnızca Android ve iOS; web yalnızca geliştirme derlemesi |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).

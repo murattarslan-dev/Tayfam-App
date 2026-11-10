@@ -1,6 +1,6 @@
 # ADR-0009: Test stratejisi, CI ve iOS derlemesi
 
-- **Durum:** Önerildi (platform sahibinin incelemesini bekliyor)
+- **Durum:** Kabul edildi (platform sahibi, 2026-11-10: "GitHub Actions ile devam et")
 - **Tarih:** 2026-11-09
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0002](0002-modul-yapisi.md), [ADR-0004](0004-tema-ve-bilesen-dili.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0008](0008-ceviri-ve-yerel-ayar.md); Tayfam-Api ADR-0010, ADR-0011
