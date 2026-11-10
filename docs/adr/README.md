@@ -24,6 +24,7 @@ olarak anar.
 | [0009](0009-test-ci-ve-ios.md) | Test stratejisi, CI ve iOS derlemesi | Kabul edildi |
 | [0010](0010-signal-kutuphanesi.md) | Uçtan uca şifreleme için Signal kütüphanesi | Kabul edildi |
 | [0011](0011-yalnizca-mobil.md) | Yalnızca mobil istemci; web yalnızca geliştirme derlemesi | Kabul edildi |
+| [0012](0012-giris-ve-kayit-akisi.md) | Açılış, giriş, kayıt ve yeniden onay akışı | Kabul edildi |
 | [0013](0013-tanitim-sitesi.md) | Tanıtım sitesi (tayfam.app) bu repoda, CI ile Cloudflare Pages'e | Kabul edildi |
 
 ## Şablon

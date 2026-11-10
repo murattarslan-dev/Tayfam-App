@@ -37,6 +37,7 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0009](docs/adr/0009-test-ci-ve-ios.md) | Test ve CI | Birim/widget/golden testler, GitHub Actions CI, iOS için ileride macOS runner |
 | [0010](docs/adr/0010-signal-kutuphanesi.md) | Signal | Resmi Rust çekirdeği (AGPL-3.0), anahtarlar güvenli depoda |
 | [0011](docs/adr/0011-yalnizca-mobil.md) | Platform | Yalnızca Android ve iOS; web yalnızca geliştirme derlemesi |
+| [0012](docs/adr/0012-giris-ve-kayit-akisi.md) | Giriş ve kayıt | Sürüm kontrolü, Google girişi, doğum tarihi teyidi, sürümlü hukuki metinler tayfam.app'te |
 | [0013](docs/adr/0013-tanitim-sitesi.md) | Tanıtım sitesi | `site/` klasörü, JavaScript yok, main'den CI ile Cloudflare Pages'e |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).
