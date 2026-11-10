@@ -1,0 +1,11 @@
+{
+  "@@locale": "tr",
+  "uygulama_adi": "Tayfam",
+  "@uygulama_adi": {
+    "description": "Uygulamanın adı. İşletim sisteminin görev değiştiricisinde ve pencere başlığında görünür; marka adıdır, çevrilmez."
+  },
+  "karsilama_metni": "Tayfam'a hoş geldin.",
+  "@karsilama_metni": {
+    "description": "Proje iskeletinin açılış ekranında ortada görünen karşılama metni. Gezinme iskeleti gelince kaldırılır."
+  }
+}
