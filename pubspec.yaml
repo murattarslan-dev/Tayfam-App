@@ -28,3 +28,18 @@ flutter:
   uses-material-design: true
   # gen_l10n: lib/l10n/app_tr.arb → AppLocalizations (ADR-0008, l10n.yaml)
   generate: true
+  # Gömülü font (ADR-0004 §1): Bricolage Grotesque, SIL OFL 1.1
+  # (assets/fonts/OFL.txt). google/fonts reposundaki değişken fonttan
+  # tool/font/bricolage_ornekle.py ile üretilen statik örnekler; yalnızca
+  # kullanılan ağırlıklar. 800 yuvası büyük başlığın wght 750 örneğidir.
+  fonts:
+    - family: BricolageGrotesque
+      fonts:
+        - asset: assets/fonts/BricolageGrotesque-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/BricolageGrotesque-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/BricolageGrotesque-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/BricolageGrotesque-Baslik750.ttf
+          weight: 800
