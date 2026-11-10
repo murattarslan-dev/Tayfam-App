@@ -4,8 +4,151 @@
   "@uygulama_adi": {
     "description": "Uygulamanın adı. İşletim sisteminin görev değiştiricisinde ve pencere başlığında görünür; marka adıdır, çevrilmez."
   },
-  "karsilama_metni": "Tayfam'a hoş geldin.",
-  "@karsilama_metni": {
-    "description": "Proje iskeletinin açılış ekranında ortada görünen karşılama metni. Gezinme iskeleti gelince kaldırılır."
+  "gezinme_sekme_tayfa": "Tayfa",
+  "@gezinme_sekme_tayfa": {
+    "description": "Alt gezinme çubuğundaki (geniş ekranda soldaki dikey çubuktaki) ilk sekmenin etiketi; aktif tayfanın ana sayfasını açar."
+  },
+  "gezinme_sekme_sohbet": "Sohbet",
+  "@gezinme_sekme_sohbet": {
+    "description": "Gezinme çubuğundaki ikinci sekmenin etiketi; tayfa kanalları ve birebir mesajlar. Sekme yer tutucu sayfasının başlığı olarak da görünür."
+  },
+  "gezinme_sekme_bildirimler": "Bildirimler",
+  "@gezinme_sekme_bildirimler": {
+    "description": "Gezinme çubuğundaki üçüncü sekmenin etiketi; tüm tayfaların bildirimleri. Sekme yer tutucu sayfasının başlığı olarak da görünür."
+  },
+  "gezinme_sekme_profil": "Profil",
+  "@gezinme_sekme_profil": {
+    "description": "Gezinme çubuğundaki dördüncü sekmenin etiketi; profil, arkadaşlar, oturumlar ve ayarlar. Sekme yer tutucu sayfasının başlığı olarak da görünür."
+  },
+  "gezinme_rozet_sayi": "{sayi}",
+  "@gezinme_rozet_sayi": {
+    "description": "Sohbet ve Bildirimler sekmesinin ikonundaki okunmamış rozetinde görünen sayı (1–99).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "gezinme_rozet_cok": "99+",
+  "@gezinme_rozet_cok": {
+    "description": "Okunmamış sayısı 99'u geçtiğinde sekme rozetinde görünen kısa metin."
+  },
+  "gezinme_sohbet_okunmamis": "{sayi, plural, other{{sayi} okunmamış mesaj}}",
+  "@gezinme_sohbet_okunmamis": {
+    "description": "Sohbet sekmesindeki okunmamış rozetinin ekran okuyucu etiketi; rozet görünürken okunur.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "gezinme_bildirim_okunmamis": "{sayi, plural, other{{sayi} okunmamış bildirim}}",
+  "@gezinme_bildirim_okunmamis": {
+    "description": "Bildirimler sekmesindeki okunmamış rozetinin ekran okuyucu etiketi; rozet görünürken okunur.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "gezinme_yer_tutucu_aciklama": "Bu bölüm hazırlanıyor.",
+  "@gezinme_yer_tutucu_aciklama": {
+    "description": "Henüz yapılmamış ekranların (sekme sayfaları, giriş, kayıt, onay, kodla katılma, tayfa oluşturma) ortasında görünen geçici açıklama."
+  },
+  "gezinme_giris_baslik": "Giriş",
+  "@gezinme_giris_baslik": {
+    "description": "Oturum yokken yönlendirilen giriş ekranının başlığı (ekran ayrı pakette gelir; şimdilik yer tutucu)."
+  },
+  "gezinme_kayit_baslik": "Kayıt",
+  "@gezinme_kayit_baslik": {
+    "description": "Google girişinden sonra kaydı tamamlanmamış kullanıcının yönlendirildiği kayıt ekranının başlığı (yer tutucu)."
+  },
+  "gezinme_onay_baslik": "Koşullar güncellendi",
+  "@gezinme_onay_baslik": {
+    "description": "Onay sürümleri değiştiğinde yönlendirilen yeniden onay ekranının başlığı (yer tutucu)."
+  },
+  "gezinme_bulunamadi_baslik": "Sayfa bulunamadı",
+  "@gezinme_bulunamadi_baslik": {
+    "description": "Uygulamada karşılığı olmayan bir adres açıldığında görünen sayfanın başlığı."
+  },
+  "gezinme_bulunamadi_aciklama": "Aradığın sayfa yok ya da taşınmış.",
+  "@gezinme_bulunamadi_aciklama": {
+    "description": "Bulunamayan sayfa ekranındaki açıklama."
+  },
+  "gezinme_ana_sayfaya_don": "Ana sayfaya dön",
+  "@gezinme_ana_sayfaya_don": {
+    "description": "Bulunamayan sayfa ekranındaki, kullanıcıyı tayfasının ana sayfasına (tayfası yoksa karşılamaya) götüren düğme."
+  },
+  "tayfa_adi_bilinmiyor": "Tayfa",
+  "@tayfa_adi_bilinmiyor": {
+    "description": "Tayfa ana sayfasının mor üst bölümünde, tayfanın adı henüz bilinmiyorken ad yerine görünen genel başlık."
+  },
+  "tayfa_degistir_ipucu": "Tayfa değiştirme panelini açar",
+  "@tayfa_degistir_ipucu": {
+    "description": "Tayfa ana sayfasının üst bölümündeki tayfa adı düğmesinin ekran okuyucu ipucu; dokununca alttan tayfa değiştirme paneli açılır."
+  },
+  "tayfa_tayfalarim": "Tayfalarım",
+  "@tayfa_tayfalarim": {
+    "description": "Tayfa değiştirme panelinde kullanıcının üye olduğu tayfaların listelendiği bölümün başlığı."
+  },
+  "tayfa_tayfalarim_bos": "Henüz bir tayfan yok. Bir kodla katılabilir ya da kendi tayfanı kurabilirsin.",
+  "@tayfa_tayfalarim_bos": {
+    "description": "Tayfa değiştirme panelinde, listelenecek tayfa yokken Tayfalarım bölümünde görünen boş durum metni."
+  },
+  "tayfa_kodla_katil": "Kodla katıl",
+  "@tayfa_kodla_katil": {
+    "description": "Tayfa değiştirme panelinde, tayfa koduyla bir tayfaya katılma akışını açan seçenek; o akışın başlığı olarak da görünür."
+  },
+  "tayfa_olustur": "Tayfa oluştur",
+  "@tayfa_olustur": {
+    "description": "Tayfa değiştirme panelinde ve karşılama ekranında yeni tayfa kurma akışını açan seçenek; o akışın başlığı olarak da görünür."
+  },
+  "tayfa_ana_sayfa_bos": "Yaklaşan etkinlikler ve son duyurular burada görünecek.",
+  "@tayfa_ana_sayfa_bos": {
+    "description": "Tayfa ana sayfasının mor üst bölümünün altında, gösterilecek içerik yokken görünen metin."
+  },
+  "karsilama_baslik": "Tayfanı bul, birlikte yola çık.",
+  "@karsilama_baslik": {
+    "description": "Tayfası olmayan kullanıcının Tayfa sekmesinde gördüğü karşılama ekranının büyük başlığı."
+  },
+  "karsilama_aciklama": "Bir tayfaya kodla katıl ya da kendi tayfanı kur.",
+  "@karsilama_aciklama": {
+    "description": "Karşılama ekranında başlığın ve tür vurgusunun altındaki açıklama."
+  },
+  "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
+  "@karsilama_turler_etiketi": {
+    "description": "Karşılama ekranındaki renkli etkinlik türü haplarının ekran okuyucu için grup etiketi."
+  },
+  "karsilama_kodum_var": "Tayfa kodum var",
+  "@karsilama_kodum_var": {
+    "description": "Karşılama ekranındaki birincil düğme; tayfa koduyla katılma akışını açar."
+  },
+  "karsilama_tayfa_olustur": "Tayfa oluştur",
+  "@karsilama_tayfa_olustur": {
+    "description": "Karşılama ekranındaki ikincil düğme; yeni tayfa kurma akışını açar."
+  },
+  "karsilama_tur_konvoy": "Konvoy",
+  "@karsilama_tur_konvoy": {
+    "description": "Karşılama ekranındaki renkli tür vurgusunda konvoy (convoy) etkinlik türünün adı."
+  },
+  "karsilama_tur_kamp": "Kamp",
+  "@karsilama_tur_kamp": {
+    "description": "Karşılama ekranındaki renkli tür vurgusunda kamp (camp) etkinlik türünün adı."
+  },
+  "karsilama_tur_yuruyus": "Yürüyüş",
+  "@karsilama_tur_yuruyus": {
+    "description": "Karşılama ekranındaki renkli tür vurgusunda yürüyüş (hike) etkinlik türünün adı."
+  },
+  "karsilama_tur_balik": "Balık",
+  "@karsilama_tur_balik": {
+    "description": "Karşılama ekranındaki renkli tür vurgusunda balık (fishing) etkinlik türünün adı."
+  },
+  "karsilama_tur_oyun": "Oyun",
+  "@karsilama_tur_oyun": {
+    "description": "Karşılama ekranındaki renkli tür vurgusunda oyun (gaming) etkinlik türünün adı."
+  },
+  "karsilama_tur_spor": "Spor",
+  "@karsilama_tur_spor": {
+    "description": "Karşılama ekranındaki renkli tür vurgusunda spor (sports) etkinlik türünün adı."
   }
 }
