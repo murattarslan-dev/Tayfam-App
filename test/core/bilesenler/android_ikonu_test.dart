@@ -56,7 +56,9 @@ void main() {
     );
     expect(
       xml,
-      contains('<foreground android:drawable="@drawable/ic_launcher_foreground"'),
+      contains(
+        '<foreground android:drawable="@drawable/ic_launcher_foreground"',
+      ),
     );
   });
 

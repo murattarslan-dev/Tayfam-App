@@ -104,6 +104,24 @@ void main() {
   testWidgets('yazı ile monogram arası simge genişliğinin %30\'u', (
     tester,
   ) async {
+    // Dar alanda logo orantılı küçülür; bu boyut 320 dp'ye sığar.
+    const boyut = 32.0;
+    await bileseniAc(
+      tester,
+      const Center(child: TayfamMonogram.yazili(boyut: boyut)),
+      mod: ThemeMode.light,
+    );
+
+    final simge = tester.getRect(_boyaci);
+    final yazi = tester.getRect(_yazi);
+    expect(simge.size, const Size.square(boyut));
+    final bosluk = boyut * TayfamSizes.logoYaziBoslukOrani;
+    expect(yazi.left - simge.right, moreOrLessEquals(bosluk));
+  });
+
+  testWidgets('dar alanda bütün logo orantılı küçülür, taşmaz', (
+    tester,
+  ) async {
     await bileseniAc(
       tester,
       const Center(child: TayfamMonogram.yazili()),
@@ -112,12 +130,11 @@ void main() {
 
     final simge = tester.getRect(_boyaci);
     final yazi = tester.getRect(_yazi);
-    expect(simge.width, TayfamSizes.logoBuyuk);
-    expect(simge.height, TayfamSizes.logoBuyuk);
-    expect(
-      yazi.left - simge.right,
-      moreOrLessEquals(TayfamSizes.logoBuyuk * TayfamSizes.logoYaziBoslukOrani),
-    );
+    expect(simge.width, simge.height);
+    expect(simge.width, lessThanOrEqualTo(TayfamSizes.logoBuyuk));
+    final oran = (yazi.left - simge.right) / simge.width;
+    expect(oran, moreOrLessEquals(TayfamSizes.logoYaziBoslukOrani));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('yazı sistem yazı ölçeğiyle büyümez (logo oranı korunur)', (
