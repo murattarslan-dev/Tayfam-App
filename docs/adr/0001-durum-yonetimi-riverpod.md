@@ -29,8 +29,10 @@ Tutarlılık için şu kurallar geçerlidir:
 
 1. **Yalnızca güncel API.** Durum `Notifier` / `AsyncNotifier` (ve
    `StreamNotifier`) ile yazılır; salt değer ve servisler `Provider` ile
-   verilir. `StateNotifier`, `ChangeNotifierProvider`, `StateProvider` ve
-   Riverpod'un eski (legacy) API'leri kullanılmaz.
+   verilir. `StateNotifier`, `ChangeNotifierProvider`, `StateProvider`,
+   `FutureProvider`, `StreamProvider` ve Riverpod'un eski (legacy) API'leri
+   kullanılmaz; tek seferlik veya akış durumu `AsyncNotifier` /
+   `StreamNotifier` ile yazılır (CLAUDE.md ile aynı; 2026-11-10).
 2. **Elle tanım, kod üretimi yok.** Provider'lar `riverpod_generator` ile
    değil elle tanımlanır. API istemcisi kararı `build_runner` getirirse bu
    madde o ADR'de yeniden değerlendirilir.
@@ -83,3 +85,9 @@ birlikte belirlenir.
   kararına kadar ertelendi.
 - **Provider / setState:** Bu ölçekte tayfa kapsamı ve servis yönetimi için
   yetersiz.
+
+## Notlar
+
+- **2026-11-10 (platform sahibi):** Kural 1, CLAUDE.md "Durum ve DI" ile
+  aynı olacak biçimde daraltıldı: `FutureProvider` ve `StreamProvider` de
+  kullanılmaz. Kural betiği (`tool/kurallar`, `riverpod-api`) bunu denetler.
