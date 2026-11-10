@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/presentation/tayfa_degistirme_paneli.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -31,12 +32,13 @@ class TayfaAnaSayfa extends ConsumerWidget {
           TayfaUstBolumu(ad: ad),
           Expanded(
             child: ListView(
-              // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
               children: [
                 Text(
                   metinler.tayfa_ana_sayfa_bos,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: context.yazi.bodyLarge?.copyWith(
+                    color: context.renkler.metinGovde,
+                  ),
                 ),
               ],
             ),
@@ -47,12 +49,9 @@ class TayfaAnaSayfa extends ConsumerWidget {
   }
 }
 
-/// Tayfa ana sayfasının mor üst bölümü (ADR-0004 §2a): tayfa adı ve
-/// dokununca alttan açılan tayfa değiştirme paneli.
-///
-/// Renkler şimdilik `colorScheme.primary` zemin + `onPrimary` metindir;
-/// tema (#6) marka renklerini (`brand` + beyaz) buraya getirir.
-// TODO(#6): TayfamColors.brand zemin, beyaz metin; iki temada aynı.
+/// Tayfa ana sayfasının mor üst bölümü (ADR-0004 §2a): `brand` zemin üzerinde
+/// beyaz tayfa adı; dokununca alttan tayfa değiştirme paneli açılır. İki
+/// temada da aynıdır; odak çerçevesi mor yüzeyde mangodur.
 class TayfaUstBolumu extends StatelessWidget {
   const TayfaUstBolumu({super.key, required this.ad});
 
@@ -62,40 +61,69 @@ class TayfaUstBolumu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final renkler = Theme.of(context).colorScheme;
-    final durumCubugu =
-        ThemeData.estimateBrightnessForColor(renkler.primary) == Brightness.dark
-        ? SystemUiOverlayStyle.light
-        : SystemUiOverlayStyle.dark;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: durumCubugu,
-      child: ColoredBox(
-        color: renkler.primary,
-        child: SafeArea(
-          bottom: false,
-          child: Padding(
-            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TextButton(
-                onPressed: () => unawaited(tayfaDegistirmePaneliniAc(context)),
-                style: TextButton.styleFrom(
-                  foregroundColor: renkler.onPrimary,
-                  textStyle: Theme.of(context).textTheme.headlineSmall,
-                ),
-                child: Semantics(
-                  hint: metinler.tayfa_degistir_ipucu,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(child: Text(ad)),
-                      const Icon(Icons.expand_more),
-                    ],
-                  ),
-                ),
-              ),
+    return MarkaYuzeyi(
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.s4,
+            TayfamSpacing.s8,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s20,
+          ),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: _TayfaAdiDugmesi(
+              ad: ad,
+              ipucu: metinler.tayfa_degistir_ipucu,
+              // Panel bu (MarkaYuzeyi dışındaki) bağlamla açılır; böylece
+              // panel mor yüzeyin temasını (mango odak) devralmaz.
+              onPressed: () => unawaited(tayfaDegistirmePaneliniAc(context)),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TayfaAdiDugmesi extends StatelessWidget {
+  const _TayfaAdiDugmesi({
+    required this.ad,
+    required this.ipucu,
+    required this.onPressed,
+  });
+
+  final String ad;
+  final String ipucu;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return OdakCercevesi(
+      koseler: TayfamRadii.dugmeKoseleri,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: r.markaYuzeyUstu,
+          textStyle: context.yazi.headlineSmall,
+          padding: const EdgeInsets.symmetric(
+            horizontal: TayfamSpacing.s12,
+            vertical: TayfamSpacing.s8,
+          ),
+          // Odak çerçevesini OdakCercevesi çizer.
+          side: BorderSide.none,
+        ),
+        child: Semantics(
+          hint: ipucu,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(child: Text(ad)),
+              const SizedBox(width: TayfamSpacing.s4),
+              const ExcludeSemantics(child: Icon(Icons.expand_more)),
+            ],
           ),
         ),
       ),

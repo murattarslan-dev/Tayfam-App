@@ -27,7 +27,9 @@ void main() {
       'mango': (r.mango, '#FFB000'),
       'nar (pomegranate)': (r.nar, '#FF3D68'),
       'vurguUstu (ink)': (r.vurguUstu, '#1B1036'),
-      'odak (mango)': (r.odak, '#FFB000'),
+      // ADR-0004 Notlar (2026-11-10): açık zeminde brand, mor yüzeyde mango.
+      'odak (brand)': (r.odak, '#5B2BE0'),
+      'markaYuzeyOdak (mango)': (r.markaYuzeyOdak, '#FFB000'),
     };
     for (final MapEntry(key: ad, value: (renk, hex)) in beklenen.entries) {
       expect(_hex(renk), hex, reason: ad);
@@ -56,9 +58,21 @@ void main() {
       'teal': (r.teal, '#00C2A8'),
       'mango': (r.mango, '#FFB000'),
       'nar': (r.nar, '#FF3D68'),
+      'odak (mango)': (r.odak, '#FFB000'),
+      'markaYuzeyOdak (mango)': (r.markaYuzeyOdak, '#FFB000'),
     };
     for (final MapEntry(key: ad, value: (renk, hex)) in beklenen.entries) {
       expect(_hex(renk), hex, reason: ad);
+    }
+  });
+
+  test('marka yüzeyinde odak markaYuzeyOdak olur, diğerleri değişmez', () {
+    for (final r in [TayfamColors.acik, TayfamColors.koyu]) {
+      final yuzey = r.markaYuzeyIcin();
+      expect(yuzey.odak, r.markaYuzeyOdak);
+      expect(yuzey.markaYuzey, r.markaYuzey);
+      expect(yuzey.zemin, r.zemin);
+      expect(yuzey.birincilEylem, r.birincilEylem);
     }
   });
 
@@ -81,6 +95,8 @@ void main() {
     expect(bas.zemin, TayfamColors.acik.zemin);
     expect(son.zemin, TayfamColors.koyu.zemin);
     expect(son.birincilEylem, TayfamColors.koyu.birincilEylem);
+    expect(son.odak, TayfamColors.koyu.odak);
+    expect(son.markaYuzeyOdak, TayfamColors.koyu.markaYuzeyOdak);
     expect(TayfamColors.acik.lerp(null, .5), same(TayfamColors.acik));
   });
 }

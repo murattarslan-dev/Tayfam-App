@@ -8,6 +8,7 @@ export 'package:tayfam/core/bilesenler/etiket.dart';
 export 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
 export 'package:tayfam/core/bilesenler/faydali_sayaci.dart';
 export 'package:tayfam/core/bilesenler/ikincil_eylem.dart';
+export 'package:tayfam/core/bilesenler/marka_yuzeyi.dart';
 export 'package:tayfam/core/bilesenler/odak_cercevesi.dart';
 export 'package:tayfam/core/bilesenler/sohbet_balonu.dart';
 export 'package:tayfam/core/bilesenler/tayfam_kart.dart';
