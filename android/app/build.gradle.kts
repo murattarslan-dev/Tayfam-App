@@ -18,7 +18,7 @@ val gelistirmeAnahtari: File? =
         ?.takeIf { it.isFile }
 
 android {
-    namespace = "app.tayfam"
+    namespace = "com.murattarslan.tayfam"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "app.tayfam"
+        applicationId = "com.murattarslan.tayfam"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
