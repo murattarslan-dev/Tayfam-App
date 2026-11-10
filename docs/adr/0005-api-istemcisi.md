@@ -9,7 +9,7 @@
 
 İstemcinin konuştuğu tek sözleşme Tayfam-Api'deki
 `api/openapi/gateway.yaml`'dır: OpenAPI 3.1, 144 işlem, `x-problem-types`
-altında 95 hata kodu. Sözleşme önce değişir (CLAUDE.md kesin kural 1).
+altında 97 hata kodu (2026-11-10). Sözleşme önce değişir (CLAUDE.md kesin kural 1).
 Token kuralları: erişim token'ı 15 dakika; yenileme token'ı her kullanımda
 değişir, kullanılmış token tekrar gelirse oturum tamamen kapanır; aynı anda
 gelen meşru çift yenilemeler için birkaç saniyelik tolerans vardır ve bu
