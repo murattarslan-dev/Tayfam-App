@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
@@ -12,6 +13,7 @@ import 'package:tayfam/shell/okunmamis.dart';
 /// Dar ekranda alt gezinme çubuğu, en az [TayfamSizes.genisEkranEsigi]
 /// genişlikte solda dikey gezinme çubuğu gösterilir (ADR-0004 §5).
 /// Sekmelerin sırası `yonlendirici.dart`'taki dalların sırasıyla aynıdır.
+/// Uygulama ön plana dönünce tayfa listesi yenilenir ([TayfaYenileyici]).
 class KabukIskeleti extends ConsumerWidget {
   const KabukIskeleti({super.key, required this.navigationShell});
 
@@ -80,14 +82,14 @@ class KabukIskeleti extends ConsumerWidget {
                 ],
               ),
             ),
-            Expanded(child: navigationShell),
+            Expanded(child: TayfaYenileyici(child: navigationShell)),
           ],
         ),
       );
     }
 
     return Scaffold(
-      body: navigationShell,
+      body: TayfaYenileyici(child: navigationShell),
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: _sekmeyeGit,

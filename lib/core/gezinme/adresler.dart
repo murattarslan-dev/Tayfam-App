@@ -39,7 +39,7 @@ abstract final class Adresler {
   /// "Güncelleme gerekli" ekranı (ADR-0012 §1.1).
   static const guncelleme = '/guncelleme';
 
-  /// Tayfaya kodla katılma ve tayfa oluşturma akışları (ayrı paketler).
-  static const tayfaKatil = '/tayfa-katil';
+  /// Tayfa oluşturma sihirbazı (ADR-0014 §4). Kodla katılım alttan açılan
+  /// bir sayfadır; adresi yoktur.
   static const tayfaOlustur = '/tayfa-olustur';
 }
