@@ -26,6 +26,7 @@ olarak anar.
 | [0011](0011-yalnizca-mobil.md) | Yalnızca mobil istemci; web yalnızca geliştirme derlemesi | Kabul edildi |
 | [0012](0012-giris-ve-kayit-akisi.md) | Açılış, giriş, kayıt ve yeniden onay akışı | Kabul edildi |
 | [0013](0013-tanitim-sitesi.md) | Tanıtım sitesi (tayfam.app) bu repoda, CI ile Cloudflare Pages'e | Kabul edildi |
+| [0014](0014-tayfa-listesi-katilim-ve-olusturma.md) | Tayfalarım, aktif tayfa, kodla katılım ve tayfa oluşturma | Kabul edildi |
 
 ## Şablon
 

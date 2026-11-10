@@ -20,7 +20,8 @@ ilkesi: tutmadığın veri çalınamaz).
 ## Karar
 
 **Uygulama, token dışında hiçbir kullanıcı içeriğini diske yazmaz.** Mobilde
-güvenli depodaki token'lar (ADR-0005) ve kullanıcı ayarları (tema, dil)
+güvenli depodaki token'lar (ADR-0005) ve kullanıcı ayarları (tema, dil,
+son aktif tayfanın kimliği; ADR-0014)
 dışında kalıcı veri yoktur. Token kaydıyla birlikte güvenli depoda
 yalnızca yönlendirme için iki oturum bayrağı (`registration_pending`,
 `consent_required`) tutulur; bunlar içerik değildir (platform sahibi,
