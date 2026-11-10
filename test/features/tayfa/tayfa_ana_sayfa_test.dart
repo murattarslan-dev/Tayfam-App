@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/tema/tema_baglami.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
 import '../../yardimcilar.dart';
@@ -21,34 +25,95 @@ void main() {
     expect(find.text(arbMetni('tayfa_ana_sayfa_bos')), findsOneWidget);
   });
 
-  testWidgets('üst bölüm mor (primary) zemin, onPrimary metin', (tester) async {
-    ekranBoyutu(tester);
-    await widgetAc(
+  for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+    final r = mod == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
+
+    testWidgets('${mod.name}: üst bölüm brand zemin, beyaz ad', (tester) async {
+      ekranBoyutu(tester);
+      await widgetAc(
+        tester,
+        const TayfaAnaSayfa(tayfaId: ornekTayfaId),
+        themeMode: mod,
+        overrides: [tayfaAdiProvider.overrideWith((ref, id) => 'Klasikçiler')],
+      );
+
+      // Mor yüzey ortak bileşenle çizilir; iki temada da brand (§2a).
+      expect(
+        find.descendant(
+          of: find.byType(TayfaUstBolumu),
+          matching: find.byType(MarkaYuzeyi),
+        ),
+        findsOneWidget,
+      );
+      final zemin = tester.widget<ColoredBox>(
+        find
+            .descendant(
+              of: find.byType(TayfaUstBolumu),
+              matching: find.byType(ColoredBox),
+            )
+            .first,
+      );
+      expect(zemin.color, r.markaYuzey);
+
+      final ad = tester.widget<RichText>(
+        find.descendant(
+          of: find.text('Klasikçiler'),
+          matching: find.byType(RichText),
+        ),
+      );
+      expect(ad.text.style?.color, r.markaYuzeyUstu);
+    });
+
+    testWidgets('${mod.name}: tayfa adında mango odak çerçevesi', (
       tester,
-      const TayfaAnaSayfa(tayfaId: ornekTayfaId),
-      overrides: [tayfaAdiProvider.overrideWith((ref, id) => 'Klasikçiler')],
-    );
+    ) async {
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(() {
+        FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.automatic;
+      });
+      ekranBoyutu(tester);
+      await widgetAc(
+        tester,
+        const TayfaAnaSayfa(tayfaId: ornekTayfaId),
+        themeMode: mod,
+      );
 
-    final context = tester.element(find.byType(TayfaUstBolumu));
-    final renkler = Theme.of(context).colorScheme;
-    final zemin = tester.widget<ColoredBox>(
-      find
-          .descendant(
-            of: find.byType(TayfaUstBolumu),
-            matching: find.byType(ColoredBox),
-          )
-          .first,
-    );
-    expect(zemin.color, renkler.primary);
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
 
-    final ad = tester.widget<RichText>(
-      find.descendant(
-        of: find.text('Klasikçiler'),
-        matching: find.byType(RichText),
-      ),
-    );
-    expect(ad.text.style?.color, renkler.onPrimary);
-  });
+      final cerceve = find.descendant(
+        of: find.byType(TayfaUstBolumu),
+        matching: find.byWidgetPredicate(
+          (w) => w is CustomPaint && w.foregroundPainter is OdakBoyaci,
+        ),
+      );
+      expect(cerceve, findsOneWidget);
+      final boya = tester.widget<CustomPaint>(cerceve);
+      final boyaci = boya.foregroundPainter! as OdakBoyaci;
+      // Mor yüzeyde iki temada da mango (ADR-0004 Notlar, 2026-11-10).
+      expect(boyaci.renk, r.mango);
+      expect(boyaci.kalinlik, 3);
+    });
+
+    testWidgets('${mod.name}: panel mor yüzeyin odak rengini almıyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await widgetAc(
+        tester,
+        const TayfaAnaSayfa(tayfaId: ornekTayfaId),
+        themeMode: mod,
+      );
+
+      await tester.tap(_tayfaAdiDugmesi);
+      await tester.pumpAndSettle();
+
+      final panel = tester.element(find.byType(TayfaDegistirmePaneli));
+      expect(panel.renkler.odak, r.odak);
+    });
+  }
 
   testWidgets('tayfa adına dokununca değiştirme paneli açılıyor', (
     tester,

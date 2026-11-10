@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa değiştirme panelini alttan açar (ADR-0003).
@@ -52,33 +53,42 @@ class TayfaDegistirmePaneli extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final yazi = Theme.of(context).textTheme;
+    final yazi = context.yazi;
     return ListView(
       shrinkWrap: true,
-      // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: TayfamSpacing.s16),
       children: [
         Padding(
-          // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: TayfamSpacing.kenarMobil,
+          ),
           child: Semantics(
             header: true,
             child: Text(metinler.tayfa_tayfalarim, style: yazi.titleMedium),
           ),
         ),
         Padding(
-          // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Text(metinler.tayfa_tayfalarim_bos, style: yazi.bodyMedium),
+          padding: const EdgeInsets.fromLTRB(
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s8,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s16,
+          ),
+          child: Text(
+            metinler.tayfa_tayfalarim_bos,
+            style: yazi.bodyMedium?.copyWith(color: context.renkler.metinGovde),
+          ),
         ),
         const Divider(),
         ListTile(
-          leading: const Icon(Icons.vpn_key_outlined),
+          leading: const ExcludeSemantics(child: Icon(Icons.vpn_key_outlined)),
           title: Text(metinler.tayfa_kodla_katil),
           onTap: onKodlaKatil,
         ),
         ListTile(
-          leading: const Icon(Icons.add_circle_outline),
+          leading: const ExcludeSemantics(
+            child: Icon(Icons.add_circle_outline),
+          ),
           title: Text(metinler.tayfa_olustur),
           onTap: onTayfaOlustur,
         ),
