@@ -31,12 +31,23 @@ final class _SahteTasima implements ApiTransport {
   Future<Object?> send({
     required String method,
     required String pathTemplate,
+    required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
-    istekler.add(_Istek(method, pathTemplate, pathParams, query, body, expect));
+    istekler.add(
+      _Istek(
+        method,
+        pathTemplate,
+        pathParams,
+        query,
+        body,
+        expect,
+        authenticated,
+      ),
+    );
     return yanit;
   }
 }
@@ -49,6 +60,7 @@ final class _Istek {
     this.query,
     this.body,
     this.expect,
+    this.authenticated,
   );
 
   final String method;
@@ -57,6 +69,7 @@ final class _Istek {
   final Map<String, String> query;
   final Object? body;
   final ResponseKind expect;
+  final bool authenticated;
 }
 
 void main() {
@@ -161,6 +174,7 @@ void main() {
         expect(istek.query, isEmpty);
         expect(istek.body, {'name': 'Yeni ad'});
         expect(istek.expect, ResponseKind.json);
+        expect(istek.authenticated, isTrue);
         expect(tayfa, Tayfa.fromJson(_tayfaJson()));
       },
     );
@@ -213,6 +227,23 @@ void main() {
 
       expect(takvim, 'BEGIN:VCALENDAR');
       expect(tasima.istekler.single.expect, ResponseKind.text);
+    });
+
+    test('security: [] uçları kimliksiz, diğerleri kimlikli gider', () async {
+      final tasima = _SahteTasima();
+      await AuthApi(tasima).signOut();
+      await expectLater(
+        AuthApi(tasima).refresh(
+          body: const RefreshRequest(refreshToken: 'ornek'),
+        ),
+        throwsFormatException,
+      );
+
+      expect(tasima.istekler.map((i) => i.pathTemplate), [
+        '/v1/auth/sign-out',
+        '/v1/auth/refresh',
+      ]);
+      expect(tasima.istekler.map((i) => i.authenticated), [true, false]);
     });
 
     test('nesne olmayan JSON yanıtı FormatException', () async {

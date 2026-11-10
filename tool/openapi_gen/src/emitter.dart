@@ -480,7 +480,10 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
     ],
     '',
     '`${op.method} ${op.path}`',
-    if (op.noAuth) ...['', 'Kimlik doğrulaması gerektirmez (`security: []`).'],
+    if (!op.authenticated) ...[
+      '',
+      'Kimlik doğrulaması gerektirmez (`security: []`).',
+    ],
   ];
   for (final param in op.params) {
     if (param.doc.isEmpty) continue;
@@ -567,7 +570,9 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
     args.add('query: {$entries}');
   }
   if (bodyExpr != null) args.add('body: $bodyExpr');
-  args.add('expect: $expect');
+  args
+    ..add('expect: $expect')
+    ..add('authenticated: ${op.authenticated}');
 
   final call = '_transport.send(${args.join(', ')},)';
   final id = dartString(op.operationId);
@@ -625,11 +630,15 @@ abstract interface class ApiTransport {
   ///   yüzde kodlamasıyla (`Uri.encodeComponent`) yerleştirir.
   /// - [query]: yalnızca verilen sorgu parametreleri, dize olarak.
   /// - [body]: JSON'a çevrilecek gövde; `null` ise gövde gönderilmez.
+  /// - [authenticated]: sözleşmedeki geçerli `security`'den gelir;
+  ///   `false` (`security: []`) ise uygulama `Authorization` eklemez ve
+  ///   token yenilemeyi denemez. Yoldan tahmin edilmez.
   ///
   /// Hata yanıtında tipli değer döndürmez, `ApiProblem` fırlatır.
   Future<Object?> send({
     required String method,
     required String pathTemplate,
+    required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
     Object? body,

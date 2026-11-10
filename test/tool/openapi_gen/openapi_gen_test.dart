@@ -17,11 +17,16 @@ String _spec({
   Map<String, Object?> schemas = const {},
   Map<String, Object?> parameters = const {},
   List<String> problems = const ['invalid-request', 'not-found'],
+  Object? security = _defaultSecurity,
 }) => jsonEncode({
   'openapi': '3.1.0',
   'info': {'title': 'Örnek', 'version': '0.1.0'},
   'paths': paths,
+  'security': ?security,
   'components': {
+    'securitySchemes': {
+      'bearer': {'type': 'http', 'scheme': 'bearer'},
+    },
     'schemas': schemas,
     'parameters': parameters,
     'responses': {
@@ -37,6 +42,11 @@ String _spec({
     },
   },
 });
+
+/// Kökteki varsayılan güvenlik: gateway.yaml'daki gibi bearer.
+const List<Object?> _defaultSecurity = [
+  {'bearer': <Object?>[]},
+];
 
 Map<String, Object?> _ref(String name) => {
   r'$ref': '#/components/schemas/$name',
@@ -602,6 +612,36 @@ void main() {
       );
     });
 
+    test('kimlik doğrulaması sözleşmeden her çağrıya yazılır', () {
+      final config = result.files['apis/client_config_api.dart']!;
+      expect(config, contains('authenticated: false'));
+      expect(config, isNot(contains('authenticated: true')));
+      // security'si olmayan işlemler kökteki varsayılanı alır.
+      for (final file in [
+        'apis/tayfas_api.dart',
+        'apis/events_api.dart',
+        'apis/me_api.dart',
+      ]) {
+        final code = result.files[file]!;
+        expect(code, contains('authenticated: true'), reason: file);
+        expect(code, isNot(contains('authenticated: false')), reason: file);
+        expect(
+          code,
+          isNot(contains('Kimlik doğrulaması gerektirmez')),
+          reason: file,
+        );
+        expect(
+          'authenticated: true'.allMatches(code).length,
+          '_transport.send('.allMatches(code).length,
+          reason: file,
+        );
+      }
+      expect(
+        result.files['transport.dart'],
+        contains('required bool authenticated,'),
+      );
+    });
+
     test('farklı şemalı başarılı yanıtlar hata verir', () {
       final bad = _spec(
         schemas: {
@@ -621,6 +661,84 @@ void main() {
         },
       );
       expect(() => _generate(bad), throwsA(isA<GenException>()));
+    });
+  });
+
+  group('kimlik doğrulaması', () {
+    String specWith({
+      Object? opSecurity,
+      Object? rootSecurity = _defaultSecurity,
+    }) => _spec(
+      security: rootSecurity,
+      schemas: {
+        'Thing': {'type': 'object'},
+      },
+      paths: {
+        '/v1/things': {
+          'get': {
+            'operationId': 'getThing',
+            'security': ?opSecurity,
+            'responses': {
+              '200': {'description': 'Şey', ..._json(_ref('Thing'))},
+            },
+          },
+        },
+      },
+    );
+
+    String things(String spec) =>
+        _generate(spec).files['apis/things_api.dart']!;
+
+    test('kökteki security işlemde yoksa geçerlidir', () {
+      expect(things(specWith()), contains('authenticated: true'));
+    });
+
+    test('işlemdeki security: [] köktekini ezer', () {
+      expect(
+        things(specWith(opSecurity: <Object?>[])),
+        contains('authenticated: false'),
+      );
+    });
+
+    test('kök boşsa ve işlemde bearer varsa kimlik doğrulaması gerekir', () {
+      final code = things(
+        specWith(rootSecurity: <Object?>[], opSecurity: _defaultSecurity),
+      );
+      expect(code, contains('authenticated: true'));
+    });
+
+    test('kökte de işlemde de security yoksa hata verir', () {
+      expect(
+        () => _generate(specWith(rootSecurity: null)),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('isteğe bağlı kimlik doğrulaması ({}) hata verir', () {
+      expect(
+        () => _generate(
+          specWith(
+            opSecurity: [
+              {'bearer': <Object?>[]},
+              <String, Object?>{},
+            ],
+          ),
+        ),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('tanımsız güvenlik şeması hata verir', () {
+      expect(
+        () => _generate(
+          specWith(
+            opSecurity: [
+              {'apiKey': <Object?>[]},
+            ],
+          ),
+        ),
+        throwsA(isA<GenException>()),
+      );
     });
   });
 

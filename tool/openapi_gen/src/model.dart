@@ -189,7 +189,7 @@ final class OperationDef {
     required this.params,
     required this.body,
     required this.response,
-    required this.noAuth,
+    required this.authenticated,
   });
 
   final String operationId;
@@ -206,8 +206,10 @@ final class OperationDef {
   final BodyDef? body;
   final ResponseShape response;
 
-  /// İşlemde `security: []` var: kimlik doğrulaması gerektirmez.
-  final bool noAuth;
+  /// Sözleşmedeki geçerli `security` (işleminki, yoksa kökteki) boş
+  /// değil: istek erişim token'ıyla gider. `security: []` olan uçlarda
+  /// `false`; `ApiClient` bu uçlarda token eklemez ve yenileme denemez.
+  final bool authenticated;
 }
 
 /// Sözleşmenin üretilecek tamamı.

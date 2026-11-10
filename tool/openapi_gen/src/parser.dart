@@ -512,7 +512,6 @@ final class _Parser {
       throw GenException('$at: parametre adları çakışıyor');
     }
 
-    final security = op['security'];
     return OperationDef(
       operationId: id,
       method: method.toUpperCase(),
@@ -523,8 +522,49 @@ final class _Parser {
       params: params,
       body: body,
       response: _response(_asMap(op['responses'], '$at.responses'), at),
-      noAuth: security is List<Object?> && security.isEmpty,
+      authenticated: _authenticated(op['security'], at),
     );
+  }
+
+  /// İşlemin geçerli `security`'si: işleminki, yoksa kökteki.
+  ///
+  /// Boş liste kimlik doğrulaması gerektirmez. Kimlik doğrulaması yoldan
+  /// tahmin edilmez; ikisi de yoksa ya da isteğe bağlı kimlik doğrulaması
+  /// (`{}`) ya da tanımsız şema varsa hata verir.
+  bool _authenticated(Object? opSecurity, String at) {
+    final String where;
+    final Object? raw;
+    if (opSecurity != null) {
+      where = '$at.security';
+      raw = opSecurity;
+    } else if (root['security'] != null) {
+      where = 'security';
+      raw = root['security'];
+    } else {
+      throw GenException(
+        '$at: security yok ve kökte varsayılan security tanımlı değil',
+      );
+    }
+    final requirements = _asList(raw, where);
+    if (requirements.isEmpty) return false;
+    final components = _asMap(root['components'], 'components');
+    final schemes = components['securitySchemes'] == null
+        ? const <String, Object?>{}
+        : _asMap(components['securitySchemes'], 'components.securitySchemes');
+    for (final requirement in requirements) {
+      final names = _asMap(requirement, where);
+      if (names.isEmpty) {
+        throw GenException(
+          '$where: isteğe bağlı kimlik doğrulaması ({}) desteklenmez',
+        );
+      }
+      for (final name in names.keys) {
+        if (!schemes.containsKey(name)) {
+          throw GenException('$where: tanımsız güvenlik şeması: $name');
+        }
+      }
+    }
+    return true;
   }
 
   /// `/v1/<x>/…` → `<x>`; `/v1/tayfas/{tayfa_id}/<x>/…` → `<x>`.
