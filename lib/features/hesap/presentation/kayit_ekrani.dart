@@ -242,7 +242,7 @@ class _KayitEkraniState extends ConsumerState<KayitEkrani> {
           ),
           if (hata != null) ...[
             const SizedBox(height: TayfamSpacing.s16),
-            HataMetni(metin: hesapHatasiMetni(metinler, hata)),
+            HataSatiri(metin: hesapHatasiMetni(metinler, hata)),
           ],
           const SizedBox(height: TayfamSpacing.s24),
           BirincilEylem(
