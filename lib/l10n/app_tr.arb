@@ -587,7 +587,7 @@
   "@hata_event_ended": {
     "description": "Hata kodu `event-ended`. Bitmiş etkinlikte ya da katılım cevabında değişiklik denendiğinde görünen hata."
   },
-  "hata_event_not_going": "Bunun için önce etkinliğe katılacağını bildir.",
+  "hata_event_not_going": "Bunun için önce etkinlikte \"Geliyorum\" seç.",
   "@hata_event_not_going": {
     "description": "Hata kodu `event-not-going`. Konvoya araç ekleme ya da check-in gibi işlemler 'katılıyorum' cevabı olmadan denendiğinde görünen hata."
   },
@@ -603,7 +603,7 @@
   "@hata_event_type_mismatch": {
     "description": "Hata kodu `event-type-mismatch`. Bir etkinlik türüne özgü işlem (kamp malzemesi, konvoy aracı, yürüyüş) başka türdeki etkinlikte denendiğinde görünen hata."
   },
-  "hata_check_in_closed": "Check-in şu an kapalı. Etkinlik başlamadan 30 dakika önce açılır, etkinlik bitince kapanır.",
+  "hata_check_in_closed": "Varış bildirimi şu an kapalı. Etkinlik başlamadan 30 dakika önce açılır, etkinlik bitince kapanır.",
   "@hata_check_in_closed": {
     "description": "Hata kodu `check-in-closed`. Check-in penceresinin dışında check-in denendiğinde görünen hata."
   },
@@ -611,7 +611,7 @@
   "@hata_check_in_too_far": {
     "description": "Hata kodu `check-in-too-far`. Check-in'de gönderilen konum buluşma noktasından uzak olduğunda görünen hata. Deneme hakkından sayılır; uzaklık söylenmez."
   },
-  "hata_check_in_attempts_exhausted": "Bu etkinlik için check-in deneme hakkın doldu. Katılımını etkinlik bitince düzenleyen ekleyebilir.",
+  "hata_check_in_attempts_exhausted": "Bu etkinlik için varış bildirme hakkın doldu. Katılımını etkinlik bitince etkinliği düzenleyen kişi ekleyebilir.",
   "@hata_check_in_attempts_exhausted": {
     "description": "Hata kodu `check-in-attempts-exhausted`. Kullanıcı etkinlik için konumla check-in hakkının tamamını (beş deneme) kullandığında görünen hata."
   },
