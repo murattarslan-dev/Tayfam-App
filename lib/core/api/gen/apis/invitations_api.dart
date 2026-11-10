@@ -32,6 +32,7 @@ final class InvitationsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return InvitationList.fromJson(jsonObject(response, 'listInvitations'));
   }
@@ -53,6 +54,7 @@ final class InvitationsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Invitation.fromJson(jsonObject(response, 'inviteFriend'));
   }
@@ -69,6 +71,7 @@ final class InvitationsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/invitations/{user_id}',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

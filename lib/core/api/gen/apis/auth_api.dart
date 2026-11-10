@@ -27,6 +27,7 @@ final class AuthApi {
       pathTemplate: '/v1/auth/sign-in',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: false,
     );
     return Session.fromJson(jsonObject(response, 'signIn'));
   }
@@ -46,6 +47,7 @@ final class AuthApi {
       pathTemplate: '/v1/auth/refresh',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: false,
     );
     return Session.fromJson(jsonObject(response, 'refresh'));
   }
@@ -58,6 +60,7 @@ final class AuthApi {
       method: 'POST',
       pathTemplate: '/v1/auth/sign-out',
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

@@ -28,6 +28,7 @@ final class ClientConfigApi {
       method: 'GET',
       pathTemplate: '/v1/client-config',
       expect: ResponseKind.json,
+      authenticated: false,
     );
     return ClientConfig.fromJson(jsonObject(response, 'getClientConfig'));
   }

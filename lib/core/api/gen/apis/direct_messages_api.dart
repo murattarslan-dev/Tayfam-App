@@ -45,6 +45,7 @@ final class DirectMessagesApi {
       pathTemplate: '/v1/direct-messages',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return DirectMessageSent.fromJson(
       jsonObject(response, 'sendDirectMessage'),
@@ -76,6 +77,7 @@ final class DirectMessagesApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ConversationList.fromJson(jsonObject(response, 'listConversations'));
   }
@@ -92,6 +94,7 @@ final class DirectMessagesApi {
       pathTemplate: '/v1/direct-messages/conversations/{conversation_id}',
       pathParams: {'conversation_id': conversationId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Conversation.fromJson(jsonObject(response, 'getConversation'));
   }
@@ -127,6 +130,7 @@ final class DirectMessagesApi {
         if (afterMessageId != null) 'after_message_id': afterMessageId,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return DirectMessageList.fromJson(
       jsonObject(response, 'listDirectMessages'),
@@ -149,6 +153,7 @@ final class DirectMessagesApi {
       pathTemplate: '/v1/direct-messages/conversations/{conversation_id}/messages/{message_id}',
       pathParams: {'conversation_id': conversationId, 'message_id': messageId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -170,6 +175,7 @@ final class DirectMessagesApi {
       pathParams: {'conversation_id': conversationId},
       body: body.toJson(),
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -189,6 +195,7 @@ final class DirectMessagesApi {
           '/v1/direct-messages/conversations/{conversation_id}/accept',
       pathParams: {'conversation_id': conversationId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Conversation.fromJson(jsonObject(response, 'acceptMessageRequest'));
   }
@@ -209,6 +216,7 @@ final class DirectMessagesApi {
           '/v1/direct-messages/conversations/{conversation_id}/decline',
       pathParams: {'conversation_id': conversationId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -237,6 +245,7 @@ final class DirectMessagesApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return DeclinedRequestList.fromJson(
       jsonObject(response, 'listDeclinedRequests'),
@@ -261,6 +270,7 @@ final class DirectMessagesApi {
       pathTemplate: '/v1/direct-messages/declined-requests/{conversation_id}',
       pathParams: {'conversation_id': conversationId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

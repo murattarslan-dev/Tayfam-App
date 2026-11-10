@@ -19,6 +19,7 @@ final class StatusApi {
       method: 'GET',
       pathTemplate: '/v1/status',
       expect: ResponseKind.json,
+      authenticated: false,
     );
     return Status.fromJson(jsonObject(response, 'getStatus'));
   }

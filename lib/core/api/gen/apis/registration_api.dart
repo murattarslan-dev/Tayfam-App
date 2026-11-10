@@ -17,6 +17,7 @@ final class RegistrationApi {
       method: 'GET',
       pathTemplate: '/v1/registration/requirements',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return RegistrationRequirements.fromJson(
       jsonObject(response, 'getRegistrationRequirements'),
@@ -36,6 +37,7 @@ final class RegistrationApi {
       pathTemplate: '/v1/registration',
       body: body.toJson(),
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

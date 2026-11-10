@@ -20,6 +20,7 @@ final class MembershipApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/membership',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

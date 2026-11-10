@@ -19,6 +19,7 @@ final class NotificationPreferencesApi {
       method: 'GET',
       pathTemplate: '/v1/notification-preferences',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return NotificationPreferenceList.fromJson(
       jsonObject(response, 'listNotificationPreferences'),
@@ -44,6 +45,7 @@ final class NotificationPreferencesApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return NotificationPreference.fromJson(
       jsonObject(response, 'setTayfaNotificationPreference'),
@@ -61,6 +63,7 @@ final class NotificationPreferencesApi {
       pathTemplate: '/v1/notification-preferences/tayfas/{tayfa_id}',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

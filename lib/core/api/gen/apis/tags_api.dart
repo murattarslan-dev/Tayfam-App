@@ -20,6 +20,7 @@ final class TagsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/tags',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return TagList.fromJson(jsonObject(response, 'listTags'));
   }
@@ -38,6 +39,7 @@ final class TagsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/tags/{tag_id}',
       pathParams: {'tayfa_id': tayfaId, 'tag_id': tagId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

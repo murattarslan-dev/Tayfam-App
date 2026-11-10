@@ -40,6 +40,7 @@ final class MembersApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return MemberList.fromJson(jsonObject(response, 'listMembers'));
   }
@@ -62,6 +63,7 @@ final class MembersApi {
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Membership.fromJson(jsonObject(response, 'changeMemberRole'));
   }
@@ -80,6 +82,7 @@ final class MembersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/members/{user_id}',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -99,6 +102,7 @@ final class MembersApi {
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Membership.fromJson(jsonObject(response, 'muteMember'));
   }
@@ -115,6 +119,7 @@ final class MembersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/members/{user_id}/mute',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Membership.fromJson(jsonObject(response, 'unmuteMember'));
   }
@@ -133,6 +138,7 @@ final class MembersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/members/{user_id}/ban',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

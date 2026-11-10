@@ -40,6 +40,7 @@ final class ReportsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return MyReport.fromJson(jsonObject(response, 'createReport'));
   }
@@ -78,6 +79,7 @@ final class ReportsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ModerationReportList.fromJson(
       jsonObject(response, 'listTayfaReports'),
@@ -111,6 +113,7 @@ final class ReportsApi {
       pathParams: {'tayfa_id': tayfaId, 'report_id': reportId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ModerationReport.fromJson(jsonObject(response, 'resolveReport'));
   }

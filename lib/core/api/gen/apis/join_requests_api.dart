@@ -32,6 +32,7 @@ final class JoinRequestsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return JoinRequestList.fromJson(jsonObject(response, 'listJoinRequests'));
   }
@@ -50,6 +51,7 @@ final class JoinRequestsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/join-requests/{user_id}',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -65,6 +67,7 @@ final class JoinRequestsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/join-requests/{user_id}/approval',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Membership.fromJson(jsonObject(response, 'approveJoinRequest'));
   }

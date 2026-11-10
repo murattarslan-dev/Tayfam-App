@@ -46,6 +46,7 @@ final class QuestionsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return QuestionList.fromJson(jsonObject(response, 'listQuestions'));
   }
@@ -69,6 +70,7 @@ final class QuestionsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Question.fromJson(jsonObject(response, 'createQuestion'));
   }
@@ -85,6 +87,7 @@ final class QuestionsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/questions/{question_id}',
       pathParams: {'tayfa_id': tayfaId, 'question_id': questionId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Question.fromJson(jsonObject(response, 'getQuestion'));
   }
@@ -110,6 +113,7 @@ final class QuestionsApi {
       pathParams: {'tayfa_id': tayfaId, 'question_id': questionId},
       body: json,
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Question.fromJson(jsonObject(response, 'updateQuestion'));
   }
@@ -130,6 +134,7 @@ final class QuestionsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/questions/{question_id}',
       pathParams: {'tayfa_id': tayfaId, 'question_id': questionId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -150,6 +155,7 @@ final class QuestionsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/questions/{question_id}/restoration',
       pathParams: {'tayfa_id': tayfaId, 'question_id': questionId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Question.fromJson(jsonObject(response, 'restoreQuestion'));
   }
@@ -181,6 +187,7 @@ final class QuestionsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return AnswerList.fromJson(jsonObject(response, 'listAnswers'));
   }
@@ -202,6 +209,7 @@ final class QuestionsApi {
       pathParams: {'tayfa_id': tayfaId, 'question_id': questionId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Answer.fromJson(jsonObject(response, 'createAnswer'));
   }

@@ -36,6 +36,7 @@ final class EventsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return EventList.fromJson(jsonObject(response, 'listUpcomingEvents'));
   }
@@ -59,6 +60,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Event.fromJson(jsonObject(response, 'createEvent'));
   }
@@ -79,6 +81,7 @@ final class EventsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}',
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Event.fromJson(jsonObject(response, 'getEvent'));
   }
@@ -117,6 +120,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: json,
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Event.fromJson(jsonObject(response, 'updateEvent'));
   }
@@ -138,6 +142,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Event.fromJson(jsonObject(response, 'cancelEvent'));
   }
@@ -161,6 +166,7 @@ final class EventsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/calendar',
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       expect: ResponseKind.text,
+      authenticated: true,
     );
     return textBody(response, 'exportEventCalendar');
   }
@@ -185,6 +191,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Rsvp.fromJson(jsonObject(response, 'setEventRsvp'));
   }
@@ -220,6 +227,7 @@ final class EventsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return AttendeeList.fromJson(jsonObject(response, 'listEventAttendees'));
   }
@@ -243,6 +251,7 @@ final class EventsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance',
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -261,6 +270,7 @@ final class EventsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance',
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -294,6 +304,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return CheckIn.fromJson(jsonObject(response, 'checkInToEvent'));
   }
@@ -315,6 +326,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return HikeCheckin.fromJson(jsonObject(response, 'startHike'));
   }
@@ -336,6 +348,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return HikeCheckin.fromJson(jsonObject(response, 'finishHike'));
   }
@@ -358,6 +371,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return CampItem.fromJson(jsonObject(response, 'addCampItem'));
   }
@@ -376,6 +390,7 @@ final class EventsApi {
           '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}',
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'item_id': itemId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -397,6 +412,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ConvoyVehicle.fromJson(jsonObject(response, 'addConvoyVehicle'));
   }
@@ -420,6 +436,7 @@ final class EventsApi {
         'vehicle_id': vehicleId,
       },
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -450,6 +467,7 @@ final class EventsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return FishingCatchList.fromJson(
       jsonObject(response, 'listFishingCatches'),
@@ -475,6 +493,7 @@ final class EventsApi {
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return FishingCatch.fromJson(jsonObject(response, 'addFishingCatch'));
   }
@@ -499,6 +518,7 @@ final class EventsApi {
         'catch_id': catchId,
       },
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

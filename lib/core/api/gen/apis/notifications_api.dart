@@ -37,6 +37,7 @@ final class NotificationsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return NotificationList.fromJson(jsonObject(response, 'listNotifications'));
   }
@@ -49,6 +50,7 @@ final class NotificationsApi {
       method: 'GET',
       pathTemplate: '/v1/notifications/unread-count',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return UnreadNotificationCount.fromJson(
       jsonObject(response, 'getUnreadNotificationCount'),
@@ -63,6 +65,7 @@ final class NotificationsApi {
       method: 'POST',
       pathTemplate: '/v1/notifications/read-all',
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -79,6 +82,7 @@ final class NotificationsApi {
       pathTemplate: '/v1/notifications/{notification_id}/read',
       pathParams: {'notification_id': notificationId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

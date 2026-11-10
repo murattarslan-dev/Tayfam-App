@@ -27,6 +27,7 @@ final class ChannelsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/channels',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ChannelList.fromJson(jsonObject(response, 'listChannels'));
   }
@@ -48,6 +49,7 @@ final class ChannelsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Channel.fromJson(jsonObject(response, 'createChannel'));
   }
@@ -67,6 +69,7 @@ final class ChannelsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/channels/{channel_id}',
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Channel.fromJson(jsonObject(response, 'getChannel'));
   }
@@ -91,6 +94,7 @@ final class ChannelsApi {
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       body: json,
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Channel.fromJson(jsonObject(response, 'updateChannel'));
   }
@@ -109,6 +113,7 @@ final class ChannelsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/channels/{channel_id}/archive',
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Channel.fromJson(jsonObject(response, 'archiveChannel'));
   }
@@ -127,6 +132,7 @@ final class ChannelsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/channels/{channel_id}/archive',
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Channel.fromJson(jsonObject(response, 'unarchiveChannel'));
   }
@@ -164,6 +170,7 @@ final class ChannelsApi {
         if (afterMessageId != null) 'after_message_id': afterMessageId,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ChannelMessageList.fromJson(
       jsonObject(response, 'listChannelMessages'),
@@ -198,6 +205,7 @@ final class ChannelsApi {
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ChannelMessage.fromJson(jsonObject(response, 'sendChannelMessage'));
   }
@@ -227,6 +235,7 @@ final class ChannelsApi {
         'message_id': messageId,
       },
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -251,6 +260,7 @@ final class ChannelsApi {
         'message_id': messageId,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ChannelMessage.fromJson(
       jsonObject(response, 'restoreChannelMessage'),
@@ -275,6 +285,7 @@ final class ChannelsApi {
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       body: body.toJson(),
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

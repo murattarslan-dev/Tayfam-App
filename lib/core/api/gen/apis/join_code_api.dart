@@ -21,6 +21,7 @@ final class JoinCodeApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/join-code',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return JoinCode.fromJson(jsonObject(response, 'rotateJoinCode'));
   }

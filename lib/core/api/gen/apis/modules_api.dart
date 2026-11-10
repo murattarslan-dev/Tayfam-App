@@ -25,6 +25,7 @@ final class ModulesApi {
       pathParams: {'tayfa_id': tayfaId, 'module': module.wire},
       body: body.toJson(),
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }
