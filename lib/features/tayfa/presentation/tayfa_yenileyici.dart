@@ -23,8 +23,7 @@ class _TayfaYenileyiciState extends ConsumerState<TayfaYenileyici> {
   void initState() {
     super.initState();
     _dinleyici = AppLifecycleListener(
-      onResume: () =>
-          unawaited(ref.read(tayfalarimProvider.notifier).yenile()),
+      onResume: () => unawaited(ref.read(tayfalarimProvider.notifier).yenile()),
     );
   }
 

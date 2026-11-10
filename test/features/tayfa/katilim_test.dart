@@ -29,6 +29,8 @@ Future<SahteTayfaTasima> _ac(
     themeMode: themeMode,
     tayfa: tayfaOverridelari(tasima: tasima),
   );
+  await tester.ensureVisible(find.text(arbMetni('karsilama_kodum_var')));
+  await tester.pumpAndSettle();
   await tester.tap(find.text(arbMetni('karsilama_kodum_var')));
   await tester.pumpAndSettle();
   expect(find.byType(KodlaKatilmaSayfasi), findsOneWidget);
@@ -37,6 +39,8 @@ Future<SahteTayfaTasima> _ac(
 
 Future<void> _gonder(WidgetTester tester, String kod) async {
   await tester.enterText(find.byType(TextField), kod);
+  await tester.ensureVisible(find.text(arbMetni('katilim_gonder')));
+  await tester.pumpAndSettle();
   await tester.tap(find.text(arbMetni('katilim_gonder')));
   await tester.pumpAndSettle();
 }
@@ -56,10 +60,9 @@ void main() {
 
     await _gonder(tester, '  $sahteKod ');
 
-    expect(
-      tasima.giden('POST', '/v1/tayfa-joins').single.govde,
-      {'code': sahteKod},
-    );
+    expect(tasima.giden('POST', '/v1/tayfa-joins').single.govde, {
+      'code': sahteKod,
+    });
     expect(find.byType(KodlaKatilmaSayfasi), findsNothing);
     expect(find.byType(TayfaAnaSayfa), findsOneWidget);
     expect(_yol(tester), '/t/$ornekTayfaId');
@@ -156,4 +159,3 @@ void main() {
     });
   }
 }
-

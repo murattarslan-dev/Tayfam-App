@@ -18,8 +18,13 @@ const String sahteKod = 'K7M2Q9XA';
 
 /// Gönderilen bir istek.
 final class TayfaIstegi {
-  const TayfaIstegi(this.method, this.yol, this.yolParametreleri, this.sorgu,
-      this.govde);
+  const TayfaIstegi(
+    this.method,
+    this.yol,
+    this.yolParametreleri,
+    this.sorgu,
+    this.govde,
+  );
 
   final String method;
   final String yol;
@@ -89,12 +94,7 @@ Map<String, Object?> tayfaJson({
   'description': '',
   'interests': ['convoy'],
   'join_policy': 'approval',
-  'modules': {
-    'announcements': true,
-    'events': true,
-    'qa': true,
-    'polls': true,
-  },
+  'modules': {'announcements': true, 'events': true, 'qa': true, 'polls': true},
   'status': durum,
   'suspended_at': ?askida,
   'deletion_at': ?silinme,
@@ -190,7 +190,11 @@ List<Override> tayfaOverridelari({
 }) {
   final t = tasima ?? SahteTayfaTasima();
   t.yanitlar
-    ..putIfAbsent('GET /v1/tayfas', () => (_) => listeJson(const []))
+    ..putIfAbsent(
+      'GET /v1/tayfas',
+      () =>
+          (_) => listeJson(const []),
+    )
     ..putIfAbsent(
       'GET /v1/tayfas/{tayfa_id}',
       () =>

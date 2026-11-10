@@ -169,10 +169,8 @@ void main() {
         tester,
         tayfa: tayfaOverridelari(
           tasima: SahteTayfaTasima({
-            'GET /v1/tayfas': (_) => listeJson([
-              etkinJson(ornekTayfaId),
-              etkinJson(ikinciTayfaId),
-            ]),
+            'GET /v1/tayfas': (_) =>
+                listeJson([etkinJson(ornekTayfaId), etkinJson(ikinciTayfaId)]),
           }),
           sonTayfa: BellekSonTayfaDeposu(ikinciTayfaId),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
@@ -13,10 +14,12 @@ import 'package:tayfam/features/tayfa/tayfa.dart';
 import '../../yardimcilar.dart';
 import 'sahteler.dart';
 
-final Finder _tayfaAdiDugmesi = find.descendant(
-  of: find.byType(TayfaUstBolumu),
-  matching: find.byType(TextButton),
-).first;
+final Finder _tayfaAdiDugmesi = find
+    .descendant(
+      of: find.byType(TayfaUstBolumu),
+      matching: find.byType(TextButton),
+    )
+    .first;
 
 /// `GET /v1/tayfas/{tayfa_id}` yanıtı verilen tayfa override'ları.
 List<Override> _gorunum(
@@ -87,10 +90,7 @@ void main() {
       await _ac(
         tester,
         tayfa: _gorunum(
-          (_) => gorunumJson(
-            ornekTayfaId,
-            silinme: zaman.toIso8601String(),
-          ),
+          (_) => gorunumJson(ornekTayfaId, silinme: zaman.toIso8601String()),
         ),
       );
 

@@ -170,10 +170,7 @@ class TayfaDurumSeridi extends StatelessWidget {
     final metinler = AppLocalizations.of(context);
     final renk = context.renkler.markaYuzeyUstu;
     final (ikon, metin) = switch (durum.tur) {
-      TayfaDurumTuru.askida => (
-        Icons.block,
-        metinler.tayfa_durum_askida,
-      ),
+      TayfaDurumTuru.askida => (Icons.block, metinler.tayfa_durum_askida),
       TayfaDurumTuru.silinecek => (
         Icons.delete_outline,
         _silinmeMetni(metinler, durum.zaman!.toLocal()),
@@ -182,10 +179,7 @@ class TayfaDurumSeridi extends StatelessWidget {
         Icons.inventory_2_outlined,
         metinler.tayfa_durum_arsiv,
       ),
-      TayfaDurumTuru.uyari => (
-        Icons.schedule,
-        metinler.tayfa_durum_uyari,
-      ),
+      TayfaDurumTuru.uyari => (Icons.schedule, metinler.tayfa_durum_uyari),
     };
     return Semantics(
       container: true,

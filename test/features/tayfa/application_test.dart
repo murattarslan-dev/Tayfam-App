@@ -123,10 +123,8 @@ void main() {
       final k = _Kurulum(
         sonTayfa: ornekTayfaId,
         yanitlar: {
-          'GET /v1/tayfas': (_) => listeJson([
-            etkinJson(ikinciTayfaId),
-            etkinJson(ornekTayfaId),
-          ]),
+          'GET /v1/tayfas': (_) =>
+              listeJson([etkinJson(ikinciTayfaId), etkinJson(ornekTayfaId)]),
         },
       );
       await k.kap.read(tayfalarimProvider.future);
@@ -568,9 +566,7 @@ void main() {
 
     test('silinme zamanı arşivden önce gelir', () {
       expect(
-        tayfaDurumu(
-          tayfa(durum: 'archived', silinme: '2026-12-01T09:00:00Z'),
-        ),
+        tayfaDurumu(tayfa(durum: 'archived', silinme: '2026-12-01T09:00:00Z')),
         TayfaDurumu(
           TayfaDurumTuru.silinecek,
           zaman: DateTime.utc(2026, 12, 1, 9),

@@ -66,9 +66,7 @@ class _KodlaKatilmaSayfasiState extends ConsumerState<KodlaKatilmaSayfasi> {
     final yazi = context.yazi;
     return Padding(
       // Klavye açılınca alan görünür kalsın.
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           TayfamSpacing.kenarMobil,

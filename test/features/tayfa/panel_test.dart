@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
@@ -110,10 +111,7 @@ void main() {
     expect(find.text(arbMetni('tayfa_geri_cek_baslik')), findsOneWidget);
     await tester.tap(find.text(arbMetni('tayfa_vazgec')));
     await tester.pumpAndSettle();
-    expect(
-      tasima.giden('DELETE', '/v1/tayfas/{tayfa_id}/membership'),
-      isEmpty,
-    );
+    expect(tasima.giden('DELETE', '/v1/tayfas/{tayfa_id}/membership'), isEmpty);
 
     await tester.tap(find.text('Kampçılar'));
     await tester.pumpAndSettle();
@@ -126,9 +124,7 @@ void main() {
     expect(find.text(arbMetni('tayfa_geri_cekildi')), findsOneWidget);
   });
 
-  testWidgets('liste alınamazsa panelde hata ve "Tekrar dene"', (
-    tester,
-  ) async {
+  testWidgets('liste alınamazsa panelde hata ve "Tekrar dene"', (tester) async {
     ekranBoyutu(tester);
     var cagri = 0;
     final tasima = SahteTayfaTasima({

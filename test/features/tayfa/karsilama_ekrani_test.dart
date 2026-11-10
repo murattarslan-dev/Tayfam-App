@@ -130,9 +130,8 @@ void main() {
   testWidgets('bekleyen istek için bilgi kartı; yalnızca ad', (tester) async {
     ekranBoyutu(tester);
     final tasima = SahteTayfaTasima({
-      'GET /v1/tayfas': (_) => listeJson([
-        bekleyenJson(_bekleyenId, ad: 'Kampçılar'),
-      ]),
+      'GET /v1/tayfas': (_) =>
+          listeJson([bekleyenJson(_bekleyenId, ad: 'Kampçılar')]),
     });
     await uygulamayiAc(tester, tayfa: tayfaOverridelari(tasima: tasima));
 

@@ -139,7 +139,7 @@ void main() {
 
   group('tayfa listesi (ADR-0014 §1)', () {
     test('liste ilk kez okunurken ana adres açılış ekranı', () {
-      for (final adres in ['/', '/karsilama', '/giris', '/acilis']) {
+      for (final adres in ['/', '/karsilama', '/giris']) {
         expect(
           _yonlendir(adres, tayfalarBekleniyor: true),
           '/acilis',
@@ -149,11 +149,7 @@ void main() {
       expect(_yonlendir('/acilis', tayfalarBekleniyor: true), isNull);
       // Aktif tayfa biliniyorsa beklenmez.
       expect(
-        _yonlendir(
-          '/',
-          aktifTayfaId: ornekTayfaId,
-          tayfalarBekleniyor: true,
-        ),
+        _yonlendir('/', aktifTayfaId: ornekTayfaId, tayfalarBekleniyor: true),
         '/t/$ornekTayfaId',
       );
       // Liste gelince açılış ekranı ana adrese döner.
@@ -217,7 +213,10 @@ void main() {
         esitle('/t/$ikinciTayfaId/deneme', aktif: ornekTayfaId, liste: etkin),
         ikinciTayfaId,
       );
-      expect(esitle('/t/$ornekTayfaId', aktif: ornekTayfaId, liste: etkin), isNull);
+      expect(
+        esitle('/t/$ornekTayfaId', aktif: ornekTayfaId, liste: etkin),
+        isNull,
+      );
       expect(esitle('/t/$_ucuncuTayfaId', liste: etkin), isNull);
       expect(esitle('/t/$ikinciTayfaId'), isNull);
       expect(esitle('/sohbet', liste: etkin), isNull);

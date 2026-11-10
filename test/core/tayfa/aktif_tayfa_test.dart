@@ -85,9 +85,10 @@ void main() {
     test('kayıtlı tayfa etkin üyeliklerdeyse seçiliyor', () async {
       final kap = _kap(BellekSonTayfaDeposu(ikinciTayfaId));
 
-      await kap
-          .read(aktifTayfaIdProvider.notifier)
-          .uzlastir([ornekTayfaId, ikinciTayfaId]);
+      await kap.read(aktifTayfaIdProvider.notifier).uzlastir([
+        ornekTayfaId,
+        ikinciTayfaId,
+      ]);
 
       expect(kap.read(aktifTayfaIdProvider), ikinciTayfaId);
     });
@@ -96,9 +97,10 @@ void main() {
       final depo = BellekSonTayfaDeposu(_ucuncuTayfaId);
       final kap = _kap(depo);
 
-      await kap
-          .read(aktifTayfaIdProvider.notifier)
-          .uzlastir([ikinciTayfaId, ornekTayfaId]);
+      await kap.read(aktifTayfaIdProvider.notifier).uzlastir([
+        ikinciTayfaId,
+        ornekTayfaId,
+      ]);
       await _bekle();
 
       expect(kap.read(aktifTayfaIdProvider), ikinciTayfaId);
@@ -108,9 +110,10 @@ void main() {
     test('kayıt yoksa ilk etkin tayfa seçiliyor', () async {
       final kap = _kap(BellekSonTayfaDeposu());
 
-      await kap
-          .read(aktifTayfaIdProvider.notifier)
-          .uzlastir([ornekTayfaId, ikinciTayfaId]);
+      await kap.read(aktifTayfaIdProvider.notifier).uzlastir([
+        ornekTayfaId,
+        ikinciTayfaId,
+      ]);
 
       expect(kap.read(aktifTayfaIdProvider), ornekTayfaId);
     });
@@ -119,9 +122,10 @@ void main() {
       final kap = _kap(BellekSonTayfaDeposu(ornekTayfaId));
       kap.read(aktifTayfaIdProvider.notifier).sec(ikinciTayfaId);
 
-      await kap
-          .read(aktifTayfaIdProvider.notifier)
-          .uzlastir([ornekTayfaId, ikinciTayfaId]);
+      await kap.read(aktifTayfaIdProvider.notifier).uzlastir([
+        ornekTayfaId,
+        ikinciTayfaId,
+      ]);
 
       expect(kap.read(aktifTayfaIdProvider), ikinciTayfaId);
     });
@@ -140,9 +144,10 @@ void main() {
     test('UUID biçiminde olmayan sunucu kimliği atlanıyor', () async {
       final kap = _kap(BellekSonTayfaDeposu());
 
-      await kap
-          .read(aktifTayfaIdProvider.notifier)
-          .uzlastir(['gecersiz', ornekTayfaId]);
+      await kap.read(aktifTayfaIdProvider.notifier).uzlastir([
+        'gecersiz',
+        ornekTayfaId,
+      ]);
 
       expect(kap.read(aktifTayfaIdProvider), ornekTayfaId);
     });

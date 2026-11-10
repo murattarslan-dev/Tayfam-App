@@ -29,6 +29,8 @@ Future<SahteTayfaTasima> _ac(
     themeMode: themeMode,
     tayfa: tayfaOverridelari(tasima: tasima),
   );
+  await tester.ensureVisible(find.text(arbMetni('karsilama_tayfa_olustur')));
+  await tester.pumpAndSettle();
   await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
   await tester.pumpAndSettle();
   expect(find.byType(OlusturmaEkrani), findsOneWidget);
@@ -134,6 +136,9 @@ void main() {
           ? const ApiProblem(type: ProblemType.tayfaCreateLimit, status: 429)
           : tayfaJson(id: _yeniId, kod: sahteKod),
     });
+    // Oluşturmadan sonraki yenilemede sunucu yeni tayfayı döndürür.
+    tasima.yanitlar['GET /v1/tayfas'] = (_) =>
+        listeJson([etkinJson(_yeniId, rol: 'admin', kod: sahteKod)]);
     await tester.enterText(find.byType(TextField), 'Klasikçiler');
     await _dokun(tester, 'olusturma_ileri');
     await _dokun(tester, 'olusturma_ileri');
@@ -176,4 +181,3 @@ void main() {
     });
   }
 }
-
