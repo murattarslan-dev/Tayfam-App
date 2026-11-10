@@ -270,10 +270,8 @@ void main() {
     test('invalid-refresh oturumu kapatır ve token\'ları siler', () async {
       final k = _Kurulum();
       await k.oturum.oturumAc(_oturum(1));
-      k.sunucu.yanit = (_) async => throw const ApiProblem(
-        type: ProblemType.invalidRefresh,
-        status: 401,
-      );
+      k.sunucu.yanit = (_) async =>
+          throw const ApiProblem(type: ProblemType.invalidRefresh, status: 401);
 
       await expectLater(k.oturum.yenile(), throwsA(isA<OturumYok>()));
       await _akisBosalsin();
@@ -286,33 +284,38 @@ void main() {
       await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
     });
 
-    test('refresh-conflict oturumu kapatmaz; depodaki yeni token kullanılır',
-        () async {
-      final k = _Kurulum();
-      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
-      k.sunucu.yanit = (_) async {
-        // Başka bir süreç aynı anda yeniledi ve depoya yazdı.
-        await k.depo.yaz(
-          KayitliOturum(
-            erisimTokeni: 'erisim-baska',
-            erisimBitis: _uzakGelecek,
-            yenilemeTokeni: 'yenileme-baska',
-            yenilemeBitis: _uzakGelecek,
-            kayitBekliyor: false,
-            onayGerekli: false,
-          ).kodla(),
-        );
-        throw const ApiProblem(type: ProblemType.refreshConflict, status: 409);
-      };
+    test(
+      'refresh-conflict oturumu kapatmaz; depodaki yeni token kullanılır',
+      () async {
+        final k = _Kurulum();
+        await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+        k.sunucu.yanit = (_) async {
+          // Başka bir süreç aynı anda yeniledi ve depoya yazdı.
+          await k.depo.yaz(
+            KayitliOturum(
+              erisimTokeni: 'erisim-baska',
+              erisimBitis: _uzakGelecek,
+              yenilemeTokeni: 'yenileme-baska',
+              yenilemeBitis: _uzakGelecek,
+              kayitBekliyor: false,
+              onayGerekli: false,
+            ).kodla(),
+          );
+          throw const ApiProblem(
+            type: ProblemType.refreshConflict,
+            status: 409,
+          );
+        };
 
-      expect(await k.oturum.erisimTokeni(), 'erisim-baska');
-      await _akisBosalsin();
+        expect(await k.oturum.erisimTokeni(), 'erisim-baska');
+        await _akisBosalsin();
 
-      expect(k.beklemeler, [const Duration(seconds: 1)]);
-      expect(k.olaylar.whereType<OturumKapali>(), isEmpty);
-      expect(k.sunucu.gonderilen, ['yenileme-1']);
-      expect(await k.oturum.erisimTokeni(), 'erisim-baska');
-    });
+        expect(k.beklemeler, [const Duration(seconds: 1)]);
+        expect(k.olaylar.whereType<OturumKapali>(), isEmpty);
+        expect(k.sunucu.gonderilen, ['yenileme-1']);
+        expect(await k.oturum.erisimTokeni(), 'erisim-baska');
+      },
+    );
 
     test('refresh-conflict sonrası depoda yeni token yoksa eskisi yeniden '
         'gönderilmez, oturum kapanır', () async {
@@ -342,40 +345,44 @@ void main() {
       expect(k.sunucu.gonderilen, ['yenileme-1']);
     });
 
-    test('yanıt gelmeden bağlantı koparsa token bir daha gönderilmez',
-        () async {
-      final k = _Kurulum();
-      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
-      k.sunucu.yanit = (_) async => throw const ApiTimeout();
+    test(
+      'yanıt gelmeden bağlantı koparsa token bir daha gönderilmez',
+      () async {
+        final k = _Kurulum();
+        await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+        k.sunucu.yanit = (_) async => throw const ApiTimeout();
 
-      await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
-      await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
-      await _akisBosalsin();
+        await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
+        await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
+        await _akisBosalsin();
 
-      expect(k.sunucu.gonderilen, ['yenileme-1']);
-      expect(await k.depo.oku(), isNull);
-      expect(
-        k.olaylar.last,
-        const OturumKapali(OturumKapanisNedeni.yenilemeBasarisiz),
-      );
-    });
+        expect(k.sunucu.gonderilen, ['yenileme-1']);
+        expect(await k.depo.oku(), isNull);
+        expect(
+          k.olaylar.last,
+          const OturumKapali(OturumKapanisNedeni.yenilemeBasarisiz),
+        );
+      },
+    );
 
-    test('yenileme sürerken kapanan oturum eski sonuçla geri açılmaz',
-        () async {
-      final k = _Kurulum();
-      await k.oturum.oturumAc(_oturum(1));
-      final cevap = Completer<Session>();
-      k.sunucu.yanit = (_) => cevap.future;
+    test(
+      'yenileme sürerken kapanan oturum eski sonuçla geri açılmaz',
+      () async {
+        final k = _Kurulum();
+        await k.oturum.oturumAc(_oturum(1));
+        final cevap = Completer<Session>();
+        k.sunucu.yanit = (_) => cevap.future;
 
-      final yenileme = k.oturum.yenile();
-      await _akisBosalsin();
-      await k.oturum.kapat(OturumKapanisNedeni.cikis);
-      cevap.complete(_oturum(2));
+        final yenileme = k.oturum.yenile();
+        await _akisBosalsin();
+        await k.oturum.kapat(OturumKapanisNedeni.cikis);
+        cevap.complete(_oturum(2));
 
-      await expectLater(yenileme, throwsA(isA<OturumYok>()));
-      expect(await k.depo.oku(), isNull);
-      await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
-    });
+        await expectLater(yenileme, throwsA(isA<OturumYok>()));
+        expect(await k.depo.oku(), isNull);
+        await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
+      },
+    );
   });
 
   group('kapatma', () {
@@ -396,10 +403,8 @@ void main() {
     test('günlükte token yok', () async {
       final k = _Kurulum();
       await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
-      k.sunucu.yanit = (_) async => throw const ApiProblem(
-        type: ProblemType.invalidRefresh,
-        status: 401,
-      );
+      k.sunucu.yanit = (_) async =>
+          throw const ApiProblem(type: ProblemType.invalidRefresh, status: 401);
       await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
 
       expect(k.gunluk, isNotEmpty);

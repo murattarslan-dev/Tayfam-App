@@ -233,9 +233,8 @@ void main() {
       final tasima = _SahteTasima();
       await AuthApi(tasima).signOut();
       await expectLater(
-        AuthApi(tasima).refresh(
-          body: const RefreshRequest(refreshToken: 'ornek'),
-        ),
+        AuthApi(tasima)
+            .refresh(body: const RefreshRequest(refreshToken: 'ornek')),
         throwsFormatException,
       );
 

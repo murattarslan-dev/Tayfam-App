@@ -93,23 +93,26 @@ void main() {
       expect(basliklar['Accept'], contains('application/problem+json'));
     });
 
-    test('durum değiştiren istek X-Tayfam-Client ve JSON gövde taşır', () async {
-      final k = _Kurulum((_) async => http.Response('', 204));
-      final yanit = await k.tasima.gonder(
-        method: 'POST',
-        pathTemplate: '/v1/tayfas',
-        body: {'name': 'Örnek'},
-        expect: ResponseKind.none,
-        erisimTokeni: 'erisim-1',
-      );
+    test(
+      'durum değiştiren istek X-Tayfam-Client ve JSON gövde taşır',
+      () async {
+        final k = _Kurulum((_) async => http.Response('', 204));
+        final yanit = await k.tasima.gonder(
+          method: 'POST',
+          pathTemplate: '/v1/tayfas',
+          body: {'name': 'Örnek'},
+          expect: ResponseKind.none,
+          erisimTokeni: 'erisim-1',
+        );
 
-      expect(yanit, isNull);
-      final istek = k.istekler.single;
-      expect(istek.headers['X-Tayfam-Client'], 'android');
-      expect(istek.headers['Authorization'], 'Bearer erisim-1');
-      expect(istek.headers['Content-Type'], startsWith('application/json'));
-      expect(jsonDecode(istek.body), {'name': 'Örnek'});
-    });
+        expect(yanit, isNull);
+        final istek = k.istekler.single;
+        expect(istek.headers['X-Tayfam-Client'], 'android');
+        expect(istek.headers['Authorization'], 'Bearer erisim-1');
+        expect(istek.headers['Content-Type'], startsWith('application/json'));
+        expect(jsonDecode(istek.body), {'name': 'Örnek'});
+      },
+    );
 
     test('metin yanıtı String döner', () async {
       final k = _Kurulum(
@@ -138,29 +141,31 @@ void main() {
       });
     }
 
-    test('eksik ya da fazla yol parametresi reddedilir; mesajda değer yok',
-        () async {
-      final k = _Kurulum((_) async => _json({}));
-      await expectLater(
-        k.tasima.gonder(method: 'GET', pathTemplate: '/v1/tayfas/{tayfa_id}'),
-        throwsArgumentError,
-      );
-      await expectLater(
-        k.tasima.gonder(
-          method: 'GET',
-          pathTemplate: '/v1/status',
-          pathParams: {'tayfa_id': _tayfaId},
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => '${e.message}',
-            'message',
-            isNot(contains(_tayfaId)),
+    test(
+      'eksik ya da fazla yol parametresi reddedilir; mesajda değer yok',
+      () async {
+        final k = _Kurulum((_) async => _json({}));
+        await expectLater(
+          k.tasima.gonder(method: 'GET', pathTemplate: '/v1/tayfas/{tayfa_id}'),
+          throwsArgumentError,
+        );
+        await expectLater(
+          k.tasima.gonder(
+            method: 'GET',
+            pathTemplate: '/v1/status',
+            pathParams: {'tayfa_id': _tayfaId},
           ),
-        ),
-      );
-      expect(k.istekler, isEmpty);
-    });
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => '${e.message}',
+              'message',
+              isNot(contains(_tayfaId)),
+            ),
+          ),
+        );
+        expect(k.istekler, isEmpty);
+      },
+    );
 
     test('taban adres yalnızca https olabilir', () {
       for (final adres in [
@@ -218,11 +223,8 @@ void main() {
   group('hatalar', () {
     test('problem+json → ApiProblem; title ve detail taşınmaz', () async {
       final k = _Kurulum(
-        (_) async => _problem(
-          'rate-limited',
-          429,
-          basliklar: {'retry-after': '7'},
-        ),
+        (_) async =>
+            _problem('rate-limited', 429, basliklar: {'retry-after': '7'}),
       );
       final hata = await k.tasima
           .gonder(method: 'GET', pathTemplate: '/v1/status')

@@ -15,11 +15,7 @@ sealed class ApiHatasi implements Exception {
 /// Arayüz [type]'a göre davranır; bilinmeyen ya da ayrıştırılamayan kod
 /// [ProblemType.unknown] olur ve genel hata metnine düşer.
 final class ApiProblem extends ApiHatasi {
-  const ApiProblem({
-    required this.type,
-    required this.status,
-    this.retryAfter,
-  });
+  const ApiProblem({required this.type, required this.status, this.retryAfter});
 
   /// `type` alanındaki `https://tayfam.app/problems/<kod>` kodu.
   final ProblemType type;
