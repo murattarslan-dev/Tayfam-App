@@ -1,0 +1,9 @@
+// yol: lib/shell/ornek.dart
+// beklenen: sabit-yaricap 3
+import 'package:flutter/material.dart';
+
+const BorderRadius a = BorderRadius.all(Radius.circular(12));
+final BorderRadius b = BorderRadius.circular(8);
+const Radius c = Radius.elliptical(4, 2);
+const Radius d = Radius.circular(TayfamRadii.kart);
+const BorderRadius e = BorderRadius.all(Radius.circular(0));

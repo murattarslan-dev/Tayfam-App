@@ -1,0 +1,24 @@
+// yol: lib/shell/ornek.dart
+// beklenen: sabit-metin 7
+import 'package:flutter/material.dart';
+
+Widget ekran(AppLocalizations metinler, int sayi, VoidCallback sil) {
+  return Column(
+    children: [
+      const Text('Merhaba'),
+      const Text("Kaydet"),
+      Text(metinler.uygulama_adi),
+      Text('$sayi'),
+      const Text('•'),
+      const Text(''),
+      IconButton(tooltip: 'Sil', onPressed: sil, icon: const Icon(Icons.close)),
+      const Text(
+        'Çok satırlı metin',
+      ),
+      Text('${sayi + 1} kişi'),
+      Text.rich(TextSpan(text: 'Bağlantı', children: [TextSpan(text: '$sayi')])),
+      const TextField(decoration: InputDecoration(hintText: r'Ara…')),
+      Semantics(label: metinler.uygulama_adi, child: const SizedBox.shrink()),
+    ],
+  );
+}

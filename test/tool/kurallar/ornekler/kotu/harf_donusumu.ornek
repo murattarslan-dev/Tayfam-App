@@ -1,0 +1,5 @@
+// yol: lib/features/anket/application/arama.dart
+// beklenen: harf-donusumu 2
+bool eslesir(String ad, String aranan) => ad.toUpperCase() == aranan;
+String etiket(String ad) => 'ad: ${ad.toLowerCase()}';
+// yol: lib/features/anket/anket.dart

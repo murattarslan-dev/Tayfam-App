@@ -1,0 +1,20 @@
+// yol: lib/shell/ornek.dart
+// beklenen: sabit-renk 5
+import 'package:flutter/material.dart';
+
+// Yorumdaki Colors.red ve Color(0xFF000000) bulgu değildir.
+const String aciklama = 'Colors.blue metindir';
+
+Widget kutu(BuildContext context) {
+  final renkler = Theme.of(context).colorScheme;
+  return Column(
+    children: [
+      const ColoredBox(color: Colors.red),
+      const ColoredBox(color: Color(0xFF5B2BE0)),
+      ColoredBox(color: Color.fromARGB(255, 0, 0, 0)),
+      ColoredBox(color: CupertinoColors.systemBlue),
+      ColoredBox(color: HSLColor.fromAHSL(1, 0, 0, 0).toColor()),
+      ColoredBox(color: renkler.primary),
+    ],
+  );
+}

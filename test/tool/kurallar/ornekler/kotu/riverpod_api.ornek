@@ -1,0 +1,11 @@
+// yol: lib/core/oturum/sayac.dart
+// beklenen: riverpod-api 4
+import 'package:flutter_riverpod/legacy.dart';
+
+final sayacProvider = StateProvider<int>((ref) => 0);
+
+class Sayac extends StateNotifier<int> {
+  Sayac() : super(0);
+}
+
+final ayarProvider = ChangeNotifierProvider((ref) => Ayar());

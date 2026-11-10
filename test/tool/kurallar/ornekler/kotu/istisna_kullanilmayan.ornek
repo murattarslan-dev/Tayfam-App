@@ -1,0 +1,6 @@
+// yol: lib/shell/ornek.dart
+// beklenen: istisna-kullanilmayan 1
+import 'package:flutter/material.dart';
+
+// kural-istisnası: sabit-renk — burada renk yok
+const int a = 1;

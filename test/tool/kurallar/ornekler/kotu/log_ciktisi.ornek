@@ -1,0 +1,23 @@
+// yol: lib/shell/ornek.dart
+// beklenen: log-ciktisi 5
+import 'dart:developer' as developer;
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
+
+void gunluk(String mesaj) {
+  print(mesaj);
+  debugPrint('mesaj: $mesaj');
+  stderr.writeln(mesaj);
+  developer.log('olay');
+}
+
+final GoRouter yonlendirici = GoRouter(
+  routes: const [],
+  debugLogDiagnostics: true,
+);
+// yol: lib/core/gunluk/gunluk.dart
+import 'dart:developer' as developer;
+
+void yaz(String satir) => developer.log(satir, name: 'tayfam');

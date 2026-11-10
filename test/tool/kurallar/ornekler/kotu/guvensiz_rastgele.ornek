@@ -1,0 +1,7 @@
+// yol: lib/core/kuyruk/kimlik.dart
+// beklenen: guvensiz-rastgele 2
+import 'dart:math' as math;
+
+final math.Random a = math.Random();
+final math.Random b = math.Random(42);
+final math.Random c = math.Random.secure();

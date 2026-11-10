@@ -1,0 +1,15 @@
+// yol: lib/features/etkinlik/presentation/etkinlik_ekrani.dart
+// beklenen: import-siniri 3
+import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/etkinlik/application/etkinlikler.dart';
+import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/shell/yonlendirici.dart';
+import '../../anket/presentation/anket_karti.dart';
+// yol: lib/features/etkinlik/etkinlik.dart
+export 'package:tayfam/features/etkinlik/presentation/etkinlik_ekrani.dart';
+// yol: lib/features/tayfa/tayfa.dart
+// yol: lib/features/anket/anket.dart
+// yol: lib/shell/kayitlar.dart
+import 'package:tayfam/features/anket/anket.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
