@@ -155,8 +155,9 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
      **açık temada açık zeminlerde odak çerçevesi `brand` (#5B2BE0)**:
      surface 6.95, card 7.33, tint-brand 5.97, tint-mango 6.48. **Koyu
      temada ve iki temada da mor yüzeyde (tayfa üst bölümü) mango**
-     kalır (koyu zeminde 8.7–9.8, mor yüzeyde 4.0). Kalınlık 3 px, öğeden
-     2 px boşlukla çizilir. Tasarım Standartları'na da işlendi.
+     kalır (koyu zeminde 8.7–9.8, mor yüzeyde 4.0). Kalınlık 3 px, dış
+     boşluk Standartlar'daki gibi 3 px (PR #16'daki 2 px düzeltilecek).
+     Tasarım Standartları'na da işlendi.
   2. **Büyük başlık 750.** Gömülü font, google/fonts'taki değişken
      fonttan üretilen statik örneklerdir (`tool/font/bricolage_ornekle.py`);
      wght 750 örneği pubspec'te 800 ağırlık yuvasındadır.
