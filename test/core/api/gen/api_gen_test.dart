@@ -36,9 +36,7 @@ final class _SahteTasima implements ApiTransport {
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
-    istekler.add(
-      _Istek(method, pathTemplate, pathParams, query, body, expect),
-    );
+    istekler.add(_Istek(method, pathTemplate, pathParams, query, body, expect));
     return yanit;
   }
 }
@@ -79,10 +77,7 @@ void main() {
       expect(tayfa.createdAt, DateTime.utc(2026, 11, 10, 9));
       expect(tayfa.updatedAt, DateTime.utc(2026, 11, 10, 9, 30));
       expect(tayfa.updatedAt.isUtc, isTrue);
-      expect(
-        tayfa.toJson()['created_at'],
-        '2026-11-10T09:00:00.000Z',
-      );
+      expect(tayfa.toJson()['created_at'], '2026-11-10T09:00:00.000Z');
     });
 
     test('isteğe bağlı alan yoksa null olur ve yazılmaz', () {
@@ -99,26 +94,25 @@ void main() {
       });
     });
 
-    test('tanınmayan alan yok sayılır, tanınmayan enum değeri unknown olur',
-        () {
-      final tayfa = Tayfa.fromJson({
-        ..._tayfaJson(),
-        'gelecekte_eklenecek_alan': 1,
-        'interests': ['convoy', 'yelken'],
-        'status': 'gelecek_durum',
-      });
-      expect(tayfa.interests, [EventType.convoy, EventType.unknown]);
-      expect(tayfa.status, TayfaStatus.unknown);
-      // Sözleşmede olmayan unknown sunucuya gönderilemez.
-      expect(tayfa.toJson, throwsStateError);
-    });
+    test(
+      'tanınmayan alan yok sayılır, tanınmayan enum değeri unknown olur',
+      () {
+        final tayfa = Tayfa.fromJson({
+          ..._tayfaJson(),
+          'gelecekte_eklenecek_alan': 1,
+          'interests': ['convoy', 'yelken'],
+          'status': 'gelecek_durum',
+        });
+        expect(tayfa.interests, [EventType.convoy, EventType.unknown]);
+        expect(tayfa.status, TayfaStatus.unknown);
+        // Sözleşmede olmayan unknown sunucuya gönderilemez.
+        expect(tayfa.toJson, throwsStateError);
+      },
+    );
 
     test('koleksiyonlar değiştirilemez', () {
       final tayfa = Tayfa.fromJson(_tayfaJson());
-      expect(
-        () => tayfa.interests.add(EventType.hike),
-        throwsUnsupportedError,
-      );
+      expect(() => tayfa.interests.add(EventType.hike), throwsUnsupportedError);
     });
 
     test('eksik zorunlu alan FormatException; mesajda değer yok', () {
@@ -151,53 +145,55 @@ void main() {
   });
 
   group('uç sınıfları', () {
-    test('PATCH yalnızca verilen alanları doğru yol ve yöntemle gönderir',
-        () async {
-      final tasima = _SahteTasima(_tayfaJson());
-      final tayfa = await TayfasApi(tasima).updateTayfa(
-        tayfaId: _tayfaId,
-        body: const TayfaUpdateRequest(name: 'Yeni ad'),
-      );
+    test(
+      'PATCH yalnızca verilen alanları doğru yol ve yöntemle gönderir',
+      () async {
+        final tasima = _SahteTasima(_tayfaJson());
+        final tayfa = await TayfasApi(tasima).updateTayfa(
+          tayfaId: _tayfaId,
+          body: const TayfaUpdateRequest(name: 'Yeni ad'),
+        );
 
-      final istek = tasima.istekler.single;
-      expect(istek.method, 'PATCH');
-      expect(istek.pathTemplate, '/v1/tayfas/{tayfa_id}');
-      expect(istek.pathParams, {'tayfa_id': _tayfaId});
-      expect(istek.query, isEmpty);
-      expect(istek.body, {'name': 'Yeni ad'});
-      expect(istek.expect, ResponseKind.json);
-      expect(tayfa, Tayfa.fromJson(_tayfaJson()));
-    });
+        final istek = tasima.istekler.single;
+        expect(istek.method, 'PATCH');
+        expect(istek.pathTemplate, '/v1/tayfas/{tayfa_id}');
+        expect(istek.pathParams, {'tayfa_id': _tayfaId});
+        expect(istek.query, isEmpty);
+        expect(istek.body, {'name': 'Yeni ad'});
+        expect(istek.expect, ResponseKind.json);
+        expect(tayfa, Tayfa.fromJson(_tayfaJson()));
+      },
+    );
 
     test('boş PATCH gövdesi gönderilmeden reddedilir', () async {
       final tasima = _SahteTasima(_tayfaJson());
       await expectLater(
-        TayfasApi(tasima).updateTayfa(
-          tayfaId: _tayfaId,
-          body: const TayfaUpdateRequest(),
-        ),
+        TayfasApi(tasima)
+            .updateTayfa(tayfaId: _tayfaId, body: const TayfaUpdateRequest()),
         throwsArgumentError,
       );
       expect(tasima.istekler, isEmpty);
     });
 
-    test('sorgu parametreleri yalnızca verilince ve wire değeriyle gider',
-        () async {
-      final tasima = _SahteTasima({'members': <Object?>[]});
-      final liste = await MembersApi(tasima).listMembers(
-        tayfaId: _tayfaId,
-        status: ListMembersStatus.banned,
-        pageSize: 20,
-      );
+    test(
+      'sorgu parametreleri yalnızca verilince ve wire değeriyle gider',
+      () async {
+        final tasima = _SahteTasima({'members': <Object?>[]});
+        final liste = await MembersApi(tasima).listMembers(
+          tayfaId: _tayfaId,
+          status: ListMembersStatus.banned,
+          pageSize: 20,
+        );
 
-      final istek = tasima.istekler.single;
-      expect(istek.method, 'GET');
-      expect(istek.pathTemplate, '/v1/tayfas/{tayfa_id}/members');
-      expect(istek.query, {'status': 'banned', 'page_size': '20'});
-      expect(istek.body, isNull);
-      expect(liste.members, isEmpty);
-      expect(liste.nextPageToken, isNull);
-    });
+        final istek = tasima.istekler.single;
+        expect(istek.method, 'GET');
+        expect(istek.pathTemplate, '/v1/tayfas/{tayfa_id}/members');
+        expect(istek.query, {'status': 'banned', 'page_size': '20'});
+        expect(istek.body, isNull);
+        expect(liste.members, isEmpty);
+        expect(liste.nextPageToken, isNull);
+      },
+    );
 
     test('204 yanıtlı uç gövde beklemez', () async {
       final tasima = _SahteTasima();
@@ -212,9 +208,8 @@ void main() {
 
     test('text/calendar yanıtı String döner', () async {
       final tasima = _SahteTasima('BEGIN:VCALENDAR');
-      final takvim = await EventsApi(
-        tasima,
-      ).exportEventCalendar(tayfaId: _tayfaId, eventId: _eventId);
+      final takvim = await EventsApi(tasima)
+          .exportEventCalendar(tayfaId: _tayfaId, eventId: _eventId);
 
       expect(takvim, 'BEGIN:VCALENDAR');
       expect(tasima.istekler.single.expect, ResponseKind.text);
