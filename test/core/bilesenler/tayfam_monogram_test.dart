@@ -115,7 +115,7 @@ void main() {
     final simge = tester.getRect(_boyaci);
     final yazi = tester.getRect(_yazi);
     expect(simge.size, const Size.square(boyut));
-    final bosluk = boyut * TayfamSizes.logoYaziBoslukOrani;
+    const bosluk = boyut * TayfamSizes.logoYaziBoslukOrani;
     expect(yazi.left - simge.right, moreOrLessEquals(bosluk));
   });
 
@@ -194,7 +194,7 @@ void main() {
     final dugum = tester.getSemantics(find.byType(TayfamMonogram));
     expect(
       dugum,
-      containsSemantics(
+      isSemantics(
         label: arbMetni('bilesen_logo_etiketi'),
         isImage: true,
         isHeader: true,
