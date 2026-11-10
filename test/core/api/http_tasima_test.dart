@@ -369,10 +369,10 @@ void main() {
 
     test('sürüm verilmezse başlık yok', () async {
       final istekler = <http.Request>[];
-      await tasima(istekler, null).gonder(
-        method: 'GET',
-        pathTemplate: '/v1/status',
-      );
+      await tasima(
+        istekler,
+        null,
+      ).gonder(method: 'GET', pathTemplate: '/v1/status');
       final basliklar = istekler.single.headers;
       expect(basliklar, isNot(contains('X-Tayfam-Client-Version')));
     });

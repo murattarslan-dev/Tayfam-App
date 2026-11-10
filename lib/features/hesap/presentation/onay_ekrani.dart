@@ -91,39 +91,47 @@ class _OnayEkraniState extends ConsumerState<OnayEkrani> {
     final kilitli = deger.gonderiliyor;
     final hata = deger.hata;
     final surumler = deger.surumler;
-    return ListView(
+    // Form kısa; ListView gibi tembel kurulmaz, bütün alanlar ağaçta
+    // (ekran okuyucu sırası ve testler).
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-      children: [
-        Text(
-          metinler.hesap_onay_aciklama,
-          style: context.yazi.bodyLarge?.copyWith(
-            color: context.renkler.metinGovde,
-          ),
-        ),
-        const SizedBox(height: TayfamSpacing.s16),
-        HukukiOnay(
-          etiket: metinler.hesap_onay_kutusu,
-          isaretli: _onay,
-          degisti: kilitli ? null : _onayDegisti,
-          baglantilar: [
-            (
-              metinler.hesap_aydinlatma_ac,
-              surumler.adres(HukukiMetin.aydinlatma),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            metinler.hesap_onay_aciklama,
+            style: context.yazi.bodyLarge?.copyWith(
+              color: context.renkler.metinGovde,
             ),
-            (metinler.hesap_kosullar_ac, surumler.adres(HukukiMetin.kosullar)),
-          ],
-          hata: _hataGoster ? metinler.hesap_onay_kutusu_hata : null,
-        ),
-        if (hata != null) ...[
+          ),
           const SizedBox(height: TayfamSpacing.s16),
-          HataMetni(metin: hesapHatasiMetni(metinler, hata)),
+          HukukiOnay(
+            etiket: metinler.hesap_onay_kutusu,
+            isaretli: _onay,
+            degisti: kilitli ? null : _onayDegisti,
+            baglantilar: [
+              (
+                metinler.hesap_aydinlatma_ac,
+                surumler.adres(HukukiMetin.aydinlatma),
+              ),
+              (
+                metinler.hesap_kosullar_ac,
+                surumler.adres(HukukiMetin.kosullar),
+              ),
+            ],
+            hata: _hataGoster ? metinler.hesap_onay_kutusu_hata : null,
+          ),
+          if (hata != null) ...[
+            const SizedBox(height: TayfamSpacing.s16),
+            HataMetni(metin: hesapHatasiMetni(metinler, hata)),
+          ],
+          const SizedBox(height: TayfamSpacing.s24),
+          BirincilEylem(
+            etiket: metinler.hesap_onay_gonder,
+            onPressed: kilitli ? null : _gonder,
+          ),
         ],
-        const SizedBox(height: TayfamSpacing.s24),
-        BirincilEylem(
-          etiket: metinler.hesap_onay_gonder,
-          onPressed: kilitli ? null : _gonder,
-        ),
-      ],
+      ),
     );
   }
 }

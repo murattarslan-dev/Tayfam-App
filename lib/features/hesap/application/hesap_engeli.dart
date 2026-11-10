@@ -26,11 +26,10 @@ class HesapEngeliNotifier extends Notifier<HesapEngeli?> {
 }
 
 /// Uygulama süreci boyunca yaşayan hesap engeli (kalıcı).
-final hesapEngeliProvider =
-    NotifierProvider<HesapEngeliNotifier, HesapEngeli?>(
-      HesapEngeliNotifier.new,
-      name: 'hesapEngeliProvider',
-    );
+final hesapEngeliProvider = NotifierProvider<HesapEngeliNotifier, HesapEngeli?>(
+  HesapEngeliNotifier.new,
+  name: 'hesapEngeliProvider',
+);
 
 /// Google hesabının görünen adı; kayıt formunu önceden doldurmak için
 /// yalnızca bellekte tutulur (ADR-0012 §2). Oturum kapanınca silinir.

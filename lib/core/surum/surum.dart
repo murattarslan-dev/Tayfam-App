@@ -38,10 +38,11 @@ final class Surum implements Comparable<Surum> {
     final eslesme = _bicim.firstMatch(metin);
     if (eslesme == null) return null;
     final onSurum = eslesme[4];
-    return Surum._(
-      [eslesme[1]!, eslesme[2]!, eslesme[3]!],
-      onSurum == null ? const [] : onSurum.split('.'),
-    );
+    return Surum._([
+      eslesme[1]!,
+      eslesme[2]!,
+      eslesme[3]!,
+    ], onSurum == null ? const [] : onSurum.split('.'));
   }
 
   @override

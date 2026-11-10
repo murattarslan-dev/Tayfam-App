@@ -64,10 +64,9 @@ void main() {
       bugun: _bugun,
     );
     expect(secilmemis.hatalar, {KayitFormHatasi.dogumTarihi});
-    expect(
-      _denetle(dogumTarihi: DateTime(2026, 11, 11)).hatalar,
-      {KayitFormHatasi.dogumTarihi},
-    );
+    expect(_denetle(dogumTarihi: DateTime(2026, 11, 11)).hatalar, {
+      KayitFormHatasi.dogumTarihi,
+    });
     // Bugün seçilebilir; yaş sınırı istemcide denetlenmez.
     expect(_denetle(dogumTarihi: DateTime(2026, 11, 10)).hatalar, isEmpty);
     expect(_denetle(dogumTarihi: DateTime(2020)).hatalar, isEmpty);

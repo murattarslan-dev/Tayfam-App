@@ -13,8 +13,10 @@ import 'package:tayfam/features/hesap/presentation/hukuki_onay.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Doğum tarihi seçici: seçilen tarihi ya da vazgeçilirse `null` döndürür.
-typedef DogumTarihiSecici =
-    Future<DateTime?> Function(BuildContext context, DateTime? secili);
+typedef DogumTarihiSecici = Future<DateTime?> Function(
+  BuildContext context,
+  DateTime? secili,
+);
 
 /// Sistem tarih seçicisi (ADR-0012 §3): `tr_TR`, ön seçili tarih yok,
 /// bugünden ileri seçilemez, yıl görünümüyle açılır.
@@ -155,92 +157,100 @@ class _KayitEkraniState extends ConsumerState<KayitEkrani> {
     final kilitli = deger.gonderiliyor;
     final hata = deger.hata;
     final surumler = deger.surumler;
-    return ListView(
+    // Form kısa; ListView gibi tembel kurulmaz, bütün alanlar ağaçta
+    // (ekran okuyucu sırası ve testler).
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-      children: [
-        Text(
-          metinler.hesap_kayit_aciklama,
-          style: yazi.bodyLarge?.copyWith(color: context.renkler.metinGovde),
-        ),
-        const SizedBox(height: TayfamSpacing.s24),
-        TextField(
-          controller: _ad,
-          enabled: !kilitli,
-          textCapitalization: TextCapitalization.words,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            labelText: metinler.hesap_kayit_ad,
-            helperText: metinler.hesap_kayit_ad_yardim,
-            errorText: _hatalar.contains(KayitFormHatasi.ad)
-                ? metinler.hesap_kayit_ad_hata
-                : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            metinler.hesap_kayit_aciklama,
+            style: yazi.bodyLarge?.copyWith(color: context.renkler.metinGovde),
           ),
-        ),
-        const SizedBox(height: TayfamSpacing.s16),
-        TextField(
-          controller: _tarihMetni,
-          readOnly: true,
-          enabled: !kilitli,
-          onTap: () => unawaited(_tarihSec()),
-          decoration: InputDecoration(
-            labelText: metinler.hesap_kayit_dogum_tarihi,
-            hintText: metinler.hesap_kayit_dogum_tarihi_bos,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            suffixIcon: const Icon(Icons.calendar_today_outlined),
-            errorText: _hatalar.contains(KayitFormHatasi.dogumTarihi)
-                ? metinler.hesap_kayit_dogum_tarihi_hata
-                : null,
-          ),
-        ),
-        const SizedBox(height: TayfamSpacing.s16),
-        HukukiOnay(
-          etiket: metinler.hesap_aydinlatma_onay,
-          isaretli: _aydinlatma,
-          degisti: kilitli ? null : (d) => setState(() => _aydinlatma = d),
-          baglantilar: [
-            (
-              metinler.hesap_aydinlatma_ac,
-              surumler.adres(HukukiMetin.aydinlatma),
+          const SizedBox(height: TayfamSpacing.s24),
+          TextField(
+            controller: _ad,
+            enabled: !kilitli,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: metinler.hesap_kayit_ad,
+              helperText: metinler.hesap_kayit_ad_yardim,
+              errorText: _hatalar.contains(KayitFormHatasi.ad)
+                  ? metinler.hesap_kayit_ad_hata
+                  : null,
             ),
-          ],
-          hata: _hatalar.contains(KayitFormHatasi.aydinlatma)
-              ? metinler.hesap_aydinlatma_hata
-              : null,
-        ),
-        const SizedBox(height: TayfamSpacing.s8),
-        HukukiOnay(
-          etiket: metinler.hesap_kosullar_onay,
-          isaretli: _kosullar,
-          degisti: kilitli ? null : (d) => setState(() => _kosullar = d),
-          baglantilar: [
-            (metinler.hesap_kosullar_ac, surumler.adres(HukukiMetin.kosullar)),
-          ],
-          hata: _hatalar.contains(KayitFormHatasi.kosullar)
-              ? metinler.hesap_kosullar_hata
-              : null,
-        ),
-        const SizedBox(height: TayfamSpacing.s16),
-        TextField(
-          controller: _referans,
-          enabled: !kilitli,
-          textInputAction: TextInputAction.done,
-          decoration: InputDecoration(
-            labelText: metinler.hesap_kayit_referans,
-            errorText: _hatalar.contains(KayitFormHatasi.referansKodu)
-                ? metinler.hesap_kayit_referans_hata
+          ),
+          const SizedBox(height: TayfamSpacing.s16),
+          TextField(
+            controller: _tarihMetni,
+            readOnly: true,
+            enabled: !kilitli,
+            onTap: () => unawaited(_tarihSec()),
+            decoration: InputDecoration(
+              labelText: metinler.hesap_kayit_dogum_tarihi,
+              hintText: metinler.hesap_kayit_dogum_tarihi_bos,
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: const Icon(Icons.calendar_today_outlined),
+              errorText: _hatalar.contains(KayitFormHatasi.dogumTarihi)
+                  ? metinler.hesap_kayit_dogum_tarihi_hata
+                  : null,
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s16),
+          HukukiOnay(
+            etiket: metinler.hesap_aydinlatma_onay,
+            isaretli: _aydinlatma,
+            degisti: kilitli ? null : (d) => setState(() => _aydinlatma = d),
+            baglantilar: [
+              (
+                metinler.hesap_aydinlatma_ac,
+                surumler.adres(HukukiMetin.aydinlatma),
+              ),
+            ],
+            hata: _hatalar.contains(KayitFormHatasi.aydinlatma)
+                ? metinler.hesap_aydinlatma_hata
                 : null,
           ),
-        ),
-        if (hata != null) ...[
+          const SizedBox(height: TayfamSpacing.s8),
+          HukukiOnay(
+            etiket: metinler.hesap_kosullar_onay,
+            isaretli: _kosullar,
+            degisti: kilitli ? null : (d) => setState(() => _kosullar = d),
+            baglantilar: [
+              (
+                metinler.hesap_kosullar_ac,
+                surumler.adres(HukukiMetin.kosullar),
+              ),
+            ],
+            hata: _hatalar.contains(KayitFormHatasi.kosullar)
+                ? metinler.hesap_kosullar_hata
+                : null,
+          ),
           const SizedBox(height: TayfamSpacing.s16),
-          HataMetni(metin: hesapHatasiMetni(metinler, hata)),
+          TextField(
+            controller: _referans,
+            enabled: !kilitli,
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              labelText: metinler.hesap_kayit_referans,
+              errorText: _hatalar.contains(KayitFormHatasi.referansKodu)
+                  ? metinler.hesap_kayit_referans_hata
+                  : null,
+            ),
+          ),
+          if (hata != null) ...[
+            const SizedBox(height: TayfamSpacing.s16),
+            HataMetni(metin: hesapHatasiMetni(metinler, hata)),
+          ],
+          const SizedBox(height: TayfamSpacing.s24),
+          BirincilEylem(
+            etiket: metinler.hesap_kayit_gonder,
+            onPressed: kilitli ? null : () => unawaited(_gonder(surumler)),
+          ),
         ],
-        const SizedBox(height: TayfamSpacing.s24),
-        BirincilEylem(
-          etiket: metinler.hesap_kayit_gonder,
-          onPressed: kilitli ? null : () => unawaited(_gonder(surumler)),
-        ),
-      ],
+      ),
     );
   }
 }

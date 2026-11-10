@@ -154,10 +154,7 @@ void main() {
   group('kayıt', () {
     Future<_Kurulum> kayitBekleyen(Map<String, Object? Function()> y) async {
       final k = _Kurulum(
-        yanitlar: {
-          'GET /v1/registration/requirements': surumGovdesi,
-          ...y,
-        },
+        yanitlar: {'GET /v1/registration/requirements': surumGovdesi, ...y},
       );
       await k.oturum.store.oturumAc(oturum(kayitBekliyor: true));
       await _bekle();
@@ -230,8 +227,7 @@ void main() {
 
     test('diğer hatalar formda gösteriliyor', () async {
       final k = await kayitBekleyen({
-        'POST /v1/registration': () =>
-            problem(ProblemType.invalidBirthDate),
+        'POST /v1/registration': () => problem(ProblemType.invalidBirthDate),
       });
 
       await k.kap.read(kayitProvider.notifier).gonder(_bilgi());
