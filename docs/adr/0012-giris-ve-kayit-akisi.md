@@ -23,8 +23,9 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
 
 1. `GET /v1/client-config`. Uygulamanın sürümü platformun
    `min_supported_version`'ının altındaysa **"Güncelleme gerekli"** ekranı
-   gösterilir (mağazaya bağlantı); başka bir şey yapılamaz. Uç
-   ulaşılamazsa açılış engellenmez; herhangi bir istek `client-outdated`
+   gösterilir (mağazaya bağlantı); başka bir şey yapılamaz. Denetim
+   oturum okumasıyla paralel çalışır, açılışı beklemez; uç ulaşılamazsa
+   açılış engellenmez; herhangi bir istek `client-outdated`
    (426) dönerse aynı ekrana geçilir.
 2. SessionStore'daki kayıt okunur ve `oturumDurumuProvider` ondan beslenir:
    kayıt yok → giriş; `registration_pending` → kayıt; `consent_required` →
@@ -68,8 +69,10 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
 - Başarılı (204) → SessionStore `yenile()` → oturum açık → karşılama /
   tayfa ana sayfası. `age-blocked` → oturum sunucuda kapanmıştır; yerel
   kayıt silinir ve sade bir bilgi ekranı gösterilir (yeniden deneme yolu
-  yok). `consent-outdated` / `already-registered` → gereksinimler yeniden
-  okunur.
+  yok). `consent-outdated` → gereksinimler yeniden okunur.
+  `already-registered` → kayıt zaten tamamlanmıştır; SessionStore
+  `yenile()` ile güncel bayraklar alınır (gereksinimleri yeniden okumak
+  kullanıcıyı döngüde bırakırdı; 2026-11-10, PR #26).
 
 ### 4. Hukuki metinler
 
@@ -132,3 +135,12 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
 - **Kendi bilgisayarında derleme:** CI'dan çıkan APK ile giriş denenemez.
 - **Play Install Referrer:** referans kodunu otomatik doldurur, ama ek paket
   ve izin getirir; sonraya bırakıldı.
+
+## Notlar
+
+- **2026-11-10 (PR #26, platform sahibi onayladı):** `already-registered`
+  durumunda `yenile()` çağrılır; sürüm denetimi oturum okumasıyla paralel
+  çalışır (yukarıdaki metne işlendi). Uygulama kimliği değişikliği aynı
+  PR'la geldi. Logo henüz yazı logo ("tayfam", gömülü font); monogram
+  varlığı ayrı iş. Genel `ProblemType` → çeviri eşlemesi (ADR-0005 §4)
+  ayrı iş; bu akış yalnızca kendi hata kodlarını eşler.
