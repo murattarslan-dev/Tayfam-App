@@ -137,7 +137,8 @@ abstract final class Kurallar {
 
   static const sabitMetin = KuralTanimi(
     ad: 'sabit-metin',
-    dayanak: 'ADR-0008 "Denetim"; CLAUDE.md "API ile konuşma" (Arayüz metinleri)',
+    dayanak:
+        'ADR-0008 "Denetim"; CLAUDE.md "API ile konuşma" (Arayüz metinleri)',
     aciklama:
         "Text('…'), tooltip: '…', semanticLabel: '…' gibi sabit kullanıcı "
         'metni yok; metin lib/l10n/app_tr.arb\'den gelir.',

@@ -192,9 +192,7 @@ List<_Istisna> _dartIstisnalari(
   TaranmisKaynak t,
   List<Bulgu> bulgular,
 ) {
-  final satirlar = [
-    for (var s = 1; s <= t.satirSayisi; s++) t.satirMetni(s),
-  ];
+  final satirlar = [for (var s = 1; s <= t.satirSayisi; s++) t.satirMetni(s)];
   final sonuc = <_Istisna>[];
   for (final y in t.yorumlar) {
     if (!y.metin.startsWith('//')) {

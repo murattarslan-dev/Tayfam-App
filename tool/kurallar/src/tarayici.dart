@@ -196,7 +196,9 @@ List<Arguman> ustDuzeyArgumanlar(String kod, int acik, int kapa) {
           );
         } else {
           final bosluk = parca.length - parca.trimLeft().length;
-          sonuc.add(Arguman(ofset: bas + bosluk, ad: null, deger: parca.trim()));
+          sonuc.add(
+            Arguman(ofset: bas + bosluk, ad: null, deger: parca.trim()),
+          );
         }
       }
       bas = i + 1;

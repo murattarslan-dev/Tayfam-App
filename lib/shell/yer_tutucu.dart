@@ -23,7 +23,7 @@ class YerTutucuSayfa extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            // TODO(#6): TayfamSpacing
+            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
             padding: const EdgeInsets.all(16),
             child: Text(
               metinler.gezinme_yer_tutucu_aciklama,
@@ -52,7 +52,7 @@ class BulunamadiSayfasi extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            // TODO(#6): TayfamSpacing
+            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
             padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -62,7 +62,7 @@ class BulunamadiSayfasi extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                // TODO(#6): TayfamSpacing
+                // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () => context.go(Adresler.kok),

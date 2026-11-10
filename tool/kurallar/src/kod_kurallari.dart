@@ -328,10 +328,14 @@ final List<RegExp> _logKaliplari = [
 ];
 
 final List<RegExp> _diskKaliplari = [
-  RegExp(r'(?<![\w$])(?:SharedPreferences\w*|File|Directory|RandomAccessFile)'
-      r'\s*[.(]'),
-  RegExp(r'\.\s*(?:writeAsString|writeAsStringSync|writeAsBytes|'
-      r'writeAsBytesSync|openWrite)\s*\('),
+  RegExp(
+    r'(?<![\w$])(?:SharedPreferences\w*|File|Directory|RandomAccessFile)'
+    r'\s*[.(]',
+  ),
+  RegExp(
+    r'\.\s*(?:writeAsString|writeAsStringSync|writeAsBytes|'
+    r'writeAsBytesSync|openWrite)\s*\(',
+  ),
   RegExp(r'(?<![\w$])(?:localStorage|sessionStorage|indexedDB)(?![\w$])'),
 ];
 
@@ -339,9 +343,7 @@ final List<RegExp> _googleFontsKaliplari = [
   RegExp(r'(?<![\w$])GoogleFonts\s*\.\s*\w*'),
 ];
 
-final List<RegExp> _rastgeleKaliplari = [
-  RegExp(r'(?<![\w$])Random\s*\('),
-];
+final List<RegExp> _rastgeleKaliplari = [RegExp(r'(?<![\w$])Random\s*\(')];
 
 final List<RegExp> _riverpodKaliplari = [
   RegExp(
@@ -370,7 +372,9 @@ final List<RegExp> _modelKaliplari = [
 ];
 
 final List<RegExp> _jsonKaliplari = [
-  RegExp(r'(?<![\w$])(?:jsonDecode|jsonEncode|JsonDecoder|JsonEncoder)'
-      r'(?![\w$])'),
+  RegExp(
+    r'(?<![\w$])(?:jsonDecode|jsonEncode|JsonDecoder|JsonEncoder)'
+    r'(?![\w$])',
+  ),
   RegExp(r'(?<![\w$])json\s*\.\s*(?:decode|encode)\s*\('),
 ];

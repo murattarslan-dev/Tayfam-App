@@ -55,11 +55,11 @@ class TayfaDegistirmePaneli extends StatelessWidget {
     final yazi = Theme.of(context).textTheme;
     return ListView(
       shrinkWrap: true,
-      // TODO(#6): TayfamSpacing
+      // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
       padding: const EdgeInsets.only(bottom: 16),
       children: [
         Padding(
-          // TODO(#6): TayfamSpacing
+          // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Semantics(
             header: true,
@@ -67,7 +67,7 @@ class TayfaDegistirmePaneli extends StatelessWidget {
           ),
         ),
         Padding(
-          // TODO(#6): TayfamSpacing
+          // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Text(metinler.tayfa_tayfalarim_bos, style: yazi.bodyMedium),
         ),

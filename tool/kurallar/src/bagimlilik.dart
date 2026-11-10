@@ -65,9 +65,7 @@ Map<String, String> sdkKisitlari(String metin) {
   if (sdks is! Map<Object?, Object?>) {
     return {};
   }
-  return {
-    for (final MapEntry(:key, :value) in sdks.entries) '$key': '$value',
-  };
+  return {for (final MapEntry(:key, :value) in sdks.entries) '$key': '$value'};
 }
 
 enum DegisiklikTuru { eklendi, kaldirildi, surumDegisti, kaynakDegisti }
@@ -214,7 +212,9 @@ String raporOlustur({
         '${say(DegisiklikTuru.kaldirildi)} kaldırıldı.',
       )
       ..writeln()
-      ..writeln('| Paket | Değişiklik | Önceki | Sonraki | Bağımlılık | Lisans |')
+      ..writeln(
+        '| Paket | Değişiklik | Önceki | Sonraki | Bağımlılık | Lisans |',
+      )
       ..writeln('| --- | --- | --- | --- | --- | --- |');
     for (final d in degisiklikler) {
       final p = d.sonraki ?? d.onceki!;

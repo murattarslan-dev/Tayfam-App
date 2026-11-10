@@ -160,19 +160,11 @@ const Map<String, _PaketKurali> _paketKurallari = {
   ),
   'sqflite': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
   'hive': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
-  'hive_flutter': _PaketKurali(
-    Kurallar.diskeYazma,
-    null,
-    'disk önbelleği yok',
-  ),
+  'hive_flutter': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
   'isar': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
   'drift': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
   'sembast': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
-  'get_storage': _PaketKurali(
-    Kurallar.diskeYazma,
-    null,
-    'disk önbelleği yok',
-  ),
+  'get_storage': _PaketKurali(Kurallar.diskeYazma, null, 'disk önbelleği yok'),
   'google_fonts': _PaketKurali(
     Kurallar.googleFonts,
     null,

@@ -199,28 +199,3 @@ jobs:
       - name: Bağımlılık ve lisans raporu
         run: dart run tool/kurallar/bin/bagimlilik_raporu.dart --onceki "$ONCEKI_KILIT" --sonraki pubspec.lock
 
-  # GEÇİCİ (#9 geliştirme): paralel dallarda yanlış alarm denetimi. PR
-  # birleşmeden önce kaldırılır.
-  gecici-dallar:
-    name: gecici-dallar
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-      - run: flutter pub get --enforce-lockfile
-      - run: |
-          for dal in feat/gezinme-iskeleti feat/openapi-uretici feat/tema-ve-bilesenler feat/api-istemcisi; do
-            hedef="$RUNNER_TEMP/${dal//\//_}"
-            git worktree add --detach "$hedef" "origin/$dal" > /dev/null
-            echo "===== $dal"
-            dart run tool/kurallar/bin/kurallar.dart --kok "$hedef" || true
-          done

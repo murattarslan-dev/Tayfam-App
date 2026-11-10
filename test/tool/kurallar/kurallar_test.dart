@@ -170,7 +170,9 @@ void main() {
       final bulgular = denetle(
         DenetimGirdisi(
           dartDosyalari: {'lib/shell/ornek.dart': kod},
-          arbDosyalari: {'lib/l10n/app_en.arb': '{"etkinlik_baslik": "Events"}'},
+          arbDosyalari: {
+            'lib/l10n/app_en.arb': '{"etkinlik_baslik": "Events"}',
+          },
         ),
       );
       expect(bulgular, isEmpty, reason: _ozet(bulgular));

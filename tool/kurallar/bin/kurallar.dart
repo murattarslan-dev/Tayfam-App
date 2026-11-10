@@ -80,10 +80,8 @@ void _listele() {
 }
 
 /// GitHub iş akışı komutu verisinin kaçışı.
-String _veri(String s) => s
-    .replaceAll('%', '%25')
-    .replaceAll('\r', '%0D')
-    .replaceAll('\n', '%0A');
+String _veri(String s) =>
+    s.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
 
 /// GitHub iş akışı komutu özelliğinin kaçışı.
 String _ozellik(String s) =>

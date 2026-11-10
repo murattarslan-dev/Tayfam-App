@@ -95,7 +95,9 @@ Map<String, String> _lisanslar(Map<String, KilitPaketi> paketler) {
       sonuc[ad] = sdkLisansi;
       continue;
     }
-    final dizin = Directory.fromUri(taban.resolve(kok.endsWith('/') ? kok : '$kok/'));
+    final dizin = Directory.fromUri(
+      taban.resolve(kok.endsWith('/') ? kok : '$kok/'),
+    );
     sonuc[ad] = _dizinLisansi(dizin);
   }
   return sonuc;
