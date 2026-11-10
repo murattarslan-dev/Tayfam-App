@@ -128,7 +128,7 @@ void main() {
 
       await _dokun(tester, _metin('hesap_google_ile_devam'));
 
-      expect(_metin('hesap_hata_cok_fazla_deneme'), findsOneWidget);
+      expect(_metin('hata_rate_limited'), findsOneWidget);
       expect(_metin('hesap_google_ile_devam'), findsOneWidget);
     });
 
@@ -262,7 +262,7 @@ void main() {
         },
       );
       await _ac(tester, ekran(), k);
-      expect(_metin('hesap_hata_genel'), findsOneWidget);
+      expect(_metin('hata_internal'), findsOneWidget);
 
       hata = false;
       await _dokun(tester, _metin('hesap_tekrar_dene'));

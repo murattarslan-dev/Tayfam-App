@@ -1,63 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/api/problem_messages.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
-import 'package:tayfam/features/hesap/application/hesap_hatasi.dart';
 import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
+import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// [h] hatasının çeviri dosyasındaki metni.
-String hesapHatasiMetni(AppLocalizations m, HesapHatasi h) => switch (h) {
-  HesapHatasi.baglantiYok => m.hesap_hata_baglanti_yok,
-  HesapHatasi.cokFazlaDeneme => m.hesap_hata_cok_fazla_deneme,
-  HesapHatasi.webDesteklenmiyor => m.hesap_hata_web,
-  HesapHatasi.googleGirisi => m.hesap_hata_google,
-  HesapHatasi.metinlerGuncellendi => m.hesap_hata_metinler_guncellendi,
-  HesapHatasi.gecersizDogumTarihi => m.hesap_hata_dogum_tarihi,
-  HesapHatasi.gecersizAd => m.hesap_hata_ad,
-  HesapHatasi.genel => m.hesap_hata_genel,
+/// [hata]'nın giriş, kayıt ve onay ekranlarındaki metni.
+///
+/// Google girişinin istemcideki hataları bu özelliğin kendi metinleriyle;
+/// API ve bağlantı hataları ortak eşlemeyle ([hataMetni], ADR-0005 §4)
+/// gösterilir. Sunucunun `title` / `detail` metni gösterilmez.
+String hesapHatasiMetni(AppLocalizations m, Object hata) => switch (hata) {
+  GoogleGirisHatasi(desteklenmiyor: true) => m.hesap_hata_web,
+  GoogleGirisHatasi() => m.hesap_hata_google,
+  _ => hataMetni(m, hata),
 };
-
-/// Uyarı ikonu ve metinden oluşan hata satırı. Ekran okuyucu metni
-/// belirdiği anda okur (canlı bölge). Hata metni ana metin rengindedir
-/// (vurgu renkleri metin rengi olmaz, ADR-0004); mor yüzeyde [renk] ile
-/// beyaz verilir.
-class HataMetni extends StatelessWidget {
-  const HataMetni({super.key, required this.metin, this.renk});
-
-  final String metin;
-
-  /// Metin ve ikon rengi; verilmezse `context.renkler.metin`.
-  final Color? renk;
-
-  @override
-  Widget build(BuildContext context) {
-    final renk = this.renk ?? context.renkler.metin;
-    return Semantics(
-      liveRegion: true,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExcludeSemantics(
-            child: Icon(
-              Icons.error_outline,
-              color: renk,
-              size: TayfamSizes.ikon,
-            ),
-          ),
-          const SizedBox(width: TayfamSpacing.s8),
-          Expanded(
-            child: Text(
-              metin,
-              style: context.yazi.bodySmall?.copyWith(color: renk),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 /// Yazı logo: küçük harfle "tayfam" (Notion: Marka; vektör logo gelene
 /// kadar fonttan).
@@ -152,7 +112,7 @@ class YuklemeDurumu extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            HataMetni(metin: hesapHatasiMetni(metinler, hesapHatasiOku(hata))),
+            HataSatiri(metin: hesapHatasiMetni(metinler, hata)),
             const SizedBox(height: TayfamSpacing.s16),
             BirincilEylem(
               etiket: metinler.hesap_tekrar_dene,

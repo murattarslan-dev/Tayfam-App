@@ -6,7 +6,6 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
-import 'package:tayfam/features/hesap/application/hesap_hatasi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 
@@ -25,8 +24,9 @@ final class OnayDurumu {
   /// Onay isteği sürüyor.
   final bool gonderiliyor;
 
-  /// Son gönderimin hatası; yoksa `null`.
-  final HesapHatasi? hata;
+  /// Son gönderimin hatası (API ya da bağlantı hatası); yoksa `null`.
+  /// Metni ekranda `hesapHatasiMetni` verir.
+  final Object? hata;
 }
 
 /// Yeniden onay akışı (ADR-0012 §5): güncel sürümler okunur, gösterilen
@@ -56,8 +56,7 @@ class OnayNotifier extends AsyncNotifier<OnayDurumu> {
       } on ApiProblem catch (problem) {
         if (problem.type != ProblemType.consentOutdated) rethrow;
         final yeni = await depo.onaySurumleri();
-        const hata = HesapHatasi.metinlerGuncellendi;
-        _bitir(OnayDurumu(surumler: yeni, hata: hata));
+        _bitir(OnayDurumu(surumler: yeni, hata: problem));
         return;
       }
       await oturum.yenile();
@@ -65,7 +64,7 @@ class OnayNotifier extends AsyncNotifier<OnayDurumu> {
     } on OturumYok {
       oturumDurumu.ayarla(OturumDurumu.girisYok);
     } on Exception catch (hata) {
-      _bitir(OnayDurumu(surumler: surumler, hata: hesapHatasiOku(hata)));
+      _bitir(OnayDurumu(surumler: surumler, hata: hata));
     }
   }
 
