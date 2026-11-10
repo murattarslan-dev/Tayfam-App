@@ -26,7 +26,8 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
   - Şemalar için değişmez model sınıfları (`fromJson` / `toJson`,
     `==`/`hashCode`), enum'lar ve `oneOf`/`anyOf` için mühürlü (sealed)
     sınıflar.
-  - Etiket (tag) başına bir uç sınıfı; her `operationId` bir metod.
+  - Yol kaynağına göre gruplanmış uç sınıfları (sözleşmede tag yok);
+    her `operationId` bir metod.
   - `x-problem-types`'tan `ProblemType` enum'u (bilinmeyen kod için
     `unknown` değeri).
 - Üretilen kod commit edilir ve elle düzenlenmez. Sözleşmenin hangi
@@ -134,3 +135,12 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
   `build_runner` ve kod üretim zinciri.
 - **dio:** hazır ara katmanlar; daha büyük bağımlılık ve bizim yazacağımız
   ara katmanı zaten karşılamıyor.
+
+## Notlar
+
+- **2026-11-10 (issue #5):** Sözleşmede hiç `tags` olmadığı için uç
+  sınıfları etiket yerine yol kaynağına göre gruplanır: `/v1/<x>/…` ve
+  `/v1/tayfas/{tayfa_id}/<x>/…` → `<X>Api` (`apis/<x>_api.dart`).
+  Sözleşmede `oneOf`/`anyOf` da yok; mühürlü sınıf üretimi, bu yapılar
+  sözleşmeye girdiğinde eklenir, o zamana kadar üretici bunlarda hata
+  verir. `GET /v1/realtime` (WebSocket, ADR-0007) üretilmez.
