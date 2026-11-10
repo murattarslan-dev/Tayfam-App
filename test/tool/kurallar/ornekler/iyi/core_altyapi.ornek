@@ -1,0 +1,25 @@
+// yol: lib/core/metin/turkce.dart
+/// Türkçe küçük harf: İ → i, I → ı, ardından genel küçük harf.
+String turkceKucukHarf(String s) =>
+    s.replaceAll('İ', 'i').replaceAll('I', 'ı').toLowerCase();
+// yol: lib/core/api/http_tasima.dart
+import 'dart:convert';
+import 'dart:developer' as developer;
+import 'dart:math';
+
+import 'package:http/http.dart' as http;
+
+void gunluk(String satir) => developer.log(satir, name: 'tayfam.api');
+
+Object? coz(http.Response yanit) => jsonDecode(utf8.decode(yanit.bodyBytes));
+
+String kimlik() => Random.secure().nextInt(1 << 32).toString();
+// yol: lib/core/realtime/baglanti.dart
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+const String realtimeYolu = '/v1/realtime';
+WebSocketChannel? kanal;
+// yol: lib/core/oturum/token_deposu.dart
+import 'dart:convert';
+
+String kodla(String erisim) => jsonEncode({'erisim': erisim});

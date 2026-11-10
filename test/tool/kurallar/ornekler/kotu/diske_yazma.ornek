@@ -1,0 +1,14 @@
+// yol: lib/core/onbellek/onbellek.dart
+// beklenen: diske-yazma 7
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<void> sakla(String yol, String veri) async {
+  final dosya = File(yol);
+  await dosya.writeAsString(veri);
+  await SharedPreferences.getInstance();
+  Directory.systemTemp;
+  localStorage;
+}

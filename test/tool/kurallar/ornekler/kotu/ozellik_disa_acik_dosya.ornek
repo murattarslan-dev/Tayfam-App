@@ -1,0 +1,3 @@
+// yol: lib/features/sohbet/presentation/sohbet_ekrani.dart
+// beklenen: ozellik-disa-acik-dosya 1
+import 'package:flutter/widgets.dart';

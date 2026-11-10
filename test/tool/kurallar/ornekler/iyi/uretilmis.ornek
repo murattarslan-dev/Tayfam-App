@@ -1,0 +1,21 @@
+// yol: lib/core/api/gen/models.dart
+// ÜRETİLMİŞ — elle düzenleme.
+import 'dart:convert';
+
+final class Tayfa {
+  const Tayfa(this.ad);
+
+  factory Tayfa.fromJson(Map<String, Object?> json) =>
+      Tayfa(json['ad']! as String);
+
+  final String ad;
+
+  Map<String, Object?> toJson() => {'ad': ad};
+}
+
+const String yol = '/v1/tayfas/{tayfa_id}';
+String kodla(Tayfa t) => jsonEncode(t.toJson());
+// yol: lib/l10n/app_localizations_tr.dart
+import 'package:flutter/widgets.dart';
+
+const Text ornek = Text('Üretilmiş çeviri kodu denetlenmez');

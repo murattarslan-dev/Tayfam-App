@@ -1,0 +1,5 @@
+// yol: lib/core/kuyruk/kuyruk.dart
+// beklenen: elle-uc 2
+const String tayfalar = '/v1/tayfas';
+String tayfa(String id) => 'https://api.ornek.invalid/v1/tayfas/$id';
+const String sayfa = '/v1beta';

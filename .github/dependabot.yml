@@ -1,0 +1,39 @@
+# Dependabot (ADR-0009, issue #9): pub ve GitHub Actions için haftalık.
+#
+# - Actions iş akışlarında commit SHA'sıyla sabitlidir (CLAUDE.md kesin
+#   kural 8). Dependabot SHA ile sabitlenmiş Action'ı yine SHA ile
+#   günceller ve satırdaki "# vX.Y.Z" yorumunu yeni sürüme çeker; sabitleme
+#   korunur.
+# - pub güncellemeleri pubspec.lock'u değiştirir; her PR CI'dan geçer ve
+#   bagimliliklar işi eklenen/sürümü değişen paketleri ve lisanslarını
+#   listeler. Yeni bir doğrudan bağımlılık Dependabot'tan gelmez.
+# - Dependabot PR'larına secret verilmez (pull_request olayı, salt okunur).
+version: 2
+updates:
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:17"
+      timezone: Europe/Istanbul
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Küçük ve yama sürümleri tek PR'da; büyük sürümler ayrı PR olur.
+      pub-kucuk:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:17"
+      timezone: Europe/Istanbul
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+      include: scope

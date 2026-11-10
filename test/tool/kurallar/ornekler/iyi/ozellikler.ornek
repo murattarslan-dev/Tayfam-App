@@ -1,0 +1,63 @@
+// yol: lib/features/etkinlik/presentation/etkinlik_karti.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/etkinlik/application/etkinlikler.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
+
+/// Etkinlik kartı. Yorumdaki Colors.red, Text('x') ve print(…) bulgu
+/// değildir.
+class EtkinlikKarti extends ConsumerWidget {
+  const EtkinlikKarti({super.key, required this.tayfaId});
+
+  final String tayfaId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final metinler = AppLocalizations.of(context);
+    final sayi = ref.watch(etkinlikSayisiProvider(tayfaId));
+    return Padding(
+      padding: const EdgeInsets.all(TayfamSpacing.s16),
+      child: Column(
+        spacing: TayfamSpacing.s8,
+        children: [
+          Text(metinler.etkinlik_baslik, style: context.yazi.titleMedium),
+          Text('$sayi'),
+          Text('${sayi + 1}'),
+          const SizedBox(height: TayfamSpacing.s8),
+          SizedBox(width: 120, height: 48, child: Text(metinler.etkinlik_baslik)),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.renkler.marka,
+              borderRadius: TayfamRadii.kartKoseleri,
+            ),
+          ),
+          Tooltip(message: metinler.etkinlik_baslik, child: const Icon(Icons.info)),
+          // kural-istisnası: sabit-renk — şeffaf zemin marka rengi değildir
+          const ColoredBox(color: Colors.transparent),
+          const ColoredBox(color: Colors.transparent), // kural-istisnası: sabit-renk — aynı gerekçe
+        ],
+      ),
+    );
+  }
+}
+// yol: lib/features/etkinlik/application/etkinlikler.dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final etkinlikSayisiProvider = Provider.autoDispose.family<int, String>(
+  (ref, tayfaId) => 0,
+  name: 'etkinlikSayisiProvider',
+);
+// yol: lib/features/etkinlik/etkinlik.dart
+export 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
+// yol: lib/features/tayfa/tayfa.dart
+// yol: lib/shell/kayitlar.dart
+import 'package:tayfam/core/moduller/tayfa_module.dart';
+import 'package:tayfam/features/etkinlik/etkinlik.dart';
+
+const String metin = '''
+Text('çok satırlı metnin içindeki kod') ve Colors.red bulgu değildir.
+''';
+const String ham = r'Color(0xFF000000) $degil';

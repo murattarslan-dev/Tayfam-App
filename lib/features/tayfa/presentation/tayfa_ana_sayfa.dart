@@ -31,7 +31,7 @@ class TayfaAnaSayfa extends ConsumerWidget {
           TayfaUstBolumu(ad: ad),
           Expanded(
             child: ListView(
-              // TODO(#6): TayfamSpacing
+              // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
@@ -74,7 +74,7 @@ class TayfaUstBolumu extends StatelessWidget {
         child: SafeArea(
           bottom: false,
           child: Padding(
-            // TODO(#6): TayfamSpacing
+            // kural-istisnası: sabit-bosluk — TODO(#6): TayfamSpacing
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
             child: Align(
               alignment: AlignmentDirectional.centerStart,
