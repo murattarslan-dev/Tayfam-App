@@ -22,6 +22,7 @@ final class UsersApi {
       pathTemplate: '/v1/users/{user_id}/profile',
       pathParams: {'user_id': userId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return UserProfile.fromJson(jsonObject(response, 'getUserProfile'));
   }
@@ -54,6 +55,7 @@ final class UsersApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ActivityList.fromJson(jsonObject(response, 'listUserActivity'));
   }

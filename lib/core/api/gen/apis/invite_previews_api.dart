@@ -23,6 +23,7 @@ final class InvitePreviewsApi {
       pathTemplate: '/v1/invite-previews',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return InvitePreview.fromJson(jsonObject(response, 'previewInvite'));
   }

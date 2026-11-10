@@ -23,6 +23,7 @@ final class AnswersApi {
       pathParams: {'tayfa_id': tayfaId, 'answer_id': answerId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Answer.fromJson(jsonObject(response, 'updateAnswer'));
   }
@@ -42,6 +43,7 @@ final class AnswersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/answers/{answer_id}',
       pathParams: {'tayfa_id': tayfaId, 'answer_id': answerId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -60,6 +62,7 @@ final class AnswersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/answers/{answer_id}/restoration',
       pathParams: {'tayfa_id': tayfaId, 'answer_id': answerId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Answer.fromJson(jsonObject(response, 'restoreAnswer'));
   }
@@ -79,6 +82,7 @@ final class AnswersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/answers/{answer_id}/vote',
       pathParams: {'tayfa_id': tayfaId, 'answer_id': answerId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Answer.fromJson(jsonObject(response, 'voteAnswer'));
   }
@@ -97,6 +101,7 @@ final class AnswersApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/answers/{answer_id}/vote',
       pathParams: {'tayfa_id': tayfaId, 'answer_id': answerId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Answer.fromJson(jsonObject(response, 'unvoteAnswer'));
   }

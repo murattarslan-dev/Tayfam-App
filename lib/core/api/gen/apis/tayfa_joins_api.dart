@@ -23,6 +23,7 @@ final class TayfaJoinsApi {
       pathTemplate: '/v1/tayfa-joins',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Membership.fromJson(jsonObject(response, 'joinByCode'));
   }

@@ -23,6 +23,7 @@ final class EventSeriesApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/event-series/{series_id}',
       pathParams: {'tayfa_id': tayfaId, 'series_id': seriesId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return EventSeries.fromJson(jsonObject(response, 'getEventSeries'));
   }
@@ -43,6 +44,7 @@ final class EventSeriesApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/event-series/{series_id}/ending',
       pathParams: {'tayfa_id': tayfaId, 'series_id': seriesId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return EventSeriesEnding.fromJson(jsonObject(response, 'endEventSeries'));
   }

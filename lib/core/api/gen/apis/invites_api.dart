@@ -21,6 +21,7 @@ final class InvitesApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/invites',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return InviteList.fromJson(jsonObject(response, 'listInvites'));
   }
@@ -44,6 +45,7 @@ final class InvitesApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return CreatedInvite.fromJson(jsonObject(response, 'createInvite'));
   }
@@ -64,6 +66,7 @@ final class InvitesApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/invites/{invite_id}',
       pathParams: {'tayfa_id': tayfaId, 'invite_id': inviteId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

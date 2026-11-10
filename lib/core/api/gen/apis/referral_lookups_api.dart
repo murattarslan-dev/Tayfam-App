@@ -25,6 +25,7 @@ final class ReferralLookupsApi {
       pathTemplate: '/v1/referral-lookups',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ReferredUser.fromJson(jsonObject(response, 'lookupReferralCode'));
   }

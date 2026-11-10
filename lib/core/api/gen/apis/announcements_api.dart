@@ -36,6 +36,7 @@ final class AnnouncementsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return AnnouncementList.fromJson(jsonObject(response, 'listAnnouncements'));
   }
@@ -56,6 +57,7 @@ final class AnnouncementsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Announcement.fromJson(jsonObject(response, 'createAnnouncement'));
   }
@@ -72,6 +74,7 @@ final class AnnouncementsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}',
       pathParams: {'tayfa_id': tayfaId, 'announcement_id': announcementId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Announcement.fromJson(jsonObject(response, 'getAnnouncement'));
   }
@@ -97,6 +100,7 @@ final class AnnouncementsApi {
       pathParams: {'tayfa_id': tayfaId, 'announcement_id': announcementId},
       body: json,
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Announcement.fromJson(jsonObject(response, 'updateAnnouncement'));
   }
@@ -117,6 +121,7 @@ final class AnnouncementsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}',
       pathParams: {'tayfa_id': tayfaId, 'announcement_id': announcementId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -134,6 +139,7 @@ final class AnnouncementsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}/pin',
       pathParams: {'tayfa_id': tayfaId, 'announcement_id': announcementId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Announcement.fromJson(jsonObject(response, 'pinAnnouncement'));
   }
@@ -150,6 +156,7 @@ final class AnnouncementsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}/pin',
       pathParams: {'tayfa_id': tayfaId, 'announcement_id': announcementId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Announcement.fromJson(jsonObject(response, 'unpinAnnouncement'));
   }
@@ -172,6 +179,7 @@ final class AnnouncementsApi {
           '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}/restoration',
       pathParams: {'tayfa_id': tayfaId, 'announcement_id': announcementId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Announcement.fromJson(jsonObject(response, 'restoreAnnouncement'));
   }

@@ -31,11 +31,15 @@ abstract interface class ApiTransport {
   ///   yüzde kodlamasıyla (`Uri.encodeComponent`) yerleştirir.
   /// - [query]: yalnızca verilen sorgu parametreleri, dize olarak.
   /// - [body]: JSON'a çevrilecek gövde; `null` ise gövde gönderilmez.
+  /// - [authenticated]: sözleşmedeki geçerli `security`'den gelir;
+  ///   `false` (`security: []`) ise uygulama `Authorization` eklemez ve
+  ///   token yenilemeyi denemez. Yoldan tahmin edilmez.
   ///
   /// Hata yanıtında tipli değer döndürmez, `ApiProblem` fırlatır.
   Future<Object?> send({
     required String method,
     required String pathTemplate,
+    required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
     Object? body,

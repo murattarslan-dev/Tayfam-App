@@ -34,6 +34,7 @@ final class MeApi {
       method: 'DELETE',
       pathTemplate: '/v1/me',
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -49,6 +50,7 @@ final class MeApi {
       method: 'GET',
       pathTemplate: '/v1/me/sessions',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return DeviceSessionList.fromJson(jsonObject(response, 'listSessions'));
   }
@@ -68,6 +70,7 @@ final class MeApi {
       pathTemplate: '/v1/me/sessions/{session_id}',
       pathParams: {'session_id': sessionId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -79,6 +82,7 @@ final class MeApi {
       method: 'POST',
       pathTemplate: '/v1/me/sessions/sign-out-others',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return RevokedSessions.fromJson(
       jsonObject(response, 'revokeOtherSessions'),
@@ -97,6 +101,7 @@ final class MeApi {
       method: 'GET',
       pathTemplate: '/v1/me/consents',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ConsentStatus.fromJson(jsonObject(response, 'getConsents'));
   }
@@ -115,6 +120,7 @@ final class MeApi {
       pathTemplate: '/v1/me/consents',
       body: body.toJson(),
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -126,6 +132,7 @@ final class MeApi {
       method: 'GET',
       pathTemplate: '/v1/me/account',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Account.fromJson(jsonObject(response, 'getAccount'));
   }
@@ -143,6 +150,7 @@ final class MeApi {
       pathTemplate: '/v1/me/account',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Account.fromJson(jsonObject(response, 'updateAccount'));
   }
@@ -155,6 +163,7 @@ final class MeApi {
       method: 'POST',
       pathTemplate: '/v1/me/referral-code',
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return ReferralCode.fromJson(jsonObject(response, 'rotateReferralCode'));
   }
@@ -177,6 +186,7 @@ final class MeApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return FriendList.fromJson(jsonObject(response, 'listFriends'));
   }
@@ -192,6 +202,7 @@ final class MeApi {
       pathTemplate: '/v1/me/friends/{user_id}',
       pathParams: {'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -220,6 +231,7 @@ final class MeApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return FriendList.fromJson(jsonObject(response, 'listFriendRequests'));
   }
@@ -238,6 +250,7 @@ final class MeApi {
       pathTemplate: '/v1/me/friend-requests',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Friend.fromJson(jsonObject(response, 'sendFriendRequest'));
   }
@@ -251,6 +264,7 @@ final class MeApi {
       pathTemplate: '/v1/me/friend-requests/{user_id}/acceptance',
       pathParams: {'user_id': userId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Friend.fromJson(jsonObject(response, 'acceptFriendRequest'));
   }
@@ -276,6 +290,7 @@ final class MeApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return BlockedUserList.fromJson(jsonObject(response, 'listBlockedUsers'));
   }
@@ -289,6 +304,7 @@ final class MeApi {
       pathTemplate: '/v1/me/blocks/{user_id}',
       pathParams: {'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -301,6 +317,7 @@ final class MeApi {
       pathTemplate: '/v1/me/blocks/{user_id}',
       pathParams: {'user_id': userId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -325,6 +342,7 @@ final class MeApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return InvitationList.fromJson(jsonObject(response, 'listMyInvitations'));
   }
@@ -338,6 +356,7 @@ final class MeApi {
       pathTemplate: '/v1/me/invitations/{tayfa_id}',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -353,6 +372,7 @@ final class MeApi {
       pathTemplate: '/v1/me/invitations/{tayfa_id}/acceptance',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Membership.fromJson(jsonObject(response, 'acceptInvitation'));
   }
@@ -375,6 +395,7 @@ final class MeApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return MyReportList.fromJson(jsonObject(response, 'listMyReports'));
   }
@@ -408,6 +429,7 @@ final class MeApi {
       pathTemplate: '/v1/me/reports',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return MyReport.fromJson(jsonObject(response, 'createDirectMessageReport'));
   }
@@ -424,6 +446,7 @@ final class MeApi {
       pathTemplate: '/v1/me/reports/{report_id}',
       pathParams: {'report_id': reportId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return MyReport.fromJson(jsonObject(response, 'getMyReport'));
   }

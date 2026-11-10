@@ -20,6 +20,7 @@ final class DeletionApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/deletion',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Deletion.fromJson(jsonObject(response, 'requestTayfaDeletion'));
   }
@@ -33,6 +34,7 @@ final class DeletionApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/deletion',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 }

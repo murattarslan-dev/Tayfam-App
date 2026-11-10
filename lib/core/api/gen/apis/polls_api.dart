@@ -38,6 +38,7 @@ final class PollsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return PollList.fromJson(jsonObject(response, 'listPolls'));
   }
@@ -58,6 +59,7 @@ final class PollsApi {
       pathParams: {'tayfa_id': tayfaId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Poll.fromJson(jsonObject(response, 'createPoll'));
   }
@@ -74,6 +76,7 @@ final class PollsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/polls/{poll_id}',
       pathParams: {'tayfa_id': tayfaId, 'poll_id': pollId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Poll.fromJson(jsonObject(response, 'getPoll'));
   }
@@ -93,6 +96,7 @@ final class PollsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/polls/{poll_id}',
       pathParams: {'tayfa_id': tayfaId, 'poll_id': pollId},
       expect: ResponseKind.none,
+      authenticated: true,
     );
   }
 
@@ -114,6 +118,7 @@ final class PollsApi {
       pathParams: {'tayfa_id': tayfaId, 'poll_id': pollId},
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Poll.fromJson(jsonObject(response, 'votePoll'));
   }
@@ -130,6 +135,7 @@ final class PollsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/polls/{poll_id}/vote',
       pathParams: {'tayfa_id': tayfaId, 'poll_id': pollId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Poll.fromJson(jsonObject(response, 'withdrawPollVote'));
   }
@@ -167,6 +173,7 @@ final class PollsApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return PollVoterList.fromJson(jsonObject(response, 'listPollVoters'));
   }
@@ -185,6 +192,7 @@ final class PollsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/polls/{poll_id}/closure',
       pathParams: {'tayfa_id': tayfaId, 'poll_id': pollId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Poll.fromJson(jsonObject(response, 'closePoll'));
   }

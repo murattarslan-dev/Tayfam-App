@@ -1,0 +1,146 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+/// Depoda tutulan oturum kaydı: token çifti, süreleri ve yönlendirmenin
+/// ihtiyaç duyduğu iki bayrak (ADR-0005, ADR-0006).
+///
+/// Kullanıcı içeriği taşımaz. `toString` token yazmaz.
+@immutable
+final class KayitliOturum {
+  const KayitliOturum({
+    required this.erisimTokeni,
+    required this.erisimBitis,
+    required this.yenilemeTokeni,
+    required this.yenilemeBitis,
+    required this.kayitBekliyor,
+    required this.onayGerekli,
+  });
+
+  final String erisimTokeni;
+  final DateTime erisimBitis;
+  final String yenilemeTokeni;
+  final DateTime yenilemeBitis;
+
+  /// `registration_pending`: kayıt tamamlanmadı.
+  final bool kayitBekliyor;
+
+  /// `consent_required`: güncel metinler onaylanmadı.
+  final bool onayGerekli;
+
+  /// Depodaki tek kayda yazılan biçim.
+  String kodla() => jsonEncode({
+    'v': 1,
+    'erisim': erisimTokeni,
+    'erisim_bitis': erisimBitis.toUtc().toIso8601String(),
+    'yenileme': yenilemeTokeni,
+    'yenileme_bitis': yenilemeBitis.toUtc().toIso8601String(),
+    'kayit_bekliyor': kayitBekliyor,
+    'onay_gerekli': onayGerekli,
+  });
+
+  /// [kodla] çıktısını okur; bozuk ya da tanınmayan kayıtta `null` döner.
+  static KayitliOturum? coz(String metin) {
+    try {
+      final json = jsonDecode(metin);
+      if (json is! Map<String, Object?> || json['v'] != 1) return null;
+      final erisim = json['erisim'];
+      final erisimBitis = json['erisim_bitis'];
+      final yenileme = json['yenileme'];
+      final yenilemeBitis = json['yenileme_bitis'];
+      final kayitBekliyor = json['kayit_bekliyor'];
+      final onayGerekli = json['onay_gerekli'];
+      if (erisim is! String ||
+          erisimBitis is! String ||
+          yenileme is! String ||
+          yenilemeBitis is! String ||
+          kayitBekliyor is! bool ||
+          onayGerekli is! bool ||
+          erisim.isEmpty ||
+          yenileme.isEmpty) {
+        return null;
+      }
+      return KayitliOturum(
+        erisimTokeni: erisim,
+        erisimBitis: DateTime.parse(erisimBitis).toUtc(),
+        yenilemeTokeni: yenileme,
+        yenilemeBitis: DateTime.parse(yenilemeBitis).toUtc(),
+        kayitBekliyor: kayitBekliyor,
+        onayGerekli: onayGerekli,
+      );
+    } on FormatException {
+      return null;
+    }
+  }
+
+  @override
+  String toString() => 'KayitliOturum(…)';
+}
+
+/// Oturum kaydının tek kalıcı yeri. Yalnızca `SessionStore` kullanır.
+abstract interface class TokenDeposu {
+  /// Kaydı okur; yoksa `null`.
+  Future<String?> oku();
+
+  /// Kaydı yazar (öncekinin yerine).
+  Future<void> yaz(String kayit);
+
+  /// Kaydı siler.
+  Future<void> sil();
+}
+
+/// Mobil: Android Keystore / iOS Keychain (`flutter_secure_storage`).
+///
+/// iOS'ta `first_unlock_this_device`: cihaz ilk kez açıldıktan sonra arka
+/// planda da okunabilir, yedeğe ve başka cihaza geçmez (ADR-0005).
+final class GuvenliTokenDeposu implements TokenDeposu {
+  GuvenliTokenDeposu([FlutterSecureStorage? depo])
+    : _depo =
+          depo ??
+          const FlutterSecureStorage(
+            iOptions: IOSOptions(
+              accessibility: KeychainAccessibility.first_unlock_this_device,
+            ),
+          );
+
+  final FlutterSecureStorage _depo;
+
+  static const String _anahtar = 'tayfam.oturum';
+
+  @override
+  Future<String?> oku() => _depo.read(key: _anahtar);
+
+  @override
+  Future<void> yaz(String kayit) => _depo.write(key: _anahtar, value: kayit);
+
+  @override
+  Future<void> sil() => _depo.delete(key: _anahtar);
+}
+
+/// Web geliştirme derlemesi: yalnızca bellek; sayfa yenilenince oturum
+/// gider, tarayıcı deposuna hiçbir şey yazılmaz (ADR-0011). Testlerde de
+/// sahte depo olarak kullanılır.
+final class BellekTokenDeposu implements TokenDeposu {
+  String? _kayit;
+
+  @override
+  Future<String?> oku() async => _kayit;
+
+  @override
+  Future<void> yaz(String kayit) async {
+    _kayit = kayit;
+  }
+
+  @override
+  Future<void> sil() async {
+    _kayit = null;
+  }
+}
+
+/// Platforma göre token deposu: web'de bellek, mobilde güvenli depo.
+final tokenDeposuProvider = Provider<TokenDeposu>(
+  (ref) => kIsWeb ? BellekTokenDeposu() : GuvenliTokenDeposu(),
+  name: 'tokenDeposuProvider',
+);

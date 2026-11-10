@@ -30,6 +30,7 @@ final class TayfasApi {
         if (pageToken != null) 'page_token': pageToken,
       },
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return MyTayfaList.fromJson(jsonObject(response, 'listMyTayfas'));
   }
@@ -49,6 +50,7 @@ final class TayfasApi {
       pathTemplate: '/v1/tayfas',
       body: body.toJson(),
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Tayfa.fromJson(jsonObject(response, 'createTayfa'));
   }
@@ -65,6 +67,7 @@ final class TayfasApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}',
       pathParams: {'tayfa_id': tayfaId},
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return TayfaView.fromJson(jsonObject(response, 'getTayfa'));
   }
@@ -91,6 +94,7 @@ final class TayfasApi {
       pathParams: {'tayfa_id': tayfaId},
       body: json,
       expect: ResponseKind.json,
+      authenticated: true,
     );
     return Tayfa.fromJson(jsonObject(response, 'updateTayfa'));
   }
