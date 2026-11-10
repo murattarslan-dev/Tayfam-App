@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/tema/kontrast.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 
 /// Bir ön plan / zemin çifti ve eşiği.
 class _Cift {
@@ -128,6 +129,24 @@ void main() {
         final oran = kontrastOrani(c.on, c.arka);
         test('${c.ad} ≥ ${c.esik} (${oran.toStringAsFixed(2)})', () {
           expect(oran, greaterThanOrEqualTo(c.esik));
+        });
+      }
+    });
+  }
+
+  // Etkinlik türü renkleri (ADR-0004 Notlar, 2026-11-10): her türün
+  // dolgusu üzerindeki metin ve ikon.
+  final turTemalari = {
+    'açık': TayfamTurRenkleri.acik,
+    'koyu': TayfamTurRenkleri.koyu,
+  };
+  for (final MapEntry(key: tema, value: t) in turTemalari.entries) {
+    group('$tema tema etkinlik türleri', () {
+      for (final renk in TurRengi.values) {
+        final cift = t.cift(renk);
+        final oran = kontrastOrani(cift.ustu, cift.dolgu);
+        test('${renk.name} ≥ $_metin (${oran.toStringAsFixed(2)})', () {
+          expect(oran, greaterThanOrEqualTo(_metin));
         });
       }
     });

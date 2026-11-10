@@ -138,6 +138,5 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
   sonra tayfaya atlamasın diye). Üye olunmayan `/t/<id>` adresi karşılamaya
   döner; ADR-0003'teki "katılım ekranına döner" ifadesinin yerine budur.
   Kodla katılım ayrı bir rota değil, alttan açılan sayfadır. İlgi alanı
-  çiplerinin tür başına rengi henüz kararlaştırılmadı; geçici olarak
-  `CipVurgusu` tür sırasına göre dağıtılır.
+  çiplerinin tür başına rengi ve ikonu için ADR-0004 Notlar'a bakın.
 

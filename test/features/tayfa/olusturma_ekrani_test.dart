@@ -62,10 +62,10 @@ void main() {
     await _dokun(tester, 'olusturma_ileri');
 
     expect(find.text('Adım 2 / 3'), findsOneWidget);
-    await _dokun(tester, 'tayfa_tur_convoy');
-    await _dokun(tester, 'tayfa_tur_camp');
+    await _dokun(tester, 'etkinlik_turu_convoy');
+    await _dokun(tester, 'etkinlik_turu_camp');
     final cip = tester.widget<FilterChip>(
-      find.widgetWithText(FilterChip, arbMetni('tayfa_tur_convoy')),
+      find.widgetWithText(FilterChip, arbMetni('etkinlik_turu_convoy')),
     );
     expect(cip.selected, isTrue);
     await _dokun(tester, 'olusturma_ileri');
@@ -104,7 +104,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField), 'Klasikçiler');
     await _dokun(tester, 'olusturma_ileri');
-    await _dokun(tester, 'tayfa_tur_hike');
+    await _dokun(tester, 'etkinlik_turu_hike');
     await _dokun(tester, 'olusturma_ileri');
     await tester.enterText(find.byType(TextField), 'Açıklama');
 
@@ -113,7 +113,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Adım 2 / 3'), findsOneWidget);
     final cip = tester.widget<FilterChip>(
-      find.widgetWithText(FilterChip, arbMetni('tayfa_tur_hike')),
+      find.widgetWithText(FilterChip, arbMetni('etkinlik_turu_hike')),
     );
     expect(cip.selected, isTrue);
 
@@ -173,7 +173,7 @@ void main() {
       expect(find.byType(FilterChip), findsNWidgets(7));
       expect(tester.takeException(), isNull);
 
-      await _dokun(tester, 'tayfa_tur_gaming');
+      await _dokun(tester, 'etkinlik_turu_gaming');
       await _dokun(tester, 'olusturma_ileri');
       expect(find.text(arbMetni('olusturma_onayli')), findsOneWidget);
       expect(tester.takeException(), isNull);

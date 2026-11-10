@@ -7,9 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/olusturma_notifier.dart';
-import 'package:tayfam/features/tayfa/presentation/tayfa_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa oluşturma sihirbazı (ADR-0014 §4): ad → ilgi alanları → katılım
@@ -213,8 +213,7 @@ class _IlgiAdimi extends StatelessWidget {
           children: [
             for (final tur in ilgiAlanlari)
               IlgiCipi(
-                etiket: turEtiketi(metinler, tur),
-                vurgu: turVurgusu(tur),
+                tur: tur,
                 secili: secili.contains(tur),
                 onDegisti: onDegisti == null ? null : () => onDegisti(tur),
               ),
@@ -225,36 +224,46 @@ class _IlgiAdimi extends StatelessWidget {
   }
 }
 
-/// İlgi alanı çipi: seçiliyken türün vurgu zemini + ink metin ve onay
-/// işareti (renk tek başına bilgi taşımaz), seçili değilken kenarlı hap.
+/// İlgi alanı çipi (ADR-0004 Notlar, 2026-11-10): türün ikonu ve adı her
+/// zaman görünür. Seçiliyken türün kendi dolgusu, üstünde türün metin
+/// rengi ve onay işareti; seçili değilken kenarlı hap. Renk, ikon ve ad
+/// etkinlik türü kaydından gelir.
 class IlgiCipi extends StatelessWidget {
   const IlgiCipi({
     super.key,
-    required this.etiket,
-    required this.vurgu,
+    required this.tur,
     required this.secili,
     required this.onDegisti,
   });
 
-  final String etiket;
-  final CipVurgusu vurgu;
+  final EventType tur;
   final bool secili;
   final VoidCallback? onDegisti;
 
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
+    final girdi = etkinlikTuruGirdisi(tur);
+    final cift = context.turRenkleri.cift(girdi.renk);
+    final yaziRengi = secili ? cift.ustu : r.metin;
     final onDegisti = this.onDegisti;
     return FilterChip(
-      label: Text(etiket),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ExcludeSemantics(
+            child: Icon(girdi.ikon, size: TayfamSizes.ikonKucuk, color: yaziRengi),
+          ),
+          const SizedBox(width: TayfamSpacing.s4),
+          Flexible(child: Text(girdi.ad(AppLocalizations.of(context)))),
+        ],
+      ),
       selected: secili,
       onSelected: onDegisti == null ? null : (_) => onDegisti(),
       showCheckmark: true,
-      checkmarkColor: r.vurguUstu,
-      selectedColor: EtkinlikTuruCipi.zeminRengi(r, vurgu),
-      labelStyle: context.yazi.labelLarge?.copyWith(
-        color: secili ? r.vurguUstu : r.metin,
-      ),
+      checkmarkColor: cift.ustu,
+      selectedColor: cift.dolgu,
+      labelStyle: context.yazi.labelLarge?.copyWith(color: yaziRengi),
       side: secili
           ? BorderSide.none
           : BorderSide(color: r.girisKenari, width: TayfamSizes.kenar),

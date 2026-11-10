@@ -3,10 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_radii.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
@@ -16,12 +19,12 @@ import 'sahteler.dart';
 const String _bekleyenId = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
 
 const _turAnahtarlari = [
-  'karsilama_tur_konvoy',
-  'karsilama_tur_kamp',
-  'karsilama_tur_yuruyus',
-  'karsilama_tur_balik',
-  'karsilama_tur_oyun',
-  'karsilama_tur_spor',
+  'etkinlik_turu_convoy',
+  'etkinlik_turu_camp',
+  'etkinlik_turu_hike',
+  'etkinlik_turu_fishing',
+  'etkinlik_turu_gaming',
+  'etkinlik_turu_sports',
 ];
 
 void main() {
@@ -45,8 +48,10 @@ void main() {
   });
 
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {
-    testWidgets('${mod.name}: tür hapları brand, nar ve mango', (tester) async {
-      final r = mod == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
+    testWidgets('${mod.name}: her tür hapı kendi renginde', (tester) async {
+      final t = mod == ThemeMode.dark
+          ? TayfamTurRenkleri.koyu
+          : TayfamTurRenkleri.acik;
       ekranBoyutu(tester);
       await widgetAc(tester, const KarsilamaEkrani(), themeMode: mod);
 
@@ -56,10 +61,25 @@ void main() {
           matching: find.byType(DecoratedBox),
         ),
       );
-      final zeminler = {
+      final zeminler = [
         for (final kutu in kutular) (kutu.decoration as BoxDecoration).color,
-      };
-      expect(zeminler, {r.markaYuzey, r.nar, r.mango});
+      ];
+      expect(zeminler, [
+        for (final tur in [
+          EventType.convoy,
+          EventType.camp,
+          EventType.hike,
+          EventType.fishing,
+          EventType.gaming,
+          EventType.sports,
+        ])
+          t.cift(etkinlikTuruGirdisi(tur).renk).dolgu,
+      ]);
+      // Renk tek başına bilgi taşımaz: her hapta türün ikonu var.
+      expect(
+        find.descendant(of: find.byType(TurVurgusu), matching: find.byType(Icon)),
+        findsNWidgets(6),
+      );
       for (final kutu in kutular) {
         expect(
           (kutu.decoration as BoxDecoration).borderRadius,

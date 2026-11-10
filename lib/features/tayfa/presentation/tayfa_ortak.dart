@@ -1,31 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/features/tayfa/data/paylasim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
-
-/// [tur] etkinlik türünün çeviri dosyasındaki adı.
-String turEtiketi(AppLocalizations m, EventType tur) => switch (tur) {
-  EventType.convoy => m.tayfa_tur_convoy,
-  EventType.camp => m.tayfa_tur_camp,
-  EventType.hike => m.tayfa_tur_hike,
-  EventType.fishing => m.tayfa_tur_fishing,
-  EventType.gaming => m.tayfa_tur_gaming,
-  EventType.sports => m.tayfa_tur_sports,
-  EventType.general || EventType.unknown => m.tayfa_tur_general,
-};
-
-/// [tur]'ün çip vurgusu. Türlere sabit renk kararı verilmediği için
-/// (etkinlik türü kaydı henüz boş) çip vurguları sözleşmenin tür sırasıyla
-/// sırayla teal, mango, nar olarak dağıtılır; tür değişmedikçe rengi
-/// değişmez.
-CipVurgusu turVurgusu(EventType tur) {
-  const vurgular = CipVurgusu.values;
-  final sira = EventType.values.indexOf(tur);
-  return vurgular[sira % vurgular.length];
-}
 
 /// Tayfa kodunu sistem paylaşım menüsüyle paylaşır (ADR-0014 §5). Metin:
 /// tayfa adı, kod ve tayfam.app bağlantısı. [dugme], iPad'de menünün

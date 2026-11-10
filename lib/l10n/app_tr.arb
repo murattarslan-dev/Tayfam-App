@@ -223,34 +223,6 @@
   "@tayfa_davet_kapat": {
     "description": "Davet kısayolu kartını kapatan ikon düğmesinin ekran okuyucu etiketi ve ipucu."
   },
-  "tayfa_tur_convoy": "Konvoy",
-  "@tayfa_tur_convoy": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında konvoy (convoy) etkinlik türü çipi."
-  },
-  "tayfa_tur_camp": "Kamp",
-  "@tayfa_tur_camp": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında kamp (camp) etkinlik türü çipi."
-  },
-  "tayfa_tur_hike": "Yürüyüş",
-  "@tayfa_tur_hike": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında yürüyüş (hike) etkinlik türü çipi."
-  },
-  "tayfa_tur_fishing": "Balık",
-  "@tayfa_tur_fishing": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında balık (fishing) etkinlik türü çipi."
-  },
-  "tayfa_tur_gaming": "Oyun",
-  "@tayfa_tur_gaming": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında oyun (gaming) etkinlik türü çipi."
-  },
-  "tayfa_tur_sports": "Spor",
-  "@tayfa_tur_sports": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında spor (sports) etkinlik türü çipi."
-  },
-  "tayfa_tur_general": "Genel",
-  "@tayfa_tur_general": {
-    "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında genel (general) etkinlik türü çipi; belirli bir türe girmeyen buluşmalar."
-  },
   "katilim_baslik": "Tayfaya kodla katıl",
   "@katilim_baslik": {
     "description": "Kodla katılma için alttan açılan sayfanın başlığı."
@@ -375,6 +347,34 @@
   "@karsilama_aciklama": {
     "description": "Karşılama ekranında başlığın ve tür vurgusunun altındaki açıklama."
   },
+  "etkinlik_turu_convoy": "Konvoy",
+  "@etkinlik_turu_convoy": {
+    "description": "Etkinlik türünün adı: konvoy (convoy). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_camp": "Kamp",
+  "@etkinlik_turu_camp": {
+    "description": "Etkinlik türünün adı: kamp (camp). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_hike": "Yürüyüş",
+  "@etkinlik_turu_hike": {
+    "description": "Etkinlik türünün adı: yürüyüş (hike). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_fishing": "Balık",
+  "@etkinlik_turu_fishing": {
+    "description": "Etkinlik türünün adı: balık (fishing). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_gaming": "Oyun",
+  "@etkinlik_turu_gaming": {
+    "description": "Etkinlik türünün adı: oyun (gaming). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_sports": "Spor",
+  "@etkinlik_turu_sports": {
+    "description": "Etkinlik türünün adı: spor (sports). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
+  "etkinlik_turu_general": "Genel",
+  "@etkinlik_turu_general": {
+    "description": "Etkinlik türünün adı: genel (belirli bir türe girmeyen buluşmalar; sunucunun henüz tanımadığı türler de bu adla görünür) (general). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+  },
   "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
   "@karsilama_turler_etiketi": {
     "description": "Karşılama ekranındaki renkli etkinlik türü haplarının ekran okuyucu için grup etiketi."
@@ -386,30 +386,6 @@
   "karsilama_tayfa_olustur": "Tayfa oluştur",
   "@karsilama_tayfa_olustur": {
     "description": "Karşılama ekranındaki ikincil düğme; yeni tayfa kurma akışını açar."
-  },
-  "karsilama_tur_konvoy": "Konvoy",
-  "@karsilama_tur_konvoy": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda konvoy (convoy) etkinlik türünün adı."
-  },
-  "karsilama_tur_kamp": "Kamp",
-  "@karsilama_tur_kamp": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda kamp (camp) etkinlik türünün adı."
-  },
-  "karsilama_tur_yuruyus": "Yürüyüş",
-  "@karsilama_tur_yuruyus": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda yürüyüş (hike) etkinlik türünün adı."
-  },
-  "karsilama_tur_balik": "Balık",
-  "@karsilama_tur_balik": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda balık (fishing) etkinlik türünün adı."
-  },
-  "karsilama_tur_oyun": "Oyun",
-  "@karsilama_tur_oyun": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda oyun (gaming) etkinlik türünün adı."
-  },
-  "karsilama_tur_spor": "Spor",
-  "@karsilama_tur_spor": {
-    "description": "Karşılama ekranındaki renkli tür vurgusunda spor (sports) etkinlik türünün adı."
   },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {

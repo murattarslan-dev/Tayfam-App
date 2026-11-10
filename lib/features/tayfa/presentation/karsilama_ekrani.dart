@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
@@ -145,28 +147,14 @@ class BekleyenIstekKarti extends StatelessWidget {
 /// Etkinlik türlerinin renkli haplar içinde yazıldığı vurgu (ADR-0004 §2a;
 /// yalnızca karşılama ve boş durum ekranlarında).
 ///
-/// Haplar sırayla brand (beyaz metin), nar ve mango (ink metin) zeminlidir;
-/// renkler iki temada da aynıdır.
+/// Her hap etkinlik türü kaydından gelir: türün kendi rengi, ikonu ve adı
+/// (ADR-0004 Notlar, 2026-11-10). "Genel" gösterilmez.
 class TurVurgusu extends StatelessWidget {
   const TurVurgusu({super.key});
 
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final r = context.renkler;
-    final ciftler = [
-      (r.markaYuzey, r.markaYuzeyUstu),
-      (r.nar, r.vurguUstu),
-      (r.mango, r.vurguUstu),
-    ];
-    final turler = [
-      metinler.karsilama_tur_konvoy,
-      metinler.karsilama_tur_kamp,
-      metinler.karsilama_tur_yuruyus,
-      metinler.karsilama_tur_balik,
-      metinler.karsilama_tur_oyun,
-      metinler.karsilama_tur_spor,
-    ];
     return Semantics(
       container: true,
       label: metinler.karsilama_turler_etiketi,
@@ -174,12 +162,8 @@ class TurVurgusu extends StatelessWidget {
         spacing: TayfamSpacing.s8,
         runSpacing: TayfamSpacing.s8,
         children: [
-          for (var i = 0; i < turler.length; i++)
-            _TurHapi(
-              metin: turler[i],
-              zemin: ciftler[i % ciftler.length].$1,
-              yaziRengi: ciftler[i % ciftler.length].$2,
-            ),
+          for (final girdi in bilinenEtkinlikTurleri)
+            if (girdi.tur != EventType.general) _TurHapi(girdi: girdi),
         ],
       ),
     );
@@ -187,21 +171,16 @@ class TurVurgusu extends StatelessWidget {
 }
 
 class _TurHapi extends StatelessWidget {
-  const _TurHapi({
-    required this.metin,
-    required this.zemin,
-    required this.yaziRengi,
-  });
+  const _TurHapi({required this.girdi});
 
-  final String metin;
-  final Color zemin;
-  final Color yaziRengi;
+  final EtkinlikTuruGirdisi girdi;
 
   @override
   Widget build(BuildContext context) {
+    final cift = context.turRenkleri.cift(girdi.renk);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: zemin,
+        color: cift.dolgu,
         borderRadius: TayfamRadii.hapKoseleri,
       ),
       child: Padding(
@@ -209,9 +188,20 @@ class _TurHapi extends StatelessWidget {
           horizontal: TayfamSpacing.s12,
           vertical: TayfamSpacing.s4,
         ),
-        child: Text(
-          metin,
-          style: context.yazi.titleMedium?.copyWith(color: yaziRengi),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(
+              child: Icon(girdi.ikon, size: TayfamSizes.ikon, color: cift.ustu),
+            ),
+            const SizedBox(width: TayfamSpacing.s4),
+            Flexible(
+              child: Text(
+                girdi.ad(AppLocalizations.of(context)),
+                style: context.yazi.titleMedium?.copyWith(color: cift.ustu),
+              ),
+            ),
+          ],
         ),
       ),
     );
