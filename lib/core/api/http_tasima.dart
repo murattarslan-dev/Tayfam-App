@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
+import 'package:tayfam/core/surum/uygulama_surumu.dart';
 
 /// Tek satırlık API günlüğü yazıcısı.
 ///
@@ -33,14 +34,28 @@ final class HttpTasima implements ApiTransport {
     required this._istemci,
     required Uri tabanAdres,
     required String istemciAdi,
+    String? surumBasligi,
     this._zamanAsimi = const Duration(seconds: 30),
     this._gunluk = varsayilanApiGunlugu,
   }) : _taban = _tabanDogrula(tabanAdres),
-       _istemciAdi = _istemciAdiDogrula(istemciAdi);
+       _istemciAdi = _istemciAdiDogrula(istemciAdi),
+       _surumBasligi = _surumBasligiDogrula(surumBasligi);
 
   final http.Client _istemci;
   final Uri _taban;
   final String _istemciAdi;
+
+  /// `X-Tayfam-Client-Version` değeri; `null` ise başlık gönderilmez.
+  final String? _surumBasligi;
+
+  final StreamController<void> _eskiSurum = StreamController<void>.broadcast();
+
+  /// Herhangi bir istek `client-outdated` (426) aldıkça bir olay; arayüz
+  /// "Güncelleme gerekli" ekranına geçer (ADR-0012 §1).
+  Stream<void> get eskiSurumOlaylari => _eskiSurum.stream;
+
+  /// Olay akışını kapatır (provider bırakılınca).
+  Future<void> dispose() => _eskiSurum.close();
   final Duration _zamanAsimi;
   final ApiGunlugu _gunluk;
 
@@ -59,6 +74,13 @@ final class HttpTasima implements ApiTransport {
       throw ArgumentError('API taban adresi yalnızca https olabilir');
     }
     return adres;
+  }
+
+  static String? _surumBasligiDogrula(String? baslik) {
+    if (baslik != null && !surumBasligiBicimi.hasMatch(baslik)) {
+      throw ArgumentError('Geçersiz X-Tayfam-Client-Version değeri');
+    }
+    return baslik;
   }
 
   static String _istemciAdiDogrula(String ad) {
@@ -134,6 +156,9 @@ final class HttpTasima implements ApiTransport {
     if (durum < 200 || durum > 299) {
       final problem = _problem(yanit);
       _gunluk('$method $pathTemplate → $durum ${problem.type.name}');
+      if (problem.type == ProblemType.clientOutdated && !_eskiSurum.isClosed) {
+        _eskiSurum.add(null);
+      }
       throw problem;
     }
     _gunluk('$method $pathTemplate → $durum');
@@ -159,6 +184,8 @@ final class HttpTasima implements ApiTransport {
     },
     // Durum değiştiren her istekte zorunlu (sözleşme: ClientHeader).
     if (method != 'GET' && method != 'HEAD') 'X-Tayfam-Client': _istemciAdi,
+    // Her istekte (sözleşme: ClientVersionHeader, Tayfam-Api ADR-0016).
+    if (_surumBasligi case final surum?) 'X-Tayfam-Client-Version': surum,
     if (erisimTokeni != null) 'Authorization': 'Bearer $erisimTokeni',
   };
 

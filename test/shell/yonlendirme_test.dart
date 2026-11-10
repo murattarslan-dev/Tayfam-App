@@ -9,15 +9,51 @@ String? _yonlendir(
   String adres, {
   OturumDurumu oturum = OturumDurumu.acik,
   String? aktifTayfaId,
+  bool guncellemeGerekli = false,
 }) {
   return yonlendir(
     oturum: oturum,
     aktifTayfaId: aktifTayfaId,
     konum: Uri.parse(adres),
+    guncellemeGerekli: guncellemeGerekli,
   );
 }
 
 void main() {
+  group('açılış ve güncelleme', () {
+    test('güncelleme gerekiyorsa her adres güncelleme ekranına gidiyor', () {
+      for (final oturum in OturumDurumu.values) {
+        for (final adres in ['/', '/giris', '/kayit', '/t/$ornekTayfaId']) {
+          expect(
+            _yonlendir(adres, oturum: oturum, guncellemeGerekli: true),
+            '/guncelleme',
+            reason: '$oturum $adres',
+          );
+        }
+        expect(
+          _yonlendir('/guncelleme', oturum: oturum, guncellemeGerekli: true),
+          isNull,
+        );
+      }
+    });
+
+    test('oturum kaydı okunurken açılış ekranı gösteriliyor', () {
+      expect(_yonlendir('/', oturum: OturumDurumu.yukleniyor), '/acilis');
+      expect(_yonlendir('/profil', oturum: OturumDurumu.yukleniyor), '/acilis');
+      expect(_yonlendir('/acilis', oturum: OturumDurumu.yukleniyor), isNull);
+    });
+
+    test('yüklenince açılış ve güncelleme adresleri bırakılıyor', () {
+      expect(_yonlendir('/acilis', oturum: OturumDurumu.girisYok), '/giris');
+      expect(_yonlendir('/acilis'), '/karsilama');
+      expect(_yonlendir('/guncelleme'), '/karsilama');
+      expect(
+        _yonlendir('/acilis', aktifTayfaId: ornekTayfaId),
+        '/t/$ornekTayfaId',
+      );
+    });
+  });
+
   group('oturum korumaları', () {
     test('giriş yoksa giriş ekranına gidiliyor', () {
       expect(_yonlendir('/sohbet', oturum: OturumDurumu.girisYok), '/giris');

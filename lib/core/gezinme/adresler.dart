@@ -28,10 +28,16 @@ abstract final class Adresler {
   /// Profil sekmesi.
   static const profil = '/profil';
 
-  /// Oturum korumalarının gönderdiği ekranlar (ayrı paketlerde gelir).
+  /// Oturum korumalarının gönderdiği ekranlar (ADR-0012).
   static const giris = '/giris';
   static const kayit = '/kayit';
   static const onay = '/onay';
+
+  /// Açılışta oturum kaydı okunurken gösterilen ekran (ADR-0012 §1).
+  static const acilis = '/acilis';
+
+  /// "Güncelleme gerekli" ekranı (ADR-0012 §1.1).
+  static const guncelleme = '/guncelleme';
 
   /// Tayfaya kodla katılma ve tayfa oluşturma akışları (ayrı paketler).
   static const tayfaKatil = '/tayfa-katil';

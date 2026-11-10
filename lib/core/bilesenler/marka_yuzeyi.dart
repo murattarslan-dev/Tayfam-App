@@ -6,7 +6,7 @@ import 'package:tayfam/core/tema/tema_baglami.dart';
 
 /// Tam yüzey mor (ADR-0004 §2a): `markaYuzey` (brand) zemin, beyaz metin ve
 /// ikon; iki temada da aynı. Yalnızca tayfa ana sayfasının üst bölümünde
-/// kullanılır.
+/// ve giriş ekranında (ADR-0012 §2) kullanılır.
 ///
 /// Altındaki öğelerde odak çerçevesi iki temada da mango olur
 /// (`TayfamColors.markaYuzeyOdak`, ADR-0004 Notlar 2026-11-10); brand

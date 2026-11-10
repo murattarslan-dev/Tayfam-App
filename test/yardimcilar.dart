@@ -9,6 +9,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/app.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
+import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
@@ -43,15 +45,53 @@ void ikiKatYazi(WidgetTester tester) {
   addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 }
 
+/// Oturum durumunu `SessionStore`'a bağlamadan sabit bir değerle başlatan
+/// notifier (güvenli depo ve ağ yok).
+class SabitOturumDurumu extends OturumDurumuNotifier {
+  SabitOturumDurumu(this._ilk);
+
+  final OturumDurumu _ilk;
+
+  @override
+  OturumDurumu build() => _ilk;
+}
+
+/// Açılıştaki sürüm denetiminin sahtesi; ağ yok.
+final class SahteSurumDenetleyici implements SurumDenetleyici {
+  SahteSurumDenetleyici({this.gerekli = false});
+
+  final bool gerekli;
+  int cagri = 0;
+
+  @override
+  Future<bool> guncellemeGerekliMi() async {
+    cagri++;
+    return gerekli;
+  }
+}
+
 /// Bütün uygulamayı (yönlendirici dahil) açar.
+///
+/// Oturum [oturum] ile başlar (`null` ise override edilmez; test kendi
+/// override'ını verir); sürüm denetimi [surumDenetleyici] ile (verilmezse
+/// güncelleme gerekmez). Gerçek güvenli depo ve ağ kullanılmaz.
 Future<void> uygulamayiAc(
   WidgetTester tester, {
   ThemeMode themeMode = ThemeMode.light,
   List<Override> overrides = const [],
+  OturumDurumu? oturum = OturumDurumu.acik,
+  SurumDenetleyici? surumDenetleyici,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: overrides,
+      overrides: [
+        if (oturum != null)
+          oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
+        surumDenetleyiciProvider.overrideWithValue(
+          surumDenetleyici ?? SahteSurumDenetleyici(),
+        ),
+        ...overrides,
+      ],
       child: TayfamApp(themeMode: themeMode),
     ),
   );
@@ -63,12 +103,14 @@ GoRouter yonlendiriciyiAl(WidgetTester tester) =>
     tester.container().read(yonlendiriciProvider);
 
 /// Tek bir widget'ı uygulamanın çeviri ve tema ayarlarıyla açar (ekran ve
-/// bileşen testleri için; yönlendirici yok).
+/// bileşen testleri için; yönlendirici yok). [dur] `false` ise animasyonun
+/// bitmesi beklenmez (dönen ilerleme göstergesi).
 Future<void> widgetAc(
   WidgetTester tester,
   Widget widget, {
   ThemeMode themeMode = ThemeMode.light,
   List<Override> overrides = const [],
+  bool dur = true,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -84,7 +126,11 @@ Future<void> widgetAc(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (dur) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
 }
 
 /// Testlerde kullanılan sahte bir tayfa modülü: `/t/<tayfaId>/deneme`

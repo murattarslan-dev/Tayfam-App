@@ -4,6 +4,19 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Geliştirme imzası (ADR-0012 §6): Google girişi uygulamanın imza parmak
+// izine bağlıdır. CI, GitHub secret'ları varken sabit geliştirme anahtarını
+// geçici bir dosyaya açar ve TAYFAM_DEV_KEYSTORE ile yolunu verir; parola ve
+// takma ad da ortam değişkenleridir. Anahtar ve parolalar repoya girmez
+// (CLAUDE.md kesin kural 6). Değişken yoksa (yerel derleme, fork PR'ı)
+// Flutter'ın varsayılan debug anahtarı kullanılır. Sürüm (mağaza) imzası
+// ayrı iştir (#13).
+val gelistirmeAnahtari: File? =
+    System.getenv("TAYFAM_DEV_KEYSTORE")
+        ?.takeIf { it.isNotBlank() }
+        ?.let { File(it) }
+        ?.takeIf { it.isFile }
+
 android {
     namespace = "app.tayfam"
     compileSdk = flutter.compileSdkVersion
@@ -29,7 +42,23 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (gelistirmeAnahtari != null) {
+            create("gelistirme") {
+                storeFile = gelistirmeAnahtari
+                storePassword = System.getenv("TAYFAM_DEV_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("TAYFAM_DEV_KEY_ALIAS")
+                keyPassword = System.getenv("TAYFAM_DEV_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            if (gelistirmeAnahtari != null) {
+                signingConfig = signingConfigs.getByName("gelistirme")
+            }
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
