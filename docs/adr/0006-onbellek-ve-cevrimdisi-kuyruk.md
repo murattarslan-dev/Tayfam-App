@@ -21,12 +21,13 @@ ilkesi: tutmadığın veri çalınamaz).
 
 **Uygulama, token dışında hiçbir kullanıcı içeriğini diske yazmaz.** Mobilde
 güvenli depodaki token'lar (ADR-0005) ve kullanıcı ayarları (tema, dil)
-dışında kalıcı veri yoktur; web'de tarayıcı deposuna içerik yazılmaz.
+dışında kalıcı veri yoktur. Web geliştirme derlemesi tarayıcı deposuna hiçbir
+şey yazmaz (ADR-0011). Signal anahtarları için ADR-0010'a bakın.
 
 ### Okuma önbelleği
 
 - Riverpod provider'larının bellekteki durumu önbellektir; ayrı bir disk
-  önbelleği (sqlite, Hive, `shared_preferences`, IndexedDB) kullanılmaz.
+  önbelleği (sqlite, Hive, `shared_preferences`) kullanılmaz.
 - Listeler ekran açılınca ve uygulama ön plana dönünce yenilenir; WebSocket
   olayları bellekteki durumu günceller (ayrı ADR).
 - Çevrimdışı açılışta liste boş görünür ve "Bağlantı yok" boş durumu
@@ -36,7 +37,7 @@ dışında kalıcı veri yoktur; web'de tarayıcı deposuna içerik yazılmaz.
 ### Çevrimdışı yazma kuyruğu
 
 - Kuyruk `core/` altında, `keepAlive` bir provider olarak yalnızca bellekte
-  tutulur (ADR-0001 kural 4). Mobilde ve web'de aynı davranır.
+  tutulur (ADR-0001 kural 4).
 - **Kapsam:** kanal mesajı, birebir mesaj (düz sürüm), soru, cevap, katılım
   bildirimi. Duyuru, etkinlik ve tayfa oluşturma kuyruğa girmez; çevrimdışı
   iken form açık kalır, gönderim bağlantı gelince yapılır.
@@ -50,8 +51,7 @@ dışında kalıcı veri yoktur; web'de tarayıcı deposuna içerik yazılmaz.
   gösterilir; başarısız öğede "Tekrar dene" ve "Sil" vardır.
 - **Bilinçli kabul edilen bedel:** uygulama kapanır ya da sistem tarafından
   sonlandırılırsa bekleyen öğeler kaybolur. Bekleyen öğe varken uygulama
-  arka plana alınırsa bir kez uyarı gösterilir (web'de sayfadan çıkarken
-  tarayıcı uyarısı).
+  arka plana alınırsa bir kez uyarı gösterilir.
 - Oturum kapanınca, kullanıcı değişince veya hesap silinince kuyruk
   temizlenir (ADR-0001 kural 8).
 - Kuyruk içeriği log'a yazılmaz (CLAUDE.md kesin kural 3).

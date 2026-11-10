@@ -33,7 +33,7 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
   Sohbet ve Bildirimler'de, sayı olarak ve ekran okuyucu etiketiyle.
 - **Tayfası olmayan kullanıcı:** Tayfa sekmesi karşılama ekranını gösterir
   ("Tayfa kodum var", "Tayfa oluştur"); diğer sekmeler çalışır.
-- **Geniş ekran (web, tablet):** Aynı dört öğe solda dikey gezinme çubuğu
+- **Geniş ekran (tablet; ADR-0011):** Aynı dört öğe solda dikey gezinme çubuğu
   (navigation rail) olarak gösterilir. Kırılım noktası tema ADR'siyle
   belirlenir.
 
@@ -43,9 +43,9 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
 - Dört sekme `StatefulShellRoute` ile kurulur; her sekme kendi geçmişini ve
   kaydırma durumunu korur. Geri tuşu önce sekmenin kendi geçmişinde geri
   gider.
-- Tayfaya bağlı adresler tayfa kimliğini taşır (`/t/<tayfaId>/…`); web'de
-  adres çubuğu ve paylaşılan linkler buna göre çalışır. Ayrıntılı adres
-  tablosu derin link işiyle birlikte yazılır.
+- Tayfaya bağlı adresler tayfa kimliğini taşır (`/t/<tayfaId>/…`); derin
+  linkler ve web geliştirme derlemesinin adres çubuğu buna göre çalışır.
+  Ayrıntılı adres tablosu derin link işiyle birlikte yazılır.
 - Her yönlendirmede oturum durumu kontrol edilir (giriş yok → giriş; kayıt
   bekliyor → kayıt; yeniden onay → onay). Bu kontrol yetki değildir; yetki
   sunucudadır (CLAUDE.md, kesin kural 5).
@@ -62,7 +62,7 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
 - Sabit iskelet öngörülebilir; modüle bağlı sekme, kapalı modüllü tayfaya
   geçildiğinde kaybolurdu (ui-ux-pro-max: `bottom-nav-limit`,
   `back-behavior`, `nav-hierarchy`).
-- `go_router` web adresleri, derin linkler ve sekme başına geçmiş için
+- `go_router` derin linkler ve sekme başına geçmiş için
   standart çözüm; ek durum yönetimi kütüphanesi gerektirmiyor (ADR-0001).
 
 ## Sonuçlar

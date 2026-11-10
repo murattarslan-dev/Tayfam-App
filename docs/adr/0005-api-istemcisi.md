@@ -13,8 +13,8 @@ altında 95 hata kodu. Sözleşme önce değişir (CLAUDE.md kesin kural 1).
 Token kuralları: erişim token'ı 15 dakika; yenileme token'ı her kullanımda
 değişir, kullanılmış token tekrar gelirse oturum tamamen kapanır; aynı anda
 gelen meşru çift yenilemeler için birkaç saniyelik tolerans vardır ve bu
-durumda `refresh-conflict` döner. Mobil token'ları gövdede, web HttpOnly
-çerezde taşır.
+durumda `refresh-conflict` döner. Uygulama yalnızca mobildir (ADR-0011);
+token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
 
 ## Karar
 
@@ -42,14 +42,14 @@ durumda `refresh-conflict` döner. Mobil token'ları gövdede, web HttpOnly
 
 ### 2. HTTP katmanı: tek `ApiClient`
 
-- Paket: Dart ekibinin `http` paketi. Web'de `BrowserClient` ve
-  `withCredentials: true` (çerezlerin gitmesi için).
+- Paket: Dart ekibinin `http` paketi.
 - Bütün istekler `core/api/`'deki tek `ApiClient`'tan geçer; özellikler
   kendi HTTP istemcisini kurmaz. `ApiClient`:
-  - Her istekte `X-Tayfam-Client: android | ios | web` ve
+  - Her istekte `X-Tayfam-Client: android | ios` (web geliştirme
+    derlemesinde Tayfam-Api'de kararlaştırılacak değer) ve
     `X-Tayfam-Client-Version` başlıklarını ekler (sürüm başlığı issue #114
     ile sözleşmeye girince).
-  - Mobilde `Authorization: Bearer <erişim token'ı>` ekler; web'de eklemez.
+  - `Authorization: Bearer <erişim token'ı>` ekler.
   - Oluşturma isteklerinde `client_request_id` (UUIDv4, `Random.secure()`)
     üretir; tekrar gönderimde aynı id kullanılır (çevrimdışı kuyruk ayrı ADR).
   - Yanıt `application/problem+json` ise `ApiProblem` (tür, durum kodu,
@@ -67,17 +67,17 @@ durumda `refresh-conflict` döner. Mobil token'ları gövdede, web HttpOnly
   (Android Keystore, iOS Keychain; iOS'ta `first_unlock_this_device`,
   yedeğe gitmez). Bellekte yalnızca `SessionStore` tutar; başka hiçbir
   provider token taşımaz.
-- **Web:** hiçbir token saklanmaz; çerezler HttpOnly'dir. İstemci yalnızca
-  `access_expires_at` ve `refresh_expires_at` zamanlarını bilir.
+- **Web geliştirme derlemesi:** token yalnızca bellekte; sayfa yenilenince
+  yeniden giriş (ADR-0011). Tarayıcı deposuna hiçbir şey yazılmaz.
 - **Yenileme `SessionStore`'da, tek uçuşta:**
   - Erişim token'ının bitmesine 60 saniye kala istek öncesi yenilenir.
   - Bir istek `unauthenticated` alırsa bir kez yenileme denenir ve istek
     bir kez tekrarlanır; ikinci `unauthenticated` oturumu kapatır.
   - Aynı anda gelen istekler süren yenilemeyi bekler (tek `Future`);
     ikinci bir yenileme isteği gönderilmez.
-  - `refresh-conflict`: başka bir sekme veya istek aynı anda yenilemiş
-    demektir; oturum kapanmaz. 1 saniye beklenir, mobilde depodaki güncel
-    token, web'de güncel çerez ile istek bir kez tekrarlanır.
+  - `refresh-conflict`: başka bir istek aynı anda yenilemiş demektir;
+    oturum kapanmaz. 1 saniye beklenir, depodaki güncel token ile istek bir
+    kez tekrarlanır.
   - `invalid-refresh` veya süresi geçmiş yenileme token'ı: oturum kapanır,
     tüm kullanıcı durumu sıfırlanır (ADR-0001 kural 8), giriş ekranına dönülür.
 - Çıkışta `POST /v1/auth/sign-out` denenir; başarısız olsa bile yerel
@@ -108,8 +108,8 @@ durumda `refresh-conflict` döner. Mobil token'ları gövdede, web HttpOnly
   tedarik zinciri büyüyor (Tayfam-Api ADR-0011).
 - `http` paketi `dio`'dan küçük; ihtiyaç duyulan ara katman (başlıklar,
   yenileme, problem ayrıştırma) zaten tek sınıfta yazılacak.
-- `refresh-conflict` için ayrı davranış, birden çok sekme açık web
-  kullanıcısının sebepsiz yere çıkış yapmasını önlüyor.
+- `refresh-conflict` için ayrı davranış, arka planda ve ön planda aynı anda
+  yenileme denendiğinde kullanıcının sebepsiz yere çıkış yapmasını önlüyor.
 
 ## Sonuçlar
 

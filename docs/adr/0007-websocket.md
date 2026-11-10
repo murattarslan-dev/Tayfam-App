@@ -8,8 +8,8 @@
 ## Bağlam
 
 Sözleşme `GET /v1/realtime` için çerçeveleri, kapanma kodlarını ve
-sınırları tanımlar: bağlantı erişim token'ıyla açılır (mobilde
-`Authorization`, web'de çerez), token süresi dolunca 4003 ile kapanır;
+sınırları tanımlar: bağlantı erişim token'ıyla (`Authorization` başlığı)
+açılır, token süresi dolunca 4003 ile kapanır;
 bağlantı başına en fazla 100 abonelik; mesaj hız sınırı REST ile ortak.
 Tayfam-Api ADR-0005'e göre WebSocket yalnızca canlı iletim içindir, kaçırılan
 mesajlar REST ile son görülen kimlikten çekilir ve mesaj gönderme "REST
@@ -19,16 +19,18 @@ mesajlar REST ile son görülen kimlikten çekilir ve mesaj gönderme "REST
 
 ### Bağlantı
 
-- Paket: Dart ekibinin `web_socket_channel` paketi. Mobilde
-  `Authorization: Bearer` başlığıyla (`IOWebSocketChannel`), web'de çerezle
-  bağlanılır. Token URL'ye konmaz.
+- Paket: Dart ekibinin `web_socket_channel` paketi; `Authorization: Bearer`
+  başlığıyla (`IOWebSocketChannel`) bağlanılır. Token URL'ye konmaz.
+- Web geliştirme derlemesinde WebSocket kurulmaz: tarayıcı WebSocket
+  isteğine `Authorization` başlığı ekleyemez. Orada mesajlar REST ile
+  gönderilir, ekranlar açılınca yenilenir; canlı akış mobilde test edilir
+  (ADR-0011).
 - Uygulama başına **tek bağlantı**, `core/realtime/` altında `keepAlive`
   bir provider'da; ekranlar onun olay akışını dinler, kendi bağlantısını
   açmaz.
 - Bağlantı yalnızca oturum açıkken ve kayıt tamamlanmışken kurulur.
-- **Arka plan:** mobilde uygulama arka plana geçtikten 30 saniye sonra,
-  web'de sekme 5 dakika görünmez kaldığında bağlantı kapatılır; ön plana
-  dönünce yeniden bağlanılır. Arka planda haber vermek push bildirimin
+- **Arka plan:** uygulama arka plana geçtikten 30 saniye sonra bağlantı
+  kapatılır; ön plana dönünce yeniden bağlanılır. Arka planda haber vermek push bildirimin
   işidir.
 - Ping/pong protokol düzeyinde platformca yanıtlanır; ayrıca kalp atışı
   çerçevesi gönderilmez.

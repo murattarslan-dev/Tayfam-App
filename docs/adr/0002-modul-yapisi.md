@@ -96,8 +96,8 @@ kadar inceleme bu ADR'ye göre yapılır.
 - Ayrı paketlerin ana kazancı olan derleyicinin zorladığı sınırlar, import
   kontrol betiğiyle büyük ölçüde sağlanıyor.
 - Ayrı paketler mağaza güncellemesi ihtiyacını azaltmaz: hepsi tek
-  uygulamada derlenir. Mağazasız değişiklik sunucu tarafı yapılandırmayla ve
-  web sürümüyle yapılır; eski sürümleri devre dışı bırakmak için en düşük
+  uygulamada derlenir. Mağazasız değişiklik sunucu tarafı yapılandırmayla
+  yapılır (web istemcisi yok, ADR-0011); eski sürümleri devre dışı bırakmak için en düşük
   sürüm kontrolü Tayfam-Api'de iş olarak açıldı (issue #114).
 - İki ayrı kayıt, sözleşmedeki iki ayrı kavramı (açılıp kapanan modül /
   etkinlik türü) birebir yansıtıyor.

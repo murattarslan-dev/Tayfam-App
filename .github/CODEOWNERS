@@ -19,7 +19,6 @@
 /android/app/src/main/AndroidManifest.xml @murattarslan-dev
 /ios/Runner/Info.plist                  @murattarslan-dev
 /ios/Runner/*.entitlements              @murattarslan-dev
-/web/index.html                         @murattarslan-dev
 
 # Oturum, token saklama, API istemcisi ve üretici (ADR-0005)
 /lib/core/oturum/                       @murattarslan-dev

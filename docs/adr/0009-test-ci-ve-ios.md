@@ -50,10 +50,11 @@ Developer hesabı yok.
   5. Bağımlılık raporu: `pubspec.lock` değişen PR'larda eklenen ve sürümü
      değişen paketler PR'a yorum olarak değil iş çıktısı olarak listelenir
   6. Gizli bilgi taraması: gitleaks
-  7. Android debug derlemesi (`flutter build apk --debug`) ve web derlemesi
-     (`flutter build web`)
+  7. Android debug derlemesi (`flutter build apk --debug`) ve geliştirme
+     için web derlemesinin bozulmadığını görmek üzere `flutter build web`
+     (yayınlanmaz, ADR-0011)
 - Dependabot: `pub` ve `github-actions` için haftalık.
-- İmzalı sürüm derlemeleri (Play Store, Cloudflare Pages) bu ADR'nin
+- İmzalı sürüm derlemeleri (Play Store, App Store) bu ADR'nin
   kapsamı dışında; dağıtım kararıyla gelir.
 
 ### iOS derlemesi

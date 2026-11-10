@@ -23,6 +23,7 @@ olarak anar.
 | [0008](0008-ceviri-ve-yerel-ayar.md) | Çeviri dosyaları, yerel ayar ve Türkçe metin işleme | Kabul edildi |
 | [0009](0009-test-ci-ve-ios.md) | Test stratejisi, CI ve iOS derlemesi | Önerildi |
 | [0010](0010-signal-kutuphanesi.md) | Uçtan uca şifreleme için Signal kütüphanesi | Önerildi |
+| [0011](0011-yalnizca-mobil.md) | Yalnızca mobil istemci; web yalnızca geliştirme derlemesi | Kabul edildi |
 
 ## Şablon
 

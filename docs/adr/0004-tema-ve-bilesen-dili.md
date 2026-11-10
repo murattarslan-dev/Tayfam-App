@@ -20,7 +20,7 @@ Standartlar'ın açık bıraktığı noktaları belirler.
   dosyası yanında durur. Yalnızca kullanılan ağırlıklar eklenir.
 - `google_fonts` paketi kullanılmaz; çalışma anında fonttan ötürü hiçbir
   dış sunucuya istek gitmez. Gerekçe: kullanıcının IP adresinin Google'a
-  gitmemesi (KVKK, yurt dışı aktarım), çevrimdışı açılış ve CSP (web).
+  gitmemesi (KVKK, yurt dışı aktarım) ve çevrimdışı açılış.
 - Yedek font: platformun sistem fontu.
 
 ### 2. Koyu tema MVP'de, cihaz ayarını izler
@@ -141,7 +141,7 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
 ## Değerlendirilen alternatifler
 
 - **`google_fonts` ile çalışma anında indirme:** daha küçük uygulama, ama
-  Google'a istek, çevrimdışı sorun ve CSP genişlemesi.
+  Google'a istek ve çevrimdışı sorun.
 - **Yalnızca açık tema:** MVP'yi biraz kısaltır; sonradan eklemek token'lar
   olmadan yazılmış ekranlarda pahalı olurdu.
 - **Material'den bağımsız kendi bileşen kütüphanesi:** tam kontrol, ama
