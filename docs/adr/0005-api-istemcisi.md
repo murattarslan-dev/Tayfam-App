@@ -171,5 +171,7 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
      isteklere eklenir (web geliştirme derlemesinde `web`). Yönlendirme
      izlenmez. `X-Tayfam-Client-Version` sözleşmede isteğe bağlıdır;
      sürümün kaynağı kararlaştırılınca eklenir. `/v1/status` yoklaması ve
-     yenileme yanıtı alınamayınca oturumun kapanması #7'nin PR'ında
-     platform sahibinin onayına sunuldu.
+     yenileme yanıtı alınamayınca oturumun kapanması platform sahibince
+     onaylandı (2026-11-10): bedeli, yenileme sırasında bağlantı koparsa
+     yeniden giriştir; "yenileme token'ı iki kez gönderilmez" kuralından
+     taviz verilmez.

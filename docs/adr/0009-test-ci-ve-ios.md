@@ -53,7 +53,10 @@ Developer hesabı yok.
   7. Android debug derlemesi (`flutter build apk --debug`) ve geliştirme
      için web derlemesinin bozulmadığını görmek üzere `flutter build web`
      (yayınlanmaz, ADR-0011)
-- Dependabot: `pub` ve `github-actions` için haftalık.
+- Dependabot: `pub` ve `github-actions` için haftalık. Dependabot'un
+  açtığı dallar `dependabot/…` adını taşır; CLAUDE.md'deki
+  `<tür>/<kısa-açıklama>` dal adı kuralının tek istisnasıdır (platform
+  sahibi, 2026-11-10).
 - İmzalı sürüm derlemeleri (Play Store, App Store) bu ADR'nin
   kapsamı dışında; dağıtım kararıyla gelir.
 
