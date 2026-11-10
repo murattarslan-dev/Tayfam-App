@@ -252,7 +252,11 @@ class IlgiCipi extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ExcludeSemantics(
-            child: Icon(girdi.ikon, size: TayfamSizes.ikonKucuk, color: yaziRengi),
+            child: Icon(
+              girdi.ikon,
+              size: TayfamSizes.ikonKucuk,
+              color: yaziRengi,
+            ),
           ),
           const SizedBox(width: TayfamSpacing.s4),
           Flexible(child: Text(girdi.ad(AppLocalizations.of(context)))),

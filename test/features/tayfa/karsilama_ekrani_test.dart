@@ -77,7 +77,10 @@ void main() {
       ]);
       // Renk tek başına bilgi taşımaz: her hapta türün ikonu var.
       expect(
-        find.descendant(of: find.byType(TurVurgusu), matching: find.byType(Icon)),
+        find.descendant(
+          of: find.byType(TurVurgusu),
+          matching: find.byType(Icon),
+        ),
         findsNWidgets(6),
       );
       for (final kutu in kutular) {
