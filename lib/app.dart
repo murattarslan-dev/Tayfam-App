@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Uygulamanın kökü.
@@ -25,8 +26,8 @@ class TayfamApp extends StatelessWidget {
       locale: yerelAyar,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(useMaterial3: true),
-      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+      theme: TayfamTheme.acik(),
+      darkTheme: TayfamTheme.koyu(),
       themeMode: themeMode,
       home: const _KarsilamaEkrani(),
     );

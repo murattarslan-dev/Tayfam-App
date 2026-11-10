@@ -7,5 +7,63 @@
   "karsilama_metni": "Tayfam'a hoş geldin.",
   "@karsilama_metni": {
     "description": "Proje iskeletinin açılış ekranında ortada görünen karşılama metni. Gezinme iskeleti gelince kaldırılır."
+  },
+  "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
+  "@bilesen_uctan_uca_sifreli": {
+    "description": "Ortak bileşen: birebir sohbetin üstündeki kilit ikonlu bilgi satırı. Mesajların uçtan uca şifrelendiğini söyler."
+  },
+  "bilesen_faydali": "faydalı",
+  "@bilesen_faydali": {
+    "description": "Ortak bileşen: soru-cevap kartındaki sayacın sayıdan sonra gelen küçük etiketi (\"12 faydalı\"). Cümle ortasında durduğu için küçük harfle başlar."
+  },
+  "bilesen_faydali_anlam": "{sayi, plural, =0{Henüz kimse faydalı bulmadı} other{{sayi} kişi faydalı buldu}}",
+  "@bilesen_faydali_anlam": {
+    "description": "Ortak bileşen: \"faydalı\" sayacının ekran okuyucuda okunan tam anlamı. Ekranda görünmez.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "bilesen_cok_yakinda": "Çok yakında",
+  "@bilesen_cok_yakinda": {
+    "description": "Ortak bileşen: henüz açılmamış bir özelliğin yanında görünen hap biçimli rozet."
+  },
+  "bilesen_sohbet_giden": "Senin mesajın",
+  "@bilesen_sohbet_giden": {
+    "description": "Ortak bileşen: kullanıcının kendi sohbet balonunda ekran okuyucunun mesaj metninden önce okuduğu bilgi. Ekranda görünmez."
+  },
+  "bilesen_sohbet_gelen": "{gonderen} yazdı",
+  "@bilesen_sohbet_gelen": {
+    "description": "Ortak bileşen: gelen sohbet balonunda ekran okuyucunun mesaj metninden önce okuduğu bilgi. Ekranda görünmez.",
+    "placeholders": {
+      "gonderen": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_sohbet_gelen_adsiz": "Gelen mesaj",
+  "@bilesen_sohbet_gelen_adsiz": {
+    "description": "Ortak bileşen: gönderen adı gösterilmeyen gelen sohbet balonunda ekran okuyucunun mesaj metninden önce okuduğu bilgi. Ekranda görünmez."
+  },
+  "bilesen_anket_secenek_anlam": "{secenek}: {oy, plural, =0{oy yok} other{{oy} oy}}, yüzde {yuzde}",
+  "@bilesen_anket_secenek_anlam": {
+    "description": "Ortak bileşen: anket seçeneği satırının ekran okuyucuda okunan tam anlamı (seçenek, oy sayısı, yüzde). Ekranda görünmez.",
+    "placeholders": {
+      "secenek": {
+        "type": "String",
+        "example": "14–15 Haziran"
+      },
+      "oy": {
+        "type": "int",
+        "example": "9"
+      },
+      "yuzde": {
+        "type": "int",
+        "example": "64"
+      }
+    }
   }
 }
