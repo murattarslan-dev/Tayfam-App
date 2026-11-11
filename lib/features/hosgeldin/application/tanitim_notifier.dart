@@ -33,15 +33,18 @@ class TanitimNotifier extends Notifier<TanitimDurumu> {
   CihazAyarlariDeposu get _depo => ref.read(cihazAyarlariDeposuProvider);
 
   Future<void> _oku() async {
-    final bool gosterildi;
-    try {
-      gosterildi = await _depo.bayrakOku(CihazBayragi.tanitimGosterildi);
-    } on Exception {
-      gosterildi = true;
-    }
+    final gosterildi = await _gosterildiMi();
     // Beklerken tanıtım tamamlandıysa o daha yenidir.
     if (!ref.mounted || state != TanitimDurumu.yukleniyor) return;
     state = gosterildi ? TanitimDurumu.gosterildi : TanitimDurumu.gosterilmedi;
+  }
+
+  Future<bool> _gosterildiMi() async {
+    try {
+      return await _depo.bayrakOku(CihazBayragi.tanitimGosterildi);
+    } on Exception {
+      return true;
+    }
   }
 
   /// Tanıtım atlandı ya da "Başlayalım"a dokunuldu: bayrak konur ve
