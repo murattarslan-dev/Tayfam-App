@@ -10,12 +10,14 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
-import 'package:tayfam/l10n/app_localizations.dart';
+import 'package:tayfam/shell/canli_olaylar.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
 import 'package:tayfam/shell/yer_tutucu.dart';
 import 'package:tayfam/shell/yonlendirme.dart';
@@ -102,7 +104,9 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
     StatefulShellRoute.indexedStack(
       // Tek WebSocket bağlantısı kabuk açıkken yaşar (ADR-0007).
       builder: (context, state, navigationShell) => RealtimeBaglantisi(
-        child: KabukIskeleti(navigationShell: navigationShell),
+        child: CanliOlaylar(
+          child: KabukIskeleti(navigationShell: navigationShell),
+        ),
       ),
       branches: [
         StatefulShellBranch(
@@ -130,8 +134,7 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.bildirimler,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _bildirimlerBasligi),
+              builder: (context, state) => const BildirimlerEkrani(),
             ),
           ],
         ),
@@ -139,8 +142,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.profil,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _profilBasligi),
+              builder: (context, state) => const ProfilEkrani(),
+              routes: profilRotalari,
             ),
           ],
         ),
@@ -186,5 +189,3 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
   ];
 }
 
-String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
-String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;
