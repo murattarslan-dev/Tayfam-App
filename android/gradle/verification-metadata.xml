@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Gradle bağımlılık doğrulaması (ADR-0010, güncelleme 2026-11-11).
+
+Yalnızca Signal paketleri (org.signal) SHA-256 ile sabitlenir; diğer
+bütün gruplar güvenilir sayılır (Flutter ve AndroidX bağımlılıkları
+pubspec.lock / Flutter sürümüyle zaten sabit). org.signal'de buradaki
+özetle uyuşmayan ya da burada olmayan bir dosya derlemeyi kırar.
+
+Özetler Signal Android uygulamasının kendi gradle/verification-metadata.xml
+dosyasındaki 0.106.1 kayıtlarıyla aynıdır. Sürüm yükseltmesi: yeni
+sürümün özetleri Signal-Android'deki dosyadan alınır, CI'da indirilen
+dosyanın özetiyle karşılaştırılır (uyuşmazlıkta Gradle hata verir).
+-->
+<verification-metadata xmlns="https://schema.gradle.org/dependency-verification" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://schema.gradle.org/dependency-verification https://schema.gradle.org/dependency-verification/dependency-verification-1.3.xsd">
+   <configuration>
+      <verify-metadata>true</verify-metadata>
+      <verify-signatures>false</verify-signatures>
+      <trusted-artifacts>
+         <trust group="^(?!org[.]signal$).*$" regex="true" reason="Yalnızca org.signal sabitlenir (ADR-0010)."/>
+         <trust file=".*[.]pom" regex="true" reason="Bağımlılıklar Gradle modül meta verisinden (.module, sabit) çözülür."/>
+         <trust file=".*-(sources|javadoc)[.]jar" regex="true" reason="IDE eki; derlemeye girmez."/>
+      </trusted-artifacts>
+   </configuration>
+   <components>
+      <component group="org.signal" name="libsignal-android" version="0.106.1">
+         <artifact name="libsignal-android-0.106.1.aar">
+            <sha256 value="865b2cfba4005ba830800021f70144687252c095880171d4cd213e29f989d204" origin="Signal-Android gradle/verification-metadata.xml"/>
+         </artifact>
+         <artifact name="libsignal-android-0.106.1.module">
+            <sha256 value="633a8386c4a1e7f4b9ea16f7bf403f597a9d450fde7e99e0762dabf9e9f6d6cb" origin="Signal-Android gradle/verification-metadata.xml"/>
+         </artifact>
+      </component>
+      <component group="org.signal" name="libsignal-client" version="0.106.1">
+         <artifact name="libsignal-client-0.106.1.jar">
+            <sha256 value="8a2da96b0bae7ae431fb871ea864e9219bf7d78eacb3e11c7e5986ad7f672274" origin="Signal-Android gradle/verification-metadata.xml"/>
+         </artifact>
+         <artifact name="libsignal-client-0.106.1.module">
+            <sha256 value="1d598cee8a9f88394651bbb2c2f19fae7ab00facec8de9f83197dc9c48890d39" origin="Signal-Android gradle/verification-metadata.xml"/>
+         </artifact>
+      </component>
+   </components>
+</verification-metadata>

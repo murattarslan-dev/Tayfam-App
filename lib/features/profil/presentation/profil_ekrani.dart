@@ -12,6 +12,7 @@ import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
+import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/application/cikis_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
@@ -356,6 +357,13 @@ class _HesapBolumu extends ConsumerWidget {
     await disBaglantiyiAc(context, ref, adres);
   }
 
+  /// Çıkış. Bu telefon şifreli mesaj geçmişinin anahtarını taşıyan tek
+  /// cihazsa önce uyarıyla onay istenir (ADR-0020).
+  Future<void> _cikisYap(BuildContext context, WidgetRef ref) async {
+    if (!await tekCihazCikisOnayi(context, ref)) return;
+    await ref.read(cikisProvider.notifier).cikisYap();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
@@ -387,6 +395,8 @@ class _HesapBolumu extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.go(Adresler.oturumlar),
         ),
+        // QR ile cihaz bağlama; E2E yoksa görünmez (ADR-0020).
+        const CihazBaglamaGirisi(),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.privacy_tip_outlined),
@@ -415,9 +425,7 @@ class _HesapBolumu extends ConsumerWidget {
                   ),
                 )
               : null,
-          onTap: cikiyor
-              ? null
-              : () => unawaited(ref.read(cikisProvider.notifier).cikisYap()),
+          onTap: cikiyor ? null : () => unawaited(_cikisYap(context, ref)),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,

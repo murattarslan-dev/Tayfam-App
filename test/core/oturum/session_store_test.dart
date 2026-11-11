@@ -127,6 +127,44 @@ void main() {
     });
   });
 
+  group('kullanıcı kimliği (E2E, ADR-0020)', () {
+    test('girişten gelir ve depoya yazılır', () async {
+      final k = _Kurulum();
+      await k.oturum.oturumAc(_oturum(1));
+      expect(
+        await k.oturum.kullaniciKimligi(),
+        '00000000-0000-4000-8000-000000000001',
+      );
+      final kayit = KayitliOturum.coz((await k.depo.oku())!);
+      expect(kayit?.kullaniciId, '00000000-0000-4000-8000-000000000001');
+      expect(k.sunucu.gonderilen, isEmpty);
+    });
+
+    test('eski kayıtta yoksa bir kez yenilenir', () async {
+      final k = _Kurulum();
+      await k.depo.yaz(
+        KayitliOturum(
+          erisimTokeni: 'erisim-1',
+          erisimBitis: _simdi.add(const Duration(minutes: 15)),
+          yenilemeTokeni: 'yenileme-1',
+          yenilemeBitis: _simdi.add(const Duration(days: 90)),
+          kayitBekliyor: false,
+          onayGerekli: false,
+        ).kodla(),
+      );
+      expect(
+        await k.oturum.kullaniciKimligi(),
+        '00000000-0000-4000-8000-000000000001',
+      );
+      expect(k.sunucu.gonderilen, ['yenileme-1']);
+    });
+
+    test('oturum yoksa OturumYok', () async {
+      final k = _Kurulum();
+      await expectLater(k.oturum.kullaniciKimligi(), throwsA(isA<OturumYok>()));
+    });
+  });
+
   group('oturum açma ve depo', () {
     test('giriş yanıtı depoya yazılır ve OturumAcik yayılır', () async {
       final k = _Kurulum();

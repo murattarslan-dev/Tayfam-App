@@ -195,6 +195,19 @@ abstract final class Adresler {
   static String tayfaAyarlari(String tayfaId) =>
       '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
 
+  /// QR ile cihaz bağlamanın (eşleştirilmiş cihaz QR okutur) profil
+  /// altındaki yolu (ADR-0020).
+  static const cihazBaglaYolu = 'cihaz-bagla';
+
+  /// Eşleştirilmiş cihazda "Cihaz bağla" (QR okutma).
+  static const cihazBagla = '$profil/$cihazBaglaYolu';
+
+  /// Bu cihazı bağlamanın (yeni cihaz QR gösterir) profil altındaki yolu.
+  static const buCihaziBaglaYolu = 'bu-cihazi-bagla';
+
+  /// Eşleştirilmemiş cihazda "Bu cihazı bağla" (QR gösterme).
+  static const buCihaziBagla = '$profil/$buCihaziBaglaYolu';
+
   /// Arkadaşlar ekranının profil altındaki yolu (ADR-0018 §7). Arkadaş
   /// bulma, istekler ve engellenenler bunun altındadır.
   static const arkadaslarYolu = 'arkadaslar';

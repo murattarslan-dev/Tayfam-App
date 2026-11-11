@@ -13,6 +13,7 @@ import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
+import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/profil/profil.dart';
@@ -179,7 +180,12 @@ List<RouteBase> rotalariOlustur(
               path: Adresler.profil,
               builder: (context, state) => const ProfilEkrani(),
               // Arkadaşlık ekranları da profilin altındadır (ADR-0018 §7).
-              routes: [...profilRotalari, ...arkadasRotalari],
+              routes: [
+                ...profilRotalari,
+                ...arkadasRotalari,
+                // QR ile cihaz eşleştirme (ADR-0020).
+                ...cihazlarRotalari,
+              ],
             ),
           ],
         ),

@@ -110,6 +110,27 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // libsignal-android java.time kullanır ve tüketicide çekirdek
+        // kütüphane desugaring'i ister (ADR-0010).
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    packaging {
+        // libsignal-android, masaüstü JVM paketini (libsignal-client) API
+        // bağımlılığı olarak getirir; onun jar'ındaki masaüstü yerel
+        // kütüphaneleri (Linux .so, macOS .dylib, Windows .dll) APK'ya
+        // girmez. Android yerel kodu AAR'ın jni/ klasöründen gelir.
+        resources {
+            excludes += setOf(
+                "libsignal_jni*.so",
+                "**/*.dylib",
+                "**/*.dll",
+            )
+        }
+        // libsignal'in yalnızca kendi testleri için olan yerel kütüphanesi.
+        jniLibs {
+            excludes += setOf("**/libsignal_jni_testing.so")
+        }
     }
 
     defaultConfig {
@@ -125,6 +146,13 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Yalnızca gerçek cihazların ve emülatörün ABI'leri (ADR-0010):
+        // libsignal-android 32 bit x86 kütüphanesini de getirir; Flutter
+        // x86'yı zaten desteklemez. Mağaza .aab'ı ayrıca ABI'ye göre bölünür.
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+        }
     }
 
     signingConfigs {
@@ -170,4 +198,26 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+// JVM birim testleri (android/app/src/test): başarısız testin ayrıntısı CI
+// log'unda görünsün. Testler gerçek anahtar ya da kullanıcı verisi içermez.
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+dependencies {
+    // Signal protokolü (ADR-0010, güncelleme 2026-11-11). Sürüm Signal
+    // Android uygulamasının kullandığıyla aynıdır; yükseltme inceleme + PR
+    // ile yapılır, SHA-256 gradle/verification-metadata.xml'de güncellenir.
+    implementation("org.signal:libsignal-android:0.106.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // JVM birim testleri gerçek libsignal ile: masaüstü paketi linux-x86_64
+    // yerel kodunu içerir (aynı sürüm).
+    testImplementation("org.signal:libsignal-client:0.106.1")
+    testImplementation("junit:junit:4.13.2")
 }

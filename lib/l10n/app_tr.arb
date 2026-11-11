@@ -5318,185 +5318,57 @@
   "@sikayet_tekrar_dene": {
     "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
   },
-  "disa_aktarma_profil_bolum": "Gizlilik",
-  "@disa_aktarma_profil_bolum": {
-    "description": "Profil sekmesindeki gizlilik bölümünün başlığı (veri dışa aktarma girişi)."
+  "e2e_sifreli_degil": "Uçtan uca şifreli değil",
+  "@e2e_sifreli_degil": {
+    "description": "Düz sürümde yazılmış (encryption: server) birebir mesajın balonunun altındaki etiket."
   },
-  "disa_aktarma_profil_aciklama": "Verilerinin bir kopyasını iste ve indir",
-  "@disa_aktarma_profil_aciklama": {
-    "description": "Profildeki \"Verilerimi indir\" satırının alt metni (KVKK veri dışa aktarma)."
+  "e2e_sifreli_degil_aciklama": "Bu konuşmadaki işaretli eski mesajlar uçtan uca şifreli değil. Yeni mesajlar uçtan uca şifrelenir.",
+  "@e2e_sifreli_degil_aciklama": {
+    "description": "Uçtan uca şifreli olmayan mesaj içeren birebir konuşmanın başındaki açıklama."
   },
-  "disa_aktarma_baslik": "Verilerimi indir",
-  "@disa_aktarma_baslik": {
-    "description": "KVKK veri dışa aktarma ekranının başlığı ve profildeki giriş satırı."
+  "e2e_mesaj_okunamiyor": "Bu şifreli mesaj bu cihazda okunamıyor.",
+  "@e2e_mesaj_okunamiyor": {
+    "description": "İçeriği bu cihazda çözülmemiş uçtan uca şifreli mesajın balonundaki metin (ör. cihaz eklenmeden önce yazılmış)."
   },
-  "disa_aktarma_giris": "Tayfam'daki verilerinin bir kopyasını hazırlarız: profilin, üyeliklerin, katılımların, yazdıkların (duyuru, etkinlik, soru, cevap, kanal mesajları, av kayıtları), anket oyların ve yüklediğin dosyaların listesi. Hazır olunca bildirim alırsın; dosyayı 7 gün içinde indirebilirsin.",
-  "@disa_aktarma_giris": {
-    "description": "Veri dışa aktarma ekranının açıklaması: neyin hazırlandığı ve ne kadar süre indirilebildiği."
+  "e2e_mesaj_cozulemedi": "Bir mesaj çözülemedi.",
+  "@e2e_mesaj_cozulemedi": {
+    "description": "Konuşmada, çözülemeyen bir şifreli zarf için gösterilen sistem satırı."
   },
-  "disa_aktarma_birebir_notu": "Birebir mesajların uçtan uca şifreli olduğu için bu dosyada yer almaz. Yüklediğin fotoğrafların kendisi değil, listesi vardır.",
-  "@disa_aktarma_birebir_notu": {
-    "description": "Veri dışa aktarmaya neyin girmediğini anlatan not (birebir mesajlar, dosyaların kendisi)."
+  "e2e_guvenlik_kodu_degisti": "Güvenlik kodu değişti: karşı tarafın cihazlarından biri eklendi ya da çıkarıldı.",
+  "@e2e_guvenlik_kodu_degisti": {
+    "description": "Karşı tarafın cihaz eklemesi, çıkarması ya da kimlik anahtarı değişince konuşmada gösterilen sistem satırı."
   },
-  "disa_aktarma_dosya_notu": "İndirirken güvenliğin için Google ile yeniden giriş yapman istenebilir. Dosya zip biçimindedir; nereye kaydedeceğini ya da kiminle paylaşacağını sen seçersin.",
-  "@disa_aktarma_dosya_notu": {
-    "description": "Veri dışa aktarma ekranında indirmenin nasıl olduğunu anlatan not (yeniden giriş, paylaşım sayfası)."
+  "e2e_yeni_kendi_cihazi": "Hesabına yeni bir cihaz eklendi. Sen eklemediysen Profil → Oturumlar'dan kapat.",
+  "@e2e_yeni_kendi_cihazi": {
+    "description": "Kullanıcının kendi hesabına yeni bir şifreli mesajlaşma cihazı eklenince konuşmalarda gösterilen bilgi satırı."
   },
-  "disa_aktarma_talep_et": "Verilerimi hazırla",
-  "@disa_aktarma_talep_et": {
-    "description": "Yeni veri dışa aktarma talebi açan düğme."
+  "e2e_yalnizca_mobil": "Bu konuşma uçtan uca şifreli. Şifreli mesajlar yalnızca mobil uygulamada okunur ve gönderilir.",
+  "@e2e_yalnizca_mobil": {
+    "description": "Web geliştirme derlemesinde şifreli konuşmanın yazma alanı yerine gösterilen boş durum."
   },
-  "disa_aktarma_talep_suruyor": "Talep gönderiliyor",
-  "@disa_aktarma_talep_suruyor": {
-    "description": "Veri dışa aktarma talebi gönderilirken ilerleme göstergesinin ekran okuyucu metni."
+  "e2e_sifreli_mesaj": "Şifreli mesaj",
+  "@e2e_sifreli_mesaj": {
+    "description": "Web geliştirme derlemesinde içeriği gösterilemeyen şifreli mesajın balonundaki metin."
   },
-  "disa_aktarma_hazirlaniyor": "Verilerin hazırlanıyor. Hazır olunca bildirim alacaksın.",
-  "@disa_aktarma_hazirlaniyor": {
-    "description": "Sırada ya da hazırlanmakta olan talep varken talep düğmesinin yerine görünen metin."
+  "e2e_cihaz_siniri_baslik": "Şifreli mesajlaşma bu cihazda açılamadı",
+  "@e2e_cihaz_siniri_baslik": {
+    "description": "Hesabın şifreli mesajlaşma cihaz sınırı dolunca birebir ekranlarında gösterilen uyarının başlığı."
   },
-  "disa_aktarma_sonraki_talep": "Yeni bir talebi {tarih} tarihinden sonra açabilirsin.",
-  "@disa_aktarma_sonraki_talep": {
-    "description": "30 günlük sınır dolmadan talep düğmesinin yerine görünen metin. {tarih} bir sonraki talebin açılabileceği gün ve saat.",
-    "placeholders": {
-      "tarih": {
-        "type": "String",
-        "example": "12 Ara 2026 14:30"
-      }
-    }
+  "e2e_cihaz_siniri_aciklama": "Hesabında en çok 5 cihaz şifreli mesajlaşabilir. Kullanmadığın bir oturumu kapatıp tekrar dene.",
+  "@e2e_cihaz_siniri_aciklama": {
+    "description": "Cihaz sınırı uyarısının açıklaması."
   },
-  "disa_aktarma_talepler_baslik": "Taleplerin",
-  "@disa_aktarma_talepler_baslik": {
-    "description": "Veri dışa aktarma ekranındaki talep listesinin başlığı."
+  "e2e_oturumlari_ac": "Oturumları aç",
+  "@e2e_oturumlari_ac": {
+    "description": "Cihaz sınırı uyarısında Profil → Oturumlar ekranını açan düğme."
   },
-  "disa_aktarma_bos": "Son 30 günde talebin yok.",
-  "@disa_aktarma_bos": {
-    "description": "Veri dışa aktarma talep listesi boşken görünen metin."
+  "e2e_hazirlanamadi": "Şifreli mesajlaşma hazırlanamadı. Bağlantını kontrol edip tekrar dene.",
+  "@e2e_hazirlanamadi": {
+    "description": "Şifreli mesajlaşma cihaz kaydı başarısız olunca birebir ekranlarında gösterilen uyarı."
   },
-  "disa_aktarma_yukleniyor": "Talepler yükleniyor",
-  "@disa_aktarma_yukleniyor": {
-    "description": "Veri dışa aktarma talepleri yüklenirken ilerleme göstergesinin ekran okuyucu metni."
-  },
-  "disa_aktarma_tekrar_dene": "Tekrar dene",
-  "@disa_aktarma_tekrar_dene": {
-    "description": "Veri dışa aktarma talepleri okunamayınca gösterilen düğme."
-  },
-  "disa_aktarma_durum_bekliyor": "Sırada",
-  "@disa_aktarma_durum_bekliyor": {
-    "description": "Veri dışa aktarma talebinin durumu: `pending`."
-  },
-  "disa_aktarma_durum_hazirlaniyor": "Hazırlanıyor",
-  "@disa_aktarma_durum_hazirlaniyor": {
-    "description": "Veri dışa aktarma talebinin durumu: `processing`."
-  },
-  "disa_aktarma_durum_hazir": "Hazır",
-  "@disa_aktarma_durum_hazir": {
-    "description": "Veri dışa aktarma talebinin durumu: `ready` (7 gün indirilebilir)."
-  },
-  "disa_aktarma_durum_suresi_doldu": "Süresi doldu",
-  "@disa_aktarma_durum_suresi_doldu": {
-    "description": "Veri dışa aktarma talebinin durumu: `expired` (dosya silindi)."
-  },
-  "disa_aktarma_durum_basarisiz": "Hazırlanamadı",
-  "@disa_aktarma_durum_basarisiz": {
-    "description": "Veri dışa aktarma talebinin durumu: `failed`."
-  },
-  "disa_aktarma_durum_bilinmiyor": "Bilinmiyor",
-  "@disa_aktarma_durum_bilinmiyor": {
-    "description": "Veri dışa aktarma talebinin tanınmayan durumu."
-  },
-  "disa_aktarma_talep_zamani": "Talep: {zaman}",
-  "@disa_aktarma_talep_zamani": {
-    "description": "Talep kartında talebin açıldığı an.",
-    "placeholders": {
-      "zaman": {
-        "type": "String",
-        "example": "11 Kas 2026 19:30"
-      }
-    }
-  },
-  "disa_aktarma_son_gun": "Son indirme: {zaman}",
-  "@disa_aktarma_son_gun": {
-    "description": "Hazır talep kartında dosyanın silineceği an (7 gün).",
-    "placeholders": {
-      "zaman": {
-        "type": "String",
-        "example": "18 Kas 2026 19:35"
-      }
-    }
-  },
-  "disa_aktarma_indirildi": "İndirildi: {zaman}",
-  "@disa_aktarma_indirildi": {
-    "description": "Talep kartında dosyanın ilk indirildiği an.",
-    "placeholders": {
-      "zaman": {
-        "type": "String",
-        "example": "11 Kas 2026 19:40"
-      }
-    }
-  },
-  "disa_aktarma_boyut_mb": "{boyut} MB",
-  "@disa_aktarma_boyut_mb": {
-    "description": "Talep kartında şifreli dosyanın boyutu (megabayt).",
-    "placeholders": {
-      "boyut": {
-        "type": "String",
-        "example": "1,4"
-      }
-    }
-  },
-  "disa_aktarma_boyut_kb": "{boyut} KB",
-  "@disa_aktarma_boyut_kb": {
-    "description": "Talep kartında şifreli dosyanın boyutu (kilobayt).",
-    "placeholders": {
-      "boyut": {
-        "type": "String",
-        "example": "320"
-      }
-    }
-  },
-  "disa_aktarma_basarisiz_unavailable": "Bir servise ulaşılamadı. Yeni bir talep açabilirsin; bu talep 30 günlük sınıra sayılmaz.",
-  "@disa_aktarma_basarisiz_unavailable": {
-    "description": "Başarısız talebin sebebi: `unavailable`."
-  },
-  "disa_aktarma_basarisiz_too_large": "Verilerin uygulama içinden indirilemeyecek kadar büyük. Talebin elle yanıtlanacak.",
-  "@disa_aktarma_basarisiz_too_large": {
-    "description": "Başarısız talebin sebebi: `too_large` (arşiv 16 MiB'ı geçti; platform elle yanıtlar)."
-  },
-  "disa_aktarma_basarisiz_timeout": "Hazırlama zamanında bitmedi. Yeni bir talep açabilirsin; bu talep 30 günlük sınıra sayılmaz.",
-  "@disa_aktarma_basarisiz_timeout": {
-    "description": "Başarısız talebin sebebi: `timeout`."
-  },
-  "disa_aktarma_basarisiz_genel": "Verilerin hazırlanamadı. Yeni bir talep açabilirsin; bu talep 30 günlük sınıra sayılmaz.",
-  "@disa_aktarma_basarisiz_genel": {
-    "description": "Başarısız talebin sebebi: `failed` ya da bilinmeyen."
-  },
-  "disa_aktarma_indir": "İndir",
-  "@disa_aktarma_indir": {
-    "description": "Hazır veri dışa aktarmasını indirip paylaşım sayfasını açan düğme."
-  },
-  "disa_aktarma_indiriliyor": "Dosya indiriliyor",
-  "@disa_aktarma_indiriliyor": {
-    "description": "Veri dışa aktarma dosyası indirilip çözülürken ilerleme göstergesinin ekran okuyucu metni."
-  },
-  "disa_aktarma_hata_bicim": "İndirilen dosya beklenen biçimde değil. Tekrar dene.",
-  "@disa_aktarma_hata_bicim": {
-    "description": "Veri dışa aktarma dosyası ya da indirme bilgisi beklenen biçimde olmayınca görünen hata."
-  },
-  "disa_aktarma_hata_indirilemedi": "Dosya indirilemedi. Bağlantını kontrol edip tekrar dene.",
-  "@disa_aktarma_hata_indirilemedi": {
-    "description": "Veri dışa aktarma dosyası indirilemeyince görünen hata."
-  },
-  "disa_aktarma_hata_cozulemedi": "Dosya doğrulanamadığı için açılmadı. Tekrar dene.",
-  "@disa_aktarma_hata_cozulemedi": {
-    "description": "Veri dışa aktarma dosyasının şifre etiketi doğrulanamayınca görünen hata."
-  },
-  "disa_aktarma_hata_cok_buyuk": "Dosya uygulama içinden açılamayacak kadar büyük. Talebin elle yanıtlanacak.",
-  "@disa_aktarma_hata_cok_buyuk": {
-    "description": "Şifreli dışa aktarma dosyası uygulamanın çözebileceği sınırı (16 MiB) aşınca görünen hata."
-  },
-  "disa_aktarma_hata_desteklenmiyor": "Verilerini şimdilik yalnızca Android uygulamasında indirebilirsin.",
-  "@disa_aktarma_hata_desteklenmiyor": {
-    "description": "Signal köprüsü olmayan derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS) indirmeye basılınca görünen hata."
+  "e2e_tekrar_dene": "Tekrar dene",
+  "@e2e_tekrar_dene": {
+    "description": "Şifreli mesajlaşma uyarılarında kaydı yeniden deneyen düğme."
   },
   "push_event_created_title": "Yeni etkinlik",
   "@push_event_created_title": {
@@ -5749,5 +5621,343 @@
   "bildirim_ayar_yukleniyor": "Bildirim izni okunuyor",
   "@bildirim_ayar_yukleniyor": {
     "description": "Profil → Bildirimler ekranında izin okunurken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "cihaz_bagla_baslik": "Cihaz bağla",
+  "@cihaz_bagla_baslik": {
+    "description": "Eşleştirilmiş cihazda QR okutarak başka bir cihaz bağlama girişi ve ekran başlığı."
+  },
+  "cihaz_bagla_aciklama": "Yeni telefonunu QR ile bağla; şifreli mesaj geçmişin orada da okunsun.",
+  "@cihaz_bagla_aciklama": {
+    "description": "Profildeki 'Cihaz bağla' girişinin açıklaması."
+  },
+  "cihaz_bu_cihazi_bagla_baslik": "Bu cihazı bağla",
+  "@cihaz_bu_cihazi_bagla_baslik": {
+    "description": "Eşleştirilmemiş cihazda QR gösterme girişi ve ekran başlığı."
+  },
+  "cihaz_bu_cihazi_bagla_aciklama": "Eski şifreli mesajlarını burada görmek için diğer telefonundan QR'ı okut.",
+  "@cihaz_bu_cihazi_bagla_aciklama": {
+    "description": "Profildeki 'Bu cihazı bağla' girişinin açıklaması."
+  },
+  "cihaz_qr_talimat": "Diğer telefonunda Profil → Cihaz bağla'yı aç ve bu kodu okut.",
+  "@cihaz_qr_talimat": {
+    "description": "QR gösterme ekranındaki talimat."
+  },
+  "cihaz_qr_etiketi": "Cihaz eşleştirme QR kodu",
+  "@cihaz_qr_etiketi": {
+    "description": "QR görselinin ekran okuyucu etiketi; içerik okunmaz."
+  },
+  "cihaz_qr_hazirlaniyor": "Kod hazırlanıyor",
+  "@cihaz_qr_hazirlaniyor": {
+    "description": "QR hazırlanırken yükleniyor göstergesinin ekran okuyucu metni."
+  },
+  "cihaz_qr_suresi_doldu": "Kodun süresi doldu.",
+  "@cihaz_qr_suresi_doldu": {
+    "description": "QR'ın 10 dakikalık süresi dolunca gösterilen metin."
+  },
+  "cihaz_qr_yenile": "Yeni kod al",
+  "@cihaz_qr_yenile": {
+    "description": "Yeni eşleştirme isteği açıp QR'ı yenileyen düğme."
+  },
+  "cihaz_qr_tamamlandi": "Bu cihaz bağlandı. Şifreli mesaj geçmişin artık burada da okunabilir.",
+  "@cihaz_qr_tamamlandi": {
+    "description": "Yeni cihazda eşleştirme tamamlanınca gösterilen metin."
+  },
+  "cihaz_tamam": "Tamam",
+  "@cihaz_tamam": {
+    "description": "Eşleştirme ekranlarını kapatan düğme."
+  },
+  "cihaz_tara_talimat": "Yeni telefonunda Profil → Bu cihazı bağla'yı aç ve gösterilen kodu çerçeveye getir.",
+  "@cihaz_tara_talimat": {
+    "description": "QR okutma ekranındaki talimat."
+  },
+  "cihaz_tara_isleniyor": "Cihaz bağlanıyor",
+  "@cihaz_tara_isleniyor": {
+    "description": "QR işlenirken yükleniyor göstergesinin ekran okuyucu metni."
+  },
+  "cihaz_tara_basarili": "Mesaj geçmişi yeni telefona gönderildi. Birkaç saniye içinde orada hazır olur.",
+  "@cihaz_tara_basarili": {
+    "description": "Eşleştirme cevabı gönderilince gösterilen metin."
+  },
+  "cihaz_tara_tekrar": "Tekrar tara",
+  "@cihaz_tara_tekrar": {
+    "description": "QR okutma ekranında yeniden taramaya dönen düğme."
+  },
+  "cihaz_kamera_izin_baslik": "Kamera izni gerekli",
+  "@cihaz_kamera_izin_baslik": {
+    "description": "Kamera izni reddedilince gösterilen başlık."
+  },
+  "cihaz_kamera_izin_aciklama": "QR kodu okumak için kamera yalnızca bu ekranda kullanılır; görüntü kaydedilmez ve hiçbir yere gönderilmez. İzni telefonunun Ayarlar → Uygulamalar → Tayfam → İzinler bölümünden açabilirsin.",
+  "@cihaz_kamera_izin_aciklama": {
+    "description": "Kamera izni reddedilince gösterilen açıklama."
+  },
+  "cihaz_ayarlari_ac": "Ayarları aç",
+  "@cihaz_ayarlari_ac": {
+    "description": "Uygulamanın sistem ayarlarını açan düğme (iOS)."
+  },
+  "cihaz_kamera_hatasi": "Kamera açılamadı. Tekrar dene.",
+  "@cihaz_kamera_hatasi": {
+    "description": "Kamera izin dışı bir nedenle açılamayınca gösterilen hata."
+  },
+  "cihaz_hata_qr_gecersiz": "Bu bir Tayfam cihaz eşleştirme kodu değil.",
+  "@cihaz_hata_qr_gecersiz": {
+    "description": "Okunan QR geçersiz ya da başka bir kod."
+  },
+  "cihaz_hata_kendi_cihazi": "Bu, bu telefonun kendi kodu. Kodu yeni telefonda göster, bu telefonla okut.",
+  "@cihaz_hata_kendi_cihazi": {
+    "description": "Cihaz kendi QR'ını okuttu."
+  },
+  "cihaz_hata_cihaz_bulunamadi": "Bu kod hesabındaki bir cihaza ait değil. Yeni telefonda aynı hesapla giriş yaptığından emin ol.",
+  "@cihaz_hata_cihaz_bulunamadi": {
+    "description": "QR'daki cihaz hesabın cihaz listesinde yok."
+  },
+  "cihaz_hata_anahtar_uyusmuyor": "Kodun güvenlik bilgisi doğrulanamadı; güvenliğin için hiçbir şey gönderilmedi. Yeni telefonda yeni bir kod al.",
+  "@cihaz_hata_anahtar_uyusmuyor": {
+    "description": "QR'daki kimlik anahtarı sunucudakiyle aynı değil."
+  },
+  "cihaz_hata_eslestirilmemis": "Bu telefonda mesaj geçmişinin anahtarı yok; başka bir cihazı bağlayamaz.",
+  "@cihaz_hata_eslestirilmemis": {
+    "description": "Eşleştirilmemiş cihaz başka cihaz bağlamaya çalıştı."
+  },
+  "cihaz_hata_suresi_doldu": "Kodun süresi dolmuş. Yeni telefonda yeni bir kod al.",
+  "@cihaz_hata_suresi_doldu": {
+    "description": "Eşleştirme isteğinin süresi doldu ya da bulunamadı."
+  },
+  "cihaz_hata_cevap_gecersiz": "Gelen yanıt doğrulanamadı. Yeni bir kod alıp tekrar dene.",
+  "@cihaz_hata_cevap_gecersiz": {
+    "description": "Yeni cihazda eşleştirme cevabı çözülemedi ya da kod tutmadı."
+  },
+  "cihaz_hata_anahtar_yenilendi": "Mesaj geçmişi anahtarı az önce yenilendi. Yeni bir kod alıp tekrar dene.",
+  "@cihaz_hata_anahtar_yenilendi": {
+    "description": "Eşleştirme sırasında geçmiş anahtarı yenilendi."
+  },
+  "cihaz_cikis_onay_baslik": "Çıkış yapılsın mı?",
+  "@cihaz_cikis_onay_baslik": {
+    "description": "Tek cihaz uyarılı çıkış onay penceresinin başlığı."
+  },
+  "cihaz_cikis_tek_cihaz_uyarisi": "Bu telefon şifreli mesaj geçmişinin anahtarını taşıyan tek cihaz. Çıkış yaparsan eski birebir mesajların kalıcı olarak okunamaz. Önce başka bir cihazı Profil → Cihaz bağla ile bağlayabilirsin.",
+  "@cihaz_cikis_tek_cihaz_uyarisi": {
+    "description": "Çıkış onayında, bu telefon geçmiş anahtarını taşıyan tek cihazsa gösterilen uyarı."
+  },
+  "cihaz_cikis_yap": "Çıkış yap",
+  "@cihaz_cikis_yap": {
+    "description": "Tek cihaz uyarılı çıkış onayındaki onay düğmesi."
+  },
+  "cihaz_vazgec": "Vazgeç",
+  "@cihaz_vazgec": {
+    "description": "Tek cihaz uyarılı çıkış onayındaki vazgeç düğmesi."
+  },
+  "cihaz_tek_cihaz_bilgi_baslik": "Mesaj geçmişin bu telefonda",
+  "@cihaz_tek_cihaz_bilgi_baslik": {
+    "description": "İlk E2E açılışında bir kez gösterilen bilgi kartının başlığı."
+  },
+  "cihaz_tek_cihaz_bilgi": "Birebir mesajların uçtan uca şifreli. Geçmişi açan anahtar yalnızca bu telefonda; telefonu kaybeder, uygulamayı siler ya da çıkış yaparsan eski mesajlar okunamaz. Profil → Cihaz bağla ile ikinci bir cihaz ekleyebilirsin.",
+  "@cihaz_tek_cihaz_bilgi": {
+    "description": "İlk E2E açılışında bir kez gösterilen tek cihaz bilgisi."
+  },
+  "cihaz_anladim": "Anladım",
+  "@cihaz_anladim": {
+    "description": "Bilgi kartlarını kapatan düğme."
+  },
+  "cihaz_eski_arsiv_okunamaz": "Bu cihazda yeni bir şifreli mesaj geçmişi başladı. Önceki cihazlarındaki eski şifreli mesajlar burada okunamaz.",
+  "@cihaz_eski_arsiv_okunamaz": {
+    "description": "Yeni geçmiş anahtarı alınınca (önceki bir anahtar varken) bir kez gösterilen bilgi."
+  },
+  "cihaz_eski_mesajlar_okunamiyor": "Eski mesajların bu cihazda okunamıyor.",
+  "@cihaz_eski_mesajlar_okunamiyor": {
+    "description": "Konuşmada eski şifreli mesajlar okunamayınca gösterilen boş durum."
+  },
+  "cihaz_eski_mesajlar_eslestir": "Bu cihazı diğer telefonunla bağla",
+  "@cihaz_eski_mesajlar_eslestir": {
+    "description": "Eski mesajlar okunamıyor satırındaki QR eşleştirme bağlantısı."
+  },
+  "cihaz_qr_kalan": "Kodun süresi: {sure}",
+  "@cihaz_qr_kalan": {
+    "description": "QR'ın kalan süresi (dakika:saniye).",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "9:05"
+      }
+    }
+  },
+  "disa_aktarma_profil_bolum": "Gizlilik",
+  "@disa_aktarma_profil_bolum": {
+    "description": "Profil sekmesindeki gizlilik bölümünün başlığı (veri dışa aktarma girişi)."
+  },
+  "disa_aktarma_profil_aciklama": "Verilerinin bir kopyasını iste ve indir",
+  "@disa_aktarma_profil_aciklama": {
+    "description": "Profildeki \"Verilerimi indir\" satırının alt metni (KVKK veri dışa aktarma)."
+  },
+  "disa_aktarma_baslik": "Verilerimi indir",
+  "@disa_aktarma_baslik": {
+    "description": "KVKK veri dışa aktarma ekranının başlığı ve profildeki giriş satırı."
+  },
+  "disa_aktarma_giris": "Tayfam'daki verilerinin bir kopyasını hazırlarız: profilin, üyeliklerin, katılımların, yazdıkların (duyuru, etkinlik, soru, cevap, kanal mesajları, av kayıtları), anket oyların ve yüklediğin dosyaların listesi. Hazır olunca bildirim alırsın; dosyayı 7 gün içinde indirebilirsin.",
+  "@disa_aktarma_giris": {
+    "description": "Veri dışa aktarma ekranının açıklaması: neyin hazırlandığı ve ne kadar süre indirilebildiği."
+  },
+  "disa_aktarma_birebir_notu": "Birebir mesajların uçtan uca şifreli olduğu için bu dosyada yer almaz. Yüklediğin fotoğrafların kendisi değil, listesi vardır.",
+  "@disa_aktarma_birebir_notu": {
+    "description": "Veri dışa aktarmaya neyin girmediğini anlatan not (birebir mesajlar, dosyaların kendisi)."
+  },
+  "disa_aktarma_dosya_notu": "İndirirken güvenliğin için Google ile yeniden giriş yapman istenebilir. Dosya zip biçimindedir; nereye kaydedeceğini ya da kiminle paylaşacağını sen seçersin.",
+  "@disa_aktarma_dosya_notu": {
+    "description": "Veri dışa aktarma ekranında indirmenin nasıl olduğunu anlatan not (yeniden giriş, paylaşım sayfası)."
+  },
+  "disa_aktarma_talep_et": "Verilerimi hazırla",
+  "@disa_aktarma_talep_et": {
+    "description": "Yeni veri dışa aktarma talebi açan düğme."
+  },
+  "disa_aktarma_talep_suruyor": "Talep gönderiliyor",
+  "@disa_aktarma_talep_suruyor": {
+    "description": "Veri dışa aktarma talebi gönderilirken ilerleme göstergesinin ekran okuyucu metni."
+  },
+  "disa_aktarma_hazirlaniyor": "Verilerin hazırlanıyor. Hazır olunca bildirim alacaksın.",
+  "@disa_aktarma_hazirlaniyor": {
+    "description": "Sırada ya da hazırlanmakta olan talep varken talep düğmesinin yerine görünen metin."
+  },
+  "disa_aktarma_sonraki_talep": "Yeni bir talebi {tarih} tarihinden sonra açabilirsin.",
+  "@disa_aktarma_sonraki_talep": {
+    "description": "30 günlük sınır dolmadan talep düğmesinin yerine görünen metin. {tarih} bir sonraki talebin açılabileceği gün ve saat.",
+    "placeholders": {
+      "tarih": {
+        "type": "String",
+        "example": "12 Ara 2026 14:30"
+      }
+    }
+  },
+  "disa_aktarma_talepler_baslik": "Taleplerin",
+  "@disa_aktarma_talepler_baslik": {
+    "description": "Veri dışa aktarma ekranındaki talep listesinin başlığı."
+  },
+  "disa_aktarma_bos": "Son 30 günde talebin yok.",
+  "@disa_aktarma_bos": {
+    "description": "Veri dışa aktarma talep listesi boşken görünen metin."
+  },
+  "disa_aktarma_yukleniyor": "Talepler yükleniyor",
+  "@disa_aktarma_yukleniyor": {
+    "description": "Veri dışa aktarma talepleri yüklenirken ilerleme göstergesinin ekran okuyucu metni."
+  },
+  "disa_aktarma_tekrar_dene": "Tekrar dene",
+  "@disa_aktarma_tekrar_dene": {
+    "description": "Veri dışa aktarma talepleri okunamayınca gösterilen düğme."
+  },
+  "disa_aktarma_durum_bekliyor": "Sırada",
+  "@disa_aktarma_durum_bekliyor": {
+    "description": "Veri dışa aktarma talebinin durumu: `pending`."
+  },
+  "disa_aktarma_durum_hazirlaniyor": "Hazırlanıyor",
+  "@disa_aktarma_durum_hazirlaniyor": {
+    "description": "Veri dışa aktarma talebinin durumu: `processing`."
+  },
+  "disa_aktarma_durum_hazir": "Hazır",
+  "@disa_aktarma_durum_hazir": {
+    "description": "Veri dışa aktarma talebinin durumu: `ready` (7 gün indirilebilir)."
+  },
+  "disa_aktarma_durum_suresi_doldu": "Süresi doldu",
+  "@disa_aktarma_durum_suresi_doldu": {
+    "description": "Veri dışa aktarma talebinin durumu: `expired` (dosya silindi)."
+  },
+  "disa_aktarma_durum_basarisiz": "Hazırlanamadı",
+  "@disa_aktarma_durum_basarisiz": {
+    "description": "Veri dışa aktarma talebinin durumu: `failed`."
+  },
+  "disa_aktarma_durum_bilinmiyor": "Bilinmiyor",
+  "@disa_aktarma_durum_bilinmiyor": {
+    "description": "Veri dışa aktarma talebinin tanınmayan durumu."
+  },
+  "disa_aktarma_talep_zamani": "Talep: {zaman}",
+  "@disa_aktarma_talep_zamani": {
+    "description": "Talep kartında talebin açıldığı an.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "11 Kas 2026 19:30"
+      }
+    }
+  },
+  "disa_aktarma_son_gun": "Son indirme: {zaman}",
+  "@disa_aktarma_son_gun": {
+    "description": "Hazır talep kartında dosyanın silineceği an (7 gün).",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "18 Kas 2026 19:35"
+      }
+    }
+  },
+  "disa_aktarma_indirildi": "İndirildi: {zaman}",
+  "@disa_aktarma_indirildi": {
+    "description": "Talep kartında dosyanın ilk indirildiği an.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "11 Kas 2026 19:40"
+      }
+    }
+  },
+  "disa_aktarma_boyut_mb": "{boyut} MB",
+  "@disa_aktarma_boyut_mb": {
+    "description": "Talep kartında şifreli dosyanın boyutu (megabayt).",
+    "placeholders": {
+      "boyut": {
+        "type": "String",
+        "example": "1,4"
+      }
+    }
+  },
+  "disa_aktarma_boyut_kb": "{boyut} KB",
+  "@disa_aktarma_boyut_kb": {
+    "description": "Talep kartında şifreli dosyanın boyutu (kilobayt).",
+    "placeholders": {
+      "boyut": {
+        "type": "String",
+        "example": "320"
+      }
+    }
+  },
+  "disa_aktarma_basarisiz_unavailable": "Bir servise ulaşılamadı. Yeni bir talep açabilirsin; bu talep 30 günlük sınıra sayılmaz.",
+  "@disa_aktarma_basarisiz_unavailable": {
+    "description": "Başarısız talebin sebebi: `unavailable`."
+  },
+  "disa_aktarma_basarisiz_too_large": "Verilerin uygulama içinden indirilemeyecek kadar büyük. Talebin elle yanıtlanacak.",
+  "@disa_aktarma_basarisiz_too_large": {
+    "description": "Başarısız talebin sebebi: `too_large` (arşiv 16 MiB'ı geçti; platform elle yanıtlar)."
+  },
+  "disa_aktarma_basarisiz_timeout": "Hazırlama zamanında bitmedi. Yeni bir talep açabilirsin; bu talep 30 günlük sınıra sayılmaz.",
+  "@disa_aktarma_basarisiz_timeout": {
+    "description": "Başarısız talebin sebebi: `timeout`."
+  },
+  "disa_aktarma_basarisiz_genel": "Verilerin hazırlanamadı. Yeni bir talep açabilirsin; bu talep 30 günlük sınıra sayılmaz.",
+  "@disa_aktarma_basarisiz_genel": {
+    "description": "Başarısız talebin sebebi: `failed` ya da bilinmeyen."
+  },
+  "disa_aktarma_indir": "İndir",
+  "@disa_aktarma_indir": {
+    "description": "Hazır veri dışa aktarmasını indirip paylaşım sayfasını açan düğme."
+  },
+  "disa_aktarma_indiriliyor": "Dosya indiriliyor",
+  "@disa_aktarma_indiriliyor": {
+    "description": "Veri dışa aktarma dosyası indirilip çözülürken ilerleme göstergesinin ekran okuyucu metni."
+  },
+  "disa_aktarma_hata_bicim": "İndirilen dosya beklenen biçimde değil. Tekrar dene.",
+  "@disa_aktarma_hata_bicim": {
+    "description": "Veri dışa aktarma dosyası ya da indirme bilgisi beklenen biçimde olmayınca görünen hata."
+  },
+  "disa_aktarma_hata_indirilemedi": "Dosya indirilemedi. Bağlantını kontrol edip tekrar dene.",
+  "@disa_aktarma_hata_indirilemedi": {
+    "description": "Veri dışa aktarma dosyası indirilemeyince görünen hata."
+  },
+  "disa_aktarma_hata_cozulemedi": "Dosya doğrulanamadığı için açılmadı. Tekrar dene.",
+  "@disa_aktarma_hata_cozulemedi": {
+    "description": "Veri dışa aktarma dosyasının şifre etiketi doğrulanamayınca görünen hata."
+  },
+  "disa_aktarma_hata_cok_buyuk": "Dosya uygulama içinden açılamayacak kadar büyük. Talebin elle yanıtlanacak.",
+  "@disa_aktarma_hata_cok_buyuk": {
+    "description": "Şifreli dışa aktarma dosyası uygulamanın çözebileceği sınırı (16 MiB) aşınca görünen hata."
+  },
+  "disa_aktarma_hata_desteklenmiyor": "Verilerini şimdilik yalnızca Android uygulamasında indirebilirsin.",
+  "@disa_aktarma_hata_desteklenmiyor": {
+    "description": "Signal köprüsü olmayan derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS) indirmeye basılınca görünen hata."
   }
 }
