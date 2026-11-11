@@ -468,7 +468,6 @@ class _EtkinlikSihirbaziEkraniState
                   if (secilen != null) _n.bitisAyarla(secilen);
                 },
         ),
-        ),
       ],
     );
   }
