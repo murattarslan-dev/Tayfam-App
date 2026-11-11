@@ -100,9 +100,7 @@ class KabukIskeleti extends ConsumerWidget {
     }
 
     return Scaffold(
-      body: BildirimYenileyici(
-        child: TayfaYenileyici(child: navigationShell),
-      ),
+      body: BildirimYenileyici(child: TayfaYenileyici(child: navigationShell)),
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (i) => _sekmeyeGit(ref, i),

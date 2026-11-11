@@ -88,10 +88,7 @@ void main() {
       );
 
       expect(find.byType(BildirimKarti), findsNWidgets(3));
-      expect(
-        find.text(arbMetni('bildirim_etkinlik_eklendi')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('bildirim_etkinlik_eklendi')), findsOneWidget);
       expect(find.text('Ayşe tayfaya katılmak istiyor'), findsOneWidget);
       expect(find.text(arbMetni('bildirim_mesaj')), findsOneWidget);
       // Tayfaya bağlı iki bildirimde tayfanın adı var; DM'de yok.
@@ -106,10 +103,7 @@ void main() {
       ekranBoyutu(tester);
       await _ekraniAc(tester, _liste(const []));
       expect(find.text(arbMetni('bildirim_bos')), findsOneWidget);
-      expect(
-        find.text(arbMetni('bildirim_hepsini_okundu_say')),
-        findsNothing,
-      );
+      expect(find.text(arbMetni('bildirim_hepsini_okundu_say')), findsNothing);
     });
 
     testWidgets('hepsi okunmuşsa "Hepsini okundu say" yok', (tester) async {
@@ -119,10 +113,7 @@ void main() {
         _liste([bildirimJson(bildirimId1, okundu: true)]),
       );
       expect(find.byType(BildirimKarti), findsOneWidget);
-      expect(
-        find.text(arbMetni('bildirim_hepsini_okundu_say')),
-        findsNothing,
-      );
+      expect(find.text(arbMetni('bildirim_hepsini_okundu_say')), findsNothing);
     });
 
     testWidgets('"Hepsini okundu say" isteği gönderiyor ve düğme kalkıyor', (
@@ -136,10 +127,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tasima.giden('POST', hepsiOkunduYolu), hasLength(1));
-      expect(
-        find.text(arbMetni('bildirim_hepsini_okundu_say')),
-        findsNothing,
-      );
+      expect(find.text(arbMetni('bildirim_hepsini_okundu_say')), findsNothing);
       expect(_okunmadi(), findsNothing);
     });
 
@@ -284,7 +272,9 @@ void main() {
         tester,
         tayfa: tayfaUyesi(),
         bildirim: bildirimOverridelari(tasima: tasima),
-        overrides: [profilSahtesi({kisiId: 'Ayşe'})],
+        overrides: [
+          profilSahtesi({kisiId: 'Ayşe'}),
+        ],
       );
 
       await tester.tap(sekme());

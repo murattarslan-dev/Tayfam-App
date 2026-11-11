@@ -169,11 +169,7 @@ class _MetinDugmesi extends StatelessWidget {
     );
     final ikon = this.ikon;
     if (ikon == null) {
-      return TextButton(
-        onPressed: onPressed,
-        style: stil,
-        child: Text(etiket),
-      );
+      return TextButton(onPressed: onPressed, style: stil, child: Text(etiket));
     }
     return TextButton.icon(
       onPressed: onPressed,

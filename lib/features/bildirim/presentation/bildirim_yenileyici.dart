@@ -25,8 +25,7 @@ class BildirimYenileyici extends ConsumerStatefulWidget {
   final Widget child;
 
   @override
-  ConsumerState<BildirimYenileyici> createState() =>
-      _BildirimYenileyiciState();
+  ConsumerState<BildirimYenileyici> createState() => _BildirimYenileyiciState();
 }
 
 class _BildirimYenileyiciState extends ConsumerState<BildirimYenileyici> {

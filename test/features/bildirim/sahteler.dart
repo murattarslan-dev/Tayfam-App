@@ -87,12 +87,10 @@ List<Override> bildirimOverridelari({SahteTayfaTasima? tasima}) {
 
 /// Profil ucunun sahtesi: [adlar]'daki kimlikler için ad döner; istenen
 /// kimlikleri [istenen]'e yazar.
-Override profilSahtesi(
-  Map<String, String> adlar, {
-  List<String>? istenen,
-}) => profilOkuyucuProvider.overrideWithValue((id) async {
-  istenen?.add(id);
-  final ad = adlar[id];
-  if (ad == null) return const KullaniciAdi.silinmis();
-  return KullaniciAdi(ad);
-});
+Override profilSahtesi(Map<String, String> adlar, {List<String>? istenen}) =>
+    profilOkuyucuProvider.overrideWithValue((id) async {
+      istenen?.add(id);
+      final ad = adlar[id];
+      if (ad == null) return const KullaniciAdi.silinmis();
+      return KullaniciAdi(ad);
+    });
