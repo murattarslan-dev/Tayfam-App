@@ -36,7 +36,8 @@ final class GidenMesaj {
   final Object? hata;
 
   /// Yeniden deneniyor.
-  GidenMesaj gonderiliyor() => GidenMesaj(istekKimligi: istekKimligi, metin: metin);
+  GidenMesaj gonderiliyor() =>
+      GidenMesaj(istekKimligi: istekKimligi, metin: metin);
 
   /// Gönderilemedi.
   GidenMesaj basarisiz(Object hata) => GidenMesaj(

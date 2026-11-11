@@ -242,7 +242,8 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
   }
 
   /// Gönderilemeyen mesajı bellekten atar.
-  void vazgec(String istekKimligi) => _gideniDegistir(istekKimligi, (_) => null);
+  void vazgec(String istekKimligi) =>
+      _gideniDegistir(istekKimligi, (_) => null);
 
   Future<void> _gonder(GidenMesaj giden, String alici) async {
     final DirectMessageSent sonuc;
@@ -256,10 +257,12 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
           );
     } on OturumYok catch (hata) {
       oturumKapandi(ref);
-      if (ref.mounted) _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
+      if (ref.mounted)
+        _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
       return;
     } on Exception catch (hata) {
-      if (ref.mounted) _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
+      if (ref.mounted)
+        _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
       return;
     }
     if (!ref.mounted) return;

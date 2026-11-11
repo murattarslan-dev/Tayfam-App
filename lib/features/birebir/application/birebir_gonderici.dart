@@ -31,7 +31,8 @@ final class RestBirebirGonderici implements BirebirGonderici {
     required String aliciId,
     required String metin,
     required String istekKimligi,
-  }) => _depo.gonder(aliciId: aliciId, metin: metin, istekKimligi: istekKimligi);
+  }) =>
+      _depo.gonder(aliciId: aliciId, metin: metin, istekKimligi: istekKimligi);
 }
 
 /// Uygulamanın birebir mesaj göndericisi.

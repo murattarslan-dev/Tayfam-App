@@ -14,17 +14,16 @@ int konusmaSirasi(Conversation a, Conversation b) {
 
 /// [konusma]'nın okunmamış sayısı sıfırlanmış ve okundu işareti
 /// [mesajId]'ye taşınmış hali (modellerde `copyWith` yoktur).
-Conversation okunduOlarak(Conversation konusma, String mesajId) =>
-    Conversation(
-      id: konusma.id,
-      otherUserId: konusma.otherUserId,
-      status: konusma.status,
-      unreadCount: 0,
-      lastReadMessageId: mesajId,
-      peerLastReadMessageId: konusma.peerLastReadMessageId,
-      lastMessageAt: konusma.lastMessageAt,
-      createdAt: konusma.createdAt,
-    );
+Conversation okunduOlarak(Conversation konusma, String mesajId) => Conversation(
+  id: konusma.id,
+  otherUserId: konusma.otherUserId,
+  status: konusma.status,
+  unreadCount: 0,
+  lastReadMessageId: mesajId,
+  peerLastReadMessageId: konusma.peerLastReadMessageId,
+  lastMessageAt: konusma.lastMessageAt,
+  createdAt: konusma.createdAt,
+);
 
 /// Kullanıcının birebir konuşmaları (`GET
 /// /v1/direct-messages/conversations`, sayfalı; ADR-0018 §9).

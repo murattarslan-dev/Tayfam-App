@@ -78,9 +78,7 @@ class _YeniKonusma extends ConsumerWidget {
                   onSil: notifier.vazgec,
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: TayfamSpacing.s8,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
                 child: BirebirAciklama(m.birebir_yeni_konusma_aciklama),
               ),
             ],

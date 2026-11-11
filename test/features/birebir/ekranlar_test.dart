@@ -62,18 +62,18 @@ SahteTayfaTasima _konusmaTasimasi({
 final class _SikayetKaydi {
   final List<(String, String)> cagrilar = [];
 
-  Override get override => birebirMesajSikayetiProvider.overrideWithValue(
-    (context, {required mesajId, required metin}) async {
-      cagrilar.add((mesajId, metin));
-    },
-  );
+  Override get override => birebirMesajSikayetiProvider.overrideWithValue((
+    context, {
+    required mesajId,
+    required metin,
+  }) async {
+    cagrilar.add((mesajId, metin));
+  });
 }
 
 void main() {
   group('konuşmalar', () {
-    testWidgets('konuşmalar, istek girişi ve okunmamış rozeti', (
-      tester,
-    ) async {
+    testWidgets('konuşmalar, istek girişi ve okunmamış rozeti', (tester) async {
       ekranBoyutu(tester, yukseklik: 1000);
       await _ac(
         tester,
@@ -364,10 +364,9 @@ void main() {
       await tester.tap(find.text(arbMetni('birebir_listeden_cikar')));
       await tester.pumpAndSettle();
 
-      expect(
-        tasima.giden('DELETE', reddedilenYolu).single.yolParametreleri,
-        {'conversation_id': konusmaId2},
-      );
+      expect(tasima.giden('DELETE', reddedilenYolu).single.yolParametreleri, {
+        'conversation_id': konusmaId2,
+      });
       expect(find.text('Ece'), findsNothing);
       expect(find.text(arbMetni('birebir_listeden_cikarildi')), findsOneWidget);
     });

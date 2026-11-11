@@ -191,4 +191,3 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
     ),
   ];
 }
-

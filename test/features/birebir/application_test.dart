@@ -126,9 +126,7 @@ void main() {
       });
       await k.liste();
       expect(k.kap.read(birebirOkunmamisSayisiProvider), 4);
-      expect(k.kap.read(mesajIstekleriProvider).map((c) => c.id), [
-        konusmaId2,
-      ]);
+      expect(k.kap.read(mesajIstekleriProvider).map((c) => c.id), [konusmaId2]);
     });
 
     test('yansıtılan konuşma son mesaja göre sıraya giriyor', () async {
@@ -249,10 +247,10 @@ void main() {
       final silinen = k.durum().mesajlar.firstWhere((m) => m.id == mesajId1);
       expect(silinen.deleted, isTrue);
       expect(silinen.body, isNull);
-      expect(
-        k.tasima.giden('DELETE', mesajYolu).single.yolParametreleri,
-        {'conversation_id': konusmaId1, 'message_id': mesajId1},
-      );
+      expect(k.tasima.giden('DELETE', mesajYolu).single.yolParametreleri, {
+        'conversation_id': konusmaId1,
+        'message_id': mesajId1,
+      });
     });
 
     test('kabul konuşmayı aktif yapıyor', () async {
@@ -401,9 +399,7 @@ void main() {
           .listedenCikar(konusmaId2);
       expect(hata, isNull);
       expect(k.kap.read(reddedilenlerProvider).requireValue.ogeler, isEmpty);
-      expect(k.kap.read(mesajIstekleriProvider).map((c) => c.id), [
-        konusmaId2,
-      ]);
+      expect(k.kap.read(mesajIstekleriProvider).map((c) => c.id), [konusmaId2]);
     });
   });
 }

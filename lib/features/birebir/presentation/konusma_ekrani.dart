@@ -58,9 +58,8 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
     if (durum == null || durum == AppLifecycleState.resumed) _yeniler();
   }
 
-  void _yeniler() => unawaited(
-    ref.read(konusmaProvider(widget.konusmaId).notifier).yeniler(),
-  );
+  void _yeniler() =>
+      unawaited(ref.read(konusmaProvider(widget.konusmaId).notifier).yeniler());
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +261,9 @@ class _Akis extends ConsumerWidget {
       ),
     );
     if (onay != true || !context.mounted) return;
-    final hata = await ref.read(konusmaProvider(konusmaId).notifier).sil(mesajId);
+    final hata = await ref
+        .read(konusmaProvider(konusmaId).notifier)
+        .sil(mesajId);
     birebirSonucunuBildir(bildirim, m, hata, m.birebir_mesaj_silindi_bildirimi);
   }
 }
