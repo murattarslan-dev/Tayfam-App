@@ -109,10 +109,7 @@ void main() {
   test('web derlemesi: desteklenmiyor, ağ yok', () async {
     final s = SahteE2eSunucu();
     final kap = _kap(SahteE2eIstemcisi(s, _ali), etkin: false);
-    expect(
-      kap.read(e2eCihazProvider).durum,
-      E2eCihazDurumu.desteklenmiyor,
-    );
+    expect(kap.read(e2eCihazProvider).durum, E2eCihazDurumu.desteklenmiyor);
     await pumpEventQueue();
     expect(s.istekler, isEmpty);
   });
@@ -141,9 +138,6 @@ void main() {
         ),
       ],
     );
-    expect(
-      kap.read(e2eCihazProvider).durum,
-      E2eCihazDurumu.desteklenmiyor,
-    );
+    expect(kap.read(e2eCihazProvider).durum, E2eCihazDurumu.desteklenmiyor);
   });
 }

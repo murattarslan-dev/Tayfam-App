@@ -483,41 +483,44 @@ void main() {
   });
 
   group('uçtan uca şifreleme çerçeveleri', () {
-    test('dm.envelope, e2e.* olayları çözülür; bozuk zarf yok sayılır', () async {
-      final k = _Kurulum();
-      final olaylar = <RealtimeOlayi>[];
-      k.istemci.olaylar.listen(olaylar.add);
-      final soket = await k.baglan();
-      final zarf = {
-        'id': mesaj1,
-        'message_id': mesaj1,
-        'conversation_id': kanal2,
-        'sender_user_id': kullanici,
-        'sender_device_id': istek,
-        'sender_device_number': 2,
-        'type': 'prekey',
-        'content': 'AQID',
-        'created_at': '2026-11-11T10:00:00Z',
-      };
-      soket
-        ..cerceve('dm.envelope', zarf)
-        ..cerceve('dm.envelope', {...zarf, 'type': 'bilinmeyen'})
-        ..cerceve('dm.envelope', {...zarf, 'sender_device_id': 'x'})
-        ..cerceve('e2e.prekeys_low', {'ec': 3, 'kyber': 20})
-        ..cerceve('e2e.link_answered', {'link_request_id': istek})
-        ..cerceve('e2e.history_key_shared', {});
-      await pumpEventQueue();
-      expect(olaylar.map((o) => o.runtimeType), [
-        Baglandi,
-        DmZarfiGeldi,
-        E2eOnAnahtarlarAzaldi,
-        E2eEslemeCevaplandi,
-        E2eGecmisAnahtariPaylasildi,
-      ]);
-      final z = (olaylar[1] as DmZarfiGeldi).zarf;
-      expect(z.senderDeviceNumber, 2);
-      expect(z.content, 'AQID');
-    });
+    test(
+      'dm.envelope, e2e.* olayları çözülür; bozuk zarf yok sayılır',
+      () async {
+        final k = _Kurulum();
+        final olaylar = <RealtimeOlayi>[];
+        k.istemci.olaylar.listen(olaylar.add);
+        final soket = await k.baglan();
+        final zarf = {
+          'id': mesaj1,
+          'message_id': mesaj1,
+          'conversation_id': kanal2,
+          'sender_user_id': kullanici,
+          'sender_device_id': istek,
+          'sender_device_number': 2,
+          'type': 'prekey',
+          'content': 'AQID',
+          'created_at': '2026-11-11T10:00:00Z',
+        };
+        soket
+          ..cerceve('dm.envelope', zarf)
+          ..cerceve('dm.envelope', {...zarf, 'type': 'bilinmeyen'})
+          ..cerceve('dm.envelope', {...zarf, 'sender_device_id': 'x'})
+          ..cerceve('e2e.prekeys_low', {'ec': 3, 'kyber': 20})
+          ..cerceve('e2e.link_answered', {'link_request_id': istek})
+          ..cerceve('e2e.history_key_shared', {});
+        await pumpEventQueue();
+        expect(olaylar.map((o) => o.runtimeType), [
+          Baglandi,
+          DmZarfiGeldi,
+          E2eOnAnahtarlarAzaldi,
+          E2eEslemeCevaplandi,
+          E2eGecmisAnahtariPaylasildi,
+        ]);
+        final z = (olaylar[1] as DmZarfiGeldi).zarf;
+        expect(z.senderDeviceNumber, 2);
+        expect(z.content, 'AQID');
+      },
+    );
 
     test('dm.envelope_ack gönderilir; bağlantı yoksa RealtimeKapali', () async {
       final k = _Kurulum();

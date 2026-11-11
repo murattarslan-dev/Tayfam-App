@@ -161,10 +161,7 @@ void main() {
 
     test('oturum yoksa OturumYok', () async {
       final k = _Kurulum();
-      await expectLater(
-        k.oturum.kullaniciKimligi(),
-        throwsA(isA<OturumYok>()),
-      );
+      await expectLater(k.oturum.kullaniciKimligi(), throwsA(isA<OturumYok>()));
     });
   });
 

@@ -93,7 +93,11 @@ void main() {
       final depo = E2eDeposu(ham);
       await depo.yukle();
       await depo.kimlikYaz(
-        DepoKimligi(kayit: _b([1, 2]), acikAnahtar: _b([5, 3]), kayitKimligi: 7),
+        DepoKimligi(
+          kayit: _b([1, 2]),
+          acikAnahtar: _b([5, 3]),
+          kayitKimligi: 7,
+        ),
       );
       await depo.cihazYaz(const DepoCihazi(id: 'c1', no: 2));
       await depo.oturumYaz(

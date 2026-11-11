@@ -177,9 +177,7 @@ final class SahteE2eSunucu {
       case 'GET /v1/users/{user_id}/e2e/devices':
         final k = i.parametreler['user_id']!;
         return {
-          'devices': [
-            for (final c in kullaniciCihazlari(k)) _acikCihaz(c),
-          ],
+          'devices': [for (final c in kullaniciCihazlari(k)) _acikCihaz(c)],
         };
       case 'GET /v1/users/{user_id}/e2e/key-events':
         final k = i.parametreler['user_id']!;

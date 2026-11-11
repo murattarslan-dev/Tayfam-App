@@ -28,8 +28,8 @@ List<SahteE2eIstegi> _gonderimler(SahteE2eSunucu s) => [
 ];
 
 List<Map<String, Object?>> _zarflar(SahteE2eIstegi i) => [
-  for (final z in (i.govde! as Map<String, Object?>)['envelopes']!
-      as List<Object?>)
+  for (final z
+      in (i.govde! as Map<String, Object?>)['envelopes']! as List<Object?>)
     z! as Map<String, Object?>,
 ];
 
@@ -91,24 +91,18 @@ void main() {
       final bilgi = await a.hazirla();
       expect(bilgi.hazir, isTrue);
       expect(bilgi.cihazNo, 1);
-      expect(
-        s.istekler.map((i) => '${i.method} ${i.yol}'),
-        [
-          'GET /v1/me/e2e/device',
-          'POST /v1/me/e2e/device',
-          'GET /v1/me/e2e/device',
-        ],
-      );
+      expect(s.istekler.map((i) => '${i.method} ${i.yol}'), [
+        'GET /v1/me/e2e/device',
+        'POST /v1/me/e2e/device',
+        'GET /v1/me/e2e/device',
+      ]);
       final cihaz = s.oturumCihazi(a.tasima.oturum)!;
       expect(cihaz.ec, hasLength(100));
       expect(cihaz.kyber, hasLength(30));
       expect(a.depo.onAnahtarKimlikleri, hasLength(100));
       expect(a.depo.kyberKimlikleri, hasLength(30));
       expect(a.depo.cihaz?.id, cihaz.id);
-      expect(
-        base64.encode(a.depo.kimlik!.acikAnahtar),
-        cihaz.kimlik,
-      );
+      expect(base64.encode(a.depo.kimlik!.acikAnahtar), cihaz.kimlik);
       // Kimlik sunucuya gitmeden önce depodaydı.
       expect(a.ham.islemler.first, 'temizle');
       expect(a.ham.islemler[1], 'yaz:${E2eDeposu.kimlikAnahtari}');
@@ -134,10 +128,7 @@ void main() {
       expect(bilgi.hazir, isTrue);
       expect(bilgi.cihazId, isNot(eski));
       expect(s.cihazlar.containsKey(eski), isFalse);
-      expect(
-        s.istekler.where((i) => i.method == 'DELETE'),
-        hasLength(1),
-      );
+      expect(s.istekler.where((i) => i.method == 'DELETE'), hasLength(1));
       expect(a.depo.cihaz?.id, bilgi.cihazId);
     });
 
@@ -246,13 +237,10 @@ void main() {
       await a2.hazirla();
       await a.gonder(ayse, 'Merhaba');
       final zarflar = _zarflar(_gonderimler(s).single);
-      expect(
-        zarflar.map((z) => z['device_id']).toSet(),
-        {
-          s.oturumCihazi(b.tasima.oturum)!.id,
-          s.oturumCihazi(a2.tasima.oturum)!.id,
-        },
-      );
+      expect(zarflar.map((z) => z['device_id']).toSet(), {
+        s.oturumCihazi(b.tasima.oturum)!.id,
+        s.oturumCihazi(a2.tasima.oturum)!.id,
+      });
     });
 
     test('e2e-devices-changed: tazelenir, aynı client_request_id', () async {
