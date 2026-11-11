@@ -16,10 +16,11 @@ WebSocket'iyle yapılır.
 Flutter uygulaması (Android / iOS)
   shell/      gezinme, tayfa geçişi, derin linkler, modül kayıtları
   features/   tayfa · duyuru · etkinlik · soru_cevap · anket · sohbet · bildirim · profil · hesap · hosgeldin
-  core/       ApiClient + üretilmiş uçlar · SessionStore · realtime · kuyruk · tema · çeviri
+  core/       ApiClient + üretilmiş uçlar · SessionStore · realtime · kuyruk · push · tema · çeviri
         │  HTTPS (REST, problem+json)  ·  WebSocket
         ▼
 gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
+                                     └──FCM──▶ cihaz (push, içeriksiz; ADR-0019)
 ```
 
 ## Kararlar
@@ -44,5 +45,6 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0016](docs/adr/0016-uygulama-degerlendirme-penceresi.md) | Değerlendirme | "Geliyorum" dediği ilk etkinlik bitince mağaza penceresi, cihazda bir kez |
 | [0017](docs/adr/0017-hosgeldin-tanitimi.md) | Hoş geldin | İlk açılışta girişten önce 5 sayfa, cihazda bir kez, kendi bileşenlerle görseller |
 | [0018](docs/adr/0018-faz1-kalan-moduller.md) | Faz 1 kalanı | Tayfa yönetimi, profil, bildirim, soru-cevap, anket, derin link, arkadaşlık, şikâyet, sohbet; E2E sonra; sürüm hattı |
+| [0019](docs/adr/0019-push-bildirimleri.md) | Push | FCM (yalnızca core + messaging, analitik kapalı), token = oturum, izin ilk ihtiyaçta, metinler ARB'den strings.xml'e, google-services.json repoda |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).

@@ -16,7 +16,9 @@ import 'package:tayfam/shell/okunmamis.dart';
 /// Sekmelerin sırası `yonlendirici.dart`'taki dalların sırasıyla aynıdır.
 /// Uygulama ön plana dönünce tayfa listesi ([TayfaYenileyici]) ve
 /// bildirimler ([BildirimYenileyici]) yenilenir; Bildirimler sekmesi
-/// açılınca da bildirimler yenilenir (ADR-0018 §3).
+/// açılınca da bildirimler yenilenir (ADR-0018 §3). Bildirim izni
+/// açıklama kartı içeriğin altında görünür ([BildirimIzniAlani]; istemci
+/// ADR-0019 §3).
 class KabukIskeleti extends ConsumerWidget {
   const KabukIskeleti({super.key, required this.navigationShell});
 
@@ -91,7 +93,9 @@ class KabukIskeleti extends ConsumerWidget {
             ),
             Expanded(
               child: BildirimYenileyici(
-                child: TayfaYenileyici(child: navigationShell),
+                child: BildirimIzniAlani(
+                  child: TayfaYenileyici(child: navigationShell),
+                ),
               ),
             ),
           ],
@@ -100,7 +104,11 @@ class KabukIskeleti extends ConsumerWidget {
     }
 
     return Scaffold(
-      body: BildirimYenileyici(child: TayfaYenileyici(child: navigationShell)),
+      body: BildirimYenileyici(
+        child: BildirimIzniAlani(
+          child: TayfaYenileyici(child: navigationShell),
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (i) => _sekmeyeGit(ref, i),

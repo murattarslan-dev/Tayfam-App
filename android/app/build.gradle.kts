@@ -4,6 +4,17 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Push (FCM; istemci ADR-0019 §5): Firebase yapılandırması
+    // google-services.json'dan.
+    id("com.google.gms.google-services")
+}
+
+// Firebase yapılandırması repodadır (istemci ADR-0019 §5; değerler public,
+// kesin kural 6). Yoksa derleme anlaşılır bir hatayla durur.
+check(file("google-services.json").isFile) {
+    "android/app/google-services.json yok. Firebase konsolundaki " +
+        "com.murattarslan.tayfam Android uygulamasının dosyası repoya " +
+        "konmalı (istemci ADR-0019 §5)."
 }
 
 // Geliştirme imzası (ADR-0012 §6): Google girişi uygulamanın imza parmak

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ÜRETİLMİŞ: lib/l10n/app_tr.arb'den tool/kurallar/bin/android_metinleri.dart yazar; elle düzenleme. -->
+<!-- Push bildirimi metinleri (Tayfam-Api ADR-0019 §4): FCM, title_loc_key / body_loc_key ile bu adları okur. -->
+<resources>
+    <string name="push_announcement_body">Tayfanda yeni bir duyuru var.</string>
+    <string name="push_announcement_title">Yeni duyuru</string>
+    <string name="push_answer_received_body">Sorduğun soruya yeni bir cevap geldi.</string>
+    <string name="push_answer_received_title">Sorun cevaplandı</string>
+    <string name="push_data_export_ready_body">Veri dışa aktarma dosyan 7 gün boyunca indirilebilir.</string>
+    <string name="push_data_export_ready_title">Verilerin hazır</string>
+    <string name="push_dm_message_body">Okunmamış birebir mesajın var.</string>
+    <string name="push_dm_message_title">Yeni mesaj</string>
+    <string name="push_dm_request_body">Sana bir mesaj isteği geldi.</string>
+    <string name="push_dm_request_title">Yeni mesaj isteği</string>
+    <string name="push_event_cancelled_body">Katıldığın bir etkinlik iptal edildi.</string>
+    <string name="push_event_cancelled_title">Etkinlik iptal edildi</string>
+    <string name="push_event_created_body">Tayfanda yeni bir etkinlik var.</string>
+    <string name="push_event_created_title">Yeni etkinlik</string>
+    <string name="push_event_updated_body">Katıldığın bir etkinlikte değişiklik var.</string>
+    <string name="push_event_updated_title">Etkinlik güncellendi</string>
+    <string name="push_friend_accepted_body">Yeni bir arkadaşın var.</string>
+    <string name="push_friend_accepted_title">Arkadaşlık isteğin kabul edildi</string>
+    <string name="push_friend_request_body">Biri seni arkadaş olarak eklemek istiyor.</string>
+    <string name="push_friend_request_title">Yeni arkadaşlık isteği</string>
+    <string name="push_hike_overdue_body">Bir yürüyüşçü zamanında dönmedi. Hemen kontrol et.</string>
+    <string name="push_hike_overdue_title">Yürüyüşçü dönmedi</string>
+    <string name="push_join_approved_body">Artık tayfanın bir üyesisin.</string>
+    <string name="push_join_approved_title">Katılım isteğin onaylandı</string>
+    <string name="push_join_request_body">Tayfana katılmak isteyen biri var.</string>
+    <string name="push_join_request_title">Yeni katılım isteği</string>
+    <string name="push_report_resolved_body">Gönderdiğin şikâyet incelendi.</string>
+    <string name="push_report_resolved_title">Şikâyetin sonuçlandı</string>
+    <string name="push_rsvp_promoted_body">Bekleme listesinden katılımcılara geçtin.</string>
+    <string name="push_rsvp_promoted_title">Yerin kesinleşti</string>
+    <string name="push_tayfa_archived_body">Üyesi olduğun bir tayfa arşivlendi.</string>
+    <string name="push_tayfa_archived_title">Tayfa arşivlendi</string>
+    <string name="push_tayfa_deletion_requested_body">Yönettiğin bir tayfa için silme talebi açıldı.</string>
+    <string name="push_tayfa_deletion_requested_title">Tayfa silme talebi</string>
+    <string name="push_tayfa_invitation_body">Bir arkadaşın seni bir tayfaya davet etti.</string>
+    <string name="push_tayfa_invitation_title">Tayfa daveti</string>
+    <string name="push_tayfa_suspended_body">Üyesi olduğun bir tayfa askıya alındı.</string>
+    <string name="push_tayfa_suspended_title">Tayfa askıya alındı</string>
+    <string name="push_tayfa_unsuspended_body">Üyesi olduğun bir tayfanın askısı kaldırıldı.</string>
+    <string name="push_tayfa_unsuspended_title">Tayfa yeniden açıldı</string>
+    <string name="push_tayfa_warned_body">Bir tayfan 7 gün içinde arşivlenecek. Ayrıntı için uygulamayı aç.</string>
+    <string name="push_tayfa_warned_title">Tayfan arşivlenmek üzere</string>
+</resources>
