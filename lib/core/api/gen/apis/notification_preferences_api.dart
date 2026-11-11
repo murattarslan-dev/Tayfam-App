@@ -11,7 +11,7 @@ final class NotificationPreferencesApi {
 
   /// Bildirim tercihleriniz (sessize alınanlar)
   ///
-  /// Tercihi olmayan tayfa için seviye `all`'dur.
+  /// Tercihi olmayan tayfa ya da konuşma için seviye `all`'dur.
   ///
   /// `GET /v1/notification-preferences`
   Future<NotificationPreferenceList> listNotificationPreferences() async {
@@ -62,6 +62,53 @@ final class NotificationPreferencesApi {
       method: 'DELETE',
       pathTemplate: '/v1/notification-preferences/tayfas/{tayfa_id}',
       pathParams: {'tayfa_id': tayfaId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Bir birebir konuşmayı sessize alır ya da seviyesini değiştirir
+  ///
+  /// Yalnızca tarafı olduğunuz ve gördüğünüz konuşma için (konuşmayı
+  /// getiren uçla aynı kural); başka bir kullanıcının konuşması, olmayan
+  /// bir konuşmayla aynı cevabı alır (`conversation-not-found`). Seviye
+  /// yalnızca `all` ya da `none` olabilir: birebir mesaj bildirimleri
+  /// kişisel olduğundan `mentions` anlamsızdır ve `invalid-request` döner.
+  /// `none` isteğe bağlı olarak `mute_until`'e kadar sürer (en fazla bir
+  /// yıl), sonra konuşma `all`'a döner; `all` ile `mute_until` verilemez;
+  /// `all` tercihi kaldırır. Sessize alma bildirimleri listeden gizlemez; yalnızca anlık bildirim
+  /// (push) gitmez. Konuşma ya da hesabınız silinince tercih de silinir.
+  ///
+  /// `PUT /v1/notification-preferences/conversations/{conversation_id}`
+  Future<NotificationPreference> setConversationNotificationPreference({
+    required String conversationId,
+    required ConversationNotificationPreferenceRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate:
+          '/v1/notification-preferences/conversations/{conversation_id}',
+      pathParams: {'conversation_id': conversationId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return NotificationPreference.fromJson(
+      jsonObject(response, 'setConversationNotificationPreference'),
+    );
+  }
+
+  /// Konuşmanın bildirim tercihini varsayılana (`all`) döndürür
+  ///
+  /// `DELETE /v1/notification-preferences/conversations/{conversation_id}`
+  Future<void> resetConversationNotificationPreference({
+    required String conversationId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate:
+          '/v1/notification-preferences/conversations/{conversation_id}',
+      pathParams: {'conversation_id': conversationId},
       expect: ResponseKind.none,
       authenticated: true,
     );
