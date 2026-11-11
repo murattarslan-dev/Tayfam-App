@@ -95,13 +95,10 @@ void main() {
       expect(i.imza, [3]);
       final k = await m.kyberOnAnahtarUret(_b([7]), 3);
       expect(cagrilar.last.method, 'kyberOnAnahtarUret');
-      expect(
-        cagrilar.last.arguments,
-        {
-          'kimlik': [7],
-          'id': 3,
-        },
-      );
+      expect(cagrilar.last.arguments, {
+        'kimlik': [7],
+        'id': 3,
+      });
       expect(k.acikAnahtar, [2]);
     });
 
@@ -221,10 +218,7 @@ void main() {
       cevap = (_) => {
         'cikti': _b([1, 2]),
       };
-      expect(
-        await m.hkdf(girdi: _b([1]), bilgi: _b([2]), uzunluk: 2),
-        [1, 2],
-      );
+      expect(await m.hkdf(girdi: _b([1]), bilgi: _b([2]), uzunluk: 2), [1, 2]);
       expect(arg(), {
         'girdi': [1],
         'tuz': null,
@@ -293,9 +287,7 @@ void main() {
         cevap = (_) => throw PlatformException(code: tur.name);
         await expectLater(
           KanalSignalMotoru().onAnahtarMesajiIncele(_b([0])),
-          throwsA(
-            isA<SignalHatasi>().having((h) => h.tur, 'tur', tur),
-          ),
+          throwsA(isA<SignalHatasi>().having((h) => h.tur, 'tur', tur)),
         );
       }
       cevap = (_) => throw PlatformException(code: 'baska');

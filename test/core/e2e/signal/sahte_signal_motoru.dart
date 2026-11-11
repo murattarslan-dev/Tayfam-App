@@ -125,10 +125,7 @@ final class SahteSignalMotoru implements SignalMotoru {
   }
 
   @override
-  Future<List<OnAnahtarKaydi>> onAnahtarUret(
-    int baslangicId,
-    int adet,
-  ) async {
+  Future<List<OnAnahtarKaydi>> onAnahtarUret(int baslangicId, int adet) async {
     _cagri('onAnahtarUret');
     final sonuc = <OnAnahtarKaydi>[];
     var id = baslangicId;

@@ -97,10 +97,7 @@ final class KanalSignalMotoru implements SignalMotoru {
   }
 
   @override
-  Future<List<OnAnahtarKaydi>> onAnahtarUret(
-    int baslangicId,
-    int adet,
-  ) async {
+  Future<List<OnAnahtarKaydi>> onAnahtarUret(int baslangicId, int adet) async {
     final m = await _cagir('onAnahtarUret', {
       'baslangicId': baslangicId,
       'adet': adet,
