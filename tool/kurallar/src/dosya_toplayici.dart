@@ -4,10 +4,12 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
+import 'android_metinleri.dart';
 import 'denetci.dart';
 
 /// [kok] dizinindeki repodan denetim girdisini toplar: lib/ altındaki
-/// bütün .dart dosyaları, pubspec.yaml ve lib/l10n/*.arb.
+/// bütün .dart dosyaları, pubspec.yaml, lib/l10n/*.arb ve push
+/// bildirimlerinin Android string kaynağı.
 DenetimGirdisi girdiyiTopla(Directory kok) {
   final kokYolu = kok.absolute.path;
   String goreli(String yol) =>
@@ -33,10 +35,14 @@ DenetimGirdisi girdiyiTopla(Directory kok) {
   final pubspec = pubspecDosyasi.existsSync()
       ? pubspecDosyasi.readAsStringSync()
       : null;
+  final androidDosyasi = File('$kokYolu/$androidMetinDosyasi');
   return DenetimGirdisi(
     dartDosyalari: dart,
     pubspec: pubspec,
     arbDosyalari: arb,
+    androidMetinleri: androidDosyasi.existsSync()
+        ? androidDosyasi.readAsStringSync()
+        : null,
     paketAdi: _paketAdi(pubspec) ?? 'tayfam',
   );
 }

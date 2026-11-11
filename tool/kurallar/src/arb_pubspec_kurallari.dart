@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:yaml/yaml.dart';
 
+import 'android_metinleri.dart';
 import 'bulgu.dart';
 
 /// Kaynak (şablon) ARB dosyası (l10n.yaml: template-arb-file).
@@ -71,7 +72,10 @@ List<Bulgu> arbKurallari({
           ),
         );
       }
-      if (!kullanilanAdlar.contains(anahtar)) {
+      // Push metinleri kodda değil Android string kaynağında kullanılır;
+      // güncelliğini android-metinleri kuralı denetler.
+      if (!kullanilanAdlar.contains(anahtar) &&
+          !androidMetinAnahtari.hasMatch(anahtar)) {
         bulgular.add(
           Bulgu(
             kural: Kurallar.arbKullanilmayan,

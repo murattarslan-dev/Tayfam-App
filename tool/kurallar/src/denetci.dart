@@ -10,6 +10,7 @@
 // bilinmeyen kurallı istisna kendisi bir hatadır; hiçbir bulguyu
 // kapatmayan istisna uyarıdır.
 
+import 'android_metinleri.dart';
 import 'arb_pubspec_kurallari.dart';
 import 'bulgu.dart';
 import 'import_kurallari.dart';
@@ -22,6 +23,7 @@ final class DenetimGirdisi {
     required this.dartDosyalari,
     this.pubspec,
     this.arbDosyalari = const {},
+    this.androidMetinleri,
     this.paketAdi = 'tayfam',
   });
 
@@ -33,6 +35,9 @@ final class DenetimGirdisi {
 
   /// lib/l10n/ altındaki ARB dosyaları (yol → içerik).
   final Map<String, String> arbDosyalari;
+
+  /// [androidMetinDosyasi]'nın içeriği; yoksa `null`.
+  final String? androidMetinleri;
 
   /// pubspec.yaml'daki paket adı.
   final String paketAdi;
@@ -138,6 +143,12 @@ List<Bulgu> denetle(DenetimGirdisi girdi) {
       kullanilanAdlar: kullanilanAdlar,
     ),
   );
+  final sablon = girdi.arbDosyalari[sablonArb];
+  if (sablon != null) {
+    bulgular.addAll(
+      androidMetinKurallari(arbMetni: sablon, mevcut: girdi.androidMetinleri),
+    );
+  }
 
   final sonuc = <Bulgu>[];
   for (final b in bulgular) {
