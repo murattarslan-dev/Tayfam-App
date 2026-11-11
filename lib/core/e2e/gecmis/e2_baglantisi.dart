@@ -129,7 +129,7 @@ final class E2DepoErisimi implements E2eDepoErisimi {
     await _depo.yukle();
     return {
       for (final a in _depo.anahtarlar(onek))
-        if (baytOku(_depo.ham(a)) case final deger?) a: deger,
+        a: ?baytOku(_depo.ham(a)),
     };
   }
 }
