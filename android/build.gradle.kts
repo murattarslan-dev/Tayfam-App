@@ -2,6 +2,21 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Signal'in resmi Maven deposu (ADR-0010, güncelleme 2026-11-11).
+        // Yalnızca org.signal grubu buradan, org.signal grubu yalnızca
+        // buradan çözülür; sürüm ve SHA-256 gradle/verification-metadata.xml'de
+        // sabittir.
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "SignalBuildArtifacts"
+                    url = uri("https://build-artifacts.signal.org/libraries/maven/")
+                }
+            }
+            filter {
+                includeGroup("org.signal")
+            }
+        }
     }
 }
 

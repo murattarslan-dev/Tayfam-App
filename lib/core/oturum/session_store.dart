@@ -202,6 +202,21 @@ final class SessionStore {
     await _tekUcus();
   }
 
+  /// Oturumun kullanıcı kimliği (`Session.user_id`). Kayıt bu alan
+  /// eklenmeden önce yazıldıysa bir kez (tek uçuşta) yenilenir. Oturum
+  /// yoksa [OturumYok]; bağlantı yoksa [ApiOffline] / [ApiTimeout].
+  Future<String> kullaniciKimligi() async {
+    await _yukle();
+    final oturum = _oturum;
+    if (oturum == null) throw const OturumYok();
+    final id = oturum.kullaniciId;
+    if (id != null) return id;
+    await _tekUcus();
+    final yeni = _oturum?.kullaniciId;
+    if (yeni == null) throw const OturumYok();
+    return yeni;
+  }
+
   /// Oturumu kapatır: token'ları bellekten ve depodan siler, [olaylar]'a
   /// [OturumKapali] yayar. Oturum zaten kapalıysa bir şey yaymaz.
   Future<void> kapat(OturumKapanisNedeni neden) async {
@@ -240,6 +255,7 @@ final class SessionStore {
     yenilemeBitis: oturum.refreshExpiresAt.toUtc(),
     kayitBekliyor: oturum.registrationPending,
     onayGerekli: oturum.consentRequired ?? false,
+    kullaniciId: oturum.userId,
   );
 
   Future<void> _yukle() => _yukleme ??= _depodanOku();

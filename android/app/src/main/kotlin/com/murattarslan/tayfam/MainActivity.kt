@@ -6,19 +6,25 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.murattarslan.tayfam.e2e.SignalKoprusu
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 /**
- * Push bildirimleri için küçük platform kanalı (istemci ADR-0019 §4):
- * bildirim kanallarını kurar ve uygulamanın sistem bildirim ayarlarını
- * açar. Kanal adları ve açıklamaları Dart'tan (çeviri dosyasından) gelir.
- * Bildirim içeriği bu kanaldan geçmez.
+ * Platform kanalları:
+ * - `tayfam/bildirim` (istemci ADR-0019 §4): bildirim kanallarını kurar ve
+ *   uygulamanın sistem bildirim ayarlarını açar. Kanal adları ve
+ *   açıklamaları Dart'tan (çeviri dosyasından) gelir. Bildirim içeriği bu
+ *   kanaldan geçmez.
+ * - `tayfam/e2e/signal` (istemci ADR-0010, ADR-0020): Signal köprüsü.
  */
 class MainActivity : FlutterActivity() {
+    private var signalKoprusu: SignalKoprusu? = null
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        signalKoprusu = SignalKoprusu.kur(flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "tayfam/bildirim")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -30,6 +36,12 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        signalKoprusu?.birak()
+        signalKoprusu = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
     /** Yalnızca beklenen biçimdeki kanalları kurar; gerisini yok sayar. */

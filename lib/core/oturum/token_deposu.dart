@@ -19,6 +19,7 @@ final class KayitliOturum {
     required this.yenilemeBitis,
     required this.kayitBekliyor,
     required this.onayGerekli,
+    this.kullaniciId,
   });
 
   final String erisimTokeni;
@@ -32,6 +33,10 @@ final class KayitliOturum {
   /// `consent_required`: güncel metinler onaylanmadı.
   final bool onayGerekli;
 
+  /// Oturumun kullanıcısı (`Session.user_id`). Bu alan eklenmeden önce
+  /// yazılmış kayıtta yoktur; ilk yenilemede gelir.
+  final String? kullaniciId;
+
   /// Depodaki tek kayda yazılan biçim.
   String kodla() => jsonEncode({
     'v': 1,
@@ -41,6 +46,7 @@ final class KayitliOturum {
     'yenileme_bitis': yenilemeBitis.toUtc().toIso8601String(),
     'kayit_bekliyor': kayitBekliyor,
     'onay_gerekli': onayGerekli,
+    'kullanici': ?kullaniciId,
   });
 
   /// [kodla] çıktısını okur; bozuk ya da tanınmayan kayıtta `null` döner.
@@ -54,6 +60,7 @@ final class KayitliOturum {
       final yenilemeBitis = json['yenileme_bitis'];
       final kayitBekliyor = json['kayit_bekliyor'];
       final onayGerekli = json['onay_gerekli'];
+      final kullanici = json['kullanici'];
       if (erisim is! String ||
           erisimBitis is! String ||
           yenileme is! String ||
@@ -71,6 +78,9 @@ final class KayitliOturum {
         yenilemeBitis: DateTime.parse(yenilemeBitis).toUtc(),
         kayitBekliyor: kayitBekliyor,
         onayGerekli: onayGerekli,
+        kullaniciId: kullanici is String && kullanici.isNotEmpty
+            ? kullanici
+            : null,
       );
     } on FormatException {
       return null;

@@ -17,6 +17,7 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - Arkadaşlık (ADR-0018 §7): `friend_request` ve `friend_accepted` kişinin
 ///   profilini (`target_id`), `tayfa_invitation` gelen tayfa davetlerini
 ///   açar (davet edilen henüz üye olmadığı için tayfa sayfası açılmaz).
+/// - `data_export` (veri dışa aktarma hazır): "Verilerimi indir" ekranı.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını
@@ -32,6 +33,8 @@ String? bildirimAdresi(Notification bildirim) {
     ) =>
       Adresler.kisi(kisi),
     (NotificationType.tayfaInvitation, _, _) => Adresler.tayfaDavetleri,
+    // KVKK veri dışa aktarma hazır (ADR-0022): talep listesi açılır.
+    (_, NotificationTargetType.dataExport, _?) => Adresler.veriDisaAktarma,
     _ => null,
   };
   if (arkadaslik != null) return arkadaslik;

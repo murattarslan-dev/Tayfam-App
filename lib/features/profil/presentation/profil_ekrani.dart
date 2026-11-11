@@ -14,6 +14,7 @@ import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
+import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/application/cikis_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
@@ -21,9 +22,9 @@ import 'package:tayfam/features/profil/application/hukuki_baglantilar.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Profil sekmesi (ADR-0018 §2): avatar (ADR-0021), referans kodu, arkadaşlık girişleri
-/// (ADR-0018 §7), katılım geçmişi
-/// görünürlüğü, tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
+/// Profil sekmesi (ADR-0018 §2): avatar (ADR-0021), referans kodu,
+/// arkadaşlık girişleri (ADR-0018 §7), katılım geçmişi görünürlüğü,
+/// verilerimi indir (ADR-0022), tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
 /// metinler, çıkış ve hesap silme.
 ///
 /// Hesap ayarları okunamazsa yalnızca o bölüm hata gösterir; tema, çıkış
@@ -55,6 +56,8 @@ class ProfilEkrani extends StatelessWidget {
                   ArkadaslikGirisleri(),
                   SizedBox(height: TayfamSpacing.s24),
                   _GorunurlukBolumu(),
+                  SizedBox(height: TayfamSpacing.s24),
+                  _GizlilikBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
                   _TemaBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
@@ -404,6 +407,30 @@ String _gorunurlukAciklamasi(AppLocalizations m, ActivityVisibility g) =>
       ActivityVisibility.unknown => m.profil_gorunurluk_herkes_aciklama,
     };
 
+/// Gizlilik: KVKK veri dışa aktarma ("Verilerimi indir", ADR-0022).
+class _GizlilikBolumu extends StatelessWidget {
+  const _GizlilikBolumu();
+
+  @override
+  Widget build(BuildContext context) {
+    final metinler = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BolumBasligi(baslik: metinler.disa_aktarma_profil_bolum),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.download_outlined),
+          title: Text(metinler.disa_aktarma_baslik),
+          subtitle: Text(metinler.disa_aktarma_profil_aciklama),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.go(Adresler.veriDisaAktarma),
+        ),
+      ],
+    );
+  }
+}
+
 /// Tema: cihaz ayarı, açık, koyu. Seçim güvenli depoda tutulur.
 class _TemaBolumu extends ConsumerWidget {
   const _TemaBolumu();
@@ -465,6 +492,13 @@ class _HesapBolumu extends ConsumerWidget {
     await disBaglantiyiAc(context, ref, adres);
   }
 
+  /// Çıkış. Bu telefon şifreli mesaj geçmişinin anahtarını taşıyan tek
+  /// cihazsa önce uyarıyla onay istenir (ADR-0020).
+  Future<void> _cikisYap(BuildContext context, WidgetRef ref) async {
+    if (!await tekCihazCikisOnayi(context, ref)) return;
+    await ref.read(cikisProvider.notifier).cikisYap();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
@@ -496,6 +530,8 @@ class _HesapBolumu extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.go(Adresler.oturumlar),
         ),
+        // QR ile cihaz bağlama; E2E yoksa görünmez (ADR-0020).
+        const CihazBaglamaGirisi(),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.privacy_tip_outlined),
@@ -524,9 +560,7 @@ class _HesapBolumu extends ConsumerWidget {
                   ),
                 )
               : null,
-          onTap: cikiyor
-              ? null
-              : () => unawaited(ref.read(cikisProvider.notifier).cikisYap()),
+          onTap: cikiyor ? null : () => unawaited(_cikisYap(context, ref)),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,

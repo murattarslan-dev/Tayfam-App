@@ -32,7 +32,9 @@ olarak anar.
 | [0017](0017-hosgeldin-tanitimi.md) | İlk açılışta hoş geldin tanıtımı | Kabul edildi |
 | [0018](0018-faz1-kalan-moduller.md) | Faz 1'in kalan modülleri ve dahili test sürümü | Kabul edildi |
 | [0019](0019-push-bildirimleri.md) | Push bildirimleri (FCM) | Kabul edildi |
+| [0020](0020-birebir-uctan-uca-sifreleme-istemci.md) | Birebir mesajda uçtan uca şifreleme (istemci) | Önerildi |
 | [0021](0021-fotograf-yukleme-ve-goruntuleme.md) | Fotoğraf yükleme ve görüntüleme | Önerildi |
+| [0022](0022-kvkk-veri-disa-aktarma.md) | KVKK veri dışa aktarma (istemci) | Önerildi |
 
 ## Şablon
 
