@@ -515,6 +515,242 @@
   "@duyuru_form_kaydet": {
     "description": "Duyuru düzenleme formunda değişiklikleri kaydeden düğme."
   },
+  "soru_liste_baslik": "Sorular",
+  "@soru_liste_baslik": {
+    "description": "Soru listesi ekranının üst çubuk başlığı ve Tayfa sekmesindeki soru-cevap modülü girişinin etiketi."
+  },
+  "soru_bolum_baslik": "Son sorular",
+  "@soru_bolum_baslik": {
+    "description": "Tayfa ana sayfasındaki soru-cevap bölümünün başlığı."
+  },
+  "soru_tum_sorular": "Tüm sorular",
+  "@soru_tum_sorular": {
+    "description": "Ana sayfadaki \"Son sorular\" bölümünün \"Tümü\" bağlantısının ekran okuyucu etiketi."
+  },
+  "soru_bos": "Henüz soru yok.",
+  "@soru_bos": {
+    "description": "Tayfada hiç soru yokken ana sayfa bölümünde ve soru listesinde görünen boş durum."
+  },
+  "soru_arama_bos": "Aramana uyan soru yok.",
+  "@soru_arama_bos": {
+    "description": "Arama ya da etiket süzgecine uyan soru bulunmadığında soru listesinde görünen metin."
+  },
+  "soru_yukleniyor": "Sorular yükleniyor",
+  "@soru_yukleniyor": {
+    "description": "Sorular okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "soru_sor": "Soru sor",
+  "@soru_sor": {
+    "description": "Soru sorma formunu açan düğme (ana sayfa bölümü ve soru listesi)."
+  },
+  "soru_arama_etiketi": "Sorularda ara",
+  "@soru_arama_etiketi": {
+    "description": "Soru listesindeki arama kutusunun etiketi. Arama başlıkta ve metinde, sunucuda yapılır."
+  },
+  "soru_arama_temizle": "Aramayı temizle",
+  "@soru_arama_temizle": {
+    "description": "Arama kutusundaki metni silen düğmenin ekran okuyucu etiketi."
+  },
+  "soru_etiket_suzgeci": "Etikete göre süz",
+  "@soru_etiket_suzgeci": {
+    "description": "Soru listesindeki etiket çiplerinin bulunduğu satırın ekran okuyucu etiketi."
+  },
+  "soru_baslik": "Soru",
+  "@soru_baslik": {
+    "description": "Tek bir sorunun ekranının üst çubuk başlığı."
+  },
+  "soru_islemler": "Soru işlemleri",
+  "@soru_islemler": {
+    "description": "Soru ekranındaki düzenleme ve silme menüsü düğmesinin ekran okuyucu etiketi."
+  },
+  "soru_duzenle": "Düzenle",
+  "@soru_duzenle": {
+    "description": "Soru ve cevap menülerinde düzenleme formunu açan seçenek."
+  },
+  "soru_sil": "Sil",
+  "@soru_sil": {
+    "description": "Soru ve cevap menülerinde silme seçeneği; silme onayındaki onay düğmesi."
+  },
+  "soru_vazgec": "Vazgeç",
+  "@soru_vazgec": {
+    "description": "Soru ya da cevap silme onayında işlemi iptal eden düğme."
+  },
+  "soru_sil_onay_baslik": "Soru silinsin mi?",
+  "@soru_sil_onay_baslik": {
+    "description": "Soru silme onay penceresinin başlığı."
+  },
+  "soru_sil_onay_kendi": "Sorun ve cevapları kalıcı olarak silinir. Bu geri alınamaz.",
+  "@soru_sil_onay_kendi": {
+    "description": "Kullanıcı kendi sorusunu silerken onay penceresindeki açıklama (sözleşme: yazarın silmesi geri alınamaz)."
+  },
+  "soru_sil_onay_yonetim": "Soru ve cevapları tayfadan gizlenir. Yönetim 30 gün içinde geri alabilir.",
+  "@soru_sil_onay_yonetim": {
+    "description": "Moderatör ya da yönetici başkasının sorusunu silerken onay penceresindeki açıklama."
+  },
+  "soru_silindi": "Soru silindi.",
+  "@soru_silindi": {
+    "description": "Soru silinince ekranın altında görünen kısa bildirim."
+  },
+  "soru_soruldu": "Sorun yayınlandı.",
+  "@soru_soruldu": {
+    "description": "Soru sorulunca ekranın altında görünen kısa bildirim."
+  },
+  "soru_kaydedildi": "Değişiklikler kaydedildi.",
+  "@soru_kaydedildi": {
+    "description": "Soru ya da cevap düzenlenip kaydedilince görünen kısa bildirim."
+  },
+  "soru_cevaplar_baslik": "Cevaplar",
+  "@soru_cevaplar_baslik": {
+    "description": "Soru ekranında cevap listesinin başlığı. Cevaplar faydalı oyuna göre sıralıdır."
+  },
+  "soru_cevap_bos": "Henüz cevap yok. İlk cevabı sen yaz.",
+  "@soru_cevap_bos": {
+    "description": "Soruda hiç cevap yokken cevap listesinde görünen metin."
+  },
+  "soru_cevap_yaz": "Cevap yaz",
+  "@soru_cevap_yaz": {
+    "description": "Soru ekranında cevap yazma formunu açan düğme."
+  },
+  "soru_cevap_yukleniyor": "Cevaplar yükleniyor",
+  "@soru_cevap_yukleniyor": {
+    "description": "Cevaplar okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "soru_cevap_islemler": "Cevap işlemleri",
+  "@soru_cevap_islemler": {
+    "description": "Cevap kartındaki düzenleme ve silme menüsü düğmesinin ekran okuyucu etiketi."
+  },
+  "soru_cevap_sil_onay_baslik": "Cevap silinsin mi?",
+  "@soru_cevap_sil_onay_baslik": {
+    "description": "Cevap silme onay penceresinin başlığı."
+  },
+  "soru_cevap_sil_onay_kendi": "Cevabın ve aldığı oylar kalıcı olarak silinir. Bu geri alınamaz.",
+  "@soru_cevap_sil_onay_kendi": {
+    "description": "Kullanıcı kendi cevabını silerken onay penceresindeki açıklama (sözleşme: metin ve oylar hemen kaldırılır)."
+  },
+  "soru_cevap_sil_onay_yonetim": "Cevap tayfadan gizlenir. Yönetim 30 gün içinde geri alabilir.",
+  "@soru_cevap_sil_onay_yonetim": {
+    "description": "Moderatör ya da yönetici başkasının cevabını silerken onay penceresindeki açıklama."
+  },
+  "soru_cevap_silindi": "Cevap silindi.",
+  "@soru_cevap_silindi": {
+    "description": "Cevap silinince ekranın altında görünen kısa bildirim."
+  },
+  "soru_cevap_gonderildi": "Cevabın gönderildi.",
+  "@soru_cevap_gonderildi": {
+    "description": "Cevap yazılınca ekranın altında görünen kısa bildirim."
+  },
+  "soru_form_yeni": "Soru sor",
+  "@soru_form_yeni": {
+    "description": "Soru sorma formunun üst çubuk başlığı."
+  },
+  "soru_form_duzenle": "Soruyu düzenle",
+  "@soru_form_duzenle": {
+    "description": "Soru düzenleme formunun üst çubuk başlığı."
+  },
+  "soru_form_baslik_etiketi": "Sorun",
+  "@soru_form_baslik_etiketi": {
+    "description": "Soru formundaki başlık alanının etiketi (sorunun kendisi, tek satır)."
+  },
+  "soru_form_baslik_hatasi": "Soru 10–150 karakter olmalı ve tek satırda yazılmalı.",
+  "@soru_form_baslik_hatasi": {
+    "description": "Soru başlığı kısa, uzun ya da çok satırlıyken alanın altında görünen hata."
+  },
+  "soru_form_govde_etiketi": "Ayrıntı (isteğe bağlı)",
+  "@soru_form_govde_etiketi": {
+    "description": "Soru formundaki ayrıntı metni alanının etiketi. Düz metin."
+  },
+  "soru_form_govde_hatasi": "Ayrıntı en çok 10.000 karakter olabilir.",
+  "@soru_form_govde_hatasi": {
+    "description": "Soru ayrıntısı çok uzunken alanın altında görünen hata."
+  },
+  "soru_form_etiket_etiketi": "Etiket",
+  "@soru_form_etiket_etiketi": {
+    "description": "Soru formunda etiket yazılan alanın etiketi."
+  },
+  "soru_form_etiket_yardim": "En çok 5 etiket ekleyebilirsin.",
+  "@soru_form_etiket_yardim": {
+    "description": "Soru formundaki etiket alanının altındaki yardım metni."
+  },
+  "soru_form_etiket_ekle": "Etiketi ekle",
+  "@soru_form_etiket_ekle": {
+    "description": "Etiket alanının yanındaki ekleme düğmesinin ekran okuyucu etiketi."
+  },
+  "soru_form_etiket_oneriler": "Tayfadaki etiketler",
+  "@soru_form_etiket_oneriler": {
+    "description": "Soru formunda önerilen var olan etiketlerin bulunduğu satırın ekran okuyucu etiketi."
+  },
+  "soru_form_etiket_cok_uzun": "Etiket en çok 30 karakter olabilir.",
+  "@soru_form_etiket_cok_uzun": {
+    "description": "Eklenmek istenen etiket çok uzunken görünen hata."
+  },
+  "soru_form_etiket_cok_fazla": "Bir soruya en çok 5 etiket eklenebilir.",
+  "@soru_form_etiket_cok_fazla": {
+    "description": "Soruda beş etiket varken yenisi eklenmek istenince görünen hata."
+  },
+  "soru_form_gonder": "Sor",
+  "@soru_form_gonder": {
+    "description": "Soru sorma formunda soruyu yayınlayan düğme."
+  },
+  "soru_form_kaydet": "Kaydet",
+  "@soru_form_kaydet": {
+    "description": "Soru ve cevap düzenleme formlarında değişiklikleri kaydeden düğme."
+  },
+  "soru_cevap_form_yeni": "Cevap yaz",
+  "@soru_cevap_form_yeni": {
+    "description": "Cevap yazma formunun üst çubuk başlığı."
+  },
+  "soru_cevap_form_duzenle": "Cevabı düzenle",
+  "@soru_cevap_form_duzenle": {
+    "description": "Cevap düzenleme formunun üst çubuk başlığı."
+  },
+  "soru_cevap_form_govde_etiketi": "Cevabın",
+  "@soru_cevap_form_govde_etiketi": {
+    "description": "Cevap formundaki metin alanının etiketi. Düz metin."
+  },
+  "soru_cevap_form_govde_hatasi": "Cevap boş olamaz, en çok 10.000 karakter olabilir.",
+  "@soru_cevap_form_govde_hatasi": {
+    "description": "Cevap boş ya da çok uzunken alanın altında görünen hata."
+  },
+  "soru_cevap_form_gonder": "Gönder",
+  "@soru_cevap_form_gonder": {
+    "description": "Cevap yazma formunda cevabı gönderen düğme."
+  },
+  "soru_cevap_sayisi": "{sayi, plural, =0{Henüz cevap yok} other{{sayi} cevap}}",
+  "@soru_cevap_sayisi": {
+    "description": "Soru kartında ve soru ekranında sorunun görünen cevap sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "soru_tarih": "{tarih}, {saat}",
+  "@soru_tarih": {
+    "description": "Soru ve cevapta yazıldığı gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "soru_form_etiket_cikar": "{ad} etiketini kaldır",
+  "@soru_form_etiket_cikar": {
+    "description": "Soru formunda eklenen etiketin çipindeki kaldırma düğmesinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "kamp"
+      }
+    }
+  },
   "tayfa_onay_bekliyor": "Onay bekliyor",
   "@tayfa_onay_bekliyor": {
     "description": "Tayfa değiştirme panelinde, katılma isteği yönetici onayı bekleyen tayfanın adının yanındaki etiket. Dokununca isteği geri çekme onayı açılır."
