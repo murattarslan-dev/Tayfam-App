@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:tayfam/core/guvenli_depo/guvenli_okuma.dart';
+
 /// Son kullanılan tayfanın kimliğinin tek kalıcı yeri (ADR-0014 §1).
 ///
 /// Yalnızca bir tayfa kimliği (UUID) tutulur; tayfa adı, rolü veya içeriği
@@ -19,6 +21,7 @@ abstract interface class SonTayfaDeposu {
 }
 
 /// Mobil: Android Keystore / iOS Keychain (`flutter_secure_storage`).
+/// Çözülemeyen kayıt okunurken silinir ve yok sayılır ([guvenliOku]).
 ///
 /// iOS'ta token kaydıyla aynı erişim sınıfı (`first_unlock_this_device`):
 /// yedeğe ve başka cihaza geçmez.
@@ -37,7 +40,7 @@ final class GuvenliSonTayfaDeposu implements SonTayfaDeposu {
   static const String _anahtar = 'tayfam.son_tayfa';
 
   @override
-  Future<String?> oku() => _depo.read(key: _anahtar);
+  Future<String?> oku() => guvenliOku(_depo, _anahtar);
 
   @override
   Future<void> yaz(String tayfaId) =>

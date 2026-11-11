@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:tayfam/core/guvenli_depo/guvenli_okuma.dart';
+
 /// Cihaza ait, evet/hayır biçimindeki kullanıcı ayarları (ADR-0006
 /// "kullanıcı ayarları" istisnası; ADR-0016, ADR-0017).
 ///
@@ -40,6 +42,7 @@ abstract interface class CihazAyarlariDeposu {
 const String _konmus = '1';
 
 /// Mobil: Android Keystore / iOS Keychain (`flutter_secure_storage`).
+/// Çözülemeyen kayıt okunurken silinir ve yok sayılır ([guvenliOku]).
 ///
 /// iOS'ta token kaydıyla aynı erişim sınıfı (`first_unlock_this_device`):
 /// yedeğe ve başka cihaza geçmez.
@@ -57,7 +60,7 @@ final class GuvenliCihazAyarlariDeposu implements CihazAyarlariDeposu {
 
   @override
   Future<bool> bayrakOku(CihazBayragi bayrak) async =>
-      await _depo.read(key: bayrak.anahtar) == _konmus;
+      await guvenliOku(_depo, bayrak.anahtar) == _konmus;
 
   @override
   Future<void> bayrakKoy(CihazBayragi bayrak) =>

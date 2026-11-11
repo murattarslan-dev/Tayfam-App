@@ -202,6 +202,53 @@ jobs:
             android.permission.INTERNET)
           echo "Bulunan:"; echo "$izinler"
           test "$izinler" = "$beklenen"
+      - name: Yedekleme ve cihaz aktarımı kapalı
+        # #12 (ADR-0005, ADR-0006, ADR-0010): birleştirilmiş manifestte
+        # allowBackup=false, dataExtractionRules (API 31+, bulut yedeği ve
+        # cihazdan cihaza aktarım) ve fullBackupContent (API 30-) olmalı;
+        # kural dosyaları hiçbir alanı içermemeli (yalnızca exclude).
+        run: |
+          set -euo pipefail
+          aapt2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -n 1)
+          apk=build/app/outputs/flutter-apk/app-debug.apk
+          "$aapt2" dump xmltree --file AndroidManifest.xml "$apk" > "$RUNNER_TEMP/manifest.txt"
+          grep -E ':(allowBackup|dataExtractionRules|fullBackupContent)\(' "$RUNNER_TEMP/manifest.txt" || true
+          grep -Eq ':allowBackup\(0x[0-9a-f]+\)=(false|0x0)' "$RUNNER_TEMP/manifest.txt" \
+            || { echo "::error::android:allowBackup=\"false\" yok."; exit 1; }
+          grep -Eq ':dataExtractionRules\(0x[0-9a-f]+\)=@0x[0-9a-f]+' "$RUNNER_TEMP/manifest.txt" \
+            || { echo "::error::android:dataExtractionRules yok."; exit 1; }
+          grep -Eq ':fullBackupContent\(0x[0-9a-f]+\)=@0x[0-9a-f]+' "$RUNNER_TEMP/manifest.txt" \
+            || { echo "::error::android:fullBackupContent yok."; exit 1; }
+          for xml in data_extraction_rules backup_rules; do
+            "$aapt2" dump xmltree --file "res/xml/$xml.xml" "$apk" > "$RUNNER_TEMP/$xml.txt"
+            if grep -Eq 'E: include' "$RUNNER_TEMP/$xml.txt"; then
+              echo "::error::$xml.xml bir alanı yedeğe ya da aktarıma dahil ediyor."; exit 1
+            fi
+            grep -q "E: exclude" "$RUNNER_TEMP/$xml.txt" \
+              || { echo "::error::$xml.xml'de exclude yok."; exit 1; }
+          done
+          for bolum in cloud-backup device-transfer; do
+            grep -q "E: $bolum" "$RUNNER_TEMP/data_extraction_rules.txt" \
+              || { echo "::error::data_extraction_rules.xml'de $bolum yok."; exit 1; }
+          done
+          echo "Yedekleme ve cihaz aktarımı kapalı."
+      - name: Sürüm derlemesi anahtarsız durur
+        # #13: yükleme anahtarı yokken sürüm derlemesi debug anahtarına
+        # düşmeden, anlaşılır bir hatayla durmalı. Bu işte TAYFAM_UPLOAD_*
+        # değişkenleri ve android/key.properties yoktur.
+        run: |
+          set -euo pipefail
+          test ! -e android/key.properties
+          kod=0
+          flutter build appbundle --release > "$RUNNER_TEMP/surum.txt" 2>&1 || kod=$?
+          tail -n 40 "$RUNNER_TEMP/surum.txt"
+          if [ "$kod" -eq 0 ]; then
+            echo "::error::Sürüm derlemesi yükleme anahtarı olmadan başarılı oldu."
+            exit 1
+          fi
+          grep -qF 'TAYFAM_UPLOAD_*' "$RUNNER_TEMP/surum.txt" \
+            || { echo "::error::Sürüm derlemesi beklenen imza hatasıyla durmadı."; exit 1; }
+          echo "Sürüm derlemesi anahtarsız durdu (beklenen)."
 
   web:
     name: web

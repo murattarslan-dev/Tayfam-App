@@ -128,42 +128,44 @@ const Set<String> izinVericiLisanslar = {
 
 /// LICENSE metninden lisansı tahmin eder. Sezgiseldir; emin olamazsa
 /// [bilinmeyenLisans] döner.
+///
+/// Metinde birden çok lisansın işareti varsa **ilk görünen** kazanır: bir
+/// lisans metni başka lisansları gövdesinde anabilir. Örneğin MPL-2.0
+/// "Secondary License" tanımında GNU GPL, LGPL ve Affero GPL'yi, GPL-3.0 de
+/// 13. maddesinde Affero GPL'yi anar; bunlar AGPL değildir (`dbus`,
+/// `geoclue`, `gsettings` MPL-2.0'dır). Lisansın adı metnin başındadır.
 String lisansiTani(String metin) {
   final m = metin.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-  if (m.contains('gnu affero general public license')) {
-    return 'AGPL';
+  String? bulunan;
+  var konum = -1;
+  void aday(String lisans, String isaret, {bool kosul = true}) {
+    if (!kosul) return;
+    final i = m.indexOf(isaret);
+    if (i < 0 || (konum >= 0 && i >= konum)) return;
+    konum = i;
+    bulunan = lisans;
   }
-  if (m.contains('gnu lesser general public license')) {
-    return 'LGPL';
-  }
-  if (m.contains('gnu general public license')) {
-    return 'GPL';
-  }
-  if (m.contains('mozilla public license')) {
-    return 'MPL-2.0';
-  }
-  if (m.contains('apache license') && m.contains('version 2.0')) {
-    return 'Apache-2.0';
-  }
-  if (m.contains('permission is hereby granted, free of charge')) {
-    return 'MIT';
-  }
-  if (m.contains('redistribution and use in source and binary forms')) {
-    return m.contains('neither the name') || m.contains('may not be used')
+
+  aday('AGPL', 'gnu affero general public license');
+  aday('LGPL', 'gnu lesser general public license');
+  aday('GPL', 'gnu general public license');
+  aday('MPL-2.0', 'mozilla public license');
+  aday('Apache-2.0', 'apache license', kosul: m.contains('version 2.0'));
+  aday('MIT', 'permission is hereby granted, free of charge');
+  aday(
+    m.contains('neither the name') || m.contains('may not be used')
         ? 'BSD-3-Clause'
-        : 'BSD-2-Clause';
-  }
-  if (m.contains('permission to use, copy, modify, and/or distribute')) {
-    return 'ISC';
-  }
-  if (m.contains('this software is provided \'as-is\'') &&
-      m.contains('altered source versions must be plainly marked')) {
-    return 'Zlib';
-  }
-  if (m.contains('free and unencumbered software released into the public')) {
-    return 'Unlicense';
-  }
-  return bilinmeyenLisans;
+        : 'BSD-2-Clause',
+    'redistribution and use in source and binary forms',
+  );
+  aday('ISC', 'permission to use, copy, modify, and/or distribute');
+  aday(
+    'Zlib',
+    "this software is provided 'as-is'",
+    kosul: m.contains('altered source versions must be plainly marked'),
+  );
+  aday('Unlicense', 'free and unencumbered software released into the public');
+  return bulunan ?? bilinmeyenLisans;
 }
 
 /// Raporun uyarıları: eklenen veya sürümü değişen ve lisansı izin verici
