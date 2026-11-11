@@ -158,20 +158,23 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 14
-      - name: Uygulamada yalnızca INTERNET, konum ve kamera izinleri
+      - name: Uygulamada yalnızca izin verilen izinler
         # Birleştirilmiş manifest (eklenti paketlerinin getirdikleri dahil)
         # derlenen APK'dan okunur. İzin verilenler (CLAUDE.md, En az izin):
         # - INTERNET: API'ye bağlanmak için.
         # - ACCESS_FINE_LOCATION ve ACCESS_COARSE_LOCATION: varış bildirimi
         #   ("Geldim", ADR-0015 §5); yalnızca düğmeye basınca, uygulamayı
         #   kullanırken, tek seferlik. Android 12+ ikisini birlikte ister.
+        # - POST_NOTIFICATIONS: push bildirimi göstermek (Android 13+;
+        #   istemci ADR-0019 §3); ilk gerçek ihtiyaçta istenir.
+        # - WAKE_LOCK ve ACCESS_NETWORK_STATE: FCM (firebase_messaging ve
+        #   Firebase SDK'sı) mesajı alırken cihazı kısa süre uyanık tutar ve
+        #   bağlantı durumuna bakar; kullanıcıya sorulmayan normal izinler.
+        #   FCM'in com.google.android.c2dm.permission.RECEIVE izni bu
+        #   listenin dışındadır (android.permission.* değil).
         # - CAMERA: QR ile cihaz eşleştirme (ADR-0020); yalnızca "Cihaz
-        #   bağla" ekranında istenir.
-        # - ACCESS_NETWORK_STATE: mobile_scanner'ın gömülü ML Kit'i
-        #   (com.google.android.datatransport) birleştirir; normal düzey
-        #   izin, kullanıcıya sorulmaz. Kaldırılırsa ML Kit'in kendi
-        #   gönderim kodu SecurityException atabileceği için bırakıldı
-        #   (ADR-0020).
+        #   bağla" ekranında istenir. mobile_scanner'ın gömülü ML Kit'i de
+        #   ACCESS_NETWORK_STATE'i birleştirir (yukarıda zaten izinli).
         # Arka plan konumu ve konum ön plan hizmeti izinleri ana manifestte
         # tools:node="remove" ile engellenir; gelirlerse iş kırılır.
         run: |
@@ -186,7 +189,9 @@ jobs:
             android.permission.ACCESS_FINE_LOCATION \
             android.permission.ACCESS_NETWORK_STATE \
             android.permission.CAMERA \
-            android.permission.INTERNET)
+            android.permission.INTERNET \
+            android.permission.POST_NOTIFICATIONS \
+            android.permission.WAKE_LOCK)
           echo "Bulunan:"; echo "$izinler"
           test "$izinler" = "$beklenen"
       - name: Yedekleme ve cihaz aktarımı kapalı

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/push/push_kaydi.dart';
+import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -24,6 +26,10 @@ class TayfamApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Push (istemci ADR-0019): uygulama açılınca altyapı başlar, kanallar
+    // kurulur ve token oturumla eşitlenir. Push'suz derlemede (web, test)
+    // hiç kurulmaz.
+    if (ref.watch(pushPlatformuProvider).etkin) ref.watch(pushKaydiProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).uygulama_adi,
       locale: yerelAyar,

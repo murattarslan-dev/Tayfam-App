@@ -24,6 +24,7 @@ import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/shell/canli_olaylar.dart';
 import 'package:tayfam/shell/derin_link/derin_link_rotalari.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
+import 'package:tayfam/shell/push_olaylari.dart';
 import 'package:tayfam/shell/yer_tutucu.dart';
 import 'package:tayfam/shell/yonlendirme.dart';
 
@@ -133,9 +134,12 @@ List<RouteBase> rotalariOlustur(
   return [
     StatefulShellRoute.indexedStack(
       // Tek WebSocket bağlantısı kabuk açıkken yaşar (ADR-0007).
+      // Push dokunma ve ön plan mesajları da kabuğa bağlanır (ADR-0019).
       builder: (context, state, navigationShell) => RealtimeBaglantisi(
-        child: CanliOlaylar(
-          child: KabukIskeleti(navigationShell: navigationShell),
+        child: PushOlaylari(
+          child: CanliOlaylar(
+            child: KabukIskeleti(navigationShell: navigationShell),
+          ),
         ),
       ),
       branches: [

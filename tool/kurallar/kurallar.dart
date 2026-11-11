@@ -2,6 +2,7 @@
 // bin/kurallar.dart ve bin/bagimlilik_raporu.dart. Testler bu dosyayı
 // doğrudan kullanır.
 
+export 'src/android_metinleri.dart';
 export 'src/arb_pubspec_kurallari.dart';
 export 'src/bagimlilik.dart';
 export 'src/bulgu.dart';

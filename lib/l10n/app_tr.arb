@@ -5318,6 +5318,258 @@
   "@sikayet_tekrar_dene": {
     "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
   },
+  "push_event_created_title": "Yeni etkinlik",
+  "@push_event_created_title": {
+    "description": "Push bildirimi başlığı (`event_created`, Android title_loc_key): yeni etkinlik eklendi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_event_created_body": "Tayfanda yeni bir etkinlik var.",
+  "@push_event_created_body": {
+    "description": "Push bildirimi gövdesi (`event_created`, Android body_loc_key): yeni etkinlik eklendi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_event_updated_title": "Etkinlik güncellendi",
+  "@push_event_updated_title": {
+    "description": "Push bildirimi başlığı (`event_updated`, Android title_loc_key): katıldığın etkinlik değişti. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_event_updated_body": "Katıldığın bir etkinlikte değişiklik var.",
+  "@push_event_updated_body": {
+    "description": "Push bildirimi gövdesi (`event_updated`, Android body_loc_key): katıldığın etkinlik değişti. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_event_cancelled_title": "Etkinlik iptal edildi",
+  "@push_event_cancelled_title": {
+    "description": "Push bildirimi başlığı (`event_cancelled`, Android title_loc_key): katıldığın etkinlik iptal edildi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_event_cancelled_body": "Katıldığın bir etkinlik iptal edildi.",
+  "@push_event_cancelled_body": {
+    "description": "Push bildirimi gövdesi (`event_cancelled`, Android body_loc_key): katıldığın etkinlik iptal edildi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_rsvp_promoted_title": "Yerin kesinleşti",
+  "@push_rsvp_promoted_title": {
+    "description": "Push bildirimi başlığı (`rsvp_promoted`, Android title_loc_key): bekleme listesinden katılımcılara geçildi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_rsvp_promoted_body": "Bekleme listesinden katılımcılara geçtin.",
+  "@push_rsvp_promoted_body": {
+    "description": "Push bildirimi gövdesi (`rsvp_promoted`, Android body_loc_key): bekleme listesinden katılımcılara geçildi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_announcement_title": "Yeni duyuru",
+  "@push_announcement_title": {
+    "description": "Push bildirimi başlığı (`announcement`, Android title_loc_key): yeni duyuru. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_announcement_body": "Tayfanda yeni bir duyuru var.",
+  "@push_announcement_body": {
+    "description": "Push bildirimi gövdesi (`announcement`, Android body_loc_key): yeni duyuru. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_answer_received_title": "Sorun cevaplandı",
+  "@push_answer_received_title": {
+    "description": "Push bildirimi başlığı (`answer_received`, Android title_loc_key): kullanıcının sorusuna cevap geldi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_answer_received_body": "Sorduğun soruya yeni bir cevap geldi.",
+  "@push_answer_received_body": {
+    "description": "Push bildirimi gövdesi (`answer_received`, Android body_loc_key): kullanıcının sorusuna cevap geldi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_join_request_title": "Yeni katılım isteği",
+  "@push_join_request_title": {
+    "description": "Push bildirimi başlığı (`join_request`, Android title_loc_key): yönetici/moderatöre tayfaya katılım isteği; isteyenin adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_join_request_body": "Tayfana katılmak isteyen biri var.",
+  "@push_join_request_body": {
+    "description": "Push bildirimi gövdesi (`join_request`, Android body_loc_key): yönetici/moderatöre tayfaya katılım isteği; isteyenin adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_join_approved_title": "Katılım isteğin onaylandı",
+  "@push_join_approved_title": {
+    "description": "Push bildirimi başlığı (`join_approved`, Android title_loc_key): katılım isteği onaylandı. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_join_approved_body": "Artık tayfanın bir üyesisin.",
+  "@push_join_approved_body": {
+    "description": "Push bildirimi gövdesi (`join_approved`, Android body_loc_key): katılım isteği onaylandı. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_deletion_requested_title": "Tayfa silme talebi",
+  "@push_tayfa_deletion_requested_title": {
+    "description": "Push bildirimi başlığı (`tayfa_deletion_requested`, Android title_loc_key): yönetici/moderatöre tayfa silme talebi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_deletion_requested_body": "Yönettiğin bir tayfa için silme talebi açıldı.",
+  "@push_tayfa_deletion_requested_body": {
+    "description": "Push bildirimi gövdesi (`tayfa_deletion_requested`, Android body_loc_key): yönetici/moderatöre tayfa silme talebi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_warned_title": "Tayfan arşivlenmek üzere",
+  "@push_tayfa_warned_title": {
+    "description": "Push bildirimi başlığı (`tayfa_warned`, Android title_loc_key): hareketsiz ya da az üyeli tayfa 7 gün içinde arşivlenecek. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_warned_body": "Bir tayfan 7 gün içinde arşivlenecek. Ayrıntı için uygulamayı aç.",
+  "@push_tayfa_warned_body": {
+    "description": "Push bildirimi gövdesi (`tayfa_warned`, Android body_loc_key): hareketsiz ya da az üyeli tayfa 7 gün içinde arşivlenecek. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_archived_title": "Tayfa arşivlendi",
+  "@push_tayfa_archived_title": {
+    "description": "Push bildirimi başlığı (`tayfa_archived`, Android title_loc_key): tayfa arşivlendi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_archived_body": "Üyesi olduğun bir tayfa arşivlendi.",
+  "@push_tayfa_archived_body": {
+    "description": "Push bildirimi gövdesi (`tayfa_archived`, Android body_loc_key): tayfa arşivlendi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_suspended_title": "Tayfa askıya alındı",
+  "@push_tayfa_suspended_title": {
+    "description": "Push bildirimi başlığı (`tayfa_suspended`, Android title_loc_key): tayfa platform tarafından askıya alındı. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_suspended_body": "Üyesi olduğun bir tayfa askıya alındı.",
+  "@push_tayfa_suspended_body": {
+    "description": "Push bildirimi gövdesi (`tayfa_suspended`, Android body_loc_key): tayfa platform tarafından askıya alındı. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_unsuspended_title": "Tayfa yeniden açıldı",
+  "@push_tayfa_unsuspended_title": {
+    "description": "Push bildirimi başlığı (`tayfa_unsuspended`, Android title_loc_key): tayfanın askısı kaldırıldı. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_unsuspended_body": "Üyesi olduğun bir tayfanın askısı kaldırıldı.",
+  "@push_tayfa_unsuspended_body": {
+    "description": "Push bildirimi gövdesi (`tayfa_unsuspended`, Android body_loc_key): tayfanın askısı kaldırıldı. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_hike_overdue_title": "Yürüyüşçü dönmedi",
+  "@push_hike_overdue_title": {
+    "description": "Push bildirimi başlığı (`hike_overdue`, Android title_loc_key): güvenlik uyarısı: yürüyüşçü zamanında dönmedi; yürüyüşçünün adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_hike_overdue_body": "Bir yürüyüşçü zamanında dönmedi. Hemen kontrol et.",
+  "@push_hike_overdue_body": {
+    "description": "Push bildirimi gövdesi (`hike_overdue`, Android body_loc_key): güvenlik uyarısı: yürüyüşçü zamanında dönmedi; yürüyüşçünün adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_friend_request_title": "Yeni arkadaşlık isteği",
+  "@push_friend_request_title": {
+    "description": "Push bildirimi başlığı (`friend_request`, Android title_loc_key): arkadaşlık isteği; isteyenin adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_friend_request_body": "Biri seni arkadaş olarak eklemek istiyor.",
+  "@push_friend_request_body": {
+    "description": "Push bildirimi gövdesi (`friend_request`, Android body_loc_key): arkadaşlık isteği; isteyenin adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_friend_accepted_title": "Arkadaşlık isteğin kabul edildi",
+  "@push_friend_accepted_title": {
+    "description": "Push bildirimi başlığı (`friend_accepted`, Android title_loc_key): arkadaşlık isteği kabul edildi; kişinin adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_friend_accepted_body": "Yeni bir arkadaşın var.",
+  "@push_friend_accepted_body": {
+    "description": "Push bildirimi gövdesi (`friend_accepted`, Android body_loc_key): arkadaşlık isteği kabul edildi; kişinin adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_invitation_title": "Tayfa daveti",
+  "@push_tayfa_invitation_title": {
+    "description": "Push bildirimi başlığı (`tayfa_invitation`, Android title_loc_key): arkadaştan tayfa daveti; adlar yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_tayfa_invitation_body": "Bir arkadaşın seni bir tayfaya davet etti.",
+  "@push_tayfa_invitation_body": {
+    "description": "Push bildirimi gövdesi (`tayfa_invitation`, Android body_loc_key): arkadaştan tayfa daveti; adlar yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_report_resolved_title": "Şikâyetin sonuçlandı",
+  "@push_report_resolved_title": {
+    "description": "Push bildirimi başlığı (`report_resolved`, Android title_loc_key): kullanıcının şikâyeti sonuçlandı; sonuç yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_report_resolved_body": "Gönderdiğin şikâyet incelendi.",
+  "@push_report_resolved_body": {
+    "description": "Push bildirimi gövdesi (`report_resolved`, Android body_loc_key): kullanıcının şikâyeti sonuçlandı; sonuç yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_dm_request_title": "Yeni mesaj isteği",
+  "@push_dm_request_title": {
+    "description": "Push bildirimi başlığı (`dm_request`, Android title_loc_key): birebir mesaj isteği; gönderen ve içerik hiçbir zaman yazılmaz (kesin kural 7). Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_dm_request_body": "Sana bir mesaj isteği geldi.",
+  "@push_dm_request_body": {
+    "description": "Push bildirimi gövdesi (`dm_request`, Android body_loc_key): birebir mesaj isteği; gönderen ve içerik hiçbir zaman yazılmaz (kesin kural 7). Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_dm_message_title": "Yeni mesaj",
+  "@push_dm_message_title": {
+    "description": "Push bildirimi başlığı (`dm_message`, Android title_loc_key): yeni birebir mesaj; gönderen, içerik ve sayı hiçbir zaman yazılmaz (kesin kural 7). Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_dm_message_body": "Okunmamış birebir mesajın var.",
+  "@push_dm_message_body": {
+    "description": "Push bildirimi gövdesi (`dm_message`, Android body_loc_key): yeni birebir mesaj; gönderen, içerik ve sayı hiçbir zaman yazılmaz (kesin kural 7). Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_data_export_ready_title": "Verilerin hazır",
+  "@push_data_export_ready_title": {
+    "description": "Push bildirimi başlığı (`data_export_ready`, Android title_loc_key): KVKK veri dışa aktarma dosyası hazır. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_data_export_ready_body": "Veri dışa aktarma dosyan 7 gün boyunca indirilebilir.",
+  "@push_data_export_ready_body": {
+    "description": "Push bildirimi gövdesi (`data_export_ready`, Android body_loc_key): KVKK veri dışa aktarma dosyası hazır. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_kanal_mesajlar": "Mesajlar",
+  "@push_kanal_mesajlar": {
+    "description": "Android bildirim kanalının adı (sistem ayarlarında görünür): birebir mesajlar ve mesaj istekleri."
+  },
+  "push_kanal_mesajlar_aciklama": "Birebir mesajlar ve mesaj istekleri",
+  "@push_kanal_mesajlar_aciklama": {
+    "description": "Android 'Mesajlar' bildirim kanalının sistem ayarlarındaki açıklaması."
+  },
+  "push_kanal_uyarilar": "Güvenlik uyarıları",
+  "@push_kanal_uyarilar": {
+    "description": "Android bildirim kanalının adı: yürüyüşten dönmeme gibi acil uyarılar."
+  },
+  "push_kanal_uyarilar_aciklama": "Yürüyüşten zamanında dönmeyen bir tayfa arkadaşın gibi acil uyarılar",
+  "@push_kanal_uyarilar_aciklama": {
+    "description": "Android 'Güvenlik uyarıları' bildirim kanalının sistem ayarlarındaki açıklaması."
+  },
+  "push_kanal_genel": "Tayfa bildirimleri",
+  "@push_kanal_genel": {
+    "description": "Android bildirim kanalının adı: mesaj ve güvenlik uyarısı dışındaki bütün bildirimler."
+  },
+  "push_kanal_genel_aciklama": "Etkinlik, duyuru, cevap, katılım ve arkadaşlık bildirimleri",
+  "@push_kanal_genel_aciklama": {
+    "description": "Android 'Tayfa bildirimleri' kanalının sistem ayarlarındaki açıklaması."
+  },
+  "bildirim_izni_baslik": "Bildirimleri aç",
+  "@bildirim_izni_baslik": {
+    "description": "Bildirim izni açıklama kartının başlığı. Kart ilk tayfaya katılınca/kurunca ya da ilk birebir mesaj gönderilince bir kez, sistem izin penceresinden önce gösterilir."
+  },
+  "bildirim_izni_aciklama": "Etkinlik, duyuru ve mesajlardan haberin olsun. Bildirimde yalnızca ne olduğu yazar; içerik ve gönderen görünmez.",
+  "@bildirim_izni_aciklama": {
+    "description": "Bildirim izni açıklama kartının metni: neden izin istendiği ve bildirimde içerik bulunmadığı."
+  },
+  "bildirim_izni_ver": "İzin ver",
+  "@bildirim_izni_ver": {
+    "description": "Bildirim izni açıklama kartında birincil düğme; sistem izin penceresini açar."
+  },
+  "bildirim_izni_simdi_degil": "Şimdi değil",
+  "@bildirim_izni_simdi_degil": {
+    "description": "Bildirim izni açıklama kartında ikincil düğme; kartı kapatır, izin bir daha kendiliğinden sorulmaz (Profil → Bildirimler'den açılabilir)."
+  },
+  "profil_bildirimler": "Bildirimler",
+  "@profil_bildirimler": {
+    "description": "Profil sekmesinde bildirim ayarları satırının ve açtığı ekranın başlığı."
+  },
+  "profil_bildirimler_acik": "Bu cihazda açık",
+  "@profil_bildirimler_acik": {
+    "description": "Profil sekmesindeki Bildirimler satırının alt metni: cihazda bildirim izni verilmiş."
+  },
+  "profil_bildirimler_kapali": "Bu cihazda kapalı",
+  "@profil_bildirimler_kapali": {
+    "description": "Profil sekmesindeki Bildirimler satırının alt metni: cihazda bildirim izni yok."
+  },
+  "bildirim_ayar_acik": "Bu cihazda bildirimler açık.",
+  "@bildirim_ayar_acik": {
+    "description": "Profil → Bildirimler ekranında izin verilmişken durum metni."
+  },
+  "bildirim_ayar_kapali": "Bu cihazda bildirimler kapalı. Etkinlik, duyuru ve mesajlardan uygulamayı açınca haberin olur.",
+  "@bildirim_ayar_kapali": {
+    "description": "Profil → Bildirimler ekranında izin yokken durum metni."
+  },
+  "bildirim_ayar_yok": "Bu cihazda bildirimler kullanılamıyor.",
+  "@bildirim_ayar_yok": {
+    "description": "Profil → Bildirimler ekranında push altyapısı olmayan derlemede (ör. geliştirme derlemesi) görünen metin."
+  },
+  "bildirim_ayar_ac": "Bildirimleri aç",
+  "@bildirim_ayar_ac": {
+    "description": "Profil → Bildirimler ekranında izin yokken birincil düğme: sistem izin penceresini, gösterilemiyorsa uygulamanın sistem bildirim ayarını açar."
+  },
+  "bildirim_ayar_sistem": "Sistem bildirim ayarları",
+  "@bildirim_ayar_sistem": {
+    "description": "Profil → Bildirimler ekranında uygulamanın sistemdeki bildirim ayarlarını açan düğme."
+  },
+  "bildirim_ayar_sistem_aciklama": "Mesajlar, güvenlik uyarıları ve tayfa bildirimlerini sistem ayarlarından ayrı ayrı açıp kapatabilirsin.",
+  "@bildirim_ayar_sistem_aciklama": {
+    "description": "Profil → Bildirimler ekranında sistem ayarları düğmesinin açıklaması (Android bildirim kanalları)."
+  },
+  "bildirim_ayar_gizlilik": "Bildirimlerde içerik, isim ve konum bulunmaz; yalnızca ne olduğu yazar. Ayrıntıyı uygulamayı açınca görürsün.",
+  "@bildirim_ayar_gizlilik": {
+    "description": "Profil → Bildirimler ekranında bildirimlerin gizliliğini anlatan metin (kesin kural 7)."
+  },
+  "bildirim_ayar_yukleniyor": "Bildirim izni okunuyor",
+  "@bildirim_ayar_yukleniyor": {
+    "description": "Profil → Bildirimler ekranında izin okunurken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
   "cihaz_bagla_baslik": "Cihaz bağla",
   "@cihaz_bagla_baslik": {
     "description": "Eşleştirilmiş cihazda QR okutarak başka bir cihaz bağlama girişi ve ekran başlığı."

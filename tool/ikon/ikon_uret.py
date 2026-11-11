@@ -18,6 +18,9 @@ token'larıyla aynıdır. Renk eşliğini
   arka plan brand rengi.
 - `mipmap-{m,h,xh,xxh,xxxh}dpi/ic_launcher.png`: Android 7 ve öncesi için
   `app-icon.svg` görünümünde PNG'ler (48–192 px).
+- `drawable/ic_bildirim.xml`: push bildiriminin durum çubuğu simgesi
+  (istemci ADR-0019 §4). Android bu simgenin yalnızca alfa kanalını
+  kullanır; monogram tek renk (beyaz), 24 dp.
 
 Kullanım (yalnızca geliştirme; uygulamaya bağımlılık eklemez):
 
@@ -175,6 +178,36 @@ def uyarlanabilir_xml() -> str:
 """
 
 
+def bildirim_ikonu_xml() -> str:
+    """Durum çubuğu simgesi: monogram, tek renk, 24 dp (viewBox 64)."""
+    cx, cy, r = NOKTA
+    return f"""<?xml version="1.0" encoding="utf-8"?>
+{UYARI}
+<!-- Push bildiriminin simgesi (istemci ADR-0019 §4): monogram, tek renk.
+     Android yalnızca alfa kanalını kullanır; rengi manifestteki
+     default_notification_color verir. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="{KUTU}"
+    android:viewportHeight="{KUTU}">
+    <path
+        android:pathData="{GOVDE}"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="{KALINLIK}"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="{CIZGI}"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="{KALINLIK}"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="{_daire_yolu(cx, cy, r)}"
+        android:fillColor="#FFFFFFFF" />
+</vector>
+"""
+
+
 def _guvenli_bolge_denetle() -> None:
     """Monogramın en uzak noktası güvenli bölgenin içinde mi."""
     import math
@@ -211,6 +244,7 @@ def main() -> None:
     _yaz(RES / "values" / "ic_launcher_renkleri.xml", renkler_xml())
     _yaz(RES / "drawable" / "ic_launcher_foreground.xml", on_plan_xml())
     _yaz(RES / "mipmap-anydpi-v26" / "ic_launcher.xml", uyarlanabilir_xml())
+    _yaz(RES / "drawable" / "ic_bildirim.xml", bildirim_ikonu_xml())
     svg = app_icon_svg().encode("utf-8")
     for yogunluk, boyut in YOGUNLUKLAR.items():
         hedef = RES / f"mipmap-{yogunluk}" / "ic_launcher.png"
