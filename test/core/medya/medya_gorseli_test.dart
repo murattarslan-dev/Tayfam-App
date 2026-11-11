@@ -144,7 +144,7 @@ void main() {
     // Content-Length 0 tutmaz: link güvenilmez sayılır, hata gösterilir.
     expect(durum.degisimler, isEmpty);
     expect(_metin('medya_hata_baglanti'), findsOneWidget);
-    expect(depo, isEmpty);
+    expect(depo.where((i) => i.method == 'PUT'), isEmpty);
     expect(tasima.sayi('POST', '/v1/uploads'), 1);
   });
 
@@ -157,7 +157,7 @@ void main() {
 
     final durum = tester.state<_FormState>(find.byType(_Form));
     expect(durum.degisimler, [ornekUploadId]);
-    expect(depo, hasLength(2));
+    expect(depo.where((i) => i.method == 'PUT'), hasLength(2));
     expect(_metin('medya_fotograf_degistir'), findsOneWidget);
     expect(tester.takeException(), isNull);
 

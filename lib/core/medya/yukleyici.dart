@@ -46,8 +46,8 @@ final class MedyaYukleyici {
   MedyaYukleyici({
     required this._uploads,
     required this._tasima,
-    Bekleyici bekle = _gercekBekle,
-  }) : _bekle = bekle;
+    this._bekle = _gercekBekle,
+  });
 
   final UploadsApi _uploads;
   final MedyaTasima _tasima;

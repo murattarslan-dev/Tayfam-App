@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,12 +75,10 @@ final medyaSaatiProvider = Provider<DateTime Function()>(
 /// - Linkler ve içerik log'a yazılmaz.
 final class MedyaOnbellegi {
   MedyaOnbellegi({
-    required MedyaLinkIsteyici isteyici,
-    required MedyaTasima tasima,
-    required DateTime Function() saat,
-  }) : _isteyici = isteyici,
-       _tasima = tasima,
-       _saat = saat;
+    required this._isteyici,
+    required this._tasima,
+    required this._saat,
+  });
 
   final MedyaLinkIsteyici _isteyici;
   final MedyaTasima _tasima;
