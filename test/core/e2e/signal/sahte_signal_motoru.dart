@@ -288,7 +288,7 @@ final class SahteSignalMotoru implements SignalMotoru {
       throw const SignalHatasi(SignalHatasiTuru.gecersizMesaj);
     }
 
-    Map<String, Object?> o;
+    final Map<String, Object?> o;
     int? kullanilanOn;
     int? kullanilanImzali;
     int? kullanilanKyber;
@@ -297,29 +297,37 @@ final class SahteSignalMotoru implements SignalMotoru {
       final ip = m['ip'] as int;
       final op = m['op'] as int?;
       final ky = m['ky'] as int?;
-      if (imzaliOnAnahtar == null ||
-          _kayitId(imzaliOnAnahtar, 'imzali') != ip) {
-        throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
-      }
-      if (op != null &&
-          (onAnahtar == null || _kayitId(onAnahtar, 'on') != op)) {
-        throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
-      }
-      if (ky == null ||
-          !kyberOnAnahtarlari.any((k) => _kayitId(k, 'kyber') == ky)) {
-        throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
-      }
+      final tb = m['tb'];
       final karsi = _b64Oku(m['g']);
       Map<String, Object?>? mevcut;
       if (oturum != null) {
         final x = _jsonOku(oturum);
         if (x != null && x['karsi'] == _b64(karsi)) mevcut = x;
       }
-      o = mevcut ?? _yeniAlanOturumu(karsi);
-      kullanilanOn = op;
-      kullanilanImzali = ip;
-      kullanilanKyber = ky;
-      taban = _b64Oku(m['tb']);
+      // libsignal gibi: aynı taban anahtarlı oturum zaten varsa ön anahtar
+      // kayıtları istenmez ve yeniden tüketilmez.
+      if (mevcut != null && mevcut['gelenTaban'] == tb) {
+        o = mevcut;
+      } else {
+        if (imzaliOnAnahtar == null ||
+            _kayitId(imzaliOnAnahtar, 'imzali') != ip) {
+          throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
+        }
+        if (op != null &&
+            (onAnahtar == null || _kayitId(onAnahtar, 'on') != op)) {
+          throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
+        }
+        if (ky == null ||
+            !kyberOnAnahtarlari.any((k) => _kayitId(k, 'kyber') == ky)) {
+          throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
+        }
+        o = _yeniAlanOturumu(karsi);
+        o['gelenTaban'] = tb;
+        kullanilanOn = op;
+        kullanilanImzali = ip;
+        kullanilanKyber = ky;
+        taban = _b64Oku(tb);
+      }
     } else {
       o = _oturumOku(oturum);
     }
