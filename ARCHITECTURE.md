@@ -42,5 +42,6 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0014](docs/adr/0014-tayfa-listesi-katilim-ve-olusturma.md) | Tayfa ve katılım | Son tayfa hatırlanır, bekleyenler panelde, kodla katılım, sihirbazla oluşturma, sistem paylaşımı |
 | [0015](docs/adr/0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru | İki bölümlü ana sayfa, sihirbaz, OSM harita seçici, varış bildiriminde tek seferlik konum |
 | [0016](docs/adr/0016-uygulama-degerlendirme-penceresi.md) | Değerlendirme | "Geliyorum" dediği ilk etkinlik bitince mağaza penceresi, cihazda bir kez |
+| [0017](docs/adr/0017-hosgeldin-tanitimi.md) | Hoş geldin | İlk açılışta girişten önce 5 sayfa, cihazda bir kez, kendi bileşenlerle görseller |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).
