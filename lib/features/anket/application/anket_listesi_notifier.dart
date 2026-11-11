@@ -39,8 +39,9 @@ class AnketListesiNotifier extends SayfaliListeNotifier<Poll> {
   }
 
   @override
-  Future<Sayfa<Poll>> sayfaGetir(String? sayfaToken) =>
-      ref.read(anketDeposuProvider).sayfa(
+  Future<Sayfa<Poll>> sayfaGetir(String? sayfaToken) => ref
+      .read(anketDeposuProvider)
+      .sayfa(
         anahtar.tayfaId,
         etkinlikId: anahtar.etkinlikId,
         sayfaToken: sayfaToken,

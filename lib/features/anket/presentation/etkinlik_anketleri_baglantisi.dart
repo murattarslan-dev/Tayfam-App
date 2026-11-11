@@ -34,9 +34,8 @@ class EtkinlikAnketleriBaglantisi extends ConsumerWidget {
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: TextButton.icon(
-        onPressed: () => context.go(
-          Adresler.anketler(tayfaId, etkinlikId: etkinlikId),
-        ),
+        onPressed: () =>
+            context.go(Adresler.anketler(tayfaId, etkinlikId: etkinlikId)),
         style: TextButton.styleFrom(
           minimumSize: const Size.square(TayfamSizes.dokunmaMin),
         ),

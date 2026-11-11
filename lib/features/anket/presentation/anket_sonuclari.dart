@@ -127,9 +127,7 @@ class _SayiliSecenek extends StatelessWidget {
         onTap: onTap,
         borderRadius: TayfamRadii.kartKoseleri,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: TayfamSizes.dokunmaMin,
-          ),
+          constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
           child: icerik,
         ),
       ),

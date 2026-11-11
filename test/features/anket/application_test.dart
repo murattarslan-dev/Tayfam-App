@@ -113,23 +113,20 @@ void main() {
     });
 
     test('önde olanlar: eşitlikte hepsi, oy yoksa hiçbiri', () {
-      expect(
-        ondekiSecenekler(_anket(anketId1, oyVeren: 4, oylar: [2, 2, 0])),
-        {secenekA, secenekB},
-      );
+      expect(ondekiSecenekler(_anket(anketId1, oyVeren: 4, oylar: [2, 2, 0])), {
+        secenekA,
+        secenekB,
+      });
       expect(ondekiSecenekler(_anket(anketId1)), isEmpty);
     });
   });
 
   group('oy verenler (gizli ankette istek yok)', () {
     test('gizli ankette uç çağrılmıyor, hata dönüyor', () async {
-      final k = _Kurulum({'GET $oyVerenlerYolu': yanit({'voters': []})});
-      final anket = _anket(
-        anketId1,
-        gizli: true,
-        oyVeren: 9,
-        oylar: [9, 0, 0],
-      );
+      final k = _Kurulum({
+        'GET $oyVerenlerYolu': yanit({'voters': []}),
+      });
+      final anket = _anket(anketId1, gizli: true, oyVeren: 9, oylar: [9, 0, 0]);
       final saglayici = oyVerenlerProvider((
         tayfaId: ornekTayfaId,
         anket: anket,
@@ -317,10 +314,7 @@ void main() {
 
     test('kapalı ankette seçim gösterilmiyor', () {
       final anket = _anket(anketId1, kapali: true);
-      expect(
-        secimGosterilir(anket, const OylamaDurumu(), anketSimdi),
-        isFalse,
-      );
+      expect(secimGosterilir(anket, const OylamaDurumu(), anketSimdi), isFalse);
     });
   });
 

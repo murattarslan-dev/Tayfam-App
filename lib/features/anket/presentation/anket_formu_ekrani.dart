@@ -105,9 +105,7 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
         : const <int, SecenekHatasi>{};
     final kapanis = d.kapanis;
     final kapanisHatali =
-        d.denendi &&
-        kapanis != null &&
-        !anketKapanisiGecerli(kapanis, simdi);
+        d.denendi && kapanis != null && !anketKapanisiGecerli(kapanis, simdi);
     final gizliNotu = [
       m.anket_gizli_aciklama,
       m.anket_form_gizli_notu,

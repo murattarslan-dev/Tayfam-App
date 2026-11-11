@@ -40,8 +40,7 @@ bool anketSecenegiGecerli(String secenek) =>
 
 /// [kapanis] (UTC) [simdi]'den sonra ve en çok 365 gün ileride mi.
 bool anketKapanisiGecerli(DateTime kapanis, DateTime simdi) =>
-    kapanis.isAfter(simdi) &&
-    !kapanis.isAfter(simdi.add(anketKapanisEnCok));
+    kapanis.isAfter(simdi) && !kapanis.isAfter(simdi.add(anketKapanisEnCok));
 
 /// Bir seçenek alanının hatası.
 enum SecenekHatasi {
@@ -162,9 +161,7 @@ class AnketFormuNotifier extends Notifier<AnketFormuDurumu> {
 
   void secenekAyarla(int sira, String metin) {
     if (_kilitli || sira < 0 || sira >= state.secenekler.length) return;
-    state = state._degistir(
-      secenekler: [...state.secenekler]..[sira] = metin,
-    );
+    state = state._degistir(secenekler: [...state.secenekler]..[sira] = metin);
   }
 
   /// Sona boş bir seçenek alanı ekler (en çok 10).
@@ -177,9 +174,7 @@ class AnketFormuNotifier extends Notifier<AnketFormuDurumu> {
   void secenekKaldir(int sira) {
     if (_kilitli || !state.secenekKaldirilabilir) return;
     if (sira < 0 || sira >= state.secenekler.length) return;
-    state = state._degistir(
-      secenekler: [...state.secenekler]..removeAt(sira),
-    );
+    state = state._degistir(secenekler: [...state.secenekler]..removeAt(sira));
   }
 
   void cokluAyarla({required bool coklu}) {

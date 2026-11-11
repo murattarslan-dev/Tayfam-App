@@ -221,9 +221,8 @@ class _AnketIcerigi extends ConsumerWidget {
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: TextButton.icon(
-              onPressed: () => context.go(
-                Adresler.etkinlik(anahtar.tayfaId, etkinlikId),
-              ),
+              onPressed: () =>
+                  context.go(Adresler.etkinlik(anahtar.tayfaId, etkinlikId)),
               style: TextButton.styleFrom(
                 minimumSize: const Size.square(TayfamSizes.dokunmaMin),
               ),

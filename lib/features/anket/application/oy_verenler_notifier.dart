@@ -48,12 +48,14 @@ class OyVerenlerNotifier extends SayfaliListeNotifier<PollVoter> {
     if (!oyVerenlerGorunur(anahtar.anket)) {
       throw const GizliAnketOyVerenleri();
     }
-    return ref.read(anketDeposuProvider).oyVerenler(
-      anahtar.tayfaId,
-      anahtar.anket.id,
-      anahtar.secenekId,
-      sayfaToken: sayfaToken,
-    );
+    return ref
+        .read(anketDeposuProvider)
+        .oyVerenler(
+          anahtar.tayfaId,
+          anahtar.anket.id,
+          anahtar.secenekId,
+          sayfaToken: sayfaToken,
+        );
   }
 
   @override

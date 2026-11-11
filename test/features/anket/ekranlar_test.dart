@@ -56,6 +56,14 @@ Future<void> _dokun(WidgetTester tester, Finder hedef) async {
   await tester.pumpAndSettle();
 }
 
+/// [alan]'ı görünür yapıp [metin]'i yazar (büyük yazıda alanlar ekranın
+/// altında kalabilir).
+Future<void> _yaz(WidgetTester tester, Finder alan, String metin) async {
+  await tester.ensureVisible(alan);
+  await tester.pumpAndSettle();
+  await tester.enterText(alan, metin);
+}
+
 final Finder _islemMenusu = find.byTooltip(arbMetni('anket_islemler'));
 final Finder _seninOyun = find.text(arbMetni('anket_senin_oyun'));
 final Finder _esikNotu = find.textContaining('5 oydan sonra görünür');
@@ -72,7 +80,9 @@ void main() {
           oylar: [2, 1, 0],
           kendi: [secenekA],
         ),
-        yanitlar: {'GET $oyVerenlerYolu': yanit({'voters': []})},
+        yanitlar: {
+          'GET $oyVerenlerYolu': yanit({'voters': []}),
+        },
       );
       await _anketiAc(tester, tasima);
 
@@ -113,7 +123,9 @@ void main() {
           oylar: [3, 2, 0],
           kendi: [secenekB],
         ),
-        yanitlar: {'GET $oyVerenlerYolu': yanit({'voters': []})},
+        yanitlar: {
+          'GET $oyVerenlerYolu': yanit({'voters': []}),
+        },
       );
       await _anketiAc(tester, tasima);
 
@@ -137,7 +149,9 @@ void main() {
       final tasima = _tekAnket(
         anketJson(anketId1, gizli: true, oyVeren: 8, oylar: [5, 3, 0]),
         rol: 'admin',
-        yanitlar: {'GET $oyVerenlerYolu': yanit({'voters': []})},
+        yanitlar: {
+          'GET $oyVerenlerYolu': yanit({'voters': []}),
+        },
       );
       await _anketiAc(tester, tasima);
       await _dokun(tester, find.text(arbMetni('anket_sonuclari_gor')));
@@ -153,12 +167,7 @@ void main() {
     testWidgets('seçeneğe dokununca oy verenler listeleniyor', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
       final tasima = _tekAnket(
-        anketJson(
-          anketId1,
-          oyVeren: 2,
-          oylar: [1, 1, 0],
-          kendi: [secenekA],
-        ),
+        anketJson(anketId1, oyVeren: 2, oylar: [1, 1, 0], kendi: [secenekA]),
         yanitlar: {
           'GET $oyVerenlerYolu': yanit({
             'voters': [
@@ -438,10 +447,7 @@ void main() {
       ekranBoyutu(tester);
       final tasima = anketTasimasi();
       await _listeyiAc(tester, tasima, etkinlikId: anketEtkinlikId);
-      expect(
-        find.text(arbMetni('anket_etkinlik_liste_bos')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('anket_etkinlik_liste_bos')), findsOneWidget);
       expect(
         tasima.giden('GET', anketlerYolu).single.sorgu['event_id'],
         anketEtkinlikId,
@@ -469,9 +475,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('boş soruda istek gitmiyor, hatalar görünüyor', (
-      tester,
-    ) async {
+    testWidgets('boş soruda istek gitmiyor, hatalar görünüyor', (tester) async {
       ekranBoyutu(tester);
       final tasima = anketTasimasi();
       await formuAc(tester, tasima);
@@ -496,9 +500,7 @@ void main() {
       expect(find.text('Seçenek 3'), findsNothing);
     });
 
-    testWidgets('anket açılınca form kapanıyor, liste güncel', (
-      tester,
-    ) async {
+    testWidgets('anket açılınca form kapanıyor, liste güncel', (tester) async {
       ekranBoyutu(tester, yukseklik: 1400);
       final tasima = anketTasimasi({
         'POST $anketlerYolu': yanit(anketJson(anketId3, soru: 'Nereye?')),
@@ -594,10 +596,7 @@ void main() {
             anketTasimasi({'GET /v1/tayfas/{tayfa_id}': yanit(gorunum)}),
           ),
         );
-        expect(
-          find.text(arbMetni('anket_etkinlik_liste_baslik')),
-          beklenen,
-        );
+        expect(find.text(arbMetni('anket_etkinlik_liste_baslik')), beklenen);
       });
     }
   });
@@ -705,13 +704,7 @@ void main() {
           themeMode: mod,
         );
         expect(tester.takeException(), isNull);
-        await tester.dragUntilVisible(
-          find.text('Belgrad ormanı'),
-          find.byType(ListView),
-          const Offset(0, -300),
-        );
-        await tester.tap(find.text('Belgrad ormanı'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, find.text('Belgrad ormanı'));
         expect(find.text(arbMetni('anket_oy_verenler')), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
@@ -728,9 +721,9 @@ void main() {
         await tester.tap(find.text(arbMetni('anket_ac')));
         await tester.pumpAndSettle();
         final alanlar = find.byType(TextField);
-        await tester.enterText(alanlar.at(0), 'Çok uzun bir anket sorusu');
-        await tester.enterText(alanlar.at(1), 'Moda');
-        await tester.enterText(alanlar.at(2), 'Şile');
+        await _yaz(tester, alanlar.at(0), 'Çok uzun bir anket sorusu');
+        await _yaz(tester, alanlar.at(1), 'Moda');
+        await _yaz(tester, alanlar.at(2), 'Şile');
         await _dokun(tester, find.text(arbMetni('anket_form_gonder')));
         expect(find.byType(HataSatiri), findsOneWidget);
         expect(tester.takeException(), isNull);
