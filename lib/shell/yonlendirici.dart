@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -98,8 +100,10 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
 List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
   return [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          KabukIskeleti(navigationShell: navigationShell),
+      // Tek WebSocket bağlantısı kabuk açıkken yaşar (ADR-0007).
+      builder: (context, state, navigationShell) => RealtimeBaglantisi(
+        child: KabukIskeleti(navigationShell: navigationShell),
+      ),
       branches: [
         StatefulShellBranch(
           routes: [
@@ -121,15 +125,7 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
             ),
           ],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Adresler.sohbet,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _sohbetBasligi),
-            ),
-          ],
-        ),
+        StatefulShellBranch(routes: [sohbetRotasi()]),
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -190,6 +186,5 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
   ];
 }
 
-String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
 String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
 String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;

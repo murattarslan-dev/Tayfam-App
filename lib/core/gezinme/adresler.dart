@@ -43,6 +43,13 @@ abstract final class Adresler {
   /// Sohbet sekmesi.
   static const sohbet = '/sohbet';
 
+  /// Kanal ekranının Sohbet sekmesi altındaki yolu (ADR-0018 §9).
+  static const sohbetKanalYolu = 'kanal';
+
+  /// Bir kanalın mesaj akışı (`/sohbet/kanal/<tayfaId>/<kanalId>`).
+  static String kanal(String tayfaId, String kanalId) =>
+      '$sohbet/$sohbetKanalYolu/$tayfaId/$kanalId';
+
   /// Bildirimler sekmesi.
   static const bildirimler = '/bildirimler';
 
