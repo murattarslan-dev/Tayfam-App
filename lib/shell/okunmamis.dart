@@ -1,9 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Sohbet sekmesinin okunmamış sayısı (rozet). GEÇİCİ: sohbet paketi
-/// gerçek sayıyı bağlayana kadar 0; 0 iken rozet gösterilmez.
+import 'package:tayfam/features/birebir/birebir.dart';
+
+/// Sohbet sekmesinin okunmamış sayısı (rozet). Bugün yalnızca birebir
+/// mesajlar (ADR-0018 §9); kanallar #63 ile eklenir. 0 iken rozet
+/// gösterilmez.
 final okunmamisSohbetSayisiProvider = Provider<int>(
-  (ref) => 0,
+  (ref) => ref.watch(birebirOkunmamisSayisiProvider),
   name: 'okunmamisSohbetSayisiProvider',
 );
 

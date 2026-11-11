@@ -43,6 +43,33 @@ abstract final class Adresler {
   /// Sohbet sekmesi.
   static const sohbet = '/sohbet';
 
+  /// Birebir konuşmanın Sohbet sekmesi altındaki yolu (ADR-0018 §9).
+  static const birebirYolu = 'birebir';
+
+  /// Bir kişiyle konuşmanın (varsa açılır, yoksa ilk mesaj yazılır)
+  /// Sohbet sekmesi altındaki yolu; kişi profilindeki "Mesaj gönder".
+  static const birebirKisiYolu = 'kisi';
+
+  /// Mesaj isteklerinin Sohbet sekmesi altındaki yolu.
+  static const mesajIstekleriYolu = 'istekler';
+
+  /// Reddedilen isteklerin mesaj istekleri altındaki yolu.
+  static const reddedilenlerYolu = 'reddedilenler';
+
+  /// Bir birebir konuşma.
+  static String birebirKonusma(String konusmaId) =>
+      '$sohbet/$birebirYolu/$konusmaId';
+
+  /// Bir kişiyle birebir konuşma.
+  static String birebirKisi(String kullaniciId) =>
+      '$sohbet/$birebirKisiYolu/$kullaniciId';
+
+  /// Mesaj istekleri.
+  static const mesajIstekleri = '$sohbet/$mesajIstekleriYolu';
+
+  /// Reddedilen mesaj istekleri.
+  static const reddedilenler = '$mesajIstekleri/$reddedilenlerYolu';
+
   /// Bildirimler sekmesi.
   static const bildirimler = '/bildirimler';
 

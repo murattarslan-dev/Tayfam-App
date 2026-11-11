@@ -104,7 +104,7 @@ void main() {
     await tester.tap(_sekme('gezinme_sekme_sohbet'));
     await tester.pumpAndSettle();
     expect(find.text(DenemeModulu.sayfaMetni), findsNothing);
-    expect(find.text(arbMetni('gezinme_yer_tutucu_aciklama')), findsOneWidget);
+    expect(find.text(arbMetni('birebir_baslik')), findsOneWidget);
 
     await tester.tap(_sekme('gezinme_sekme_tayfa'));
     await tester.pumpAndSettle();
