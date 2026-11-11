@@ -296,14 +296,18 @@ final class E2eDeposu {
       _jsonYaz(sonCareAnahtari(k.id), _imzaliJson(k));
 
   /// Depodaki bütün imzalı ön anahtarlar.
-  List<DepoImzaliKayit> get imzalilar => _kimlikliler(
-    '${onek}imzali.',
-  ).map(imzali).whereType<DepoImzaliKayit>().toList();
+  List<DepoImzaliKayit> get imzalilar =>
+      _kimlikliler('${onek}imzali.')
+          .map(imzali)
+          .whereType<DepoImzaliKayit>()
+          .toList();
 
   /// Depodaki bütün son çare Kyber anahtarları.
-  List<DepoImzaliKayit> get sonCareler => _kimlikliler(
-    '${onek}kyber_son_care.',
-  ).map(sonCare).whereType<DepoImzaliKayit>().toList();
+  List<DepoImzaliKayit> get sonCareler =>
+      _kimlikliler('${onek}kyber_son_care.')
+          .map(sonCare)
+          .whereType<DepoImzaliKayit>()
+          .toList();
 
   List<int> _kimlikliler(String onek) => [
     for (final a in anahtarlar(onek)) ?int.tryParse(a.substring(onek.length)),
@@ -360,12 +364,10 @@ final class E2eDeposu {
     return DepoOturumu(cihazNo: no, kayitKimligi: kk, kayit: kayit);
   }
 
-  Future<bool> oturumYaz(String cihazId, DepoOturumu o) =>
-      _jsonYaz(oturumAnahtari(cihazId), {
-        'no': o.cihazNo,
-        'kk': o.kayitKimligi,
-        'kayit': base64.encode(o.kayit),
-      });
+  Future<bool> oturumYaz(String cihazId, DepoOturumu o) => _jsonYaz(
+    oturumAnahtari(cihazId),
+    {'no': o.cihazNo, 'kk': o.kayitKimligi, 'kayit': base64.encode(o.kayit)},
+  );
 
   DepoKarsiKimlik? karsiKimlik(String cihazId) {
     final j = _json(karsiKimlikAnahtari(cihazId));
@@ -375,11 +377,10 @@ final class E2eDeposu {
     return DepoKarsiKimlik(acikAnahtar: acik, kullaniciId: kullanici);
   }
 
-  Future<bool> karsiKimlikYaz(String cihazId, DepoKarsiKimlik k) =>
-      _jsonYaz(karsiKimlikAnahtari(cihazId), {
-        'acik': base64.encode(k.acikAnahtar),
-        'kullanici': k.kullaniciId,
-      });
+  Future<bool> karsiKimlikYaz(String cihazId, DepoKarsiKimlik k) => _jsonYaz(
+    karsiKimlikAnahtari(cihazId),
+    {'acik': base64.encode(k.acikAnahtar), 'kullanici': k.kullaniciId},
+  );
 
   /// Karşı cihazın oturumunu ve güvenilen kimliğini siler (cihaz çıkarıldı
   /// ya da kimliği değişti).

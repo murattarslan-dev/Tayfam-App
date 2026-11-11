@@ -51,9 +51,8 @@ final class KonusmaDurumu {
 
   /// Akışta uçtan uca şifreli mesaj var mı (web geliştirme derlemesinde
   /// yazma alanı yerine "yalnızca mobil uygulamada" gösterilir).
-  bool get sifreliVar => mesajlar.any(
-    (m) => m.encryption == DirectMessageEncryption.e2e,
-  );
+  bool get sifreliVar =>
+      mesajlar.any((m) => m.encryption == DirectMessageEncryption.e2e);
 
   /// Akışta düz sürümde yazılmış (`encryption: server`) mesaj var mı.
   bool get duzVar => mesajlar.any(

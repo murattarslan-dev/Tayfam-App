@@ -140,10 +140,16 @@ SahteTayfaTasima birebirTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
 /// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok. Uçtan uca
 /// şifreleme kapalıdır (düz sürüm yolu); E2E testleri kendi
 /// override'larını verir.
-List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) {
+List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) => [
+  e2eEtkinProvider.overrideWithValue(false),
+  ...birebirUcOverridelari(tasima),
+];
+
+/// [birebirOverridelari]'nın E2E anahtarı olmadan hali (E2E testleri
+/// `e2eEtkinProvider`'ı kendisi verir).
+List<Override> birebirUcOverridelari([SahteTayfaTasima? tasima]) {
   final t = tasima ?? birebirTasimasi();
   return [
-    e2eEtkinProvider.overrideWithValue(false),
     birebirDeposuProvider.overrideWithValue(BirebirDeposu(t)),
     birebirYenilemeAraligiProvider.overrideWithValue(const Duration(days: 1)),
   ];
@@ -198,11 +204,13 @@ List<Override> birebirEkranOverridelari(
   SahteTayfaTasima tasima, {
   OturumDurumu oturum = OturumDurumu.acik,
   SahteRealtime? realtime,
+  bool e2e = false,
 }) {
   final r = realtime ?? SahteRealtime();
   return [
     ...tayfaOverridelari(tasima: tasima),
-    ...birebirOverridelari(tasima),
+    e2eEtkinProvider.overrideWithValue(e2e),
+    ...birebirUcOverridelari(tasima),
     profilAdlari,
     oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
     realtimeIstemcisiProvider.overrideWithValue(r.istemci),

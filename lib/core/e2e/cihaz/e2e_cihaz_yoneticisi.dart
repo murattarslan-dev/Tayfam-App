@@ -419,10 +419,7 @@ final class E2eCihazYoneticisi {
   /// olayları. İlk bakışta yalnızca en yeni olay işaretlenir.
   Future<List<E2EKeyEvent>> yeniKendiCihazlari(String benId) async {
     final cihaz = depo.cihaz;
-    final yanit = await _users.listE2EKeyEvents(
-      userId: benId,
-      pageSize: 50,
-    );
+    final yanit = await _users.listE2EKeyEvents(userId: benId, pageSize: 50);
     final liste = yanit.events;
     if (liste.isEmpty) return const [];
     final son = depo.sonAnahtarOlayi(benId);

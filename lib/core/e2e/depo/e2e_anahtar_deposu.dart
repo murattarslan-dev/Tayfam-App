@@ -34,13 +34,15 @@ abstract interface class E2eAnahtarDeposu {
 ///   `accountName: tayfam_e2e`.
 final class GuvenliE2eAnahtarDeposu implements E2eAnahtarDeposu {
   GuvenliE2eAnahtarDeposu([FlutterSecureStorage? depo])
-    : _depo = depo ?? const FlutterSecureStorage(
-        aOptions: AndroidOptions(storageNamespace: adAlani),
-        iOptions: IOSOptions(
-          accessibility: KeychainAccessibility.first_unlock_this_device,
-          accountName: adAlani,
-        ),
-      );
+    : _depo =
+          depo ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(storageNamespace: adAlani),
+            iOptions: IOSOptions(
+              accessibility: KeychainAccessibility.first_unlock_this_device,
+              accountName: adAlani,
+            ),
+          );
 
   /// Depo ad alanı.
   static const String adAlani = 'tayfam_e2e';
@@ -102,8 +104,7 @@ final class GuvenliE2eAnahtarDeposu implements E2eAnahtarDeposu {
 /// Testler için yalnızca bellekte duran depo. [hataVer] konursa bütün
 /// işlemler başarısız olur (hata yolu testleri).
 final class BellekE2eAnahtarDeposu implements E2eAnahtarDeposu {
-  BellekE2eAnahtarDeposu([Map<String, String>? ilk])
-    : kayitlar = {...?ilk};
+  BellekE2eAnahtarDeposu([Map<String, String>? ilk]) : kayitlar = {...?ilk};
 
   final Map<String, String> kayitlar;
 
