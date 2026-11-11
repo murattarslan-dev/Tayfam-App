@@ -75,9 +75,8 @@ Map<String, Object?> konusmaTercihiJson(
 };
 
 /// `GET /v1/notification-preferences` yanıtı.
-Map<String, Object?> tercihListesiJson(
-  List<Map<String, Object?>> tercihler,
-) => {'preferences': tercihler};
+Map<String, Object?> tercihListesiJson(List<Map<String, Object?>> tercihler) =>
+    {'preferences': tercihler};
 
 /// Örnek konuşma (`Conversation`) JSON'u.
 Map<String, Object?> konusmaJson(

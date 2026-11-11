@@ -240,7 +240,7 @@ void main() {
     });
 
     testWidgets('sessize alma hatası çeviriyle gösteriliyor', (tester) async {
-      ekranBoyutu(tester);
+      ekranBoyutu(tester, yukseklik: 1000);
       final tasima = _konusmaTasimasi({
         'PUT $konusmaTercihiYolu': (_) => const ApiProblem(
           type: ProblemType.conversationNotFound,
@@ -295,7 +295,10 @@ void main() {
       // Konuşma 1 süresiz sessizde; konuşma 2'nin süresi dolmuş.
       expect(find.byType(SessizSimgesi), findsOneWidget);
       expect(
-        find.bySemanticsLabel(arbMetni('birebir_sessiz_simge')),
+        // Satır anlam düğümleri birleşebilir; etiket metnin içinde aranır.
+        find.bySemanticsLabel(
+          RegExp(RegExp.escape(arbMetni('birebir_sessiz_simge'))),
+        ),
         findsOneWidget,
       );
       anlam.dispose();
