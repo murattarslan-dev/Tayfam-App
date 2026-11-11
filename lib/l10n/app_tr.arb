@@ -5621,5 +5621,69 @@
   "bildirim_ayar_yukleniyor": "Bildirim izni okunuyor",
   "@bildirim_ayar_yukleniyor": {
     "description": "Profil → Bildirimler ekranında izin okunurken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "birebir_sessiz_menu_ipucu": "Konuşma seçenekleri",
+  "@birebir_sessiz_menu_ipucu": {
+    "description": "Birebir konuşma ekranının üst çubuğundaki menü düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "birebir_sessiz_al": "Sessize al",
+  "@birebir_sessiz_al": {
+    "description": "Birebir konuşma menüsünde, konuşmanın bildirimlerini sessize alan giriş; süre seçimini açar."
+  },
+  "birebir_sessiz_ac": "Sesi aç",
+  "@birebir_sessiz_ac": {
+    "description": "Birebir konuşma menüsünde, sessize alınmış konuşmanın bildirimlerini yeniden açan giriş."
+  },
+  "birebir_sessiz_sure_baslik": "Ne kadar süre sessize alınsın?",
+  "@birebir_sessiz_sure_baslik": {
+    "description": "Birebir konuşmayı sessize alırken açılan süre seçiminin başlığı."
+  },
+  "birebir_sessiz_aciklama": "Mesajlar gelmeye devam eder; yalnızca bu konuşmanın bildirimleri gelmez.",
+  "@birebir_sessiz_aciklama": {
+    "description": "Sessize alma süre seçiminde, sessize almanın ne yaptığını anlatan metin (mesajlar gizlenmez, yalnızca anlık bildirim gitmez)."
+  },
+  "birebir_sessiz_sure_8_saat": "8 saat",
+  "@birebir_sessiz_sure_8_saat": {
+    "description": "Sessize alma süre seçeneği: 8 saat."
+  },
+  "birebir_sessiz_sure_1_hafta": "1 hafta",
+  "@birebir_sessiz_sure_1_hafta": {
+    "description": "Sessize alma süre seçeneği: 1 hafta."
+  },
+  "birebir_sessiz_sure_suresiz": "Süresiz",
+  "@birebir_sessiz_sure_suresiz": {
+    "description": "Sessize alma süre seçeneği: kullanıcı sesi açana kadar."
+  },
+  "birebir_sessiz_bitis": "{tarih}, {saat} saatine kadar sessizde",
+  "@birebir_sessiz_bitis": {
+    "description": "Birebir konuşma menüsünde \"Sesi aç\" altında, sessizliğin bittiği gün ve saat (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-12"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-12T02:30"
+      }
+    }
+  },
+  "birebir_sessiz_suresiz_durum": "Süresiz sessizde",
+  "@birebir_sessiz_suresiz_durum": {
+    "description": "Birebir konuşma menüsünde \"Sesi aç\" altında, süresiz sessize alınmış konuşmanın durumu."
+  },
+  "birebir_sessiz_alindi": "Bu konuşmanın bildirimleri sessize alındı.",
+  "@birebir_sessiz_alindi": {
+    "description": "Birebir konuşma sessize alınınca kısa süre görünen bildirim."
+  },
+  "birebir_sessiz_acildi": "Bu konuşmanın bildirimleri yeniden açık.",
+  "@birebir_sessiz_acildi": {
+    "description": "Birebir konuşmanın sesi açılınca kısa süre görünen bildirim."
+  },
+  "birebir_sessiz_simge": "Sessizde",
+  "@birebir_sessiz_simge": {
+    "description": "Konuşma listesinde sessize alınmış konuşmanın simgesinin ekran okuyucu etiketi."
   }
 }
