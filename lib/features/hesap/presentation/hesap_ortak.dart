@@ -19,29 +19,6 @@ String hesapHatasiMetni(AppLocalizations m, Object hata) => switch (hata) {
   _ => hataMetni(m, hata),
 };
 
-/// Yazı logo: küçük harfle "tayfam" (Notion: Marka; vektör logo gelene
-/// kadar fonttan).
-class YaziLogo extends StatelessWidget {
-  const YaziLogo({super.key, this.renk});
-
-  /// Verilmezse ana metin rengi.
-  final Color? renk;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      header: true,
-      child: Text(
-        AppLocalizations.of(context).hesap_yazi_logo,
-        textAlign: TextAlign.center,
-        style: context.yazi.displayLarge?.copyWith(
-          color: renk ?? context.renkler.metin,
-        ),
-      ),
-    );
-  }
-}
-
 /// Hukuki metnin sürümlü sayfasını (ya da mağaza sayfasını) tarayıcıda
 /// açan bağlantı düğmesi.
 class DisBaglantiDugmesi extends ConsumerWidget {

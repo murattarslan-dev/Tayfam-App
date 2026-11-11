@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
-import 'package:tayfam/features/hesap/presentation/hesap_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Açılışta oturum kaydı güvenli depodan okunurken kısa süre görünen ekran
-/// (ADR-0012 §1). Yazı logo ve ilerleme göstergesi; süs animasyonu yok.
+/// (ADR-0012 §1). Yazılı logo (monogram + "tayfam") ve ilerleme
+/// göstergesi; süs animasyonu yok.
 class AcilisEkrani extends StatelessWidget {
   const AcilisEkrani({super.key});
 
@@ -20,7 +21,7 @@ class AcilisEkrani extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const YaziLogo(),
+                const TayfamMonogram.yazili(baslik: true),
                 const SizedBox(height: TayfamSpacing.s24),
                 CircularProgressIndicator(
                   semanticsLabel: metinler.hesap_acilis_yukleniyor,

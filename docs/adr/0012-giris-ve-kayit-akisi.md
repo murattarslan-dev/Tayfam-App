@@ -141,6 +141,7 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
 - **2026-11-10 (PR #26, platform sahibi onayladı):** `already-registered`
   durumunda `yenile()` çağrılır; sürüm denetimi oturum okumasıyla paralel
   çalışır (yukarıdaki metne işlendi). Uygulama kimliği değişikliği aynı
-  PR'la geldi. Logo henüz yazı logo ("tayfam", gömülü font); monogram
-  varlığı ayrı iş. Genel `ProblemType` → çeviri eşlemesi (ADR-0005 §4)
+  PR'la geldi. Logo artık monogram + "tayfam" yazısı
+  (`TayfamMonogram`, PR #34); logo yazısı sistem yazı ölçeğiyle büyümez,
+  görsel sayılır ve dar alanda orantılı küçülür. Genel `ProblemType` → çeviri eşlemesi (ADR-0005 §4)
   ayrı iş; bu akış yalnızca kendi hata kodlarını eşler.

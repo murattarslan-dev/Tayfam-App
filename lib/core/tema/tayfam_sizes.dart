@@ -44,4 +44,25 @@ abstract final class TayfamSizes {
 
   /// Sohbet balonunun en fazla genişliği, kullanılabilir genişliğe oranla.
   static const double balonEnFazlaOran = .78;
+
+  /// Monogramın en küçük boyutu (Standartlar, Logo kullanımı: 16 px).
+  static const double logoEnKucuk = 16;
+
+  /// Bu boyutun altında monogram yazısız kullanılır (Standartlar: 24 px).
+  static const double logoYaziEsigi = 24;
+
+  /// Açılış ve giriş ekranındaki yazılı logonun monogram boyutu.
+  static const double logoBuyuk = 72;
+
+  /// Monogram ile "tayfam" yazısı arasındaki boşluk, monogram genişliğine
+  /// oranla (Standartlar: ~%30).
+  static const double logoYaziBoslukOrani = .3;
+
+  /// "tayfam" yazısının punto boyu, monogram boyuna oranla (tanıtım
+  /// sayfasındaki başlık: 36 px simge, 1.45rem ≈ 23.2 px yazı).
+  static const double logoYaziOrani = .645;
+
+  /// "tayfam" yazısının harf aralığı, punto boyuna oranla (tanıtım
+  /// sayfası: −0.03em).
+  static const double logoHarfAraligiOrani = -.03;
 }
