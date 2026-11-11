@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
+import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
@@ -41,6 +42,7 @@ class TayfaAnaSayfa extends ConsumerWidget {
       ref.watch(tayfaModulleriProvider),
       ozet.acikModuller,
     );
+    final menu = ref.watch(tayfaUstMenusuProvider);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => _yenile(ref, moduller),
@@ -54,6 +56,7 @@ class TayfaAnaSayfa extends ConsumerWidget {
               uyeSayisi: tayfa?.memberCount,
               durum: tayfa == null ? null : tayfaDurumu(tayfa),
               katilimKodu: kod,
+              menu: menu?.call(context, tayfaId),
             ),
             Padding(
               padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
@@ -106,6 +109,7 @@ class TayfaUstBolumu extends StatelessWidget {
     this.uyeSayisi,
     this.durum,
     this.katilimKodu,
+    this.menu,
   });
 
   /// Gösterilecek tayfa adı.
@@ -121,10 +125,15 @@ class TayfaUstBolumu extends StatelessWidget {
   /// paylaşım düğmeleri gösterilmez.
   final String? katilimKodu;
 
+  /// Tayfa adının yanındaki menü düğmesi (tayfa yönetimi kaydından;
+  /// ADR-0018 §1); yoksa gösterilmez.
+  final Widget? menu;
+
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
     final r = context.renkler;
+    final menu = this.menu;
     final uyeSayisi = this.uyeSayisi;
     final durum = this.durum;
     final kod = katilimKodu;
@@ -141,12 +150,25 @@ class TayfaUstBolumu extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _TayfaAdiDugmesi(
-                ad: ad,
-                ipucu: metinler.tayfa_degistir_ipucu,
-                // Panel bu (MarkaYuzeyi dışındaki) bağlamla açılır; böylece
-                // panel mor yüzeyin temasını (mango odak) devralmaz.
-                onPressed: () => unawaited(tayfaDegistirmePaneliniAc(context)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: _TayfaAdiDugmesi(
+                        ad: ad,
+                        ipucu: metinler.tayfa_degistir_ipucu,
+                        // Panel bu (MarkaYuzeyi dışındaki) bağlamla açılır;
+                        // böylece panel mor yüzeyin temasını (mango odak)
+                        // devralmaz.
+                        onPressed: () =>
+                            unawaited(tayfaDegistirmePaneliniAc(context)),
+                      ),
+                    ),
+                  ),
+                  ?menu,
+                ],
               ),
               if (uyeSayisi != null)
                 Padding(

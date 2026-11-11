@@ -2428,5 +2428,556 @@
   "hata_message_request_not_found": "Bekleyen bir mesaj isteği yok.",
   "@hata_message_request_not_found": {
     "description": "Hata kodu `message-request-not-found`. Bu konuşmada kullanıcıyı bekleyen bir mesaj isteği olmadığında (kabul ya da ret denendiğinde) görünen hata."
+  },
+  "yonetim_menu_ipucu": "Tayfa menüsü",
+  "@yonetim_menu_ipucu": {
+    "description": "Tayfa ana sayfasının mor üst bölümündeki menü düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "yonetim_menu_ipucu_bekleyen": "Tayfa menüsü, bekleyen katılım isteği var",
+  "@yonetim_menu_ipucu_bekleyen": {
+    "description": "Menü düğmesinin ipucu; yönetim rolündeki kullanıcı için bekleyen katılım isteği varken (düğmede rozet görünür)."
+  },
+  "yonetim_menu_ayarlar": "Tayfa ayarları",
+  "@yonetim_menu_ayarlar": {
+    "description": "Tayfa menüsünde, yalnızca moderatör ve yöneticiye görünen ayarlar girişi."
+  },
+  "yonetim_menu_bekleyen_var": "Bekleyen katılım isteği var",
+  "@yonetim_menu_bekleyen_var": {
+    "description": "Tayfa ayarları girişinin ve ayarlardaki katılım istekleri satırının alt metni; onay bekleyen istek varken görünür."
+  },
+  "yonetim_menu_sessize_al": "Bildirimleri sessize al",
+  "@yonetim_menu_sessize_al": {
+    "description": "Tayfa menüsünde, bu tayfanın bildirimlerini süresiz sessize alan giriş."
+  },
+  "yonetim_menu_sessizden_cikar": "Bildirimleri aç",
+  "@yonetim_menu_sessizden_cikar": {
+    "description": "Tayfa menüsünde, sessize alınmış tayfanın bildirimlerini yeniden açan giriş."
+  },
+  "yonetim_menu_ayril": "Tayfadan ayrıl",
+  "@yonetim_menu_ayril": {
+    "description": "Tayfa menüsünde tayfadan ayrılma girişi; onay penceresi açar."
+  },
+  "yonetim_sessize_alindi": "Bu tayfanın bildirimleri sessize alındı.",
+  "@yonetim_sessize_alindi": {
+    "description": "Tayfa sessize alınınca kısa süre görünen bildirim."
+  },
+  "yonetim_sessizden_cikti": "Bu tayfanın bildirimleri yeniden açık.",
+  "@yonetim_sessizden_cikti": {
+    "description": "Tayfanın bildirimleri yeniden açılınca kısa süre görünen bildirim."
+  },
+  "yonetim_ayril_baslik": "Tayfadan ayrılıyor musun?",
+  "@yonetim_ayril_baslik": {
+    "description": "Tayfadan ayrılma onay penceresinin başlığı."
+  },
+  "yonetim_ayril_aciklama": "{ad} tayfasından ayrılacaksın. Yeniden katılmak için kod ya da davet gerekir.",
+  "@yonetim_ayril_aciklama": {
+    "description": "Tayfadan ayrılma onay penceresinin açıklaması; ad, tayfanın adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      }
+    }
+  },
+  "yonetim_ayril_onayla": "Ayrıl",
+  "@yonetim_ayril_onayla": {
+    "description": "Tayfadan ayrılma onay penceresindeki onay düğmesi."
+  },
+  "yonetim_ayrildin": "Tayfadan ayrıldın.",
+  "@yonetim_ayrildin": {
+    "description": "Tayfadan ayrılınca kısa süre görünen bildirim."
+  },
+  "yonetim_vazgec": "Vazgeç",
+  "@yonetim_vazgec": {
+    "description": "Tayfa yönetimi onay pencerelerinde, değişiklik yapmadan kapatan düğme."
+  },
+  "yonetim_tekrar_dene": "Tekrar dene",
+  "@yonetim_tekrar_dene": {
+    "description": "Tayfa yönetimi ekranlarında liste okunamayınca görünen düğme."
+  },
+  "yonetim_daha_fazla": "Daha fazla göster",
+  "@yonetim_daha_fazla": {
+    "description": "Tayfa yönetimi listelerinde sonraki sayfayı okuyan düğme."
+  },
+  "yonetim_yukleniyor": "Yükleniyor",
+  "@yonetim_yukleniyor": {
+    "description": "Tayfa yönetimi ekranlarındaki yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "yonetim_ayarlar_baslik": "Tayfa ayarları",
+  "@yonetim_ayarlar_baslik": {
+    "description": "Tayfa ayarları ekranının başlığı."
+  },
+  "yonetim_istekler": "Katılım istekleri",
+  "@yonetim_istekler": {
+    "description": "Tayfa ayarlarındaki katılım istekleri girişi ve ekranının başlığı."
+  },
+  "yonetim_uyeler": "Üyeler",
+  "@yonetim_uyeler": {
+    "description": "Tayfa ayarlarındaki üyeler girişi ve ekranının başlığı."
+  },
+  "yonetim_davetler": "Davet linkleri",
+  "@yonetim_davetler": {
+    "description": "Tayfa ayarlarındaki davet linkleri girişi ve ekranının başlığı."
+  },
+  "yonetim_bilgiler": "Tayfa bilgileri",
+  "@yonetim_bilgiler": {
+    "description": "Tayfa ayarlarındaki (yalnızca yönetici) tayfa bilgileri girişi ve ekranının başlığı."
+  },
+  "yonetim_moduller": "Modüller",
+  "@yonetim_moduller": {
+    "description": "Tayfa ayarlarında modülleri açıp kapatma bölümünün başlığı."
+  },
+  "yonetim_moduller_aciklama": "Kapalı modül tayfada görünmez.",
+  "@yonetim_moduller_aciklama": {
+    "description": "Modüller bölümünün açıklaması."
+  },
+  "yonetim_modul_duyurular": "Duyurular",
+  "@yonetim_modul_duyurular": {
+    "description": "Modüller bölümünde duyuru modülünün anahtarı."
+  },
+  "yonetim_modul_etkinlikler": "Etkinlikler",
+  "@yonetim_modul_etkinlikler": {
+    "description": "Modüller bölümünde etkinlik modülünün anahtarı."
+  },
+  "yonetim_modul_soru_cevap": "Soru-cevap",
+  "@yonetim_modul_soru_cevap": {
+    "description": "Modüller bölümünde soru-cevap modülünün anahtarı."
+  },
+  "yonetim_modul_anketler": "Anketler",
+  "@yonetim_modul_anketler": {
+    "description": "Modüller bölümünde anket modülünün anahtarı."
+  },
+  "yonetim_modul_acildi": "Modül açıldı.",
+  "@yonetim_modul_acildi": {
+    "description": "Bir modül açılınca kısa süre görünen bildirim."
+  },
+  "yonetim_modul_kapandi": "Modül kapatıldı.",
+  "@yonetim_modul_kapandi": {
+    "description": "Bir modül kapatılınca kısa süre görünen bildirim."
+  },
+  "yonetim_kod_baslik": "Tayfa kodu",
+  "@yonetim_kod_baslik": {
+    "description": "Tayfa ayarlarında tayfa kodu bölümünün başlığı."
+  },
+  "yonetim_kod_yenile": "Kodu yenile",
+  "@yonetim_kod_yenile": {
+    "description": "Tayfa kodunu yenileyen düğme; onay penceresi açar."
+  },
+  "yonetim_kod_yenile_baslik": "Kod yenilensin mi?",
+  "@yonetim_kod_yenile_baslik": {
+    "description": "Tayfa kodunu yenileme onay penceresinin başlığı."
+  },
+  "yonetim_kod_yenile_aciklama": "Eski kod hemen geçersiz olur; paylaştığın eski kodla artık kimse katılamaz.",
+  "@yonetim_kod_yenile_aciklama": {
+    "description": "Tayfa kodunu yenileme onay penceresinin açıklaması."
+  },
+  "yonetim_kod_yenile_onayla": "Yenile",
+  "@yonetim_kod_yenile_onayla": {
+    "description": "Tayfa kodunu yenileme onay penceresindeki onay düğmesi."
+  },
+  "yonetim_kod_yenilendi": "Tayfa kodu yenilendi.",
+  "@yonetim_kod_yenilendi": {
+    "description": "Tayfa kodu yenilenince kısa süre görünen bildirim."
+  },
+  "yonetim_silme_baslik": "Tayfayı sil",
+  "@yonetim_silme_baslik": {
+    "description": "Tayfa ayarlarında silme bölümünün başlığı."
+  },
+  "yonetim_silme_aciklama": "Silme 72 saat sonra gerçekleşir. Bu sürede tayfa yalnızca okunabilir ve herhangi bir yönetici silmeyi iptal edebilir.",
+  "@yonetim_silme_aciklama": {
+    "description": "Silme bölümünün açıklaması; silme beklemiyorken görünür."
+  },
+  "yonetim_sil": "Tayfayı sil",
+  "@yonetim_sil": {
+    "description": "Tayfa silmeyi başlatan düğme; onay penceresi açar."
+  },
+  "yonetim_sil_onay_baslik": "Tayfa silinsin mi?",
+  "@yonetim_sil_onay_baslik": {
+    "description": "Tayfa silme onay penceresinin başlığı."
+  },
+  "yonetim_sil_onay_aciklama": "{ad} 72 saat sonra bütün içeriğiyle silinecek. Bu sürede silmeyi iptal edebilirsin.",
+  "@yonetim_sil_onay_aciklama": {
+    "description": "Tayfa silme onay penceresinin açıklaması; ad, tayfanın adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      }
+    }
+  },
+  "yonetim_sil_onayla": "Silmeyi başlat",
+  "@yonetim_sil_onayla": {
+    "description": "Tayfa silme onay penceresindeki onay düğmesi."
+  },
+  "yonetim_silme_planlandi": "Tayfa 72 saat sonra silinecek.",
+  "@yonetim_silme_planlandi": {
+    "description": "Tayfa silme başlatılınca kısa süre görünen bildirim."
+  },
+  "yonetim_silme_iptal": "Silmeyi iptal et",
+  "@yonetim_silme_iptal": {
+    "description": "Silme beklerken görünen, silmeyi iptal eden düğme."
+  },
+  "yonetim_silme_iptal_edildi": "Silme iptal edildi.",
+  "@yonetim_silme_iptal_edildi": {
+    "description": "Silme iptal edilince kısa süre görünen bildirim."
+  },
+  "yonetim_istekler_bos": "Bekleyen katılım isteği yok.",
+  "@yonetim_istekler_bos": {
+    "description": "Katılım istekleri ekranında istek yokken görünen metin."
+  },
+  "yonetim_istek_kaynak_link": "Davet linkiyle geldi",
+  "@yonetim_istek_kaynak_link": {
+    "description": "Katılım isteğinin kaynağı: davet linki."
+  },
+  "yonetim_istek_kaynak_dogrudan": "Doğrudan davetle geldi",
+  "@yonetim_istek_kaynak_dogrudan": {
+    "description": "Katılım isteğinin kaynağı: bir üyenin doğrudan daveti."
+  },
+  "yonetim_istek_kaynak_kod": "Tayfa koduyla geldi",
+  "@yonetim_istek_kaynak_kod": {
+    "description": "Katılım isteğinin kaynağı: tayfa kodu."
+  },
+  "yonetim_istek_kaynak_kesfet": "Keşfetten geldi",
+  "@yonetim_istek_kaynak_kesfet": {
+    "description": "Katılım isteğinin kaynağı: keşfet."
+  },
+  "yonetim_istek_kaynak_bilinmiyor": "Katılma isteği gönderdi",
+  "@yonetim_istek_kaynak_bilinmiyor": {
+    "description": "Katılım isteğinin kaynağı bilinmiyorken görünen genel metin."
+  },
+  "yonetim_istek_davet_eden": "Davet eden:",
+  "@yonetim_istek_davet_eden": {
+    "description": "Katılım isteğinde davet eden ya da linki açan kişinin adından önce gelen etiket."
+  },
+  "yonetim_istek_zamani": "{tarih} tarihinde istedi",
+  "@yonetim_istek_zamani": {
+    "description": "Katılım isteğinin gönderildiği gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-10"
+      }
+    }
+  },
+  "yonetim_onayla": "Onayla",
+  "@yonetim_onayla": {
+    "description": "Katılım isteğini onaylayan düğme."
+  },
+  "yonetim_reddet": "Reddet",
+  "@yonetim_reddet": {
+    "description": "Katılım isteğini reddeden düğme."
+  },
+  "yonetim_istek_onaylandi": "İstek onaylandı; artık tayfada.",
+  "@yonetim_istek_onaylandi": {
+    "description": "Katılım isteği onaylanınca kısa süre görünen bildirim."
+  },
+  "yonetim_istek_reddedildi": "İstek reddedildi.",
+  "@yonetim_istek_reddedildi": {
+    "description": "Katılım isteği reddedilince kısa süre görünen bildirim."
+  },
+  "yonetim_filtre_hepsi": "Hepsi",
+  "@yonetim_filtre_hepsi": {
+    "description": "Üyeler ekranında bütün etkin üyeleri gösteren filtre."
+  },
+  "yonetim_filtre_yonetici": "Yöneticiler",
+  "@yonetim_filtre_yonetici": {
+    "description": "Üyeler ekranında yöneticileri gösteren filtre."
+  },
+  "yonetim_filtre_moderator": "Moderatörler",
+  "@yonetim_filtre_moderator": {
+    "description": "Üyeler ekranında moderatörleri gösteren filtre."
+  },
+  "yonetim_filtre_uye": "Üyeler",
+  "@yonetim_filtre_uye": {
+    "description": "Üyeler ekranında üye rolündekileri gösteren filtre."
+  },
+  "yonetim_filtre_banli": "Banlananlar",
+  "@yonetim_filtre_banli": {
+    "description": "Üyeler ekranında banlananları gösteren filtre."
+  },
+  "yonetim_uyeler_bos": "Bu filtrede kimse yok.",
+  "@yonetim_uyeler_bos": {
+    "description": "Üyeler ekranında filtreye uyan kimse yokken görünen metin."
+  },
+  "yonetim_rol_admin": "Yönetici",
+  "@yonetim_rol_admin": {
+    "description": "Üye satırındaki rol: yönetici."
+  },
+  "yonetim_rol_moderator": "Moderatör",
+  "@yonetim_rol_moderator": {
+    "description": "Üye satırındaki rol: moderatör."
+  },
+  "yonetim_rol_member": "Üye",
+  "@yonetim_rol_member": {
+    "description": "Üye satırındaki rol: üye."
+  },
+  "yonetim_banli": "Banlı",
+  "@yonetim_banli": {
+    "description": "Banlananlar listesindeki üye satırının alt metni."
+  },
+  "yonetim_susturuldu": "Susturuldu",
+  "@yonetim_susturuldu": {
+    "description": "Üye satırında, üye susturulmuşken rolün yanında görünen metin."
+  },
+  "yonetim_uye_islemleri": "Üye işlemleri",
+  "@yonetim_uye_islemleri": {
+    "description": "Üye satırındaki işlem düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "yonetim_rol_yap_admin": "Yönetici yap",
+  "@yonetim_rol_yap_admin": {
+    "description": "Üye işlemleri panelinde rolü yönetici yapan giriş."
+  },
+  "yonetim_rol_yap_moderator": "Moderatör yap",
+  "@yonetim_rol_yap_moderator": {
+    "description": "Üye işlemleri panelinde rolü moderatör yapan giriş."
+  },
+  "yonetim_rol_yap_member": "Üye yap",
+  "@yonetim_rol_yap_member": {
+    "description": "Üye işlemleri panelinde rolü üye yapan giriş."
+  },
+  "yonetim_sustur_saat": "{sayi, plural, other{{sayi} saat sustur}}",
+  "@yonetim_sustur_saat": {
+    "description": "Üye işlemleri panelinde saat cinsinden susturma süresi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "yonetim_sustur_gun": "{sayi, plural, other{{sayi} gün sustur}}",
+  "@yonetim_sustur_gun": {
+    "description": "Üye işlemleri panelinde gün cinsinden susturma süresi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "yonetim_susturmayi_kaldir": "Susturmayı kaldır",
+  "@yonetim_susturmayi_kaldir": {
+    "description": "Üye işlemleri panelinde susturmayı hemen bitiren giriş."
+  },
+  "yonetim_cikar": "Tayfadan çıkar",
+  "@yonetim_cikar": {
+    "description": "Üye işlemleri panelinde üyeyi çıkaran giriş; onay penceresi açar."
+  },
+  "yonetim_banla": "Banla",
+  "@yonetim_banla": {
+    "description": "Üye işlemleri panelinde üyeyi banlayan giriş; onay penceresi açar."
+  },
+  "yonetim_cikar_baslik": "Tayfadan çıkarılsın mı?",
+  "@yonetim_cikar_baslik": {
+    "description": "Üyeyi çıkarma onay penceresinin başlığı."
+  },
+  "yonetim_cikar_aciklama": "Çıkarılan kişi daha sonra kodla ya da davetle tekrar katılabilir.",
+  "@yonetim_cikar_aciklama": {
+    "description": "Üyeyi çıkarma onay penceresinin açıklaması."
+  },
+  "yonetim_cikar_onayla": "Çıkar",
+  "@yonetim_cikar_onayla": {
+    "description": "Üyeyi çıkarma onay penceresindeki onay düğmesi."
+  },
+  "yonetim_banla_baslik": "Banlansın mı?",
+  "@yonetim_banla_baslik": {
+    "description": "Üyeyi banlama onay penceresinin başlığı."
+  },
+  "yonetim_banla_aciklama": "Banlanan kişi tayfadan çıkar ve kodla ya da davetle tekrar katılamaz.",
+  "@yonetim_banla_aciklama": {
+    "description": "Üyeyi banlama onay penceresinin açıklaması."
+  },
+  "yonetim_banla_onayla": "Banla",
+  "@yonetim_banla_onayla": {
+    "description": "Üyeyi banlama onay penceresindeki onay düğmesi."
+  },
+  "yonetim_rol_degisti": "Rol değiştirildi.",
+  "@yonetim_rol_degisti": {
+    "description": "Üyenin rolü değişince kısa süre görünen bildirim."
+  },
+  "yonetim_susturuldu_bildirim": "Üye susturuldu.",
+  "@yonetim_susturuldu_bildirim": {
+    "description": "Üye susturulunca kısa süre görünen bildirim."
+  },
+  "yonetim_susturma_kalkti": "Susturma kaldırıldı.",
+  "@yonetim_susturma_kalkti": {
+    "description": "Susturma kaldırılınca kısa süre görünen bildirim."
+  },
+  "yonetim_cikarildi": "Üye tayfadan çıkarıldı.",
+  "@yonetim_cikarildi": {
+    "description": "Üye çıkarılınca kısa süre görünen bildirim."
+  },
+  "yonetim_banlandi": "Üye banlandı.",
+  "@yonetim_banlandi": {
+    "description": "Üye banlanınca kısa süre görünen bildirim."
+  },
+  "yonetim_ad_etiketi": "Tayfa adı",
+  "@yonetim_ad_etiketi": {
+    "description": "Tayfa bilgileri formunda ad alanının etiketi."
+  },
+  "yonetim_ad_hata": "Tayfa adı 3–50 karakter olmalı.",
+  "@yonetim_ad_hata": {
+    "description": "Tayfa adı kısa ya da uzun olduğunda görünen hata."
+  },
+  "yonetim_aciklama_etiketi": "Açıklama",
+  "@yonetim_aciklama_etiketi": {
+    "description": "Tayfa bilgileri formunda açıklama alanının etiketi."
+  },
+  "yonetim_aciklama_hata": "Açıklama en çok 500 karakter olabilir.",
+  "@yonetim_aciklama_hata": {
+    "description": "Açıklama uzun olduğunda görünen hata."
+  },
+  "yonetim_ilgi_baslik": "İlgi alanları",
+  "@yonetim_ilgi_baslik": {
+    "description": "Tayfa bilgileri formunda ilgi alanları bölümünün başlığı."
+  },
+  "yonetim_katilim_baslik": "Katılım",
+  "@yonetim_katilim_baslik": {
+    "description": "Tayfa bilgileri formunda katılım politikası bölümünün başlığı."
+  },
+  "yonetim_uye_etkinlik": "Üyeler etkinlik açabilir",
+  "@yonetim_uye_etkinlik": {
+    "description": "Tayfa bilgileri formunda her üyenin etkinlik açmasına izin veren anahtar."
+  },
+  "yonetim_uye_etkinlik_aciklama": "Kapalıyken yalnızca moderatörler ve yöneticiler etkinlik açar.",
+  "@yonetim_uye_etkinlik_aciklama": {
+    "description": "Üyelerin etkinlik açma anahtarının açıklaması."
+  },
+  "yonetim_kaydet": "Kaydet",
+  "@yonetim_kaydet": {
+    "description": "Tayfa bilgileri formunu kaydeden düğme."
+  },
+  "yonetim_kaydedildi": "Tayfa bilgileri kaydedildi.",
+  "@yonetim_kaydedildi": {
+    "description": "Tayfa bilgileri kaydedilince kısa süre görünen bildirim."
+  },
+  "yonetim_davet_olustur": "Davet linki oluştur",
+  "@yonetim_davet_olustur": {
+    "description": "Davet linkleri ekranında yeni link seçeneklerini açan düğme."
+  },
+  "yonetim_davet_olustur_onayla": "Oluştur",
+  "@yonetim_davet_olustur_onayla": {
+    "description": "Davet linki seçenekleri panelinde linki oluşturan düğme."
+  },
+  "yonetim_davet_sure": "Geçerlilik",
+  "@yonetim_davet_sure": {
+    "description": "Davet linki seçeneklerinde süre bölümünün başlığı."
+  },
+  "yonetim_davet_sure_gun": "{sayi, plural, other{{sayi} gün}}",
+  "@yonetim_davet_sure_gun": {
+    "description": "Davet linkinin geçerlilik süresi seçeneği.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "yonetim_davet_kullanim": "Kaç kişi katılabilir",
+  "@yonetim_davet_kullanim": {
+    "description": "Davet linki seçeneklerinde kullanım sayısı bölümünün başlığı."
+  },
+  "yonetim_davet_kullanim_sayi": "{sayi, plural, other{{sayi} kişi}}",
+  "@yonetim_davet_kullanim_sayi": {
+    "description": "Davet linkinin kullanım sayısı seçeneği.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "yonetim_davet_hazir_baslik": "Davet linkin hazır",
+  "@yonetim_davet_hazir_baslik": {
+    "description": "Yeni davet linkinin paylaşım panelinin başlığı."
+  },
+  "yonetim_davet_hazir_aciklama": "Bu link yalnızca şimdi gösterilir; kapatınca bir daha göremezsin. Şimdi paylaş ya da kopyala.",
+  "@yonetim_davet_hazir_aciklama": {
+    "description": "Yeni davet linkinin paylaşım panelinin açıklaması."
+  },
+  "yonetim_davet_paylas": "Linki paylaş",
+  "@yonetim_davet_paylas": {
+    "description": "Davet linkini sistem paylaşım menüsüyle paylaşan düğme."
+  },
+  "yonetim_davet_kopyala": "Linki kopyala",
+  "@yonetim_davet_kopyala": {
+    "description": "Davet linkini panoya kopyalayan düğme."
+  },
+  "yonetim_davet_kopyalandi": "Davet linki kopyalandı.",
+  "@yonetim_davet_kopyalandi": {
+    "description": "Davet linki panoya kopyalanınca kısa süre görünen bildirim."
+  },
+  "yonetim_davet_paylasim_metni": "{ad} tayfasına Tayfam'da katıl:\n{link}",
+  "@yonetim_davet_paylasim_metni": {
+    "description": "Davet linki paylaşılırken gönderilen metin; ad tayfanın adı, link davet linkidir.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://tayfam.app/davet#..."
+      }
+    }
+  },
+  "yonetim_davetler_bos": "Geçerli davet linki yok.",
+  "@yonetim_davetler_bos": {
+    "description": "Davet linkleri ekranında geçerli link yokken görünen metin."
+  },
+  "yonetim_davet_kullanim_durumu": "{kullanilan}/{enCok} kişi katıldı",
+  "@yonetim_davet_kullanim_durumu": {
+    "description": "Davet linki kartında kullanım durumu.",
+    "placeholders": {
+      "kullanilan": {
+        "type": "int",
+        "example": "3"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "yonetim_davet_bitis": "{tarih}, {saat} tarihine kadar geçerli",
+  "@yonetim_davet_bitis": {
+    "description": "Davet linki kartında linkin bitiş zamanı (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-20"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-20T09:00"
+      }
+    }
+  },
+  "yonetim_davet_acan": "Açan:",
+  "@yonetim_davet_acan": {
+    "description": "Davet linki kartında linki açan kişinin adından önce gelen etiket."
+  },
+  "yonetim_davet_iptal": "Linki iptal et",
+  "@yonetim_davet_iptal": {
+    "description": "Davet linki kartında linki geçersiz kılan düğme; onay penceresi açar."
+  },
+  "yonetim_davet_iptal_baslik": "Link iptal edilsin mi?",
+  "@yonetim_davet_iptal_baslik": {
+    "description": "Davet linkini iptal etme onay penceresinin başlığı."
+  },
+  "yonetim_davet_iptal_aciklama": "Bu linkle artık kimse katılamaz.",
+  "@yonetim_davet_iptal_aciklama": {
+    "description": "Davet linkini iptal etme onay penceresinin açıklaması."
+  },
+  "yonetim_davet_iptal_onayla": "İptal et",
+  "@yonetim_davet_iptal_onayla": {
+    "description": "Davet linkini iptal etme onay penceresindeki onay düğmesi."
+  },
+  "yonetim_davet_iptal_edildi": "Davet linki iptal edildi.",
+  "@yonetim_davet_iptal_edildi": {
+    "description": "Davet linki iptal edilince kısa süre görünen bildirim."
   }
 }
