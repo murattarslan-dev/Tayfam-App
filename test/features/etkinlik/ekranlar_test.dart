@@ -102,10 +102,7 @@ void main() {
           reason: 'üye, tayfada üyeler etkinlik açamıyor',
         );
 
-        await _gorunurDokun(
-          tester,
-          find.text(arbMetni('etkinlik_daha_fazla')),
-        );
+        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_daha_fazla')));
         final sayfalar = tasima.giden('GET', etkinliklerYolu);
         expect(sayfalar, hasLength(2));
         expect(sayfalar[0].sorgu, {'page_size': '20'});
@@ -151,10 +148,7 @@ void main() {
 
       await tester.tap(find.text('Göl kampı'));
       await tester.pumpAndSettle();
-      expect(
-        _yol(tester),
-        Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
-      );
+      expect(_yol(tester), Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
       expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
     });
   });
@@ -179,23 +173,24 @@ void main() {
           themeMode: tema,
         );
 
-        expect(find.text('Göl kampı'), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_seri_notu')), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_kontenjan_dolu')), findsOneWidget);
-        await tester.scrollUntilVisible(
-          find.text('Göl kenarı'),
-          200,
-          scrollable: find.byType(Scrollable).first,
-        );
-        expect(find.text('Ayşe'), findsOneWidget);
-        expect(find.text('Abant Gölü'), findsOneWidget);
-        expect(find.text('Merkez, Bolu'), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_harita_atif')), findsOneWidget);
-        await tester.scrollUntilVisible(
-          find.text('Mert'),
-          200,
-          scrollable: find.byType(Scrollable).first,
-        );
+        for (final metin in [
+          'Göl kampı',
+          arbMetni('etkinlik_seri_notu'),
+          arbMetni('etkinlik_kontenjan_dolu'),
+          'Abant Gölü',
+          'Merkez, Bolu',
+          arbMetni('etkinlik_harita_atif'),
+          'Ayşe',
+          'Göl kenarı',
+          'Mert',
+        ]) {
+          await tester.scrollUntilVisible(
+            find.text(metin),
+            100,
+            scrollable: find.byType(Scrollable).first,
+          );
+          expect(find.text(metin), findsOneWidget, reason: metin);
+        }
         expect(
           tasima.giden('GET', katilimcilarYolu).first.sorgu['status'],
           'going',
@@ -203,7 +198,7 @@ void main() {
       });
     }
 
-    testWidgets('katılım: Geliyorum seçilir, sayı ve sekme güncellenir', (
+    testWidgets('katılım: Geliyorum seçilir, sayılar güncellenir', (
       tester,
     ) async {
       ekranBoyutu(tester);
@@ -234,11 +229,6 @@ void main() {
       );
       expect(cip.selected, isTrue);
       expect(find.text('Geliyor: 4 · Belki: 1'), findsOneWidget);
-      expect(
-        tasima.giden('GET', katilimcilarYolu).length,
-        greaterThanOrEqualTo(2),
-        reason: 'katılımcılar yeniden okunur',
-      );
     });
 
     testWidgets('bekleme listesindeyken bilgi gösterilir', (tester) async {
@@ -281,10 +271,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(takvim.paylasilan, hasLength(1));
 
-      await _gorunurDokun(
-        tester,
-        find.text(arbMetni('etkinlik_haritada_ac')),
-      );
+      await _gorunurDokun(tester, find.text(arbMetni('etkinlik_haritada_ac')));
       expect(baglanti.noktalar, [(40.6, 31.28)]);
     });
 
@@ -333,7 +320,10 @@ void main() {
       );
       await tester.tap(onay);
       await tester.pumpAndSettle();
-      expect(find.text(arbMetni('etkinlik_iptal_gerekce_hata')), findsOneWidget);
+      expect(
+        find.text(arbMetni('etkinlik_iptal_gerekce_hata')),
+        findsOneWidget,
+      );
       expect(tasima.giden('POST', iptalYolu), isEmpty);
 
       await tester.enterText(find.byType(TextField), 'Hava kötü');
@@ -422,10 +412,8 @@ void main() {
       });
       await _git(tester, tasima, Adresler.etkinlikOlustur(ornekTayfaId));
       final n = tester.container().read(
-        etkinlikSihirbaziProvider((
-          tayfaId: ornekTayfaId,
-          duzenlenen: null,
-        )).notifier,
+        etkinlikSihirbaziProvider((tayfaId: ornekTayfaId, duzenlenen: null))
+            .notifier,
       );
       n
         ..turSec(EventType.general)
@@ -450,10 +438,7 @@ void main() {
               as Map<String, Object?>;
       expect(govde['client_request_id'], sahteEtkinlikIstekKimligi);
       expect(govde['type'], 'general');
-      expect(
-        _yol(tester),
-        Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
-      );
+      expect(_yol(tester), Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
       expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
     });
 

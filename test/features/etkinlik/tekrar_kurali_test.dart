@@ -25,9 +25,7 @@ void main() {
         'FREQ=WEEKLY;INTERVAL=2',
       );
       expect(
-        rruleUret(
-          const TekrarSecimi(siklik: TekrarSikligi.aylik, aralik: 3),
-        ),
+        rruleUret(const TekrarSecimi(siklik: TekrarSikligi.aylik, aralik: 3)),
         'FREQ=MONTHLY;INTERVAL=3',
       );
     });
@@ -46,7 +44,10 @@ void main() {
         bitis: TekrarBitisi.tarih,
         sonGun: DateTime.utc(2027, 3, 31),
       );
-      expect(rruleUret(secim), 'FREQ=MONTHLY;INTERVAL=2;UNTIL=20270331T205959Z');
+      expect(
+        rruleUret(secim),
+        'FREQ=MONTHLY;INTERVAL=2;UNTIL=20270331T205959Z',
+      );
     });
 
     test('sözleşmenin alt kümesinde kalır ve 256 karakteri geçmez', () {
@@ -59,8 +60,12 @@ void main() {
       expect(kural.length, lessThanOrEqualTo(256));
       expect(
         kural,
-        matches(RegExp(r'^FREQ=(WEEKLY|MONTHLY)(;INTERVAL=\d+)?'
-            r'(;(COUNT=\d+|UNTIL=\d{8}T\d{6}Z))?$')),
+        matches(
+          RegExp(
+            r'^FREQ=(WEEKLY|MONTHLY)(;INTERVAL=\d+)?'
+            r'(;(COUNT=\d+|UNTIL=\d{8}T\d{6}Z))?$',
+          ),
+        ),
       );
     });
 
@@ -157,10 +162,7 @@ void main() {
     test('UTC+3, yaz saati yok', () {
       expect(istanbulSaatine(DateTime.utc(2026, 7, 1, 21)).day, 2);
       expect(istanbulSaatine(DateTime.utc(2026, 7, 1, 21)).hour, 0);
-      expect(
-        istanbulSaatinden(2026, 1, 15, 9),
-        DateTime.utc(2026, 1, 15, 6),
-      );
+      expect(istanbulSaatinden(2026, 1, 15, 9), DateTime.utc(2026, 1, 15, 6));
     });
   });
 }

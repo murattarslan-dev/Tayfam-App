@@ -58,8 +58,11 @@ void main() {
 
     n.ileri();
     expect(t().adim, 1);
-    expect(t().hatalar, {TaslakHatasi.baslik, TaslakHatasi.baslangicYok,
-        TaslakHatasi.bitis});
+    expect(t().hatalar, {
+      TaslakHatasi.baslik,
+      TaslakHatasi.baslangicYok,
+      TaslakHatasi.bitis,
+    });
 
     n
       ..baslikAyarla('Kaçkar')
@@ -116,54 +119,55 @@ void main() {
     expect(yer.ilce, 'Merkez');
   });
 
-  test('oluşturma gövdesi ve tekrar; hata sonrası aynı client_request_id', () async {
-    var deneme = 0;
-    final tasima = etkinlikTasimasi({
-      'POST $etkinliklerYolu': (_) => deneme++ == 0
-          ? const ApiProblem(type: ProblemType.unavailable, status: 503)
-          : etkinlikJson(),
-    });
-    final c = _kapsayici(tasima);
-    final n = _doldur(c)
-      ..kontenjanAyarla('12')
-      ..ayrintiAyarla(
-        const TurAyrintisi(kampYeri: 'Göl kenarı', su: true),
-      )
-      ..tekrarAyarla(const TekrarSecimi(aralik: 2));
-    EtkinlikTaslagi t() => c.read(etkinlikSihirbaziProvider(_olusturma));
-    expect(t().adim, 3);
+  test(
+    'oluşturma gövdesi ve tekrar; hata sonrası aynı client_request_id',
+    () async {
+      var deneme = 0;
+      final tasima = etkinlikTasimasi({
+        'POST $etkinliklerYolu': (_) => deneme++ == 0
+            ? const ApiProblem(type: ProblemType.unavailable, status: 503)
+            : etkinlikJson(),
+      });
+      final c = _kapsayici(tasima);
+      final n = _doldur(c)
+        ..kontenjanAyarla('12')
+        ..ayrintiAyarla(const TurAyrintisi(kampYeri: 'Göl kenarı', su: true))
+        ..tekrarAyarla(const TekrarSecimi(aralik: 2));
+      EtkinlikTaslagi t() => c.read(etkinlikSihirbaziProvider(_olusturma));
+      expect(t().adim, 3);
 
-    await n.gonder();
-    expect(t().hata, isA<ApiProblem>());
-    expect(t().sonuc, isNull);
+      await n.gonder();
+      expect(t().hata, isA<ApiProblem>());
+      expect(t().sonuc, isNull);
 
-    await n.gonder();
-    expect(t().sonuc, ornekEtkinlikId);
+      await n.gonder();
+      expect(t().sonuc, ornekEtkinlikId);
 
-    final istekler = tasima.giden('POST', etkinliklerYolu);
-    expect(istekler, hasLength(2));
-    expect(istekler[0].govde, istekler[1].govde);
-    final govde = istekler[1].govde! as Map<String, Object?>;
-    expect(govde, {
-      'type': 'camp',
-      'mode': 'in_person',
-      'title': 'Göl kampı',
-      'description': 'Çadırını getir.',
-      'starts_at': '2026-11-14T06:00:00.000Z',
-      'ends_at': '2026-11-14T08:00:00.000Z',
-      'meeting_point_name': 'Abant Gölü',
-      'meeting_point': {'lat': 40.6, 'lng': 31.28},
-      'city': 'Bolu',
-      'district': 'Merkez',
-      'capacity': 12,
-      'camp': {'site_name': 'Göl kenarı', 'has_water': true},
-      'recurrence': {
-        'rrule': 'FREQ=WEEKLY;INTERVAL=2',
-        'time_zone': 'Europe/Istanbul',
-      },
-      'client_request_id': sahteEtkinlikIstekKimligi,
-    });
-  });
+      final istekler = tasima.giden('POST', etkinliklerYolu);
+      expect(istekler, hasLength(2));
+      expect(istekler[0].govde, istekler[1].govde);
+      final govde = istekler[1].govde! as Map<String, Object?>;
+      expect(govde, {
+        'type': 'camp',
+        'mode': 'in_person',
+        'title': 'Göl kampı',
+        'description': 'Çadırını getir.',
+        'starts_at': '2026-11-14T06:00:00.000Z',
+        'ends_at': '2026-11-14T08:00:00.000Z',
+        'meeting_point_name': 'Abant Gölü',
+        'meeting_point': {'lat': 40.6, 'lng': 31.28},
+        'city': 'Bolu',
+        'district': 'Merkez',
+        'capacity': 12,
+        'camp': {'site_name': 'Göl kenarı', 'has_water': true},
+        'recurrence': {
+          'rrule': 'FREQ=WEEKLY;INTERVAL=2',
+          'time_zone': 'Europe/Istanbul',
+        },
+        'client_request_id': sahteEtkinlikIstekKimligi,
+      });
+    },
+  );
 
   test('gönderirken hatalı adıma dönülür; istek gitmez', () async {
     final tasima = etkinlikTasimasi();
@@ -182,10 +186,7 @@ void main() {
       tur: EventType.gaming,
       ayrinti: const TurAyrintisi(oyun: ' Valorant '),
     );
-    expect(
-      adimHatalari(3, oyun, simdi: sabitSimdi),
-      {TaslakHatasi.platform},
-    );
+    expect(adimHatalari(3, oyun, simdi: sabitSimdi), {TaslakHatasi.platform});
     expect(
       turAyrintisi(
         EventType.gaming,

@@ -32,7 +32,7 @@ class EtkinliklerEkrani extends ConsumerWidget {
       appBar: AppBar(title: Text(m.etkinlik_modul_adi)),
       floatingActionButton: acabilir == true
           ? FloatingActionButton.extended(
-              onPressed: () => context.push(Adresler.etkinlikOlustur(tayfaId)),
+              onPressed: () => context.go(Adresler.etkinlikOlustur(tayfaId)),
               icon: const Icon(Icons.add),
               label: Text(m.etkinlik_ac),
             )
@@ -64,9 +64,8 @@ class EtkinliklerEkrani extends ConsumerWidget {
               ],
             ),
           ),
-          loading: () => const _Durum(
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          loading: () =>
+              const _Durum(child: Center(child: CircularProgressIndicator())),
         ),
       ),
     );
@@ -131,8 +130,7 @@ class _Liste extends StatelessWidget {
           final etkinlik = etkinlikler[i];
           return EtkinlikSatiri(
             etkinlik: etkinlik,
-            onTap: () =>
-                context.push(Adresler.etkinlik(tayfaId, etkinlik.id)),
+            onTap: () => context.go(Adresler.etkinlik(tayfaId, etkinlik.id)),
           );
         }
         return Column(

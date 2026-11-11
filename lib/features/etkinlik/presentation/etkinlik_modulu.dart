@@ -35,8 +35,7 @@ class EtkinlikModulu implements TayfaModule {
   List<RouteBase> get rotalar => [
     GoRoute(
       path: Adresler.etkinliklerYolu,
-      builder: (context, state) =>
-          EtkinliklerEkrani(tayfaId: _tayfaId(state)),
+      builder: (context, state) => EtkinliklerEkrani(tayfaId: _tayfaId(state)),
       routes: [
         GoRoute(
           path: Adresler.etkinlikOlusturYolu,

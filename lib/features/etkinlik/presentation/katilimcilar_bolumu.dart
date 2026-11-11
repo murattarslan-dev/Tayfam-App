@@ -31,8 +31,7 @@ class KatilimcilarBolumu extends ConsumerStatefulWidget {
   final String etkinlikId;
 
   @override
-  ConsumerState<KatilimcilarBolumu> createState() =>
-      _KatilimcilarBolumuState();
+  ConsumerState<KatilimcilarBolumu> createState() => _KatilimcilarBolumuState();
 }
 
 class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {

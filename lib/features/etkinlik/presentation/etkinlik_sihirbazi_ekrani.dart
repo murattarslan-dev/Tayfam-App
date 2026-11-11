@@ -201,12 +201,7 @@ class _EtkinlikSihirbaziEkraniState
     final sonuc = await haritaSeciciAc(context, baslangic: _t.yer.nokta);
     if (sonuc == null || !mounted) return;
     final oneri = sonuc.oneri;
-    _n.noktaSec(
-      sonuc.nokta,
-      ad: oneri?.ad,
-      il: oneri?.il,
-      ilce: oneri?.ilce,
-    );
+    _n.noktaSec(sonuc.nokta, ad: oneri?.ad, il: oneri?.il, ilce: oneri?.ilce);
     final yer = _t.yer;
     _noktaAdi.text = yer.noktaAdi;
     _il.text = yer.il;
@@ -253,7 +248,9 @@ class _EtkinlikSihirbaziEkraniState
       lastDate: DateTime(ilkGun.year + 5, ilkGun.month, ilkGun.day),
     );
     if (gun == null || !mounted) return;
-    _tekrar((s) => s.degistir(sonGun: DateTime.utc(gun.year, gun.month, gun.day)));
+    _tekrar(
+      (s) => s.degistir(sonGun: DateTime.utc(gun.year, gun.month, gun.day)),
+    );
   }
 
   @override
@@ -705,7 +702,9 @@ class _EtkinlikSihirbaziEkraniState
                 DropdownMenuItem(
                   value: z,
                   child: Text(
-                    z == 0 ? m.etkinlik_zorluk_yok : m.etkinlik_zorluk_degeri(z),
+                    z == 0
+                        ? m.etkinlik_zorluk_yok
+                        : m.etkinlik_zorluk_degeri(z),
                   ),
                 ),
             ],
@@ -721,10 +720,7 @@ class _EtkinlikSihirbaziEkraniState
             onChanged: (v) => _ayrinti((a) => a.kopya(mesafe: v)),
             decoration: InputDecoration(
               labelText: m.etkinlik_mesafe_etiketi,
-              errorText: sayi(
-                TaslakHatasi.mesafe,
-                etkinlikMesafeEnCok.toInt(),
-              ),
+              errorText: sayi(TaslakHatasi.mesafe, etkinlikMesafeEnCok.toInt()),
             ),
           ),
           const SizedBox(height: TayfamSpacing.s12),
@@ -864,10 +860,7 @@ class _EtkinlikSihirbaziEkraniState
             ),
           ),
         ];
-      case EventType.convoy ||
-          EventType.general ||
-          EventType.unknown ||
-          null:
+      case EventType.convoy || EventType.general || EventType.unknown || null:
         return const [];
     }
   }

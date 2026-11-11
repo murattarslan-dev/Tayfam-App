@@ -359,9 +359,7 @@ EtkinlikTaslagi duzenlemeTaslagi(Event etkinlik, String istekKimligi) {
   return EtkinlikTaslagi(
     istekKimligi: istekKimligi,
     adim: 1,
-    tur: etkinlik.type == EventType.unknown
-        ? EventType.general
-        : etkinlik.type,
+    tur: etkinlik.type == EventType.unknown ? EventType.general : etkinlik.type,
     baslik: etkinlik.title,
     aciklama: etkinlik.description,
     baslangic: etkinlik.startsAt.toUtc(),
@@ -690,13 +688,7 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
   final kontenjan = kontenjanSayisi(t.kontenjan) ?? 0;
   final ayrinti = t.ayrintiDegisti
       ? turAyrintisi(t.tur, t.ayrinti)
-      : (
-          camp: null,
-          hike: null,
-          fishing: null,
-          gaming: null,
-          sports: null,
-        );
+      : (camp: null, hike: null, fishing: null, gaming: null, sports: null);
   final istek = EventUpdateRequest(
     title: baslik == eski.title ? null : baslik,
     description: aciklama == eski.description ? null : aciklama,

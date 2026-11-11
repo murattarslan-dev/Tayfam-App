@@ -91,7 +91,9 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
   /// ve katılımcı listeleri tazelenir.
   Future<Object?> katil(RsvpRequestStatus durum) async {
     final etkinlik = ref.read(etkinlikDetayProvider(anahtar)).value;
-    if (state != null || etkinlik == null || durum == RsvpRequestStatus.unknown) {
+    if (state != null ||
+        etkinlik == null ||
+        durum == RsvpRequestStatus.unknown) {
       return null;
     }
     return _calistir(EtkinlikEylemi.katilim, () async {

@@ -36,8 +36,7 @@ const String katilimYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/rsvp';
 const String katilimcilarYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees';
 const String takvimYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/calendar';
-const String iptalYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/cancellation';
+const String iptalYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/cancellation';
 const String profilYolu = '/v1/users/{user_id}/profile';
 
 /// Örnek `Event` JSON'u (sözleşmedeki zorunlu alanlar dolu).
@@ -135,11 +134,7 @@ Map<String, Object?> katilimcilarJson(
 }) => {
   'attendees': [
     for (final id in kimlikler)
-      {
-        'user_id': id,
-        'status': durum,
-        'updated_at': '2026-11-02T10:00:00Z',
-      },
+      {'user_id': id, 'status': durum, 'updated_at': '2026-11-02T10:00:00Z'},
   ],
   'next_page_token': ?sonraki,
 };
@@ -248,9 +243,7 @@ List<Override> etkinlikOverridelari({
   etkinlikIslemleriProvider.overrideWithValue(EtkinlikIslemleri(tasima)),
   etkinlikSaatiProvider.overrideWithValue(() => sabitSimdi),
   karoSaglayiciProvider.overrideWithValue(karolar ?? (() => null)),
-  takvimPaylasiciProvider.overrideWithValue(
-    takvim ?? SahteTakvimPaylasici(),
-  ),
+  takvimPaylasiciProvider.overrideWithValue(takvim ?? SahteTakvimPaylasici()),
   etkinlikBaglantiAciciProvider.overrideWithValue(
     baglanti ?? SahteBaglantiAcici(),
   ),

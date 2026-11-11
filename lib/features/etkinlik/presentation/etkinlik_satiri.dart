@@ -79,10 +79,7 @@ class EtkinlikSatiri extends ConsumerWidget {
   String _gelen(AppLocalizations m) {
     final gelen = etkinlikSayi(m, etkinlik.goingCount);
     return etkinlik.capacity > 0
-        ? m.etkinlik_gelen_kontenjan(
-            gelen,
-            etkinlikSayi(m, etkinlik.capacity),
-          )
+        ? m.etkinlik_gelen_kontenjan(gelen, etkinlikSayi(m, etkinlik.capacity))
         : m.etkinlik_gelen(etkinlik.goingCount, gelen);
   }
 }

@@ -31,8 +31,9 @@ final class SayfaliListe<T> {
 }
 
 /// Bir sayfa okuyan fonksiyon.
-typedef SayfaOkuyucu<T> =
-    Future<({List<T> ogeler, String? sonraki})> Function(String? token);
+typedef SayfaOkuyucu<T> = Future<({List<T> ogeler, String? sonraki})> Function(
+  String? token,
+);
 
 /// Sayfalı listelerin ortak notifier'ı: ilk sayfa `build`'de, sonrakiler
 /// [dahaFazla] ile okunur. Sunucu aynı token'ı tekrar döndürürse liste

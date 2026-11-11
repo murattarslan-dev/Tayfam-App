@@ -12,9 +12,9 @@ String etkinlikZamani(
   DateTime an, {
   required DateTime simdi,
 }) {
-  final metin = DateFormat.MMMMEEEEd(
-    m.localeName,
-  ).add_Hm().format(istanbulSaatine(an));
+  final metin = DateFormat.MMMMEEEEd(m.localeName)
+      .add_Hm()
+      .format(istanbulSaatine(an));
   return turkiyeDisindaMi(simdi) ? m.etkinlik_turkiye_saati(metin) : metin;
 }
 
@@ -37,9 +37,8 @@ String etkinlikZamanAraligi(
 }
 
 /// Sihirbazdaki tarih ve saat alanının metni (Türkiye saati).
-String etkinlikTarihSaat(AppLocalizations m, DateTime an) => DateFormat.yMMMd(
-  m.localeName,
-).add_Hm().format(istanbulSaatine(an));
+String etkinlikTarihSaat(AppLocalizations m, DateTime an) =>
+    DateFormat.yMMMd(m.localeName).add_Hm().format(istanbulSaatine(an));
 
 /// Sihirbazdaki gün alanının metni ([gun]'ün yalnızca yıl, ay, gün
 /// alanları).

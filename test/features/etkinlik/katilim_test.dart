@@ -68,17 +68,15 @@ void main() {
       expect(kontenjanDolu(ornekEtkinlik(kontenjan: 3)), isTrue);
       expect(kontenjanDolu(ornekEtkinlik(kontenjan: 4)), isFalse);
       expect(katilimAcik(ornekEtkinlik(), sabitSimdi), isTrue);
-      expect(
-        katilimAcik(ornekEtkinlik(), DateTime.utc(2027, 1, 1)),
-        isFalse,
-      );
+      expect(katilimAcik(ornekEtkinlik(), DateTime.utc(2027, 1, 1)), isFalse);
       final iptal = Event.fromJson(etkinlikJson(iptal: true));
       expect(katilimAcik(iptal, sabitSimdi), isFalse);
     });
   });
 
   group('EtkinlikEylemNotifier', () {
-    ProviderContainer kapsayici(SahteTayfaTasima tasima, {
+    ProviderContainer kapsayici(
+      SahteTayfaTasima tasima, {
       SahteTakvimPaylasici? takvim,
     }) {
       final c = ProviderContainer(
@@ -137,10 +135,8 @@ void main() {
 
     test('hata döner, cevap değişmez', () async {
       final tasima = etkinlikTasimasi({
-        'PUT $katilimYolu': (_) => const ApiProblem(
-          type: ProblemType.eventCancelled,
-          status: 409,
-        ),
+        'PUT $katilimYolu': (_) =>
+            const ApiProblem(type: ProblemType.eventCancelled, status: 409),
       });
       final c = kapsayici(tasima);
       await c.read(etkinlikDetayProvider(_anahtar).future);
@@ -153,24 +149,27 @@ void main() {
       expect(c.read(etkinlikDetayProvider(_anahtar)).value!.callerRsvp, isNull);
     });
 
-    test('iptal: gerekçe gövdede, detay güncellenir; boş gerekçe gitmez', () async {
-      final tasima = etkinlikTasimasi({
-        'POST $iptalYolu': (_) => etkinlikJson(iptal: true),
-      });
-      final c = kapsayici(tasima);
-      await c.read(etkinlikDetayProvider(_anahtar).future);
-      final n = c.read(etkinlikEylemProvider(_anahtar).notifier);
+    test(
+      'iptal: gerekçe gövdede, detay güncellenir; boş gerekçe gitmez',
+      () async {
+        final tasima = etkinlikTasimasi({
+          'POST $iptalYolu': (_) => etkinlikJson(iptal: true),
+        });
+        final c = kapsayici(tasima);
+        await c.read(etkinlikDetayProvider(_anahtar).future);
+        final n = c.read(etkinlikEylemProvider(_anahtar).notifier);
 
-      expect(await n.iptalEt('   '), isNull);
-      expect(tasima.giden('POST', iptalYolu), isEmpty);
+        expect(await n.iptalEt('   '), isNull);
+        expect(tasima.giden('POST', iptalYolu), isEmpty);
 
-      expect(await n.iptalEt(' Hava kötü '), isNull);
-      expect(tasima.giden('POST', iptalYolu).single.govde, {
-        'reason': 'Hava kötü',
-      });
-      final e = c.read(etkinlikDetayProvider(_anahtar)).value!;
-      expect(iptalEdildi(e), isTrue);
-    });
+        expect(await n.iptalEt(' Hava kötü '), isNull);
+        expect(tasima.giden('POST', iptalYolu).single.govde, {
+          'reason': 'Hava kötü',
+        });
+        final e = c.read(etkinlikDetayProvider(_anahtar)).value!;
+        expect(iptalEdildi(e), isTrue);
+      },
+    );
 
     test('takvime ekle: .ics metni paylaşıcıya gider', () async {
       final takvim = SahteTakvimPaylasici();

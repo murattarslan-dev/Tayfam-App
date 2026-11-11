@@ -85,11 +85,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
               onSelected: (secim) {
                 switch (secim) {
                   case _Yonetim.duzenle:
-                    unawaited(
-                      context.push(
-                        Adresler.etkinlikDuzenle(tayfaId, etkinlikId),
-                      ),
-                    );
+                    context.go(Adresler.etkinlikDuzenle(tayfaId, etkinlikId));
                   case _Yonetim.iptal:
                     unawaited(_iptalEt(context, ref, anahtar));
                 }

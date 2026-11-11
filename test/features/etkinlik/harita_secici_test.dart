@@ -55,8 +55,7 @@ class _Acici extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: TextButton(
-          onPressed: () async =>
-              sonuclar.add(await haritaSeciciAc(context)),
+          onPressed: () async => sonuclar.add(await haritaSeciciAc(context)),
           child: const Text('ac'),
         ),
       ),
@@ -149,10 +148,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Abant');
     await tester.tap(find.text(arbMetni('etkinlik_harita_ara')));
     await tester.pumpAndSettle();
-    expect(
-      find.text(arbMetni('etkinlik_harita_arama_hatasi')),
-      findsOneWidget,
-    );
+    expect(find.text(arbMetni('etkinlik_harita_arama_hatasi')), findsOneWidget);
   });
 
   testWidgets('karolar: OSM adresi ve uygulamayı tanıtan User-Agent', (
@@ -162,10 +158,7 @@ void main() {
     await widgetAc(
       tester,
       const Scaffold(
-        body: OsmHarita(
-          merkez: LatLng(lat: 39, lng: 35),
-          yakinlik: 5,
-        ),
+        body: OsmHarita(merkez: LatLng(lat: 39, lng: 35), yakinlik: 5),
       ),
       tayfa: etkinlikOverridelari(
         tasima: etkinlikTasimasi(),
