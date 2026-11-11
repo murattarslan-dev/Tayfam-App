@@ -9,6 +9,7 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -134,8 +135,7 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.bildirimler,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _bildirimlerBasligi),
+              builder: (context, state) => const BildirimlerEkrani(),
             ),
           ],
         ),
@@ -191,5 +191,4 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
 }
 
 String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
-String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
 String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;

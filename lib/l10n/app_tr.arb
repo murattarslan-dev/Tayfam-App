@@ -51,6 +51,164 @@
       }
     }
   },
+  "bildirim_hepsini_okundu_say": "Hepsini okundu say",
+  "@bildirim_hepsini_okundu_say": {
+    "description": "Bildirimler sekmesinde, okunmamış bildirim varken listenin üstündeki, bütün bildirimleri okundu işaretleyen düğme."
+  },
+  "bildirim_bos": "Henüz bildirimin yok.",
+  "@bildirim_bos": {
+    "description": "Bildirimler sekmesinde hiç bildirim yokken görünen metin."
+  },
+  "bildirim_yukleniyor": "Bildirimler yükleniyor",
+  "@bildirim_yukleniyor": {
+    "description": "Bildirimler sekmesindeki yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "bildirim_okunmadi": "Okunmadı",
+  "@bildirim_okunmadi": {
+    "description": "Okunmamış bir bildirimin kartındaki noktanın ekran okuyucu etiketi."
+  },
+  "bildirim_kisi_bilinmiyor": "Biri",
+  "@bildirim_kisi_bilinmiyor": {
+    "description": "Bildirim metninde adı geçen kişinin adı henüz bilinmiyorken ya da okunamadığında ad yerine geçen sözcük (ör. \"Biri sana arkadaşlık isteği gönderdi\")."
+  },
+  "bildirim_zaman": "{tarih}, {saat}",
+  "@bildirim_zaman": {
+    "description": "Bildirim kartında bildirimin geldiği gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "bildirim_etkinlik_eklendi": "Yeni bir etkinlik eklendi",
+  "@bildirim_etkinlik_eklendi": {
+    "description": "Bildirim metni: tayfada yeni bir etkinlik oluşturuldu (`event_created`). Tayfanın adı altta ayrı satırdadır; etkinliğin adı gösterilmez."
+  },
+  "bildirim_etkinlik_guncellendi": "Katıldığın bir etkinlik güncellendi",
+  "@bildirim_etkinlik_guncellendi": {
+    "description": "Bildirim metni: kullanıcının katıldığı bir etkinlik değişti (`event_updated`)."
+  },
+  "bildirim_etkinlik_iptal": "Katıldığın bir etkinlik iptal edildi",
+  "@bildirim_etkinlik_iptal": {
+    "description": "Bildirim metni: kullanıcının katıldığı bir etkinlik iptal edildi (`event_cancelled`)."
+  },
+  "bildirim_katilimciya_gectin": "Bekleme listesinden katılımcılara geçtin",
+  "@bildirim_katilimciya_gectin": {
+    "description": "Bildirim metni: kullanıcı bir etkinliğin bekleme listesinden katılımcılara geçti (`rsvp_promoted`)."
+  },
+  "bildirim_duyuru": "Yeni bir duyuru var",
+  "@bildirim_duyuru": {
+    "description": "Bildirim metni: tayfada yeni duyuru yayınlandı (`announcement`). Duyurunun başlığı gösterilmez."
+  },
+  "bildirim_cevap": "Soruna yeni bir cevap geldi",
+  "@bildirim_cevap": {
+    "description": "Bildirim metni: kullanıcının sorusu cevaplandı (`answer_received`). Cevap metni gösterilmez."
+  },
+  "bildirim_katilim_istegi": "{kisi} tayfaya katılmak istiyor",
+  "@bildirim_katilim_istegi": {
+    "description": "Bildirim metni (yönetim): bir kişi tayfaya katılım isteği gönderdi (`join_request`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_katilim_onaylandi": "Katılım isteğin onaylandı",
+  "@bildirim_katilim_onaylandi": {
+    "description": "Bildirim metni: kullanıcının tayfaya katılım isteği onaylandı (`join_approved`)."
+  },
+  "bildirim_silme_istendi": "Tayfanın silinmesi istendi",
+  "@bildirim_silme_istendi": {
+    "description": "Bildirim metni (yönetim): tayfa için silme talebi açıldı (`tayfa_deletion_requested`)."
+  },
+  "bildirim_uyari_hareketsiz": "Tayfa bir süredir hareketsiz; 7 gün içinde arşivlenecek",
+  "@bildirim_uyari_hareketsiz": {
+    "description": "Bildirim metni: tayfa hareketsiz olduğu için 7 gün içinde arşivlenecek (`tayfa_warned`, `inactive`)."
+  },
+  "bildirim_uyari_az_uye": "Tayfada çok az üye var; 7 gün içinde arşivlenecek",
+  "@bildirim_uyari_az_uye": {
+    "description": "Bildirim metni: tayfada çok az üye olduğu için 7 gün içinde arşivlenecek (`tayfa_warned`, `few_members`)."
+  },
+  "bildirim_uyari": "Tayfa 7 gün içinde arşivlenecek",
+  "@bildirim_uyari": {
+    "description": "Bildirim metni: tayfa 7 gün içinde arşivlenecek, gerekçe bilinmiyor (`tayfa_warned`)."
+  },
+  "bildirim_arsivlendi": "Tayfa arşivlendi",
+  "@bildirim_arsivlendi": {
+    "description": "Bildirim metni: tayfa arşivlendi (`tayfa_archived`)."
+  },
+  "bildirim_askiya_alindi": "Tayfa askıya alındı",
+  "@bildirim_askiya_alindi": {
+    "description": "Bildirim metni: tayfa platform tarafından askıya alındı (`tayfa_suspended`); gerekçe tayfa ayrıntısındadır."
+  },
+  "bildirim_aski_kaldirildi": "Tayfanın askısı kaldırıldı",
+  "@bildirim_aski_kaldirildi": {
+    "description": "Bildirim metni: tayfanın askısı kaldırıldı (`tayfa_unsuspended`)."
+  },
+  "bildirim_yuruyus_donmedi": "{kisi} yürüyüşten zamanında dönmedi",
+  "@bildirim_yuruyus_donmedi": {
+    "description": "Bildirim metni (güvenlik): bir yürüyüşçü planlanan zamanda dönmedi (`hike_overdue`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_arkadaslik_istegi": "{kisi} sana arkadaşlık isteği gönderdi",
+  "@bildirim_arkadaslik_istegi": {
+    "description": "Bildirim metni: kullanıcıya arkadaşlık isteği geldi (`friend_request`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_arkadaslik_kabul": "{kisi} arkadaşlık isteğini kabul etti",
+  "@bildirim_arkadaslik_kabul": {
+    "description": "Bildirim metni: kullanıcının arkadaşlık isteği kabul edildi (`friend_accepted`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_tayfa_daveti": "{kisi} seni bir tayfaya davet etti",
+  "@bildirim_tayfa_daveti": {
+    "description": "Bildirim metni: bir arkadaş kullanıcıyı tayfaya davet etti (`tayfa_invitation`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_sikayet_sonuclandi": "Şikâyetin sonuçlandı",
+  "@bildirim_sikayet_sonuclandi": {
+    "description": "Bildirim metni: kullanıcının şikâyeti sonuçlandı (`report_resolved`)."
+  },
+  "bildirim_mesaj_istegi": "Yeni bir mesaj isteğin var",
+  "@bildirim_mesaj_istegi": {
+    "description": "Bildirim metni: birebir mesaj isteği geldi (`dm_request`). Gönderen ve içerik hiçbir zaman yazılmaz."
+  },
+  "bildirim_mesaj": "Yeni birebir mesajın var",
+  "@bildirim_mesaj": {
+    "description": "Bildirim metni: yeni birebir mesaj geldi (`dm_message`). Gönderen ve içerik hiçbir zaman yazılmaz."
+  },
+  "bildirim_genel": "Yeni bir bildirimin var",
+  "@bildirim_genel": {
+    "description": "Bildirim metni: uygulamanın henüz tanımadığı bir bildirim türü."
+  },
   "gezinme_yer_tutucu_aciklama": "Bu bölüm hazırlanıyor.",
   "@gezinme_yer_tutucu_aciklama": {
     "description": "Henüz yapılmamış ekranların (sekme sayfaları, kodla katılma, tayfa oluşturma) ortasında görünen geçici açıklama."
