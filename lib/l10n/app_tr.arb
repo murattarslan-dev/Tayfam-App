@@ -205,6 +205,10 @@
   "@bildirim_mesaj": {
     "description": "Bildirim metni: yeni birebir mesaj geldi (`dm_message`). Gönderen ve içerik hiçbir zaman yazılmaz."
   },
+  "bildirim_veri_hazir": "Verilerin indirilmeye hazır",
+  "@bildirim_veri_hazir": {
+    "description": "Bildirim metni: KVKK veri dışa aktarma talebi hazırlandı, 7 gün indirilebilir (`data_export_ready`)."
+  },
   "bildirim_genel": "Yeni bir bildirimin var",
   "@bildirim_genel": {
     "description": "Bildirim metni: uygulamanın henüz tanımadığı bir bildirim türü."
@@ -3358,6 +3362,94 @@
   "hata_message_request_not_found": "Bekleyen bir mesaj isteği yok.",
   "@hata_message_request_not_found": {
     "description": "Hata kodu `message-request-not-found`. Bu konuşmada kullanıcıyı bekleyen bir mesaj isteği olmadığında (kabul ya da ret denendiğinde) görünen hata."
+  },
+  "hata_upload_not_found": "Dosya bulunamadı. Yeniden yüklemeyi dene.",
+  "@hata_upload_not_found": {
+    "description": "Hata kodu `upload-not-found`. Yükleme yoksa, kullanıcıya ait değilse ya da başka amaçla açılmışsa görünen hata."
+  },
+  "hata_upload_not_ready": "Dosya henüz hazır değil. Biraz bekleyip tekrar dene.",
+  "@hata_upload_not_ready": {
+    "description": "Hata kodu `upload-not-ready`. Yükleme henüz işlenmeden kullanılmak istendiğinde görünen hata."
+  },
+  "hata_upload_in_use": "Bu dosya zaten kullanılıyor. Yeni bir dosya yükle.",
+  "@hata_upload_in_use": {
+    "description": "Hata kodu `upload-in-use`. Aynı yükleme ikinci kez bağlanmak istendiğinde görünen hata."
+  },
+  "hata_upload_not_received": "Dosya tam yüklenmedi. Yeniden yüklemeyi dene.",
+  "@hata_upload_not_received": {
+    "description": "Hata kodu `upload-not-received`. Yükleme tamamlandı denildiğinde dosyanın bir parçası sunucuya ulaşmamışsa görünen hata."
+  },
+  "hata_upload_rate_limited": "Çok sık dosya yükledin. Biraz bekleyip tekrar dene.",
+  "@hata_upload_rate_limited": {
+    "description": "Hata kodu `upload-rate-limited`. Kısa sürede izin verilenden çok yükleme açıldığında görünen hata."
+  },
+  "hata_upload_quota_exceeded": "Dosya yükleme sınırına ulaştın.",
+  "@hata_upload_quota_exceeded": {
+    "description": "Hata kodu `upload-quota-exceeded`. Kullanıcının toplam yükleme alanı dolduğunda görünen hata."
+  },
+  "hata_data_export_not_found": "Bu veri dışa aktarma talebi bulunamadı.",
+  "@hata_data_export_not_found": {
+    "description": "Hata kodu `data-export-not-found`. KVKK veri dışa aktarma talebi yoksa ya da kullanıcıya ait değilse görünen hata."
+  },
+  "hata_data_export_in_progress": "Verilerin zaten hazırlanıyor. Hazır olunca bildirim alacaksın.",
+  "@hata_data_export_in_progress": {
+    "description": "Hata kodu `data-export-in-progress`. Süren bir veri dışa aktarma talebi varken yenisi açılmak istendiğinde görünen hata."
+  },
+  "hata_data_export_limit": "Veri dışa aktarma talebi 30 günde bir açılabilir.",
+  "@hata_data_export_limit": {
+    "description": "Hata kodu `data-export-limit`. Son 30 gün içinde talep açılmışken yenisi istendiğinde görünen hata."
+  },
+  "hata_data_export_not_ready": "Verilerin henüz hazır değil. Hazır olunca bildirim alacaksın.",
+  "@hata_data_export_not_ready": {
+    "description": "Hata kodu `data-export-not-ready`. Hazırlanmakta olan dışa aktarma indirilmek istendiğinde görünen hata."
+  },
+  "hata_data_export_expired": "İndirme süresi doldu. Yeni bir talep açabilirsin.",
+  "@hata_data_export_expired": {
+    "description": "Hata kodu `data-export-expired`. 7 günlük indirme süresi geçmiş dışa aktarma indirilmek istendiğinde görünen hata."
+  },
+  "hata_e2e_device_not_registered": "Bu cihazda şifreli mesajlaşma henüz hazır değil. Uygulamayı yeniden açıp tekrar dene.",
+  "@hata_e2e_device_not_registered": {
+    "description": "Hata kodu `e2e-device-not-registered`. Uçtan uca şifreleme için bu oturumun cihaz kaydı yokken görünen hata. Normalde uygulama cihazı kendisi kaydeder; bu metin yedektir."
+  },
+  "hata_e2e_device_already_registered": "Bu cihaz şifreli mesajlaşma için zaten kayıtlı.",
+  "@hata_e2e_device_already_registered": {
+    "description": "Hata kodu `e2e-device-already-registered`. Oturum farklı anahtarlarla yeniden kaydolmak istediğinde görünen hata. Uygulamanın kendi hatasıdır; teknik ayrıntı verilmez."
+  },
+  "hata_e2e_device_limit": "Şifreli mesajlaşma için cihaz sınırına ulaştın. Profil → Oturumlar'dan eski bir oturumu kapat.",
+  "@hata_e2e_device_limit": {
+    "description": "Hata kodu `e2e-device-limit`. Hesapta en çok 5 E2E cihazı varken yenisi kaydedilmek istendiğinde görünen hata."
+  },
+  "hata_e2e_devices_changed": "Karşı tarafın cihazları değişti. Mesajı tekrar gönder.",
+  "@hata_e2e_devices_changed": {
+    "description": "Hata kodu `e2e-devices-changed`. Şifreli mesaj gönderilirken alıcının cihaz listesi değiştiğinde görünen hata. Normalde uygulama listeyi yenileyip yeniden dener; bu metin yedektir."
+  },
+  "hata_e2e_recipient_unavailable": "Bu kişiye şu an şifreli mesaj gönderilemiyor.",
+  "@hata_e2e_recipient_unavailable": {
+    "description": "Hata kodu `e2e-recipient-unavailable`. Alıcının şifreli mesaj alabilecek cihazı olmadığında görünen hata. Sebep ayrıntısı verilmez."
+  },
+  "hata_e2e_required": "Bu konuşma uçtan uca şifreli. Uygulamayı güncelleyip tekrar dene.",
+  "@hata_e2e_required": {
+    "description": "Hata kodu `e2e-required`. Uçtan uca şifreli konuşmaya şifresiz mesaj gönderilmek istendiğinde görünen hata."
+  },
+  "hata_e2e_not_paired": "Bu cihaz mesaj geçmişine erişmek için eşleştirilmemiş.",
+  "@hata_e2e_not_paired": {
+    "description": "Hata kodu `e2e-not-paired`. Şifreli mesaj geçmişi yalnızca eşleştirilmiş cihazdan okunup yazılabilirken eşleştirilmemiş cihaz denediğinde görünen hata."
+  },
+  "hata_e2e_already_paired": "Bu cihaz zaten eşleştirilmiş.",
+  "@hata_e2e_already_paired": {
+    "description": "Hata kodu `e2e-already-paired`. Eşleştirilmiş cihaz yeniden eşleştirme isteği açtığında görünen hata."
+  },
+  "hata_e2e_paired_device_exists": "Hesabında eşleştirilmiş başka bir cihaz var. Bu cihazı onunla eşleştir.",
+  "@hata_e2e_paired_device_exists": {
+    "description": "Hata kodu `e2e-paired-device-exists`. Eşleştirilmiş başka cihaz varken geçmiş anahtarı yeniden oluşturulmak istendiğinde görünen hata (QR ile eşleştirme önerilir)."
+  },
+  "hata_e2e_history_key_stale": "Mesaj geçmişi anahtarı güncel değil. Tekrar dene.",
+  "@hata_e2e_history_key_stale": {
+    "description": "Hata kodu `e2e-history-key-stale`. Geçmiş anahtarının eski sürümüyle işlem yapıldığında görünen hata. Normalde uygulama güncelleyip yeniden dener; bu metin yedektir."
+  },
+  "hata_e2e_link_request_not_found": "Eşleştirme isteği bulunamadı ya da süresi doldu. Yeniden başlat.",
+  "@hata_e2e_link_request_not_found": {
+    "description": "Hata kodu `e2e-link-request-not-found`. Cihaz eşleştirme isteği yoksa, cevaplanmışsa ya da süresi dolmuşsa görünen hata."
   },
   "hosgeldin_atla": "Atla",
   "@hosgeldin_atla": {

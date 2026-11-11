@@ -144,6 +144,7 @@ String bildirimMetni(
   NotificationType.reportResolved => m.bildirim_sikayet_sonuclandi,
   NotificationType.dmRequest => m.bildirim_mesaj_istegi,
   NotificationType.dmMessage => m.bildirim_mesaj,
+  NotificationType.dataExportReady => m.bildirim_veri_hazir,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -169,5 +170,6 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.reportResolved => Icons.flag_outlined,
   NotificationType.dmRequest ||
   NotificationType.dmMessage => Icons.mail_outline,
+  NotificationType.dataExportReady => Icons.download_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };
