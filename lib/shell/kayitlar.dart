@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/moduller/tayfa_module.dart';
+import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 
@@ -11,6 +12,7 @@ import 'package:tayfam/features/etkinlik/etkinlik.dart';
 const List<TayfaModule> tayfaModulKaydi = [
   EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
   DuyuruModulu(),
+  AnketModulu(),
 ];
 
 /// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu

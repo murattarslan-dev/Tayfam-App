@@ -40,6 +40,27 @@ abstract final class Adresler {
   static String etkinlikler(String tayfaId) =>
       '${tayfa(tayfaId)}/$etkinliklerYolu';
 
+  /// Anket modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0018 §5).
+  static const anketlerYolu = 'anketler';
+
+  /// Anket listesinde etkinlik süzgecinin sorgu parametresi.
+  static const anketEtkinlikParametresi = 'etkinlik';
+
+  /// Tayfanın anketleri; [etkinlikId] verilirse yalnızca o etkinliğin
+  /// anketleri.
+  static String anketler(String tayfaId, {String? etkinlikId}) {
+    final yol = '${tayfa(tayfaId)}/$anketlerYolu';
+    if (etkinlikId == null) return yol;
+    return Uri(
+      path: yol,
+      queryParameters: {anketEtkinlikParametresi: etkinlikId},
+    ).toString();
+  }
+
+  /// Tek bir anketin ekranı.
+  static String anket(String tayfaId, String anketId) =>
+      '${anketler(tayfaId)}/$anketId';
+
   /// Sohbet sekmesi.
   static const sohbet = '/sohbet';
 

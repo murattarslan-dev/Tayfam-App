@@ -10,6 +10,7 @@ import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
@@ -259,6 +260,11 @@ class _Detay extends ConsumerWidget {
             _BilgiSatiri(etiket: etiket, deger: deger),
         ],
         if (arac != null) ...[const SizedBox(height: TayfamSpacing.s24), arac],
+        const SizedBox(height: TayfamSpacing.s16),
+        EtkinlikAnketleriBaglantisi(
+          tayfaId: anahtar.tayfaId,
+          etkinlikId: anahtar.etkinlikId,
+        ),
         const SizedBox(height: TayfamSpacing.s24),
         KatilimcilarBolumu(
           tayfaId: anahtar.tayfaId,
