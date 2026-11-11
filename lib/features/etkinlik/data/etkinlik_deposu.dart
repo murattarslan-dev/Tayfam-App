@@ -145,11 +145,8 @@ final class EtkinlikDeposu {
     String tayfaId,
     String etkinlikId,
     ConvoyVehicleCreateRequest istek,
-  ) => _api.addConvoyVehicle(
-    tayfaId: tayfaId,
-    eventId: etkinlikId,
-    body: istek,
-  );
+  ) =>
+      _api.addConvoyVehicle(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
 
   /// `DELETE .../convoy-vehicles/{vehicle_id}`.
   Future<void> aracCikar(String tayfaId, String etkinlikId, String aracId) =>
@@ -181,19 +178,11 @@ final class EtkinlikDeposu {
     String tayfaId,
     String etkinlikId,
     FishingCatchCreateRequest istek,
-  ) => _api.addFishingCatch(
-    tayfaId: tayfaId,
-    eventId: etkinlikId,
-    body: istek,
-  );
+  ) => _api.addFishingCatch(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
 
   /// `DELETE .../fishing-catches/{catch_id}`.
-  Future<void> avCikar(String tayfaId, String etkinlikId, String avId) =>
-      _api.removeFishingCatch(
-        tayfaId: tayfaId,
-        eventId: etkinlikId,
-        catchId: avId,
-      );
+  Future<void> avCikar(String tayfaId, String etkinlikId, String avId) => _api
+      .removeFishingCatch(tayfaId: tayfaId, eventId: etkinlikId, catchId: avId);
 
   /// Organizatör düzeltmesi: `PUT .../attendees/{user_id}/attendance`
   /// ([ekle]) ya da `DELETE` ile katılımı ekler veya kaldırır.

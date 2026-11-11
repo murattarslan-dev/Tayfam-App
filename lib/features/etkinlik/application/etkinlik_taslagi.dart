@@ -576,10 +576,7 @@ Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
       }
     case EventType.convoy:
       if (rotaHatali(a.rota)) hatalar.add(TaslakHatasi.rota);
-    case EventType.fishing ||
-        EventType.general ||
-        EventType.unknown ||
-        null:
+    case EventType.fishing || EventType.general || EventType.unknown || null:
       break;
   }
   return hatalar;

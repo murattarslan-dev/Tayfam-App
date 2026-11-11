@@ -59,11 +59,9 @@ void main() {
         AracHatasi.marka,
       });
       for (final yil in ['1899', '2028', 'yetmiş']) {
-        expect(
-          aracIstegi(marka: 'Anadol', yil: yil, buYil: 2026).hatalar,
-          {AracHatasi.yil},
-          reason: yil,
-        );
+        expect(aracIstegi(marka: 'Anadol', yil: yil, buYil: 2026).hatalar, {
+          AracHatasi.yil,
+        }, reason: yil);
       }
       expect(
         aracIstegi(marka: 'Anadol', yil: '2027', buYil: 2026).hatalar,
@@ -71,11 +69,9 @@ void main() {
         reason: 'gelecek yıl olabilir',
       );
       for (final plaka in ['3', '34  AB 12', '34-AB-12', 'A' * 17]) {
-        expect(
-          aracIstegi(marka: 'Anadol', plaka: plaka, buYil: 2026).hatalar,
-          {AracHatasi.plaka},
-          reason: plaka,
-        );
+        expect(aracIstegi(marka: 'Anadol', plaka: plaka, buYil: 2026).hatalar, {
+          AracHatasi.plaka,
+        }, reason: plaka);
       }
     });
   });

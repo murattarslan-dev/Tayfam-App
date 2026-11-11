@@ -42,9 +42,7 @@ Future<void> _detayiAc(
     themeMode: themeMode,
     tayfa: etkinlikOverridelari(tasima: tasima, konum: konum),
   );
-  yonlendiriciyiAl(
-    tester,
-  ).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+  yonlendiriciyiAl(tester).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
   await tester.pumpAndSettle();
 }
 
@@ -59,6 +57,14 @@ Future<void> _gorunurYap(WidgetTester tester, Finder bulucu) async {
 
 Future<void> _gorunurDokun(WidgetTester tester, Finder bulucu) async {
   await _gorunurYap(tester, bulucu);
+  await tester.tap(bulucu);
+  await tester.pumpAndSettle();
+}
+
+/// Kaydırılabilir bir bölümdeki öğeyi görünür yapıp dokunur.
+Future<void> _dokun(WidgetTester tester, Finder bulucu) async {
+  await tester.ensureVisible(bulucu);
+  await tester.pumpAndSettle();
   await tester.tap(bulucu);
   await tester.pumpAndSettle();
 }
@@ -252,7 +258,10 @@ void main() {
         },
       });
       await _detayiAc(tester, tasima);
-      expect(find.text(arbMetni('etkinlik_konvoy_arac_yok')), findsOneWidget);
+      await _gorunurYap(
+        tester,
+        find.text(arbMetni('etkinlik_konvoy_arac_yok')),
+      );
 
       await _gorunurDokun(
         tester,
@@ -281,7 +290,9 @@ void main() {
       });
       await _detayiAc(tester, tasima);
       final cikar = find.byTooltip(arbMetni('etkinlik_konvoy_arac_cikar'));
-      await _gorunurYap(tester, cikar.last);
+      await _gorunurYap(tester, find.text('Murat 124'));
+      await tester.ensureVisible(cikar.last);
+      await tester.pumpAndSettle();
       expect(cikar, findsNWidgets(2));
 
       await tester.tap(cikar.last);
@@ -374,10 +385,7 @@ void main() {
         etkinlikTasimasi({'GET $etkinlikYolu': (_) => kamp()}),
       );
       await _gorunurYap(tester, find.text('Ocak'));
-      expect(
-        find.text(arbMetni('etkinlik_kamp_malzeme_ekle')),
-        findsNothing,
-      );
+      expect(find.text(arbMetni('etkinlik_kamp_malzeme_ekle')), findsNothing);
       expect(
         find.byTooltip(arbMetni('etkinlik_kamp_malzeme_cikar')),
         findsNothing,
@@ -422,10 +430,7 @@ void main() {
           find.text(arbMetni('etkinlik_yuruyus_dondum')),
         );
         expect(tasima.giden('POST', donusYolu), hasLength(1));
-        expect(
-          find.text(arbMetni('etkinlik_yuruyus_dondum')),
-          findsNothing,
-        );
+        expect(find.text(arbMetni('etkinlik_yuruyus_dondum')), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }
@@ -504,17 +509,13 @@ void main() {
           themeMode: tema,
           tayfa: etkinlikOverridelari(tasima: tasima, baglanti: baglanti),
         );
-        yonlendiriciyiAl(
-          tester,
-        ).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+        yonlendiriciyiAl(tester)
+            .go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
         await tester.pumpAndSettle();
 
         await _gorunurYap(tester, find.text('Çipura, 30 cm'));
         expect(find.text('Levrek, 42,5 cm'), findsOneWidget);
-        expect(
-          find.text(arbMetni('etkinlik_av_yeri_sende')),
-          findsOneWidget,
-        );
+        expect(find.text(arbMetni('etkinlik_av_yeri_sende')), findsOneWidget);
         // Yalnızca sunucunun yerini döndürdüğü av için harita bağlantısı.
         expect(find.text(arbMetni('etkinlik_av_yeri_ac')), findsOneWidget);
         // Üye yalnızca kendi avını çıkarabilir.
@@ -571,11 +572,13 @@ void main() {
         });
         await _detayiAc(tester, tasima, themeMode: tema);
         final menu = find.byTooltip(arbMetni('etkinlik_duzeltme'));
-        await _gorunurYap(tester, menu.first);
-        expect(
+        await _gorunurYap(
+          tester,
           find.text(arbMetni('etkinlik_duzeltme_bilgi')),
-          findsOneWidget,
         );
+        await tester.ensureVisible(menu);
+        await tester.pumpAndSettle();
+        expect(find.text(arbMetni('etkinlik_duzeltme_bilgi')), findsOneWidget);
         // Kendi satırında (Mert) menü yok.
         expect(menu, findsOneWidget);
 
@@ -615,7 +618,9 @@ void main() {
       });
       await _detayiAc(tester, tasima);
       final menu = find.byTooltip(arbMetni('etkinlik_duzeltme'));
-      await _gorunurYap(tester, menu);
+      await _gorunurYap(tester, find.text(arbMetni('etkinlik_duzeltme_bilgi')));
+      await tester.ensureVisible(menu);
+      await tester.pumpAndSettle();
       await tester.tap(menu);
       await tester.pumpAndSettle();
       await tester.tap(find.text(arbMetni('etkinlik_duzeltme_kaldir')));
@@ -688,14 +693,12 @@ void main() {
           hasLength(2),
         );
 
-        await tester.tap(find.text(arbMetni('etkinlik_rota_son_noktayi_sil')));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(arbMetni('etkinlik_rota_son_noktayi_sil')));
-        await tester.pumpAndSettle();
+        final sil = find.text(arbMetni('etkinlik_rota_son_noktayi_sil'));
+        await _dokun(tester, sil);
+        await _dokun(tester, sil);
         expect(find.text(arbMetni('etkinlik_rota_yok')), findsOneWidget);
 
-        await tester.tap(find.text(arbMetni('etkinlik_rota_kaydet')));
-        await tester.pumpAndSettle();
+        await _dokun(tester, find.text(arbMetni('etkinlik_rota_kaydet')));
         expect(sonuclar.single, isEmpty);
         expect(tester.takeException(), isNull);
       });

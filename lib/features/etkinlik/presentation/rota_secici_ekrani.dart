@@ -69,9 +69,9 @@ class _RotaSeciciEkraniState extends State<RotaSeciciEkrani> {
             etiket: m.etkinlik_rota_kaydet,
             onPressed: hatali
                 ? null
-                : () => Navigator.of(
-                    context,
-                  ).pop<List<LatLng>>(List.unmodifiable(_noktalar)),
+                : () =>
+                      Navigator.of(context)
+                          .pop<List<LatLng>>(List.unmodifiable(_noktalar)),
           ),
         ),
       ),

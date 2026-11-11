@@ -153,16 +153,14 @@ class AracEylemNotifier extends Notifier<bool> {
 
   /// Av günlüğüne av ekler. Tekrar denemede aynı `client_request_id`
   /// gönderilir (form açılınca bir kez üretilir).
-  Future<Object?> avEkle(FishingCatchCreateRequest istek) =>
-      _calistir(() async {
-        final av = await _depo.avEkle(
-          anahtar.tayfaId,
-          anahtar.etkinlikId,
-          istek,
-        );
-        if (!ref.mounted) return;
-        ref.read(avGunluguProvider(anahtar).notifier).eklendi(av);
-      }, yenile: false);
+  Future<Object?> avEkle(FishingCatchCreateRequest istek) => _calistir(
+    () async {
+      final av = await _depo.avEkle(anahtar.tayfaId, anahtar.etkinlikId, istek);
+      if (!ref.mounted) return;
+      ref.read(avGunluguProvider(anahtar).notifier).eklendi(av);
+    },
+    yenile: false,
+  );
 
   /// Av günlüğünden av çıkarır.
   Future<Object?> avCikar(String avId) => _calistir(() async {
