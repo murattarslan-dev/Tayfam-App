@@ -8,6 +8,7 @@ import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
 import 'package:tayfam/features/birebir/application/birebir_islemi.dart';
@@ -252,6 +253,8 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
             gonderici: ref.read(birebirGondericiProvider),
           ),
         );
+    // İlk gerçek ihtiyaç: bildirim izni açıklaması (istemci ADR-0019 §3).
+    unawaited(ref.read(bildirimIzniProvider.notifier).ihtiyacDogdu());
     return true;
   }
 

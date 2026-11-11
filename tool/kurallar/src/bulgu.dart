@@ -225,6 +225,14 @@ abstract final class Kurallar {
     seviye: Seviye.uyari,
   );
 
+  static const androidMetinleri = KuralTanimi(
+    ad: 'android-metinleri',
+    dayanak: 'ADR-0019 §4 (istemci); ADR-0008',
+    aciklama:
+        'android/app/src/main/res/values/strings.xml, ARB\'deki '
+        'push_<tür>_title|body anahtarlarından üretilenle aynıdır.',
+  );
+
   static const istisnaBicimi = KuralTanimi(
     ad: 'istisna-bicimi',
     dayanak: 'tool/kurallar (istisna biçimi)',
@@ -264,6 +272,7 @@ abstract final class Kurallar {
     arbAciklama,
     arbAnahtarAdi,
     arbKullanilmayan,
+    androidMetinleri,
     istisnaBicimi,
     istisnaKullanilmayan,
   ];

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/api_client.dart';
@@ -9,35 +8,26 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/e2e/cihaz/e2e_cihaz_yoneticisi.dart';
 import 'package:tayfam/core/e2e/depo/e2e_deposu.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
+import 'package:tayfam/core/e2e/signal/signal_motoru_provider.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 
 export 'package:tayfam/core/e2e/cihaz/e2e_cihaz_yoneticisi.dart'
     show E2eCihazBilgisi, E2eCihazDurumu;
 
-/// Bu derlemede uçtan uca şifreleme var mı: mobilde evet, web geliştirme
-/// derlemesinde hayır (ADR-0011). Testler override eder.
+/// Bu derlemede uçtan uca şifreleme var mı: Android'de evet; web
+/// geliştirme derlemesinde (ADR-0011) ve iOS köprüsü yazılana kadar
+/// iOS'ta hayır. Testler override eder.
 final e2eEtkinProvider = Provider<bool>(
-  (ref) => !kIsWeb,
+  (ref) => ref.watch(signalDestekleniyorProvider),
   name: 'e2eEtkinProvider',
 );
 
-/// Uygulamanın Signal motoru (ADR-0010). Platform kanalı uygulaması Signal
-/// köprüsü işiyle (`lib/core/e2e/signal/`) gelir ve bu provider'a
-/// bağlanır; bağlanana kadar her çağrı desteklenmiyor hatası verir ve
-/// cihaz kaydı [E2eCihazDurumu.hata]'da kalır. Testler sahte motor verir.
+/// Uygulamanın Signal motoru (ADR-0010; Signal köprüsü). Testler sahte
+/// motor verir.
 final e2eMotoruProvider = Provider<SignalMotoru>(
-  (ref) => const _BaglanmamisMotor(),
+  (ref) => ref.watch(signalMotoruProvider),
   name: 'e2eMotoruProvider',
 );
-
-/// Köprü bağlanana kadar her çağrıda [SignalHatasi] veren motor.
-final class _BaglanmamisMotor implements SignalMotoru {
-  const _BaglanmamisMotor();
-
-  @override
-  Object? noSuchMethod(Invocation invocation) =>
-      Future<Never>.error(const SignalHatasi(SignalHatasiTuru.bilinmeyen));
-}
 
 /// Cihaz kaydı ve ön anahtar bakımı.
 final e2eCihazYoneticisiProvider = Provider<E2eCihazYoneticisi>(
