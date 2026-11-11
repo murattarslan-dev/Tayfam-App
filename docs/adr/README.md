@@ -28,6 +28,7 @@ olarak anar.
 | [0013](0013-tanitim-sitesi.md) | Tanıtım sitesi (tayfam.app) bu repoda, CI ile Cloudflare Pages'e | Kabul edildi |
 | [0014](0014-tayfa-listesi-katilim-ve-olusturma.md) | Tayfalarım, aktif tayfa, kodla katılım ve tayfa oluşturma | Kabul edildi |
 | [0015](0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru modülleri, tayfa ana sayfası | Kabul edildi |
+| [0016](0016-uygulama-degerlendirme-penceresi.md) | İlk etkinlikten sonra uygulama değerlendirme penceresi | Kabul edildi |
 
 ## Şablon
 
