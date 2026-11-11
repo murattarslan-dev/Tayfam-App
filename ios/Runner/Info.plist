@@ -26,6 +26,11 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- ADR-0021: fotoğraf seçici (PHPicker) izin istemez; metin yine de gerekli. Kamera yalnızca "Fotoğraf çek"e basınca sorulur. -->
+	<key>NSCameraUsageDescription</key>
+	<string>Profil, kapak ya da av fotoğrafı çekmek için kamerana erişilir. Fotoğrafın konum bilgisi gönderilmeden silinir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Profil, kapak ya da av fotoğrafı seçmek için yalnızca seçtiğin fotoğrafa erişilir. Fotoğrafın konum bilgisi gönderilmeden silinir.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

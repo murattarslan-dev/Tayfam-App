@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/medya/jpeg.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/profil/presentation/hesabi_sil_ekrani.dart';
 import 'package:tayfam/features/profil/presentation/oturumlar_ekrani.dart';
 import 'package:tayfam/features/profil/presentation/profil_ekrani.dart';
 
+import '../../core/medya/sahteler.dart';
 import '../../yardimcilar.dart';
 import 'sahteler.dart';
 
@@ -26,6 +29,7 @@ final class _Ortam {
     WidgetTester tester,
     Widget ekran, {
     ThemeMode themeMode = ThemeMode.light,
+    List<Override> ek = const [],
   }) async {
     await sahteOturum.store.oturumAc(oturum());
     await widgetAc(
@@ -41,6 +45,7 @@ final class _Ortam {
           acici: acici,
           tema: tema,
         ),
+        ...ek,
       ],
     );
   }
@@ -96,6 +101,62 @@ void main() {
       });
     });
   }
+
+  group('avatar (ADR-0021)', () {
+    testWidgets('fotoğraf seçilince yüklenip avatar yapılıyor', (tester) async {
+      ekranBoyutu(tester);
+      final o = _Ortam({
+        'PUT /v1/me/avatar': () => {'avatar_upload_id': ornekUploadId},
+      });
+      yuklemeYanitlariEkle(o.tasima);
+      final k = ornekJpeg();
+      await o.ac(
+        tester,
+        const ProfilEkrani(),
+        ek: medyaOverridelari(
+          tasima: o.tasima,
+          secici: SahteSecici([k]),
+          kodlayici: SahteKodlayici(
+            kaynak: k,
+            kaynakOlcusu: const JpegOlculeri(3024, 4032),
+          ),
+          linkIsteyici: (idler) async => [],
+        ),
+      );
+
+      await tester.tap(_metin('medya_fotograf_ekle'));
+      await tester.pumpAndSettle();
+      await tester.tap(_metin('medya_kaynak_kamera'));
+      await tester.pumpAndSettle();
+
+      expect(o.tasima.sayi('POST', '/v1/uploads'), 1);
+      expect(o.tasima.sayi('PUT', '/v1/me/avatar'), 1);
+      expect(_metin('profil_avatar_kaydedildi'), findsOneWidget);
+      expect(_metin('medya_fotograf_degistir'), findsOneWidget);
+    });
+
+    testWidgets('avatar kaldırılıyor', (tester) async {
+      ekranBoyutu(tester);
+      final o = _Ortam({
+        hesapYolu: () => {...hesapJson(), 'avatar_upload_id': ornekUploadId},
+        'DELETE /v1/me/avatar': () => null,
+      });
+      await o.ac(
+        tester,
+        const ProfilEkrani(),
+        ek: medyaOverridelari(
+          tasima: o.tasima,
+          linkIsteyici: (idler) async => [],
+        ),
+      );
+
+      await tester.tap(_metin('medya_fotograf_kaldir'));
+      await tester.pumpAndSettle();
+      expect(o.tasima.sayi('DELETE', '/v1/me/avatar'), 1);
+      expect(_metin('profil_avatar_kaldirildi'), findsOneWidget);
+      expect(_metin('medya_fotograf_ekle'), findsOneWidget);
+    });
+  });
 
   group('profil ekranı', () {
     testWidgets('kod kopyalanıyor ve link paylaşılıyor', (tester) async {
