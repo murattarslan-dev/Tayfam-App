@@ -53,6 +53,7 @@ void main() {
       'hata_genel',
       'hata_baglanti_yok',
       'hata_zaman_asimi',
+      'hata_sunucu_ulasilamiyor',
     };
     final hataAnahtarlari = arb.keys.where((k) => k.startsWith('hata_'));
     expect(hataAnahtarlari.toSet(), beklenen);
@@ -67,6 +68,26 @@ void main() {
       }
       expect(durumKodu.hasMatch(metin), isFalse, reason: metin);
     }
+  });
+
+  test('problem gövdesiz ağ geçidi hatası sunucu metnine düşüyor', () {
+    for (final status in [502, 503, 504, 520, 530]) {
+      expect(
+        hataMetni(tr, ApiProblem(type: ProblemType.unknown, status: status)),
+        arb['hata_sunucu_ulasilamiyor'],
+        reason: '$status',
+      );
+    }
+    // Sunucunun kendi problem cevabı kendi metnini alır.
+    expect(
+      hataMetni(
+        tr,
+        const ApiProblem(type: ProblemType.unavailable, status: 503),
+      ),
+      arb['hata_unavailable'],
+    );
+    expect(sunucuUlasilamiyorMu(500), isFalse);
+    expect(sunucuUlasilamiyorMu(531), isFalse);
   });
 
   test('bilinmeyen kod genel metne düşüyor', () {

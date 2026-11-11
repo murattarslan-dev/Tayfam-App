@@ -647,6 +647,10 @@
   "@hata_baglanti_yok": {
     "description": "Sunucuya ulaşılamadığında ya da bağlantı koptuğunda görünen hata."
   },
+  "hata_sunucu_ulasilamiyor": "Sunucuya şu an ulaşılamıyor. Biraz sonra tekrar dene.",
+  "@hata_sunucu_ulasilamiyor": {
+    "description": "Sunucunun önündeki ağ geçidi problem gövdesi olmadan 502/503/504 ya da 520–530 döndürdüğünde (sunucu kapalı, tünel kopuk) görünen hata."
+  },
   "hata_zaman_asimi": "Yanıt gecikti. Bağlantını kontrol edip tekrar dene.",
   "@hata_zaman_asimi": {
     "description": "Sunucunun yanıtı zaman aşımı süresinde gelmediğinde görünen hata."
