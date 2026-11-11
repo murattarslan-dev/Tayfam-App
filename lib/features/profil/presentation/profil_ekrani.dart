@@ -7,8 +7,13 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+<<<<<<< HEAD
 import 'package:tayfam/core/medya/fotograf_yukleme.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
+=======
+import 'package:tayfam/core/push/bildirim_izni.dart';
+import 'package:tayfam/core/push/push_platformu.dart';
+>>>>>>> origin/main
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
@@ -21,7 +26,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Profil sekmesi (ADR-0018 §2): avatar (ADR-0021), referans kodu, arkadaşlık girişleri
 /// (ADR-0018 §7), katılım geçmişi
-/// görünürlüğü, tema, oturumlar, hukuki metinler, çıkış ve hesap silme.
+/// görünürlüğü, tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
+/// metinler, çıkış ve hesap silme.
 ///
 /// Hesap ayarları okunamazsa yalnızca o bölüm hata gösterir; tema, çıkış
 /// ve öteki satırlar yine kullanılabilir.
@@ -440,7 +446,7 @@ class _TemaBolumu extends ConsumerWidget {
   }
 }
 
-/// Oturumlar, hukuki metinler, çıkış ve hesap silme.
+/// Bildirimler, oturumlar, hukuki metinler, çıkış ve hesap silme.
 class _HesapBolumu extends ConsumerWidget {
   const _HesapBolumu();
 
@@ -466,10 +472,25 @@ class _HesapBolumu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
     final cikiyor = ref.watch(cikisProvider);
+    final bildirimIzni = ref.watch(pushPlatformuProvider).etkin
+        ? ref.watch(bildirimIzniProvider.select((d) => d.izin))
+        : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BolumBasligi(baslik: metinler.profil_hesap_baslik),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.notifications_outlined),
+          title: Text(metinler.profil_bildirimler),
+          subtitle: switch (bildirimIzni) {
+            null => null,
+            BildirimIzni.verildi => Text(metinler.profil_bildirimler_acik),
+            _ => Text(metinler.profil_bildirimler_kapali),
+          },
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.go(Adresler.bildirimAyarlari),
+        ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.devices_outlined),

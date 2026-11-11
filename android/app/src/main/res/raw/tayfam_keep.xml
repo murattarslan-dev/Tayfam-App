@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sürüm derlemesinde kaynak küçültme bu kaynakları silmesin: push
+     metinleri ve bildirim simgesi koddan değil, FCM'in sunucudan gelen
+     adla (title_loc_key / body_loc_key) ve manifest meta-data'sıyla
+     bulduğu kaynaklardır (istemci ADR-0019 §4). -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/push_*,@drawable/ic_bildirim" />
