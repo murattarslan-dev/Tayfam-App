@@ -70,7 +70,8 @@ final class _SahteAyarlar implements AyarlarAcici {
 
 /// Eşleştirme servisinin sahte bağımlılıkları.
 final class _Ortam {
-  _Ortam({required bool eslesmis}) {
+  _Ortam({required bool eslesmis, bool ayarlarDestekli = true})
+    : ayarlar = _SahteAyarlar(destekleniyor: ayarlarDestekli) {
     kaynak = SahteKaynak(
       bilgi(
         cihaz: eslesmis ? cihazA : cihazB,
@@ -109,7 +110,7 @@ final class _Ortam {
   late final EslemeServisi servis;
   final SahteZamanlayici zamanlayici = SahteZamanlayici();
   final _SahteTarayici tarayici = _SahteTarayici();
-  final _SahteAyarlar ayarlar = _SahteAyarlar();
+  final _SahteAyarlar ayarlar;
   DateTime simdi = DateTime.utc(2026, 11, 11, 19);
 
   List<Override> get overrides => [
@@ -231,17 +232,8 @@ void main() {
   testWidgets('Android: ayarlar açılamıyorsa yalnızca tekrar tara', (
     tester,
   ) async {
-    final o = _Ortam(eslesmis: true);
-    await widgetAc(
-      tester,
-      const CihazBaglaEkrani(),
-      overrides: [
-        ...o.overrides,
-        ayarlarAciciProvider.overrideWithValue(
-          _SahteAyarlar(destekleniyor: false),
-        ),
-      ],
-    );
+    final o = _Ortam(eslesmis: true, ayarlarDestekli: false);
+    await widgetAc(tester, const CihazBaglaEkrani(), overrides: o.overrides);
     o.tarayici.izinReddedildi!();
     await tester.pumpAndSettle();
     expect(_metin('cihaz_ayarlari_ac'), findsNothing);

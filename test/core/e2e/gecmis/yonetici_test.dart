@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +7,7 @@ import 'package:http/testing.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
 import 'package:tayfam/core/e2e/gecmis/bagimliliklar.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_api.dart';
@@ -194,8 +194,13 @@ void main() {
       istemciAdi: 'android',
     );
     try {
-      await GecmisApi(tasima)
-          .anahtariYenile(2, [(cihazId: cihazB, paket: Uint8List(2))]);
+      await tasima.gonder(
+        method: 'POST',
+        pathTemplate: '/v1/me/e2e/history-key/rotate',
+        body: const <String, Object?>{},
+        expect: ResponseKind.none,
+        erisimTokeni: 'erisim',
+      );
       fail('hata bekleniyordu');
     } on ApiProblem catch (p) {
       expect(p.type, ProblemType.e2eDevicesChanged);
