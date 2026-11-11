@@ -45,10 +45,9 @@ class CevapListesiNotifier extends SayfaliListeNotifier<Answer> {
   }
 
   @override
-  Future<Sayfa<Answer>> sayfaGetir(String? sayfaToken) =>
-      ref
-          .read(soruCevapDeposuProvider)
-          .cevaplar(anahtar.tayfaId, anahtar.soruId, sayfaToken: sayfaToken);
+  Future<Sayfa<Answer>> sayfaGetir(String? sayfaToken) => ref
+      .read(soruCevapDeposuProvider)
+      .cevaplar(anahtar.tayfaId, anahtar.soruId, sayfaToken: sayfaToken);
 
   @override
   String kimlik(Answer oge) => oge.id;
@@ -116,7 +115,8 @@ class CevapListesiNotifier extends SayfaliListeNotifier<Answer> {
     if (!ref.mounted) return null;
     cikar(cevapId);
     final soru = soruProvider(anahtar);
-    if (ref.read(soru.exists)) ref.read(soru.notifier).cevapSayisiniDegistir(-1);
+    if (ref.read(soru.exists))
+      ref.read(soru.notifier).cevapSayisiniDegistir(-1);
     return null;
   }
 }

@@ -115,8 +115,7 @@ final class SoruCevapDeposu {
   /// Cevaba faydalı oyu verir (`PUT …/vote`) ya da geri alır
   /// (`DELETE …/vote`). Kendi cevabına oyu sunucu reddeder
   /// (`own-answer-vote`).
-  Future<Answer> oyla(String tayfaId, String cevapId, {required bool oy}) =>
-      oy
+  Future<Answer> oyla(String tayfaId, String cevapId, {required bool oy}) => oy
       ? _cevaplar.voteAnswer(tayfaId: tayfaId, answerId: cevapId)
       : _cevaplar.unvoteAnswer(tayfaId: tayfaId, answerId: cevapId);
 

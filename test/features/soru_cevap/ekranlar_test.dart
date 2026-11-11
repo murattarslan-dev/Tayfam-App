@@ -393,9 +393,7 @@ void main() {
       expect(find.text(arbMetni('soru_cevap_silindi')), findsOneWidget);
     });
 
-    testWidgets('biçimsiz kimlikte istek gitmiyor, bulunamadı', (
-      tester,
-    ) async {
+    testWidgets('biçimsiz kimlikte istek gitmiyor, bulunamadı', (tester) async {
       ekranBoyutu(tester);
       final tasima = soruTasimasi();
       await _soruyuAc(tester, tasima, soruId: 'gecersiz');
@@ -649,6 +647,12 @@ void main() {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         await _soruyuAc(tester, _detayTasimasi(), themeMode: mod);
+        // Düğme uzun sorunun altında; tembel liste onu henüz kurmamış olabilir.
+        await tester.dragUntilVisible(
+          find.text(arbMetni('soru_cevap_yaz')),
+          find.byType(ListView),
+          const Offset(0, -300),
+        );
         await _dokun(tester, find.text(arbMetni('soru_cevap_yaz')));
         await _dokun(tester, find.text(arbMetni('soru_cevap_form_gonder')));
         expect(tester.takeException(), isNull);

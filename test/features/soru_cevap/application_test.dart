@@ -51,7 +51,8 @@ final class _Kurulum {
     await kap.read(cevaplar.future);
   }
 
-  Question get gosterilen => kap.read(soruProvider(_soru(soruId1))).requireValue;
+  Question get gosterilen =>
+      kap.read(soruProvider(_soru(soruId1))).requireValue;
 
   List<Answer> get cevaplar =>
       kap.read(cevapListesiProvider(_soru(soruId1))).requireValue.ogeler;
@@ -74,13 +75,20 @@ void main() {
       expect(soruAramasiniNormalle(uzun).runes.length, soruAramasiEnCok);
     });
 
-    test('arama ve etiket sunucuya gidiyor; harf dönüşümü yapılmıyor', () async {
-      final k = _Kurulum();
-      await k.liste((tayfaId: ornekTayfaId, arama: 'IŞIK', etiketId: etiketId1));
-      final istek = k.tasima.giden('GET', sorularYolu).single;
-      expect(istek.sorgu['q'], 'IŞIK');
-      expect(istek.sorgu['tag_id'], etiketId1);
-    });
+    test(
+      'arama ve etiket sunucuya gidiyor; harf dönüşümü yapılmıyor',
+      () async {
+        final k = _Kurulum();
+        await k.liste((
+          tayfaId: ornekTayfaId,
+          arama: 'IŞIK',
+          etiketId: etiketId1,
+        ));
+        final istek = k.tasima.giden('GET', sorularYolu).single;
+        expect(istek.sorgu['q'], 'IŞIK');
+        expect(istek.sorgu['tag_id'], etiketId1);
+      },
+    );
 
     test('süzgeçsiz listede q ve tag_id gönderilmiyor', () async {
       final k = _Kurulum();
@@ -175,41 +183,47 @@ void main() {
       expect(durum(k).etiketler, ['kamp ateşi', 'IŞIK', 'bir', 'üç']);
     });
 
-    test('soru sorulunca istek kimliği gidiyor, listenin başına ekleniyor', () async {
-      final k = _Kurulum({
-        'GET $sorularYolu': yanit(soruListesiJson([soruJson(soruId2)])),
-        'POST $sorularYolu': yanit(soruJson(soruId1)),
-      });
-      await k.liste();
-      final n = form(k)
-        ..baslikAyarla('  Kamp için hangi çadırı alalım?  ')
-        ..etiketEkle('kamp');
-      await n.gonder();
-      final govde =
-          k.tasima.giden('POST', sorularYolu).single.govde!
-              as Map<String, Object?>;
-      expect(govde, {
-        'title': 'Kamp için hangi çadırı alalım?',
-        'tags': ['kamp'],
-        'client_request_id': sahteIstekKimligi,
-      });
-      expect(durum(k).tamamlanan?.id, soruId1);
-      expect(k.sorular.map((s) => s.id), [soruId1, soruId2]);
-    });
+    test(
+      'soru sorulunca istek kimliği gidiyor, listenin başına ekleniyor',
+      () async {
+        final k = _Kurulum({
+          'GET $sorularYolu': yanit(soruListesiJson([soruJson(soruId2)])),
+          'POST $sorularYolu': yanit(soruJson(soruId1)),
+        });
+        await k.liste();
+        final n = form(k)
+          ..baslikAyarla('  Kamp için hangi çadırı alalım?  ')
+          ..etiketEkle('kamp');
+        await n.gonder();
+        final govde =
+            k.tasima.giden('POST', sorularYolu).single.govde!
+                as Map<String, Object?>;
+        expect(govde, {
+          'title': 'Kamp için hangi çadırı alalım?',
+          'tags': ['kamp'],
+          'client_request_id': sahteIstekKimligi,
+        });
+        expect(durum(k).tamamlanan?.id, soruId1);
+        expect(k.sorular.map((s) => s.id), [soruId1, soruId2]);
+      },
+    );
 
-    test('hata alınca form açık kalıyor; tekrarda aynı istek kimliği', () async {
-      final k = _Kurulum({'POST $sorularYolu': yanit(const ApiOffline())});
-      final n = form(k)..baslikAyarla('Kamp için hangi çadırı alalım?');
-      await n.gonder();
-      expect(durum(k).hata, isA<ApiOffline>());
-      k.tasima.yanitlar['POST $sorularYolu'] = yanit(soruJson(soruId1));
-      await n.gonder();
-      final kimlikler = [
-        for (final i in k.tasima.giden('POST', sorularYolu))
-          (i.govde! as Map<String, Object?>)['client_request_id'],
-      ];
-      expect(kimlikler, [sahteIstekKimligi, sahteIstekKimligi]);
-    });
+    test(
+      'hata alınca form açık kalıyor; tekrarda aynı istek kimliği',
+      () async {
+        final k = _Kurulum({'POST $sorularYolu': yanit(const ApiOffline())});
+        final n = form(k)..baslikAyarla('Kamp için hangi çadırı alalım?');
+        await n.gonder();
+        expect(durum(k).hata, isA<ApiOffline>());
+        k.tasima.yanitlar['POST $sorularYolu'] = yanit(soruJson(soruId1));
+        await n.gonder();
+        final kimlikler = [
+          for (final i in k.tasima.giden('POST', sorularYolu))
+            (i.govde! as Map<String, Object?>)['client_request_id'],
+        ];
+        expect(kimlikler, [sahteIstekKimligi, sahteIstekKimligi]);
+      },
+    );
 
     test('düzenlemede yalnızca değişen alanlar gidiyor', () async {
       final eski = _soruModeli(
@@ -360,7 +374,9 @@ void main() {
       });
       await k.liste();
       await k.soru();
-      final hata = await k.kap.read(soruProvider(_soru(soruId1)).notifier).sil();
+      final hata = await k.kap
+          .read(soruProvider(_soru(soruId1)).notifier)
+          .sil();
       expect(hata, isNull);
       expect(k.sorular.map((s) => s.id), [soruId2]);
     });
@@ -374,7 +390,9 @@ void main() {
       });
       await k.liste();
       await k.soru();
-      final hata = await k.kap.read(soruProvider(_soru(soruId1)).notifier).sil();
+      final hata = await k.kap
+          .read(soruProvider(_soru(soruId1)).notifier)
+          .sil();
       expect(hata, isA<ApiProblem>());
       expect(k.sorular.map((s) => s.id), [soruId1]);
     });

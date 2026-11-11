@@ -324,8 +324,7 @@ class _Cevaplar extends ConsumerWidget {
         );
       case CevapIslemi.sil:
         final yazarId = cevap.authorUserId;
-        final kendisi =
-            yazarId != null && ref.read(kendisiMiProvider(yazarId));
+        final kendisi = yazarId != null && ref.read(kendisiMiProvider(yazarId));
         final onay = await silmeyiOnayla(
           context,
           baslik: metinler.soru_cevap_sil_onay_baslik,

@@ -171,7 +171,9 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
   }
 
   void _dahaFazla(SoruSuzgeci suzgec) => unawaited(
-    ref.read(soruListesiProvider(suzgec.anahtar(_tayfaId)).notifier).dahaFazla(),
+    ref
+        .read(soruListesiProvider(suzgec.anahtar(_tayfaId)).notifier)
+        .dahaFazla(),
   );
 
   /// Listeyi ve etiketleri yeniler. Yenileme başarısız olursa eldeki liste
