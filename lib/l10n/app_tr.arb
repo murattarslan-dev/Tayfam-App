@@ -51,6 +51,164 @@
       }
     }
   },
+  "bildirim_hepsini_okundu_say": "Hepsini okundu say",
+  "@bildirim_hepsini_okundu_say": {
+    "description": "Bildirimler sekmesinde, okunmamış bildirim varken listenin üstündeki, bütün bildirimleri okundu işaretleyen düğme."
+  },
+  "bildirim_bos": "Henüz bildirimin yok.",
+  "@bildirim_bos": {
+    "description": "Bildirimler sekmesinde hiç bildirim yokken görünen metin."
+  },
+  "bildirim_yukleniyor": "Bildirimler yükleniyor",
+  "@bildirim_yukleniyor": {
+    "description": "Bildirimler sekmesindeki yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "bildirim_okunmadi": "Okunmadı",
+  "@bildirim_okunmadi": {
+    "description": "Okunmamış bir bildirimin kartındaki noktanın ekran okuyucu etiketi."
+  },
+  "bildirim_kisi_bilinmiyor": "Biri",
+  "@bildirim_kisi_bilinmiyor": {
+    "description": "Bildirim metninde adı geçen kişinin adı henüz bilinmiyorken ya da okunamadığında ad yerine geçen sözcük (ör. \"Biri sana arkadaşlık isteği gönderdi\")."
+  },
+  "bildirim_zaman": "{tarih}, {saat}",
+  "@bildirim_zaman": {
+    "description": "Bildirim kartında bildirimin geldiği gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "bildirim_etkinlik_eklendi": "Yeni bir etkinlik eklendi",
+  "@bildirim_etkinlik_eklendi": {
+    "description": "Bildirim metni: tayfada yeni bir etkinlik oluşturuldu (`event_created`). Tayfanın adı altta ayrı satırdadır; etkinliğin adı gösterilmez."
+  },
+  "bildirim_etkinlik_guncellendi": "Katıldığın bir etkinlik güncellendi",
+  "@bildirim_etkinlik_guncellendi": {
+    "description": "Bildirim metni: kullanıcının katıldığı bir etkinlik değişti (`event_updated`)."
+  },
+  "bildirim_etkinlik_iptal": "Katıldığın bir etkinlik iptal edildi",
+  "@bildirim_etkinlik_iptal": {
+    "description": "Bildirim metni: kullanıcının katıldığı bir etkinlik iptal edildi (`event_cancelled`)."
+  },
+  "bildirim_katilimciya_gectin": "Bekleme listesinden katılımcılara geçtin",
+  "@bildirim_katilimciya_gectin": {
+    "description": "Bildirim metni: kullanıcı bir etkinliğin bekleme listesinden katılımcılara geçti (`rsvp_promoted`)."
+  },
+  "bildirim_duyuru": "Yeni bir duyuru var",
+  "@bildirim_duyuru": {
+    "description": "Bildirim metni: tayfada yeni duyuru yayınlandı (`announcement`). Duyurunun başlığı gösterilmez."
+  },
+  "bildirim_cevap": "Soruna yeni bir cevap geldi",
+  "@bildirim_cevap": {
+    "description": "Bildirim metni: kullanıcının sorusu cevaplandı (`answer_received`). Cevap metni gösterilmez."
+  },
+  "bildirim_katilim_istegi": "{kisi} tayfaya katılmak istiyor",
+  "@bildirim_katilim_istegi": {
+    "description": "Bildirim metni (yönetim): bir kişi tayfaya katılım isteği gönderdi (`join_request`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_katilim_onaylandi": "Katılım isteğin onaylandı",
+  "@bildirim_katilim_onaylandi": {
+    "description": "Bildirim metni: kullanıcının tayfaya katılım isteği onaylandı (`join_approved`)."
+  },
+  "bildirim_silme_istendi": "Tayfanın silinmesi istendi",
+  "@bildirim_silme_istendi": {
+    "description": "Bildirim metni (yönetim): tayfa için silme talebi açıldı (`tayfa_deletion_requested`)."
+  },
+  "bildirim_uyari_hareketsiz": "Tayfa bir süredir hareketsiz; 7 gün içinde arşivlenecek",
+  "@bildirim_uyari_hareketsiz": {
+    "description": "Bildirim metni: tayfa hareketsiz olduğu için 7 gün içinde arşivlenecek (`tayfa_warned`, `inactive`)."
+  },
+  "bildirim_uyari_az_uye": "Tayfada çok az üye var; 7 gün içinde arşivlenecek",
+  "@bildirim_uyari_az_uye": {
+    "description": "Bildirim metni: tayfada çok az üye olduğu için 7 gün içinde arşivlenecek (`tayfa_warned`, `few_members`)."
+  },
+  "bildirim_uyari": "Tayfa 7 gün içinde arşivlenecek",
+  "@bildirim_uyari": {
+    "description": "Bildirim metni: tayfa 7 gün içinde arşivlenecek, gerekçe bilinmiyor (`tayfa_warned`)."
+  },
+  "bildirim_arsivlendi": "Tayfa arşivlendi",
+  "@bildirim_arsivlendi": {
+    "description": "Bildirim metni: tayfa arşivlendi (`tayfa_archived`)."
+  },
+  "bildirim_askiya_alindi": "Tayfa askıya alındı",
+  "@bildirim_askiya_alindi": {
+    "description": "Bildirim metni: tayfa platform tarafından askıya alındı (`tayfa_suspended`); gerekçe tayfa ayrıntısındadır."
+  },
+  "bildirim_aski_kaldirildi": "Tayfanın askısı kaldırıldı",
+  "@bildirim_aski_kaldirildi": {
+    "description": "Bildirim metni: tayfanın askısı kaldırıldı (`tayfa_unsuspended`)."
+  },
+  "bildirim_yuruyus_donmedi": "{kisi} yürüyüşten zamanında dönmedi",
+  "@bildirim_yuruyus_donmedi": {
+    "description": "Bildirim metni (güvenlik): bir yürüyüşçü planlanan zamanda dönmedi (`hike_overdue`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_arkadaslik_istegi": "{kisi} sana arkadaşlık isteği gönderdi",
+  "@bildirim_arkadaslik_istegi": {
+    "description": "Bildirim metni: kullanıcıya arkadaşlık isteği geldi (`friend_request`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_arkadaslik_kabul": "{kisi} arkadaşlık isteğini kabul etti",
+  "@bildirim_arkadaslik_kabul": {
+    "description": "Bildirim metni: kullanıcının arkadaşlık isteği kabul edildi (`friend_accepted`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_tayfa_daveti": "{kisi} seni bir tayfaya davet etti",
+  "@bildirim_tayfa_daveti": {
+    "description": "Bildirim metni: bir arkadaş kullanıcıyı tayfaya davet etti (`tayfa_invitation`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_sikayet_sonuclandi": "Şikâyetin sonuçlandı",
+  "@bildirim_sikayet_sonuclandi": {
+    "description": "Bildirim metni: kullanıcının şikâyeti sonuçlandı (`report_resolved`)."
+  },
+  "bildirim_mesaj_istegi": "Yeni bir mesaj isteğin var",
+  "@bildirim_mesaj_istegi": {
+    "description": "Bildirim metni: birebir mesaj isteği geldi (`dm_request`). Gönderen ve içerik hiçbir zaman yazılmaz."
+  },
+  "bildirim_mesaj": "Yeni birebir mesajın var",
+  "@bildirim_mesaj": {
+    "description": "Bildirim metni: yeni birebir mesaj geldi (`dm_message`). Gönderen ve içerik hiçbir zaman yazılmaz."
+  },
+  "bildirim_genel": "Yeni bir bildirimin var",
+  "@bildirim_genel": {
+    "description": "Bildirim metni: uygulamanın henüz tanımadığı bir bildirim türü."
+  },
   "gezinme_yer_tutucu_aciklama": "Bu bölüm hazırlanıyor.",
   "@gezinme_yer_tutucu_aciklama": {
     "description": "Henüz yapılmamış ekranların (sekme sayfaları, kodla katılma, tayfa oluşturma) ortasında görünen geçici açıklama."
@@ -2022,6 +2180,268 @@
         "type": "DateTime",
         "format": "yMMMMd",
         "example": "2009-03-12"
+      }
+    }
+  },
+  "profil_tekrar_dene": "Tekrar dene",
+  "@profil_tekrar_dene": {
+    "description": "Profil, oturumlar ve hesap ayarları okunamadığında hatanın altındaki yeniden deneme düğmesi."
+  },
+  "profil_yukleniyor": "Yükleniyor",
+  "@profil_yukleniyor": {
+    "description": "Profil sekmesinde ve oturumlar ekranında bilgiler yüklenirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "profil_vazgec": "Vazgeç",
+  "@profil_vazgec": {
+    "description": "Profil ekranlarındaki onay pencerelerinde işlemi yapmadan kapatan düğme."
+  },
+  "profil_referans_baslik": "Referans kodun",
+  "@profil_referans_baslik": {
+    "description": "Profil sekmesindeki ilk bölümün başlığı; kullanıcının kendi referans kodu."
+  },
+  "profil_referans_aciklama": "Arkadaşlarını Tayfam'a bu kodla ya da linkle davet edebilirsin; seni bu kodla bulabilirler.",
+  "@profil_referans_aciklama": {
+    "description": "Profil sekmesinde referans kodunun altındaki açıklama."
+  },
+  "profil_referans_paylas": "Paylaş",
+  "@profil_referans_paylas": {
+    "description": "Referans linkini sistem paylaşım menüsüyle paylaşan düğme."
+  },
+  "profil_referans_kopyala": "Kodu kopyala",
+  "@profil_referans_kopyala": {
+    "description": "Referans kodunu panoya kopyalayan düğme."
+  },
+  "profil_referans_kopyalandi": "Kod kopyalandı",
+  "@profil_referans_kopyalandi": {
+    "description": "Referans kodu panoya kopyalanınca ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_referans_yenile": "Yeni kod al",
+  "@profil_referans_yenile": {
+    "description": "Yeni referans kodu üreten düğme; onay penceresinin onay düğmesi olarak da görünür."
+  },
+  "profil_referans_yenile_onay_baslik": "Yeni kod alınsın mı?",
+  "@profil_referans_yenile_onay_baslik": {
+    "description": "Yeni referans kodu üretmeden önceki onay penceresinin başlığı."
+  },
+  "profil_referans_yenile_onay_aciklama": "Eski kodun ve linkin hemen geçersiz olur.",
+  "@profil_referans_yenile_onay_aciklama": {
+    "description": "Yeni referans kodu üretmeden önceki onay penceresinin açıklaması."
+  },
+  "profil_referans_yenilendi": "Yeni kodun hazır.",
+  "@profil_referans_yenilendi": {
+    "description": "Yeni referans kodu üretilince ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_gorunurluk_baslik": "Katılım geçmişin",
+  "@profil_gorunurluk_baslik": {
+    "description": "Profil sekmesinde katılım geçmişinin kime görüneceğini seçtiren bölümün başlığı."
+  },
+  "profil_gorunurluk_aciklama": "Katıldığın etkinliklerin kime görüneceğini seç.",
+  "@profil_gorunurluk_aciklama": {
+    "description": "Katılım geçmişi görünürlüğü bölümünün açıklaması."
+  },
+  "profil_gorunurluk_ozel": "Yalnızca ben",
+  "@profil_gorunurluk_ozel": {
+    "description": "Katılım geçmişi görünürlüğü seçeneği: yalnızca kullanıcının kendisi (`private`)."
+  },
+  "profil_gorunurluk_ozel_aciklama": "Katılım geçmişini senden başka kimse göremez.",
+  "@profil_gorunurluk_ozel_aciklama": {
+    "description": "`Yalnızca ben` seçeneğinin açıklaması."
+  },
+  "profil_gorunurluk_tayfa": "Arkadaşlarım ve tayfalarım",
+  "@profil_gorunurluk_tayfa": {
+    "description": "Katılım geçmişi görünürlüğü seçeneği: arkadaşlar ve ortak tayfa üyeleri (`tayfa`, varsayılan)."
+  },
+  "profil_gorunurluk_tayfa_aciklama": "Arkadaşların tümünü görür; ortak tayfalarındaki üyeler son 14 günü göremez.",
+  "@profil_gorunurluk_tayfa_aciklama": {
+    "description": "`Arkadaşlarım ve tayfalarım` seçeneğinin açıklaması."
+  },
+  "profil_gorunurluk_herkes": "Herkes",
+  "@profil_gorunurluk_herkes": {
+    "description": "Katılım geçmişi görünürlüğü seçeneği: herkes (`public`)."
+  },
+  "profil_gorunurluk_herkes_aciklama": "Arkadaşların tümünü görür; diğer herkes son 14 günü göremez.",
+  "@profil_gorunurluk_herkes_aciklama": {
+    "description": "`Herkes` seçeneğinin açıklaması."
+  },
+  "profil_tema_baslik": "Tema",
+  "@profil_tema_baslik": {
+    "description": "Profil sekmesinde uygulamanın açık ya da koyu görünümünü seçtiren bölümün başlığı."
+  },
+  "profil_tema_sistem": "Cihaz ayarı",
+  "@profil_tema_sistem": {
+    "description": "Tema seçeneği: cihazın açık / koyu ayarını izler (varsayılan)."
+  },
+  "profil_tema_acik": "Açık",
+  "@profil_tema_acik": {
+    "description": "Tema seçeneği: her zaman açık tema."
+  },
+  "profil_tema_koyu": "Koyu",
+  "@profil_tema_koyu": {
+    "description": "Tema seçeneği: her zaman koyu tema."
+  },
+  "profil_hesap_baslik": "Hesap",
+  "@profil_hesap_baslik": {
+    "description": "Profil sekmesinde oturumlar, hukuki metinler, çıkış ve hesap silme satırlarının bölüm başlığı."
+  },
+  "profil_oturumlar": "Oturumlar",
+  "@profil_oturumlar": {
+    "description": "Profil sekmesinde açık oturumlar ekranını açan satır; o ekranın başlığı."
+  },
+  "profil_oturumlar_aciklama": "Hesabının açık olduğu cihazlar",
+  "@profil_oturumlar_aciklama": {
+    "description": "Oturumlar satırının altındaki açıklama."
+  },
+  "profil_aydinlatma": "Aydınlatma metni",
+  "@profil_aydinlatma": {
+    "description": "KVKK aydınlatma metnini tarayıcıda açan satır."
+  },
+  "profil_kosullar": "Kullanım koşulları",
+  "@profil_kosullar": {
+    "description": "Kullanım koşullarını tarayıcıda açan satır."
+  },
+  "profil_cikis": "Çıkış yap",
+  "@profil_cikis": {
+    "description": "Bu cihazdaki oturumu kapatıp giriş ekranına dönen satır."
+  },
+  "profil_cikis_suruyor": "Çıkış yapılıyor",
+  "@profil_cikis_suruyor": {
+    "description": "Çıkış sürerken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "profil_hesabi_sil": "Hesabı sil",
+  "@profil_hesabi_sil": {
+    "description": "Profil sekmesinde hesap silme ekranını açan satır."
+  },
+  "profil_oturum_android": "Android cihaz",
+  "@profil_oturum_android": {
+    "description": "Oturumlar listesinde Android cihazdaki oturumun adı."
+  },
+  "profil_oturum_ios": "iPhone ya da iPad",
+  "@profil_oturum_ios": {
+    "description": "Oturumlar listesinde iOS cihazdaki oturumun adı."
+  },
+  "profil_oturum_web": "Web tarayıcısı",
+  "@profil_oturum_web": {
+    "description": "Oturumlar listesinde web geliştirme derlemesindeki oturumun adı."
+  },
+  "profil_oturum_bilinmeyen": "Bilinmeyen cihaz",
+  "@profil_oturum_bilinmeyen": {
+    "description": "Oturumlar listesinde platformu bilinmeyen oturumun adı."
+  },
+  "profil_oturum_bu_cihaz": "Bu cihaz",
+  "@profil_oturum_bu_cihaz": {
+    "description": "Oturumlar listesinde şu an kullanılan cihazın oturumunun altında görünen işaret."
+  },
+  "profil_oturum_kapat": "Oturumu kapat",
+  "@profil_oturum_kapat": {
+    "description": "Oturumlar listesinde başka bir cihazın oturumunu kapatan düğmenin ipucu; onay penceresinin onay düğmesi."
+  },
+  "profil_oturum_kapat_onay_baslik": "Bu oturum kapatılsın mı?",
+  "@profil_oturum_kapat_onay_baslik": {
+    "description": "Başka bir cihazın oturumunu kapatmadan önceki onay penceresinin başlığı."
+  },
+  "profil_oturum_kapat_onay_aciklama": "O cihazda yeniden giriş yapman gerekir.",
+  "@profil_oturum_kapat_onay_aciklama": {
+    "description": "Başka bir cihazın oturumunu kapatmadan önceki onay penceresinin açıklaması."
+  },
+  "profil_oturum_kapatildi": "Oturum kapatıldı.",
+  "@profil_oturum_kapatildi": {
+    "description": "Bir oturum kapatılınca ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_diger_cihazlardan_cik": "Diğer cihazlardan çık",
+  "@profil_diger_cihazlardan_cik": {
+    "description": "Bu cihaz dışındaki bütün oturumları kapatan düğme; onay penceresinin onay düğmesi."
+  },
+  "profil_diger_onay_baslik": "Diğer cihazlardan çıkılsın mı?",
+  "@profil_diger_onay_baslik": {
+    "description": "Diğer cihazlardan çıkmadan önceki onay penceresinin başlığı."
+  },
+  "profil_diger_onay_aciklama": "Bu cihaz dışındaki bütün cihazlarda yeniden giriş yapman gerekir.",
+  "@profil_diger_onay_aciklama": {
+    "description": "Diğer cihazlardan çıkmadan önceki onay penceresinin açıklaması."
+  },
+  "profil_diger_kapatildi": "Diğer cihazlardan çıkıldı.",
+  "@profil_diger_kapatildi": {
+    "description": "Diğer oturumlar kapatılınca ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_sil_baslik": "Hesabı sil",
+  "@profil_sil_baslik": {
+    "description": "Hesap silme ekranının başlığı."
+  },
+  "profil_sil_giris": "Hesabını silersen:",
+  "@profil_sil_giris": {
+    "description": "Hesap silme ekranında ne olacağını anlatan maddelerin girişi."
+  },
+  "profil_sil_madde_bilgiler": "Adın, profil fotoğrafın, doğum tarihin ve referans kodun hemen silinir.",
+  "@profil_sil_madde_bilgiler": {
+    "description": "Hesap silme açıklamasının maddesi: kişisel bilgiler."
+  },
+  "profil_sil_madde_oturumlar": "Bütün cihazlardaki oturumların kapanır ve tayfalarından çıkarsın.",
+  "@profil_sil_madde_oturumlar": {
+    "description": "Hesap silme açıklamasının maddesi: oturumlar ve tayfa üyelikleri."
+  },
+  "profil_sil_madde_icerik": "Yazdıkların ve paylaştıkların kalır; yazarı \"Silinmiş kullanıcı\" olarak görünür.",
+  "@profil_sil_madde_icerik": {
+    "description": "Hesap silme açıklamasının maddesi: içerikler silinmez, yazar adı yerine \"Silinmiş kullanıcı\" görünür."
+  },
+  "profil_sil_madde_geri_alma": "Silme geri alınamaz. Aynı Google hesabıyla yeniden giriş yaparsan yeni bir hesap açılır.",
+  "@profil_sil_madde_geri_alma": {
+    "description": "Hesap silme açıklamasının maddesi: geri alma yok."
+  },
+  "profil_sil_madde_yeniden_giris": "Silmeden önce Google ile yeniden giriş yapman istenir.",
+  "@profil_sil_madde_yeniden_giris": {
+    "description": "Hesap silme açıklamasının maddesi: yeniden Google girişi gerekir."
+  },
+  "profil_sil_dugme": "Hesabımı sil",
+  "@profil_sil_dugme": {
+    "description": "Hesap silme ekranında onay penceresini açan düğme."
+  },
+  "profil_sil_onay_baslik": "Hesabın silinsin mi?",
+  "@profil_sil_onay_baslik": {
+    "description": "Hesap silme onay penceresinin başlığı."
+  },
+  "profil_sil_onay_aciklama": "Bu işlem geri alınamaz. Google ile giriş yaptıktan sonra hesabın silinecek.",
+  "@profil_sil_onay_aciklama": {
+    "description": "Hesap silme onay penceresinin açıklaması."
+  },
+  "profil_sil_onay": "Google ile doğrula ve sil",
+  "@profil_sil_onay": {
+    "description": "Hesap silme onay penceresinde yeniden Google girişini başlatan düğme."
+  },
+  "profil_sil_suruyor": "Hesabın siliniyor",
+  "@profil_sil_suruyor": {
+    "description": "Hesap silme sürerken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "profil_sil_farkli_hesap": "Seçtiğin Google hesabı bu hesap değil. Hesabını açtığın Google hesabıyla tekrar dene.",
+  "@profil_sil_farkli_hesap": {
+    "description": "Hesap silmede yeniden girişte başka bir Google hesabı seçildiğinde görünen hata; hiçbir hesap silinmez."
+  },
+  "profil_referans_paylasim_metni": "Tayfam'da bana katıl: {link}",
+  "@profil_referans_paylasim_metni": {
+    "description": "Referans linki paylaşılırken sistem paylaşım menüsüne giden metin. {link} tayfam.app/r/<kod> adresidir.",
+    "placeholders": {
+      "link": {
+        "type": "String",
+        "example": "https://tayfam.app/r/TYF-8K2M4Q"
+      }
+    }
+  },
+  "profil_referans_kod_etiketi": "Referans kodun: {kod}",
+  "@profil_referans_kod_etiketi": {
+    "description": "Profil sekmesindeki referans kodunun ekran okuyucu etiketi.",
+    "placeholders": {
+      "kod": {
+        "type": "String",
+        "example": "TYF-8K2M4Q"
+      }
+    }
+  },
+  "profil_oturum_son_kullanim": "Son kullanım: {zaman}",
+  "@profil_oturum_son_kullanim": {
+    "description": "Oturumlar listesinde başka bir cihazın oturumunun son kullanıldığı zaman. {zaman} tarih ve saattir (12 Kas 2026 14:30).",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "12 Kas 2026 14:30"
       }
     }
   },
