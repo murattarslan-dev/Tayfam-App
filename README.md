@@ -19,5 +19,7 @@ Sunucu tarafı ayrı repodadır:
 ## Lisans ve güvenlik
 
 Kod [MIT](LICENSE) lisanslıdır. "Tayfam" adı ve logosu lisans kapsamında
-değildir. Güvenlik açıklarını herkese açık issue yerine
+değildir. Uçtan uca şifreleme Signal'in AGPL-3.0 lisanslı
+`libsignal-android` paketini kullanır; dağıtılan uygulama (APK) bu
+lisansa tabidir ([ADR-0010](docs/adr/0010-signal-kutuphanesi.md)). Güvenlik açıklarını herkese açık issue yerine
 [SECURITY.md](SECURITY.md)'deki yolla bildir.
