@@ -14,8 +14,15 @@ const List<TayfaModule> tayfaModulKaydi = [
 ];
 
 /// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
-/// listeye bir satırla eklenir.
-const List<EtkinlikTuru> etkinlikTuruKaydi = [];
+/// listeye bir satırla eklenir. Yalnızca türe özel aracı olan türler
+/// kayıtlıdır (ADR-0015 §6); oyun, spor ve genel yalnızca bilgi alanları
+/// gösterir.
+const List<EtkinlikTuru> etkinlikTuruKaydi = [
+  KonvoyTuru(),
+  KampTuru(),
+  YuruyusTuru(),
+  BalikTuru(),
+];
 
 /// Kayıt listelerini `core/` ve özelliklerdeki provider'lara veren
 /// override'lar; uygulamanın kökündeki `ProviderScope`'a verilir.

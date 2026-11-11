@@ -835,6 +835,432 @@
   "@etkinlik_katildi": {
     "description": "Katılımcılar listesinde katılımı doğrulanmış kişinin yanındaki etiket."
   },
+  "etkinlik_varis_baslik": "Varış bildirimi",
+  "@etkinlik_varis_baslik": {
+    "description": "Etkinlik detayındaki varış bildirimi bölümünün başlığı (ADR-0015 §5)."
+  },
+  "etkinlik_varis_geldim": "Geldim",
+  "@etkinlik_varis_geldim": {
+    "description": "Yüz yüze etkinlikte buluşma noktasına varınca basılan düğme; konum bir kez okunur."
+  },
+  "etkinlik_varis_katildim": "Katıldım",
+  "@etkinlik_varis_katildim": {
+    "description": "Çevrimiçi etkinlikte katıldığını bildiren düğme; konum istenmez."
+  },
+  "etkinlik_varis_konum_notu": "Konumun yalnızca bu bildirim için bir kez okunur ve saklanmaz.",
+  "@etkinlik_varis_konum_notu": {
+    "description": "\"Geldim\" düğmesinin altındaki gizlilik notu."
+  },
+  "etkinlik_varis_konum_aliniyor": "Konumun alınıyor…",
+  "@etkinlik_varis_konum_aliniyor": {
+    "description": "\"Geldim\"e basıldıktan sonra konum okunurken görünen metin."
+  },
+  "etkinlik_varis_gonderiliyor": "Gönderiliyor…",
+  "@etkinlik_varis_gonderiliyor": {
+    "description": "Varış bildirimi gönderilirken düğmede görünen metin."
+  },
+  "etkinlik_varis_basarili": "Varışın bildirildi.",
+  "@etkinlik_varis_basarili": {
+    "description": "Varış bildirimi başarılı olunca kısa bildirim."
+  },
+  "etkinlik_katilim_dogrulandi": "Katılımın doğrulandı.",
+  "@etkinlik_katilim_dogrulandi": {
+    "description": "Kullanıcının bu etkinliğe katılımı doğrulandığında detayda görünen bilgi."
+  },
+  "etkinlik_konum_izni_baslik": "Konum izni gerekli",
+  "@etkinlik_konum_izni_baslik": {
+    "description": "Konum izni reddedilince açılan diyaloğun başlığı."
+  },
+  "etkinlik_konum_izni_metni": "Varışını bildirmek için konumuna bir kez bakmamız gerekiyor. Konumun yalnızca bu bildirimde kullanılır ve saklanmaz. İzni ayarlardan verebilirsin.",
+  "@etkinlik_konum_izni_metni": {
+    "description": "Konum izni reddedilince açılan diyaloğun açıklaması."
+  },
+  "etkinlik_konum_hassas_baslik": "Hassas konum gerekli",
+  "@etkinlik_konum_hassas_baslik": {
+    "description": "Yalnızca yaklaşık konuma izin verildiğinde açılan diyaloğun başlığı."
+  },
+  "etkinlik_konum_hassas_metni": "Buluşma noktasında olduğunu doğrulamak için yaklaşık konum yetmez. Ayarlardan hassas konumu açabilirsin.",
+  "@etkinlik_konum_hassas_metni": {
+    "description": "Yalnızca yaklaşık konuma izin verildiğinde açılan diyaloğun açıklaması; uzaklık söylemez."
+  },
+  "etkinlik_konum_kapali_baslik": "Konum kapalı",
+  "@etkinlik_konum_kapali_baslik": {
+    "description": "Cihazın konum servisi kapalıyken açılan diyaloğun başlığı."
+  },
+  "etkinlik_konum_kapali_metni": "Varışını bildirmek için cihazının konumunu aç.",
+  "@etkinlik_konum_kapali_metni": {
+    "description": "Cihazın konum servisi kapalıyken açılan diyaloğun açıklaması."
+  },
+  "etkinlik_konum_alinamadi": "Konumun alınamadı. Biraz sonra tekrar dene.",
+  "@etkinlik_konum_alinamadi": {
+    "description": "Konum okunamadığında (zaman aşımı vb.) kısa bildirim."
+  },
+  "etkinlik_ayarlara_git": "Ayarlara git",
+  "@etkinlik_ayarlara_git": {
+    "description": "Konum diyaloğunda sistem ayarlarını açan düğme."
+  },
+  "etkinlik_ayarlar_acilamadi": "Ayarlar açılamadı.",
+  "@etkinlik_ayarlar_acilamadi": {
+    "description": "Sistem ayarları açılamadığında kısa bildirim."
+  },
+  "etkinlik_konvoy_baslik": "Konvoy",
+  "@etkinlik_konvoy_baslik": {
+    "description": "Konvoy etkinliğinde araç bölümünün başlığı."
+  },
+  "etkinlik_konvoy_rota": "Rota",
+  "@etkinlik_konvoy_rota": {
+    "description": "Konvoy bölümünde rota önizlemesinin başlığı."
+  },
+  "etkinlik_konvoy_rota_noktalari": "{sayi} noktalı rota",
+  "@etkinlik_konvoy_rota_noktalari": {
+    "description": "Konvoy rotasının nokta sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "12"
+      }
+    }
+  },
+  "etkinlik_konvoy_araclar": "Araçlar",
+  "@etkinlik_konvoy_araclar": {
+    "description": "Konvoy bölümünde araç listesinin başlığı."
+  },
+  "etkinlik_konvoy_arac_yok": "Henüz araç eklenmedi.",
+  "@etkinlik_konvoy_arac_yok": {
+    "description": "Konvoyda araç yokken görünen boş durum."
+  },
+  "etkinlik_konvoy_arac_ekle": "Aracını ekle",
+  "@etkinlik_konvoy_arac_ekle": {
+    "description": "Konvoya kendi aracını ekleyen düğme."
+  },
+  "etkinlik_konvoy_arac_degistir": "Aracını değiştir",
+  "@etkinlik_konvoy_arac_degistir": {
+    "description": "Konvoydaki kendi aracını değiştiren düğme ve formun başlığı."
+  },
+  "etkinlik_konvoy_arac_cikar": "Aracı çıkar",
+  "@etkinlik_konvoy_arac_cikar": {
+    "description": "Konvoydan aracı çıkaran düğmenin ipucu ve onaydaki düğme."
+  },
+  "etkinlik_konvoy_arac_cikar_onay": "Araç konvoydan çıkarılsın mı?",
+  "@etkinlik_konvoy_arac_cikar_onay": {
+    "description": "Aracı çıkarmadan önce sorulan onay."
+  },
+  "etkinlik_konvoy_ekle_bilgi": "Aracını eklemek için “Geliyorum” seç.",
+  "@etkinlik_konvoy_ekle_bilgi": {
+    "description": "Cevabı \"Geliyorum\" olmayan kullanıcıya konvoy bölümünde görünen bilgi."
+  },
+  "etkinlik_konvoy_plaka": "Plaka: {plaka}",
+  "@etkinlik_konvoy_plaka": {
+    "description": "Konvoy listesinde aracın plakası.",
+    "placeholders": {
+      "plaka": {
+        "type": "String",
+        "example": "34 ABC 123"
+      }
+    }
+  },
+  "etkinlik_arac_marka": "Marka",
+  "@etkinlik_arac_marka": {
+    "description": "Araç formundaki marka alanı (zorunlu)."
+  },
+  "etkinlik_arac_model": "Model (isteğe bağlı)",
+  "@etkinlik_arac_model": {
+    "description": "Araç formundaki model alanı."
+  },
+  "etkinlik_arac_yil": "Model yılı (isteğe bağlı)",
+  "@etkinlik_arac_yil": {
+    "description": "Araç formundaki model yılı alanı."
+  },
+  "etkinlik_arac_renk": "Renk (isteğe bağlı)",
+  "@etkinlik_arac_renk": {
+    "description": "Araç formundaki renk alanı."
+  },
+  "etkinlik_arac_plaka": "Plaka (isteğe bağlı)",
+  "@etkinlik_arac_plaka": {
+    "description": "Araç formundaki plaka alanı."
+  },
+  "etkinlik_arac_plaka_notu": "Plakayı yalnızca etkinliğe gelenler ve organizatör görür; 30 gün içinde silinir.",
+  "@etkinlik_arac_plaka_notu": {
+    "description": "Araç formunda plaka alanının altındaki gizlilik notu (ADR-0015 §6)."
+  },
+  "etkinlik_arac_marka_hata": "Markayı yaz (en çok 40 karakter).",
+  "@etkinlik_arac_marka_hata": {
+    "description": "Araç formunda marka boş ya da uzunsa görünen hata."
+  },
+  "etkinlik_arac_yil_hata": "1900 ile {enCok} arasında bir yıl yaz.",
+  "@etkinlik_arac_yil_hata": {
+    "description": "Araç formunda model yılı geçersizse görünen hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "2027"
+      }
+    }
+  },
+  "etkinlik_arac_plaka_hata": "Plaka 2–16 karakter olmalı; yalnızca harf, rakam ve tek boşluk.",
+  "@etkinlik_arac_plaka_hata": {
+    "description": "Araç formunda plaka geçersizse görünen hata."
+  },
+  "etkinlik_kaydet": "Kaydet",
+  "@etkinlik_kaydet": {
+    "description": "Türe özel araç formlarındaki kaydetme düğmesi."
+  },
+  "etkinlik_ekle": "Ekle",
+  "@etkinlik_ekle": {
+    "description": "Türe özel araç formlarındaki ekleme düğmesi."
+  },
+  "etkinlik_cikar": "Çıkar",
+  "@etkinlik_cikar": {
+    "description": "Türe özel araçlardaki çıkarma onayının düğmesi."
+  },
+  "etkinlik_kamp_malzemeler": "Ortak malzemeler",
+  "@etkinlik_kamp_malzemeler": {
+    "description": "Kamp etkinliğinde ortak malzeme listesinin başlığı."
+  },
+  "etkinlik_kamp_malzeme_yok": "Henüz malzeme eklenmedi.",
+  "@etkinlik_kamp_malzeme_yok": {
+    "description": "Kamp malzeme listesi boşken görünen metin."
+  },
+  "etkinlik_kamp_malzeme_ekle": "Malzeme ekle",
+  "@etkinlik_kamp_malzeme_ekle": {
+    "description": "Kamp listesine malzeme ekleyen düğme ve formun başlığı."
+  },
+  "etkinlik_kamp_malzeme_cikar": "Malzemeyi çıkar",
+  "@etkinlik_kamp_malzeme_cikar": {
+    "description": "Kamp listesinden malzemeyi çıkaran düğmenin ipucu."
+  },
+  "etkinlik_kamp_malzeme_cikar_onay": "Malzeme listeden çıkarılsın mı?",
+  "@etkinlik_kamp_malzeme_cikar_onay": {
+    "description": "Malzemeyi çıkarmadan önce sorulan onay."
+  },
+  "etkinlik_kamp_malzeme_adi": "Malzeme",
+  "@etkinlik_kamp_malzeme_adi": {
+    "description": "Kamp malzemesi formundaki ad alanı."
+  },
+  "etkinlik_kamp_malzeme_adi_hata": "Malzemenin adını yaz (en çok 60 karakter).",
+  "@etkinlik_kamp_malzeme_adi_hata": {
+    "description": "Kamp malzemesi adı boş ya da uzunsa görünen hata."
+  },
+  "etkinlik_kamp_malzeme_adedi": "Adet (isteğe bağlı)",
+  "@etkinlik_kamp_malzeme_adedi": {
+    "description": "Kamp malzemesi formundaki adet alanı; boşsa 1."
+  },
+  "etkinlik_kamp_adet": "{adet} adet",
+  "@etkinlik_kamp_adet": {
+    "description": "Kamp malzemesinin adedi.",
+    "placeholders": {
+      "adet": {
+        "type": "String",
+        "example": "2"
+      }
+    }
+  },
+  "etkinlik_kamp_getirecek": "Getirecek:",
+  "@etkinlik_kamp_getirecek": {
+    "description": "Kamp malzemesini getirecek kişinin adından önceki etiket."
+  },
+  "etkinlik_yuruyus_yoklama": "Yürüyüş yoklaması",
+  "@etkinlik_yuruyus_yoklama": {
+    "description": "Yürüyüş etkinliğinde \"Çıktım\" ve \"Döndüm\" bölümünün başlığı."
+  },
+  "etkinlik_yuruyus_bilgi": "Yürüyüşe başlarken “Çıktım”a, döndüğünde “Döndüm”e bas.",
+  "@etkinlik_yuruyus_bilgi": {
+    "description": "Yürüyüş yoklaması bölümündeki açıklama."
+  },
+  "etkinlik_yuruyus_ciktim": "Çıktım",
+  "@etkinlik_yuruyus_ciktim": {
+    "description": "Yürüyüşe çıkıldığını bildiren düğme; katılım sayılır."
+  },
+  "etkinlik_yuruyus_dondum": "Döndüm",
+  "@etkinlik_yuruyus_dondum": {
+    "description": "Yürüyüşten dönüldüğünü bildiren düğme."
+  },
+  "etkinlik_yuruyus_cikis": "Çıkış: {zaman}",
+  "@etkinlik_yuruyus_cikis": {
+    "description": "Yürüyüşe çıkış zamanı.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "09:12"
+      }
+    }
+  },
+  "etkinlik_yuruyus_donus_zamani": "Dönüş: {zaman}",
+  "@etkinlik_yuruyus_donus_zamani": {
+    "description": "Yürüyüşten dönüş zamanı.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "15:40"
+      }
+    }
+  },
+  "etkinlik_yuruyus_ciktin": "Yürüyüşe çıkışın kaydedildi.",
+  "@etkinlik_yuruyus_ciktin": {
+    "description": "Katılımı doğrulanmış yürüyüşçüye, çıkış zamanı bilinmiyorsa görünen bilgi."
+  },
+  "etkinlik_av_gunlugu": "Av günlüğü",
+  "@etkinlik_av_gunlugu": {
+    "description": "Balık etkinliğinde av günlüğü bölümünün başlığı."
+  },
+  "etkinlik_av_yok": "Henüz av eklenmedi.",
+  "@etkinlik_av_yok": {
+    "description": "Av günlüğü boşken görünen metin."
+  },
+  "etkinlik_av_ekle": "Av ekle",
+  "@etkinlik_av_ekle": {
+    "description": "Av günlüğüne av ekleyen düğme ve formun başlığı."
+  },
+  "etkinlik_av_ekle_bilgi": "Av eklemek için önce varışını bildir.",
+  "@etkinlik_av_ekle_bilgi": {
+    "description": "Katılımı doğrulanmamış kullanıcıya av günlüğünde görünen bilgi."
+  },
+  "etkinlik_av_cikar": "Avı çıkar",
+  "@etkinlik_av_cikar": {
+    "description": "Av günlüğünden avı çıkaran düğmenin ipucu."
+  },
+  "etkinlik_av_cikar_onay": "Av günlükten çıkarılsın mı?",
+  "@etkinlik_av_cikar_onay": {
+    "description": "Avı çıkarmadan önce sorulan onay."
+  },
+  "etkinlik_av_turu": "Balık türü",
+  "@etkinlik_av_turu": {
+    "description": "Av formundaki tür alanı."
+  },
+  "etkinlik_av_turu_hata": "Türü yaz (en çok 60 karakter).",
+  "@etkinlik_av_turu_hata": {
+    "description": "Av formunda tür boş ya da uzunsa görünen hata."
+  },
+  "etkinlik_av_boyu": "Boy (cm)",
+  "@etkinlik_av_boyu": {
+    "description": "Av formundaki boy alanı."
+  },
+  "etkinlik_av_boyu_hata": "0'dan büyük, en çok 1000 cm bir boy yaz.",
+  "@etkinlik_av_boyu_hata": {
+    "description": "Av formunda boy geçersizse görünen hata."
+  },
+  "etkinlik_av_ozet": "{tur}, {boy} cm",
+  "@etkinlik_av_ozet": {
+    "description": "Av günlüğünde avın türü ve boyu.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "Levrek"
+      },
+      "boy": {
+        "type": "String",
+        "example": "42,5"
+      }
+    }
+  },
+  "etkinlik_av_yer_sec": "Yeri haritada işaretle (isteğe bağlı)",
+  "@etkinlik_av_yer_sec": {
+    "description": "Av formunda avın yerini harita seçicide işaretleyen düğme."
+  },
+  "etkinlik_av_yer_secildi": "Yer işaretlendi.",
+  "@etkinlik_av_yer_secildi": {
+    "description": "Av formunda yer seçildikten sonra görünen bilgi."
+  },
+  "etkinlik_av_yer_kaldir": "Yeri kaldır",
+  "@etkinlik_av_yer_kaldir": {
+    "description": "Av formunda seçilen yeri kaldıran düğme."
+  },
+  "etkinlik_av_yer_notu": "Yer, haritada senin işaretlediğin noktadır; cihazının konumu kullanılmaz.",
+  "@etkinlik_av_yer_notu": {
+    "description": "Av formunda yer seçiminin altındaki not."
+  },
+  "etkinlik_av_yer_kimin": "Yeri kim görsün?",
+  "@etkinlik_av_yer_kimin": {
+    "description": "Av formunda yerin görünürlük seçiminin başlığı."
+  },
+  "etkinlik_av_yer_self": "Yalnızca ben",
+  "@etkinlik_av_yer_self": {
+    "description": "Av yerini yalnızca avcının gördüğü seçenek."
+  },
+  "etkinlik_av_yer_tayfa": "Noktayı görebilen tayfa üyeleri",
+  "@etkinlik_av_yer_tayfa": {
+    "description": "Av yerini buluşma noktasını görebilen üyelerin de gördüğü seçenek."
+  },
+  "etkinlik_av_yeri_ac": "Yeri haritada aç",
+  "@etkinlik_av_yeri_ac": {
+    "description": "Av günlüğünde avın yerini sistemin harita uygulamasında açan düğme."
+  },
+  "etkinlik_av_yeri_sende": "Yerini yalnızca sen görüyorsun.",
+  "@etkinlik_av_yeri_sende": {
+    "description": "Kendi avında yer görünürlüğü \"yalnızca ben\" ise görünen bilgi."
+  },
+  "etkinlik_av_yeri_tayfada": "Yerini noktayı görebilen üyeler de görüyor.",
+  "@etkinlik_av_yeri_tayfada": {
+    "description": "Kendi avında yer görünürlüğü \"tayfa\" ise görünen bilgi."
+  },
+  "etkinlik_duzeltme": "Katılımı düzelt",
+  "@etkinlik_duzeltme": {
+    "description": "Katılımcılar listesinde organizatör düzeltmesi menüsünün ipucu."
+  },
+  "etkinlik_duzeltme_ekle": "Katılımı ekle",
+  "@etkinlik_duzeltme_ekle": {
+    "description": "Organizatör düzeltmesi: katılımı doğrulanmış olarak ekler."
+  },
+  "etkinlik_duzeltme_kaldir": "Katılımı kaldır",
+  "@etkinlik_duzeltme_kaldir": {
+    "description": "Organizatör düzeltmesi: doğrulanmış katılımı kaldırır."
+  },
+  "etkinlik_duzeltme_kaldir_onay": "Katılım kaldırılsın mı?",
+  "@etkinlik_duzeltme_kaldir_onay": {
+    "description": "Katılımı kaldırmadan önce sorulan onayın başlığı."
+  },
+  "etkinlik_duzeltme_kaldir_metni": "Bu kişinin bu etkinliğe katılımı kayıtlardan silinir.",
+  "@etkinlik_duzeltme_kaldir_metni": {
+    "description": "Katılımı kaldırma onayının açıklaması."
+  },
+  "etkinlik_duzeltme_bilgi": "Etkinlik bittikten sonraki 7 gün içinde katılımları düzeltebilirsin.",
+  "@etkinlik_duzeltme_bilgi": {
+    "description": "Katılımcılar listesinde organizatöre görünen düzeltme bilgisi."
+  },
+  "etkinlik_duzeltme_tamam": "Katılım güncellendi.",
+  "@etkinlik_duzeltme_tamam": {
+    "description": "Organizatör düzeltmesi başarılı olunca kısa bildirim."
+  },
+  "etkinlik_rota_baslik": "Konvoy rotası (isteğe bağlı)",
+  "@etkinlik_rota_baslik": {
+    "description": "Sihirbazda konvoy rotası alanının başlığı."
+  },
+  "etkinlik_rota_yok": "Rota çizilmedi.",
+  "@etkinlik_rota_yok": {
+    "description": "Sihirbazda rota yokken görünen metin."
+  },
+  "etkinlik_rota_ciz": "Rota çiz",
+  "@etkinlik_rota_ciz": {
+    "description": "Sihirbazda rota seçicisini açan düğme (rota yokken)."
+  },
+  "etkinlik_rota_duzenle": "Rotayı düzenle",
+  "@etkinlik_rota_duzenle": {
+    "description": "Sihirbazda rota seçicisini açan düğme (rota varken)."
+  },
+  "etkinlik_rota_hata": "Rota en az 2, en çok 500 noktadan oluşmalı.",
+  "@etkinlik_rota_hata": {
+    "description": "Rotanın nokta sayısı geçersizse görünen hata."
+  },
+  "etkinlik_rota_secici_baslik": "Konvoy rotası",
+  "@etkinlik_rota_secici_baslik": {
+    "description": "Rota seçici ekranının başlığı."
+  },
+  "etkinlik_rota_ipucu": "Haritaya dokunarak rota noktalarını sırayla ekle (en az 2).",
+  "@etkinlik_rota_ipucu": {
+    "description": "Rota seçicideki ipucu."
+  },
+  "etkinlik_rota_son_noktayi_sil": "Son noktayı sil",
+  "@etkinlik_rota_son_noktayi_sil": {
+    "description": "Rota seçicide son eklenen noktayı silen düğme."
+  },
+  "etkinlik_rota_temizle": "Temizle",
+  "@etkinlik_rota_temizle": {
+    "description": "Rota seçicide bütün noktaları silen düğme."
+  },
+  "etkinlik_rota_kaydet": "Rotayı kaydet",
+  "@etkinlik_rota_kaydet": {
+    "description": "Rota seçicide rotayı sihirbaza aktaran düğme."
+  },
   "etkinlik_kamp_yeri": "Kamp yeri",
   "@etkinlik_kamp_yeri": {
     "description": "Kamp etkinliğinde kamp yerinin adı: detayda bilgi etiketi, sihirbazda alan etiketi."

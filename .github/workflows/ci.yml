@@ -135,13 +135,28 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 14
-      - name: Ana manifestte yalnızca INTERNET izni
-        # Birleştirilmiş sürüm manifesti değil, ana manifest denetlenir;
-        # eklenti paketlerinin getirdiği izinler ayrıca incelenir.
+      - name: Uygulamada yalnızca INTERNET ve konum izinleri
+        # Birleştirilmiş manifest (eklenti paketlerinin getirdikleri dahil)
+        # derlenen APK'dan okunur. İzin verilenler (CLAUDE.md, En az izin):
+        # - INTERNET: API'ye bağlanmak için.
+        # - ACCESS_FINE_LOCATION ve ACCESS_COARSE_LOCATION: varış bildirimi
+        #   ("Geldim", ADR-0015 §5); yalnızca düğmeye basınca, uygulamayı
+        #   kullanırken, tek seferlik. Android 12+ ikisini birlikte ister.
+        # Arka plan konumu ve konum ön plan hizmeti izinleri ana manifestte
+        # tools:node="remove" ile engellenir; gelirlerse iş kırılır.
         run: |
-          izinler=$(grep -o 'android:name="android.permission[^"]*"' android/app/src/main/AndroidManifest.xml | sort -u)
-          echo "$izinler"
-          test "$izinler" = 'android:name="android.permission.INTERNET"'
+          set -euo pipefail
+          aapt2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -n 1)
+          apk=build/app/outputs/flutter-apk/app-debug.apk
+          "$aapt2" dump permissions "$apk" > "$RUNNER_TEMP/izinler.txt"
+          cat "$RUNNER_TEMP/izinler.txt"
+          izinler=$(sed -n "s/^uses-permission\(-sdk-23\)\{0,1\}: name='\(android\.permission\.[^']*\)'.*/\2/p" "$RUNNER_TEMP/izinler.txt" | LC_ALL=C sort -u)
+          beklenen=$(printf '%s\n' \
+            android.permission.ACCESS_COARSE_LOCATION \
+            android.permission.ACCESS_FINE_LOCATION \
+            android.permission.INTERNET)
+          echo "Bulunan:"; echo "$izinler"
+          test "$izinler" = "$beklenen"
 
   web:
     name: web

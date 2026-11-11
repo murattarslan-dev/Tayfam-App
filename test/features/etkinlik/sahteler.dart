@@ -242,10 +242,10 @@ List<Override> etkinlikOverridelari({
 }) => [
   ...tayfaOverridelari(tasima: tasima),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
-  profilOkuyucuProvider.overrideWithValue(
-    (id) async =>
-        (await UsersApi(tasima).getUserProfile(userId: id)).displayName,
-  ),
+  profilOkuyucuProvider.overrideWithValue((id) async {
+    final profil = await UsersApi(tasima).getUserProfile(userId: id);
+    return KullaniciAdi(profil.displayName, ben: profil.self);
+  }),
   etkinlikSaatiProvider.overrideWithValue(() => sabitSimdi),
   karoSaglayiciProvider.overrideWithValue(karolar ?? (() => null)),
   takvimPaylasiciProvider.overrideWithValue(takvim ?? SahteTakvimPaylasici()),

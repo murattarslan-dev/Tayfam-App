@@ -18,6 +18,11 @@ dependencies:
   # (ADR-0006).
   flutter_map: ^8.2.2
   flutter_secure_storage: ^11.2.0
+  # Varış bildirimi ("Geldim", ADR-0015 §5): düğmeye basınca "uygulamayı
+  # kullanırken" izniyle tek seferlik konum (getCurrentPosition). Konum
+  # akışı, arka plan konumu ve son bilinen konum kullanılmaz. Yayıncı
+  # baseflow.com; Android'de ACCESS_FINE/COARSE_LOCATION.
+  geolocator: ^14.0.2
   go_router: ^18.1.4
   # Google ile giriş (ADR-0012 §2); yayıncı flutter.dev.
   google_sign_in: ^7.2.0

@@ -1,8 +1,28 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Uygulamanın tek izni (CLAUDE.md, En az izin). flutter create bunu
-         yalnızca debug/profile manifestine koyar; sürüm derlemesi de API'ye
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- İnternet (CLAUDE.md, En az izin). flutter create bunu yalnızca
+         debug/profile manifestine koyar; sürüm derlemesi de API'ye
          bağlanacağı için ana manifestte. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Varış bildirimi ("Geldim", ADR-0015 §5): yüz yüze etkinlikte
+         buluşma noktasına 300 m kontrolü için tek seferlik konum. İzin
+         yalnızca düğmeye basınca, "uygulamayı kullanırken" kapsamıyla
+         istenir. Android 12+ hassas konumu yaklaşık konumla birlikte
+         istemeyi zorunlu kılar; 300 m kontrolü yaklaşık konumla yapılamaz. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Kütüphanelerin manifest birleştirmesiyle gelebilecek arka plan
+         konumu ve konum ön plan hizmeti izinleri engellenir (en az izin).
+         Uygulama konum akışı ve arka plan konumu kullanmaz. -->
+    <uses-permission
+        android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
+        tools:node="remove"/>
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        tools:node="remove"/>
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_LOCATION"
+        tools:node="remove"/>
     <!-- allowBackup="false": token'lar ve anahtarlar cihaz yedeğine gitmesin
          (ADR-0005, ADR-0006, ADR-0010). -->
     <application

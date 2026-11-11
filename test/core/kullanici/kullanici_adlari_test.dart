@@ -33,7 +33,9 @@ ProviderContainer _kapsayici(_SahteOkuyucu okuyucu) {
       oturumDurumuProvider.overrideWith(
         () => SabitOturumDurumu(OturumDurumu.acik),
       ),
-      profilOkuyucuProvider.overrideWithValue(okuyucu.oku),
+      profilOkuyucuProvider.overrideWithValue(
+        (id) async => KullaniciAdi(await okuyucu.oku(id)),
+      ),
     ],
   );
   addTearDown(c.dispose);

@@ -38,8 +38,8 @@ LatLng sozlesmeNoktasi(ll.LatLng nokta) => LatLng(
   lng: double.parse(nokta.longitude.toStringAsFixed(6)),
 );
 
-/// OpenStreetMap haritası: karolar, varsa buluşma noktası iğnesi ve her
-/// zaman görünen OSM atfı (ADR-0015 §4).
+/// OpenStreetMap haritası: karolar, varsa buluşma noktası iğnesi ve konvoy
+/// rotası, her zaman görünen OSM atfı (ADR-0015 §4).
 ///
 /// Cihaz konumu istenmez ve gösterilmez. [etkilesimli] `false` ise harita
 /// kaydırılamaz (önizleme).
@@ -49,6 +49,7 @@ class OsmHarita extends ConsumerStatefulWidget {
     required this.merkez,
     required this.yakinlik,
     this.isaret,
+    this.rota = const [],
     this.etkilesimli = true,
     this.onTap,
     this.denetleyici,
@@ -62,6 +63,9 @@ class OsmHarita extends ConsumerStatefulWidget {
 
   /// İğnenin yeri; yoksa iğne yok.
   final LatLng? isaret;
+
+  /// Konvoy rotasının noktaları, sırasıyla; boşsa rota çizilmez.
+  final List<LatLng> rota;
 
   final bool etkilesimli;
 
@@ -84,6 +88,7 @@ class _OsmHaritaState extends ConsumerState<OsmHarita> {
     final r = context.renkler;
     final karolar = _karolar;
     final isaret = widget.isaret;
+    final rota = [for (final n in widget.rota) haritaNoktasi(n)];
     final onTap = widget.onTap;
     return Stack(
       children: [
@@ -109,6 +114,27 @@ class _OsmHaritaState extends ConsumerState<OsmHarita> {
                   urlTemplate: osmKaroAdresi,
                   userAgentPackageName: haritaPaketAdi,
                   tileProvider: karolar,
+                ),
+              if (rota.length > 1)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: rota,
+                      strokeWidth: TayfamSizes.rotaKalinligi,
+                      color: r.marka,
+                    ),
+                  ],
+                ),
+              if (rota.isNotEmpty)
+                CircleLayer(
+                  circles: [
+                    for (final nokta in rota)
+                      CircleMarker(
+                        point: nokta,
+                        radius: TayfamSizes.rotaNoktasi,
+                        color: r.marka,
+                      ),
+                  ],
                 ),
               if (isaret != null)
                 MarkerLayer(

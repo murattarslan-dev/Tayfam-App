@@ -65,4 +65,10 @@ abstract final class TayfamSizes {
   /// "tayfam" yazısının harf aralığı, punto boyuna oranla (tanıtım
   /// sayfası: −0.03em).
   static const double logoHarfAraligiOrani = -.03;
+
+  /// Haritadaki konvoy rotası çizgisinin kalınlığı.
+  static const double rotaKalinligi = 4;
+
+  /// Haritadaki rota noktası işaretinin yarıçapı.
+  static const double rotaNoktasi = 5;
 }

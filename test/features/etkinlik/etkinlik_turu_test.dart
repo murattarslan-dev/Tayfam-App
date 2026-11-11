@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 
 class _DenemeTuru implements EtkinlikTuru {
@@ -19,7 +20,7 @@ class _DenemeTuru implements EtkinlikTuru {
   Widget formAlanlari(BuildContext context) => const SizedBox.shrink();
 
   @override
-  Widget? aracBolumu(BuildContext context, String etkinlikId) => null;
+  Widget? aracBolumu(BuildContext context, Event etkinlik) => null;
 }
 
 void main() {
