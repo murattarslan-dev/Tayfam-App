@@ -5317,5 +5317,163 @@
   "sikayet_tekrar_dene": "Tekrar dene",
   "@sikayet_tekrar_dene": {
     "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
+  },
+  "cihaz_bagla_baslik": "Cihaz bağla",
+  "@cihaz_bagla_baslik": {
+    "description": "Eşleştirilmiş cihazda QR okutarak başka bir cihaz bağlama girişi ve ekran başlığı."
+  },
+  "cihaz_bagla_aciklama": "Yeni telefonunu QR ile bağla; şifreli mesaj geçmişin orada da okunsun.",
+  "@cihaz_bagla_aciklama": {
+    "description": "Profildeki 'Cihaz bağla' girişinin açıklaması."
+  },
+  "cihaz_bu_cihazi_bagla_baslik": "Bu cihazı bağla",
+  "@cihaz_bu_cihazi_bagla_baslik": {
+    "description": "Eşleştirilmemiş cihazda QR gösterme girişi ve ekran başlığı."
+  },
+  "cihaz_bu_cihazi_bagla_aciklama": "Eski şifreli mesajlarını burada görmek için diğer telefonundan QR'ı okut.",
+  "@cihaz_bu_cihazi_bagla_aciklama": {
+    "description": "Profildeki 'Bu cihazı bağla' girişinin açıklaması."
+  },
+  "cihaz_qr_talimat": "Diğer telefonunda Profil → Cihaz bağla'yı aç ve bu kodu okut.",
+  "@cihaz_qr_talimat": {
+    "description": "QR gösterme ekranındaki talimat."
+  },
+  "cihaz_qr_etiketi": "Cihaz eşleştirme QR kodu",
+  "@cihaz_qr_etiketi": {
+    "description": "QR görselinin ekran okuyucu etiketi; içerik okunmaz."
+  },
+  "cihaz_qr_hazirlaniyor": "Kod hazırlanıyor",
+  "@cihaz_qr_hazirlaniyor": {
+    "description": "QR hazırlanırken yükleniyor göstergesinin ekran okuyucu metni."
+  },
+  "cihaz_qr_suresi_doldu": "Kodun süresi doldu.",
+  "@cihaz_qr_suresi_doldu": {
+    "description": "QR'ın 10 dakikalık süresi dolunca gösterilen metin."
+  },
+  "cihaz_qr_yenile": "Yeni kod al",
+  "@cihaz_qr_yenile": {
+    "description": "Yeni eşleştirme isteği açıp QR'ı yenileyen düğme."
+  },
+  "cihaz_qr_tamamlandi": "Bu cihaz bağlandı. Şifreli mesaj geçmişin artık burada da okunabilir.",
+  "@cihaz_qr_tamamlandi": {
+    "description": "Yeni cihazda eşleştirme tamamlanınca gösterilen metin."
+  },
+  "cihaz_tamam": "Tamam",
+  "@cihaz_tamam": {
+    "description": "Eşleştirme ekranlarını kapatan düğme."
+  },
+  "cihaz_tara_talimat": "Yeni telefonunda Profil → Bu cihazı bağla'yı aç ve gösterilen kodu çerçeveye getir.",
+  "@cihaz_tara_talimat": {
+    "description": "QR okutma ekranındaki talimat."
+  },
+  "cihaz_tara_isleniyor": "Cihaz bağlanıyor",
+  "@cihaz_tara_isleniyor": {
+    "description": "QR işlenirken yükleniyor göstergesinin ekran okuyucu metni."
+  },
+  "cihaz_tara_basarili": "Mesaj geçmişi yeni telefona gönderildi. Birkaç saniye içinde orada hazır olur.",
+  "@cihaz_tara_basarili": {
+    "description": "Eşleştirme cevabı gönderilince gösterilen metin."
+  },
+  "cihaz_tara_tekrar": "Tekrar tara",
+  "@cihaz_tara_tekrar": {
+    "description": "QR okutma ekranında yeniden taramaya dönen düğme."
+  },
+  "cihaz_kamera_izin_baslik": "Kamera izni gerekli",
+  "@cihaz_kamera_izin_baslik": {
+    "description": "Kamera izni reddedilince gösterilen başlık."
+  },
+  "cihaz_kamera_izin_aciklama": "QR kodu okumak için kamera yalnızca bu ekranda kullanılır; görüntü kaydedilmez ve hiçbir yere gönderilmez. İzni telefonunun Ayarlar → Uygulamalar → Tayfam → İzinler bölümünden açabilirsin.",
+  "@cihaz_kamera_izin_aciklama": {
+    "description": "Kamera izni reddedilince gösterilen açıklama."
+  },
+  "cihaz_ayarlari_ac": "Ayarları aç",
+  "@cihaz_ayarlari_ac": {
+    "description": "Uygulamanın sistem ayarlarını açan düğme (iOS)."
+  },
+  "cihaz_kamera_hatasi": "Kamera açılamadı. Tekrar dene.",
+  "@cihaz_kamera_hatasi": {
+    "description": "Kamera izin dışı bir nedenle açılamayınca gösterilen hata."
+  },
+  "cihaz_hata_qr_gecersiz": "Bu bir Tayfam cihaz eşleştirme kodu değil.",
+  "@cihaz_hata_qr_gecersiz": {
+    "description": "Okunan QR geçersiz ya da başka bir kod."
+  },
+  "cihaz_hata_kendi_cihazi": "Bu, bu telefonun kendi kodu. Kodu yeni telefonda göster, bu telefonla okut.",
+  "@cihaz_hata_kendi_cihazi": {
+    "description": "Cihaz kendi QR'ını okuttu."
+  },
+  "cihaz_hata_cihaz_bulunamadi": "Bu kod hesabındaki bir cihaza ait değil. Yeni telefonda aynı hesapla giriş yaptığından emin ol.",
+  "@cihaz_hata_cihaz_bulunamadi": {
+    "description": "QR'daki cihaz hesabın cihaz listesinde yok."
+  },
+  "cihaz_hata_anahtar_uyusmuyor": "Kodun güvenlik bilgisi doğrulanamadı; güvenliğin için hiçbir şey gönderilmedi. Yeni telefonda yeni bir kod al.",
+  "@cihaz_hata_anahtar_uyusmuyor": {
+    "description": "QR'daki kimlik anahtarı sunucudakiyle aynı değil."
+  },
+  "cihaz_hata_eslestirilmemis": "Bu telefonda mesaj geçmişinin anahtarı yok; başka bir cihazı bağlayamaz.",
+  "@cihaz_hata_eslestirilmemis": {
+    "description": "Eşleştirilmemiş cihaz başka cihaz bağlamaya çalıştı."
+  },
+  "cihaz_hata_suresi_doldu": "Kodun süresi dolmuş. Yeni telefonda yeni bir kod al.",
+  "@cihaz_hata_suresi_doldu": {
+    "description": "Eşleştirme isteğinin süresi doldu ya da bulunamadı."
+  },
+  "cihaz_hata_cevap_gecersiz": "Gelen yanıt doğrulanamadı. Yeni bir kod alıp tekrar dene.",
+  "@cihaz_hata_cevap_gecersiz": {
+    "description": "Yeni cihazda eşleştirme cevabı çözülemedi ya da kod tutmadı."
+  },
+  "cihaz_hata_anahtar_yenilendi": "Mesaj geçmişi anahtarı az önce yenilendi. Yeni bir kod alıp tekrar dene.",
+  "@cihaz_hata_anahtar_yenilendi": {
+    "description": "Eşleştirme sırasında geçmiş anahtarı yenilendi."
+  },
+  "cihaz_cikis_onay_baslik": "Çıkış yapılsın mı?",
+  "@cihaz_cikis_onay_baslik": {
+    "description": "Tek cihaz uyarılı çıkış onay penceresinin başlığı."
+  },
+  "cihaz_cikis_tek_cihaz_uyarisi": "Bu telefon şifreli mesaj geçmişinin anahtarını taşıyan tek cihaz. Çıkış yaparsan eski birebir mesajların kalıcı olarak okunamaz. Önce başka bir cihazı Profil → Cihaz bağla ile bağlayabilirsin.",
+  "@cihaz_cikis_tek_cihaz_uyarisi": {
+    "description": "Çıkış onayında, bu telefon geçmiş anahtarını taşıyan tek cihazsa gösterilen uyarı."
+  },
+  "cihaz_cikis_yap": "Çıkış yap",
+  "@cihaz_cikis_yap": {
+    "description": "Tek cihaz uyarılı çıkış onayındaki onay düğmesi."
+  },
+  "cihaz_vazgec": "Vazgeç",
+  "@cihaz_vazgec": {
+    "description": "Tek cihaz uyarılı çıkış onayındaki vazgeç düğmesi."
+  },
+  "cihaz_tek_cihaz_bilgi_baslik": "Mesaj geçmişin bu telefonda",
+  "@cihaz_tek_cihaz_bilgi_baslik": {
+    "description": "İlk E2E açılışında bir kez gösterilen bilgi kartının başlığı."
+  },
+  "cihaz_tek_cihaz_bilgi": "Birebir mesajların uçtan uca şifreli. Geçmişi açan anahtar yalnızca bu telefonda; telefonu kaybeder, uygulamayı siler ya da çıkış yaparsan eski mesajlar okunamaz. Profil → Cihaz bağla ile ikinci bir cihaz ekleyebilirsin.",
+  "@cihaz_tek_cihaz_bilgi": {
+    "description": "İlk E2E açılışında bir kez gösterilen tek cihaz bilgisi."
+  },
+  "cihaz_anladim": "Anladım",
+  "@cihaz_anladim": {
+    "description": "Bilgi kartlarını kapatan düğme."
+  },
+  "cihaz_eski_arsiv_okunamaz": "Bu cihazda yeni bir şifreli mesaj geçmişi başladı. Önceki cihazlarındaki eski şifreli mesajlar burada okunamaz.",
+  "@cihaz_eski_arsiv_okunamaz": {
+    "description": "Yeni geçmiş anahtarı alınınca (önceki bir anahtar varken) bir kez gösterilen bilgi."
+  },
+  "cihaz_eski_mesajlar_okunamiyor": "Eski mesajların bu cihazda okunamıyor.",
+  "@cihaz_eski_mesajlar_okunamiyor": {
+    "description": "Konuşmada eski şifreli mesajlar okunamayınca gösterilen boş durum."
+  },
+  "cihaz_eski_mesajlar_eslestir": "Bu cihazı diğer telefonunla bağla",
+  "@cihaz_eski_mesajlar_eslestir": {
+    "description": "Eski mesajlar okunamıyor satırındaki QR eşleştirme bağlantısı."
+  },
+  "cihaz_qr_kalan": "Kodun süresi: {sure}",
+  "@cihaz_qr_kalan": {
+    "description": "QR'ın kalan süresi (dakika:saniye).",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "9:05"
+      }
+    }
   }
 }

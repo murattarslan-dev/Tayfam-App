@@ -11,6 +11,13 @@
          istemeyi zorunlu kılar; 300 m kontrolü yaklaşık konumla yapılamaz. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- QR ile cihaz eşleştirme (ADR-0020): eşleştirilmiş telefon yeni
+         telefondaki QR'ı okutur. İzin yalnızca "Cihaz bağla" ekranı
+         açılınca istenir; görüntü saklanmaz, gönderilmez. mobile_scanner
+         da aynı izni birleştirir; burada açıkça yazıldı. Kamera zorunlu
+         donanım değildir (kamerasız cihazda uygulama yine kurulur). -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <!-- Kütüphanelerin manifest birleştirmesiyle gelebilecek arka plan
          konumu ve konum ön plan hizmeti izinleri engellenir (en az izin).
          Uygulama konum akışı ve arka plan konumu kullanmaz. -->

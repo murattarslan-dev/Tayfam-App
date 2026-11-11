@@ -36,6 +36,16 @@ dependencies:
   intl: ^0.20.3
   # flutter_map'in koordinat türü (ADR-0015 Sonuçlar); saf Dart, izin yok.
   latlong2: ^0.9.1
+  # QR ile cihaz eşleştirmede kamerayla QR okuma (ADR-0020). Yayıncı
+  # steenbakker.dev (doğrulanmış), BSD-3; Android CameraX + ML Kit (gömülü
+  # model: Play Hizmetleri olmayan Huawei cihazlarda da çalışır), iOS
+  # AVFoundation/Vision. İzin: CAMERA (yalnızca tarama ekranında istenir).
+  # Sürüm tam sabit.
+  mobile_scanner: 7.5.0
+  # Eşleştirme QR'ını üretmek için (ADR-0020); çizim CustomPainter ile.
+  # Yayıncı kevmoo.com (doğrulanmış), BSD-3, saf Dart, izin gerektirmez.
+  # Sürüm tam sabit.
+  qr: 4.0.1
   # Tayfa kodunu sistem paylaşım menüsüyle paylaşmak için (ADR-0014 §5);
   # yayıncı fluttercommunity.dev, izin gerektirmez.
   share_plus: ^13.3.1
