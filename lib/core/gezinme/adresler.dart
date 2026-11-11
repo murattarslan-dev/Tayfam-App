@@ -63,4 +63,22 @@ abstract final class Adresler {
   /// Tayfa oluşturma sihirbazı (ADR-0014 §4). Kodla katılım alttan açılan
   /// bir sayfadır; adresi yoktur.
   static const tayfaOlustur = '/tayfa-olustur';
+
+  /// Etkinlik oluşturma sihirbazının etkinlik listesi altındaki yolu.
+  static const etkinlikOlusturYolu = 'yeni';
+
+  /// Etkinlik düzenleme ekranının etkinlik detayı altındaki yolu.
+  static const etkinlikDuzenleYolu = 'duzenle';
+
+  /// Bir etkinliğin detayı.
+  static String etkinlik(String tayfaId, String etkinlikId) =>
+      '${etkinlikler(tayfaId)}/$etkinlikId';
+
+  /// Etkinlik oluşturma sihirbazı.
+  static String etkinlikOlustur(String tayfaId) =>
+      '${etkinlikler(tayfaId)}/$etkinlikOlusturYolu';
+
+  /// Etkinlik düzenleme.
+  static String etkinlikDuzenle(String tayfaId, String etkinlikId) =>
+      '${etkinlik(tayfaId, etkinlikId)}/$etkinlikDuzenleYolu';
 }

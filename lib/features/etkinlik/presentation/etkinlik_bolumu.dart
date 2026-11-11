@@ -89,7 +89,10 @@ class EtkinlikBolumu extends ConsumerWidget {
         ] else
           for (final (sira, etkinlik) in gosterilen.indexed) ...[
             if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-            EtkinlikKarti(etkinlik: etkinlik),
+            EtkinlikKarti(
+              etkinlik: etkinlik,
+              onTap: () => context.go(Adresler.etkinlik(tayfaId, etkinlik.id)),
+            ),
           ],
       ],
     );

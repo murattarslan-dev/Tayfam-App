@@ -169,3 +169,32 @@ Platform sahibinin kararı (2026-11-11):
 - **Google Maps:** anahtar ve faturalandırma ister.
 - **Metin ve harita linki:** paket gerektirmez, ama koordinatı güvenilir
   biçimde almak zahmetli.
+
+## Notlar
+
+- **2026-11-11 (platform sahibi, issue #38 / PR #39):**
+  1. **Saat.** Etkinlik zamanları cihazın saat diliminde gösterilir ve
+     girilir. Cihaz UTC+3 değilse saat diliminin adı belirtilir. Bu
+     ADR-0008 ile uyumludur ve §3'teki "Europe/Istanbul" ifadesinin yerini
+     alır. Tekrar kuralının `time_zone`'u `Europe/Istanbul`'dur. Sonu bir
+     günle verilen tekrarın `UNTIL`'i o günün sonudur (Türkiye saati).
+  2. **Katılımcı ve organizatör adları.** Sözleşmede katılımcı listesi
+     yalnızca `user_id` döndürür. Ad, profil ucundan
+     (`GET /v1/users/{id}/profile`) bir bellek önbelleğiyle alınır
+     (`core/kullanici/`):
+     - Ad yalnızca ekrana gelen satır için istenir.
+     - Aynı kimlik için istekler tek uçuşta birleşir; aynı anda en çok
+       dört profil isteği yapılır.
+     - Önbellek oturum boyunca yalnızca bellekte tutulur (ADR-0006) ve
+       oturum değişince sıfırlanır.
+     - Bulunamayan kullanıcı "Silinmiş kullanıcı" olarak gösterilir;
+       başka hatalar önbelleğe alınmaz.
+     - Kullanım büyüyünce sözleşmeye `display_name` eklenmesi yeniden
+       değerlendirilir.
+  3. **Türe özel form alanları.** Bu alanlar şimdilik oluşturma
+     sihirbazında, türe göre `switch` ile yazılır. Bu, ADR-0002'deki
+     `EtkinlikTuru.formAlanlari` kaydından bir sapmadır. Gerekçe:
+     arayüzün `formAlanlari(BuildContext)` imzası sihirbaz durumunu
+     taşıyamaz. Detaydaki `aracBolumu` kancası kayıttan bağlıdır.
+  4. **Konvoy rotası** (`ConvoyDetailsInput.route`) sihirbazda girilmez;
+     §7'deki 3. paketle (türe özel araçlar) gelir.

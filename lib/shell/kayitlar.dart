@@ -8,7 +8,10 @@ import 'package:tayfam/features/etkinlik/etkinlik.dart';
 /// çalışma zamanında dışarıdan modül yüklenmez. Modüller kendi
 /// paketlerinde bu listeye bir satırla eklenir. Sıra, tayfa ana
 /// sayfasındaki bölümlerin sırasıdır (ADR-0015 §1).
-const List<TayfaModule> tayfaModulKaydi = [EtkinlikModulu(), DuyuruModulu()];
+const List<TayfaModule> tayfaModulKaydi = [
+  EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
+  DuyuruModulu(),
+];
 
 /// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
 /// listeye bir satırla eklenir.
