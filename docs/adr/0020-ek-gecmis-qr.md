@@ -134,8 +134,8 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4)
   (`app-settings:`), Android'de `url_launcher` uygulama ayarlarını
   açamadığı için yol metinle anlatılır ve "Tekrar tara" sunulur.
   `android.hardware.camera` zorunlu değil.
-- CI APK izin denetimi: `INTERNET`, konum ikilisi, `CAMERA`,
-  `ACCESS_NETWORK_STATE`.
+- CI APK izin denetimine `CAMERA` eklendi. ML Kit'in birleştirdiği
+  `ACCESS_NETWORK_STATE` FCM (#76) nedeniyle listede zaten vardı.
 
 ### Sapmalar ve açık konular
 
@@ -145,10 +145,9 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4)
   seçenek A; platform sahibi 2026-11-11). Sunucu değişmez; ADR-0018
   metnine not düşülmeli. Kendi bağlamamıza ya da HPKE'li bir sürüme
   geçilirse (seçenek B) QR biçimi `v2` olur.
-- `ACCESS_NETWORK_STATE`: ML Kit'in `datatransport` bileşeni getirir.
-  Kaldırılması ML Kit'in kendi gönderim kodunda `SecurityException`
-  riskine yol açtığı için bırakıldı. ML Kit'in Google'a anonim kullanım
-  ölçümü göndermesi platform sahibine sorulacak (gerekirse ZXing tabanlı
-  tarayıcıya geçiş).
+- ML Kit (gömülü) Google'a anonim kullanım ölçümü gönderir
+  (`datatransport`; `ACCESS_NETWORK_STATE`'i de o getirir, FCM için zaten
+  izinli). Platform sahibine sorulacak; kabul edilmezse ZXing tabanlı
+  tarayıcıya geçilir.
 - Yenilemede boş kümeyle ilk deneme bir fazla istek demektir; sözleşme
   eşleştirilmiş cihaz listesini vermediği için bilinçli seçim.
