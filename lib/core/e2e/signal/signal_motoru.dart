@@ -41,6 +41,13 @@ abstract interface class SignalMotoru {
 
   // ---------------------------------------------------------------------
   // Oturum kurma
+  //
+  // `yerelAdres` bu cihazın, `adres` karşı cihazın adresidir. libsignal
+  // (0.10x) iki adresi mesajın MAC'ine bağlar: gönderenin `yerelAdres`'i
+  // alıcının verdiği `adres` ile, alıcının `yerelAdres`'i gönderenin
+  // verdiği `adres` ile birebir aynı olmalıdır; aksi halde mesaj
+  // [SignalHatasiTuru.gecersizMesaj] olur. `ad` küçük harfli UUID
+  // dizgisidir (sunucunun cihaz kimliği).
   // ---------------------------------------------------------------------
 
   /// Karşı cihazın sunucudan gelen ön anahtar paketini işleyip yeni oturum
@@ -54,6 +61,7 @@ abstract interface class SignalMotoru {
   Future<Uint8List> paketIsle({
     required Uint8List kimlik,
     required int kayitKimligi,
+    required SignalAdresi yerelAdres,
     required SignalAdresi adres,
     Uint8List? mevcutOturum,
     required OnAnahtarPaketi paket,
@@ -69,6 +77,7 @@ abstract interface class SignalMotoru {
   Future<SifreliMesaj> sifrele({
     required Uint8List kimlik,
     required int kayitKimligi,
+    required SignalAdresi yerelAdres,
     required SignalAdresi adres,
     required Uint8List oturum,
     required Uint8List duz,
@@ -103,6 +112,7 @@ abstract interface class SignalMotoru {
   Future<CozulmusMesaj> coz({
     required Uint8List kimlik,
     required int kayitKimligi,
+    required SignalAdresi yerelAdres,
     required SignalAdresi adres,
     required int tur,
     required Uint8List sifreli,
@@ -141,6 +151,20 @@ abstract interface class SignalMotoru {
     required Uint8List aad,
   });
 
+  /// AES-256-GCM çözme (libsignal `Aes256GcmDecryption`; KVKK veri dışa
+  /// aktarma dosyası için). [anahtar] 32, [nonce] 12 bayt;
+  /// [sifreliVeEtiket]'in son 16 baytı etikettir. Etiket doğrulanamazsa
+  /// `null`; doğrulanmamış düz metin hiçbir zaman dönmez.
+  ///
+  /// Girdi platform kanalından tek parça geçer (birkaç on MB'a kadar
+  /// uygun; bellekte girdi ve çıktı birlikte durur).
+  Future<Uint8List?> aes256GcmCoz({
+    required Uint8List anahtar,
+    required Uint8List nonce,
+    required Uint8List sifreliVeEtiket,
+    required Uint8List aad,
+  });
+
   // ---------------------------------------------------------------------
   // Güvenlik kodu
   // ---------------------------------------------------------------------
@@ -169,7 +193,7 @@ abstract final class SignalMesajTuru {
 final class SignalAdresi {
   const SignalAdresi({required this.ad, required this.cihazNo});
 
-  /// Sunucudaki cihaz UUID'si.
+  /// Sunucudaki cihaz UUID'si (küçük harfli dizgi).
   final String ad;
 
   /// Signal cihaz numarası (1–127).
