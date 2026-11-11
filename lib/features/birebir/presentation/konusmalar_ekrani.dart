@@ -13,31 +13,24 @@ import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/konusma_satiri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Sohbet sekmesinin birebir konuşmalar ekranı (ADR-0018 §9): mesaj
-/// isteklerine giriş, konuşmalar (son mesaja göre), sayfalama. Aşağı
-/// çekince ve uygulama ön plana dönünce yenilenir.
-///
-/// Kanallar (#63) geldiğinde Sohbet sekmesinin kökü kanallarla birlikte
-/// kurulur; bu ekranın gövdesi ([BirebirKonusmalarListesi]) orada da
-/// kullanılabilir.
-class BirebirKonusmalarEkrani extends ConsumerWidget {
-  const BirebirKonusmalarEkrani({super.key});
+/// Sohbet sekmesinin Birebir bölümü (ADR-0018 §9): mesaj isteklerine
+/// giriş ve konuşmalar (son mesaja göre, sayfalı). Aşağı çekince ve
+/// uygulama ön plana dönünce yenilenir. Sohbet sekmesinin
+/// `birebirBolumuProvider` yuvasına konur (`shell/kayitlar.dart`).
+class BirebirSekmesi extends ConsumerWidget {
+  const BirebirSekmesi({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final m = AppLocalizations.of(context);
     return OnPlanaDonunce(
       onResume: () =>
           unawaited(ref.read(konusmaListesiProvider.notifier).yenile()),
-      child: Scaffold(
-        appBar: AppBar(title: Text(m.gezinme_sekme_sohbet)),
-        body: RefreshIndicator(
-          onRefresh: () => _yenile(context, ref),
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-            children: const [BirebirKonusmalarListesi()],
-          ),
+      child: RefreshIndicator(
+        onRefresh: () => _yenile(context, ref),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          children: const [BirebirKonusmalarListesi()],
         ),
       ),
     );
@@ -54,8 +47,8 @@ class BirebirKonusmalarEkrani extends ConsumerWidget {
   }
 }
 
-/// Birebir konuşmalar bölümü: başlık, mesaj istekleri girişi ve
-/// konuşmalar. Kaydırılan bir listenin içine konur.
+/// Birebir konuşmalar: mesaj istekleri girişi ve konuşmalar. Kaydırılan
+/// bir listenin içine konur.
 class BirebirKonusmalarListesi extends ConsumerWidget {
   const BirebirKonusmalarListesi({super.key});
 
@@ -73,7 +66,6 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BolumBasligi(baslik: m.birebir_baslik),
         _IstekleriAc(sayi: istekSayisi),
         const Divider(),
         if (liste == null && hata != null) ...[

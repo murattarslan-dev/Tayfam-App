@@ -1,10 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/misc.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/birebir/application/konusma_notifier.dart';
 import 'package:tayfam/features/birebir/data/birebir_deposu.dart';
 
+import '../../core/realtime/sahte_soket.dart';
+import '../../core/zaman_sahteleri.dart';
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
 
@@ -147,14 +154,54 @@ final Override profilAdlari = profilOkuyucuProvider.overrideWithValue(
   },
 );
 
+/// Sahte WebSocket: bağlantı [baglan] çağrılana kadar kapalıdır (gönderim
+/// REST'ten gider); zamanlayıcı elle çalışır.
+final class SahteRealtime {
+  SahteRealtime() {
+    istemci = RealtimeIstemcisi(
+      adres: Uri.parse('wss://api.ornek.test/v1/realtime'),
+      baglayici: (adres, basliklar) {
+        final s = SahteSoket(adres, basliklar);
+        soketler.add(s);
+        return s;
+      },
+      tokenAl: () async => 'token',
+      reddedildi: (_) async => 'token',
+      oturumuKapat: () async {},
+      zamanlayici: zaman.kur,
+      rastgele: Random(1),
+      gunluk: (_) {},
+    );
+  }
+
+  final SahteZamanlayici zaman = SahteZamanlayici();
+  final List<SahteSoket> soketler = [];
+  late final RealtimeIstemcisi istemci;
+
+  /// Bağlantıyı açar (`ready`).
+  Future<SahteSoket> baglan() async {
+    istemci.baslat();
+    await pumpEventQueue();
+    await soketler.last.ac();
+    return soketler.last;
+  }
+}
+
 /// Birebir ve tayfa uçlarını [tasima]'ya bağlayan, oturumu [oturum] ile
-/// (varsayılan: açık) başlatan override'lar.
+/// (varsayılan: açık) başlatan override'lar. WebSocket [realtime]'dan
+/// (verilmezse hiç bağlanmayan sahte).
 List<Override> birebirEkranOverridelari(
   SahteTayfaTasima tasima, {
   OturumDurumu oturum = OturumDurumu.acik,
-}) => [
-  ...tayfaOverridelari(tasima: tasima),
-  ...birebirOverridelari(tasima),
-  profilAdlari,
-  oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
-];
+  SahteRealtime? realtime,
+}) {
+  final r = realtime ?? SahteRealtime();
+  return [
+    ...tayfaOverridelari(tasima: tasima),
+    ...birebirOverridelari(tasima),
+    profilAdlari,
+    oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
+    realtimeIstemcisiProvider.overrideWithValue(r.istemci),
+    zamanlayiciProvider.overrideWithValue(r.zaman.kur),
+  ];
+}

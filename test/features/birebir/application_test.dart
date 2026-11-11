@@ -16,17 +16,23 @@ import '../tayfa/sahteler.dart';
 import 'sahteler.dart';
 
 final class _Kurulum {
-  _Kurulum([Map<String, TayfaYaniti>? yanitlar, OturumDurumu? oturum])
-    : tasima = birebirTasimasi(yanitlar) {
+  _Kurulum([
+    Map<String, TayfaYaniti>? yanitlar,
+    OturumDurumu? oturum,
+    SahteRealtime? realtime,
+  ]) : tasima = birebirTasimasi(yanitlar),
+       realtime = realtime ?? SahteRealtime() {
     kap = ProviderContainer.test(
       overrides: birebirEkranOverridelari(
         tasima,
         oturum: oturum ?? OturumDurumu.acik,
+        realtime: this.realtime,
       ),
     );
   }
 
   final SahteTayfaTasima tasima;
+  final SahteRealtime realtime;
   late final ProviderContainer kap;
 
   Future<KonusmaListesiNotifier> liste() async {
@@ -47,6 +53,9 @@ final class _Kurulum {
 
   KonusmaDurumu durum([String id = konusmaId1]) =>
       kap.read(konusmaProvider(id)).requireValue;
+
+  /// Karşı tarafa giden, kuyruktaki mesajlar.
+  List<GidenMesaj> get bekleyen => kap.read(bekleyenBirebirProvider(karsiId));
 }
 
 /// Konuşma ve mesaj uçlarının varsayılan yanıtları.
@@ -165,7 +174,7 @@ void main() {
       await k.liste();
       final n = await k.konusma();
       expect(n.gonder('  Geliyorum  '), isTrue);
-      expect(k.durum().giden.single.durum, GidenDurumu.gonderiliyor);
+      expect(k.bekleyen.single.durum, GidenDurumu.gonderiliyor);
       await _bekle();
 
       final istek = k.tasima.giden('POST', gonderYolu).single;
@@ -175,7 +184,7 @@ void main() {
         'client_request_id': sahteIstekKimligi,
       });
       final d = k.durum();
-      expect(d.giden, isEmpty);
+      expect(k.bekleyen, isEmpty);
       expect(d.mesajlar.first.id, mesajId3);
       expect(k.konusmalar.map((c) => c.id), [konusmaId1]);
     });
@@ -201,7 +210,7 @@ void main() {
       final n = await k.konusma();
       n.gonder('Geliyorum');
       await _bekle();
-      final basarisiz = k.durum().giden.single;
+      final basarisiz = k.bekleyen.single;
       expect(basarisiz.durum, GidenDurumu.basarisiz);
       expect(
         (basarisiz.hata! as ApiProblem).type,
@@ -215,7 +224,7 @@ void main() {
           (i.govde! as Map<String, Object?>)['client_request_id'],
       ];
       expect(kimlikler, [sahteIstekKimligi, sahteIstekKimligi]);
-      expect(k.durum().giden, isEmpty);
+      expect(k.bekleyen, isEmpty);
     });
 
     test('gönderilemeyen mesaj silinebiliyor', () async {
@@ -226,8 +235,84 @@ void main() {
       final n = await k.konusma();
       n.gonder('Geliyorum');
       await _bekle();
+      // Bağlantı yok geçici hatadır: mesaj beklemede kalır (ADR-0006).
+      expect(k.bekleyen.single.durum, GidenDurumu.gonderiliyor);
       n.vazgec(sahteIstekKimligi);
-      expect(k.durum().giden, isEmpty);
+      expect(k.bekleyen, isEmpty);
+    });
+
+    test('bağlantı açıkken dm.send ile gidiyor', () async {
+      final r = SahteRealtime();
+      final k = _Kurulum(_konusmaYanitlari(), null, r);
+      final n = await k.konusma();
+      final soket = await r.baglan();
+      expect(n.gonder('Geliyorum'), isTrue);
+      await pumpEventQueue();
+
+      final cerceve = soket.tur('dm.send').single;
+      expect(cerceve['data'], {
+        'recipient_user_id': karsiId,
+        'body': 'Geliyorum',
+        'client_request_id': sahteIstekKimligi,
+      });
+      soket.cerceve('dm.sent', {
+        ...mesajJson(mesajId3, gonderen: benId, metin: 'Geliyorum'),
+        'created_at': '2026-11-10T12:00:00Z',
+        'conversation_status': 'active',
+      }, id: cerceve['id']! as String);
+      await pumpEventQueue();
+
+      expect(k.tasima.giden('POST', gonderYolu), isEmpty);
+      expect(k.bekleyen, isEmpty);
+      expect(k.durum().mesajlar.first.id, mesajId3);
+    });
+
+    test('WebSocket olayları akışı güncelliyor', () async {
+      final r = SahteRealtime();
+      final k = _Kurulum(_konusmaYanitlari(), null, r);
+      await k.konusma();
+      final soket = await r.baglan();
+
+      soket.cerceve('dm.message_created', {
+        'id': mesajId4,
+        'conversation_id': konusmaId1,
+        'sender_user_id': karsiId,
+        'body': 'Yoldayım',
+        'created_at': '2026-11-10T13:00:00Z',
+      });
+      soket.cerceve('dm.message_deleted', {
+        'conversation_id': konusmaId1,
+        'message_id': mesajId2,
+      });
+      soket.cerceve('dm.read', {
+        'conversation_id': konusmaId1,
+        'user_id': karsiId,
+        'last_read_message_id': mesajId1,
+      });
+      // Başka konuşmanın olayı yok sayılır.
+      soket.cerceve('dm.message_deleted', {
+        'conversation_id': konusmaId2,
+        'message_id': mesajId1,
+      });
+      await pumpEventQueue();
+
+      final d = k.durum();
+      expect(d.mesajlar.first.body, 'Yoldayım');
+      expect(d.mesajlar.firstWhere((m) => m.id == mesajId2).deleted, isTrue);
+      expect(d.mesajlar.firstWhere((m) => m.id == mesajId1).deleted, isFalse);
+      expect(d.gorulenGidenId, mesajId1);
+    });
+
+    test('kabul olayı konuşmayı aktif yapıyor', () async {
+      final r = SahteRealtime();
+      final k = _Kurulum(_konusmaYanitlari(durum: 'request_sent'), null, r);
+      await k.konusma();
+      final soket = await r.baglan();
+      soket.cerceve('dm.conversation_accepted', {
+        'conversation_id': konusmaId1,
+      });
+      await pumpEventQueue();
+      expect(k.durum().konusma.status, ConversationStatus.active);
     });
 
     test('hesabı silinmiş kişiye gönderilmiyor', () async {

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
@@ -79,7 +78,10 @@ final class YeniMesajDurumu {
   final String? konusmaId;
 }
 
-/// Henüz konuşma olmayan kişiye ilk mesaj (`POST /v1/direct-messages`).
+/// Henüz konuşma olmayan kişiye ilk mesaj (bağlantı açıksa `dm.send`,
+/// değilse `POST /v1/direct-messages`). İlk mesaj kuyruğa girmez: konuşma
+/// henüz yoktur; gönderilemezse "Tekrar dene" aynı `client_request_id`
+/// ile dener.
 ///
 /// İlk mesaj konuşmayı açar; arkadaş ya da ortak etkinlik geçmişi yoksa
 /// mesaj isteği olur. Kimin kime yazabileceğine sunucu karar verir
@@ -128,7 +130,7 @@ class YeniMesajNotifier extends Notifier<YeniMesajDurumu> {
   }
 
   Future<void> _gonder(GidenMesaj giden) async {
-    final DirectMessageSent sonuc;
+    final BirebirGonderimi sonuc;
     try {
       sonuc = await ref
           .read(birebirGondericiProvider)
@@ -146,8 +148,13 @@ class YeniMesajNotifier extends Notifier<YeniMesajDurumu> {
       return;
     }
     if (!ref.mounted) return;
-    ref.read(konusmaListesiProvider.notifier).yansit(sonuc.conversation);
-    state = YeniMesajDurumu(konusmaId: sonuc.conversation.id);
+    final liste = ref.read(konusmaListesiProvider.notifier);
+    if (sonuc.konusma case final konusma?) {
+      liste.yansit(konusma);
+    } else {
+      unawaited(liste.yenile());
+    }
+    state = YeniMesajDurumu(konusmaId: sonuc.mesaj.conversationId);
   }
 }
 

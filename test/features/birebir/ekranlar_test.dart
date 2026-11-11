@@ -14,6 +14,7 @@ import 'package:tayfam/features/birebir/presentation/kisi_konusmasi_ekrani.dart'
 import 'package:tayfam/features/birebir/presentation/konusma_ekrani.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_istekleri_ekrani.dart';
 import 'package:tayfam/features/birebir/presentation/reddedilenler_ekrani.dart';
+import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 import '../../yardimcilar.dart';
@@ -78,7 +79,7 @@ void main() {
       ekranBoyutu(tester, yukseklik: 1000);
       await _ac(
         tester,
-        const BirebirKonusmalarEkrani(),
+        const Scaffold(body: BirebirSekmesi()),
         birebirTasimasi({
           'GET $konusmalarYolu': (_) => konusmaListesiJson([
             konusmaJson(konusmaId1, okunmamis: 120),
@@ -93,7 +94,6 @@ void main() {
         }),
       );
 
-      expect(find.text(arbMetni('birebir_baslik')), findsOneWidget);
       expect(find.text('Deniz'), findsOneWidget);
       // İstek ana listede değil, istek girişinde sayılır.
       expect(find.text('Ece'), findsNothing);
@@ -108,7 +108,7 @@ void main() {
 
     testWidgets('konuşma yoksa boş durum', (tester) async {
       ekranBoyutu(tester);
-      await _ac(tester, const BirebirKonusmalarEkrani(), birebirTasimasi());
+      await _ac(tester, const Scaffold(body: BirebirSekmesi()), birebirTasimasi());
       expect(find.text(arbMetni('birebir_bos')), findsOneWidget);
     });
 
@@ -117,7 +117,7 @@ void main() {
       var deneme = 0;
       await _ac(
         tester,
-        const BirebirKonusmalarEkrani(),
+        const Scaffold(body: BirebirSekmesi()),
         birebirTasimasi({
           'GET $konusmalarYolu': (_) => deneme++ == 0
               ? const ApiOffline()
@@ -449,8 +449,15 @@ void main() {
       await uygulamayiAc(
         tester,
         birebir: [...birebirOverridelari(tasima), profilAdlari],
+        overrides: [
+          birebirBolumuProvider.overrideWithValue(
+            (context) => const BirebirSekmesi(),
+          ),
+        ],
       );
       yonlendiriciyiAl(tester).go('/sohbet');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(arbMetni('sohbet_sekme_birebir')));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Deniz'));
@@ -473,7 +480,7 @@ void main() {
       );
       yonlendiriciyiAl(tester).go('/sohbet/kisi/gecersiz');
       await tester.pumpAndSettle();
-      expect(find.byType(BirebirKonusmalarEkrani), findsOneWidget);
+      expect(find.byType(SohbetEkrani), findsOneWidget);
     });
 
     testWidgets('"Mesaj gönder" kişiyle konuşmanın adresine gidiyor', (
@@ -579,7 +586,7 @@ void main() {
         ikiKatYazi(tester);
         await _ac(
           tester,
-          const BirebirKonusmalarEkrani(),
+          const Scaffold(body: BirebirSekmesi()),
           birebirTasimasi({
             'GET $konusmalarYolu': (_) => konusmaListesiJson([
               konusmaJson(konusmaId1, okunmamis: 5),
@@ -602,7 +609,12 @@ void main() {
           const KonusmaEkrani(konusmaId: konusmaId1),
           _konusmaTasimasi(
             durum: 'request_received',
-            ek: {'POST $gonderYolu': (_) => const ApiOffline()},
+            ek: {
+              'POST $gonderYolu': (_) => const ApiProblem(
+                type: ProblemType.messageRequestLimit,
+                status: 429,
+              ),
+            },
           ),
           tema: tema,
         );

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/moduller/tayfa_module.dart';
@@ -7,6 +8,7 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 
@@ -41,4 +43,8 @@ final List<Override> kayitOverridelari = [
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Kişi profilinde "Mesaj gönder" (ADR-0018 §9).
   kisiProfiliEylemleriProvider.overrideWithValue(const [mesajGonderEylemi]),
+  // Sohbet sekmesinin Birebir bölümü (ADR-0018 §9).
+  birebirBolumuProvider.overrideWithValue(_birebirBolumu),
 ];
+
+Widget _birebirBolumu(BuildContext context) => const BirebirSekmesi();

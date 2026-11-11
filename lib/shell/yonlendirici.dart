@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
@@ -15,8 +16,10 @@ import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/profil/profil.dart';
+import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
+import 'package:tayfam/shell/canli_olaylar.dart';
 import 'package:tayfam/shell/derin_link/derin_link_rotalari.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
 import 'package:tayfam/shell/yer_tutucu.dart';
@@ -127,8 +130,12 @@ List<RouteBase> rotalariOlustur(
 }) {
   return [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          KabukIskeleti(navigationShell: navigationShell),
+      // Tek WebSocket bağlantısı kabuk açıkken yaşar (ADR-0007).
+      builder: (context, state, navigationShell) => RealtimeBaglantisi(
+        child: CanliOlaylar(
+          child: KabukIskeleti(navigationShell: navigationShell),
+        ),
+      ),
       branches: [
         StatefulShellBranch(
           routes: [
@@ -151,14 +158,7 @@ List<RouteBase> rotalariOlustur(
           ],
         ),
         StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Adresler.sohbet,
-              // Birebir konuşmalar (ADR-0018 §9); kanallar #63 ile eklenir.
-              builder: (context, state) => const BirebirKonusmalarEkrani(),
-              routes: birebirRotalari(),
-            ),
-          ],
+          routes: [sohbetRotasi(ekRotalar: birebirRotalari())],
         ),
         StatefulShellBranch(
           routes: [

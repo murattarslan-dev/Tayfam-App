@@ -8,7 +8,9 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
 import 'package:tayfam/features/birebir/application/konusma_notifier.dart';
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_ogeleri.dart';
@@ -19,9 +21,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// sürüm): mesaj akışı (en yeni altta), yazma alanı, okundu bilgisi,
 /// mesaj isteğini kabul ve ret, kendi mesajını silme ve mesaj şikâyeti.
 ///
-/// Ekran açıkken konuşma okundu işaretlenir. Yeni mesajlar bugün ekran
-/// açıkken ve uygulama ön plandayken aralıklarla REST'ten okunur
-/// ([birebirYenilemeAraligiProvider]).
+/// Ekran açıkken konuşma okundu işaretlenir. Yeni mesajlar WebSocket
+/// olaylarıyla gelir; bağlantı yokken ekran açık ve uygulama ön plandayken
+/// aralıklarla REST'ten okunur ([birebirYenilemeAraligiProvider]).
 class KonusmaEkrani extends ConsumerStatefulWidget {
   const KonusmaEkrani({super.key, required this.konusmaId});
 
@@ -53,7 +55,12 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
     super.dispose();
   }
 
+  /// WebSocket açıkken olaylar yeterlidir; kapalıyken (web geliştirme
+  /// derlemesi, kopuk bağlantı) ön plandaysa REST'ten okunur.
   void _onPlandaysaYeniler() {
+    if (ref.read(realtimeIstemcisiProvider).durum == RealtimeDurumu.acik) {
+      return;
+    }
     final durum = WidgetsBinding.instance.lifecycleState;
     if (durum == null || durum == AppLifecycleState.resumed) _yeniler();
   }
@@ -112,7 +119,10 @@ class _Akis extends ConsumerWidget {
     final notifier = ref.read(konusmaProvider(konusmaId).notifier);
     final konusma = durum.konusma;
     final gorulen = durum.gorulenGidenId;
-    final giden = durum.giden.reversed.toList();
+    final alici = konusma.otherUserId;
+    final giden = alici == null
+        ? const <GidenMesaj>[]
+        : ref.watch(bekleyenBirebirProvider(alici)).reversed.toList();
     final ogeler = <Widget>[
       for (final g in giden)
         GidenOgesi(

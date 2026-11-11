@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
+import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
 import 'package:tayfam/features/birebir/application/birebir_islemi.dart';
 import 'package:tayfam/features/birebir/data/birebir_deposu.dart';
 
@@ -32,13 +37,47 @@ Conversation okunduOlarak(Conversation konusma, String mesajId) => Conversation(
 /// oturum değişince yeniden kurulur (ADR-0001 kural 8). Oturum açık
 /// değilse istek atmadan boş döner. Yalnızca bellektedir (ADR-0006).
 /// Mesaj istekleri (`request_received`) aynı listededir; ekranlar ayırır.
+///
+/// Yeni birebir mesaj, kabul edilen istek ya da yeniden kurulan bağlantı
+/// (WebSocket; ADR-0007) listeyi REST'ten yeniler; sözleşme son mesajı ve
+/// okunmamış sayısını yalnızca listede verir.
 class KonusmaListesiNotifier extends SayfaliListeNotifier<Conversation> {
   @override
   Future<SayfaliListe<Conversation>> build() async {
     final oturum = ref.watch(oturumDurumuProvider);
     ref.watch(birebirDeposuProvider);
     if (oturum != OturumDurumu.acik) return const SayfaliListe(ogeler: []);
+    final olaylar = ref
+        .watch(realtimeIstemcisiProvider)
+        .olaylar
+        .listen(_olay);
+    ref.onDispose(olaylar.cancel);
+    final kuyruk = ref
+        .read(cevrimdisiKuyrukProvider.notifier)
+        .olaylar
+        .listen(_kuyrukOlayi);
+    ref.onDispose(kuyruk.cancel);
     return ilkSayfayiOku();
+  }
+
+  void _olay(RealtimeOlayi olay) {
+    switch (olay) {
+      case DmMesajiGeldi() || DmKonusmaKabulEdildi() || Baglandi():
+        unawaited(yenile());
+      default:
+        break;
+    }
+  }
+
+  void _kuyrukOlayi(KuyrukOlayi olay) {
+    if (olay case KuyrukGonderildi(:final BirebirGonderimi sonuc)) {
+      final konusma = sonuc.konusma;
+      if (konusma != null) {
+        yansit(konusma);
+      } else {
+        unawaited(yenile());
+      }
+    }
   }
 
   @override

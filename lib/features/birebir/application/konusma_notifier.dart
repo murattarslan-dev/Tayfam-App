@@ -4,8 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
 import 'package:tayfam/features/birebir/application/birebir_islemi.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
@@ -27,7 +29,6 @@ final class KonusmaDurumu {
     this.eskiSayfa,
     this.eskiYukleniyor = false,
     this.eskiHatasi,
-    this.giden = const [],
   });
 
   final Conversation konusma;
@@ -43,9 +44,6 @@ final class KonusmaDurumu {
 
   /// Daha eski mesajlar okunamadıysa hatası.
   final Object? eskiHatasi;
-
-  /// Sunucu henüz kabul etmemiş giden mesajlar, eskiden yeniye.
-  final List<GidenMesaj> giden;
 
   /// Okunacak daha eski mesaj var mı.
   bool get eskiVar => eskiSayfa != null;
@@ -78,14 +76,12 @@ final class KonusmaDurumu {
     bool eskiSayfayiSil = false,
     bool eskiYukleniyor = false,
     Object? eskiHatasi,
-    List<GidenMesaj>? giden,
   }) => KonusmaDurumu(
     konusma: konusma ?? this.konusma,
     mesajlar: mesajlar ?? this.mesajlar,
     eskiSayfa: eskiSayfayiSil ? null : eskiSayfa ?? this.eskiSayfa,
     eskiYukleniyor: eskiYukleniyor,
     eskiHatasi: eskiHatasi,
-    giden: List.unmodifiable(giden ?? this.giden),
   );
 }
 
@@ -94,9 +90,15 @@ final class KonusmaDurumu {
 ///
 /// Ekran açıkken yaşar (`autoDispose`); oturum değişince yeniden kurulur.
 /// Mesajlar yalnızca bellektedir (ADR-0006) ve hiçbir yere yazılmaz,
-/// loglanmaz (kesin kural 3). Yeni mesajlar bugün ekran açıkken
-/// [yeniler] ile REST'ten çekilir; WebSocket geldiğinde olaylar da aynı
-/// birleştirmeden geçer.
+/// loglanmaz (kesin kural 3).
+///
+/// - WebSocket olayları (`dm.message_created`, `dm.message_deleted`,
+///   `dm.conversation_accepted`, `dm.read`) bellekteki durumu günceller;
+///   bağlantı yeniden kurulunca kaçırılanlar REST'ten çekilir (ADR-0007).
+/// - Gönderim çevrimdışı kuyruktan geçer ([gonder]; ADR-0006): bağlantı
+///   açıksa `dm.send`, değilse aynı `client_request_id` ile REST. Bekleyen
+///   mesajlar [bekleyenBirebirProvider]'dadır; gönderilen mesaj bekleyen
+///   balonun yerine geçer.
 class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
   KonusmaNotifier(this.konusmaId);
 
@@ -110,7 +112,15 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
   Future<KonusmaDurumu> build() async {
     ref.watch(oturumDurumuProvider);
     final depo = ref.watch(birebirDeposuProvider);
+    final realtime = ref.watch(realtimeIstemcisiProvider);
     _isaretlenen = null;
+    final olaylar = realtime.olaylar.listen(_olay);
+    ref.onDispose(olaylar.cancel);
+    final kuyruk = ref
+        .read(cevrimdisiKuyrukProvider.notifier)
+        .olaylar
+        .listen(_kuyrukOlayi);
+    ref.onDispose(kuyruk.cancel);
     final konusma = await depo.konusma(konusmaId);
     final sayfa = await depo.mesajlar(konusmaId);
     return KonusmaDurumu(
@@ -206,95 +216,119 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
     }
   }
 
-  /// [ham] metni gönderir: geçerliyse bekleyen mesaj olarak hemen görünür
-  /// ve `true` döner. Geçersizse ya da yazılacak kişi yoksa (hesabı
-  /// silinmiş) `false`. Kimin kime yazabileceğine sunucu karar verir
-  /// (kesin kural 5); ret, bekleyen mesajın hatası olarak görünür.
+  /// [ham] metni çevrimdışı kuyruğa koyar: geçerliyse bekleyen mesaj
+  /// olarak hemen görünür ve `true` döner. Geçersizse ya da yazılacak
+  /// kişi yoksa (hesabı silinmiş) `false`. Kimin kime yazabileceğine
+  /// sunucu karar verir (kesin kural 5); ret, bekleyen mesajın hatası
+  /// olarak görünür.
   bool gonder(String ham) {
     final metin = birebirMetniniHazirla(ham);
-    final mevcut = state.value;
-    final alici = mevcut?.konusma.otherUserId;
-    if (mevcut == null || alici == null || !birebirMetniGecerli(metin)) {
-      return false;
-    }
-    final giden = GidenMesaj(
-      istekKimligi: ref.read(istekKimligiUreticisiProvider)(),
-      metin: metin,
-    );
-    state = AsyncData(mevcut._degistir(giden: [...mevcut.giden, giden]));
-    unawaited(_gonder(giden, alici));
+    final alici = state.value?.konusma.otherUserId;
+    if (alici == null || !birebirMetniGecerli(metin)) return false;
+    ref
+        .read(cevrimdisiKuyrukProvider.notifier)
+        .ekle(
+          BirebirMesajIsi(
+            aliciId: alici,
+            metin: metin,
+            istekKimligi: ref.read(istekKimligiUreticisiProvider)(),
+            gonderici: ref.read(birebirGondericiProvider),
+          ),
+        );
     return true;
   }
 
   /// Gönderilemeyen mesajı aynı `client_request_id` ile yeniden dener.
-  void tekrarDene(String istekKimligi) {
-    final mevcut = state.value;
-    final alici = mevcut?.konusma.otherUserId;
-    if (mevcut == null || alici == null) return;
-    for (final g in mevcut.giden) {
-      if (g.istekKimligi == istekKimligi && g.durum == GidenDurumu.basarisiz) {
-        final yeni = g.gonderiliyor();
-        _gideniDegistir(istekKimligi, (_) => yeni);
-        unawaited(_gonder(yeni, alici));
-        return;
-      }
+  void tekrarDene(String istekKimligi) =>
+      ref.read(cevrimdisiKuyrukProvider.notifier).tekrarDene(istekKimligi);
+
+  /// Bekleyen ya da gönderilemeyen mesajı kuyruktan atar.
+  void vazgec(String istekKimligi) =>
+      ref.read(cevrimdisiKuyrukProvider.notifier).sil(istekKimligi);
+
+  void _kuyrukOlayi(KuyrukOlayi olay) {
+    if (olay
+        case KuyrukGonderildi(
+          isi: BirebirMesajIsi(),
+          :final BirebirGonderimi sonuc,
+        )
+        when sonuc.mesaj.conversationId == konusmaId) {
+      _mesajiYaz(sonuc.mesaj, durum: sonuc.durum, konusma: sonuc.konusma);
     }
   }
 
-  /// Gönderilemeyen mesajı bellekten atar.
-  void vazgec(String istekKimligi) =>
-      _gideniDegistir(istekKimligi, (_) => null);
-
-  Future<void> _gonder(GidenMesaj giden, String alici) async {
-    final DirectMessageSent sonuc;
-    try {
-      sonuc = await ref
-          .read(birebirGondericiProvider)
-          .gonder(
-            aliciId: alici,
-            metin: giden.metin,
-            istekKimligi: giden.istekKimligi,
-          );
-    } on OturumYok catch (hata) {
-      oturumKapandi(ref);
-      if (ref.mounted) {
-        _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
-      }
-      return;
-    } on Exception catch (hata) {
-      if (ref.mounted) {
-        _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
-      }
-      return;
+  void _olay(RealtimeOlayi olay) {
+    switch (olay) {
+      case DmMesajiGeldi(:final mesaj) when mesaj.conversationId == konusmaId:
+        _mesajiYaz(mesaj);
+      case DmMesajiSilindi(:final konusmaId, :final mesajId)
+          when konusmaId == this.konusmaId:
+        _silindiIsaretle(mesajId);
+      case DmKonusmaKabulEdildi(:final konusmaId)
+          when konusmaId == this.konusmaId:
+        _durumuDegistir(ConversationStatus.active);
+      case DmOkundu(:final konusmaId, :final kullaniciId, :final sonOkunanMesajId)
+          when konusmaId == this.konusmaId:
+        _karsiOkudu(kullaniciId, sonOkunanMesajId);
+      case Baglandi():
+        unawaited(yeniler());
+      default:
+        break;
     }
-    if (!ref.mounted) return;
+  }
+
+  /// [mesaj]'ı akışa yazar; gönderimden geldiyse konuşmanın yeni durumunu
+  /// da ([durum] ya da sunucunun döndürdüğü [konusma]) yansıtır.
+  void _mesajiYaz(
+    DirectMessage mesaj, {
+    ConversationStatus? durum,
+    Conversation? konusma,
+  }) {
+    final mevcut = state.value;
+    if (mevcut == null) return;
+    final yeniKonusma =
+        konusma ??
+        (durum == null
+            ? mevcut.konusma
+            : _konusmaDegistir(mevcut.konusma, durum: durum));
+    state = AsyncData(
+      mevcut._degistir(
+        konusma: yeniKonusma,
+        mesajlar: mesajlariBirlestir(mevcut.mesajlar, [mesaj]),
+      ),
+    );
+    if (konusma != null || durum != null) {
+      ref.read(konusmaListesiProvider.notifier).yansit(yeniKonusma);
+    }
+  }
+
+  void _silindiIsaretle(String mesajId) {
     final mevcut = state.value;
     if (mevcut == null) return;
     state = AsyncData(
       mevcut._degistir(
-        konusma: sonuc.conversation,
-        mesajlar: mesajlariBirlestir(mevcut.mesajlar, [sonuc.message]),
-        giden: [
-          for (final g in mevcut.giden)
-            if (g.istekKimligi != giden.istekKimligi) g,
+        mesajlar: [
+          for (final m in mevcut.mesajlar)
+            m.id == mesajId ? silinmisOlarak(m) : m,
         ],
       ),
     );
-    ref.read(konusmaListesiProvider.notifier).yansit(sonuc.conversation);
   }
 
-  void _gideniDegistir(
-    String istekKimligi,
-    GidenMesaj? Function(GidenMesaj g) degistir,
-  ) {
+  void _durumuDegistir(ConversationStatus durum) {
     final mevcut = state.value;
     if (mevcut == null) return;
+    final konusma = _konusmaDegistir(mevcut.konusma, durum: durum);
+    state = AsyncData(mevcut._degistir(konusma: konusma));
+    ref.read(konusmaListesiProvider.notifier).yansit(konusma);
+  }
+
+  void _karsiOkudu(String kullaniciId, String mesajId) {
+    final mevcut = state.value;
+    if (mevcut == null || kullaniciId != mevcut.konusma.otherUserId) return;
     state = AsyncData(
       mevcut._degistir(
-        giden: [
-          for (final g in mevcut.giden)
-            if (g.istekKimligi != istekKimligi) g else ?degistir(g),
-        ],
+        konusma: _konusmaDegistir(mevcut.konusma, karsiOkundu: mesajId),
       ),
     );
   }
@@ -307,17 +341,7 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
       () => ref.read(birebirDeposuProvider).sil(konusmaId, mesajId),
     );
     if (hata != null || !ref.mounted) return hata;
-    final mevcut = state.value;
-    if (mevcut != null) {
-      state = AsyncData(
-        mevcut._degistir(
-          mesajlar: [
-            for (final m in mevcut.mesajlar)
-              m.id == mesajId ? silinmisOlarak(m) : m,
-          ],
-        ),
-      );
-    }
+    _silindiIsaretle(mesajId);
     return null;
   }
 
@@ -375,6 +399,21 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
     ref.read(konusmaListesiProvider.notifier).yansit(konusma);
   }
 
+  Conversation _konusmaDegistir(
+    Conversation k, {
+    ConversationStatus? durum,
+    String? karsiOkundu,
+  }) => Conversation(
+    id: k.id,
+    otherUserId: k.otherUserId,
+    status: durum ?? k.status,
+    unreadCount: k.unreadCount,
+    lastReadMessageId: k.lastReadMessageId,
+    peerLastReadMessageId: karsiOkundu ?? k.peerLastReadMessageId,
+    lastMessageAt: k.lastMessageAt,
+    createdAt: k.createdAt,
+  );
+
   String? _gecerliToken(String? token) =>
       token == null || token.isEmpty ? null : token;
 }
@@ -387,11 +426,31 @@ final konusmaProvider = AsyncNotifierProvider.autoDispose
       retry: yenidenDenemeYok,
     );
 
-/// Konuşma ekranı açıkken ve uygulama ön plandayken yeni mesajların
-/// REST'ten okunma aralığı. GEÇİCİ: WebSocket (`dm.message_created`,
-/// ADR-0007) bağlanınca yalnızca yeniden bağlanmada eksik tamamlamaya
-/// iner.
+/// WebSocket bağlantısı yokken (web geliştirme derlemesi, kopuk
+/// bağlantı) konuşma ekranı açık ve uygulama ön plandayken yeni mesajların
+/// REST'ten okunma aralığı.
 final birebirYenilemeAraligiProvider = Provider<Duration>(
   (ref) => const Duration(seconds: 10),
   name: 'birebirYenilemeAraligiProvider',
 );
+
+/// [aliciId]'ye giden, kuyrukta bekleyen ya da gönderilemeyen birebir
+/// mesajlar, eklenme sırasıyla (ADR-0006: bekleyen saat, gönderilemeyen
+/// uyarı ikonuyla gösterilir).
+final bekleyenBirebirProvider = Provider.autoDispose
+    .family<List<GidenMesaj>, String>((ref, aliciId) {
+      final ogeler = ref.watch(cevrimdisiKuyrukProvider);
+      return [
+        for (final o in ogeler)
+          if (o.isi case BirebirMesajIsi(:final metin, aliciId: final a)
+              when a == aliciId)
+            GidenMesaj(
+              istekKimligi: o.istekKimligi,
+              metin: metin,
+              durum: o.durum == KuyrukDurumu.gonderilemedi
+                  ? GidenDurumu.basarisiz
+                  : GidenDurumu.gonderiliyor,
+              hata: o.hata,
+            ),
+      ];
+    }, name: 'bekleyenBirebirProvider');
