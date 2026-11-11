@@ -47,6 +47,7 @@ final class ArsivYazici {
 
   final Queue<ArsivlenecekMesaj> _kuyruk = Queue();
   Future<void>? _suren;
+  bool _planli = false;
 
   /// Bekleyen mesaj sayısı.
   int get bekleyen => _kuyruk.length;
@@ -59,7 +60,14 @@ final class ArsivYazici {
     while (_kuyruk.length > arsivKuyrukSiniri) {
       _kuyruk.removeFirst();
     }
-    unawaited(bosalt());
+    // Aynı anda gelen mesajlar (açılışta çekilen zarflar) tek gruba
+    // girsin diye gönderim bir sonraki olay döngüsü turunda başlar.
+    if (_planli) return;
+    _planli = true;
+    Timer.run(() {
+      _planli = false;
+      unawaited(bosalt());
+    });
   }
 
   /// Kuyruğu gönderir; sürüyorsa aynı işi bekler.
