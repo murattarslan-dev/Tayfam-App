@@ -3111,5 +3111,337 @@
   "yonetim_davet_iptal_edildi": "Davet linki iptal edildi.",
   "@yonetim_davet_iptal_edildi": {
     "description": "Davet linki iptal edilince kısa süre görünen bildirim."
+  },
+  "arkadas_baslik": "Arkadaşlar",
+  "@arkadas_baslik": {
+    "description": "Arkadaşlar ekranının başlığı ve profil sekmesindeki giriş."
+  },
+  "arkadas_ekle": "Arkadaş ekle",
+  "@arkadas_ekle": {
+    "description": "Referans koduyla arkadaş bulma ekranına giden düğme ve satır."
+  },
+  "arkadas_istekler": "Arkadaşlık istekleri",
+  "@arkadas_istekler": {
+    "description": "Arkadaşlık istekleri ekranının başlığı ve ona giden satır."
+  },
+  "arkadas_istek_bekliyor": "Cevap bekleyen istek var",
+  "@arkadas_istek_bekliyor": {
+    "description": "Arkadaşlar girişindeki rozetin ekran okuyucu metni."
+  },
+  "arkadas_engellenenler": "Engellenenler",
+  "@arkadas_engellenenler": {
+    "description": "Engellenen kullanıcılar ekranının başlığı ve ona giden satır."
+  },
+  "arkadas_liste_baslik": "Arkadaşların",
+  "@arkadas_liste_baslik": {
+    "description": "Arkadaş listesinin bölüm başlığı."
+  },
+  "arkadas_liste_bos": "Henüz arkadaşın yok. Arkadaşının referans koduyla onu bulabilirsin.",
+  "@arkadas_liste_bos": {
+    "description": "Arkadaş listesi boşken gösterilen metin."
+  },
+  "arkadas_davetler_baslik": "Tayfa davetleri",
+  "@arkadas_davetler_baslik": {
+    "description": "Sana gelen doğrudan tayfa davetleri ekranının başlığı ve profil sekmesindeki giriş."
+  },
+  "arkadas_davet_bekliyor": "Cevap bekleyen davet var",
+  "@arkadas_davet_bekliyor": {
+    "description": "Tayfa davetleri girişindeki rozetin ekran okuyucu metni."
+  },
+  "arkadas_davetler_bos": "Bekleyen tayfa davetin yok.",
+  "@arkadas_davetler_bos": {
+    "description": "Gelen tayfa daveti yokken gösterilen metin."
+  },
+  "arkadas_davet_eden": "Davet eden:",
+  "@arkadas_davet_eden": {
+    "description": "Tayfa daveti kartında davet edenin adından önce gelen etiket."
+  },
+  "arkadas_davet_zamani": "{tarih} tarihinde davet edildin",
+  "@arkadas_davet_zamani": {
+    "description": "Tayfa davetinin gönderildiği gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-10"
+      }
+    }
+  },
+  "arkadas_davet_kabul": "Katıl",
+  "@arkadas_davet_kabul": {
+    "description": "Tayfa davetini kabul eden düğme."
+  },
+  "arkadas_davet_katildin": "Tayfaya katıldın.",
+  "@arkadas_davet_katildin": {
+    "description": "Tayfa daveti kabul edilip üyelik hemen etkin olunca kısa süre görünen bildirim."
+  },
+  "arkadas_davet_onay_bekliyor": "Katılım isteğin gönderildi; yönetimin onayını bekliyor.",
+  "@arkadas_davet_onay_bekliyor": {
+    "description": "Tayfa daveti kabul edildiğinde üyelik onay beklerse kısa süre görünen bildirim."
+  },
+  "arkadas_davet_reddedildi": "Davet reddedildi.",
+  "@arkadas_davet_reddedildi": {
+    "description": "Tayfa daveti reddedilince kısa süre görünen bildirim; davet edene bildirilmez."
+  },
+  "arkadas_bul_baslik": "Arkadaş ekle",
+  "@arkadas_bul_baslik": {
+    "description": "Referans koduyla arkadaş bulma ekranının başlığı."
+  },
+  "arkadas_bul_aciklama": "Arkadaşının referans kodunu gir. Kodu kendi profil sayfasında görebilir.",
+  "@arkadas_bul_aciklama": {
+    "description": "Arkadaş bulma ekranındaki açıklama."
+  },
+  "arkadas_bul_kod_etiketi": "Referans kodu",
+  "@arkadas_bul_kod_etiketi": {
+    "description": "Referans kodu alanının etiketi."
+  },
+  "arkadas_bul_kod_ornek": "TYF-…",
+  "@arkadas_bul_kod_ornek": {
+    "description": "Referans kodu alanının örnek biçimi."
+  },
+  "arkadas_bul_ara": "Bul",
+  "@arkadas_bul_ara": {
+    "description": "Girilen referans kodunun sahibini arayan düğme."
+  },
+  "arkadas_bul_kendi_kodun": "Bu senin kendi kodun.",
+  "@arkadas_bul_kendi_kodun": {
+    "description": "Aranan kod kullanıcının kendi koduysa gösterilen metin."
+  },
+  "arkadas_yukleniyor": "Yükleniyor",
+  "@arkadas_yukleniyor": {
+    "description": "Arkadaşlık ekranlarındaki ilerleme göstergesinin ekran okuyucu metni."
+  },
+  "arkadas_istek_gonder": "Arkadaşlık isteği gönder",
+  "@arkadas_istek_gonder": {
+    "description": "Kişiye arkadaşlık isteği gönderen düğme."
+  },
+  "arkadas_istek_gonderildi": "Arkadaşlık isteği gönderildi.",
+  "@arkadas_istek_gonderildi": {
+    "description": "Arkadaşlık isteği gönderilince kısa süre görünen bildirim."
+  },
+  "arkadas_artik_arkadassiniz": "Artık arkadaşsınız.",
+  "@arkadas_artik_arkadassiniz": {
+    "description": "Arkadaşlık kurulunca (istek kabul edilince) kısa süre görünen bildirim."
+  },
+  "arkadas_durum_arkadas": "Arkadaşın",
+  "@arkadas_durum_arkadas": {
+    "description": "Kişiyle arkadaş olunduğunu gösteren durum metni."
+  },
+  "arkadas_durum_giden": "Arkadaşlık isteğin cevap bekliyor",
+  "@arkadas_durum_giden": {
+    "description": "Kişiye gönderilen isteğin beklediğini gösteren durum metni."
+  },
+  "arkadas_durum_gelen": "Sana arkadaşlık isteği gönderdi",
+  "@arkadas_durum_gelen": {
+    "description": "Kişinin kullanıcıya istek gönderdiğini gösteren durum metni."
+  },
+  "arkadas_istekler_gelen": "Gelen",
+  "@arkadas_istekler_gelen": {
+    "description": "İstekler ekranında gelen istekleri seçen bölüm."
+  },
+  "arkadas_istekler_giden": "Gönderdiğin",
+  "@arkadas_istekler_giden": {
+    "description": "İstekler ekranında gönderilen istekleri seçen bölüm."
+  },
+  "arkadas_istekler_gelen_bos": "Cevap bekleyen istek yok.",
+  "@arkadas_istekler_gelen_bos": {
+    "description": "Gelen arkadaşlık isteği yokken gösterilen metin."
+  },
+  "arkadas_istekler_giden_bos": "Bekleyen isteğin yok.",
+  "@arkadas_istekler_giden_bos": {
+    "description": "Gönderilen ve bekleyen istek yokken gösterilen metin."
+  },
+  "arkadas_istek_zamani": "{tarih} tarihinde istendi",
+  "@arkadas_istek_zamani": {
+    "description": "Arkadaşlık isteğinin gönderildiği gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-10"
+      }
+    }
+  },
+  "arkadas_kabul_et": "Kabul et",
+  "@arkadas_kabul_et": {
+    "description": "Gelen arkadaşlık isteğini kabul eden düğme."
+  },
+  "arkadas_reddet": "Reddet",
+  "@arkadas_reddet": {
+    "description": "Gelen arkadaşlık isteğini ya da tayfa davetini reddeden düğme."
+  },
+  "arkadas_geri_cek": "İsteği geri çek",
+  "@arkadas_geri_cek": {
+    "description": "Gönderilen arkadaşlık isteğini geri çeken düğme."
+  },
+  "arkadas_istek_reddedildi": "İstek reddedildi.",
+  "@arkadas_istek_reddedildi": {
+    "description": "Gelen istek reddedilince kısa süre görünen bildirim; karşı tarafa bildirilmez."
+  },
+  "arkadas_istek_geri_cekildi": "İsteğin geri çekildi.",
+  "@arkadas_istek_geri_cekildi": {
+    "description": "Gönderilen istek geri çekilince kısa süre görünen bildirim."
+  },
+  "arkadas_cikar": "Arkadaşlıktan çıkar",
+  "@arkadas_cikar": {
+    "description": "Arkadaşlığı bitiren düğme; onay penceresi açar."
+  },
+  "arkadas_cikar_baslik": "{ad} arkadaşlıktan çıkarılsın mı?",
+  "@arkadas_cikar_baslik": {
+    "description": "Arkadaşlıktan çıkarma onay penceresinin başlığı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
+  "arkadas_cikar_aciklama": "Bu kişiye bildirilmez. İstersen daha sonra yeniden arkadaşlık isteği gönderebilirsin.",
+  "@arkadas_cikar_aciklama": {
+    "description": "Arkadaşlıktan çıkarma onay penceresinin açıklaması."
+  },
+  "arkadas_cikarildi": "Arkadaşlıktan çıkarıldı.",
+  "@arkadas_cikarildi": {
+    "description": "Arkadaşlık bitince kısa süre görünen bildirim."
+  },
+  "arkadas_engelle": "Engelle",
+  "@arkadas_engelle": {
+    "description": "Kişiyi engelleyen menü öğesi ve onay düğmesi."
+  },
+  "arkadas_engelle_baslik": "{ad} engellensin mi?",
+  "@arkadas_engelle_baslik": {
+    "description": "Engelleme onay penceresinin başlığı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
+  "arkadas_engelle_aciklama": "Arkadaşlığınız ve bekleyen istekler silinir. Birbirinizin profilini göremez, arkadaşlık isteği gönderemezsiniz.",
+  "@arkadas_engelle_aciklama": {
+    "description": "Engelleme onay penceresinin açıklaması."
+  },
+  "arkadas_engellendi": "Kişi engellendi.",
+  "@arkadas_engellendi": {
+    "description": "Engelleme başarılı olunca kısa süre görünen bildirim."
+  },
+  "arkadas_engellenenler_aciklama": "Engellediğin kişilerle birbirinizin profilini göremez, arkadaşlık isteği gönderemezsiniz. Engeli kaldırınca arkadaşlık geri gelmez.",
+  "@arkadas_engellenenler_aciklama": {
+    "description": "Engellenenler ekranındaki açıklama."
+  },
+  "arkadas_engellenenler_bos": "Kimseyi engellemedin.",
+  "@arkadas_engellenenler_bos": {
+    "description": "Engellenen kullanıcı yokken gösterilen metin."
+  },
+  "arkadas_engel_zamani": "{tarih} tarihinde engellendi",
+  "@arkadas_engel_zamani": {
+    "description": "Kişinin engellendiği gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-10"
+      }
+    }
+  },
+  "arkadas_engel_kaldir": "Engeli kaldır",
+  "@arkadas_engel_kaldir": {
+    "description": "Engeli kaldıran düğme; onay penceresi açar."
+  },
+  "arkadas_engel_kaldir_baslik": "Engel kaldırılsın mı?",
+  "@arkadas_engel_kaldir_baslik": {
+    "description": "Engeli kaldırma onay penceresinin başlığı."
+  },
+  "arkadas_engel_kaldir_aciklama": "Birbirinizin profilini yeniden görebilir, istek gönderebilirsiniz. Arkadaşlığınız geri gelmez.",
+  "@arkadas_engel_kaldir_aciklama": {
+    "description": "Engeli kaldırma onay penceresinin açıklaması."
+  },
+  "arkadas_engel_kaldirildi": "Engel kaldırıldı.",
+  "@arkadas_engel_kaldirildi": {
+    "description": "Engel kaldırılınca kısa süre görünen bildirim."
+  },
+  "arkadas_profil_baslik": "Profil",
+  "@arkadas_profil_baslik": {
+    "description": "Kişi profili ekranının ad gelmeden önceki başlığı."
+  },
+  "arkadas_profil_menu": "Diğer seçenekler",
+  "@arkadas_profil_menu": {
+    "description": "Kişi profilindeki menü düğmesinin ipucu."
+  },
+  "arkadas_profil_sen": "Bu senin profilin",
+  "@arkadas_profil_sen": {
+    "description": "Kullanıcı kendi profiline baktığında gösterilen metin."
+  },
+  "arkadas_tayfaya_davet": "Tayfaya davet et",
+  "@arkadas_tayfaya_davet": {
+    "description": "Arkadaşı tayfaya davet eden düğme; tayfa seçimi açar."
+  },
+  "arkadas_tayfa_sec_baslik": "{ad} hangi tayfaya davet edilsin?",
+  "@arkadas_tayfa_sec_baslik": {
+    "description": "Tayfaya davet ederken açılan tayfa seçiminin başlığı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
+  "arkadas_tayfa_sec_bos": "Davet edebileceğin bir tayfa yok.",
+  "@arkadas_tayfa_sec_bos": {
+    "description": "Davet edilebilecek tayfa yokken tayfa seçiminde gösterilen metin."
+  },
+  "arkadas_davet_gonderildi": "Davet gönderildi.",
+  "@arkadas_davet_gonderildi": {
+    "description": "Arkadaş tayfaya davet edilince kısa süre görünen bildirim."
+  },
+  "arkadas_ortak_tayfalar": "Ortak tayfalar",
+  "@arkadas_ortak_tayfalar": {
+    "description": "Kişi profilinde ikinizin de üyesi olduğu tayfaların bölüm başlığı."
+  },
+  "arkadas_ortak_tayfa_yok": "Ortak tayfanız yok.",
+  "@arkadas_ortak_tayfa_yok": {
+    "description": "Ortak tayfa yokken gösterilen metin."
+  },
+  "arkadas_gecmis_baslik": "Katılım geçmişi",
+  "@arkadas_gecmis_baslik": {
+    "description": "Kişi profilindeki katılım geçmişi bölümünün başlığı."
+  },
+  "arkadas_gecmis_gizli": "Katılım geçmişi sana görünmüyor.",
+  "@arkadas_gecmis_gizli": {
+    "description": "Kişinin katılım geçmişi görünürlük ayarı yüzünden gösterilemezken gösterilen metin."
+  },
+  "arkadas_gecmis_bos": "Gösterilecek katılım yok.",
+  "@arkadas_gecmis_bos": {
+    "description": "Görünür katılım kaydı yokken gösterilen metin."
+  },
+  "arkadas_gecmis_etkinlik": "Bir etkinlik",
+  "@arkadas_gecmis_etkinlik": {
+    "description": "Etkinliğin başlığı görünmediğinde (tayfanın üyesi değilsen) gösterilen genel metin."
+  },
+  "arkadas_gecmis_cevrimici": "Çevrimiçi",
+  "@arkadas_gecmis_cevrimici": {
+    "description": "Online etkinliğe katılım kaydında yer yerine gösterilen metin."
+  },
+  "arkadas_gecmis_tarih": "{tarih}",
+  "@arkadas_gecmis_tarih": {
+    "description": "Katılım kaydındaki etkinlik günü (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-08"
+      }
+    }
+  },
+  "arkadas_gecmis_sure": "{dakika} dakika",
+  "@arkadas_gecmis_sure": {
+    "description": "Katılım kaydındaki etkinlik süresi.",
+    "placeholders": {
+      "dakika": {
+        "type": "int",
+        "example": "90"
+      }
+    }
   }
 }
