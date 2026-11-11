@@ -127,10 +127,7 @@ final class E2DepoErisimi implements E2eDepoErisimi {
   @override
   Future<Map<String, Uint8List>> onekliOku(String onek) async {
     await _depo.yukle();
-    return {
-      for (final a in _depo.anahtarlar(onek))
-        a: ?baytOku(_depo.ham(a)),
-    };
+    return {for (final a in _depo.anahtarlar(onek)) a: ?baytOku(_depo.ham(a))};
   }
 }
 
