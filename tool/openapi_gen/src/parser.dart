@@ -299,9 +299,7 @@ final class _Parser {
         final partProps = _asMap(part['properties'], '$partAt.properties');
         for (final entry in partProps.entries) {
           if (properties.containsKey(entry.key)) {
-            throw GenException(
-              '$partAt: alan iki kez tanımlı: ${entry.key}',
-            );
+            throw GenException('$partAt: alan iki kez tanımlı: ${entry.key}');
           }
           properties[entry.key] = entry.value;
         }
