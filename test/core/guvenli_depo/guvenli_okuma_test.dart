@@ -31,7 +31,7 @@ final class _BozukDepo extends Fake implements FlutterSecureStorage {
     WindowsOptions? wOptions,
   }) async {
     if (cozulemeyenler.contains(key) && _kayitlar.containsKey(key)) {
-      throw const PlatformException(code: 'cozulemedi');
+      throw PlatformException(code: 'cozulemedi');
     }
     return _kayitlar[key];
   }
@@ -47,7 +47,7 @@ final class _BozukDepo extends Fake implements FlutterSecureStorage {
     WindowsOptions? wOptions,
   }) async {
     silinenler.add(key);
-    if (silmeHatasi) throw const PlatformException(code: 'silinemedi');
+    if (silmeHatasi) throw PlatformException(code: 'silinemedi');
     _kayitlar.remove(key);
   }
 }

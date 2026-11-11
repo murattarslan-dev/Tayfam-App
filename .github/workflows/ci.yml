@@ -215,10 +215,10 @@ jobs:
         # düşmeden, anlaşılır bir hatayla durmalı. Bu işte TAYFAM_UPLOAD_*
         # değişkenleri ve android/key.properties yoktur.
         run: |
-          set -uo pipefail
+          set -euo pipefail
           test ! -e android/key.properties
-          flutter build appbundle --release > "$RUNNER_TEMP/surum.txt" 2>&1
-          kod=$?
+          kod=0
+          flutter build appbundle --release > "$RUNNER_TEMP/surum.txt" 2>&1 || kod=$?
           tail -n 40 "$RUNNER_TEMP/surum.txt"
           if [ "$kod" -eq 0 ]; then
             echo "::error::Sürüm derlemesi yükleme anahtarı olmadan başarılı oldu."
