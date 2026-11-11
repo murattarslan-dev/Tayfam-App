@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
@@ -30,11 +31,7 @@ Future<void> _ac(
 
 /// Bütün uygulamayı [rol]'deki kullanıcının tek tayfasıyla açar.
 Future<void> _uygulamayiAc(WidgetTester tester, SahteTayfaTasima tasima) async {
-  await uygulamayiAc(
-    tester,
-    oturum: null,
-    tayfa: yonetimOverridelari(tasima),
-  );
+  await uygulamayiAc(tester, oturum: null, tayfa: yonetimOverridelari(tasima));
   tester.container().read(aktifTayfaIdProvider.notifier).sec(ornekTayfaId);
   await tester.pumpAndSettle();
 }
@@ -87,10 +84,7 @@ void main() {
       await _uygulamayiAc(tester, tasima);
 
       expect(_rozetGorunur(tester), isTrue);
-      expect(
-        tasima.giden('GET', isteklerYolu).first.sorgu['page_size'],
-        '1',
-      );
+      expect(tasima.giden('GET', isteklerYolu).first.sorgu['page_size'], '1');
       await _dokun(tester, _menu);
       expect(find.text(arbMetni('yonetim_menu_bekleyen_var')), findsOneWidget);
       await _dokun(tester, find.text(arbMetni('yonetim_menu_ayarlar')));
@@ -128,8 +122,7 @@ void main() {
       ekranBoyutu(tester);
       var uye = true;
       final tasima = _uygulamaTasimasi('member', {
-        'GET /v1/tayfas': (_) =>
-            listeJson([if (uye) etkinJson(ornekTayfaId)]),
+        'GET /v1/tayfas': (_) => listeJson([if (uye) etkinJson(ornekTayfaId)]),
         'DELETE $uyelikYolu': (_) {
           uye = false;
           return null;
@@ -167,9 +160,7 @@ void main() {
         tester,
         const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
         yonetimTasimasi(
-          yanitlar: {
-            'GET $tayfaYolu': yanit(yonetimGorunumu(kod: sahteKod)),
-          },
+          yanitlar: {'GET $tayfaYolu': yanit(yonetimGorunumu(kod: sahteKod))},
         ),
       );
 
@@ -205,10 +196,12 @@ void main() {
 
     testWidgets('modül kapatma', (tester) async {
       ekranBoyutu(tester, yukseklik: 2000);
-      final tasima = yonetimTasimasi(
-        yanitlar: {'PUT $modulYolu': yanit(null)},
+      final tasima = yonetimTasimasi(yanitlar: {'PUT $modulYolu': yanit(null)});
+      await _ac(
+        tester,
+        const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
+        tasima,
       );
-      await _ac(tester, const TayfaAyarlariEkrani(tayfaId: ornekTayfaId), tasima);
 
       await _dokun(
         tester,
@@ -231,10 +224,17 @@ void main() {
           'POST $kodYolu': yanit({'join_code': 'ABCD2345'}),
         },
       );
-      await _ac(tester, const TayfaAyarlariEkrani(tayfaId: ornekTayfaId), tasima);
+      await _ac(
+        tester,
+        const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
+        tasima,
+      );
 
       await _dokun(tester, find.text(arbMetni('yonetim_kod_yenile')));
-      expect(find.text(arbMetni('yonetim_kod_yenile_aciklama')), findsOneWidget);
+      expect(
+        find.text(arbMetni('yonetim_kod_yenile_aciklama')),
+        findsOneWidget,
+      );
       await _dokun(tester, find.text(arbMetni('yonetim_kod_yenile_onayla')));
 
       expect(tasima.giden('POST', kodYolu), hasLength(1));
@@ -257,7 +257,11 @@ void main() {
           },
         },
       );
-      await _ac(tester, const TayfaAyarlariEkrani(tayfaId: ornekTayfaId), tasima);
+      await _ac(
+        tester,
+        const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
+        tasima,
+      );
 
       await _dokun(
         tester,
@@ -370,10 +374,7 @@ void main() {
       expect(find.text('Kişi 3'), findsOneWidget);
       expect(find.text(arbMetni('yonetim_banli')), findsOneWidget);
       expect(islemDugmesi, findsNothing);
-      expect(
-        tasima.giden('GET', uyelerYolu).last.sorgu['status'],
-        'banned',
-      );
+      expect(tasima.giden('GET', uyelerYolu).last.sorgu['status'], 'banned');
     });
 
     testWidgets('1 gün susturma', (tester) async {
@@ -467,7 +468,9 @@ void main() {
       );
       await _dokun(tester, find.text(arbMetni('yonetim_kaydet')));
 
-      expect(tasima.giden('PATCH', tayfaYolu).single.govde, {'name': 'Yeni ad'});
+      expect(tasima.giden('PATCH', tayfaYolu).single.govde, {
+        'name': 'Yeni ad',
+      });
       expect(find.text(arbMetni('yonetim_kaydedildi')), findsOneWidget);
     });
 
@@ -591,7 +594,11 @@ void main() {
                 ),
                 'GET $isteklerYolu': yanit(
                   istekListesiJson([
-                    istekJson(uyeId1, kaynak: 'direct_invite', davetEden: uyeId2),
+                    istekJson(
+                      uyeId1,
+                      kaynak: 'direct_invite',
+                      davetEden: uyeId2,
+                    ),
                   ]),
                 ),
                 'GET $davetlerYolu': yanit({
