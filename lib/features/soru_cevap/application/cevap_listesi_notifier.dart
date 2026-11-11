@@ -115,8 +115,9 @@ class CevapListesiNotifier extends SayfaliListeNotifier<Answer> {
     if (!ref.mounted) return null;
     cikar(cevapId);
     final soru = soruProvider(anahtar);
-    if (ref.read(soru.exists))
+    if (ref.read(soru.exists)) {
       ref.read(soru.notifier).cevapSayisiniDegistir(-1);
+    }
     return null;
   }
 }
