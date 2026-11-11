@@ -22,8 +22,7 @@ const MethodChannel bildirimKanali = MethodChannel('tayfam/bildirim');
 ///   çalışmada kapalıdır; hiçbir çağrı hata fırlatmaz.
 /// - Token, mesaj verisi ve bildirim içeriği loglanmaz.
 final class FirebasePushPlatformu implements PushPlatformu {
-  FirebasePushPlatformu({MethodChannel kanal = bildirimKanali})
-    : _kanal = kanal;
+  FirebasePushPlatformu({this._kanal = bildirimKanali});
 
   final MethodChannel _kanal;
   Future<bool>? _baslatma;

@@ -86,16 +86,12 @@ List<BildirimKanali> bildirimKanallari(AppLocalizations m) => [
 ///   yazılmaz; yalnızca platformun kendi deposunda durur.
 final class PushKaydi {
   PushKaydi({
-    required PushPlatformu platform,
-    required PushTokenDeposu depo,
-    required bool Function() oturumAcik,
-    required AppLocalizations metinler,
-    ApiGunlugu gunluk = varsayilanApiGunlugu,
-  }) : _platform = platform,
-       _depo = depo,
-       _oturumAcik = oturumAcik,
-       _metinler = metinler,
-       _gunluk = gunluk;
+    required this._platform,
+    required this._depo,
+    required this._oturumAcik,
+    required this._metinler,
+    this._gunluk = varsayilanApiGunlugu,
+  });
 
   final PushPlatformu _platform;
   final PushTokenDeposu _depo;
