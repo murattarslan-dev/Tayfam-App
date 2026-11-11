@@ -124,6 +124,29 @@ jobs:
           TAYFAM_DEV_KEY_ALIAS: ${{ secrets.ANDROID_DEV_KEY_ALIAS }}
           TAYFAM_DEV_KEY_PASSWORD: ${{ secrets.ANDROID_DEV_KEY_PASSWORD }}
         run: flutter build apk --debug --dart-define=TAYFAM_SURUM="$TAYFAM_SURUM"
+      - name: İmza parmak izi (uygulama linkleri)
+        # ADR-0018 §6: site/.well-known/assetlinks.json, APK'nın imza
+        # sertifikasının SHA-256 parmak izini taşır. Parmak izi public'tir
+        # (APK'dan herkes okuyabilir); derlenen APK'dan okunup log'a yazılır.
+        # assetlinks.json'da yoksa uyarı verilir (fork PR'ında debug anahtarı
+        # kullanıldığı için iş kırılmaz).
+        run: |
+          set -euo pipefail
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
+          # Satır biçimi apksigner sürümüne göre "Signer #1 certificate …",
+          # "V2 Signer: certificate …" ya da "Signer (minSdkVersion=…) …" olabilir.
+          "$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-debug.apk \
+            > "$RUNNER_TEMP/imza.txt"
+          grep 'SHA-256' "$RUNNER_TEMP/imza.txt"
+          ozet=$(sed -n 's/^.*Signer.*certificate SHA-256 digest: //p' "$RUNNER_TEMP/imza.txt" \
+            | LC_ALL=C sort -u)
+          [[ "$ozet" =~ ^[0-9a-f]{64}$ ]]
+          parmak=$(printf '%s' "$ozet" | tr 'a-f' 'A-F' | sed 's/../&:/g; s/:$//')
+          echo "Geliştirme imzası SHA-256: $parmak"
+          echo "::notice title=Geliştirme imzası SHA-256::$parmak"
+          if ! grep -q "\"$parmak\"" site/.well-known/assetlinks.json 2>/dev/null; then
+            echo "::warning title=assetlinks.json::Bu APK'nın parmak izi site/.well-known/assetlinks.json'da yok; uygulama linkleri bu derlemede doğrulanmaz."
+          fi
       - name: Geliştirme anahtarını sil
         if: always()
         run: rm -f "$RUNNER_TEMP/tayfam-gelistirme.jks"

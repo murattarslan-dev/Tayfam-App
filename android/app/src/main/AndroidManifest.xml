@@ -59,6 +59,26 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Uygulama linkleri (Android App Links, ADR-0018 §6, kesin
+                 kural 9): yalnızca https://tayfam.app ve yalnızca davet
+                 (/davet#<token>) ile referans (/r/<KOD>) yolları. Alan adı
+                 site/.well-known/assetlinks.json ile doğrulanır
+                 (autoVerify); doğrulanmazsa Android linki tarayıcıda açar.
+                 Adres yönlendiricide yeniden doğrulanır. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"/>
+                <data android:host="tayfam.app"/>
+                <data android:path="/davet"/>
+                <data android:pathPrefix="/r/"/>
+            </intent-filter>
+            <!-- Gelen link Flutter'ın yönlendiricisine (go_router) verilir;
+                 ek paket gerekmez. Varsayılan da açıktır; açıkça yazıldı. -->
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true"/>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

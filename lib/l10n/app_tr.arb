@@ -4374,6 +4374,268 @@
       }
     }
   },
+  "derin_link_davet_baslik": "Tayfa daveti",
+  "@derin_link_davet_baslik": {
+    "description": "Davet linkiyle açılan ekranın başlığı."
+  },
+  "derin_link_davet_kapat": "Kapat",
+  "@derin_link_davet_kapat": {
+    "description": "Davet ekranını kapatan düğmenin ipucu ve ekran okuyucu etiketi; daveti bırakır."
+  },
+  "derin_link_davet_yukleniyor": "Davet yükleniyor",
+  "@derin_link_davet_yukleniyor": {
+    "description": "Davet önizlemesi yüklenirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "derin_link_davet_ust_baslik": "Seni bu tayfaya davet ettiler",
+  "@derin_link_davet_ust_baslik": {
+    "description": "Davet ekranında tayfa adının üstündeki kısa satır."
+  },
+  "derin_link_davet_aciklama": "Katılınca tayfanın etkinliklerini, duyurularını ve sohbetini görürsün. Tayfa onaylı katılımlıysa yönetici onayından sonra katılırsın.",
+  "@derin_link_davet_aciklama": {
+    "description": "Davet ekranında katıl düğmesinin üstündeki açıklama."
+  },
+  "derin_link_davet_zaten_uye": "Bu tayfaya zaten üyesin ya da katılım isteğin onay bekliyor.",
+  "@derin_link_davet_zaten_uye": {
+    "description": "Davet edilen tayfaya zaten üye olan ya da isteği bekleyen kullanıcıya gösterilen metin."
+  },
+  "derin_link_davet_katil": "Tayfaya katıl",
+  "@derin_link_davet_katil": {
+    "description": "Davet linkiyle tayfaya katılan birincil düğme."
+  },
+  "derin_link_davet_vazgec": "Vazgeç",
+  "@derin_link_davet_vazgec": {
+    "description": "Daveti kabul etmeden ekranı kapatan ikincil düğme."
+  },
+  "derin_link_davet_tamam": "Tamam",
+  "@derin_link_davet_tamam": {
+    "description": "Davet ekranını kapatan düğme (istek gönderildi, zaten üye ya da hata durumunda)."
+  },
+  "derin_link_davet_gonderildi_baslik": "İsteğin gönderildi",
+  "@derin_link_davet_gonderildi_baslik": {
+    "description": "Onaylı katılımlı tayfaya davetle katılma isteği gönderilince görünen başlık."
+  },
+  "derin_link_davet_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın.",
+  "@derin_link_davet_gonderildi_aciklama": {
+    "description": "Davetle katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+  },
+  "derin_link_davet_gecersiz": "Bu davet linki açılamadı. Linki gönderen kişiden yenisini iste.",
+  "@derin_link_davet_gecersiz": {
+    "description": "Bekleyen davet yokken ya da link bozukken davet ekranında görünen metin."
+  },
+  "derin_link_tekrar_dene": "Tekrar dene",
+  "@derin_link_tekrar_dene": {
+    "description": "Davet önizlemesi bağlantı ya da sunucu hatasıyla yüklenemeyince görünen düğme."
+  },
+  "derin_link_davet_uye_sayisi": "{sayi, plural, other{{sayi} üye}}",
+  "@derin_link_davet_uye_sayisi": {
+    "description": "Davet ekranında tayfa adının altındaki üye sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_sekme_kanallar": "Kanallar",
+  "@sohbet_sekme_kanallar": {
+    "description": "Sohbet sekmesinin üstündeki bölüm: aktif tayfanın kanalları."
+  },
+  "sohbet_sekme_birebir": "Birebir",
+  "@sohbet_sekme_birebir": {
+    "description": "Sohbet sekmesinin üstündeki bölüm: birebir konuşmalar."
+  },
+  "sohbet_birebir_yakinda": "Birebir konuşmaların burada görünecek.",
+  "@sohbet_birebir_yakinda": {
+    "description": "Birebir bölümü henüz dolmadan gösterilen metin."
+  },
+  "sohbet_tayfa_yok": "Kanalları görmek için önce bir tayfaya katıl.",
+  "@sohbet_tayfa_yok": {
+    "description": "Aktif tayfa yokken Kanallar bölümündeki boş durum."
+  },
+  "sohbet_kanallar_yukleniyor": "Kanallar yükleniyor",
+  "@sohbet_kanallar_yukleniyor": {
+    "description": "Kanal listesi yüklenirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "sohbet_kanallar_bos": "Bu tayfada henüz kanal yok.",
+  "@sohbet_kanallar_bos": {
+    "description": "Kanal listesi boşken."
+  },
+  "sohbet_tekrar_dene": "Tekrar dene",
+  "@sohbet_tekrar_dene": {
+    "description": "Okunamayan liste ya da gönderilemeyen mesaj için tekrar deneme düğmesi."
+  },
+  "sohbet_kanal_ac": "Kanal aç",
+  "@sohbet_kanal_ac": {
+    "description": "Yönetime görünen yeni kanal düğmesi."
+  },
+  "sohbet_kanal_yonetim": "Yönetim kanalı",
+  "@sohbet_kanal_yonetim": {
+    "description": "Yalnızca yönetici ve moderatörlerin gördüğü kanalın etiketi."
+  },
+  "sohbet_kanal_arsivde": "Arşivde",
+  "@sohbet_kanal_arsivde": {
+    "description": "Arşivlenmiş kanalın etiketi."
+  },
+  "sohbet_kanal_okunmamis": "{sayi, plural, other{{sayi} okunmamış mesaj}}",
+  "@sohbet_kanal_okunmamis": {
+    "description": "Kanal satırındaki okunmamış rozetinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_mesajlar_yukleniyor": "Mesajlar yükleniyor",
+  "@sohbet_mesajlar_yukleniyor": {
+    "description": "Kanal mesajları yüklenirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "sohbet_kanal_bos": "Henüz mesaj yok. İlk mesajı sen yaz.",
+  "@sohbet_kanal_bos": {
+    "description": "Mesajı olmayan kanal."
+  },
+  "sohbet_mesaj_silindi": "Bu mesaj silindi",
+  "@sohbet_mesaj_silindi": {
+    "description": "Silinmiş mesajın yerinde gösterilen metin."
+  },
+  "sohbet_mesaj_ipucu": "Mesaj yaz",
+  "@sohbet_mesaj_ipucu": {
+    "description": "Mesaj yazma alanının ipucu."
+  },
+  "sohbet_gonder": "Gönder",
+  "@sohbet_gonder": {
+    "description": "Mesaj gönderme düğmesinin ekran okuyucu etiketi."
+  },
+  "sohbet_gonder_bekle": "{saniye, plural, other{{saniye} sn sonra yazabilirsin}}",
+  "@sohbet_gonder_bekle": {
+    "description": "Yavaş modda gönder düğmesinin yerindeki geri sayım.",
+    "placeholders": {
+      "saniye": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_yavas_mod_bilgi": "{saniye, plural, other{Yavaş mod: {saniye} saniyede bir mesaj}}",
+  "@sohbet_yavas_mod_bilgi": {
+    "description": "Yavaş modu açık kanalın üstündeki bilgi şeridi.",
+    "placeholders": {
+      "saniye": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_arsiv_bilgi": "Bu kanal arşivlendi; yeni mesaj yazılamaz.",
+  "@sohbet_arsiv_bilgi": {
+    "description": "Arşivlenmiş kanalda yazma alanının yerinde."
+  },
+  "sohbet_mesaj_gonderiliyor": "Gönderiliyor",
+  "@sohbet_mesaj_gonderiliyor": {
+    "description": "Kuyrukta bekleyen mesajın saat ikonunun ekran okuyucu etiketi."
+  },
+  "sohbet_mesaj_gonderilemedi": "Gönderilemedi",
+  "@sohbet_mesaj_gonderilemedi": {
+    "description": "Gönderilemeyen mesajın uyarı ikonunun yanındaki metin."
+  },
+  "sohbet_mesaj_sil": "Sil",
+  "@sohbet_mesaj_sil": {
+    "description": "Mesajı ya da gönderilemeyen mesajı silme eylemi."
+  },
+  "sohbet_mesaj_geri_al": "Geri al",
+  "@sohbet_mesaj_geri_al": {
+    "description": "Moderasyonla gizlenen mesajı geri alma eylemi (yönetici)."
+  },
+  "sohbet_mesaj_sil_onay_baslik": "Mesaj silinsin mi?",
+  "@sohbet_mesaj_sil_onay_baslik": {
+    "description": "Mesaj silme onayının başlığı."
+  },
+  "sohbet_mesaj_sil_onay_aciklama": "Mesajın yerinde “Bu mesaj silindi” yazar.",
+  "@sohbet_mesaj_sil_onay_aciklama": {
+    "description": "Mesaj silme onayının açıklaması."
+  },
+  "sohbet_vazgec": "Vazgeç",
+  "@sohbet_vazgec": {
+    "description": "Onay penceresini kapatan düğme."
+  },
+  "sohbet_daha_eski": "Daha eski mesajlar",
+  "@sohbet_daha_eski": {
+    "description": "Daha eski mesajları yükleyen düğme."
+  },
+  "sohbet_kanal_ayarlari": "Kanal ayarları",
+  "@sohbet_kanal_ayarlari": {
+    "description": "Kanal ekranındaki ayarlar düğmesinin etiketi (yönetim)."
+  },
+  "sohbet_form_yeni": "Yeni kanal",
+  "@sohbet_form_yeni": {
+    "description": "Kanal açma formunun başlığı."
+  },
+  "sohbet_form_duzenle": "Kanalı düzenle",
+  "@sohbet_form_duzenle": {
+    "description": "Kanal düzenleme formunun başlığı."
+  },
+  "sohbet_form_ad": "Kanal adı",
+  "@sohbet_form_ad": {
+    "description": "Kanal adı alanının etiketi."
+  },
+  "sohbet_form_ad_hata": "Kanal adı 1–40 karakter olmalı.",
+  "@sohbet_form_ad_hata": {
+    "description": "Kanal adı boş ya da çok uzunken."
+  },
+  "sohbet_form_yonetim": "Yalnızca yönetim görsün",
+  "@sohbet_form_yonetim": {
+    "description": "Kanalı yönetim kanalı yapan anahtar."
+  },
+  "sohbet_form_yonetim_aciklama": "Yalnızca yönetici ve moderatörler görür ve yazar.",
+  "@sohbet_form_yonetim_aciklama": {
+    "description": "Yönetim kanalı anahtarının açıklaması."
+  },
+  "sohbet_form_yavas_mod": "Yavaş mod",
+  "@sohbet_form_yavas_mod": {
+    "description": "Yavaş mod seçiminin etiketi."
+  },
+  "sohbet_yavas_kapali": "Kapalı",
+  "@sohbet_yavas_kapali": {
+    "description": "Yavaş mod kapalı seçeneği."
+  },
+  "sohbet_yavas_saniye": "{saniye, plural, other{{saniye} saniye}}",
+  "@sohbet_yavas_saniye": {
+    "description": "Yavaş mod seçeneği (saniye).",
+    "placeholders": {
+      "saniye": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_yavas_dakika": "{dakika, plural, other{{dakika} dakika}}",
+  "@sohbet_yavas_dakika": {
+    "description": "Yavaş mod seçeneği (dakika).",
+    "placeholders": {
+      "dakika": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_yavas_saat": "1 saat",
+  "@sohbet_yavas_saat": {
+    "description": "Yavaş mod seçeneği (bir saat)."
+  },
+  "sohbet_form_kaydet": "Kaydet",
+  "@sohbet_form_kaydet": {
+    "description": "Kanal düzenleme formunun kaydet düğmesi."
+  },
+  "sohbet_form_olustur": "Kanalı aç",
+  "@sohbet_form_olustur": {
+    "description": "Kanal açma formunun gönder düğmesi."
+  },
+  "sohbet_arsivle": "Kanalı arşivle",
+  "@sohbet_arsivle": {
+    "description": "Kanalı salt okunur yapan eylem."
+  },
+  "sohbet_arsivden_cikar": "Arşivden çıkar",
+  "@sohbet_arsivden_cikar": {
+    "description": "Arşivlenmiş kanalı yeniden açan eylem."
+  },
+  "sohbet_erisim_kalmadi": "Bu kanala artık erişimin yok.",
+  "@sohbet_erisim_kalmadi": {
+    "description": "Açık kanala erişim kalmayınca listeye dönülürken gösterilen bildirim."
+  },
   "sikayet_et": "Şikâyet et",
   "@sikayet_et": {
     "description": "İçerik menülerindeki (duyuru, etkinlik vb.) şikâyet seçeneği; şikâyet sayfasını açar."

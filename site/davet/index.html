@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tayfa daveti – Tayfam</title>
+<meta name="description" content="Tayfam tayfa daveti: davet uygulamada açılır.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#5B2BE0">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --turkuaz: #00C2A8;
+    --mercan: #FF3D68;
+    --mor: #5B2BE0;
+    --gece: #1B1036;
+    --safak: #FFB000;
+    --krem: #FAF8FF;
+    --lavanta: #5A5275;
+    --govde: #3F3758;
+    --cizgi: #E6E1F5;
+    --kart: #FFFFFF;
+    --mango-ton: #FFF0CC;
+    --bal: #7A5A1E;
+    --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --genislik: 1120px;
+    --metin: 44rem;
+    --kenar: clamp(16px, 5vw, 48px);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--krem);
+    color: var(--gece);
+    font-family: var(--font);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-optical-sizing: auto;
+  }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  /* Odak: açık zeminde brand, mor/koyu zeminde mango (Tasarım Standartları). */
+  :focus-visible { outline: 3px solid var(--mor); outline-offset: 3px; border-radius: 6px; }
+  .ust :focus-visible, footer :focus-visible { outline-color: var(--safak); }
+
+  .kap { max-width: var(--genislik); margin: 0 auto; padding: 0 var(--kenar); }
+
+  h1, h2, h3 { line-height: 1.08; margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); font-weight: 750; }
+  h2 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 48px; margin-bottom: 14px; }
+  h3 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 28px; margin-bottom: 10px; }
+  p { margin: 0 0 14px; }
+
+  .ust { background: var(--mor); color: var(--krem); }
+  .ust .kap { display: flex; align-items: center; justify-content: space-between; padding-top: 22px; padding-bottom: 22px; }
+  .marka { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 1.45rem; letter-spacing: -0.03em; }
+  .marka svg { width: 36px; height: 36px; }
+
+  main { padding: clamp(40px, 7vw, 72px) 0 clamp(64px, 10vw, 120px); }
+  .yazi { max-width: var(--metin); color: var(--govde); }
+  .yazi h1, .yazi h2, .yazi h3, .yazi strong { color: var(--gece); }
+  .surum { color: var(--lavanta); font-size: .98rem; margin-top: 12px; margin-bottom: 28px; }
+  .yazi ul { margin: 0 0 14px; padding-left: 1.2em; }
+  .yazi li { margin: 6px 0; }
+
+  .taslak {
+    background: var(--mango-ton); border: 1px solid #FFD98A; border-radius: 22px;
+    padding: 20px; margin-bottom: 32px; color: var(--gece);
+  }
+  .taslak strong { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+  .taslak p { margin: 0; }
+
+  .tablo { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--cizgi); border-radius: 14px; background: var(--kart); }
+  table { width: 100%; border-collapse: collapse; font-size: .97rem; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-top: 1px solid var(--cizgi); }
+  thead th { border-top: 0; color: var(--gece); font-weight: 700; background: #ECE4FF; }
+  tbody th { color: var(--gece); font-weight: 600; min-width: 9rem; }
+
+  footer { background: var(--gece); color: rgba(250,248,255,.75); padding: 32px 0; font-size: .95rem; }
+  footer .kap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+  footer .marka { color: var(--krem); font-size: 1.2rem; }
+  footer .marka svg { width: 28px; height: 28px; }
+
+  .dugmeler { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 8px; }
+  .dugme {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px;
+    padding: 12px 22px; border-radius: 999px; font-weight: 700; text-decoration: none;
+    border: 2px solid var(--mor);
+  }
+  .dugme.birincil { background: var(--mor); color: var(--krem); }
+  .dugme.ikincil { background: transparent; color: var(--mor); }
+  .not { color: var(--lavanta); font-size: .98rem; }
+  .yazi ol { margin: 0 0 14px; padding-left: 1.4em; }
+</style>
+</head>
+<body>
+
+<header class="ust">
+  <div class="kap">
+    <a class="marka" href="/" aria-label="Tayfam ana sayfa">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7" fill="none" stroke="#00C2A8" stroke-width="10" stroke-linecap="round"/><path d="M14 27c10 0 22-2 34-6" fill="none" stroke="#FFB000" stroke-width="10" stroke-linecap="round"/><circle cx="52" cy="13" r="4.5" fill="#FF3D68"/></svg>
+      tayfam
+    </a>
+  </div>
+</header>
+
+<main>
+  <article class="kap">
+    <div class="yazi">
+
+      <!-- Davet token'ı adresin # kısmındadır: sunucuya ve Referer'a gitmez.
+           Bu sayfa JavaScript içermez ve token'ı okumaz (kesin kural 9). -->
+      <h1>Bir tayfaya davet edildin</h1>
+      <p>Bu davet Tayfam uygulamasında açılır. Uygulama telefonunda yüklüyse, linke sana gönderildiği yerden (mesaj, WhatsApp, e-posta) dokunduğunda doğrudan uygulamada açılır.</p>
+
+      <h2 id="uygulama-yok">Tayfam yüklü değilse</h2>
+      <ol>
+        <li>Tayfam'ı Google Play'den yükle.</li>
+        <li>Sana gönderilen davet linkine yeniden dokun.</li>
+        <li>Google hesabınla giriş yap; davet girişten sonra açılır ve tayfaya katılmadan önce sana sorulur.</li>
+      </ol>
+      <div class="dugmeler">
+        <a class="dugme birincil" href="https://play.google.com/store/apps/details?id=com.murattarslan.tayfam">Google Play'den indir</a>
+      </div>
+
+      <h2 id="uygulamada-ac">Uygulamada aç</h2>
+      <p>Tayfam yüklü olduğu halde bu sayfayı görüyorsan, linke tarayıcının içinden değil, sana gönderildiği mesajdan dokun. Tarayıcı menüsünde "Uygulamada aç" seçeneği varsa onu da kullanabilirsin.</p>
+      <p class="not">Güvenliğin için: davet linkleri yalnızca https://tayfam.app/davet adresiyle başlar. Başka bir adresten gelen "Tayfam daveti" linkine dokunma.</p>
+
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="kap">
+    <a class="marka" href="/" aria-label="Tayfam ana sayfa">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7" fill="none" stroke="#00C2A8" stroke-width="10" stroke-linecap="round"/><path d="M14 27c10 0 22-2 34-6" fill="none" stroke="#FFB000" stroke-width="10" stroke-linecap="round"/><circle cx="52" cy="13" r="4.5" fill="#FF3D68"/></svg>
+      tayfam
+    </a>
+    <span>Tayfa daveti</span>
+    <span>© 2026 Tayfam</span>
+  </div>
+</footer>
+
+</body>
+</html>
