@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
@@ -47,6 +48,17 @@ final class KonusmaDurumu {
 
   /// Okunacak daha eski mesaj var mı.
   bool get eskiVar => eskiSayfa != null;
+
+  /// Akışta uçtan uca şifreli mesaj var mı (web geliştirme derlemesinde
+  /// yazma alanı yerine "yalnızca mobil uygulamada" gösterilir).
+  bool get sifreliVar => mesajlar.any(
+    (m) => m.encryption == DirectMessageEncryption.e2e,
+  );
+
+  /// Akışta düz sürümde yazılmış (`encryption: server`) mesaj var mı.
+  bool get duzVar => mesajlar.any(
+    (m) => m.encryption == DirectMessageEncryption.server && !m.deleted,
+  );
 
   /// [mesaj] kullanıcının kendi mesajı mı. Karşı tarafın mesajında
   /// gönderen karşı taraftır; hesabı silinmişse gönderen yoktur.
@@ -123,6 +135,12 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
     ref.onDispose(kuyruk.cancel);
     final konusma = await depo.konusma(konusmaId);
     final sayfa = await depo.mesajlar(konusmaId);
+    // Karşı tarafın cihaz/anahtar değişiklikleri: "güvenlik kodu
+    // değişti" satırları (ADR-0020; en iyi çaba).
+    final karsi = konusma.otherUserId;
+    if (karsi != null && ref.read(e2eEtkinProvider)) {
+      unawaited(ref.read(e2eBirebirProvider).konusmaAcildi(karsi));
+    }
     return KonusmaDurumu(
       konusma: konusma,
       mesajlar: mesajlariBirlestir(const [], sayfa.ogeler),

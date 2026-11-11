@@ -5317,5 +5317,57 @@
   "sikayet_tekrar_dene": "Tekrar dene",
   "@sikayet_tekrar_dene": {
     "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
+  },
+  "e2e_sifreli_degil": "Uçtan uca şifreli değil",
+  "@e2e_sifreli_degil": {
+    "description": "Düz sürümde yazılmış (encryption: server) birebir mesajın balonunun altındaki etiket."
+  },
+  "e2e_sifreli_degil_aciklama": "Bu konuşmadaki işaretli eski mesajlar uçtan uca şifreli değil. Yeni mesajlar uçtan uca şifrelenir.",
+  "@e2e_sifreli_degil_aciklama": {
+    "description": "Uçtan uca şifreli olmayan mesaj içeren birebir konuşmanın başındaki açıklama."
+  },
+  "e2e_mesaj_okunamiyor": "Bu şifreli mesaj bu cihazda okunamıyor.",
+  "@e2e_mesaj_okunamiyor": {
+    "description": "İçeriği bu cihazda çözülmemiş uçtan uca şifreli mesajın balonundaki metin (ör. cihaz eklenmeden önce yazılmış)."
+  },
+  "e2e_mesaj_cozulemedi": "Bir mesaj çözülemedi.",
+  "@e2e_mesaj_cozulemedi": {
+    "description": "Konuşmada, çözülemeyen bir şifreli zarf için gösterilen sistem satırı."
+  },
+  "e2e_guvenlik_kodu_degisti": "Güvenlik kodu değişti: karşı tarafın cihazlarından biri eklendi ya da çıkarıldı.",
+  "@e2e_guvenlik_kodu_degisti": {
+    "description": "Karşı tarafın cihaz eklemesi, çıkarması ya da kimlik anahtarı değişince konuşmada gösterilen sistem satırı."
+  },
+  "e2e_yeni_kendi_cihazi": "Hesabına yeni bir cihaz eklendi. Sen eklemediysen Profil → Oturumlar'dan kapat.",
+  "@e2e_yeni_kendi_cihazi": {
+    "description": "Kullanıcının kendi hesabına yeni bir şifreli mesajlaşma cihazı eklenince konuşmalarda gösterilen bilgi satırı."
+  },
+  "e2e_yalnizca_mobil": "Bu konuşma uçtan uca şifreli. Şifreli mesajlar yalnızca mobil uygulamada okunur ve gönderilir.",
+  "@e2e_yalnizca_mobil": {
+    "description": "Web geliştirme derlemesinde şifreli konuşmanın yazma alanı yerine gösterilen boş durum."
+  },
+  "e2e_sifreli_mesaj": "Şifreli mesaj",
+  "@e2e_sifreli_mesaj": {
+    "description": "Web geliştirme derlemesinde içeriği gösterilemeyen şifreli mesajın balonundaki metin."
+  },
+  "e2e_cihaz_siniri_baslik": "Şifreli mesajlaşma bu cihazda açılamadı",
+  "@e2e_cihaz_siniri_baslik": {
+    "description": "Hesabın şifreli mesajlaşma cihaz sınırı dolunca birebir ekranlarında gösterilen uyarının başlığı."
+  },
+  "e2e_cihaz_siniri_aciklama": "Hesabında en çok 5 cihaz şifreli mesajlaşabilir. Kullanmadığın bir oturumu kapatıp tekrar dene.",
+  "@e2e_cihaz_siniri_aciklama": {
+    "description": "Cihaz sınırı uyarısının açıklaması."
+  },
+  "e2e_oturumlari_ac": "Oturumları aç",
+  "@e2e_oturumlari_ac": {
+    "description": "Cihaz sınırı uyarısında Profil → Oturumlar ekranını açan düğme."
+  },
+  "e2e_hazirlanamadi": "Şifreli mesajlaşma hazırlanamadı. Bağlantını kontrol edip tekrar dene.",
+  "@e2e_hazirlanamadi": {
+    "description": "Şifreli mesajlaşma cihaz kaydı başarısız olunca birebir ekranlarında gösterilen uyarı."
+  },
+  "e2e_tekrar_dene": "Tekrar dene",
+  "@e2e_tekrar_dene": {
+    "description": "Şifreli mesajlaşma uyarılarında kaydı yeniden deneyen düğme."
   }
 }

@@ -6,10 +6,12 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/application/konusma_listesi_notifier.dart';
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
+import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/konusma_satiri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -66,6 +68,7 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (ref.watch(e2eEtkinProvider)) const E2eCihazUyarisi(),
         _IstekleriAc(sayi: istekSayisi),
         const Divider(),
         if (liste == null && hata != null) ...[

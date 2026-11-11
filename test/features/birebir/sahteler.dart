@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
@@ -136,10 +137,13 @@ SahteTayfaTasima birebirTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
 }
 
 /// Birebir uçlarını [tasima]'ya bağlayan override'lar; yenileme
-/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok.
+/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok. Uçtan uca
+/// şifreleme kapalıdır (düz sürüm yolu); E2E testleri kendi
+/// override'larını verir.
 List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) {
   final t = tasima ?? birebirTasimasi();
   return [
+    e2eEtkinProvider.overrideWithValue(false),
     birebirDeposuProvider.overrideWithValue(BirebirDeposu(t)),
     birebirYenilemeAraligiProvider.overrideWithValue(const Duration(days: 1)),
   ];
