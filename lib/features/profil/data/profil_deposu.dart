@@ -39,6 +39,16 @@ final class ProfilDeposu {
   Future<int> digerOturumlariKapat() async =>
       (await _me.revokeOtherSessions()).revokedCount;
 
+  /// `PUT /v1/me/avatar`: hazır `avatar` yüklemesini avatar yapar; yeni
+  /// avatarın kimliğini döndürür. Eski avatar sunucuda silinir.
+  Future<String> avatarAyarla(String uploadId) async {
+    final yanit = await _me.putAvatar(body: AvatarRequest(uploadId: uploadId));
+    return yanit.avatarUploadId;
+  }
+
+  /// `DELETE /v1/me/avatar` (dosya silinir).
+  Future<void> avatariKaldir() => _me.deleteAvatar();
+
   /// `GET /v1/users/{user_id}/profile`'ın `self` alanı: [kullaniciId]
   /// oturumdaki kullanıcının kendisi mi.
   Future<bool> kendisiMi(String kullaniciId) async =>

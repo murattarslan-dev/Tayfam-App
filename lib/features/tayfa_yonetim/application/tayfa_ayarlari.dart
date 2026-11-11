@@ -30,6 +30,10 @@ enum BilgiHatasi {
 /// Formdaki değerlerin [eski] tayfaya göre değişen alanları; değişiklik
 /// yoksa `null`. Yalnızca değişen alanlar gönderilir (sözleşme:
 /// `PATCH`'te gövdedeki alanlar değişir, en az bir alan gerekir).
+///
+/// [kapak] formdaki kapak yüklemesidir (`null`: kapak yok); verilmezse
+/// kapak değişmez. Kaldırılan kapak `""` olarak gönderilir (sözleşme;
+/// ADR-0021 §6).
 TayfaUpdateRequest? bilgiDegisiklikleri(
   Tayfa eski, {
   required String ad,
@@ -37,13 +41,17 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   required Set<EventType> ilgi,
   required JoinPolicy katilim,
   required bool uyeEtkinlikAcar,
+  Object? kapak = _kapakAyni,
 }) {
+  final kapakDegisti =
+      !identical(kapak, _kapakAyni) && kapak != eski.coverUploadId;
   final yeniAd = ad.trim();
   final yeniAciklama = aciklama.trim();
   final eskiIlgi = eski.interests.where(ilgiAlanlari.contains).toSet();
   final ilgiDegisti =
       eskiIlgi.length != ilgi.length || !eskiIlgi.containsAll(ilgi);
   final istek = TayfaUpdateRequest(
+    coverUploadId: kapakDegisti ? (kapak as String?) ?? '' : null,
     name: yeniAd == eski.name ? null : yeniAd,
     description: yeniAciklama == eski.description ? null : yeniAciklama,
     interests: ilgiDegisti
@@ -59,6 +67,8 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   );
   return istek.toJson().isEmpty ? null : istek;
 }
+
+const Object _kapakAyni = Object();
 
 /// Formdaki ad ve açıklamanın hatası; geçerliyse `null`.
 BilgiHatasi? bilgiHatasi({required String ad, required String aciklama}) {

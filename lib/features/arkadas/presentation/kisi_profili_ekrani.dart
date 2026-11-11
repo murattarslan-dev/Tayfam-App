@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart';
@@ -253,6 +254,14 @@ class _UstState extends ConsumerState<_Ust> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Center(
+            child: KullaniciAvatari(
+              ad: p.displayName,
+              avatarUploadId: p.avatarUploadId,
+              cap: TayfamSizes.avatarBuyuk,
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
           Text(p.displayName, style: context.yazi.headlineSmall),
           if (durumMetni != null) ...[
             const SizedBox(height: TayfamSpacing.s4),
