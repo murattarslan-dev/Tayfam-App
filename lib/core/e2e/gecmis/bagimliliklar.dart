@@ -9,6 +9,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -17,44 +18,67 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
-/// Bu oturumun E2E cihazı ve oturumdaki kullanıcı.
+/// Bu oturumun E2E cihazı ve oturumdaki kullanıcı (geçmiş katmanının
+/// gördüğü kadarı). E2'nin cihaz durumundan ve kimlik kaydından kurulur.
 @immutable
-final class E2eCihazBilgisi {
-  const E2eCihazBilgisi({required this.kullaniciId, required this.durum});
+final class GecmisCihazBilgisi {
+  GecmisCihazBilgisi({
+    required this.kullaniciId,
+    required this.cihazId,
+    required Uint8List kimlikAnahtari,
+    required this.eslestirilmis,
+    required this.baskaEslestirilmisVar,
+    required this.gecmisSurumu,
+    required this.yenilemeGerekli,
+  }) : kimlikAnahtari = Uint8List.fromList(kimlikAnahtari);
+
+  /// `GET /v1/me/e2e/device` cevabından.
+  factory GecmisCihazBilgisi.sunucudan({
+    required String kullaniciId,
+    required E2EDeviceState durum,
+  }) => GecmisCihazBilgisi(
+    kullaniciId: kullaniciId,
+    cihazId: durum.device.id,
+    kimlikAnahtari: base64.decode(durum.device.identityKey),
+    eslestirilmis: durum.device.paired,
+    baskaEslestirilmisVar: durum.otherPairedDevice,
+    gecmisSurumu: durum.historyKeyVersion,
+    yenilemeGerekli: durum.rotationNeeded,
+  );
 
   /// Oturumdaki kullanıcının kimliği (arşiv AAD'si ve kendi cihaz
   /// listesi için).
   final String kullaniciId;
 
-  /// `GET /v1/me/e2e/device` cevabı.
-  final E2EDeviceState durum;
+  /// Bu cihazın sunucudaki kimliği (`device.id`).
+  final String cihazId;
 
-  /// Bu cihazın sunucudaki kimliği.
-  String get cihazId => durum.device.id;
+  /// Bu cihazın Signal kimlik açık anahtarı (33 bayt; QR'a yazılır).
+  final Uint8List kimlikAnahtari;
 
-  /// Bu cihaz geçmiş anahtarını biliyor (arşive yazar ve okur).
-  bool get eslestirilmis => durum.device.paired;
+  /// `device.paired`: bu cihaz geçmiş anahtarını biliyor.
+  final bool eslestirilmis;
 
-  /// Hesabın eşleştirilmiş başka cihazı var.
-  bool get baskaEslestirilmisVar => durum.otherPairedDevice;
+  /// `other_paired_device`: hesabın eşleştirilmiş başka cihazı var.
+  final bool baskaEslestirilmisVar;
 
-  /// Hesabın güncel geçmiş anahtarı sürümü (0: henüz yok).
-  int get gecmisSurumu => durum.historyKeyVersion;
+  /// `history_key_version` (0: henüz yok).
+  final int gecmisSurumu;
 
-  /// Eşleştirilmiş bir cihaz kaldırıldı; anahtar yenilenmeli.
-  bool get yenilemeGerekli => durum.rotationNeeded;
+  /// `rotation_needed`: eşleştirilmiş bir cihaz kaldırıldı.
+  final bool yenilemeGerekli;
 }
 
 /// Cihaz durumunu yayınlayan kaynak (E2'nin cihaz kaydı katmanı).
 abstract interface class E2eCihazDurumuKaynagi {
   /// Son bilinen durum; cihaz kayıtlı değilse ya da E2E yoksa `null`.
-  E2eCihazBilgisi? get guncel;
+  GecmisCihazBilgisi? get guncel;
 
   /// Durum her değiştiğinde.
-  Stream<E2eCihazBilgisi?> get degisiklikler;
+  Stream<GecmisCihazBilgisi?> get degisiklikler;
 
   /// `GET /v1/me/e2e/device` ile yeniden okur, yayınlar ve döner.
-  Future<E2eCihazBilgisi?> tazele();
+  Future<GecmisCihazBilgisi?> tazele();
 }
 
 /// E2E'nin güvenli deposu (E2: `flutter_secure_storage`, ayrı
@@ -175,13 +199,13 @@ final class E2eYok
   const E2eYok();
 
   @override
-  E2eCihazBilgisi? get guncel => null;
+  GecmisCihazBilgisi? get guncel => null;
 
   @override
-  Stream<E2eCihazBilgisi?> get degisiklikler => const Stream.empty();
+  Stream<GecmisCihazBilgisi?> get degisiklikler => const Stream.empty();
 
   @override
-  Future<E2eCihazBilgisi?> tazele() async => null;
+  Future<GecmisCihazBilgisi?> tazele() async => null;
 
   @override
   Stream<ArsivlenecekMesaj> get mesajlar => const Stream.empty();

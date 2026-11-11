@@ -149,7 +149,7 @@ final class EslemeServisi {
     final qr = EslemeQr(
       istekId: istek.linkRequestId,
       cihazId: bilgi.cihazId,
-      kimlikAnahtari: base64.decode(bilgi.durum.device.identityKey),
+      kimlikAnahtari: bilgi.kimlikAnahtari,
       kod: Uint8List.fromList([
         for (var i = 0; i < dogrulamaKoduUzunlugu; i++) rastgele.nextInt(256),
       ]),

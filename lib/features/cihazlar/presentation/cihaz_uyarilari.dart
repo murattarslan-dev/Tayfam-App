@@ -21,7 +21,7 @@ class CihazBaglamaGirisi extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
-    final bilgi = ref.watch(e2eCihazBilgisiProvider);
+    final bilgi = ref.watch(gecmisCihazBilgisiProvider);
     if (bilgi == null) return const SizedBox.shrink();
     if (bilgi.eslestirilmis) {
       return ListTile(

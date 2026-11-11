@@ -81,9 +81,10 @@ void main() {
       }
       await pumpEventQueue();
       final giden = o.tasima.giden(arsivYaz);
-      expect([
-        for (final g in giden) (g.json['entries']! as List<Object?>).length,
-      ], [50, 50, 20]);
+      expect(
+        [for (final g in giden) (g.json['entries']! as List<Object?>).length],
+        [50, 50, 20],
+      );
       expect(giden.first.json['history_key_version'], 1);
       expect(o.yazici.bekleyen, 0);
     });
@@ -122,9 +123,8 @@ void main() {
         'yazılır', () async {
       var ilk = true;
       final paylasim = kendiCihazPaketi(
-        await SahteKendiOturum(
-          cihazB,
-        ).sifrele(cihazA, paylasimDuzMetni({2: anahtar(2)})),
+        await SahteKendiOturum(cihazB)
+            .sifrele(cihazA, paylasimDuzMetni({2: anahtar(2)})),
       );
       final o = _Ortam(
         tasima: SahteTasima({

@@ -30,14 +30,14 @@ String mesajId(int i) =>
     '00000000-0000-4000-8000-${i.toRadixString(16).padLeft(12, '0')}';
 
 /// `E2EDeviceState` (sahte).
-E2eCihazBilgisi bilgi({
+GecmisCihazBilgisi bilgi({
   String cihaz = cihazA,
   bool eslesmis = true,
   bool baska = false,
   int surum = 1,
   bool yenile = false,
   int kimlikNo = 1,
-}) => E2eCihazBilgisi(
+}) => GecmisCihazBilgisi.sunucudan(
   kullaniciId: kullaniciId,
   durum: E2EDeviceState.fromJson({
     'device': {
@@ -81,26 +81,26 @@ final class BellekE2eDepo implements E2eDepoErisimi {
 final class SahteKaynak implements E2eCihazDurumuKaynagi {
   SahteKaynak(this._guncel);
 
-  E2eCihazBilgisi? _guncel;
-  E2eCihazBilgisi? Function()? sonraki;
+  GecmisCihazBilgisi? _guncel;
+  GecmisCihazBilgisi? Function()? sonraki;
   int tazelemeSayisi = 0;
-  final StreamController<E2eCihazBilgisi?> _akis = StreamController.broadcast(
+  final StreamController<GecmisCihazBilgisi?> _akis = StreamController.broadcast(
     sync: true,
   );
 
-  void yayinla(E2eCihazBilgisi? b) {
+  void yayinla(GecmisCihazBilgisi? b) {
     _guncel = b;
     _akis.add(b);
   }
 
   @override
-  E2eCihazBilgisi? get guncel => _guncel;
+  GecmisCihazBilgisi? get guncel => _guncel;
 
   @override
-  Stream<E2eCihazBilgisi?> get degisiklikler => _akis.stream;
+  Stream<GecmisCihazBilgisi?> get degisiklikler => _akis.stream;
 
   @override
-  Future<E2eCihazBilgisi?> tazele() async {
+  Future<GecmisCihazBilgisi?> tazele() async {
     tazelemeSayisi++;
     final s = sonraki;
     if (s != null) yayinla(s());

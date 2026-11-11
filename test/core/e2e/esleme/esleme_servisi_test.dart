@@ -131,24 +131,27 @@ void main() {
     await eski.anahtarlar.yaz(2, anahtar(2));
   });
 
-  test('iki cihaz: QR → cevap → çöz → anahtarlar yeni cihazda → tamamla', () async {
-    final oturum = await yeni.servis.baslat();
-    expect(oturum.qr.cihazId, cihazB);
-    expect(oturum.qr.kimlikAnahtari, kimlik(2));
-    expect(await yeni.servis.cevabiAl(oturum), isFalse);
+  test(
+    'iki cihaz: QR → cevap → çöz → anahtarlar yeni cihazda → tamamla',
+    () async {
+      final oturum = await yeni.servis.baslat();
+      expect(oturum.qr.cihazId, cihazB);
+      expect(oturum.qr.kimlikAnahtari, kimlik(2));
+      expect(await yeni.servis.cevabiAl(oturum), isFalse);
 
-    await eski.servis.cevapla(oturum.qr.kodla());
-    expect(eski.oturum.sifrelenen, [cihazB]);
-    expect(sunucu.cevapSurumu, 2);
-    // Cevap opak: tür baytı + şifreli; QR kodu düz görünmez.
-    final paket = base64.decode(sunucu.cevap!);
-    expect(paket.first, 3);
+      await eski.servis.cevapla(oturum.qr.kodla());
+      expect(eski.oturum.sifrelenen, [cihazB]);
+      expect(sunucu.cevapSurumu, 2);
+      // Cevap opak: tür baytı + şifreli; QR kodu düz görünmez.
+      final paket = base64.decode(sunucu.cevap!);
+      expect(paket.first, 3);
 
-    expect(await yeni.servis.cevabiAl(oturum), isTrue);
-    expect(await yeni.anahtarlar.hepsi(), {1: anahtar(1), 2: anahtar(2)});
-    expect(sunucu.tamamlandi, isTrue);
-    expect(yeni.kaynak.tazelemeSayisi, 1);
-  });
+      expect(await yeni.servis.cevabiAl(oturum), isTrue);
+      expect(await yeni.anahtarlar.hepsi(), {1: anahtar(1), 2: anahtar(2)});
+      expect(sunucu.tamamlandi, isTrue);
+      expect(yeni.kaynak.tazelemeSayisi, 1);
+    },
+  );
 
   test('QR\'daki kimlik sunucunun listesindekiyle aynı değilse hiçbir şey '
       'gönderilmez', () async {
@@ -163,16 +166,19 @@ void main() {
     expect(sunucu.cevap, isNull);
   });
 
-  test('ön anahtar paketindeki kimlik QR\'dakinden farklıysa reddedilir', () async {
-    kur(paketteBKimligi: kimlik(9));
-    await eski.anahtarlar.yaz(2, anahtar(2));
-    final oturum = await yeni.servis.baslat();
-    await expectLater(
-      eski.servis.cevapla(oturum.qr.kodla()),
-      _hata(EslemeHataTuru.anahtarUyusmuyor),
-    );
-    expect(sunucu.cevap, isNull);
-  });
+  test(
+    'ön anahtar paketindeki kimlik QR\'dakinden farklıysa reddedilir',
+    () async {
+      kur(paketteBKimligi: kimlik(9));
+      await eski.anahtarlar.yaz(2, anahtar(2));
+      final oturum = await yeni.servis.baslat();
+      await expectLater(
+        eski.servis.cevapla(oturum.qr.kodla()),
+        _hata(EslemeHataTuru.anahtarUyusmuyor),
+      );
+      expect(sunucu.cevap, isNull);
+    },
+  );
 
   test('listede olmayan cihaz ve kendi QR\'ı reddedilir', () async {
     final yabanci = EslemeQr(

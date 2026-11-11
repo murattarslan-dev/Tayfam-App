@@ -88,9 +88,9 @@ final gecmisServisleriProvider = Provider<GecmisServisleri>((ref) {
 }, name: 'gecmisServisleriProvider');
 
 /// Cihaz durumunun Riverpod yansıması (arayüz ve uyarılar için).
-final class E2eCihazBilgisiNotifier extends Notifier<E2eCihazBilgisi?> {
+final class GecmisCihazBilgisiNotifier extends Notifier<GecmisCihazBilgisi?> {
   @override
-  E2eCihazBilgisi? build() {
+  GecmisCihazBilgisi? build() {
     ref.watch(oturumDurumuProvider);
     final kaynak = ref.watch(e2eCihazDurumuKaynagiProvider);
     final abonelik = kaynak.degisiklikler.listen((b) => state = b);
@@ -100,24 +100,24 @@ final class E2eCihazBilgisiNotifier extends Notifier<E2eCihazBilgisi?> {
 }
 
 /// Bu cihazın E2E durumu; E2E yoksa `null`.
-final e2eCihazBilgisiProvider =
-    NotifierProvider<E2eCihazBilgisiNotifier, E2eCihazBilgisi?>(
-      E2eCihazBilgisiNotifier.new,
-      name: 'e2eCihazBilgisiProvider',
+final gecmisCihazBilgisiProvider =
+    NotifierProvider<GecmisCihazBilgisiNotifier, GecmisCihazBilgisi?>(
+      GecmisCihazBilgisiNotifier.new,
+      name: 'gecmisCihazBilgisiProvider',
     );
 
 /// Bu telefon geçmiş anahtarını taşıyan tek cihaz mı (`paired &&
 /// !other_paired_device`): çıkış onayında ek uyarı ve ilk E2E açılışında
 /// bir kez bilgi gösterilir (araştırma §3.11).
 final tekCihazUyarisiProvider = Provider<bool>((ref) {
-  final bilgi = ref.watch(e2eCihazBilgisiProvider);
+  final bilgi = ref.watch(gecmisCihazBilgisiProvider);
   return bilgi != null && bilgi.eslestirilmis && !bilgi.baskaEslestirilmisVar;
 }, name: 'tekCihazUyarisiProvider');
 
 /// Bu cihaz eşleştirilmemiş ve hesabın eşleştirilmiş başka cihazı var:
 /// "Bu cihazı bağla" (QR göster) önerilir.
 final qrOnerisiProvider = Provider<bool>((ref) {
-  final bilgi = ref.watch(e2eCihazBilgisiProvider);
+  final bilgi = ref.watch(gecmisCihazBilgisiProvider);
   return bilgi != null && !bilgi.eslestirilmis && bilgi.baskaEslestirilmisVar;
 }, name: 'qrOnerisiProvider');
 
@@ -166,7 +166,7 @@ final class GecmisYoneticisi extends Notifier<GecmisDurumu> {
   /// "Eski mesajlar okunamaz" bilgisi gösterildi.
   void eskiArsivBilgisiGoruldu() => state = const GecmisDurumu();
 
-  void _durumDegisti(E2eCihazBilgisi? bilgi) {
+  void _durumDegisti(GecmisCihazBilgisi? bilgi) {
     if (bilgi == null) return;
     if (!bilgi.eslestirilmis) {
       if (!bilgi.baskaEslestirilmisVar) unawaited(_guvenli(_ilkCihaz));
@@ -231,7 +231,7 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
 
   @override
   Future<KonusmaArsivi> build() async {
-    final bilgi = ref.watch(e2eCihazBilgisiProvider);
+    final bilgi = ref.watch(gecmisCihazBilgisiProvider);
     if (bilgi == null) return const KonusmaArsivi.yok();
     return ref.read(gecmisServisleriProvider).okuyucu.oku(konusmaId);
   }

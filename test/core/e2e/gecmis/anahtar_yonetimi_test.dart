@@ -52,7 +52,10 @@ void main() {
 
     test('eşleştirilmiş cihaz yoksa 32 bayt üretilir, depoya yazılır, '
         'sürüm bildirilir', () async {
-      kur(() => bilgi(eslesmis: false, surum: 0), (_) => {'history_key_version': 1});
+      kur(
+        () => bilgi(eslesmis: false, surum: 0),
+        (_) => {'history_key_version': 1},
+      );
       final sonuc = await kurulum.kur();
       expect(sonuc, isA<IlkCihazAnahtarAldi>());
       expect((sonuc as IlkCihazAnahtarAldi).eskiArsivOkunamaz, isFalse);
@@ -64,14 +67,20 @@ void main() {
     });
 
     test('önceki sürüm varsa eski arşiv bu cihazda okunamaz', () async {
-      kur(() => bilgi(eslesmis: false, surum: 3), (_) => {'history_key_version': 4});
+      kur(
+        () => bilgi(eslesmis: false, surum: 3),
+        (_) => {'history_key_version': 4},
+      );
       final sonuc = await kurulum.kur() as IlkCihazAnahtarAldi;
       expect(sonuc.eskiArsivOkunamaz, isTrue);
       expect((await anahtarlar.hepsi()).keys, [4]);
     });
 
     test('sunucu başka sürüm verirse anahtar o sürüme taşınır', () async {
-      kur(() => bilgi(eslesmis: false, surum: 3), (_) => {'history_key_version': 5});
+      kur(
+        () => bilgi(eslesmis: false, surum: 3),
+        (_) => {'history_key_version': 5},
+      );
       await kurulum.kur();
       expect((await anahtarlar.hepsi()).keys, [5]);
     });
@@ -167,9 +176,7 @@ void main() {
       );
       final tasimaB = SahteTasima({
         paylasimlarUc: (_) => {
-          'shares': [
-            _paylasim(istekId, cihazA, 4, base64.decode(paylasimB)),
-          ],
+          'shares': [_paylasim(istekId, cihazA, 4, base64.decode(paylasimB))],
         },
         paylasimOnay: (_) => null,
       });
@@ -184,34 +191,40 @@ void main() {
       expect(tasimaB.giden(paylasimOnay).single.json['share_ids'], [istekId]);
     });
 
-    test('stale yarışı: aday silinir, öteki cihazın paylaşımı alınır', () async {
-      final oteki = kendiCihazPaketi(
-        await SahteKendiOturum(cihazB)
-            .sifrele(cihazA, paylasimDuzMetni({4: anahtar(44)})),
-      );
-      kur({
-        yenileUc: (_) => problem(ProblemType.e2eHistoryKeyStale),
-        paylasimlarUc: (_) => {
-          'shares': [_paylasim(istekId, cihazB, 4, oteki)],
-        },
-        paylasimOnay: (_) => null,
-      });
-      expect(await yenileyici.yenile(), YenilemeSonucu.baskaCihazYeniledi);
-      expect(await anahtarlarA.oku(4), anahtar(44));
-      expect(kaynakA.tazelemeSayisi, 1);
-    });
+    test(
+      'stale yarışı: aday silinir, öteki cihazın paylaşımı alınır',
+      () async {
+        final oteki = kendiCihazPaketi(
+          await SahteKendiOturum(cihazB)
+              .sifrele(cihazA, paylasimDuzMetni({4: anahtar(44)})),
+        );
+        kur({
+          yenileUc: (_) => problem(ProblemType.e2eHistoryKeyStale),
+          paylasimlarUc: (_) => {
+            'shares': [_paylasim(istekId, cihazB, 4, oteki)],
+          },
+          paylasimOnay: (_) => null,
+        });
+        expect(await yenileyici.yenile(), YenilemeSonucu.baskaCihazYeniledi);
+        expect(await anahtarlarA.oku(4), anahtar(44));
+        expect(kaynakA.tazelemeSayisi, 1);
+      },
+    );
 
-    test('cihaz kümesi oturmazsa (3 tekrar) vazgeçilir, aday silinir', () async {
-      kur({
-        yenileUc: (_) => problem(
-          ProblemType.e2eDevicesChanged,
-          fark: const E2eCihazFarki(eksik: [cihazB], eski: [cihazB]),
-        ),
-      });
-      expect(await yenileyici.yenile(), YenilemeSonucu.basarisiz);
-      expect(tasimaA.giden(yenileUc), hasLength(yenilemeTekrarEnCok + 1));
-      expect(await anahtarlarA.oku(4), isNull);
-    });
+    test(
+      'cihaz kümesi oturmazsa (3 tekrar) vazgeçilir, aday silinir',
+      () async {
+        kur({
+          yenileUc: (_) => problem(
+            ProblemType.e2eDevicesChanged,
+            fark: const E2eCihazFarki(eksik: [cihazB], eski: [cihazB]),
+          ),
+        });
+        expect(await yenileyici.yenile(), YenilemeSonucu.basarisiz);
+        expect(tasimaA.giden(yenileUc), hasLength(yenilemeTekrarEnCok + 1));
+        expect(await anahtarlarA.oku(4), isNull);
+      },
+    );
 
     test('sonucu bilinmeyen istekte (bağlantı koptu) aday korunur', () async {
       kur({yenileUc: (_) => const ApiOffline()});
@@ -261,7 +274,9 @@ void main() {
     });
 
     test('paylaşım yoksa onay isteği atılmaz', () async {
-      final tasima = SahteTasima({paylasimlarUc: (_) => {'shares': []}});
+      final tasima = SahteTasima({
+        paylasimlarUc: (_) => {'shares': []},
+      });
       final alici = PaylasimAlici(
         api: GecmisApi(tasima),
         oturum: SahteKendiOturum(cihazA),
@@ -288,4 +303,4 @@ void main() {
 }
 
 /// Testte cihaz bilgisi üreten fonksiyon.
-typedef E2eBilgisiUretici = E2eCihazBilgisi Function();
+typedef E2eBilgisiUretici = GecmisCihazBilgisi Function();
