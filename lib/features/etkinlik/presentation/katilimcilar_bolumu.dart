@@ -5,8 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
-import 'package:tayfam/features/etkinlik/application/etkinlik_listesi.dart';
+import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -82,8 +83,8 @@ class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {
               ),
             for (final katilimci in sayfali.ogeler)
               _KatilimciSatiri(katilimci: katilimci),
-            if (sayfali.hata case final hata?) HataSatiri.hatadan(hata),
-            if (sayfali.yukleniyor)
+            if (sayfali.dahaHatasi case final hata?) HataSatiri.hatadan(hata),
+            if (sayfali.dahaYukleniyor)
               const Center(child: CircularProgressIndicator())
             else if (sayfali.dahaVar)
               Align(
@@ -117,22 +118,24 @@ class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {
   }
 }
 
-class _KatilimciSatiri extends ConsumerWidget {
+class _KatilimciSatiri extends StatelessWidget {
   const _KatilimciSatiri({required this.katilimci});
 
   final Attendee katilimci;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    final ad =
-        ref.watch(kullaniciAdiProvider(katilimci.userId)).value ??
-        m.etkinlik_uye;
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
       child: Row(
         children: [
-          Expanded(child: Text(ad, style: context.yazi.bodyLarge)),
+          Expanded(
+            child: KullaniciAdiMetni(
+              kullaniciId: katilimci.userId,
+              style: context.yazi.bodyLarge,
+            ),
+          ),
           if (katilimci.attendance == AttendanceStatus.attended)
             Etiket(metin: m.etkinlik_katildi),
         ],

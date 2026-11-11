@@ -63,93 +63,46 @@ Future<void> _yaz(WidgetTester tester, String metin) async {
 
 void main() {
   group('etkinlik listesi', () {
-    for (final tema in _temalar) {
-      testWidgets('kartlar, iptal etiketi ve sayfalama (${tema.name})', (
-        tester,
-      ) async {
-        ekranBoyutu(tester, genislik: 320);
-        ikiKatYazi(tester);
-        final tasima = etkinlikTasimasi({
-          'GET $etkinliklerYolu': (i) => i.sorgu['page_token'] == null
-              ? etkinlikListesiJson([
-                  etkinlikJson(cevap: 'going', kontenjan: 20, gelen: 8),
-                ], sonraki: 'sonraki-sayfa')
-              : etkinlikListesiJson([
-                  etkinlikJson(
-                    id: ikinciEtkinlikId,
-                    tur: 'gaming',
-                    mod: 'online',
-                    baslik: 'Oyun gecesi',
-                    iptal: true,
-                  ),
-                ]),
-        });
-        await _git(
-          tester,
-          tasima,
-          Adresler.etkinlikler(ornekTayfaId),
-          themeMode: tema,
-        );
-
-        expect(find.byType(EtkinliklerEkrani), findsOneWidget);
-        expect(find.text('Göl kampı'), findsOneWidget);
-        expect(find.text('Abant Gölü'), findsOneWidget);
-        expect(find.text('8 / 20 kişi geliyor'), findsOneWidget);
-        expect(find.text('Cevabın: Geliyorum'), findsOneWidget);
-        expect(
-          find.text(arbMetni('etkinlik_ac')),
-          findsNothing,
-          reason: 'üye, tayfada üyeler etkinlik açamıyor',
-        );
-
-        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_daha_fazla')));
-        final sayfalar = tasima.giden('GET', etkinliklerYolu);
-        expect(sayfalar, hasLength(2));
-        expect(sayfalar[0].sorgu, {'page_size': '20'});
-        expect(sayfalar[1].sorgu, {
-          'page_size': '20',
-          'page_token': 'sonraki-sayfa',
-        });
-        await tester.scrollUntilVisible(
-          find.text('Oyun gecesi'),
-          200,
-          scrollable: find.byType(Scrollable).first,
-        );
-        expect(find.text(arbMetni('etkinlik_iptal_edildi')), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_cevrimici')), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_daha_fazla')), findsNothing);
-      });
-    }
-
-    testWidgets('yöneticiye "Etkinlik aç"; boş durum; karta dokununca detay', (
+    testWidgets('yöneticiye "Etkinlik aç"; karta dokununca detay', (
       tester,
     ) async {
-      ekranBoyutu(tester);
-      var bos = true;
+      ekranBoyutu(tester, genislik: 320);
+      ikiKatYazi(tester);
       final tasima = etkinlikTasimasi({
         'GET /v1/tayfas/{tayfa_id}': (_) =>
             gorunumJson(ornekTayfaId, rol: 'admin'),
-        'GET $etkinliklerYolu': (_) =>
-            etkinlikListesiJson(bos ? const [] : [etkinlikJson()]),
       });
       await _git(tester, tasima, Adresler.etkinlikler(ornekTayfaId));
 
-      expect(find.text(arbMetni('etkinlik_liste_bos')), findsOneWidget);
-      expect(find.text(arbMetni('etkinlik_ac')), findsOneWidget);
-
-      bos = false;
-      await tester.fling(
-        find.byType(Scrollable).first,
-        const Offset(0, 400),
-        1000,
+      expect(find.byType(EtkinliklerEkrani), findsOneWidget);
+      expect(
+        find.widgetWithText(
+          FloatingActionButton,
+          arbMetni('tayfa_ana_etkinlik_ac'),
+        ),
+        findsOneWidget,
       );
-      await tester.pumpAndSettle();
-      expect(find.text('Göl kampı'), findsOneWidget);
 
       await tester.tap(find.text('Göl kampı'));
       await tester.pumpAndSettle();
       expect(_yol(tester), Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
       expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
+    });
+
+    testWidgets('üyeye "Etkinlik aç" yok; sihirbaz adresiyle açılır', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _git(
+        tester,
+        etkinlikTasimasi(),
+        Adresler.etkinlikler(ornekTayfaId),
+      );
+      expect(find.byType(FloatingActionButton), findsNothing);
+
+      yonlendiriciyiAl(tester).go(Adresler.etkinlikOlustur(ornekTayfaId));
+      await tester.pumpAndSettle();
+      expect(find.byType(EtkinlikSihirbaziEkrani), findsOneWidget);
     });
   });
 
@@ -333,7 +286,7 @@ void main() {
       expect(tasima.giden('POST', iptalYolu).single.govde, {
         'reason': 'Hava kötü',
       });
-      expect(find.text(arbMetni('etkinlik_iptal_edildi')), findsOneWidget);
+      expect(find.text(arbMetni('etkinlik_karti_iptal')), findsOneWidget);
       expect(find.text('İptal gerekçesi: Hava kötü'), findsOneWidget);
       expect(find.byTooltip(arbMetni('etkinlik_islemler')), findsNothing);
     });

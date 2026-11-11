@@ -2,13 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/misc.dart';
 
+import 'package:tayfam/core/api/gen/apis/users_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
-import 'package:tayfam/features/etkinlik/data/etkinlik_islemleri.dart';
+import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
 
@@ -240,7 +242,11 @@ List<Override> etkinlikOverridelari({
   KaroSaglayiciUretici? karolar,
 }) => [
   ...tayfaOverridelari(tasima: tasima),
-  etkinlikIslemleriProvider.overrideWithValue(EtkinlikIslemleri(tasima)),
+  etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
+  profilOkuyucuProvider.overrideWithValue(
+    (id) async =>
+        (await UsersApi(tasima).getUserProfile(userId: id)).displayName,
+  ),
   etkinlikSaatiProvider.overrideWithValue(() => sabitSimdi),
   karoSaglayiciProvider.overrideWithValue(karolar ?? (() => null)),
   takvimPaylasiciProvider.overrideWithValue(takvim ?? SahteTakvimPaylasici()),

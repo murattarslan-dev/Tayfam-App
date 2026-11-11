@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
 
@@ -27,10 +28,26 @@ class TayfaGorunumuNotifier extends AsyncNotifier<TayfaView> {
     try {
       return await depo.tayfa(tayfaId);
     } on ApiProblem catch (problem) {
-      if (problem.type == ProblemType.tayfaNotFound && ref.mounted) {
-        unawaited(ref.read(tayfalarimProvider.notifier).yenile());
-      }
+      _bulunamadiysaListeyiYenile(problem);
       rethrow;
+    }
+  }
+
+  /// Görünümü yeniden okur (ana sayfa aşağı çekilince). Okunamazsa eldeki
+  /// görünüm kalır; elde görünüm yoksa hata gösterilir.
+  Future<void> yenile() async {
+    try {
+      final gorunum = await ref.read(tayfaDeposuProvider).tayfa(tayfaId);
+      if (ref.mounted) state = AsyncData(gorunum);
+    } on Exception catch (hata, yigin) {
+      if (hata is ApiProblem) _bulunamadiysaListeyiYenile(hata);
+      if (ref.mounted && !state.hasValue) state = AsyncError(hata, yigin);
+    }
+  }
+
+  void _bulunamadiysaListeyiYenile(ApiProblem problem) {
+    if (problem.type == ProblemType.tayfaNotFound && ref.mounted) {
+      unawaited(ref.read(tayfalarimProvider.notifier).yenile());
     }
   }
 }
@@ -45,17 +62,39 @@ final tayfaGorunumuProvider = AsyncNotifierProvider.autoDispose
 
 Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
 
-/// Ana sayfanın üst bölümünde gösterilen tayfa bilgisi: ad, üye sayısı,
-/// durum ve (yalnızca yöneticiye dönen) katılım kodu.
+/// Ana sayfada gösterilen tayfa bilgisi: ad, üye sayısı, durum, (yalnızca
+/// yöneticiye dönen) katılım kodu, kullanıcının rolü ve açık modüller.
+///
+/// Rol ve modüller arayüzü sadeleştirmek içindir; bir işlemin yapılıp
+/// yapılamayacağına sunucu karar verir (kesin kural 5).
 @immutable
 final class TayfaOzeti {
-  const TayfaOzeti({this.ad, this.tayfa});
+  const TayfaOzeti({this.ad, this.tayfa, this.rol});
 
   /// Tayfanın adı; bilinmiyorsa `null`.
   final String? ad;
 
   /// Tam tayfa bilgisi; henüz bilinmiyorsa `null`.
   final Tayfa? tayfa;
+
+  /// Kullanıcının bu tayfadaki rolü; bilinmiyorsa `null`.
+  final Role? rol;
+
+  /// Kullanıcı moderatör ya da yönetici: duyuru yazma, düzenleme,
+  /// sabitleme ve silme düğmeleri gösterilir (ADR-0015 §2).
+  bool get yonetimde => rol == Role.moderator || rol == Role.admin;
+
+  /// "Etkinlik aç" gösterilir: moderatör, yönetici ya da tayfada
+  /// `members_can_create_events` açıksa her üye (sözleşme).
+  bool get etkinlikAcabilir =>
+      yonetimde || (tayfa?.membersCanCreateEvents ?? false);
+
+  /// Sunucunun açık dediği modüllerin anahtarları; tayfa bilinmiyorsa boş.
+  Set<String> get acikModuller {
+    final tayfa = this.tayfa;
+    if (tayfa == null) return const {};
+    return acikModulAnahtarlari(tayfa.modules);
+  }
 
   /// Paylaşılacak katılım kodu; yalnızca yöneticiye döner (sözleşme). Kod
   /// yoksa paylaşım düğmesi görünmez; bu bir kolaylıktır, yetki kararı
@@ -75,7 +114,12 @@ final tayfaOzetiProvider = Provider.autoDispose.family<TayfaOzeti, String>((
   final listedeki = _listedeBul(ref.watch(tayfalarimProvider).value, tayfaId);
   final tayfa = gorunum?.tayfa ?? listedeki?.tayfa;
   final ad = tayfa?.name ?? listedeki?.name;
-  return TayfaOzeti(ad: ad == null || ad.isEmpty ? null : ad, tayfa: tayfa);
+  final rol = gorunum?.callerRole ?? listedeki?.role;
+  return TayfaOzeti(
+    ad: ad == null || ad.isEmpty ? null : ad,
+    tayfa: tayfa,
+    rol: rol == Role.unknown ? null : rol,
+  );
 }, name: 'tayfaOzetiProvider');
 
 MyTayfa? _listedeBul(List<MyTayfa>? liste, String tayfaId) {

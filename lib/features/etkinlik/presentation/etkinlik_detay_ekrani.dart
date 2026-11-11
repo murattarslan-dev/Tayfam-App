@@ -8,12 +8,13 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
-import 'package:tayfam/features/etkinlik/application/etkinlik_listesi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
+import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilimcilar_bolumu.dart';
@@ -177,7 +178,6 @@ class _Detay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
-    final simdi = ref.watch(etkinlikSaatiProvider)();
     final iptal = iptalEdildi(etkinlik);
     final gerekce = etkinlik.cancelReason;
     final aciklama = etkinlik.description.trim();
@@ -188,7 +188,7 @@ class _Detay extends ConsumerWidget {
             turler,
             etkinlik.type.wire,
           )?.aracBolumu(context, etkinlik.id);
-    final ayrintilar = _ayrintiSatirlari(m, etkinlik, simdi);
+    final ayrintilar = _ayrintiSatirlari(m, etkinlik);
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
@@ -199,7 +199,7 @@ class _Detay extends ConsumerWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             EtkinlikTuruCipi(tur: etkinlik.type),
-            if (iptal) Etiket(metin: m.etkinlik_iptal_edildi),
+            if (iptal) Etiket(metin: m.etkinlik_karti_iptal),
           ],
         ),
         const SizedBox(height: TayfamSpacing.s12),
@@ -209,12 +209,7 @@ class _Detay extends ConsumerWidget {
         ),
         const SizedBox(height: TayfamSpacing.s8),
         Text(
-          etkinlikZamanAraligi(
-            m,
-            etkinlik.startsAt,
-            etkinlik.endsAt,
-            simdi: simdi,
-          ),
+          etkinlikZamanAraligi(m, etkinlik.startsAt, etkinlik.endsAt),
           style: context.yazi.bodyLarge,
         ),
         if (iptal && gerekce != null && gerekce.trim().isNotEmpty) ...[
@@ -271,11 +266,7 @@ class _Detay extends ConsumerWidget {
 }
 
 /// Türe özel bilgiler (yalnızca okunur; ADR-0015 §3).
-List<(String, String)> _ayrintiSatirlari(
-  AppLocalizations m,
-  Event e,
-  DateTime simdi,
-) {
+List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
   final satirlar = <(String, String)>[];
   void ekle(String etiket, String? deger) {
     if (deger != null && deger.trim().isNotEmpty) {
@@ -309,7 +300,7 @@ List<(String, String)> _ayrintiSatirlari(
     }
     final donus = hike.expectedReturnAt;
     if (donus != null) {
-      ekle(m.etkinlik_yuruyus_donus, etkinlikZamani(m, donus, simdi: simdi));
+      ekle(m.etkinlik_yuruyus_donus, etkinlikZamani(m, donus));
     }
     final tolerans = hike.returnGraceMinutes;
     if (tolerans != null && tolerans > 0) {
@@ -384,19 +375,21 @@ class _BilgiSatiri extends StatelessWidget {
   }
 }
 
-class _Organizator extends ConsumerWidget {
+class _Organizator extends StatelessWidget {
   const _Organizator({required this.kullaniciId});
 
   final String? kullaniciId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final m = AppLocalizations.of(context);
+  Widget build(BuildContext context) {
     final id = kullaniciId;
-    final ad = id == null
-        ? m.etkinlik_organizator_yok
-        : ref.watch(kullaniciAdiProvider(id)).value ?? m.etkinlik_uye;
-    return Text(ad, style: context.yazi.bodyLarge);
+    if (id == null) {
+      return Text(
+        AppLocalizations.of(context).etkinlik_organizator_yok,
+        style: context.yazi.bodyLarge,
+      );
+    }
+    return KullaniciAdiMetni(kullaniciId: id, style: context.yazi.bodyLarge);
   }
 }
 
@@ -597,7 +590,7 @@ class _CevrimiciBolumu extends ConsumerWidget {
       children: [
         _Baslik(metin: m.etkinlik_baglanti_baslik),
         const SizedBox(height: TayfamSpacing.s8),
-        Text(m.etkinlik_cevrimici, style: context.yazi.bodyLarge),
+        Text(m.etkinlik_karti_cevrimici, style: context.yazi.bodyLarge),
         if (baglanti != null && baglanti.isNotEmpty) ...[
           const SizedBox(height: TayfamSpacing.s4),
           SelectableText(

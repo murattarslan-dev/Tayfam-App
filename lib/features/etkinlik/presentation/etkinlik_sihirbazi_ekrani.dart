@@ -208,11 +208,11 @@ class _EtkinlikSihirbaziEkraniState
     _ilce.text = yer.ilce;
   }
 
+  /// Tarih ve saat seçtirir; seçim cihazın saatidir, UTC'ye çevrilir.
   Future<DateTime?> _tarihSaatSec(DateTime? mevcut) async {
-    final simdi = ref.read(etkinlikSaatiProvider)();
-    final bugun = istanbulSaatine(simdi);
-    final baslangic = istanbulSaatine(mevcut ?? simdi.add(varsayilanSure));
-    final ilkGun = DateTime(bugun.year, bugun.month, bugun.day);
+    final simdi = ref.read(etkinlikSaatiProvider)().toLocal();
+    final baslangic = (mevcut ?? simdi.add(varsayilanSure)).toLocal();
+    final ilkGun = DateTime(simdi.year, simdi.month, simdi.day);
     final secilen = DateTime(baslangic.year, baslangic.month, baslangic.day);
     final gun = await showDatePicker(
       context: context,
@@ -226,17 +226,17 @@ class _EtkinlikSihirbaziEkraniState
       initialTime: TimeOfDay(hour: baslangic.hour, minute: baslangic.minute),
     );
     if (saat == null) return null;
-    return istanbulSaatinden(
+    return DateTime(
       gun.year,
       gun.month,
       gun.day,
       saat.hour,
       saat.minute,
-    );
+    ).toUtc();
   }
 
   Future<void> _sonGunSec() async {
-    final simdi = istanbulSaatine(ref.read(etkinlikSaatiProvider)());
+    final simdi = ref.read(etkinlikSaatiProvider)().toLocal();
     final ilkGun = DateTime(simdi.year, simdi.month, simdi.day);
     final mevcut = _t.tekrar?.sonGun;
     final gun = await showDatePicker(
@@ -468,12 +468,6 @@ class _EtkinlikSihirbaziEkraniState
                   if (secilen != null) _n.bitisAyarla(secilen);
                 },
         ),
-        const SizedBox(height: TayfamSpacing.s8),
-        Text(
-          m.etkinlik_saatler_turkiye,
-          style: context.yazi.bodySmall?.copyWith(
-            color: context.renkler.metinIkincil,
-          ),
         ),
       ],
     );

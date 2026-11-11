@@ -1,44 +1,32 @@
 import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
+import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Etkinlik zamanı: gün, ay, haftanın günü ve saat, Türkiye saatiyle
-/// (ADR-0015 §3; ADR-0008: `tr_TR`). Cihaz başka bir saat dilimindeyse
-/// "Türkiye saati" belirtilir.
-String etkinlikZamani(
-  AppLocalizations m,
-  DateTime an, {
-  required DateTime simdi,
-}) {
-  final metin = DateFormat.MMMMEEEEd(m.localeName)
-      .add_Hm()
-      .format(istanbulSaatine(an));
-  return turkiyeDisindaMi(simdi) ? m.etkinlik_turkiye_saati(metin) : metin;
-}
-
-/// Başlangıç ve bitiş; aynı gündeyse bitişte yalnızca saat.
+/// Başlangıç ve bitiş, cihazın saatine göre (ADR-0008); aynı gündeyse
+/// bitişte yalnızca saat. Cihaz Türkiye saatinde değilse saat diliminin adı
+/// eklenir (kartla aynı kural, `etkinlikZamani`).
 String etkinlikZamanAraligi(
   AppLocalizations m,
   DateTime baslangic,
-  DateTime bitis, {
-  required DateTime simdi,
-}) {
-  final b = istanbulSaatine(baslangic);
-  final s = istanbulSaatine(bitis);
+  DateTime bitis,
+) {
+  final b = baslangic.toLocal();
+  final s = bitis.toLocal();
   final gun = DateFormat.MMMMEEEEd(m.localeName).add_Hm();
   final ayniGun = b.year == s.year && b.month == s.month && b.day == s.day;
   final metin = m.etkinlik_zaman_araligi(
     gun.format(b),
     ayniGun ? DateFormat.Hm(m.localeName).format(s) : gun.format(s),
   );
-  return turkiyeDisindaMi(simdi) ? m.etkinlik_turkiye_saati(metin) : metin;
+  if (b.timeZoneOffset == turkiyeSaatFarki) return metin;
+  return m.etkinlik_karti_zaman_dilimli(metin, b.timeZoneName);
 }
 
-/// Sihirbazdaki tarih ve saat alanının metni (Türkiye saati).
+/// Sihirbazdaki tarih ve saat alanının metni (cihazın saati).
 String etkinlikTarihSaat(AppLocalizations m, DateTime an) =>
-    DateFormat.yMMMd(m.localeName).add_Hm().format(istanbulSaatine(an));
+    DateFormat.yMMMd(m.localeName).add_Hm().format(an.toLocal());
 
 /// Sihirbazdaki gün alanının metni ([gun]'ün yalnızca yıl, ay, gün
 /// alanları).
@@ -48,15 +36,6 @@ String etkinlikGun(AppLocalizations m, DateTime gun) =>
 /// Sayı, `tr_TR` biçiminde ("1.250", "12,5").
 String etkinlikSayi(AppLocalizations m, num sayi) =>
     NumberFormat.decimalPattern(m.localeName).format(sayi);
-
-/// Katılım cevabının adı.
-String cevapAdi(AppLocalizations m, RsvpStatus cevap) => switch (cevap) {
-  RsvpStatus.going => m.etkinlik_cevap_going,
-  RsvpStatus.maybe => m.etkinlik_cevap_maybe,
-  RsvpStatus.notGoing => m.etkinlik_cevap_not_going,
-  RsvpStatus.waitlist => m.etkinlik_cevap_waitlist,
-  RsvpStatus.unknown => m.etkinlik_cevap_bilinmiyor,
-};
 
 /// Katılımcılar sekmesinin adı.
 String katilimciSekmesi(AppLocalizations m, ListEventAttendeesStatus durum) =>

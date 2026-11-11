@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
-import 'package:tayfam/features/etkinlik/application/etkinlik_listesi.dart';
+import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
-import 'package:tayfam/features/etkinlik/data/etkinlik_islemleri.dart';
+import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 
 /// Bir etkinliğin anahtarı: adresteki tayfa ve etkinlik kimliği.
 typedef EtkinlikAnahtari = ({String tayfaId, String etkinlikId});
@@ -23,7 +23,7 @@ class EtkinlikDetayNotifier extends AsyncNotifier<Event> {
 
   @override
   Future<Event> build() => ref
-      .read(etkinlikIslemleriProvider)
+      .read(etkinlikDeposuProvider)
       .etkinlik(anahtar.tayfaId, anahtar.etkinlikId);
 
   /// Baştan okur (aşağı çekince). Hata ekranda gösterilir.
@@ -46,7 +46,7 @@ class EtkinlikDetayNotifier extends AsyncNotifier<Event> {
   Future<void> sessizceYenile() async {
     try {
       final etkinlik = await ref
-          .read(etkinlikIslemleriProvider)
+          .read(etkinlikDeposuProvider)
           .etkinlik(anahtar.tayfaId, anahtar.etkinlikId);
       if (ref.mounted) guncelle(etkinlik);
     } on Exception {
@@ -81,7 +81,7 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
   @override
   EtkinlikEylemi? build() => null;
 
-  EtkinlikIslemleri get _islemler => ref.read(etkinlikIslemleriProvider);
+  EtkinlikDeposu get _depo => ref.read(etkinlikDeposuProvider);
 
   EtkinlikDetayNotifier get _detay =>
       ref.read(etkinlikDetayProvider(anahtar).notifier);
@@ -97,7 +97,7 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
       return null;
     }
     return _calistir(EtkinlikEylemi.katilim, () async {
-      final kaydedilen = await _islemler.katilim(
+      final kaydedilen = await _depo.katilim(
         anahtar.tayfaId,
         anahtar.etkinlikId,
         durum,
@@ -116,7 +116,7 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
     final metin = gerekce.trim();
     if (state != null || metin.isEmpty) return null;
     return _calistir(EtkinlikEylemi.iptal, () async {
-      final etkinlik = await _islemler.iptalEt(
+      final etkinlik = await _depo.iptalEt(
         anahtar.tayfaId,
         anahtar.etkinlikId,
         metin,
@@ -131,7 +131,7 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
   Future<Object?> takvimeEkle({Rect? konum}) async {
     if (state != null) return null;
     return _calistir(EtkinlikEylemi.takvim, () async {
-      final icerik = await _islemler.takvim(
+      final icerik = await _depo.takvim(
         anahtar.tayfaId,
         anahtar.etkinlikId,
       );

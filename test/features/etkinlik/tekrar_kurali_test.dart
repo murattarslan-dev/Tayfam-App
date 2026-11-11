@@ -158,11 +158,8 @@ void main() {
     });
   });
 
-  group('Türkiye saati', () {
-    test('UTC+3, yaz saati yok', () {
-      expect(istanbulSaatine(DateTime.utc(2026, 7, 1, 21)).day, 2);
-      expect(istanbulSaatine(DateTime.utc(2026, 7, 1, 21)).hour, 0);
-      expect(istanbulSaatinden(2026, 1, 15, 9), DateTime.utc(2026, 1, 15, 6));
-    });
+  test('Türkiye saati UTC+3, yaz saati yok', () {
+    expect(istanbulSaatinden(2026, 1, 15, 9), DateTime.utc(2026, 1, 15, 6));
+    expect(istanbulSaatinden(2026, 7, 2), DateTime.utc(2026, 7, 1, 21));
   });
 }

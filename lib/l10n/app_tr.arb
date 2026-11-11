@@ -91,9 +91,271 @@
   "@tayfa_olustur": {
     "description": "Tayfa değiştirme panelinde ve karşılama ekranında yeni tayfa kurma akışını açan seçenek; o akışın başlığı olarak da görünür."
   },
-  "tayfa_ana_sayfa_bos": "Yaklaşan etkinlikler ve son duyurular burada görünecek.",
+  "tayfa_ana_sayfa_bos": "Bu tayfada şimdilik gösterilecek bir şey yok.",
   "@tayfa_ana_sayfa_bos": {
-    "description": "Tayfa ana sayfasının mor üst bölümünün altında, gösterilecek içerik yokken görünen metin."
+    "description": "Tayfa ana sayfasının mor üst bölümünün altında, etkinlik ve duyuru bölümlerinin hiçbiri görünmezken (modüller kapalı ya da tayfa bilgisi henüz alınamadı) görünen metin."
+  },
+  "tayfa_ana_tumu": "Tümü",
+  "@tayfa_ana_tumu": {
+    "description": "Tayfa ana sayfasında bir bölümün (yaklaşan etkinlikler, duyurular) başlığının yanındaki bağlantı; bölümün tam listesini açar. Ekran okuyucu bunun yerine bölüme özel etiketi okur."
+  },
+  "tayfa_ana_etkinlikler_baslik": "Yaklaşan etkinlikler",
+  "@tayfa_ana_etkinlikler_baslik": {
+    "description": "Tayfa ana sayfasında mor üst bölümün altındaki ilk bölümün başlığı (en yakın üç etkinlik); etkinlik listesi ekranının da başlığı."
+  },
+  "tayfa_ana_tum_etkinlikler": "Tüm etkinlikler",
+  "@tayfa_ana_tum_etkinlikler": {
+    "description": "Tayfa ana sayfasındaki \"Tümü\" bağlantısının ekran okuyucu etiketi; yaklaşan etkinlikler listesini açar."
+  },
+  "tayfa_ana_etkinlikler_bos": "Yaklaşan etkinlik yok.",
+  "@tayfa_ana_etkinlikler_bos": {
+    "description": "Tayfa ana sayfasındaki ve etkinlik listesindeki boş durum; tayfada bitmemiş etkinlik yokken görünür."
+  },
+  "tayfa_ana_etkinlik_ac": "Etkinlik aç",
+  "@tayfa_ana_etkinlik_ac": {
+    "description": "Yaklaşan etkinlik yokken, etkinlik açabilen kullanıcıya (moderatör, yönetici ya da tayfa izin veriyorsa üye) gösterilen kısayol düğmesi."
+  },
+  "tayfa_ana_etkinlikler_yukleniyor": "Etkinlikler yükleniyor",
+  "@tayfa_ana_etkinlikler_yukleniyor": {
+    "description": "Etkinlikler okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "tayfa_ana_duyurular_baslik": "Duyurular",
+  "@tayfa_ana_duyurular_baslik": {
+    "description": "Tayfa ana sayfasında yaklaşan etkinliklerin altındaki bölümün başlığı (önce sabitlenenler, sonra son üç duyuru); duyuru listesi ekranının da başlığı."
+  },
+  "tayfa_ana_tum_duyurular": "Tüm duyurular",
+  "@tayfa_ana_tum_duyurular": {
+    "description": "Tayfa ana sayfasındaki \"Tümü\" bağlantısının ekran okuyucu etiketi; duyuru listesini açar."
+  },
+  "tayfa_ana_duyurular_bos": "Henüz duyuru yok.",
+  "@tayfa_ana_duyurular_bos": {
+    "description": "Tayfa ana sayfasındaki ve duyuru listesindeki boş durum; tayfada duyuru yokken görünür."
+  },
+  "tayfa_ana_tekrar_dene": "Tekrar dene",
+  "@tayfa_ana_tekrar_dene": {
+    "description": "Tayfa ana sayfasındaki bölümlerde ve etkinlik ile duyuru listelerinde, okunamayan içeriği yeniden okuyan düğme."
+  },
+  "tayfa_ana_daha_fazla": "Daha fazla göster",
+  "@tayfa_ana_daha_fazla": {
+    "description": "Etkinlik ve duyuru listelerinin sonunda, sonraki sayfayı okuyan düğme."
+  },
+  "etkinlik_karti_zaman": "{gun}, {saat}",
+  "@etkinlik_karti_zaman": {
+    "description": "Etkinlik kartında etkinliğin başlangıç günü ve saati, cihazın saatine göre (ör. \"14 Kasım Cumartesi, 09:00\").",
+    "placeholders": {
+      "gun": {
+        "type": "DateTime",
+        "format": "MMMMEEEEd",
+        "example": "2026-11-14"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-14T09:00"
+      }
+    }
+  },
+  "etkinlik_karti_zaman_dilimli": "{zaman} ({dilim})",
+  "@etkinlik_karti_zaman_dilimli": {
+    "description": "Etkinlik kartındaki zaman; cihaz Türkiye saatinde değilse cihazın saat diliminin adı parantez içinde eklenir (ör. \"14 Kasım Cumartesi, 09:00 (CET)\").",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "14 Kasım Cumartesi, 09:00"
+      },
+      "dilim": {
+        "type": "String",
+        "example": "CET"
+      }
+    }
+  },
+  "etkinlik_karti_cevrimici": "Çevrimiçi",
+  "@etkinlik_karti_cevrimici": {
+    "description": "Etkinlik kartında yer yerine görünür; etkinlik çevrimiçiyse."
+  },
+  "etkinlik_karti_ilce_il": "{ilce}, {il}",
+  "@etkinlik_karti_ilce_il": {
+    "description": "Etkinlik kartında buluşma noktasının adı yoksa gösterilen ilçe ve il.",
+    "placeholders": {
+      "ilce": {
+        "type": "String",
+        "example": "Kadıköy"
+      },
+      "il": {
+        "type": "String",
+        "example": "İstanbul"
+      }
+    }
+  },
+  "etkinlik_karti_gelen": "{sayi, plural, other{{sayi} kişi geliyor}}",
+  "@etkinlik_karti_gelen": {
+    "description": "Etkinlik kartında kontenjansız etkinliğe gelecek kişi sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "etkinlik_karti_gelen_kontenjan": "{sayi}/{kontenjan} kişi geliyor",
+  "@etkinlik_karti_gelen_kontenjan": {
+    "description": "Etkinlik kartında kontenjanlı etkinliğe gelecek kişi sayısı ve kontenjan.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      },
+      "kontenjan": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "etkinlik_karti_bekleme": "{sayi, plural, other{{sayi} kişi bekleme listesinde}}",
+  "@etkinlik_karti_bekleme": {
+    "description": "Etkinlik kartında, kontenjan dolduğu için bekleme listesindeki kişi sayısı; yalnızca bekleyen varsa görünür.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "etkinlik_karti_cevap_geliyorum": "Cevabın: Geliyorum",
+  "@etkinlik_karti_cevap_geliyorum": {
+    "description": "Etkinlik kartında kullanıcının katılım cevabı \"Geliyorum\" ise."
+  },
+  "etkinlik_karti_cevap_belki": "Cevabın: Belki",
+  "@etkinlik_karti_cevap_belki": {
+    "description": "Etkinlik kartında kullanıcının katılım cevabı \"Belki\" ise."
+  },
+  "etkinlik_karti_cevap_gelmiyorum": "Cevabın: Gelmiyorum",
+  "@etkinlik_karti_cevap_gelmiyorum": {
+    "description": "Etkinlik kartında kullanıcının katılım cevabı \"Gelmiyorum\" ise."
+  },
+  "etkinlik_karti_cevap_bekleme": "Bekleme listesindesin",
+  "@etkinlik_karti_cevap_bekleme": {
+    "description": "Etkinlik kartında, kullanıcı \"Geliyorum\" dedi ama kontenjan dolu olduğu için bekleme listesindeyse."
+  },
+  "etkinlik_karti_iptal": "İptal edildi",
+  "@etkinlik_karti_iptal": {
+    "description": "İptal edilen etkinliğin kartındaki etiket; kart soluk görünür."
+  },
+  "duyuru_baslik": "Duyuru",
+  "@duyuru_baslik": {
+    "description": "Tek bir duyurunun ekranının üst çubuk başlığı."
+  },
+  "duyuru_yukleniyor": "Duyurular yükleniyor",
+  "@duyuru_yukleniyor": {
+    "description": "Duyurular okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "duyuru_sabit": "Sabitlendi",
+  "@duyuru_sabit": {
+    "description": "Sabitlenmiş duyurunun kartında ve ekranında, raptiye ikonunun yanındaki etiket."
+  },
+  "duyuru_tarih": "{tarih}, {saat}",
+  "@duyuru_tarih": {
+    "description": "Duyuru kartında ve ekranında duyurunun yayınlandığı gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "duyuru_yaz": "Duyuru yaz",
+  "@duyuru_yaz": {
+    "description": "Moderatör ve yöneticiye duyuru listesinde ve tayfa ana sayfasında (henüz duyuru yokken) gösterilen düğme; duyuru formunu açar."
+  },
+  "duyuru_islemler": "Duyuru işlemleri",
+  "@duyuru_islemler": {
+    "description": "Duyuru ekranının üst çubuğundaki menü düğmesinin ekran okuyucu etiketi (düzenle, sabitle, sil); yalnızca moderatör ve yöneticiye görünür."
+  },
+  "duyuru_duzenle": "Düzenle",
+  "@duyuru_duzenle": {
+    "description": "Duyuru işlemleri menüsünde duyuru formunu düzenleme için açan seçenek."
+  },
+  "duyuru_sabitle": "Sabitle",
+  "@duyuru_sabitle": {
+    "description": "Duyuru işlemleri menüsünde duyuruyu listenin başına sabitleyen seçenek."
+  },
+  "duyuru_sabitlemeyi_kaldir": "Sabitlemeyi kaldır",
+  "@duyuru_sabitlemeyi_kaldir": {
+    "description": "Duyuru işlemleri menüsünde sabitlenmiş duyurunun sabitlemesini kaldıran seçenek."
+  },
+  "duyuru_sil": "Sil",
+  "@duyuru_sil": {
+    "description": "Duyuru işlemleri menüsünde ve silme onayında duyuruyu silen seçenek."
+  },
+  "duyuru_sil_onay_baslik": "Duyuru silinsin mi?",
+  "@duyuru_sil_onay_baslik": {
+    "description": "Duyuru silinmeden önce açılan onay penceresinin başlığı."
+  },
+  "duyuru_sil_onay_aciklama": "Duyuru tayfadaki herkesten kaldırılır.",
+  "@duyuru_sil_onay_aciklama": {
+    "description": "Duyuru silme onay penceresinin açıklaması."
+  },
+  "duyuru_vazgec": "Vazgeç",
+  "@duyuru_vazgec": {
+    "description": "Duyuru silme onay penceresinde silmeden kapatan düğme."
+  },
+  "duyuru_silindi": "Duyuru silindi.",
+  "@duyuru_silindi": {
+    "description": "Duyuru silindikten sonra ekranın altında kısa süre görünen bildirim."
+  },
+  "duyuru_sabitlendi": "Duyuru sabitlendi.",
+  "@duyuru_sabitlendi": {
+    "description": "Duyuru sabitlendikten sonra ekranın altında kısa süre görünen bildirim."
+  },
+  "duyuru_sabitleme_kaldirildi": "Sabitleme kaldırıldı.",
+  "@duyuru_sabitleme_kaldirildi": {
+    "description": "Duyurunun sabitlemesi kaldırıldıktan sonra ekranın altında kısa süre görünen bildirim."
+  },
+  "duyuru_yayinlandi": "Duyuru yayınlandı.",
+  "@duyuru_yayinlandi": {
+    "description": "Yeni duyuru yayınlandıktan sonra ekranın altında kısa süre görünen bildirim."
+  },
+  "duyuru_kaydedildi": "Değişiklikler kaydedildi.",
+  "@duyuru_kaydedildi": {
+    "description": "Duyuru düzenlendikten sonra ekranın altında kısa süre görünen bildirim."
+  },
+  "duyuru_form_yeni": "Yeni duyuru",
+  "@duyuru_form_yeni": {
+    "description": "Duyuru yazma formunun üst çubuk başlığı."
+  },
+  "duyuru_form_duzenle": "Duyuruyu düzenle",
+  "@duyuru_form_duzenle": {
+    "description": "Duyuru düzenleme formunun üst çubuk başlığı."
+  },
+  "duyuru_form_baslik_etiketi": "Başlık",
+  "@duyuru_form_baslik_etiketi": {
+    "description": "Duyuru formundaki başlık alanının etiketi."
+  },
+  "duyuru_form_baslik_hatasi": "Başlık 1–120 karakter olmalı ve tek satırda yazılmalı.",
+  "@duyuru_form_baslik_hatasi": {
+    "description": "Duyuru formunda başlık boşsa, 120 karakteri aşıyorsa ya da birden çok satırsa alanın altında görünen hata."
+  },
+  "duyuru_form_govde_etiketi": "Metin",
+  "@duyuru_form_govde_etiketi": {
+    "description": "Duyuru formundaki duyuru metni alanının etiketi; metin düz yazı olarak gösterilir."
+  },
+  "duyuru_form_govde_hatasi": "Metin en çok 5000 karakter olabilir.",
+  "@duyuru_form_govde_hatasi": {
+    "description": "Duyuru formunda metin 5000 karakteri aştığında alanın altında görünen hata."
+  },
+  "duyuru_form_yayinla": "Yayınla",
+  "@duyuru_form_yayinla": {
+    "description": "Duyuru yazma formunda duyuruyu yayınlayan düğme."
+  },
+  "duyuru_form_kaydet": "Kaydet",
+  "@duyuru_form_kaydet": {
+    "description": "Duyuru düzenleme formunda değişiklikleri kaydeden düğme."
   },
   "tayfa_onay_bekliyor": "Onay bekliyor",
   "@tayfa_onay_bekliyor": {
@@ -375,18 +637,6 @@
   "@etkinlik_turu_general": {
     "description": "Etkinlik türünün adı: genel (belirli bir türe girmeyen buluşmalar; sunucunun henüz tanımadığı türler de bu adla görünür) (general). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
   },
-  "etkinlik_modul_adi": "Etkinlikler",
-  "@etkinlik_modul_adi": {
-    "description": "Etkinlik modülünün adı: tayfanın etkinlik listesi ekranının başlığı ve modülün gezinme girişi."
-  },
-  "etkinlik_liste_bos": "Yaklaşan etkinlik yok.",
-  "@etkinlik_liste_bos": {
-    "description": "Etkinlik listesinde bitmemiş etkinlik olmadığında görünen boş durum metni."
-  },
-  "etkinlik_ac": "Etkinlik aç",
-  "@etkinlik_ac": {
-    "description": "Etkinlik listesinde yetkili kullanıcıya görünen, oluşturma sihirbazını açan düğme."
-  },
   "etkinlik_daha_fazla": "Daha fazla göster",
   "@etkinlik_daha_fazla": {
     "description": "Etkinlik ve katılımcı listelerinin sonunda sonraki sayfayı yükleyen düğme."
@@ -395,27 +645,9 @@
   "@etkinlik_tekrar_dene": {
     "description": "Etkinlik listesi, detayı ya da katılımcılar okunamadığında hata metninin altındaki düğme."
   },
-  "etkinlik_iptal_edildi": "İptal edildi",
-  "@etkinlik_iptal_edildi": {
-    "description": "İptal edilen etkinliğin kartında ve detayında görünen etiket."
-  },
-  "etkinlik_cevrimici": "Çevrimiçi",
-  "@etkinlik_cevrimici": {
-    "description": "Çevrimiçi etkinliğin kartında yer adı yerine ve detayında görünen metin."
-  },
   "etkinlik_yer_gizli": "Yer bilgisi yok",
   "@etkinlik_yer_gizli": {
     "description": "Yüz yüze etkinliğin yer adı ve il/ilçe bilgisi kullanıcıya gelmediğinde (ör. katılımcılara özel balık noktası) kartta ve detayda görünen metin."
-  },
-  "etkinlik_turkiye_saati": "{zaman} (Türkiye saati)",
-  "@etkinlik_turkiye_saati": {
-    "description": "Cihaz Türkiye dışındaki bir saat dilimindeyken etkinlik zamanının yanına eklenen not. Zaman her zaman Türkiye saatiyle gösterilir.",
-    "placeholders": {
-      "zaman": {
-        "type": "String",
-        "example": "14 Kasım Cumartesi 09:00"
-      }
-    }
   },
   "etkinlik_zaman_araligi": "{baslangic} – {bitis}",
   "@etkinlik_zaman_araligi": {
@@ -431,44 +663,6 @@
       }
     }
   },
-  "etkinlik_gelen": "{sayi, plural, =0{Henüz gelen yok} other{{sayiMetni} kişi geliyor}}",
-  "@etkinlik_gelen": {
-    "description": "Kontenjansız etkinliğin kartında \"Geliyorum\" diyenlerin sayısı. sayiMetni biçimlenmiş sayıdır.",
-    "placeholders": {
-      "sayi": {
-        "type": "int",
-        "example": "12"
-      },
-      "sayiMetni": {
-        "type": "String",
-        "example": "12"
-      }
-    }
-  },
-  "etkinlik_gelen_kontenjan": "{gelen} / {kontenjan} kişi geliyor",
-  "@etkinlik_gelen_kontenjan": {
-    "description": "Kontenjanlı etkinliğin kartında gelen sayısı ve kontenjan.",
-    "placeholders": {
-      "gelen": {
-        "type": "String",
-        "example": "8"
-      },
-      "kontenjan": {
-        "type": "String",
-        "example": "20"
-      }
-    }
-  },
-  "etkinlik_cevabin": "Cevabın: {cevap}",
-  "@etkinlik_cevabin": {
-    "description": "Etkinlik kartında kullanıcının kendi katılım cevabı.",
-    "placeholders": {
-      "cevap": {
-        "type": "String",
-        "example": "Geliyorum"
-      }
-    }
-  },
   "etkinlik_cevap_going": "Geliyorum",
   "@etkinlik_cevap_going": {
     "description": "Katılım cevabı: geliyorum (going). Detaydaki katılım seçimlerinde ve kartta görünür."
@@ -480,14 +674,6 @@
   "etkinlik_cevap_not_going": "Gelmiyorum",
   "@etkinlik_cevap_not_going": {
     "description": "Katılım cevabı: gelmiyorum (not_going)."
-  },
-  "etkinlik_cevap_waitlist": "Bekleme listesinde",
-  "@etkinlik_cevap_waitlist": {
-    "description": "Kullanıcının \"Geliyorum\" cevabı kontenjan dolu olduğu için bekleme listesine düştüğünde kartta görünen cevap."
-  },
-  "etkinlik_cevap_bilinmiyor": "Cevap verildi",
-  "@etkinlik_cevap_bilinmiyor": {
-    "description": "Sunucunun henüz tanımadığımız bir katılım cevabı döndürdüğünde kartta görünen genel metin."
   },
   "etkinlik_detay_baslik": "Etkinlik",
   "@etkinlik_detay_baslik": {
@@ -555,9 +741,13 @@
   "@etkinlik_organizator_yok": {
     "description": "Organizatörün hesabı silindiğinde detayda ad yerine görünen metin."
   },
-  "etkinlik_uye": "Tayfa üyesi",
-  "@etkinlik_uye": {
-    "description": "Organizatörün ya da katılımcının adı okunurken veya okunamadığında görünen genel ad."
+  "kullanici_genel": "Tayfa üyesi",
+  "@kullanici_genel": {
+    "description": "Bir kişinin (organizatör, katılımcı) adı okunurken ya da okunamadığında ad yerine görünen genel metin."
+  },
+  "kullanici_silinmis": "Silinmiş kullanıcı",
+  "@kullanici_silinmis": {
+    "description": "Hesabı silinmiş ya da artık erişilemeyen bir kişinin adı yerine görünen metin (katılımcı listesi, organizatör)."
   },
   "etkinlik_aciklama_baslik": "Açıklama",
   "@etkinlik_aciklama_baslik": {
@@ -938,10 +1128,6 @@
   "etkinlik_bitis_hata": "Bitiş başlangıçtan sonra olmalı.",
   "@etkinlik_bitis_hata": {
     "description": "Bitiş seçilmediğinde ya da başlangıçtan önce olduğunda görünen hata."
-  },
-  "etkinlik_saatler_turkiye": "Saatler Türkiye saatidir.",
-  "@etkinlik_saatler_turkiye": {
-    "description": "Sihirbazda zaman alanlarının altındaki bilgi."
   },
   "etkinlik_yer_adim_baslik": "Nerede?",
   "@etkinlik_yer_adim_baslik": {

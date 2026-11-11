@@ -5,11 +5,11 @@ import 'package:tayfam/core/api/istek_kimligi.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
-import 'package:tayfam/features/etkinlik/application/etkinlik_listesi.dart';
+import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
-import 'package:tayfam/features/etkinlik/data/etkinlik_islemleri.dart';
+import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 
 /// Etkinlik oluşturmanın `client_request_id` üreticisi; testlerde sabit
 /// değer verilir.
@@ -179,7 +179,7 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
         return;
       }
     }
-    final islemler = ref.read(etkinlikIslemleriProvider);
+    final islemler = ref.read(etkinlikDeposuProvider);
     final tayfaId = anahtar.tayfaId;
     final eski = anahtar.duzenlenen;
     state = mevcut.kopya(gonderiliyor: true, hatalar: const {});

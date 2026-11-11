@@ -17,7 +17,7 @@ import 'package:tayfam/shell/yer_tutucu.dart';
 import 'package:tayfam/shell/yonlendirme.dart';
 
 /// Tayfa sekmesinin kökündeki rota parametresi.
-const String tayfaIdParametresi = 'tayfaId';
+const String tayfaIdParametresi = Adresler.tayfaIdParametresi;
 
 /// Uygulamanın yönlendiricisi (ADR-0003).
 ///
