@@ -12,12 +12,19 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.5.0
+  # Etkinlik buluşma noktası: OpenStreetMap karolarıyla harita önizlemesi ve
+  # seçici (ADR-0015 §4); yayıncı fleaflet.dev, izin gerektirmez, saf
+  # Flutter (Android/iOS). Yerleşik karo önbelleği kapalı kullanılır
+  # (ADR-0006).
+  flutter_map: ^8.2.2
   flutter_secure_storage: ^11.2.0
   go_router: ^18.1.4
   # Google ile giriş (ADR-0012 §2); yayıncı flutter.dev.
   google_sign_in: ^7.2.0
   http: ^1.6.0
   intl: ^0.20.3
+  # flutter_map'in koordinat türü (ADR-0015 Sonuçlar); saf Dart, izin yok.
+  latlong2: ^0.9.1
   # Tayfa kodunu sistem paylaşım menüsüyle paylaşmak için (ADR-0014 §5);
   # yayıncı fluttercommunity.dev, izin gerektirmez.
   share_plus: ^13.3.1
