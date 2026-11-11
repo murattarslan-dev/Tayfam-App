@@ -10,7 +10,6 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
-import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
 
