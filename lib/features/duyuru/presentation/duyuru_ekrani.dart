@@ -6,15 +6,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/duyuru/application/duyuru_notifier.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_karti.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_ortak.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Duyuru işlemleri menüsünün seçenekleri.
-enum DuyuruIslemi { duzenle, sabitle, sabitlemeyiKaldir, sil }
+enum DuyuruIslemi { duzenle, sabitle, sabitlemeyiKaldir, sil, sikayet }
 
 /// Tek bir duyuru (`/t/<tayfaId>/duyurular/<duyuruId>`; ADR-0015 §2):
 /// başlık, yayın zamanı ve gövde. Gövde düz metindir; markdown ya da HTML
@@ -23,6 +25,7 @@ enum DuyuruIslemi { duzenle, sabitle, sabitlemeyiKaldir, sil }
 /// Adresteki [duyuruId] girdi kabul edilir: UUID biçiminde değilse istek
 /// gönderilmez, "bulunamadı" gösterilir. Moderatör ve yöneticiye düzenleme,
 /// sabitleme ve (onaylı) silme menüsü gösterilir; kararı sunucu verir.
+/// Başkasının duyurusunda menüde "Şikâyet et" vardır (ADR-0018 §8).
 class DuyuruEkrani extends ConsumerWidget {
   const DuyuruEkrani({
     super.key,
@@ -53,13 +56,19 @@ class DuyuruEkrani extends ConsumerWidget {
     final yonetimde = ref.watch(tayfaOzetiProvider(tayfaId)).yonetimde;
     final duyuru = durum.value;
     final hata = durum.error;
+    final yazar = duyuru?.authorUserId;
+    final sikayetEdilebilir =
+        duyuru != null &&
+        (yazar == null || !ref.watch(kendisiMiProvider(yazar)));
     return Scaffold(
       appBar: AppBar(
         title: Text(metinler.duyuru_baslik),
         actions: [
-          if (yonetimde && duyuru != null)
+          if (duyuru != null && (yonetimde || sikayetEdilebilir))
             _IslemMenusu(
               duyuru: duyuru,
+              yonetimde: yonetimde,
+              sikayetEdilebilir: sikayetEdilebilir,
               onSecildi: (islem) =>
                   unawaited(_islemiYap(context, ref, duyuru, islem)),
             ),
@@ -139,6 +148,15 @@ class DuyuruEkrani extends ConsumerWidget {
         }
         bildirimGoster(bildirim, metinler.duyuru_silindi);
         await Navigator.of(context).maybePop();
+      case DuyuruIslemi.sikayet:
+        await sikayetSayfasiniAc(
+          context,
+          SikayetHedefi.tayfada(
+            tayfaId: tayfaId,
+            tur: ReportTargetType.announcement,
+            id: duyuru.id,
+          ),
+        );
     }
   }
 }
@@ -167,9 +185,16 @@ Future<bool> _silmeyiOnayla(BuildContext context) async {
 }
 
 class _IslemMenusu extends StatelessWidget {
-  const _IslemMenusu({required this.duyuru, required this.onSecildi});
+  const _IslemMenusu({
+    required this.duyuru,
+    required this.yonetimde,
+    required this.sikayetEdilebilir,
+    required this.onSecildi,
+  });
 
   final Announcement duyuru;
+  final bool yonetimde;
+  final bool sikayetEdilebilir;
   final ValueChanged<DuyuruIslemi> onSecildi;
 
   @override
@@ -180,24 +205,31 @@ class _IslemMenusu extends StatelessWidget {
       icon: const Icon(Icons.more_vert),
       onSelected: onSecildi,
       itemBuilder: (_) => [
-        PopupMenuItem(
-          value: DuyuruIslemi.duzenle,
-          child: Text(metinler.duyuru_duzenle),
-        ),
-        if (duyuru.pinned)
+        if (yonetimde) ...[
           PopupMenuItem(
-            value: DuyuruIslemi.sabitlemeyiKaldir,
-            child: Text(metinler.duyuru_sabitlemeyi_kaldir),
-          )
-        else
-          PopupMenuItem(
-            value: DuyuruIslemi.sabitle,
-            child: Text(metinler.duyuru_sabitle),
+            value: DuyuruIslemi.duzenle,
+            child: Text(metinler.duyuru_duzenle),
           ),
-        PopupMenuItem(
-          value: DuyuruIslemi.sil,
-          child: Text(metinler.duyuru_sil),
-        ),
+          if (duyuru.pinned)
+            PopupMenuItem(
+              value: DuyuruIslemi.sabitlemeyiKaldir,
+              child: Text(metinler.duyuru_sabitlemeyi_kaldir),
+            )
+          else
+            PopupMenuItem(
+              value: DuyuruIslemi.sabitle,
+              child: Text(metinler.duyuru_sabitle),
+            ),
+          PopupMenuItem(
+            value: DuyuruIslemi.sil,
+            child: Text(metinler.duyuru_sil),
+          ),
+        ],
+        if (sikayetEdilebilir)
+          PopupMenuItem(
+            value: DuyuruIslemi.sikayet,
+            child: Text(metinler.sikayet_et),
+          ),
       ],
     );
   }

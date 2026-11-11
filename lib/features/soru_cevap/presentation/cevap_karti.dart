@@ -9,7 +9,7 @@ import 'package:tayfam/features/soru_cevap/presentation/soru_cevap_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Cevap işlemleri menüsünün seçenekleri.
-enum CevapIslemi { duzenle, sil }
+enum CevapIslemi { duzenle, sil, sikayet }
 
 /// Bir cevabın kartı (ADR-0004 soru-cevap kartı): yazar ve zaman, düz
 /// metin gövde ve honey "faydalı" sayacı.
@@ -17,7 +17,8 @@ enum CevapIslemi { duzenle, sil }
 /// Sayaç başkasının cevabında dokunulabilir bir aç/kapa düğmesidir; kendi
 /// cevabında yalnızca sayıyı gösterir. Kendi cevabına oyu sunucu da
 /// reddeder (`own-answer-vote`); istemcinin gizlemesi yetki değildir (kesin
-/// kural 5). Düzenleme ve silme menüsü yazar ile yönetime gösterilir.
+/// kural 5). Düzenleme ve silme menüsü yazar ile yönetime gösterilir;
+/// başkasının cevabında menüde "Şikâyet et" vardır (ADR-0018 §8).
 class CevapKarti extends ConsumerWidget {
   const CevapKarti({
     super.key,
@@ -69,12 +70,12 @@ class CevapKarti extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (kendisi || yonetimde)
-                PopupMenuButton<CevapIslemi>(
-                  tooltip: metinler.soru_cevap_islemler,
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: onIslem,
-                  itemBuilder: (_) => [
+              PopupMenuButton<CevapIslemi>(
+                tooltip: metinler.soru_cevap_islemler,
+                icon: const Icon(Icons.more_vert),
+                onSelected: onIslem,
+                itemBuilder: (_) => [
+                  if (kendisi || yonetimde) ...[
                     PopupMenuItem(
                       value: CevapIslemi.duzenle,
                       child: Text(metinler.soru_duzenle),
@@ -84,7 +85,13 @@ class CevapKarti extends ConsumerWidget {
                       child: Text(metinler.soru_sil),
                     ),
                   ],
-                ),
+                  if (!kendisi)
+                    PopupMenuItem(
+                      value: CevapIslemi.sikayet,
+                      child: Text(metinler.sikayet_et),
+                    ),
+                ],
+              ),
             ],
           ),
         ],

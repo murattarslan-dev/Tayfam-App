@@ -65,6 +65,17 @@ Future<void> _yaz(WidgetTester tester, Finder alan, String metin) async {
 }
 
 final Finder _islemMenusu = find.byTooltip(arbMetni('anket_islemler'));
+
+/// Menüde kapatma yok, yalnızca "Şikâyet et" var (başkasının anketi).
+Future<void> _yalnizcaSikayet(WidgetTester tester) async {
+  await tester.tap(_islemMenusu);
+  await tester.pumpAndSettle();
+  expect(find.text(arbMetni('anket_kapat')), findsNothing);
+  expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
+  await tester.tapAt(Offset.zero);
+  await tester.pumpAndSettle();
+}
+
 final Finder _seninOyun = find.text(arbMetni('anket_senin_oyun'));
 final Finder _esikNotu = find.textContaining('5 oydan sonra görünür');
 
@@ -333,15 +344,15 @@ void main() {
       expect(find.text(arbMetni('anket_oy_ver')), findsNothing);
       expect(find.text(arbMetni('anket_oyu_degistir')), findsNothing);
       expect(find.byType(AnketCubugu), findsNWidgets(3));
-      expect(_islemMenusu, findsNothing);
+      await _yalnizcaSikayet(tester);
     });
   });
 
   group('kapatma', () {
-    testWidgets('üyeye (açan değil) menü yok', (tester) async {
+    testWidgets('üyeye (açan değil) yalnızca şikâyet', (tester) async {
       ekranBoyutu(tester);
       await _anketiAc(tester, _tekAnket(anketJson(anketId1)));
-      expect(_islemMenusu, findsNothing);
+      await _yalnizcaSikayet(tester);
     });
 
     testWidgets('anketi açana menü var', (tester) async {
@@ -385,7 +396,7 @@ void main() {
       expect(tasima.giden('POST', kapatmaYolu), hasLength(1));
       expect(find.text(arbMetni('anket_kapatildi')), findsOneWidget);
       expect(find.text(arbMetni('anket_kapandi')), findsOneWidget);
-      expect(_islemMenusu, findsNothing);
+      await _yalnizcaSikayet(tester);
     });
   });
 

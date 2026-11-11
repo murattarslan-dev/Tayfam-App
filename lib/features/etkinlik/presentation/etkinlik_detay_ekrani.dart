@@ -9,6 +9,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
@@ -24,6 +25,7 @@ import 'package:tayfam/features/etkinlik/presentation/katilimcilar_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Detaydaki harita önizlemesinin yüksekliği.
@@ -37,7 +39,8 @@ const double haritaOnizlemeYakinligi = 15;
 /// çevrimiçi bağlantı, organizatör, katılım ve sayılar, varış bildirimi
 /// (ADR-0015 §5), türe özel bilgiler ve araçlar (§6) ve katılımcılar
 /// (organizatör düzeltmesiyle). Takvime ekleme her zaman; düzenleme ve iptal
-/// `caller_can_manage` ise görünür. Bitmiş ve cevabı "Geliyorum" olan
+/// `caller_can_manage` ise görünür; başkasının etkinliğinde menüde "Şikâyet
+/// et" vardır (ADR-0018 §8). Bitmiş ve cevabı "Geliyorum" olan
 /// etkinlikte uygulama değerlendirme penceresi için fırsat denetlenir
 /// (ADR-0016).
 ///
@@ -70,6 +73,12 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
     final eylem = ref.watch(etkinlikEylemProvider(anahtar));
     final etkinlik = detay.value;
     final notifier = ref.read(etkinlikDetayProvider(anahtar).notifier);
+    final yonetebilir =
+        etkinlik != null && etkinlik.callerCanManage && !iptalEdildi(etkinlik);
+    final organizator = etkinlik?.createdByUserId;
+    final sikayetEdilebilir =
+        etkinlik != null &&
+        (organizator == null || !ref.watch(kendisiMiProvider(organizator)));
     return Scaffold(
       appBar: AppBar(
         title: Text(m.etkinlik_detay_baslik),
@@ -84,9 +93,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
                     : () => unawaited(_takvimeEkle(context, ref, anahtar)),
               ),
             ),
-          if (etkinlik != null &&
-              etkinlik.callerCanManage &&
-              !iptalEdildi(etkinlik))
+          if (yonetebilir || sikayetEdilebilir)
             PopupMenuButton<_Yonetim>(
               tooltip: m.etkinlik_islemler,
               enabled: eylem == null,
@@ -96,17 +103,35 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
                     context.go(Adresler.etkinlikDuzenle(tayfaId, etkinlikId));
                   case _Yonetim.iptal:
                     unawaited(_iptalEt(context, ref, anahtar));
+                  case _Yonetim.sikayet:
+                    unawaited(
+                      sikayetSayfasiniAc(
+                        context,
+                        SikayetHedefi.tayfada(
+                          tayfaId: tayfaId,
+                          tur: ReportTargetType.event,
+                          id: etkinlikId,
+                        ),
+                      ),
+                    );
                 }
               },
               itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: _Yonetim.duzenle,
-                  child: Text(m.etkinlik_duzenle),
-                ),
-                PopupMenuItem(
-                  value: _Yonetim.iptal,
-                  child: Text(m.etkinlik_iptal_et),
-                ),
+                if (yonetebilir) ...[
+                  PopupMenuItem(
+                    value: _Yonetim.duzenle,
+                    child: Text(m.etkinlik_duzenle),
+                  ),
+                  PopupMenuItem(
+                    value: _Yonetim.iptal,
+                    child: Text(m.etkinlik_iptal_et),
+                  ),
+                ],
+                if (sikayetEdilebilir)
+                  PopupMenuItem(
+                    value: _Yonetim.sikayet,
+                    child: Text(m.sikayet_et),
+                  ),
               ],
             ),
         ],
@@ -167,7 +192,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
   }
 }
 
-enum _Yonetim { duzenle, iptal }
+enum _Yonetim { duzenle, iptal, sikayet }
 
 /// [context]'teki öğenin ekrandaki yeri (iPad paylaşım menüsü için).
 Rect? _konum(BuildContext context) {

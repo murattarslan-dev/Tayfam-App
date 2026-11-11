@@ -26,6 +26,9 @@ const String sabitlemeYolu =
     '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}/pin';
 const String etkinliklerYolu = '/v1/tayfas/{tayfa_id}/events';
 
+/// Örnek duyuruların yazarı.
+const String duyuruYazariId = '00000000-0000-4000-8000-000000000001';
+
 /// Örnek duyuru (`Announcement`) JSON'u.
 Map<String, Object?> duyuruJson(
   String id, {
@@ -33,10 +36,11 @@ Map<String, Object?> duyuruJson(
   String govde = 'Saat 9’da Moda’dayız.',
   bool sabit = false,
   String zaman = '2026-11-10T10:00:00Z',
+  String yazar = duyuruYazariId,
 }) => {
   'id': id,
   'tayfa_id': ornekTayfaId,
-  'author_user_id': '00000000-0000-4000-8000-000000000001',
+  'author_user_id': yazar,
   'title': baslik,
   'body': govde,
   'pinned': sabit,
