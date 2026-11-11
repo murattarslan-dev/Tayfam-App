@@ -40,5 +40,6 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0012](docs/adr/0012-giris-ve-kayit-akisi.md) | Giriş ve kayıt | Sürüm kontrolü, Google girişi, doğum tarihi teyidi, sürümlü hukuki metinler tayfam.app'te |
 | [0013](docs/adr/0013-tanitim-sitesi.md) | Tanıtım sitesi | `site/` klasörü, JavaScript yok, main'den CI ile Cloudflare Pages'e |
 | [0014](docs/adr/0014-tayfa-listesi-katilim-ve-olusturma.md) | Tayfa ve katılım | Son tayfa hatırlanır, bekleyenler panelde, kodla katılım, sihirbazla oluşturma, sistem paylaşımı |
+| [0015](docs/adr/0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru | İki bölümlü ana sayfa, sihirbaz, OSM harita seçici, varış bildiriminde tek seferlik konum |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).
