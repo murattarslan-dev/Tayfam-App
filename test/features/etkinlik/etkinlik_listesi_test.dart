@@ -8,7 +8,6 @@ import 'package:tayfam/features/etkinlik/etkinlik.dart';
 
 import '../../yardimcilar.dart';
 import '../duyuru/sahteler.dart';
-import '../tayfa/sahteler.dart';
 
 void main() {
   test('yaklaşan etkinlikler sayfalı okunuyor', () async {

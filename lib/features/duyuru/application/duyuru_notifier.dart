@@ -28,8 +28,8 @@ class DuyuruNotifier extends AsyncNotifier<Announcement> {
     ref.watch(oturumDurumuProvider);
     final depo = ref.watch(duyuruDeposuProvider);
     final liste = duyuruListesiProvider(anahtar.tayfaId);
-    if (ref.exists(liste)) {
-      for (final d in ref.read(liste).value?.ogeler ?? const []) {
+    if (ref.read(liste.exists)) {
+      for (final d in ref.read(liste).value?.ogeler ?? const <Announcement>[]) {
         if (d.id == anahtar.duyuruId) return d;
       }
     }
@@ -58,7 +58,7 @@ class DuyuruNotifier extends AsyncNotifier<Announcement> {
     await depo.sil(tayfaId, duyuruId);
     if (!ref.mounted) return;
     final liste = duyuruListesiProvider(tayfaId);
-    if (ref.exists(liste)) ref.read(liste.notifier).cikar(duyuruId);
+    if (ref.read(liste.exists)) ref.read(liste.notifier).cikar(duyuruId);
   });
 
   Future<Object?> _islem(Future<void> Function() islem) async {
@@ -92,10 +92,10 @@ Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
 void duyuruyuYansit(Ref ref, String tayfaId, Announcement duyuru) {
   _listeyeYansit(ref, tayfaId, duyuru);
   final tek = duyuruProvider((tayfaId: tayfaId, duyuruId: duyuru.id));
-  if (ref.exists(tek)) ref.read(tek.notifier).yansit(duyuru);
+  if (ref.read(tek.exists)) ref.read(tek.notifier).yansit(duyuru);
 }
 
 void _listeyeYansit(Ref ref, String tayfaId, Announcement duyuru) {
   final liste = duyuruListesiProvider(tayfaId);
-  if (ref.exists(liste)) ref.read(liste.notifier).yansit(duyuru);
+  if (ref.read(liste.exists)) ref.read(liste.notifier).yansit(duyuru);
 }
