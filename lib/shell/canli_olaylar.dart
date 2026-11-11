@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
@@ -29,6 +30,8 @@ class _CanliOlaylarState extends ConsumerState<CanliOlaylar> {
   void initState() {
     super.initState();
     ref.read(e2eYoneticisiProvider);
+    // Geçmiş arşivi, eşleştirme ve anahtar yenileme (ADR-0020).
+    ref.read(gecmisYoneticisiProvider);
     _abonelik = ref.read(realtimeIstemcisiProvider).olaylar.listen((olay) {
       if (olay is BildirimGeldi && mounted) bildirimleriYenile(ref);
     });

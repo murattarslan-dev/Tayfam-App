@@ -58,12 +58,22 @@ void main() {
     test('hedefin ekranı yoksa Bildirimler sekmesi', () {
       final b = pushBildirimi({
         'notification_id': _bildirim,
-        'type': 'data_export_ready',
-        'target_type': 'data_export',
+        'type': 'report_resolved',
+        'target_type': 'report',
         'target_id': _hedef,
       }, simdi: simdi);
       expect(b, isNotNull);
       expect(pushAdresi(b), Adresler.bildirimler);
+    });
+
+    test('veri dışa aktarma hazır: "Verilerimi indir" (ADR-0022)', () {
+      final b = pushBildirimi({
+        'notification_id': _bildirim,
+        'type': 'data_export_ready',
+        'target_type': 'data_export',
+        'target_id': _hedef,
+      }, simdi: simdi);
+      expect(pushAdresi(b), Adresler.veriDisaAktarma);
     });
 
     final gecersizler = <String, Map<String, String>>{

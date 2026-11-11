@@ -15,7 +15,12 @@ sealed class ApiHatasi implements Exception {
 /// Arayüz [type]'a göre davranır; bilinmeyen ya da ayrıştırılamayan kod
 /// [ProblemType.unknown] olur ve genel hata metnine düşer.
 final class ApiProblem extends ApiHatasi {
-  const ApiProblem({required this.type, required this.status, this.retryAfter});
+  const ApiProblem({
+    required this.type,
+    required this.status,
+    this.retryAfter,
+    this.cihazFarki,
+  });
 
   /// `type` alanındaki `https://tayfam.app/problems/<kod>` kodu.
   final ProblemType type;
@@ -27,8 +32,24 @@ final class ApiProblem extends ApiHatasi {
   /// `slow-mode`).
   final Duration? retryAfter;
 
+  /// `e2e-devices-changed` (409) cevabının cihaz listeleri; başka türde
+  /// `null`.
+  final E2eCihazFarki? cihazFarki;
+
   @override
   String toString() => 'ApiProblem(${type.name}, $status)';
+}
+
+/// `e2e-devices-changed` cevabındaki cihaz kimlikleri (sözleşme:
+/// `E2EDevicesChangedProblem`). Yalnızca biçimi geçerli UUID'ler alınır.
+final class E2eCihazFarki {
+  const E2eCihazFarki({required this.eksik, required this.eski});
+
+  /// `missing_device_ids`: zarf ya da paylaşım eksik cihazlar.
+  final List<String> eksik;
+
+  /// `stale_device_ids`: artık olmayan, değişmiş ya da fazla cihazlar.
+  final List<String> eski;
 }
 
 /// İstek sunucuya ulaşamadı ya da bağlantı koptu.
