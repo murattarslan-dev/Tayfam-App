@@ -8,6 +8,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
@@ -48,7 +49,7 @@ void main() {
     // Diğer sekmeler çalışıyor.
     await tester.tap(_sekme('gezinme_sekme_profil'));
     await tester.pumpAndSettle();
-    expect(find.text(arbMetni('gezinme_yer_tutucu_aciklama')), findsOneWidget);
+    expect(find.byType(ProfilEkrani), findsOneWidget);
     expect(
       yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
       '/profil',

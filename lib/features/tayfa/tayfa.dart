@@ -16,6 +16,8 @@ export 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart'
         tayfaAdiProvider,
         tayfalarYukleniyorProvider,
         tayfalarimProvider;
+export 'package:tayfam/features/tayfa/data/paylasim.dart'
+    show Paylasici, paylasiciProvider;
 export 'package:tayfam/features/tayfa/data/tayfa_deposu.dart'
     show TayfaDeposu, tayfaDeposuProvider;
 export 'package:tayfam/features/tayfa/presentation/karsilama_ekrani.dart';
