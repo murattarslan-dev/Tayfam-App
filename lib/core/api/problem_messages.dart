@@ -16,6 +16,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// gösterilir; başka her hata (beklenmeyen istisnalar dahil) genel hata
 /// metnine düşer.
 String hataMetni(AppLocalizations m, Object hata) => switch (hata) {
+  ApiProblem(type: ProblemType.unknown, :final status)
+      when sunucuUlasilamiyorMu(status) =>
+    m.hata_sunucu_ulasilamiyor,
   ApiProblem(:final type) => problemMetni(m, type),
   ApiOffline() => m.hata_baglanti_yok,
   ApiTimeout() => m.hata_zaman_asimi,
@@ -125,3 +128,10 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.messageRequestNotFound => m.hata_message_request_not_found,
   ProblemType.unknown => m.hata_genel,
 };
+
+/// Problem gövdesi olmadan gelen ağ geçidi hataları: API'nin önündeki
+/// katman (Cloudflare tüneli) sunucuya ulaşamadığında 502/503/504 ya da
+/// Cloudflare'in 520–530 kodlarını kendi sayfasıyla döndürür. Sunucunun
+/// kendi `problem+json` cevabı (ör. `unavailable`) kendi metnini alır.
+bool sunucuUlasilamiyorMu(int status) =>
+    const {502, 503, 504}.contains(status) || (status >= 520 && status <= 530);
