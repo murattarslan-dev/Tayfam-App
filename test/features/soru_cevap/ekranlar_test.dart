@@ -309,13 +309,30 @@ void main() {
       );
     });
 
-    testWidgets('üyeye başkasının sorusunda menü yok; kendi cevabında var', (
-      tester,
-    ) async {
+    testWidgets('üye: başkasının sorusunda yalnızca şikâyet', (tester) async {
       ekranBoyutu(tester, yukseklik: 1600);
       await _soruyuAc(tester, _detayTasimasi());
-      expect(_soruMenusu, findsNothing);
-      expect(_cevapMenusu, findsOneWidget);
+      expect(_cevapMenusu, findsNWidgets(2));
+
+      await tester.tap(_soruMenusu);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('soru_sil')), findsNothing);
+      expect(find.text(arbMetni('soru_duzenle')), findsNothing);
+      expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
+      await tester.tapAt(Offset.zero);
+      await tester.pumpAndSettle();
+
+      // Kendi cevabında şikâyet yok; başkasınınkinde yalnızca şikâyet.
+      await tester.tap(_cevapMenusu.first);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('soru_sil')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_et')), findsNothing);
+      await tester.tapAt(Offset.zero);
+      await tester.pumpAndSettle();
+      await tester.tap(_cevapMenusu.last);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('soru_sil')), findsNothing);
+      expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
     });
 
     testWidgets('moderatör başkasının sorusunu siler: gizleme açıklaması', (
@@ -371,7 +388,7 @@ void main() {
       await _soruyuAc(tester, tasima);
       expect(find.text('2 cevap'), findsOneWidget);
 
-      await tester.tap(_cevapMenusu);
+      await tester.tap(_cevapMenusu.first);
       await tester.pumpAndSettle();
       await tester.tap(find.text(arbMetni('soru_sil')));
       await tester.pumpAndSettle();

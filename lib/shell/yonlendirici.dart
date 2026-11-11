@@ -16,6 +16,7 @@ import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/profil/profil.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
@@ -152,7 +153,7 @@ List<RouteBase> rotalariOlustur(
                 for (final modul in moduller) ...modul.rotalar,
                 // Tayfa yönetimi modül değildir; her tayfada vardır
                 // (ADR-0002, ADR-0018 §1).
-                ...tayfaYonetimRotalari(),
+                ...tayfaYonetimRotalari(ekRotalar: moderasyonRotalari),
               ],
             ),
           ],

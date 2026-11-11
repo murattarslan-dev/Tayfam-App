@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
+import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/features/anket/anket.dart';
@@ -8,6 +9,7 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
@@ -41,10 +43,31 @@ final List<Override> kayitOverridelari = [
   etkinlikTurleriProvider.overrideWithValue(etkinlikTuruKaydi),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
+  // Tayfa ayarlarındaki ek girişler: moderasyon kuyruğu (ADR-0018 §8).
+  yonetimEkGirisleriProvider.overrideWithValue(yonetimEkGirisleri),
   // Kişi profilinde "Mesaj gönder" (ADR-0018 §9).
   kisiProfiliEylemleriProvider.overrideWithValue(const [mesajGonderEylemi]),
   // Sohbet sekmesinin Birebir bölümü (ADR-0018 §9).
   birebirBolumuProvider.overrideWithValue(_birebirBolumu),
+  // Birebir mesaj şikâyeti: mesajın açık metni cihazdan (ADR-0018 §8).
+  birebirMesajSikayetiProvider.overrideWithValue(_birebirMesajSikayeti),
+];
+
+/// Tayfa ayarları ekranına başka paketlerin eklediği girişler; rotaları
+/// `shell/yonlendirici.dart`'ta `tayfaYonetimRotalari(ekRotalar:)` ile
+/// eklenir.
+const List<YonetimEkGirisi> yonetimEkGirisleri = [
+  YonetimEkGirisi(
+    ikon: moderasyonGirisIkonu,
+    etiket: moderasyonGirisEtiketi,
+    adres: moderasyonAdresi,
+  ),
 ];
 
 Widget _birebirBolumu(BuildContext context) => const BirebirSekmesi();
+
+Future<void> _birebirMesajSikayeti(
+  BuildContext context, {
+  required String mesajId,
+  required String metin,
+}) => birebirMesajiSikayetEt(context, mesajId: mesajId, mesajMetni: metin);

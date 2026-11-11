@@ -4,9 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_ekrani.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_karti.dart';
 import 'package:tayfam/features/duyuru/presentation/duyurular_ekrani.dart';
+import 'package:tayfam/features/sikayet/data/sikayet_deposu.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -33,7 +35,17 @@ Future<void> _duyuruyuAc(
   DuyuruEkrani(tayfaId: ornekTayfaId, duyuruId: duyuruId),
   themeMode: themeMode,
   tayfa: modulOverridelari(tasima),
+  overrides: [
+    sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
+    profilOkuyucuProvider.overrideWithValue(
+      (id) async => KullaniciAdi('Kişi', ben: id == _benimId),
+    ),
+  ],
 );
+
+/// Oturumdaki kullanıcı (duyuruların yazarı değil).
+const String _benimId = '00000000-0000-4000-8000-0000000000aa';
+const String _sikayetlerYolu = '/v1/tayfas/{tayfa_id}/reports';
 
 SahteTayfaTasima _rolle(String rol, [Map<String, TayfaYaniti>? yanitlar]) =>
     modulTasimasi({
@@ -250,14 +262,70 @@ void main() {
       );
     });
 
-    testWidgets('üyeye işlem menüsü yok', (tester) async {
+    testWidgets('üyeye yönetim işlemi yok; yalnızca şikâyet', (tester) async {
       ekranBoyutu(tester);
       await _duyuruyuAc(
         tester,
         _rolle('member', {'GET $duyuruYolu': yanit(duyuruJson(duyuruId1))}),
       );
 
+      await tester.tap(_islemMenusu);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('duyuru_sil')), findsNothing);
+      expect(find.text(arbMetni('duyuru_duzenle')), findsNothing);
+      expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
+    });
+
+    testWidgets('kendi duyurusunu şikâyet edemez; üyeye menü yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _duyuruyuAc(
+        tester,
+        _rolle('member', {
+          'GET $duyuruYolu': yanit(duyuruJson(duyuruId1, yazar: _benimId)),
+        }),
+      );
+
       expect(_islemMenusu, findsNothing);
+    });
+
+    testWidgets('üye şikâyet eder: gerekçe seçilir, POST gider', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = _rolle('member', {
+        'GET $duyuruYolu': yanit(duyuruJson(duyuruId1)),
+        'POST $_sikayetlerYolu': yanit({
+          'id': '9a8b7c6d-0000-4000-8000-000000000001',
+          'tayfa_id': ornekTayfaId,
+          'target_type': 'announcement',
+          'target_id': duyuruId1,
+          'reason': 'spam',
+          'status': 'open',
+          'created_at': '2026-11-11T10:00:00Z',
+        }),
+      });
+      await _duyuruyuAc(tester, tasima);
+
+      await tester.tap(_islemMenusu);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(arbMetni('sikayet_et')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('sikayet_soru_duyuru')), findsOneWidget);
+      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_spam')));
+      await tester.pumpAndSettle();
+      await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
+      await tester.pumpAndSettle();
+
+      final giden = tasima.giden('POST', _sikayetlerYolu);
+      expect(giden, hasLength(1));
+      expect(giden.single.govde, {
+        'target_type': 'announcement',
+        'target_id': duyuruId1,
+        'reason': 'spam',
+      });
+      expect(find.text(arbMetni('sikayet_iletildi')), findsOneWidget);
     });
 
     testWidgets('yönetici siler: onay sorulur, sonra DELETE', (tester) async {
