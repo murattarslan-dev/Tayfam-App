@@ -43,5 +43,6 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0015](docs/adr/0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru | İki bölümlü ana sayfa, sihirbaz, OSM harita seçici, varış bildiriminde tek seferlik konum |
 | [0016](docs/adr/0016-uygulama-degerlendirme-penceresi.md) | Değerlendirme | "Geliyorum" dediği ilk etkinlik bitince mağaza penceresi, cihazda bir kez |
 | [0017](docs/adr/0017-hosgeldin-tanitimi.md) | Hoş geldin | İlk açılışta girişten önce 5 sayfa, cihazda bir kez, kendi bileşenlerle görseller |
+| [0018](docs/adr/0018-faz1-kalan-moduller.md) | Faz 1 kalanı | Tayfa yönetimi, profil, bildirim, soru-cevap, anket, derin link, arkadaşlık, şikâyet, sohbet; E2E sonra; sürüm hattı |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).
