@@ -131,10 +131,7 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
   Future<Object?> takvimeEkle({Rect? konum}) async {
     if (state != null) return null;
     return _calistir(EtkinlikEylemi.takvim, () async {
-      final icerik = await _depo.takvim(
-        anahtar.tayfaId,
-        anahtar.etkinlikId,
-      );
+      final icerik = await _depo.takvim(anahtar.tayfaId, anahtar.etkinlikId);
       if (!ref.mounted) return;
       await ref.read(takvimPaylasiciProvider).paylas(icerik, konum: konum);
     });

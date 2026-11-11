@@ -75,26 +75,29 @@ void main() {
     expect(n.calisan, KullaniciAdlariNotifier.enCokEszamanli);
   });
 
-  test('bulunamayan kullanıcı silinmiş; diğer hata önbelleğe alınmaz', () async {
-    final okuyucu = _SahteOkuyucu();
-    final c = _kapsayici(okuyucu);
-    final n = c.read(kullaniciAdlariProvider.notifier)
-      ..iste('silinen')
-      ..iste('agsiz');
-    okuyucu
-      ..hata(
-        'silinen',
-        const ApiProblem(type: ProblemType.userNotFound, status: 404),
-      )
-      ..hata('agsiz', const ApiOffline());
-    await pumpEventQueue();
-    expect(c.read(kullaniciAdlariProvider), {
-      'silinen': const KullaniciAdi.silinmis(),
-    });
+  test(
+    'bulunamayan kullanıcı silinmiş; diğer hata önbelleğe alınmaz',
+    () async {
+      final okuyucu = _SahteOkuyucu();
+      final c = _kapsayici(okuyucu);
+      final n = c.read(kullaniciAdlariProvider.notifier)
+        ..iste('silinen')
+        ..iste('agsiz');
+      okuyucu
+        ..hata(
+          'silinen',
+          const ApiProblem(type: ProblemType.userNotFound, status: 404),
+        )
+        ..hata('agsiz', const ApiOffline());
+      await pumpEventQueue();
+      expect(c.read(kullaniciAdlariProvider), {
+        'silinen': const KullaniciAdi.silinmis(),
+      });
 
-    n.iste('agsiz');
-    expect(okuyucu.istekler['agsiz'], hasLength(2), reason: 'tekrar istenir');
-  });
+      n.iste('agsiz');
+      expect(okuyucu.istekler['agsiz'], hasLength(2), reason: 'tekrar istenir');
+    },
+  );
 
   test('oturum değişince önbellek boşalır, eski istek sonuç yazmaz', () async {
     final okuyucu = _SahteOkuyucu();
