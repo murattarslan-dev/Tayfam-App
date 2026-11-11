@@ -164,11 +164,15 @@ void main() {
       final o = _Ortam();
       await o.ac(tester, const ProfilEkrani());
 
+      await tester.ensureVisible(_metin('profil_referans_kopyala'));
+      await tester.pumpAndSettle();
       await tester.tap(_metin('profil_referans_kopyala'));
       await tester.pumpAndSettle();
       expect(o.paylasici.kopyalanan, [ornekKod]);
       expect(_metin('profil_referans_kopyalandi'), findsOneWidget);
 
+      await tester.ensureVisible(_metin('profil_referans_paylas'));
+      await tester.pumpAndSettle();
       await tester.tap(_metin('profil_referans_paylas'));
       await tester.pumpAndSettle();
       expect(o.paylasici.paylasilan.single, contains('https://tayfam.app/r/'));

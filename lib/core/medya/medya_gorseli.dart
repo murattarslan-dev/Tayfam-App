@@ -30,9 +30,8 @@ class MedyaGorselNotifier extends AsyncNotifier<Uint8List?> {
   final MedyaGorselAnahtari anahtar;
 
   @override
-  Future<Uint8List?> build() => ref
-      .watch(medyaOnbellegiProvider)
-      .bayt(anahtar.uploadId, anahtar.varyant);
+  Future<Uint8List?> build() =>
+      ref.watch(medyaOnbellegiProvider).bayt(anahtar.uploadId, anahtar.varyant);
 }
 
 /// Bir dosya varyantının baytları. Hata otomatik yeniden denenmez.
@@ -85,8 +84,7 @@ class MedyaGorseli extends ConsumerWidget {
           fit: fit,
           gaplessPlayback: true,
           excludeFromSemantics: true,
-          errorBuilder: (_, _, _) =>
-              _bos(context, Icons.broken_image_outlined),
+          errorBuilder: (_, _, _) => _bos(context, Icons.broken_image_outlined),
         );
       case AsyncLoading():
         icerik = Stack(
@@ -164,11 +162,7 @@ class KullaniciAvatari extends StatelessWidget {
                 excludeSemantics: true,
                 child: basHarf,
               )
-            : MedyaGorseli(
-                uploadId: id,
-                etiket: etiket,
-                yerTutucu: basHarf,
-              ),
+            : MedyaGorseli(uploadId: id, etiket: etiket, yerTutucu: basHarf),
       ),
     );
   }

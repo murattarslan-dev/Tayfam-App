@@ -81,13 +81,13 @@ Future<SahteTasima> _ac(
         () => SabitOturumDurumu(OturumDurumu.acik),
       ),
       ...medyaOverridelari(
-      tasima: tasima,
-      secici: SahteSecici([k]),
-      kodlayici: SahteKodlayici(
-        kaynak: k,
-        kaynakOlcusu: const JpegOlculeri(4032, 3024),
-      ),
-      depo: sahteDepo(depo ?? []),
+        tasima: tasima,
+        secici: SahteSecici([k]),
+        kodlayici: SahteKodlayici(
+          kaynak: k,
+          kaynakOlcusu: const JpegOlculeri(4032, 3024),
+        ),
+        depo: sahteDepo(depo ?? []),
         linkIsteyici: (idler) async => [
           for (final id in idler) MediaUrls.fromJson(medyaLinkiJson(id)),
         ],

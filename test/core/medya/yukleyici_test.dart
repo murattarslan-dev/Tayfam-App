@@ -64,42 +64,45 @@ final class _Ortam {
 }
 
 void main() {
-  test('aç → iki PUT → tamamla; token ve Tayfam başlıkları depoya gitmez', () async {
-    final o = _Ortam({
-      _acYolu: yuklemeAcildiJson,
-      _tamamlaYolu: () => {'upload': yuklemeJson()},
-    });
+  test(
+    'aç → iki PUT → tamamla; token ve Tayfam başlıkları depoya gitmez',
+    () async {
+      final o = _Ortam({
+        _acYolu: yuklemeAcildiJson,
+        _tamamlaYolu: () => {'upload': yuklemeJson()},
+      });
 
-    expect(await o.yukle(), ornekUploadId);
+      expect(await o.yukle(), ornekUploadId);
 
-    expect(o.depo, hasLength(2));
-    for (final istek in o.depo) {
-      expect(istek.method, 'PUT');
-      expect(istek.url.host, 'ornekhesap.r2.cloudflarestorage.com');
-      final adlar = istek.headers.keys.map((k) => k.toLowerCase()).toSet();
-      expect(adlar, isNot(contains('authorization')));
-      expect(adlar.where((a) => a.startsWith('x-tayfam')), isEmpty);
-      expect(istek.headers['Content-Type'], 'image/jpeg');
-      expect(istek.followRedirects, isFalse);
-    }
-    expect(o.depo[0].bodyBytes, _goruntu().onizleme);
-    expect(o.depo[1].bodyBytes, _goruntu().tam);
+      expect(o.depo, hasLength(2));
+      for (final istek in o.depo) {
+        expect(istek.method, 'PUT');
+        expect(istek.url.host, 'ornekhesap.r2.cloudflarestorage.com');
+        final adlar = istek.headers.keys.map((k) => k.toLowerCase()).toSet();
+        expect(adlar, isNot(contains('authorization')));
+        expect(adlar.where((a) => a.startsWith('x-tayfam')), isEmpty);
+        expect(istek.headers['Content-Type'], 'image/jpeg');
+        expect(istek.followRedirects, isFalse);
+      }
+      expect(o.depo[0].bodyBytes, _goruntu().onizleme);
+      expect(o.depo[1].bodyBytes, _goruntu().tam);
 
-    final ac = o.api.istekler.first.govde! as Map<String, Object?>;
-    expect(ac['purpose'], 'avatar');
-    expect(ac.containsKey('tayfa_id'), isFalse);
-    expect(ac['variants'], [
-      {'kind': 'preview', 'content_type': 'image/jpeg', 'size_bytes': 10},
-      {'kind': 'full', 'content_type': 'image/jpeg', 'size_bytes': 20},
-    ]);
-    expect(o.api.istekler.last.govde, {'width': 1600, 'height': 1200});
+      final ac = o.api.istekler.first.govde! as Map<String, Object?>;
+      expect(ac['purpose'], 'avatar');
+      expect(ac.containsKey('tayfa_id'), isFalse);
+      expect(ac['variants'], [
+        {'kind': 'preview', 'content_type': 'image/jpeg', 'size_bytes': 10},
+        {'kind': 'full', 'content_type': 'image/jpeg', 'size_bytes': 20},
+      ]);
+      expect(o.api.istekler.last.govde, {'width': 1600, 'height': 1200});
 
-    // Günlükte link ya da imza yok.
-    for (final satir in o.gunluk) {
-      expect(satir, isNot(contains('http')));
-      expect(satir, isNot(contains('Signature')));
-    }
-  });
+      // Günlükte link ya da imza yok.
+      for (final satir in o.gunluk) {
+        expect(satir, isNot(contains('http')));
+        expect(satir, isNot(contains('Signature')));
+      }
+    },
+  );
 
   test('kapakta tayfa kimliği gönderilir', () async {
     final o = _Ortam({
@@ -152,28 +155,35 @@ void main() {
     await expectLater(
       o.yukle(),
       throwsA(
-        isA<ApiProblem>().having((p) => p.type, 'type', ProblemType.unavailable),
+        isA<ApiProblem>().having(
+          (p) => p.type,
+          'type',
+          ProblemType.unavailable,
+        ),
       ),
     );
     expect(o.api.sayi('POST', '/v1/uploads'), 1);
     expect(o.depo, isEmpty);
   });
 
-  test('süresi dolmuş link (403): aynı client_request_id ile yeni linkler', () async {
-    var put = 0;
-    final o = _Ortam(
-      {
-        _acYolu: yuklemeAcildiJson,
-        _tamamlaYolu: () => {'upload': yuklemeJson()},
-      },
-      depoYaniti: (_) =>
-          http.Response('', ++put == 1 ? 403 : 200, headers: {}),
-    );
-    expect(await o.yukle(), ornekUploadId);
-    final kimlikler = o.acmaKimlikleri();
-    expect(kimlikler, hasLength(2));
-    expect(kimlikler.toSet(), hasLength(1));
-  });
+  test(
+    'süresi dolmuş link (403): aynı client_request_id ile yeni linkler',
+    () async {
+      var put = 0;
+      final o = _Ortam(
+        {
+          _acYolu: yuklemeAcildiJson,
+          _tamamlaYolu: () => {'upload': yuklemeJson()},
+        },
+        depoYaniti: (_) =>
+            http.Response('', ++put == 1 ? 403 : 200, headers: {}),
+      );
+      expect(await o.yukle(), ornekUploadId);
+      final kimlikler = o.acmaKimlikleri();
+      expect(kimlikler, hasLength(2));
+      expect(kimlikler.toSet(), hasLength(1));
+    },
+  );
 
   test('PUT bağlantı hatası tekrarlanır', () async {
     var put = 0;
@@ -229,9 +239,7 @@ void main() {
     });
 
     test('Content-Length gövdeyle tutmazsa istek gitmez', () async {
-      final o = _Ortam({
-        _acYolu: () => yuklemeAcildiJson(onizlemeBoyutu: 11),
-      });
+      final o = _Ortam({_acYolu: () => yuklemeAcildiJson(onizlemeBoyutu: 11)});
       await expectLater(o.yukle(), throwsA(isA<GecersizMedyaLinki>()));
       expect(o.depo, isEmpty);
     });

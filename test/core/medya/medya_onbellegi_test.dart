@@ -87,22 +87,25 @@ void main() {
     expect(o.istekler, hasLength(2));
   });
 
-  test('görülemeyen ve geçersiz linkli dosya null; kısa süre sorulmaz', () async {
-    final o = _Ortam(
-      yanit: (idler) => [
-        MediaUrls.fromJson(
-          medyaLinkiJson(_b, alan: 'https://kotu.example.com'),
-        ),
-      ],
-    );
-    expect(await o.onbellek.link(_a), isNull);
-    expect(await o.onbellek.link(_b), isNull);
-    expect(await o.onbellek.link(_a), isNull);
-    expect(o.istekler, hasLength(2));
-    o.simdi = o.simdi.add(const Duration(minutes: 6));
-    await o.onbellek.link(_a);
-    expect(o.istekler, hasLength(3));
-  });
+  test(
+    'görülemeyen ve geçersiz linkli dosya null; kısa süre sorulmaz',
+    () async {
+      final o = _Ortam(
+        yanit: (idler) => [
+          MediaUrls.fromJson(
+            medyaLinkiJson(_b, alan: 'https://kotu.example.com'),
+          ),
+        ],
+      );
+      expect(await o.onbellek.link(_a), isNull);
+      expect(await o.onbellek.link(_b), isNull);
+      expect(await o.onbellek.link(_a), isNull);
+      expect(o.istekler, hasLength(2));
+      o.simdi = o.simdi.add(const Duration(minutes: 6));
+      await o.onbellek.link(_a);
+      expect(o.istekler, hasLength(3));
+    },
+  );
 
   test('ağ hatası önbelleğe alınmaz', () async {
     var ilk = true;

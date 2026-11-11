@@ -19,11 +19,7 @@ Future<(HazirGoruntu, SahteKodlayici)> _hazirla(
   Uint8List? kaynak,
 }) async {
   final k = kaynak ?? ornekJpeg();
-  final kodlayici = SahteKodlayici(
-    kaynak: k,
-    kaynakOlcusu: olcu,
-    donuk: donuk,
-  );
+  final kodlayici = SahteKodlayici(kaynak: k, kaynakOlcusu: olcu, donuk: donuk);
   final sonuc = await GoruntuHazirlayici(kodlayici).hazirla(k);
   return (sonuc, kodlayici);
 }
@@ -101,18 +97,15 @@ void main() {
 
   group('metadata', () {
     for (final ilerlemeli in [false, true]) {
-      test(
-        'kodlayıcı metadata bıraksa da çıktı temiz '
-        '(${ilerlemeli ? 'ilerlemeli' : 'temel'})',
-        () async {
-          final k = ornekJpeg(ilerlemeli: ilerlemeli);
-          final (g, _) = await _hazirla(
-            const JpegOlculeri(4032, 3024),
-            kaynak: k,
-          );
-          _metadataYok(g);
-        },
-      );
+      test('kodlayıcı metadata bıraksa da çıktı temiz '
+          '(${ilerlemeli ? 'ilerlemeli' : 'temel'})', () async {
+        final k = ornekJpeg(ilerlemeli: ilerlemeli);
+        final (g, _) = await _hazirla(
+          const JpegOlculeri(4032, 3024),
+          kaynak: k,
+        );
+        _metadataYok(g);
+      });
     }
 
     test('HEIC kaynağı platform kodlayıcısıyla JPEG olur', () async {

@@ -42,8 +42,9 @@ final class MedyaLinki {
 }
 
 /// Sunucudan toplu link isteyen fonksiyon (testlerde sahtesi verilir).
-typedef MedyaLinkIsteyici =
-    Future<List<MediaUrls>> Function(List<String> uploadIdleri);
+typedef MedyaLinkIsteyici = Future<List<MediaUrls>> Function(
+  List<String> uploadIdleri,
+);
 
 /// `POST /v1/media/urls` (1–100 kimlik).
 final medyaLinkIsteyiciProvider = Provider<MedyaLinkIsteyici>((ref) {
@@ -196,8 +197,12 @@ final class MedyaOnbellegi {
       _baytlar[anahtar] = onceki; // En son kullanılan sona.
       return Future.value(onceki);
     }
+    // Geri çağırma bir şey döndürmez: kaldırılan Future'ı döndürseydi
+    // whenComplete kendi sonucunu beklerdi (kilitlenme).
     return _inenler[anahtar] ??= _indir(uploadId, varyant, anahtar)
-        .whenComplete(() => _inenler.remove(anahtar));
+        .whenComplete(() {
+          _inenler.remove(anahtar);
+        });
   }
 
   Future<Uint8List?> _indir(
