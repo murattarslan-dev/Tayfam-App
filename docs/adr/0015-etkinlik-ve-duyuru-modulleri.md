@@ -198,3 +198,19 @@ Platform sahibinin kararı (2026-11-11):
      taşıyamaz. Detaydaki `aracBolumu` kancası kayıttan bağlıdır.
   4. **Konvoy rotası** (`ConvoyDetailsInput.route`) sihirbazda girilmez;
      §7'deki 3. paketle (türe özel araçlar) gelir.
+- **2026-11-11 (PR #42):**
+  - `EtkinlikTuru.aracBolumu` artık etkinlik kimliği yerine `Event` alır,
+    çünkü türe özel araçlar tayfa kimliğine ve tek etkinlik yanıtındaki
+    ayrıntılara ihtiyaç duyar. Ortak taban `KayitliEtkinlikTuru`.
+  - Yürüyüşte "Geldim" gösterilmez; katılım "Çıktım" ile doğrulanır.
+  - Organizatör düzeltmesi yalnızca bitişten sonraki 7 gün içinde gösterilir.
+  - Kamp malzemesine kişi atama arayüzü yoktur; atanmışsa gösterilir.
+  - Oturumdaki kullanıcının kimliği profil ucunun `self` alanından ad
+    önbelleğiyle öğrenilir ("kendi aracım" gibi ayrımlar için; yetki kararı
+    değildir).
+  - Android izinleri: INTERNET, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION.
+    Arka plan konumu ve ön plan servisi izinleri `tools:node="remove"` ile
+    engellenir. `USE_BIOMETRIC` ve `USE_FINGERPRINT` de kaldırılmıştır;
+    Google girişi bunlar olmadan telefonda doğrulanmalıdır. CI, izinleri
+    derlenen APK'dan denetler.
+
