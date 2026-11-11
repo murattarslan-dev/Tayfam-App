@@ -1,6 +1,7 @@
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 
 const Set<String> _oturumAdresleri = {
   Adresler.giris,
@@ -8,6 +9,7 @@ const Set<String> _oturumAdresleri = {
   Adresler.onay,
   Adresler.acilis,
   Adresler.guncelleme,
+  Adresler.hosGeldin,
 };
 
 /// Yönlendiricinin her gezinmede çağırdığı koruma (ADR-0003).
@@ -18,6 +20,11 @@ const Set<String> _oturumAdresleri = {
 /// 0. Güncelleme gerekiyorsa ([guncellemeGerekli]) her adres "Güncelleme
 ///    gerekli" ekranına gider; başka bir şey yapılamaz (ADR-0012 §1.1).
 ///    Oturum kaydı henüz okunmadıysa açılış ekranı gösterilir.
+/// 0a. Oturum yoksa ve hoş geldin tanıtımı bu cihazda gösterilmediyse
+///    ([tanitim]) tanıtıma gidilir; tanıtım bayrağı okunurken açılış ekranı
+///    gösterilir (ADR-0017 §4: sürüm denetimi → tanıtım → giriş). Gelinen
+///    adres bir sistem adresi değilse yolu [korunacakHedef] ile tanıtım
+///    adresinde taşınır; tanıtım bitince oraya gidilir.
 /// 1. Oturum açık değilse durumun ekranına gidilir (giriş yok → giriş;
 ///    kayıt bekliyor → kayıt; yeniden onay → onay). Bu kontrol yetki
 ///    değildir; yetki sunucudadır (CLAUDE.md, kesin kural 5).
@@ -43,11 +50,24 @@ String? yonlendir({
   bool guncellemeGerekli = false,
   Set<String>? etkinTayfalar,
   bool tayfalarBekleniyor = false,
+  TanitimDurumu tanitim = TanitimDurumu.gosterildi,
 }) {
   final yol = konum.path;
 
   if (guncellemeGerekli) {
     return yol == Adresler.guncelleme ? null : Adresler.guncelleme;
+  }
+
+  if (oturum == OturumDurumu.girisYok) {
+    switch (tanitim) {
+      case TanitimDurumu.yukleniyor:
+        return yol == Adresler.acilis ? null : Adresler.acilis;
+      case TanitimDurumu.gosterilmedi:
+        if (yol == Adresler.hosGeldin) return null;
+        return Adresler.hosGeldinAdresi(korunacakHedef(konum));
+      case TanitimDurumu.gosterildi:
+        break;
+    }
   }
 
   final oturumAdresi = switch (oturum) {
@@ -84,6 +104,46 @@ String? yonlendir({
     }
   }
   return null;
+}
+
+/// Tanıtıma yönlendirilirken korunacak yol (ADR-0017 §1); kök, karşılama
+/// ve açılış/oturum ekranları için `null`.
+///
+/// Yalnızca yol alınır: sorgu ve fragment (davet token'ı, kesin kural 9)
+/// taşınmaz. Davet ve referans linkini tanıtımdan sonra işlemek derin link
+/// işinindir; bu yalnızca yönlendirmenin bıraktığı kancadır.
+String? korunacakHedef(Uri konum) {
+  final yol = konum.path;
+  if (yol.isEmpty ||
+      yol == Adresler.kok ||
+      yol == Adresler.karsilama ||
+      _oturumAdresleri.contains(yol)) {
+    return null;
+  }
+  return guvenliHedef(yol);
+}
+
+/// Tanıtım adresindeki `hedef` parametresini doğrular (girdi kabul edilir):
+/// `/` ile başlayan, şema, alan adı, sorgu ve fragment taşımayan bir
+/// uygulama içi yol ise onu, değilse `null` döndürür.
+String? guvenliHedef(String? hedef) {
+  if (hedef == null || !hedef.startsWith('/') || hedef.startsWith('//')) {
+    return null;
+  }
+  final Uri uri;
+  try {
+    uri = Uri.parse(hedef);
+  } on FormatException {
+    return null;
+  }
+  if (uri.hasScheme ||
+      uri.hasAuthority ||
+      uri.hasQuery ||
+      uri.hasFragment ||
+      uri.path != hedef) {
+    return null;
+  }
+  return hedef;
 }
 
 /// `/t/<tayfaId>/…` adresindeki tayfa kimliği; adres tayfa adresi değilse

@@ -60,6 +60,21 @@ abstract final class Adresler {
   /// "Güncelleme gerekli" ekranı (ADR-0012 §1.1).
   static const guncelleme = '/guncelleme';
 
+  /// İlk açılıştaki hoş geldin tanıtımı (ADR-0017).
+  static const hosGeldin = '/hos-geldin';
+
+  /// Tanıtım bitince gidilecek adresin sorgu parametresi (ADR-0017 §1:
+  /// davet ve referans linki tanıtımdan sonra işlenir). Yalnızca yol taşır;
+  /// sorgu ve fragment (davet token'ı) hiçbir zaman buraya yazılmaz.
+  static const hedefParametresi = 'hedef';
+
+  /// Tanıtım adresi; [hedef] verilirse tanıtımdan sonra gidilecek yol.
+  static String hosGeldinAdresi([String? hedef]) {
+    if (hedef == null) return hosGeldin;
+    final sorgu = {hedefParametresi: hedef};
+    return Uri(path: hosGeldin, queryParameters: sorgu).toString();
+  }
+
   /// Tayfa oluşturma sihirbazı (ADR-0014 §4). Kodla katılım alttan açılan
   /// bir sayfadır; adresi yoktur.
   static const tayfaOlustur = '/tayfa-olustur';
