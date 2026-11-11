@@ -181,6 +181,12 @@ abstract final class Adresler {
   /// Cihazdaki bildirim izni ve sistem ayarı.
   static const bildirimAyarlari = '$profil/$bildirimAyarlariYolu';
 
+  /// KVKK veri dışa aktarma ekranının profil altındaki yolu (ADR-0022).
+  static const veriDisaAktarmaYolu = 'verilerim';
+
+  /// "Verilerimi indir": talep, durum ve indirme.
+  static const veriDisaAktarma = '$profil/$veriDisaAktarmaYolu';
+
   /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
   /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
   static const tayfaAyarlariYolu = 'ayarlar';

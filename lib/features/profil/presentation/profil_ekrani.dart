@@ -21,8 +21,8 @@ import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Profil sekmesi (ADR-0018 §2): referans kodu, arkadaşlık girişleri
-/// (ADR-0018 §7), katılım geçmişi
-/// görünürlüğü, tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
+/// (ADR-0018 §7), katılım geçmişi görünürlüğü, verilerimi indir
+/// (ADR-0022), tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
 /// metinler, çıkış ve hesap silme.
 ///
 /// Hesap ayarları okunamazsa yalnızca o bölüm hata gösterir; tema, çıkış
@@ -52,6 +52,8 @@ class ProfilEkrani extends StatelessWidget {
                   ArkadaslikGirisleri(),
                   SizedBox(height: TayfamSpacing.s24),
                   _GorunurlukBolumu(),
+                  SizedBox(height: TayfamSpacing.s24),
+                  _GizlilikBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
                   _TemaBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
@@ -269,6 +271,30 @@ String _gorunurlukAciklamasi(AppLocalizations m, ActivityVisibility g) =>
       ActivityVisibility.public ||
       ActivityVisibility.unknown => m.profil_gorunurluk_herkes_aciklama,
     };
+
+/// Gizlilik: KVKK veri dışa aktarma ("Verilerimi indir", ADR-0022).
+class _GizlilikBolumu extends StatelessWidget {
+  const _GizlilikBolumu();
+
+  @override
+  Widget build(BuildContext context) {
+    final metinler = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BolumBasligi(baslik: metinler.disa_aktarma_profil_bolum),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.download_outlined),
+          title: Text(metinler.disa_aktarma_baslik),
+          subtitle: Text(metinler.disa_aktarma_profil_aciklama),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.go(Adresler.veriDisaAktarma),
+        ),
+      ],
+    );
+  }
+}
 
 /// Tema: cihaz ayarı, açık, koyu. Seçim güvenli depoda tutulur.
 class _TemaBolumu extends ConsumerWidget {
