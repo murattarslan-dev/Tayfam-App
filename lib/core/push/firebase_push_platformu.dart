@@ -45,8 +45,7 @@ final class FirebasePushPlatformu implements PushPlatformu {
     }
   }
 
-  Future<FirebaseMessaging?> _hazir() async =>
-      await baslat() ? _fcm : null;
+  Future<FirebaseMessaging?> _hazir() async => await baslat() ? _fcm : null;
 
   @override
   Future<BildirimIzni> izin() async {

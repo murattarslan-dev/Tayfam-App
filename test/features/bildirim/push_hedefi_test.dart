@@ -110,9 +110,9 @@ void main() {
   });
 
   group('push metinleri', () {
-    final arb =
-        jsonDecode(File('lib/l10n/app_tr.arb').readAsStringSync())
-            as Map<String, Object?>;
+    final arb = jsonDecode(
+      File('lib/l10n/app_tr.arb').readAsStringSync(),
+    ) as Map<String, Object?>;
 
     test('her bildirim türünün başlığı ve gövdesi ARB\'de', () {
       for (final tur in NotificationType.values) {

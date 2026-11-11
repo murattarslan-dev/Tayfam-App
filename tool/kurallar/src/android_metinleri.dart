@@ -19,9 +19,7 @@ const String androidMetinDosyasi =
     'android/app/src/main/res/values/strings.xml';
 
 /// ARB'de Android'e giden anahtarlar: `push_<tür>_title|body`.
-final RegExp androidMetinAnahtari = RegExp(
-  r'^push_[a-z0-9_]+_(?:title|body)$',
-);
+final RegExp androidMetinAnahtari = RegExp(r'^push_[a-z0-9_]+_(?:title|body)$');
 
 /// [arbMetni]'ndeki (kaynak ARB) push anahtarlarından `strings.xml`'i
 /// üretir. Anahtarlar ada göre sıralıdır; metinler Android kaynak

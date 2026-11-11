@@ -87,9 +87,7 @@ void main() {
     });
 
     testWidgets('izin verilince durum "açık" olur', (tester) async {
-      final platform = SahtePushPlatformu(
-        izinDurumu: BildirimIzni.sorulmadi,
-      );
+      final platform = SahtePushPlatformu(izinDurumu: BildirimIzni.sorulmadi);
       await _ac(tester, const BildirimAyarlariEkrani(), platform);
       await tester.tap(_metin('bildirim_ayar_ac'));
       await tester.pumpAndSettle();
@@ -118,14 +116,10 @@ void main() {
 
   group('Bildirim izni açıklama kartı', () {
     for (final tema in [ThemeMode.light, ThemeMode.dark]) {
-      testWidgets('ihtiyaç doğunca görünür (${tema.name}, 2×)', (
-        tester,
-      ) async {
+      testWidgets('ihtiyaç doğunca görünür (${tema.name}, 2×)', (tester) async {
         ekranBoyutu(tester);
         ikiKatYazi(tester);
-        final platform = SahtePushPlatformu(
-          izinDurumu: BildirimIzni.sorulmadi,
-        );
+        final platform = SahtePushPlatformu(izinDurumu: BildirimIzni.sorulmadi);
         await _ac(
           tester,
           const BildirimIzniAlani(child: Scaffold(body: SizedBox.expand())),
@@ -163,9 +157,7 @@ void main() {
       expect(_metin('bildirim_izni_baslik'), findsNothing);
     });
 
-    testWidgets('"Şimdi değil" kartı kapatır, pencere açılmaz', (
-      tester,
-    ) async {
+    testWidgets('"Şimdi değil" kartı kapatır, pencere açılmaz', (tester) async {
       final platform = SahtePushPlatformu(izinDurumu: BildirimIzni.sorulmadi);
       await _ac(
         tester,
