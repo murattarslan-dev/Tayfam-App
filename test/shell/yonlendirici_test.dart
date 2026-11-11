@@ -11,6 +11,7 @@ import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
 import 'package:tayfam/features/profil/profil.dart';
+import 'package:tayfam/features/sohbet/data/kanal_deposu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
@@ -104,6 +105,16 @@ void main() {
       tester,
       overrides: [
         tayfaModulleriProvider.overrideWithValue(const [DenemeModulu()]),
+        // Sohbet sekmesinin kanal listesi (ağ yok).
+        kanalDeposuProvider.overrideWithValue(
+          KanalDeposu(
+            SahteTayfaTasima({
+              'GET /v1/tayfas/{tayfa_id}/channels': (_) => {
+                'channels': <Object?>[],
+              },
+            }),
+          ),
+        ),
       ],
     );
     await _aktifTayfaSec(tester, ornekTayfaId);
@@ -117,7 +128,7 @@ void main() {
     await tester.tap(_sekme('gezinme_sekme_sohbet'));
     await tester.pumpAndSettle();
     expect(find.text(DenemeModulu.sayfaMetni), findsNothing);
-    expect(find.text(arbMetni('gezinme_yer_tutucu_aciklama')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_sekme_kanallar')), findsOneWidget);
 
     await tester.tap(_sekme('gezinme_sekme_tayfa'));
     await tester.pumpAndSettle();
