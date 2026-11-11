@@ -21,10 +21,9 @@ final class KanalMesajIsi extends KuyrukIsi {
     required this.kanalId,
     required this.metin,
     required this.istekKimligi,
-    required RealtimeIstemcisi realtime,
-    required KanalDeposu depo,
-  }) : _realtime = realtime,
-       _depo = depo;
+    required this._realtime,
+    required this._depo,
+  });
 
   final String tayfaId;
   final String kanalId;

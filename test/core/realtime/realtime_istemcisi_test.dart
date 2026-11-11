@@ -359,8 +359,9 @@ void main() {
         metin: 'x',
         istekKimligi: istek,
       );
+      final beklenti = expectLater(sonuc, throwsA(isA<RealtimeKapali>()));
       await soket.sunucuKapatti(1006);
-      await expectLater(sonuc, throwsA(isA<RealtimeKapali>()));
+      await beklenti;
     });
 
     test('slow_mode hatası problem türüne ve süreye çevrilir', () async {

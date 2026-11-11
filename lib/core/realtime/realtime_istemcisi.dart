@@ -66,11 +66,10 @@ final class RealtimeIstemcisi {
     required this._reddedildi,
     required this._oturumuKapat,
     required this._zamanlayici,
-    Map<String, String> basliklar = const {},
+    this._basliklar = const {},
     Random? rastgele,
     this._gunluk = _varsayilanGunluk,
-  }) : _basliklar = basliklar,
-       _rastgele = rastgele ?? Random.secure();
+  }) : _rastgele = rastgele ?? Random.secure();
 
   /// En fazla abonelik (sözleşme: bağlantı başına 100).
   static const int enFazlaAbonelik = 100;

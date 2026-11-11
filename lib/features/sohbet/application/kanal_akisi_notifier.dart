@@ -163,7 +163,9 @@ class KanalAkisiNotifier extends AsyncNotifier<KanalAkisi> {
     if (mesajlar == null || mesajlar.isEmpty) return;
     final enYeni = mesajlar.first.id;
     final kanallar = kanallarProvider(kanal.tayfaId);
-    if (ref.exists(kanallar)) ref.read(kanallar.notifier).okundu(kanal.kanalId);
+    if (ref.read(kanallar.exists)) {
+      ref.read(kanallar.notifier).okundu(kanal.kanalId);
+    }
     if (enYeni == _isaretlenen) return;
     _isaretlenen = enYeni;
     try {

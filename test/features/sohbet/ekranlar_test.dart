@@ -107,9 +107,14 @@ void main() {
       final ortam = SohbetOrtami(
         kanallar: [kanalJson(kanalId1, ad: 'genel', yavas: 30)],
         mesajlar: [
-          mesajJson(mesajId3, metin: 'benden', yazar: benimId),
+          mesajJson(mesajId1, silindi: true, zaman: '2026-11-11T10:03:00Z'),
+          mesajJson(
+            mesajId3,
+            metin: 'benden',
+            yazar: benimId,
+            zaman: '2026-11-11T10:02:00Z',
+          ),
           mesajJson(mesajId2, metin: 'selam tayfa'),
-          mesajJson(mesajId1, silindi: true),
         ],
       );
       await _ac(

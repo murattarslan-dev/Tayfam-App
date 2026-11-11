@@ -23,11 +23,13 @@ class AcikKanalNotifier extends Notifier<KanalRef?> {
   }
 
   /// Kanal ekranı açılınca.
-  void ac(KanalRef kanal) => state = kanal;
+  void ac(KanalRef kanal) {
+    if (ref.mounted) state = kanal;
+  }
 
   /// Kanal ekranı kapanınca; başka bir kanal açıldıysa dokunmaz.
   void kapat(KanalRef kanal) {
-    if (state == kanal) state = null;
+    if (ref.mounted && state == kanal) state = null;
   }
 }
 

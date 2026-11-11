@@ -92,6 +92,7 @@ final class SohbetOrtami {
         'messages': mesajlar ?? <Object?>[],
       },
       'PUT /v1/tayfas/{tayfa_id}/channels/{channel_id}/read': (_) => null,
+      'GET /v1/tayfas': (_) => listeJson([etkinJson(ornekTayfaId, rol: rol)]),
       'GET /v1/tayfas/{tayfa_id}': (i) =>
           gorunumJson(i.yolParametreleri['tayfa_id']!, rol: rol),
     });
