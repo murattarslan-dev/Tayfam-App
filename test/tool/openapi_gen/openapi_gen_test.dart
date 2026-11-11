@@ -285,6 +285,67 @@ void main() {
       final spec = _spec(schemas: holder([_ref('Tag'), _ref('Tag')]));
       expect(() => _generate(spec), throwsA(isA<GenException>()));
     });
+
+    test('üst düzey allOf alanları tek düz sınıfta birleştirir', () {
+      final models = _models(
+        _spec(
+          schemas: {
+            'Base': {
+              'type': 'object',
+              'required': ['kind'],
+              'properties': {
+                'kind': {'type': 'string'},
+              },
+            },
+            'Extended': {
+              'description': 'Genişletilmiş.',
+              'allOf': [
+                _ref('Base'),
+                {
+                  'type': 'object',
+                  'required': ['ids'],
+                  'properties': {
+                    'ids': {
+                      'type': 'array',
+                      'items': {'type': 'string', 'format': 'uuid'},
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ),
+      );
+      expect(models, contains('final class Extended {'));
+      expect(models, contains('/// Genişletilmiş.'));
+      expect(models, contains('required this.kind,'));
+      expect(models, contains('final List<String> ids;'));
+    });
+
+    test('üst düzey allOf parçalarında aynı alan hata verir', () {
+      final spec = _spec(
+        schemas: {
+          'Base': {
+            'type': 'object',
+            'properties': {
+              'kind': {'type': 'string'},
+            },
+          },
+          'Extended': {
+            'allOf': [
+              _ref('Base'),
+              {
+                'type': 'object',
+                'properties': {
+                  'kind': {'type': 'string'},
+                },
+              },
+            ],
+          },
+        },
+      );
+      expect(() => _generate(spec), throwsA(isA<GenException>()));
+    });
   });
 
   group('desteklenmeyen yapı', () {
