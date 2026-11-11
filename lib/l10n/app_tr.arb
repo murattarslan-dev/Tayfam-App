@@ -1997,6 +1997,280 @@
       }
     }
   },
+  "anket_baslik": "Anket",
+  "@anket_baslik": {
+    "description": "Tek bir anketin ekranının üst çubuk başlığı."
+  },
+  "anket_yukleniyor": "Anketler yükleniyor",
+  "@anket_yukleniyor": {
+    "description": "Anketler okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "anket_ana_baslik": "Açık anketler",
+  "@anket_ana_baslik": {
+    "description": "Tayfa ana sayfasındaki anket bölümünün başlığı (ADR-0018 §5)."
+  },
+  "anket_ana_tumu": "Tüm anketler",
+  "@anket_ana_tumu": {
+    "description": "Tayfa ana sayfasındaki anket bölümünde bütün anketleri açan bağlantı."
+  },
+  "anket_ana_bos": "Şu an açık anket yok.",
+  "@anket_ana_bos": {
+    "description": "Tayfa ana sayfasında açık anket yokken bölümde görünen metin."
+  },
+  "anket_liste_baslik": "Anketler",
+  "@anket_liste_baslik": {
+    "description": "Tayfanın anket listesinin üst çubuk başlığı (açık ve kapanmış anketler) ve Tayfa sekmesindeki anket modülü girişinin etiketi."
+  },
+  "anket_liste_bos": "Henüz anket yok.",
+  "@anket_liste_bos": {
+    "description": "Anket listesi boşken görünen metin."
+  },
+  "anket_etkinlik_liste_baslik": "Etkinliğin anketleri",
+  "@anket_etkinlik_liste_baslik": {
+    "description": "Bir etkinliğe bağlı anketlerin listesinin başlığı; etkinlik detayındaki bağlantının metni de budur."
+  },
+  "anket_etkinlik_liste_bos": "Bu etkinliğe bağlı anket yok.",
+  "@anket_etkinlik_liste_bos": {
+    "description": "Etkinliğe bağlı anket listesi boşken görünen metin."
+  },
+  "anket_ac": "Anket aç",
+  "@anket_ac": {
+    "description": "Anket oluşturma formunu açan düğme; her üyeye gösterilir, yetkiyi sunucu verir."
+  },
+  "anket_acik": "Açık",
+  "@anket_acik": {
+    "description": "Oy alan anketin kartındaki ve ekranındaki durum etiketi."
+  },
+  "anket_kapandi": "Kapandı",
+  "@anket_kapandi": {
+    "description": "Kapanmış (oy almayan) anketin kartındaki ve ekranındaki durum etiketi."
+  },
+  "anket_gizli": "Gizli anket",
+  "@anket_gizli": {
+    "description": "Gizli (anonim) anketin etiketi. Gizli ankette kimin neye oy verdiği hiç kimseye gösterilmez."
+  },
+  "anket_gizli_aciklama": "Kimin neye oy verdiği kimseye gösterilmez, yöneticilere de.",
+  "@anket_gizli_aciklama": {
+    "description": "Gizli anketin ekranında ve oluşturma formunda gizliliği açıklayan metin (kesin kural 7)."
+  },
+  "anket_tek_secim": "Tek seçenek seçebilirsin",
+  "@anket_tek_secim": {
+    "description": "Tek seçimli anketin ekranında oy verme kuralı."
+  },
+  "anket_coklu_secim": "Birden çok seçenek seçebilirsin",
+  "@anket_coklu_secim": {
+    "description": "Çok seçimli anketin ekranında oy verme kuralı."
+  },
+  "anket_kapanis": "Kapanış: {tarih}, {saat}",
+  "@anket_kapanis": {
+    "description": "Açık anketin planlanan kapanma günü ve saati, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "anket_kapandi_zaman": "Kapandı: {tarih}, {saat}",
+  "@anket_kapandi_zaman": {
+    "description": "Kapanmış anketin kapandığı gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "anket_oy_veren_sayisi": "{sayi, plural, =0{Henüz oy yok} other{{sayi} kişi oy verdi}}",
+  "@anket_oy_veren_sayisi": {
+    "description": "Ankete oy veren kişi sayısı; çok seçimli ankette kişi bir kez sayılır.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "anket_esik_notu": "Sonuçlar {esik} oydan sonra görünür.",
+  "@anket_esik_notu": {
+    "description": "Gizli ankette oy veren sayısı eşiğin altındayken seçenek sayıları yerine görünen metin (kesin kural 7: az oyda sayım kimlik açabilir).",
+    "placeholders": {
+      "esik": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "anket_senin_oyun": "Senin oyun",
+  "@anket_senin_oyun": {
+    "description": "Kullanıcının kendi seçtiği seçeneğin yanındaki etiket; yalnızca kullanıcının kendisine görünür."
+  },
+  "anket_oy_verdin": "Oy verdin",
+  "@anket_oy_verdin": {
+    "description": "Kullanıcının oy verdiği anketin kartındaki etiket."
+  },
+  "anket_oy_ver": "Oy ver",
+  "@anket_oy_ver": {
+    "description": "Seçilen seçeneklerle oyu gönderen düğme."
+  },
+  "anket_oyu_degistir": "Oyunu değiştir",
+  "@anket_oyu_degistir": {
+    "description": "Oy vermiş kullanıcının seçimini yeniden yapmasını sağlayan düğme."
+  },
+  "anket_oyu_geri_cek": "Oyunu geri çek",
+  "@anket_oyu_geri_cek": {
+    "description": "Kullanıcının oyunu geri çeken düğme."
+  },
+  "anket_sonuclari_gor": "Sonuçları gör",
+  "@anket_sonuclari_gor": {
+    "description": "Oy vermeden sonuçlara geçen düğme."
+  },
+  "anket_oy_vermeye_don": "Oy vermeye dön",
+  "@anket_oy_vermeye_don": {
+    "description": "Sonuçlardan seçim ekranına dönen düğme (henüz oy verilmemişken)."
+  },
+  "anket_vazgec": "Vazgeç",
+  "@anket_vazgec": {
+    "description": "Oy değiştirmeden ya da onay penceresinden vazgeçme düğmesi."
+  },
+  "anket_oy_kaydedildi": "Oyun kaydedildi.",
+  "@anket_oy_kaydedildi": {
+    "description": "Oy verilince ya da değiştirilince kısa bildirim."
+  },
+  "anket_oy_geri_cekildi": "Oyun geri çekildi.",
+  "@anket_oy_geri_cekildi": {
+    "description": "Oy geri çekilince kısa bildirim."
+  },
+  "anket_islemler": "Anket işlemleri",
+  "@anket_islemler": {
+    "description": "Anket ekranındaki işlem menüsünün ipucu (anketi açan ya da yönetim)."
+  },
+  "anket_kapat": "Anketi kapat",
+  "@anket_kapat": {
+    "description": "Anketi erken kapatan menü öğesi ve onay düğmesi."
+  },
+  "anket_kapat_onay_baslik": "Anket kapatılsın mı?",
+  "@anket_kapat_onay_baslik": {
+    "description": "Anketi kapatma onayının başlığı."
+  },
+  "anket_kapat_onay_aciklama": "Kapanan ankette oy verilemez, oylar da değiştirilemez.",
+  "@anket_kapat_onay_aciklama": {
+    "description": "Anketi kapatma onayının açıklaması."
+  },
+  "anket_kapatildi": "Anket kapatıldı.",
+  "@anket_kapatildi": {
+    "description": "Anket kapatılınca kısa bildirim."
+  },
+  "anket_oy_verenler": "Oy verenler",
+  "@anket_oy_verenler": {
+    "description": "Açık (gizli olmayan) ankette bir seçeneğe oy verenlerin listesinin başlığı."
+  },
+  "anket_oy_verenler_bos": "Bu seçeneğe henüz oy veren yok.",
+  "@anket_oy_verenler_bos": {
+    "description": "Oy verenler listesi boşken görünen metin."
+  },
+  "anket_oy_verenler_ipucu": "Oy verenleri görmek için seçeneğe dokun.",
+  "@anket_oy_verenler_ipucu": {
+    "description": "Açık (gizli olmayan) ankette sonuçların altında görünen ipucu. Gizli ankette gösterilmez."
+  },
+  "anket_acan": "Açan",
+  "@anket_acan": {
+    "description": "Anket ekranında anketi açan kişinin adının önündeki etiket."
+  },
+  "anket_etkinlige_git": "Bağlı etkinliği aç",
+  "@anket_etkinlige_git": {
+    "description": "Bir etkinliğe bağlı anketin ekranında etkinliği açan bağlantı."
+  },
+  "anket_form_baslik": "Yeni anket",
+  "@anket_form_baslik": {
+    "description": "Anket oluşturma formunun üst çubuk başlığı."
+  },
+  "anket_form_soru": "Soru",
+  "@anket_form_soru": {
+    "description": "Anket formunda sorunun alan etiketi."
+  },
+  "anket_form_soru_hatasi": "Soru 1–200 karakter olmalı ve tek satırda yazılmalı.",
+  "@anket_form_soru_hatasi": {
+    "description": "Anket formunda soru geçersizken görünen hata."
+  },
+  "anket_form_secenek": "Seçenek {sira}",
+  "@anket_form_secenek": {
+    "description": "Anket formunda bir seçeneğin alan etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "anket_form_secenek_hatasi": "Seçenek 1–100 karakter olmalı ve tek satırda yazılmalı.",
+  "@anket_form_secenek_hatasi": {
+    "description": "Anket formunda bir seçenek geçersizken görünen hata."
+  },
+  "anket_form_secenek_tekrar": "Bu seçenek zaten var.",
+  "@anket_form_secenek_tekrar": {
+    "description": "Anket formunda aynı seçenek iki kez yazılınca görünen hata."
+  },
+  "anket_form_secenek_ekle": "Seçenek ekle",
+  "@anket_form_secenek_ekle": {
+    "description": "Anket formunda yeni seçenek alanı ekleyen düğme (en çok 10 seçenek)."
+  },
+  "anket_form_secenek_kaldir": "Seçeneği kaldır",
+  "@anket_form_secenek_kaldir": {
+    "description": "Anket formunda bir seçenek alanını kaldıran düğmenin ipucu (en az 2 seçenek kalır)."
+  },
+  "anket_form_coklu": "Birden çok seçenek seçilebilsin",
+  "@anket_form_coklu": {
+    "description": "Anket formunda çok seçimli anket anahtarı."
+  },
+  "anket_form_gizli": "Gizli anket",
+  "@anket_form_gizli": {
+    "description": "Anket formunda gizli (anonim) anket anahtarı."
+  },
+  "anket_form_gizli_notu": "İlk oydan sonra değiştirilemez.",
+  "@anket_form_gizli_notu": {
+    "description": "Anket formunda gizli anket anahtarının altındaki not."
+  },
+  "anket_form_kapanis_yok": "Kapanış zamanı yok; elle kapatılana kadar açık kalır.",
+  "@anket_form_kapanis_yok": {
+    "description": "Anket formunda kapanış zamanı seçilmemişken görünen metin."
+  },
+  "anket_form_kapanis_sec": "Kapanış zamanı seç",
+  "@anket_form_kapanis_sec": {
+    "description": "Anket formunda kapanış günü ve saatini seçtiren düğme."
+  },
+  "anket_form_kapanis_kaldir": "Kapanış zamanını kaldır",
+  "@anket_form_kapanis_kaldir": {
+    "description": "Anket formunda seçilen kapanış zamanını kaldıran düğme."
+  },
+  "anket_form_kapanis_hatasi": "Kapanış zamanı gelecekte ve en çok 365 gün sonra olmalı.",
+  "@anket_form_kapanis_hatasi": {
+    "description": "Anket formunda kapanış zamanı geçersizken görünen hata."
+  },
+  "anket_form_etkinlik_notu": "Anket bu etkinliğe bağlanacak.",
+  "@anket_form_etkinlik_notu": {
+    "description": "Etkinlikten açılan anket formunda görünen not."
+  },
+  "anket_form_gonder": "Anketi aç",
+  "@anket_form_gonder": {
+    "description": "Anket formunu gönderen düğme."
+  },
+  "anket_acildi": "Anket açıldı.",
+  "@anket_acildi": {
+    "description": "Anket açılınca kısa bildirim."
+  },
   "hesap_slogan": "Birlikte yapınca güzel.",
   "@hesap_slogan": {
     "description": "Giriş ekranında yazı logonun altındaki slogan (Notion: Marka)."
