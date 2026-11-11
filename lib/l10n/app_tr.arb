@@ -5490,9 +5490,13 @@
   "@disa_aktarma_hata_cozulemedi": {
     "description": "Veri dışa aktarma dosyasının şifre etiketi doğrulanamayınca görünen hata."
   },
-  "disa_aktarma_hata_desteklenmiyor": "Verilerini bu sürümde indiremiyorsun. Mobil uygulamanın güncel sürümünü kullan.",
+  "disa_aktarma_hata_cok_buyuk": "Dosya uygulama içinden açılamayacak kadar büyük. Talebin elle yanıtlanacak.",
+  "@disa_aktarma_hata_cok_buyuk": {
+    "description": "Şifreli dışa aktarma dosyası uygulamanın çözebileceği sınırı (16 MiB) aşınca görünen hata."
+  },
+  "disa_aktarma_hata_desteklenmiyor": "Verilerini şimdilik yalnızca Android uygulamasında indirebilirsin.",
   "@disa_aktarma_hata_desteklenmiyor": {
-    "description": "Bu derlemede (web geliştirme derlemesi ya da çözme köprüsü olmayan sürüm) indirme yokken görünen hata."
+    "description": "Signal köprüsü olmayan derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS) indirmeye basılınca görünen hata."
   },
   "push_event_created_title": "Yeni etkinlik",
   "@push_event_created_title": {

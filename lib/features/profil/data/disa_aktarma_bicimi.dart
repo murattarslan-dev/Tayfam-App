@@ -17,7 +17,12 @@ enum DisaAktarmaHataTuru {
   /// bozulmuş. Doğrulanmamış içerik hiçbir zaman kullanılmaz.
   cozulemedi,
 
-  /// Bu derlemede indirme yok (web geliştirme derlemesi, ADR-0011).
+  /// Şifreli dosya uygulama içinde çözülebilecek sınırdan
+  /// ([DisaAktarmaBicimi.dosyaEnCok]) büyük; indirilmez.
+  cokBuyuk,
+
+  /// Bu derlemede Signal köprüsü, dolayısıyla indirme yok (web geliştirme
+  /// derlemesi, ADR-0011; iOS köprüsü yazılana kadar iOS).
   desteklenmiyor,
 }
 

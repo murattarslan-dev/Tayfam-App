@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/gen/models.dart' hide Notification;
 import 'package:tayfam/core/api/gen/models.dart' as api show Notification;
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/imzali_indirme.dart';
+import 'package:tayfam/core/e2e/signal/desteklenmeyen_signal_motoru.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
@@ -33,6 +34,7 @@ final class _Kurulum {
     Map<String, Object? Function()> yanitlar = const {},
     SahteGoogle? google,
     SahteIndirici? indirici,
+    SignalMotoru? motor,
   }) : tasima = SahteTasima(
          profilYanitlari({
            taleplerYolu: () => listeJson([talepJson()]),
@@ -42,7 +44,8 @@ final class _Kurulum {
          }),
        ),
        google = google ?? SahteGoogle(sonuc: ornekKimlik),
-       indirici = indirici ?? SahteIndirici() {
+       indirici = indirici ?? SahteIndirici(),
+       motor = motor ?? SahteSignalMotoru() {
     kap = ProviderContainer.test(
       overrides: disaAktarmaOverridelari(
         tasima: tasima,
@@ -61,7 +64,7 @@ final class _Kurulum {
   final SahteIndirici indirici;
   final SahteOturum oturum = _yenilenenOturum();
   final SahteZipPaylasici paylasici = SahteZipPaylasici();
-  final SahteSignalMotoru motor = SahteSignalMotoru();
+  final SignalMotoru motor;
   final SahteZamanlayici zamanlayici = SahteZamanlayici();
   late final ProviderContainer kap;
 
@@ -518,7 +521,8 @@ void main() {
       await k.eylem.indir(_talep());
 
       expect(k.durum.hata, _hata(DisaAktarmaHataTuru.bicim));
-      expect(k.motor.cagrilar, isNot(contains('aes256GcmCoz')));
+      final motor = k.motor as SahteSignalMotoru;
+      expect(motor.cagrilar, isNot(contains('aes256GcmCoz')));
       expect(k.paylasici.kopyalar, isEmpty);
     });
 
@@ -598,6 +602,35 @@ void main() {
       await ilk;
 
       expect(k.yollar, [indirmeYolu]);
+    });
+
+    test('Signal köprüsü yoksa hiçbir istek yapılmıyor', () async {
+      final k = _Kurulum(motor: const DesteklenmeyenSignalMotoru());
+      await k.oturumuAc();
+      k.dinle();
+
+      await k.eylem.indir(_talep());
+
+      expect(k.durum.hata, _hata(DisaAktarmaHataTuru.desteklenmiyor));
+      expect(k.tasima.istekler, isEmpty);
+      expect(k.google.cagri, 0);
+      expect(k.indirici.adresler, isEmpty);
+    });
+
+    test('sınırdan büyük dosya indirilmiyor', () async {
+      final k = _Kurulum(
+        yanitlar: {
+          indirmeYolu: () =>
+              indirmeJson(boyut: DisaAktarmaBicimi.dosyaEnCok + 1),
+        },
+      );
+      await k.oturumuAc();
+      k.dinle();
+
+      await k.eylem.indir(_talep());
+
+      expect(k.durum.hata, _hata(DisaAktarmaHataTuru.cokBuyuk));
+      expect(k.indirici.adresler, isEmpty);
     });
 
     test('hata metninde link ve anahtar yok', () {

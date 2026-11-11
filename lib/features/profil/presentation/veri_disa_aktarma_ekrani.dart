@@ -22,6 +22,7 @@ String disaAktarmaHatasiMetni(AppLocalizations m, Object hata) =>
         DisaAktarmaHataTuru.bicim => m.disa_aktarma_hata_bicim,
         DisaAktarmaHataTuru.indirilemedi => m.disa_aktarma_hata_indirilemedi,
         DisaAktarmaHataTuru.cozulemedi => m.disa_aktarma_hata_cozulemedi,
+        DisaAktarmaHataTuru.cokBuyuk => m.disa_aktarma_hata_cok_buyuk,
         DisaAktarmaHataTuru.desteklenmiyor =>
           m.disa_aktarma_hata_desteklenmiyor,
       },

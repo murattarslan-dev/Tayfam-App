@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/imzali_indirme.dart';
 import 'package:tayfam/core/api/istek_kimligi.dart';
+import 'package:tayfam/core/e2e/signal/signal_motoru_provider.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
@@ -198,8 +199,10 @@ class DisaAktarmaEylemNotifier extends Notifier<DisaAktarmaEylemDurumu> {
     final cozucu = ref.read(disaAktarmaCozucuProvider);
     final paylasici = ref.read(zipPaylasiciProvider);
     final durum = ref.read(oturumDurumuProvider.notifier);
+    final destekleniyor = ref.read(signalDestekleniyorProvider);
     try {
-      if (kIsWeb) {
+      // Köprü yoksa (web, henüz iOS) yeniden giriş ya da istek yapılmaz.
+      if (!destekleniyor) {
         throw const DisaAktarmaHatasi(DisaAktarmaHataTuru.desteklenmiyor);
       }
       final bilgi = await _indirmeBilgisi(depo, yenidenGiris, talep.id);
@@ -265,6 +268,10 @@ class DisaAktarmaEylemNotifier extends Notifier<DisaAktarmaEylemDurumu> {
     ImzaliIndirici indirici,
     DisaAktarmaCozucu cozucu,
   ) async {
+    if (bilgi.sizeBytes > DisaAktarmaBicimi.dosyaEnCok) {
+      // Köprü dosyayı tek parça çözer; sınırın üstü uygulamada açılmaz.
+      throw const DisaAktarmaHatasi(DisaAktarmaHataTuru.cokBuyuk);
+    }
     final adres = Uri.tryParse(bilgi.url);
     if (bilgi.format != DataExportDownloadFormat.aes256GcmV1 || adres == null) {
       throw const DisaAktarmaHatasi(DisaAktarmaHataTuru.bicim);

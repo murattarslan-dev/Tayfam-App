@@ -5,9 +5,10 @@ import 'dart:ui';
 import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/api/imzali_indirme.dart';
+import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
+import 'package:tayfam/core/e2e/signal/signal_motoru_provider.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/profil/data/disa_aktarma_bicimi.dart';
-import 'package:tayfam/features/profil/data/disa_aktarma_cozucu.dart';
 import 'package:tayfam/features/profil/data/disa_aktarma_deposu.dart';
 
 import '../../core/e2e/signal/sahte_signal_motoru.dart';
@@ -94,11 +95,12 @@ Map<String, Object?> indirmeJson({
   Uint8List? anahtar,
   String bicim = 'aes-256-gcm-v1',
   String link = sahteLink,
+  int? boyut,
 }) => {
   'url': link,
   'expires_at': '2026-11-10T10:05:00Z',
   'key': base64.encode(anahtar ?? sahteAnahtar()),
-  'size_bytes': (dosya ?? sifreliDosya()).length,
+  'size_bytes': boyut ?? (dosya ?? sifreliDosya()).length,
   'format': bicim,
 };
 
@@ -156,15 +158,14 @@ List<Override> disaAktarmaOverridelari({
   SahteGoogle? google,
   SahteIndirici? indirici,
   SahteZipPaylasici? paylasici,
-  SahteSignalMotoru? motor,
+  SignalMotoru? motor,
   SahteZamanlayici? zamanlayici,
 }) => [
   ...profilOverridelari(tasima: tasima, oturum: oturum, google: google),
   disaAktarmaDeposuProvider.overrideWithValue(DisaAktarmaDeposu(tasima)),
   imzaliIndiriciProvider.overrideWithValue(indirici ?? SahteIndirici()),
-  disaAktarmaCozucuProvider.overrideWithValue(
-    SignalDisaAktarmaCozucu(motor ?? SahteSignalMotoru()),
-  ),
+  // Çözücü gerçek bağlantıyla (signalDestekleniyorProvider) motordan gelir.
+  signalMotoruProvider.overrideWithValue(motor ?? SahteSignalMotoru()),
   zipPaylasiciProvider.overrideWithValue(paylasici ?? SahteZipPaylasici()),
   zamanlayiciProvider.overrideWithValue(
     (zamanlayici ?? SahteZamanlayici()).kur,

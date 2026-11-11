@@ -109,12 +109,18 @@ Profil → Gizlilik → **"Verilerimi indir"** (`/profil/verilerim`).
 
 ### 4. Platform ve bağımlılık
 
-- **Web geliştirme derlemesi** (ADR-0011): liste ve talep çalışır; indirme
-  yoktur ("bu sürümde indiremiyorsun").
-- **Signal köprüsü:** arayüz (`SignalMotoru.aes256GcmCoz`) bu dala
-  `feat/e2e-signal-kopru`'dan alındı. Köprünün motor provider'ı main'e
-  girene kadar `disaAktarmaCozucuProvider` "desteklenmiyor" döner;
-  provider gelince tek satırla `SignalDisaAktarmaCozucu`'ya bağlanır.
+- **Signal köprüsü:** çözme `signalMotoruProvider`'ın `aes256GcmCoz`'udur
+  (Android'de `tayfam/e2e/signal` platform kanalı; dosyalar
+  `feat/e2e-signal-kopru`'dan alındı). `signalDestekleniyorProvider`
+  `false` ise (web geliştirme derlemesi, ADR-0011; iOS köprüsü yazılana
+  kadar iOS) liste ve talep çalışır, indirme hiçbir istek yapmadan
+  "şimdilik yalnızca Android uygulamasında" der.
+- **Boyut:** köprü dosyayı platform kanalından **tek parça** geçirir
+  (akışlı çağrı yok; birkaç on MB'a kadar uygun). İstemci şifreli dosyayı
+  sunucu sınırı olan 16 MiB + 29 baytla sınırlar; `size_bytes` bunu aşarsa
+  indirme denenmez ve "dosya uygulama içinden açılamayacak kadar büyük"
+  hatası gösterilir. Sunucu sınırı büyürse (Tayfam-Api ADR-0021 §4) köprüde
+  akışlı çözme ayrı bir kararla eklenir.
 - Yeni paket yoktur (`http`, `share_plus` mevcut).
 
 ### 5. Kapsam dışı (sonraki adımlar)
