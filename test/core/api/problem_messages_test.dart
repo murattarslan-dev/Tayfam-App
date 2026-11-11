@@ -23,8 +23,8 @@ void main() {
   final tr = lookupAppLocalizations(const Locale('tr'));
   final kodlar = ProblemType.values.where((t) => t != ProblemType.unknown);
 
-  test('sözleşmedeki 97 kodun hepsi var', () {
-    expect(kodlar, hasLength(97));
+  test('sözleşmedeki 119 kodun hepsi var', () {
+    expect(kodlar, hasLength(119));
   });
 
   group('her kodun anahtarı', () {
