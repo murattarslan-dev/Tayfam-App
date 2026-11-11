@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_hedefi.dart';
@@ -127,7 +128,13 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
       ref.read(bildirimListesiProvider.notifier).okunduIsaretle(bildirim.id),
     );
     final adres = bildirimAdresi(bildirim);
-    if (adres != null) context.go(adres);
+    if (adres == null) return;
+    // Kişi profili sekmelerin üstünde açılır; geri tuşu bildirimlere döner.
+    if (adres.startsWith('${Adresler.kisiOneki}/')) {
+      unawaited(context.push(adres));
+    } else {
+      context.go(adres);
+    }
   }
 
   void _dahaFazla() =>

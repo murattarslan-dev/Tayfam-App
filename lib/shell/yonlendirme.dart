@@ -2,6 +2,7 @@ import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/shell/derin_link/derin_link.dart';
 
 const Set<String> _oturumAdresleri = {
   Adresler.giris,
@@ -24,7 +25,9 @@ const Set<String> _oturumAdresleri = {
 ///    ([tanitim]) tanıtıma gidilir; tanıtım bayrağı okunurken açılış ekranı
 ///    gösterilir (ADR-0017 §4: sürüm denetimi → tanıtım → giriş). Gelinen
 ///    adres bir sistem adresi değilse yolu [korunacakHedef] ile tanıtım
-///    adresinde taşınır; tanıtım bitince oraya gidilir.
+///    adresinde taşınır; tanıtım bitince oraya gidilir. Bekleyen bir
+///    davet varsa ([davetBekliyor]) hedef davet ekranıdır (`/davet`;
+///    token adreste yoktur).
 /// 1. Oturum açık değilse durumun ekranına gidilir (giriş yok → giriş;
 ///    kayıt bekliyor → kayıt; yeniden onay → onay). Bu kontrol yetki
 ///    değildir; yetki sunucudadır (CLAUDE.md, kesin kural 5).
@@ -40,9 +43,10 @@ const Set<String> _oturumAdresleri = {
 ///    (yönlendiricideki dinleyici). Bu bir kolaylıktır; erişim kararını
 ///    sunucu verir (kesin kural 5, 9).
 ///
-/// Derin link adresleri (`/davet`, `/r/<kod>`) bu fonksiyona dokunmadan
-/// kendi rotalarıyla eklenebilir; bilinmeyen adresler değiştirilmez ve
-/// yönlendiricinin "bulunamadı" sayfasına düşer.
+/// Platformdan gelen derin linkler (`https://tayfam.app/davet#…`,
+/// `/r/<kod>`) bu fonksiyondan önce yönlendiricide bellekteki kutuya
+/// alınır (`shell/derin_link/`); buraya kök adres olarak gelir. Bilinmeyen
+/// adresler değiştirilmez ve yönlendiricinin "bulunamadı" sayfasına düşer.
 String? yonlendir({
   required OturumDurumu oturum,
   required String? aktifTayfaId,
@@ -51,6 +55,7 @@ String? yonlendir({
   Set<String>? etkinTayfalar,
   bool tayfalarBekleniyor = false,
   TanitimDurumu tanitim = TanitimDurumu.gosterildi,
+  bool davetBekliyor = false,
 }) {
   final yol = konum.path;
 
@@ -64,7 +69,9 @@ String? yonlendir({
         return yol == Adresler.acilis ? null : Adresler.acilis;
       case TanitimDurumu.gosterilmedi:
         if (yol == Adresler.hosGeldin) return null;
-        return Adresler.hosGeldinAdresi(korunacakHedef(konum));
+        return Adresler.hosGeldinAdresi(
+          davetBekliyor ? davetYolu : korunacakHedef(konum),
+        );
       case TanitimDurumu.gosterildi:
         break;
     }
@@ -79,6 +86,10 @@ String? yonlendir({
   };
   if (oturumAdresi != null) {
     return yol == oturumAdresi ? null : oturumAdresi;
+  }
+
+  if (davetBekliyor) {
+    return yol == davetYolu ? null : davetYolu;
   }
 
   final anaAdres = aktifTayfaId != null
@@ -110,8 +121,9 @@ String? yonlendir({
 /// ve açılış/oturum ekranları için `null`.
 ///
 /// Yalnızca yol alınır: sorgu ve fragment (davet token'ı, kesin kural 9)
-/// taşınmaz. Davet ve referans linkini tanıtımdan sonra işlemek derin link
-/// işinindir; bu yalnızca yönlendirmenin bıraktığı kancadır.
+/// taşınmaz. Davet ve referans linki bellekteki kutuda korunur
+/// (`shell/derin_link/`); bekleyen davette [yonlendir] hedefi `/davet`
+/// yapar.
 String? korunacakHedef(Uri konum) {
   final yol = konum.path;
   if (yol.isEmpty ||
