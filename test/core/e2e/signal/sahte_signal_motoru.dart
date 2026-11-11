@@ -99,6 +99,9 @@ final class SahteSignalMotoru implements SignalMotoru {
     'kurulum': null,
   };
 
+  static String _adresBagi(SignalAdresi gonderen, SignalAdresi alici) =>
+      '${gonderen.ad}.${gonderen.cihazNo}>${alici.ad}.${alici.cihazNo}';
+
   static int? _kayitId(Uint8List kayit, String tur) {
     final m = _jsonOku(kayit);
     if (m == null || m['sahte'] != tur) return null;
@@ -182,6 +185,7 @@ final class SahteSignalMotoru implements SignalMotoru {
   Future<Uint8List> paketIsle({
     required Uint8List kimlik,
     required int kayitKimligi,
+    required SignalAdresi yerelAdres,
     required SignalAdresi adres,
     Uint8List? mevcutOturum,
     required OnAnahtarPaketi paket,
@@ -212,6 +216,7 @@ final class SahteSignalMotoru implements SignalMotoru {
   Future<SifreliMesaj> sifrele({
     required Uint8List kimlik,
     required int kayitKimligi,
+    required SignalAdresi yerelAdres,
     required SignalAdresi adres,
     required Uint8List oturum,
     required Uint8List duz,
@@ -221,7 +226,12 @@ final class SahteSignalMotoru implements SignalMotoru {
     final o = _oturumOku(oturum);
     final n = (o['gonderilen'] as int?) ?? 0;
     final kurulum = o['kurulum'];
-    final baslik = <String, Object?>{'sahte': 'mesaj', 'n': n};
+    final baslik = <String, Object?>{
+      'sahte': 'mesaj',
+      'n': n,
+      // libsignal gibi adresleri mesaja bağlar.
+      'adr': _adresBagi(yerelAdres, adres),
+    };
     final int tur;
     if (kurulum is Map<String, Object?>) {
       tur = SignalMesajTuru.onAnahtar;
@@ -257,6 +267,7 @@ final class SahteSignalMotoru implements SignalMotoru {
   Future<CozulmusMesaj> coz({
     required Uint8List kimlik,
     required int kayitKimligi,
+    required SignalAdresi yerelAdres,
     required SignalAdresi adres,
     required int tur,
     required Uint8List sifreli,
@@ -272,6 +283,9 @@ final class SahteSignalMotoru implements SignalMotoru {
       throw const SignalHatasi(SignalHatasiTuru.gecersizMesaj);
     }
     final n = m['n'] as int;
+    if (m['adr'] != _adresBagi(adres, yerelAdres)) {
+      throw const SignalHatasi(SignalHatasiTuru.gecersizMesaj);
+    }
     final onAnahtarliMi = m['ip'] is int;
     if ((tur == SignalMesajTuru.onAnahtar) != onAnahtarliMi) {
       throw const SignalHatasi(SignalHatasiTuru.gecersizMesaj);
@@ -405,6 +419,15 @@ final class SahteSignalMotoru implements SignalMotoru {
     required Uint8List aad,
   }) async {
     _cagri('aesGcmSivCoz');
+    return _etiketliCoz(anahtar, nonce, sifreli, aad);
+  }
+
+  static Uint8List? _etiketliCoz(
+    Uint8List anahtar,
+    Uint8List nonce,
+    Uint8List sifreli,
+    Uint8List aad,
+  ) {
     if (anahtar.length != 32 || nonce.length != 12) {
       throw const SignalHatasi(SignalHatasiTuru.gecersizAnahtar);
     }
@@ -416,6 +439,32 @@ final class SahteSignalMotoru implements SignalMotoru {
       if (etiket[i] != beklenen[i]) return null;
     }
     return _ters(govde);
+  }
+
+  /// SAHTE AES-256-GCM şifreleme: [aes256GcmCoz]'un çözebileceği girdiyi
+  /// üretir (testlerde dışa aktarma dosyası hazırlamak için).
+  static Uint8List sahteAes256GcmSifrele({
+    required Uint8List anahtar,
+    required Uint8List nonce,
+    required Uint8List duz,
+    required Uint8List aad,
+  }) {
+    final govde = _ters(duz);
+    return Uint8List.fromList([
+      ...govde,
+      ..._etiket(anahtar, nonce, aad, govde),
+    ]);
+  }
+
+  @override
+  Future<Uint8List?> aes256GcmCoz({
+    required Uint8List anahtar,
+    required Uint8List nonce,
+    required Uint8List sifreliVeEtiket,
+    required Uint8List aad,
+  }) async {
+    _cagri('aes256GcmCoz');
+    return _etiketliCoz(anahtar, nonce, sifreliVeEtiket, aad);
   }
 
   // ---------------------------------------------------------------------
