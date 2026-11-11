@@ -120,7 +120,7 @@ class KonusmaSessizlikNotifier extends AsyncNotifier<Map<String, Sessizlik>> {
     state = AsyncData({
       for (final e in eski.entries)
         if (e.key != konusmaId) e.key: e.value,
-      if (sessizlik != null) konusmaId: sessizlik,
+      konusmaId: ?sessizlik,
     });
   }
 }
