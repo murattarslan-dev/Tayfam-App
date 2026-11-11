@@ -6,8 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
+import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
+import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -21,15 +25,22 @@ const List<ListEventAttendeesStatus> katilimciSekmeleri = [
 
 /// Katılımcılar (ADR-0015 §3): cevaba göre sekmeler, sayfalı. Sekmeler dar
 /// ekranda ve büyük yazıda alt satıra geçen seçim çipleridir.
+///
+/// [duzeltme] açıksa (yönetebilen kullanıcı, bitişten sonraki yedi gün;
+/// ADR-0015 §6) her satırda organizatör düzeltmesi menüsü vardır: katılımı
+/// ekle ya da kaldır. Kendi satırında menü yoktur (sunucu: kimse kendi
+/// katılımını düzeltemez).
 class KatilimcilarBolumu extends ConsumerStatefulWidget {
   const KatilimcilarBolumu({
     super.key,
     required this.tayfaId,
     required this.etkinlikId,
+    this.duzeltme = false,
   });
 
   final String tayfaId;
   final String etkinlikId;
+  final bool duzeltme;
 
   @override
   ConsumerState<KatilimcilarBolumu> createState() => _KatilimcilarBolumuState();
@@ -71,6 +82,15 @@ class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {
               ),
           ],
         ),
+        if (widget.duzeltme) ...[
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(
+            m.etkinlik_duzeltme_bilgi,
+            style: context.yazi.bodySmall?.copyWith(
+              color: context.renkler.metinIkincil,
+            ),
+          ),
+        ],
         const SizedBox(height: TayfamSpacing.s8),
         ...liste.when<List<Widget>>(
           data: (sayfali) => [
@@ -82,7 +102,14 @@ class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {
                 ),
               ),
             for (final katilimci in sayfali.ogeler)
-              _KatilimciSatiri(katilimci: katilimci),
+              _KatilimciSatiri(
+                anahtar: (
+                  tayfaId: widget.tayfaId,
+                  etkinlikId: widget.etkinlikId,
+                ),
+                katilimci: katilimci,
+                duzeltme: widget.duzeltme,
+              ),
             if (sayfali.dahaHatasi case final hata?) HataSatiri.hatadan(hata),
             if (sayfali.dahaYukleniyor)
               const Center(child: CircularProgressIndicator())
@@ -118,14 +145,25 @@ class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {
   }
 }
 
-class _KatilimciSatiri extends StatelessWidget {
-  const _KatilimciSatiri({required this.katilimci});
+enum _Duzeltme { ekle, kaldir }
 
+class _KatilimciSatiri extends ConsumerWidget {
+  const _KatilimciSatiri({
+    required this.anahtar,
+    required this.katilimci,
+    required this.duzeltme,
+  });
+
+  final EtkinlikAnahtari anahtar;
   final Attendee katilimci;
+  final bool duzeltme;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
+    final katildi = katilimci.attendance == AttendanceStatus.attended;
+    final menu = duzeltme && !ref.watch(kendisiMiProvider(katilimci.userId));
+    final mesgul = ref.watch(aracEylemProvider(anahtar));
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
       child: Row(
@@ -136,10 +174,55 @@ class _KatilimciSatiri extends StatelessWidget {
               style: context.yazi.bodyLarge,
             ),
           ),
-          if (katilimci.attendance == AttendanceStatus.attended)
-            Etiket(metin: m.etkinlik_katildi),
+          if (katildi) Etiket(metin: m.etkinlik_katildi),
+          if (menu)
+            PopupMenuButton<_Duzeltme>(
+              tooltip: m.etkinlik_duzeltme,
+              enabled: !mesgul,
+              onSelected: (secim) => unawaited(
+                _duzelt(context, ref, ekle: secim == _Duzeltme.ekle),
+              ),
+              itemBuilder: (context) => [
+                if (katildi)
+                  PopupMenuItem(
+                    value: _Duzeltme.kaldir,
+                    child: Text(m.etkinlik_duzeltme_kaldir),
+                  )
+                else
+                  PopupMenuItem(
+                    value: _Duzeltme.ekle,
+                    child: Text(m.etkinlik_duzeltme_ekle),
+                  ),
+              ],
+            ),
         ],
       ),
     );
+  }
+
+  Future<void> _duzelt(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool ekle,
+  }) async {
+    final m = AppLocalizations.of(context);
+    if (!ekle) {
+      final onay = await cikarmaOnayi(
+        context,
+        baslik: m.etkinlik_duzeltme_kaldir_onay,
+        metin: m.etkinlik_duzeltme_kaldir_metni,
+        eylem: m.etkinlik_duzeltme_kaldir,
+      );
+      if (!onay || !context.mounted) return;
+    }
+    final hata = await ref
+        .read(aracEylemProvider(anahtar).notifier)
+        .katilimDuzelt(katilimci.userId, ekle: ekle);
+    if (!context.mounted) return;
+    if (hata != null) {
+      hataBildir(context, hata);
+    } else {
+      aracBildir(context, m.etkinlik_duzeltme_tamam);
+    }
   }
 }

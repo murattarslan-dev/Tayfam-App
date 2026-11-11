@@ -19,6 +19,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/harita_secici_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Etkinlik düzenleme (`/t/<tayfaId>/etkinlikler/<etkinlikId>/duzenle`):
@@ -195,6 +196,17 @@ class _EtkinlikSihirbaziEkraniState
   void _tekrar(TekrarSecimi Function(TekrarSecimi s) degisim) {
     final mevcut = _t.tekrar;
     if (mevcut != null) _n.tekrarAyarla(degisim(mevcut));
+  }
+
+  Future<void> _rotaSec() async {
+    final t = _t;
+    final rota = await rotaSeciciAc(
+      context,
+      baslangic: t.ayrinti.rota,
+      merkez: t.yer.nokta,
+    );
+    if (rota == null || !mounted) return;
+    _ayrinti((a) => a.kopya(rota: rota));
   }
 
   Future<void> _noktaSec() async {
@@ -853,7 +865,36 @@ class _EtkinlikSihirbaziEkraniState
             ),
           ),
         ];
-      case EventType.convoy || EventType.general || EventType.unknown || null:
+      case EventType.convoy:
+        return [
+          Text(m.etkinlik_rota_baslik, style: context.yazi.titleSmall),
+          const SizedBox(height: TayfamSpacing.s4),
+          Text(
+            a.rota.isEmpty
+                ? m.etkinlik_rota_yok
+                : m.etkinlik_konvoy_rota_noktalari(
+                    etkinlikSayi(m, a.rota.length),
+                  ),
+            style: context.yazi.bodyMedium,
+          ),
+          if (h.contains(TaslakHatasi.rota))
+            HataSatiri(metin: m.etkinlik_rota_hata),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: OutlinedButton.icon(
+              onPressed: kapali ? null : () => unawaited(_rotaSec()),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+              ),
+              icon: const Icon(Icons.route),
+              label: Text(
+                a.rota.isEmpty ? m.etkinlik_rota_ciz : m.etkinlik_rota_duzenle,
+              ),
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
+        ];
+      case EventType.general || EventType.unknown || null:
         return const [];
     }
   }

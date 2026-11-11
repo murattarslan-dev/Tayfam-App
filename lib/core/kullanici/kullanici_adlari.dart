@@ -11,37 +11,47 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 
 /// Bir kullanıcının bilinen adı: görünen ad ya da hesabın silindiği
-/// (erişilemediği) bilgisi.
+/// (erişilemediği) bilgisi; profilin oturumdaki kullanıcıya ait olup
+/// olmadığı ([ben], sözleşmedeki `UserProfile.self`).
 @immutable
 final class KullaniciAdi {
   /// Görünen ad.
-  const KullaniciAdi(String this.ad);
+  const KullaniciAdi(String this.ad, {this.ben = false});
 
   /// Kullanıcı bulunamadı (hesap silinmiş ya da erişilemiyor).
-  const KullaniciAdi.silinmis() : ad = null;
+  const KullaniciAdi.silinmis() : ad = null, ben = false;
 
   /// Görünen ad; silinmiş kullanıcıda `null`.
   final String? ad;
+
+  /// Profil oturumdaki kullanıcının kendisi (`self`). Yalnızca arayüzü
+  /// sadeleştirmek içindir ("Aracını değiştir" gibi); yetki sunucudadır
+  /// (kesin kural 5).
+  final bool ben;
 
   /// Kullanıcı silinmiş ya da erişilemiyor.
   bool get silinmis => ad == null;
 
   @override
-  bool operator ==(Object other) => other is KullaniciAdi && other.ad == ad;
+  bool operator ==(Object other) =>
+      other is KullaniciAdi && other.ad == ad && other.ben == ben;
 
   @override
-  int get hashCode => ad.hashCode;
+  int get hashCode => Object.hash(ad, ben);
 }
 
-/// Bir kullanıcının görünen adını sunucudan okur.
-typedef ProfilOkuyucu = Future<String> Function(String kullaniciId);
+/// Bir kullanıcının görünen adını (ve kendisi olup olmadığını) sunucudan
+/// okur.
+typedef ProfilOkuyucu = Future<KullaniciAdi> Function(String kullaniciId);
 
-/// `GET /v1/users/{user_id}/profile` ile görünen ad. Testlerde sahtesi
-/// verilir.
+/// `GET /v1/users/{user_id}/profile` ile görünen ad ve `self`. Testlerde
+/// sahtesi verilir.
 final profilOkuyucuProvider = Provider<ProfilOkuyucu>((ref) {
   final api = UsersApi(ref.watch(apiClientProvider));
-  return (kullaniciId) async =>
-      (await api.getUserProfile(userId: kullaniciId)).displayName;
+  return (kullaniciId) async {
+    final profil = await api.getUserProfile(userId: kullaniciId);
+    return KullaniciAdi(profil.displayName, ben: profil.self);
+  };
 }, name: 'profilOkuyucuProvider');
 
 /// Kullanıcı kimliği → görünen ad önbelleği (ADR-0015 Notlar, 2026-11-11).
@@ -107,7 +117,7 @@ class KullaniciAdlariNotifier extends Notifier<Map<String, KullaniciAdi>> {
   Future<void> _oku(String kullaniciId, int nesil) async {
     KullaniciAdi? sonuc;
     try {
-      sonuc = KullaniciAdi(await ref.read(profilOkuyucuProvider)(kullaniciId));
+      sonuc = await ref.read(profilOkuyucuProvider)(kullaniciId);
     } on ApiProblem catch (problem) {
       if (problem.type == ProblemType.userNotFound ||
           problem.type == ProblemType.notFound) {
@@ -131,3 +141,18 @@ final kullaniciAdlariProvider =
       KullaniciAdlariNotifier.new,
       name: 'kullaniciAdlariProvider',
     );
+
+/// [kullaniciId] oturumdaki kullanıcının kendisi mi (profilin `self`
+/// alanı). Bilinmiyorsa profil istenir ve gelene kadar `false` döner.
+///
+/// Yalnızca arayüzü sadeleştirmek içindir (ör. kendi aracında "Değiştir");
+/// bir işlemin yapılıp yapılamayacağına sunucu karar verir (kesin kural 5).
+final kendisiMiProvider = Provider.autoDispose.family<bool, String>((
+  ref,
+  kullaniciId,
+) {
+  ref.read(kullaniciAdlariProvider.notifier).iste(kullaniciId);
+  return ref.watch(
+    kullaniciAdlariProvider.select((adlar) => adlar[kullaniciId]?.ben ?? false),
+  );
+}, name: 'kendisiMiProvider');

@@ -60,13 +60,17 @@ Event katilimiUygula(Event etkinlik, RsvpStatus yeni) {
   );
 }
 
-/// [etkinlik]'in kopyası; verilen sayılar ve cevap değişir.
+/// [etkinlik]'in kopyası; verilen sayılar, cevap, doğrulanmış katılım ve
+/// türe özel araç listeleri (konvoy, kamp) değişir.
 Event etkinlikKopyasi(
   Event etkinlik, {
   RsvpStatus? cevap,
   int? gelen,
   int? belki,
   int? bekleyen,
+  AttendanceStatus? katilim,
+  ConvoyDetails? convoy,
+  CampDetails? camp,
 }) => Event(
   id: etkinlik.id,
   tayfaId: etkinlik.tayfaId,
@@ -92,13 +96,13 @@ Event etkinlikKopyasi(
   waitlistCount: bekleyen ?? etkinlik.waitlistCount,
   callerRsvp: cevap ?? etkinlik.callerRsvp,
   callerCanManage: etkinlik.callerCanManage,
-  callerAttendance: etkinlik.callerAttendance,
+  callerAttendance: katilim ?? etkinlik.callerAttendance,
   seriesId: etkinlik.seriesId,
   seriesOverride: etkinlik.seriesOverride,
   createdAt: etkinlik.createdAt,
   updatedAt: etkinlik.updatedAt,
-  convoy: etkinlik.convoy,
-  camp: etkinlik.camp,
+  convoy: convoy ?? etkinlik.convoy,
+  camp: camp ?? etkinlik.camp,
   hike: etkinlik.hike,
   fishing: etkinlik.fishing,
   gaming: etkinlik.gaming,

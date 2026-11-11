@@ -10,6 +10,7 @@ import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
@@ -19,6 +20,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilimcilar_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -30,8 +32,9 @@ const double haritaOnizlemeYakinligi = 15;
 
 /// Etkinlik detayı (`/t/<tayfaId>/etkinlikler/<etkinlikId>`, ADR-0015 §3):
 /// açıklama, yer (harita önizlemesi; dokununca sistemin harita uygulaması),
-/// çevrimiçi bağlantı, organizatör, katılım ve sayılar, türe özel bilgiler
-/// ve katılımcılar. Takvime ekleme her zaman; düzenleme ve iptal
+/// çevrimiçi bağlantı, organizatör, katılım ve sayılar, varış bildirimi
+/// (ADR-0015 §5), türe özel bilgiler ve araçlar (§6) ve katılımcılar
+/// (organizatör düzeltmesiyle). Takvime ekleme her zaman; düzenleme ve iptal
 /// `caller_can_manage` ise görünür.
 ///
 /// Adresteki kimlikler girdi kabul edilir: biçimi bozuk etkinlik kimliği
@@ -187,7 +190,7 @@ class _Detay extends ConsumerWidget {
         : etkinlikTuruBul(
             turler,
             etkinlik.type.wire,
-          )?.aracBolumu(context, etkinlik.id);
+          )?.aracBolumu(context, etkinlik);
     final ayrintilar = _ayrintiSatirlari(m, etkinlik);
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -228,6 +231,7 @@ class _Detay extends ConsumerWidget {
         ],
         const SizedBox(height: TayfamSpacing.s24),
         _KatilimBolumu(anahtar: anahtar, etkinlik: etkinlik),
+        VarisBolumu(anahtar: anahtar, etkinlik: etkinlik),
         const SizedBox(height: TayfamSpacing.s24),
         if (etkinlik.mode == EventMode.online)
           _CevrimiciBolumu(etkinlik: etkinlik)
@@ -259,6 +263,10 @@ class _Detay extends ConsumerWidget {
         KatilimcilarBolumu(
           tayfaId: anahtar.tayfaId,
           etkinlikId: anahtar.etkinlikId,
+          duzeltme: katilimDuzeltmeAcik(
+            etkinlik,
+            ref.watch(etkinlikSaatiProvider)(),
+          ),
         ),
       ],
     );
