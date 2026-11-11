@@ -8,10 +8,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/app.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
+import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
 
@@ -58,6 +60,17 @@ class SabitOturumDurumu extends OturumDurumuNotifier {
   OturumDurumu build() => _ilk;
 }
 
+/// Tanıtım durumunu güvenli depoya bağlanmadan sabit bir değerle başlatan
+/// notifier; `tamamla` yine çalışır (deposu testte bellektir).
+class SabitTanitimDurumu extends TanitimNotifier {
+  SabitTanitimDurumu(this._ilk);
+
+  final TanitimDurumu _ilk;
+
+  @override
+  TanitimDurumu build() => _ilk;
+}
+
 /// Açılıştaki sürüm denetiminin sahtesi; ağ yok.
 final class SahteSurumDenetleyici implements SurumDenetleyici {
   SahteSurumDenetleyici({this.gerekli = false});
@@ -77,7 +90,10 @@ final class SahteSurumDenetleyici implements SurumDenetleyici {
 /// Oturum [oturum] ile başlar (`null` ise override edilmez; test kendi
 /// override'ını verir); sürüm denetimi [surumDenetleyici] ile (verilmezse
 /// güncelleme gerekmez). Tayfa uçları ve son tayfa deposu [tayfa] ile
-/// (verilmezse tayfa listesi boş). Gerçek güvenli depo ve ağ kullanılmaz.
+/// (verilmezse tayfa listesi boş). Hoş geldin tanıtımı [tanitim] ile başlar
+/// (`null` ise override edilmez; varsayılan: gösterildi); cihaz ayarları
+/// [cihazAyarlari] deposundadır (verilmezse boş bellek deposu). Gerçek
+/// güvenli depo ve ağ kullanılmaz.
 Future<void> uygulamayiAc(
   WidgetTester tester, {
   ThemeMode themeMode = ThemeMode.light,
@@ -85,6 +101,8 @@ Future<void> uygulamayiAc(
   OturumDurumu? oturum = OturumDurumu.acik,
   SurumDenetleyici? surumDenetleyici,
   List<Override>? tayfa,
+  TanitimDurumu? tanitim = TanitimDurumu.gosterildi,
+  CihazAyarlariDeposu? cihazAyarlari,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -92,6 +110,11 @@ Future<void> uygulamayiAc(
         ...tayfa ?? tayfaOverridelari(),
         if (oturum != null)
           oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
+        if (tanitim != null)
+          tanitimProvider.overrideWith(() => SabitTanitimDurumu(tanitim)),
+        cihazAyarlariDeposuProvider.overrideWithValue(
+          cihazAyarlari ?? BellekCihazAyarlariDeposu(),
+        ),
         surumDenetleyiciProvider.overrideWithValue(
           surumDenetleyici ?? SahteSurumDenetleyici(),
         ),
