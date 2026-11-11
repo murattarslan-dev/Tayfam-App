@@ -5318,7 +5318,6 @@
   "@sikayet_tekrar_dene": {
     "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
   },
-<<<<<<< HEAD
   "medya_fotograf_ekle": "Fotoğraf ekle",
   "@medya_fotograf_ekle": {
     "description": "Fotoğraf alanında yeni fotoğraf seçtiren düğme."
@@ -5432,7 +5431,7 @@
         "example": "Deniz"
       }
     }
-=======
+  },
   "push_event_created_title": "Yeni etkinlik",
   "@push_event_created_title": {
     "description": "Push bildirimi başlığı (`event_created`, Android title_loc_key): yeni etkinlik eklendi. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
@@ -5684,6 +5683,5 @@
   "bildirim_ayar_yukleniyor": "Bildirim izni okunuyor",
   "@bildirim_ayar_yukleniyor": {
     "description": "Profil → Bildirimler ekranında izin okunurken ilerleme göstergesinin ekran okuyucu etiketi."
->>>>>>> origin/main
   }
 }

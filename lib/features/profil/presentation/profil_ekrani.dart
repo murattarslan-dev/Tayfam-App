@@ -7,13 +7,10 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
-<<<<<<< HEAD
 import 'package:tayfam/core/medya/fotograf_yukleme.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
-=======
 import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/push/push_platformu.dart';
->>>>>>> origin/main
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
