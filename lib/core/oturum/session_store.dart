@@ -245,7 +245,16 @@ final class SessionStore {
   Future<void> _yukle() => _yukleme ??= _depodanOku();
 
   Future<void> _depodanOku() async {
-    final metin = await _depodanOkuSessiz();
+    final String? metin;
+    try {
+      metin = await _depo.oku();
+    } on Exception {
+      // Çözülemeyen kayıt (ör. başka cihazdan taşınmış; #12): silinir,
+      // oturum yok sayılır ve giriş istenir.
+      _gunluk('oturum: depo okunamadı');
+      await _depodanSilSessiz();
+      return;
+    }
     if (metin == null) return;
     final kayit = KayitliOturum.coz(metin);
     if (kayit == null || !kayit.yenilemeBitis.isAfter(_saat())) {

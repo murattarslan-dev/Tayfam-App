@@ -1,0 +1,196 @@
+name: Sürüm
+
+# Play dahili test kanalı için imzalı .aab (ADR-0018 §10, issue #71, #13).
+# `v*` etiketiyle ya da elle (workflow_dispatch) çalışır. Elle çalıştırma
+# yalnızca bir `v*` etiketi seçilerek yapılır ("Use workflow from" →
+# Tags); daldan çalıştırılırsa ilk iş anlaşılır bir hatayla durur. İmzasız
+# deneme yoktur: yükleme anahtarı secret'ları yoksa derleme başlamadan
+# durur.
+#
+# Yükleme anahtarı yalnızca `play-yayin` GitHub ortamının secret'larıdır
+# (ANDROID_UPLOAD_KEYSTORE_B64, ANDROID_UPLOAD_KEYSTORE_PASSWORD,
+# ANDROID_UPLOAD_KEY_ALIAS, ANDROID_UPLOAD_KEY_PASSWORD); ortam yalnızca
+# `v*` etiketlerine açıktır. Prod Google sunucu istemci kimliği
+# TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD değişkenidir (public bir değer; CLAUDE.md
+# kesin kural 6). Anahtar dosyası geçici dizine açılır, iş sonunda silinir
+# ve hiçbir log'a yazılmaz. Play'e yükleme ilk sürümde elle yapılır.
+#
+# Actions commit SHA'sıyla sabittir (CLAUDE.md kesin kural 8); ci.yml'deki
+# sürümlerle aynıdır.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Aynı etiket için iki derleme aynı anda koşmaz; yarıda kesilmez.
+concurrency:
+  group: surum-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # ci.yml ile aynı Flutter sürümü (ADR-0009).
+  FLUTTER_VERSION: 3.47.9
+  # Prod API (ADR-0018 §10). Public bir değerdir.
+  TAYFAM_API: https://api.tayfam.app
+
+jobs:
+  etiket:
+    name: etiket
+    # Ortam (secret'lar) açılmadan önce: çalıştırılan ref bir `v*` etiketi
+    # mi ve pubspec.yaml sürümüyle eşleşiyor mu.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      surum: ${{ steps.surum.outputs.surum }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Etiket ve pubspec sürümü
+        id: surum
+        env:
+          REF_TURU: ${{ github.ref_type }}
+          REF_ADI: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ "$REF_TURU" != "tag" ] || [[ ! "$REF_ADI" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(\+[0-9]+)?$ ]]; then
+            echo "::error title=Etiket gerekli::Sürüm iş akışı yalnızca vX.Y.Z (ya da vX.Y.Z+N) etiketinden çalışır. Elle çalıştırırken 'Use workflow from' → Tags → etiketi seç."
+            exit 1
+          fi
+          surum=$(sed -n 's/^version: *//p' pubspec.yaml)
+          if [[ ! "$surum" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)$ ]]; then
+            echo "::error title=pubspec sürümü::pubspec.yaml version X.Y.Z+N biçiminde olmalı (N = Play versionCode)."
+            exit 1
+          fi
+          ad="${BASH_REMATCH[1]}"
+          etiket="${REF_ADI#v}"
+          if [ "$etiket" != "$ad" ] && [ "$etiket" != "$surum" ]; then
+            echo "::error title=Sürüm uyuşmuyor::Etiket $REF_ADI, pubspec.yaml version $surum ile eşleşmiyor (beklenen v$ad ya da v$surum)."
+            exit 1
+          fi
+          echo "Sürüm: $surum"
+          echo "surum=$surum" >> "$GITHUB_OUTPUT"
+
+  aab:
+    name: aab
+    needs: etiket
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: play-yayin
+    env:
+      TAYFAM_SURUM: ${{ needs.etiket.outputs.surum }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prod Google sunucu istemci kimliği
+        env:
+          ISTEMCI: ${{ vars.TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$ISTEMCI" ]; then
+            echo "::error title=Değişken eksik::TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD tanımlı değil (play-yayin ortamı ya da repo değişkeni). Prod Google OAuth web istemcisinin kimliği olmalı."
+            exit 1
+          fi
+          if [[ ! "$ISTEMCI" =~ ^[0-9]+-[0-9a-z]+\.apps\.googleusercontent\.com$ ]]; then
+            echo "::error title=Değişken geçersiz::TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD <sayı>-<kod>.apps.googleusercontent.com biçiminde değil."
+            exit 1
+          fi
+          echo "Google sunucu istemcisi: $ISTEMCI"
+      - name: Yükleme anahtarı
+        # Dört secret da dolu olmalı; yoksa imzasız deneme yapılmaz. Anahtar
+        # yalnızca $RUNNER_TEMP'e açılır; parolalar yalnızca derleme
+        # adımının ortamındadır (GITHUB_ENV'e yazılmaz).
+        env:
+          ANAHTAR_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_B64 }}
+          PAROLA: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          TAKMA_AD: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          ANAHTAR_PAROLASI: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          eksik=()
+          [ -n "$ANAHTAR_B64" ] || eksik+=(ANDROID_UPLOAD_KEYSTORE_B64)
+          [ -n "$PAROLA" ] || eksik+=(ANDROID_UPLOAD_KEYSTORE_PASSWORD)
+          [ -n "$TAKMA_AD" ] || eksik+=(ANDROID_UPLOAD_KEY_ALIAS)
+          [ -n "$ANAHTAR_PAROLASI" ] || eksik+=(ANDROID_UPLOAD_KEY_PASSWORD)
+          if [ "${#eksik[@]}" -gt 0 ]; then
+            echo "::error title=Yükleme anahtarı yok::play-yayin ortamında eksik secret: ${eksik[*]}. İmzasız sürüm derlenmez."
+            exit 1
+          fi
+          dosya="$RUNNER_TEMP/tayfam-yukleme.jks"
+          umask 077
+          if ! printf '%s' "$ANAHTAR_B64" | base64 -d > "$dosya" 2>/dev/null || [ ! -s "$dosya" ]; then
+            rm -f "$dosya"
+            echo "::error title=Yükleme anahtarı okunamadı::ANDROID_UPLOAD_KEYSTORE_B64 geçerli base64 değil."
+            exit 1
+          fi
+          echo "TAYFAM_UPLOAD_KEYSTORE=$dosya" >> "$GITHUB_ENV"
+      - name: Java 17
+        run: echo "JAVA_HOME=${JAVA_HOME_17_X64}" >> "$GITHUB_ENV"
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          # Sürüm derlemesi önbelleksiz: başka bir çalışmanın önbelleği
+          # imzalı çıktıya karışmasın.
+          cache: false
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: İmzalı .aab
+        env:
+          ISTEMCI: ${{ vars.TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD }}
+          TAYFAM_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          TAYFAM_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          TAYFAM_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          flutter build appbundle --release \
+            --dart-define=TAYFAM_API="$TAYFAM_API" \
+            --dart-define=TAYFAM_GOOGLE_SUNUCU_ISTEMCI="$ISTEMCI" \
+            --dart-define=TAYFAM_SURUM="$TAYFAM_SURUM"
+      - name: Yükleme anahtarını sil
+        if: always()
+        run: rm -f "$RUNNER_TEMP/tayfam-yukleme.jks"
+      - name: İmza sertifikası parmak izleri
+        # Sertifika parmak izleri public'tir (.aab'dan herkes okuyabilir).
+        # Bu yükleme anahtarınınkidir; Play App Signing sertifikasınınki
+        # Play Console'da (Test ve yayınla → Uygulama bütünlüğü) görünür.
+        # Debug sertifikasıyla imzalanmışsa iş kırılır (#13).
+        run: |
+          set -euo pipefail
+          aab=build/app/outputs/bundle/release/app-release.aab
+          keytool -printcert -jarfile "$aab" > "$RUNNER_TEMP/sertifika.txt"
+          if grep -qi 'CN=Android Debug' "$RUNNER_TEMP/sertifika.txt"; then
+            echo "::error title=Debug imzası::.aab debug sertifikasıyla imzalanmış."
+            exit 1
+          fi
+          sha1=$(sed -n 's/^[[:space:]]*SHA1: *//p' "$RUNNER_TEMP/sertifika.txt" | LC_ALL=C sort -u)
+          sha256=$(sed -n 's/^[[:space:]]*SHA256: *//p' "$RUNNER_TEMP/sertifika.txt" | LC_ALL=C sort -u)
+          [[ "$sha1" =~ ^([0-9A-F]{2}:){19}[0-9A-F]{2}$ ]] || { echo "::error::.aab imzalı değil ya da SHA-1 okunamadı."; exit 1; }
+          [[ "$sha256" =~ ^([0-9A-F]{2}:){31}[0-9A-F]{2}$ ]] || { echo "::error::.aab imzalı değil ya da SHA-256 okunamadı."; exit 1; }
+          echo "Yükleme sertifikası SHA-1:   $sha1"
+          echo "Yükleme sertifikası SHA-256: $sha256"
+          echo "::notice title=Yükleme sertifikası SHA-256::$sha256"
+          {
+            echo "## Tayfam $TAYFAM_SURUM (.aab)"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Sürüm | \`$TAYFAM_SURUM\` |"
+            echo "| API | \`$TAYFAM_API\` |"
+            echo "| Yükleme sertifikası SHA-1 | \`$sha1\` |"
+            echo "| Yükleme sertifikası SHA-256 | \`$sha256\` |"
+            echo
+            echo "Play App Signing sertifikasının parmak izleri Play Console'dadır (Test ve yayınla → Uygulama bütünlüğü → Uygulama imzalama)."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: .aab (artefakt)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tayfam-${{ needs.etiket.outputs.surum }}-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30

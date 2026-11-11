@@ -32,8 +32,15 @@ final class _SayanDepo implements TokenDeposu {
   int yazma = 0;
   int silme = 0;
 
+  /// Verilirse `oku` bu hatayı atar (çözülemeyen kayıt).
+  Exception? okumaHatasi;
+
   @override
-  Future<String?> oku() => _ic.oku();
+  Future<String?> oku() {
+    final hata = okumaHatasi;
+    if (hata != null) return Future.error(hata);
+    return _ic.oku();
+  }
 
   @override
   Future<void> yaz(String kayit) {
@@ -159,6 +166,20 @@ void main() {
       await k.depo.yaz('{bozuk');
       expect(await k.oturum.durum(), const OturumKapali());
       expect(await k.depo.oku(), isNull);
+    });
+
+    test('çözülemeyen kayıt silinir, giriş istenir (#12)', () async {
+      final k = _Kurulum();
+      await k.depo.yaz('cozulemeyen');
+      k.depo.okumaHatasi = Exception('çözülemedi');
+
+      expect(await k.oturum.durum(), const OturumKapali());
+      await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
+      expect(k.depo.silme, 1);
+      expect(k.gunluk, ['oturum: depo okunamadı']);
+      k.depo.okumaHatasi = null;
+      expect(await k.depo.oku(), isNull);
+      expect(k.sunucu.gonderilen, isEmpty);
     });
 
     test('yenileme süresi geçmiş kayıt silinir', () async {
