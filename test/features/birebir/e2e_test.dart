@@ -126,7 +126,6 @@ List<Override> _e2eOverridelari(
   BirebirIcerikDurumu? icerik,
 }) => [
   ...birebirEkranOverridelari(tasima, e2e: e2e),
-  profilAdlari,
   e2eCihazProvider.overrideWith(() => _SabitCihaz(cihaz)),
   birebirIcerikProvider.overrideWith(() => _SabitIcerik(icerik ?? _icerik)),
 ];

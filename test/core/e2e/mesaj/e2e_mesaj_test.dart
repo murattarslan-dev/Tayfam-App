@@ -427,6 +427,14 @@ void main() {
       await ayse1.gonder(ali, 'Var, 9\'da çıkıyoruz.');
       await ali1.cek();
       await ali2.cek();
+      expect(
+        ali1.alinanlar,
+        hasLength(1),
+        reason:
+            'onay: ${ali1.onaylar} çözülemeyen: ${ali1.cozulemeyenler.length} '
+            'motor: ${ali1.motor.cagrilar.reversed.take(6).toList()} '
+            'ayse motor: ${ayse1.motor.cagrilar.reversed.take(8).toList()}',
+      );
       expect(ali1.alinanlar.single.metin, 'Var, 9\'da çıkıyoruz.');
       expect(ali2.alinanlar.last.metin, 'Var, 9\'da çıkıyoruz.');
 

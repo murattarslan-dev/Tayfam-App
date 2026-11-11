@@ -35,10 +35,9 @@ final class E2eOturumlari {
     required this.depo,
     required ApiTransport api,
     AdresKilidi? kilit,
-    GuvenlikDegisti? guvenlikDegisti,
+    this._guvenlikDegisti,
   }) : _users = UsersApi(api),
-       kilit = kilit ?? AdresKilidi(),
-       _guvenlikDegisti = guvenlikDegisti;
+       kilit = kilit ?? AdresKilidi();
 
   final SignalMotoru motor;
   final E2eDeposu depo;

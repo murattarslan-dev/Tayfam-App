@@ -19,9 +19,9 @@ final class AdresKilidi {
         return await islem();
       } finally {
         tamam.complete();
-        if (identical(_kuyruklar[anahtar], kuyruk)) {
-          _kuyruklar.remove(anahtar);
-        }
+        _kuyruklar.removeWhere(
+          (a, k) => a == anahtar && identical(k, kuyruk),
+        );
       }
     }
 
