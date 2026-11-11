@@ -12,6 +12,7 @@ import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -143,8 +144,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.profil,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _profilBasligi),
+              builder: (context, state) => const ProfilEkrani(),
+              routes: profilRotalari,
             ),
           ],
         ),
@@ -191,4 +192,3 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
 }
 
 String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
-String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;

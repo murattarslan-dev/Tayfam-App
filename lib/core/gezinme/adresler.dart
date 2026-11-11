@@ -118,6 +118,19 @@ abstract final class Adresler {
   static String etkinlikDuzenle(String tayfaId, String etkinlikId) =>
       '${etkinlik(tayfaId, etkinlikId)}/$etkinlikDuzenleYolu';
 
+  /// Profil sekmesindeki oturumlar ekranının profil altındaki yolu
+  /// (ADR-0018 §2).
+  static const oturumlarYolu = 'oturumlar';
+
+  /// Açık oturumların listesi.
+  static const oturumlar = '$profil/$oturumlarYolu';
+
+  /// Hesap silme ekranının profil altındaki yolu (ADR-0018 §2).
+  static const hesabiSilYolu = 'hesabi-sil';
+
+  /// Hesap silme açıklaması ve akışı.
+  static const hesabiSil = '$profil/$hesabiSilYolu';
+
   /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
   /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
   static const tayfaAyarlariYolu = 'ayarlar';
