@@ -1,0 +1,4 @@
+# Bilinçli istisnalar (gitleaks). Biçim: <commit>:<dosya>:<kural>:<satır>.
+# PR #68'in ilk commit'indeki test sabiti: rastgele görünümlü ama sahte bir
+# davet token'ı; sonraki commit'te açıkça sahte bir değerle değiştirildi.
+beb1c0c018d304846123c099b1e9198344ba9b95:test/shell/derin_link/davet_akisi_test.dart:generic-api-key:19

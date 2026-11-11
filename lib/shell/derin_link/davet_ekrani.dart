@@ -12,7 +12,7 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/derin_link/davet_notifier.dart';
 
-/// Davet linkinin ekranı (ADR-0018 §6): "<Tayfa>'ya katıl?".
+/// Davet linkinin ekranı (ADR-0018 §6): "Tayfaya katıl?".
 ///
 /// Yönlendirici, bekleyen bir davet varken ve oturum açıkken buraya
 /// getirir (giriş, kayıt ve tanıtımdan sonra da). Adreste token yoktur;

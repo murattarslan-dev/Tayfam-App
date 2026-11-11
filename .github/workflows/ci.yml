@@ -133,12 +133,12 @@ jobs:
         run: |
           set -euo pipefail
           apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
-          # Satır biçimi apksigner sürümüne göre "Signer #1 certificate …"
-          # ya da "Signer (minSdkVersion=…) certificate …" olabilir.
+          # Satır biçimi apksigner sürümüne göre "Signer #1 certificate …",
+          # "V2 Signer: certificate …" ya da "Signer (minSdkVersion=…) …" olabilir.
           "$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-debug.apk \
             > "$RUNNER_TEMP/imza.txt"
           grep 'SHA-256' "$RUNNER_TEMP/imza.txt"
-          ozet=$(sed -n 's/^Signer.* certificate SHA-256 digest: //p' "$RUNNER_TEMP/imza.txt" \
+          ozet=$(sed -n 's/^.*Signer.*certificate SHA-256 digest: //p' "$RUNNER_TEMP/imza.txt" \
             | LC_ALL=C sort -u)
           [[ "$ozet" =~ ^[0-9a-f]{64}$ ]]
           parmak=$(printf '%s' "$ozet" | tr 'a-f' 'A-F' | sed 's/../&:/g; s/:$//')
