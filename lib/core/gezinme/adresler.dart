@@ -33,6 +33,16 @@ abstract final class Adresler {
   static String duyuru(String tayfaId, String duyuruId) =>
       '${duyurular(tayfaId)}/$duyuruId';
 
+  /// Soru-cevap modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0018 §4).
+  static const sorularYolu = 'sorular';
+
+  /// Tayfanın soruları.
+  static String sorular(String tayfaId) => '${tayfa(tayfaId)}/$sorularYolu';
+
+  /// Tek bir sorunun ekranı ve cevapları.
+  static String soru(String tayfaId, String soruId) =>
+      '${sorular(tayfaId)}/$soruId';
+
   /// Etkinlik modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0015 §3).
   static const etkinliklerYolu = 'etkinlikler';
 
