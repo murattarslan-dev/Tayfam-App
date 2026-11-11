@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
@@ -136,8 +137,17 @@ SahteTayfaTasima birebirTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
 }
 
 /// Birebir uçlarını [tasima]'ya bağlayan override'lar; yenileme
-/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok.
-List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) {
+/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok. Uçtan uca
+/// şifreleme kapalıdır (düz sürüm yolu); E2E testleri kendi
+/// override'larını verir.
+List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) => [
+  e2eEtkinProvider.overrideWithValue(false),
+  ...birebirUcOverridelari(tasima),
+];
+
+/// [birebirOverridelari]'nın E2E anahtarı olmadan hali (E2E testleri
+/// `e2eEtkinProvider`'ı kendisi verir).
+List<Override> birebirUcOverridelari([SahteTayfaTasima? tasima]) {
   final t = tasima ?? birebirTasimasi();
   return [
     birebirDeposuProvider.overrideWithValue(BirebirDeposu(t)),
@@ -194,11 +204,13 @@ List<Override> birebirEkranOverridelari(
   SahteTayfaTasima tasima, {
   OturumDurumu oturum = OturumDurumu.acik,
   SahteRealtime? realtime,
+  bool e2e = false,
 }) {
   final r = realtime ?? SahteRealtime();
   return [
     ...tayfaOverridelari(tasima: tasima),
-    ...birebirOverridelari(tasima),
+    e2eEtkinProvider.overrideWithValue(e2e),
+    ...birebirUcOverridelari(tasima),
     profilAdlari,
     oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
     realtimeIstemcisiProvider.overrideWithValue(r.istemci),

@@ -135,6 +135,33 @@ final class DmOkundu extends RealtimeOlayi {
   final String sonOkunanMesajId;
 }
 
+/// `dm.envelope`: bu cihaza (oturuma) gelen uçtan uca şifreli zarf
+/// (ADR-0020). İçerik opaktır; hiçbir yere yazılmaz ve loglanmaz. Teslim
+/// en az bir kezdir; alan taraf zarf kimliğiyle tekilleştirir.
+final class DmZarfiGeldi extends RealtimeOlayi {
+  const DmZarfiGeldi(this.zarf);
+
+  final E2EEnvelope zarf;
+}
+
+/// `e2e.prekeys_low`: cihazın tek kullanımlık ön anahtarları azaldı.
+final class E2eOnAnahtarlarAzaldi extends RealtimeOlayi {
+  const E2eOnAnahtarlarAzaldi();
+}
+
+/// `e2e.link_answered`: cihazın eşleştirme isteği cevaplandı.
+final class E2eEslemeCevaplandi extends RealtimeOlayi {
+  const E2eEslemeCevaplandi(this.eslemeIstegiId);
+
+  final String eslemeIstegiId;
+}
+
+/// `e2e.history_key_shared`: cihaz için yeni geçmiş anahtarı paylaşımı
+/// var (`GET /v1/me/e2e/history-key-shares`).
+final class E2eGecmisAnahtariPaylasildi extends RealtimeOlayi {
+  const E2eGecmisAnahtariPaylasildi();
+}
+
 /// Bağlantı (yeniden) kuruldu ve `ready` geldi. Açık ekranlar
 /// kaçırdıklarını REST ile, son gördükleri kimlikten itibaren çeker
 /// (ADR-0007).
@@ -237,6 +264,21 @@ RealtimeOlayi? olayaCevir(GelenCerceve c) {
         _kimlik(v, 'id');
         _kimlik(v, 'conversation_id');
         return DmMesajiGeldi(DirectMessage.fromJson({...v, 'deleted': false}));
+      case 'dm.envelope':
+        _kimlik(v, 'id');
+        _kimlik(v, 'message_id');
+        _kimlik(v, 'conversation_id');
+        _kimlik(v, 'sender_user_id');
+        _kimlik(v, 'sender_device_id');
+        final zarf = E2EEnvelope.fromJson(v);
+        if (zarf.type == E2EEnvelopeType.unknown) return null;
+        return DmZarfiGeldi(zarf);
+      case 'e2e.prekeys_low':
+        return const E2eOnAnahtarlarAzaldi();
+      case 'e2e.link_answered':
+        return E2eEslemeCevaplandi(_kimlik(v, 'link_request_id'));
+      case 'e2e.history_key_shared':
+        return const E2eGecmisAnahtariPaylasildi();
       case 'dm.message_deleted':
         return DmMesajiSilindi(
           konusmaId: _kimlik(v, 'conversation_id'),

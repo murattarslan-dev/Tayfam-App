@@ -168,12 +168,13 @@ eklenir. Bugün `Account` yalnızca referans kodu ve görünürlük taşıyor.
   - Okundu bilgisi.
 - **Sohbet sekmesi:** kanallar (aktif tayfanınkiler) ve birebir
   konuşmalar.
-- **Uçtan uca şifreleme (Signal, ADR-0010):** bu dahili test sürümüne
-  **girmez**. Notion'daki sıraya uygun olarak ("önce düz birebir mesaj, E2E
-  modülün son adımı") ayrı bir iş olarak hemen ardından gelir.
-  - Sunucu, E2E cihazı olmayan iki kullanıcı arasında düz mesaja izin
-    verir.
-  - Bu sürümde istemci E2E cihazı kaydetmez.
+- **Uçtan uca şifreleme (Signal, ADR-0010):** ~~bu dahili test sürümüne
+  girmez~~. **Güncelleme 2026-11-11 (platform sahibi):** E2E dahili test
+  sürümüne girer; istemci tasarımı [ADR-0020](0020-birebir-uctan-uca-sifreleme-istemci.md).
+  - Mobil istemci girişten sonra E2E cihazını kaydeder; birebir mesajlar
+    uçtan uca şifreli gider.
+  - Düz sürümde yazılmış mesajlar "uçtan uca şifreli değil" etiketiyle
+    görünür; sunucuda silinmeleri Tayfam-Api'de ayrı iştir.
 
 ### 10. Sürüm hattı
 
@@ -211,8 +212,9 @@ göre mimari oturumunca belirlenir.
   - prod API'nin hazır olması.
 - **Yeni paket gerekmez.** WebSocket için `web_socket_channel` zaten
   ADR'de var.
-- **Uçtan uca şifreleme** bu sürümün dışındadır. Push bu sürüme girdi
-  (platform sahibi, sohbette, 2026-11-11; [ADR-0019](0019-push-bildirimleri.md)).
+- **Push** ([ADR-0019](0019-push-bildirimleri.md)) ve **uçtan uca
+  şifreleme** ([ADR-0020](0020-birebir-uctan-uca-sifreleme-istemci.md))
+  platform sahibinin 2026-11-11 kararlarıyla bu sürüme girdi.
 
 ## Değerlendirilen alternatifler
 
