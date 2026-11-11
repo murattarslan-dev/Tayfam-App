@@ -90,7 +90,8 @@ eklenir. Bugün `Account` yalnızca referans kodu ve görünürlük taşıyor.
   Bilinmeyen tür için yalnızca okundu işaretlenir.
 - **İçerik:** bildirimde içerik gösterilmez (kesin kural 7). Metin,
   türden ve tayfa adından kurulur.
-- **Push (FCM):** Firebase kurulunca gelir; bu sürümde yoktur.
+- **Push (FCM):** bu sürüme girdi (platform sahibi, sohbette,
+  2026-11-11); kararlar [ADR-0019](0019-push-bildirimleri.md)'da.
 
 ### 4. Soru-cevap (`soru_cevap`)
 
@@ -210,7 +211,8 @@ göre mimari oturumunca belirlenir.
   - prod API'nin hazır olması.
 - **Yeni paket gerekmez.** WebSocket için `web_socket_channel` zaten
   ADR'de var.
-- **Push ve uçtan uca şifreleme** bu sürümün dışındadır.
+- **Uçtan uca şifreleme** bu sürümün dışındadır. Push bu sürüme girdi
+  (platform sahibi, sohbette, 2026-11-11; [ADR-0019](0019-push-bildirimleri.md)).
 
 ## Değerlendirilen alternatifler
 
