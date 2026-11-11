@@ -10,6 +10,8 @@ import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
+import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
@@ -224,10 +226,25 @@ class _Detay extends ConsumerWidget {
             etkinlik.type.wire,
           )?.aracBolumu(context, etkinlik);
     final ayrintilar = _ayrintiSatirlari(m, etkinlik);
+    final kapak = etkinlik.coverUploadId;
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
       children: [
+        if (kapak != null && kapak.isNotEmpty) ...[
+          ClipRRect(
+            borderRadius: TayfamRadii.onizlemeKoseleri,
+            child: AspectRatio(
+              aspectRatio: TayfamSizes.kapakOrani,
+              child: MedyaGorseli(
+                uploadId: kapak,
+                varyant: MedyaVaryanti.tam,
+                etiket: m.medya_kapak_etiketi,
+              ),
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
+        ],
         Wrap(
           spacing: TayfamSpacing.s8,
           runSpacing: TayfamSpacing.s8,

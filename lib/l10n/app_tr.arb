@@ -5960,6 +5960,120 @@
   "@disa_aktarma_hata_desteklenmiyor": {
     "description": "Signal köprüsü olmayan derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS) indirmeye basılınca görünen hata."
   },
+  "medya_fotograf_ekle": "Fotoğraf ekle",
+  "@medya_fotograf_ekle": {
+    "description": "Fotoğraf alanında yeni fotoğraf seçtiren düğme."
+  },
+  "medya_fotograf_degistir": "Fotoğrafı değiştir",
+  "@medya_fotograf_degistir": {
+    "description": "Fotoğraf alanında mevcut fotoğrafı değiştiren düğme."
+  },
+  "medya_fotograf_kaldir": "Fotoğrafı kaldır",
+  "@medya_fotograf_kaldir": {
+    "description": "Fotoğraf alanında fotoğrafı kaldıran düğme."
+  },
+  "medya_kaynak_baslik": "Fotoğraf seç",
+  "@medya_kaynak_baslik": {
+    "description": "Fotoğrafın kaynağını soran alt sayfanın başlığı."
+  },
+  "medya_kaynak_galeri": "Galeriden seç",
+  "@medya_kaynak_galeri": {
+    "description": "Fotoğrafı cihazın galerisinden seçtiren seçenek."
+  },
+  "medya_kaynak_kamera": "Fotoğraf çek",
+  "@medya_kaynak_kamera": {
+    "description": "Fotoğrafı kamerayla çektiren seçenek."
+  },
+  "medya_hazirlaniyor": "Fotoğraf hazırlanıyor…",
+  "@medya_hazirlaniyor": {
+    "description": "Fotoğraf küçültülüp konum bilgisi silinirken gösterilen metin."
+  },
+  "medya_yukleniyor": "Fotoğraf yükleniyor…",
+  "@medya_yukleniyor": {
+    "description": "Fotoğraf sunucuya yüklenirken gösterilen metin."
+  },
+  "medya_tekrar_dene": "Tekrar dene",
+  "@medya_tekrar_dene": {
+    "description": "Fotoğraf yüklenemeyince aynı fotoğrafı yeniden yükleyen düğme."
+  },
+  "medya_gorsel_yukleniyor": "Fotoğraf yükleniyor",
+  "@medya_gorsel_yukleniyor": {
+    "description": "Bir fotoğraf gösterilmek üzere indirilirken ekran okuyucu metni."
+  },
+  "medya_avatar_etiketi_adsiz": "Profil fotoğrafı",
+  "@medya_avatar_etiketi_adsiz": {
+    "description": "Adı bilinmeyen kullanıcının avatarının ekran okuyucu etiketi."
+  },
+  "medya_kapak_etiketi": "Kapak fotoğrafı",
+  "@medya_kapak_etiketi": {
+    "description": "Tayfa ya da etkinlik kapağının ekran okuyucu etiketi ve alan başlığı."
+  },
+  "medya_av_fotografi_etiketi": "Av fotoğrafı",
+  "@medya_av_fotografi_etiketi": {
+    "description": "Av günlüğündeki fotoğrafın ekran okuyucu etiketi."
+  },
+  "medya_hata_okunamadi": "Bu fotoğraf okunamadı. Başka bir fotoğraf seç.",
+  "@medya_hata_okunamadi": {
+    "description": "Seçilen dosya çözülemeyince (desteklenmeyen biçim) gösterilir."
+  },
+  "medya_hata_cok_buyuk": "Bu fotoğraf çok büyük. Başka bir fotoğraf seç.",
+  "@medya_hata_cok_buyuk": {
+    "description": "Seçilen dosya 40 MB'tan büyükse gösterilir."
+  },
+  "medya_hata_islenemedi": "Fotoğraf hazırlanamadı. Başka bir fotoğraf seç.",
+  "@medya_hata_islenemedi": {
+    "description": "Küçültülen fotoğraf kurallara uymayınca gösterilir."
+  },
+  "medya_hata_reddedildi": "Fotoğraf kabul edilmedi. Başka bir fotoğraf seç.",
+  "@medya_hata_reddedildi": {
+    "description": "Sunucu yüklenen fotoğrafı reddedince gösterilir."
+  },
+  "medya_hata_kapali": "Fotoğraf yükleme şu an kullanılamıyor. Daha sonra tekrar dene.",
+  "@medya_hata_kapali": {
+    "description": "Sunucuda fotoğraf deposu kapalıyken ya da ulaşılamıyorken (503) gösterilir."
+  },
+  "medya_hata_baglanti": "Fotoğraf yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+  "@medya_hata_baglanti": {
+    "description": "Fotoğraf depoya gönderilemeyince gösterilir."
+  },
+  "profil_avatar_baslik": "Profil fotoğrafı",
+  "@profil_avatar_baslik": {
+    "description": "Profil sekmesindeki avatar bölümünün başlığı."
+  },
+  "profil_avatar_aciklama": "Fotoğrafın konum bilgisi gönderilmeden silinir. Oturum açmış herkes görebilir; engellediğin kişiler göremez.",
+  "@profil_avatar_aciklama": {
+    "description": "Profil sekmesindeki avatar bölümünün açıklaması."
+  },
+  "profil_avatar_kaydedildi": "Profil fotoğrafın güncellendi.",
+  "@profil_avatar_kaydedildi": {
+    "description": "Avatar değiştirildikten sonra gösterilen bildirim."
+  },
+  "profil_avatar_kaldirildi": "Profil fotoğrafın kaldırıldı.",
+  "@profil_avatar_kaldirildi": {
+    "description": "Avatar kaldırıldıktan sonra gösterilen bildirim."
+  },
+  "etkinlik_kapak_aciklama": "İsteğe bağlı. Yalnızca etkinliği görebilen üyeler görür.",
+  "@etkinlik_kapak_aciklama": {
+    "description": "Etkinlik sihirbazındaki kapak fotoğrafı alanının açıklaması."
+  },
+  "yonetim_kapak_aciklama": "Yalnızca tayfanın üyeleri görür. Kaydet'e basınca uygulanır.",
+  "@yonetim_kapak_aciklama": {
+    "description": "Tayfa bilgileri ekranındaki kapak fotoğrafı alanının açıklaması."
+  },
+  "etkinlik_av_fotografi": "Fotoğraf (isteğe bağlı)",
+  "@etkinlik_av_fotografi": {
+    "description": "Av ekleme formundaki fotoğraf alanının başlığı."
+  },
+  "medya_avatar_etiketi": "{ad} profil fotoğrafı",
+  "@medya_avatar_etiketi": {
+    "description": "Bir kullanıcının avatarının ekran okuyucu etiketi.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
   "birebir_sessiz_menu_ipucu": "Konuşma seçenekleri",
   "@birebir_sessiz_menu_ipucu": {
     "description": "Birebir konuşma ekranının üst çubuğundaki menü düğmesinin ipucu ve ekran okuyucu etiketi."
