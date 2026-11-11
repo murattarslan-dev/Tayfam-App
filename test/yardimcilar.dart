@@ -15,6 +15,7 @@ import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
 
+import 'features/bildirim/sahteler.dart';
 import 'features/tayfa/sahteler.dart';
 
 /// Testlerde kullanılan, biçimi geçerli örnek tayfa kimlikleri.
@@ -77,7 +78,8 @@ final class SahteSurumDenetleyici implements SurumDenetleyici {
 /// Oturum [oturum] ile başlar (`null` ise override edilmez; test kendi
 /// override'ını verir); sürüm denetimi [surumDenetleyici] ile (verilmezse
 /// güncelleme gerekmez). Tayfa uçları ve son tayfa deposu [tayfa] ile
-/// (verilmezse tayfa listesi boş). Gerçek güvenli depo ve ağ kullanılmaz.
+/// (verilmezse tayfa listesi boş); bildirim uçları [bildirim] ile
+/// (verilmezse bildirim yok). Gerçek güvenli depo ve ağ kullanılmaz.
 Future<void> uygulamayiAc(
   WidgetTester tester, {
   ThemeMode themeMode = ThemeMode.light,
@@ -85,11 +87,13 @@ Future<void> uygulamayiAc(
   OturumDurumu? oturum = OturumDurumu.acik,
   SurumDenetleyici? surumDenetleyici,
   List<Override>? tayfa,
+  List<Override>? bildirim,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         ...tayfa ?? tayfaOverridelari(),
+        ...bildirim ?? bildirimOverridelari(),
         if (oturum != null)
           oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
         surumDenetleyiciProvider.overrideWithValue(
