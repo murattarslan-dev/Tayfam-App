@@ -94,6 +94,7 @@ void main() {
           'id': {'type': 'string', 'format': 'uuid'},
           'created_at': {'type': 'string', 'format': 'date-time'},
           'birth_date': {'type': 'string', 'format': 'date'},
+          'key': {'type': 'string', 'format': 'byte'},
           'count': {'type': 'integer'},
           'big': {'type': 'integer', 'format': 'int64'},
           'ratio': {'type': 'number'},
@@ -136,6 +137,11 @@ void main() {
     test('date String kalır, belgede biçimi yazar', () {
       expect(models, contains('final String? birthDate;'));
       expect(models, contains('`YYYY-AA-GG`'));
+    });
+
+    test('byte String kalır, belgede base64 yazar', () {
+      expect(models, contains('final String? key;'));
+      expect(models, contains('biçim: standart base64'));
     });
 
     test('DateTime UTC yazılır ve okunur', () {

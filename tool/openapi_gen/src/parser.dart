@@ -370,7 +370,8 @@ final class _Parser {
           return EnumRef(nameHint);
         }
         switch (format) {
-          case null || 'uuid' || 'uri' || 'date':
+          // `byte`: standart base64 metni; çözme işi kullanan katmandadır.
+          case null || 'uuid' || 'uri' || 'date' || 'byte':
             return const PrimitiveRef(Primitive.string);
           case 'date-time':
             return const PrimitiveRef(Primitive.dateTime);
@@ -824,6 +825,9 @@ final class _Parser {
     ];
     if (schema['format'] == 'date') {
       constraints.add('biçim: `YYYY-AA-GG` (saat dilimsiz tarih)');
+    }
+    if (schema['format'] == 'byte') {
+      constraints.add('biçim: standart base64');
     }
     if (schema['default'] != null) {
       constraints.add('varsayılan (sunucu): ${_docValue(schema['default'])}');
