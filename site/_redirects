@@ -1,1 +1,4 @@
 /gizlilik  /yasal/aydinlatma-metni/2026-11-08/  302
+# Referans linki tayfam.app/r/<KOD>: uygulama yüklü değilse tek karşılama
+# sayfası gösterilir; adres (ve kod) değişmez (ADR-0018 §6).
+/r/:kod  /r/  200

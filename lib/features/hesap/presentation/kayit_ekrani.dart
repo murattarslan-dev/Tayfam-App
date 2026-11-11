@@ -34,11 +34,21 @@ Future<DateTime?> sistemTarihSecicisi(BuildContext context, DateTime? secili) {
 /// Kayıt ekranı (ADR-0012 §3): ad (Google adıyla dolu), doğum tarihi, iki
 /// ayrı onay kutusu ve isteğe bağlı referans kodu. Gönderimden önce doğum
 /// tarihi bir pencerede teyit ettirilir; pencere yaş sınırını söylemez.
+///
+/// Referans linkiyle (`tayfam.app/r/<KOD>`) gelindiyse kod alanı
+/// [referansKodu] ile dolu açılır (ADR-0018 §6); kullanıcı değiştirebilir.
 class KayitEkrani extends ConsumerStatefulWidget {
-  const KayitEkrani({super.key, this.tarihSecici = sistemTarihSecicisi});
+  const KayitEkrani({
+    super.key,
+    this.tarihSecici = sistemTarihSecicisi,
+    this.referansKodu,
+  });
 
   /// Testlerde sahte seçici verilir.
   final DogumTarihiSecici tarihSecici;
+
+  /// Referans linkinden gelen kod; yoksa `null`.
+  final String? referansKodu;
 
   @override
   ConsumerState<KayitEkrani> createState() => _KayitEkraniState();
@@ -57,6 +67,18 @@ class _KayitEkraniState extends ConsumerState<KayitEkrani> {
   void initState() {
     super.initState();
     _ad.text = ref.read(googleAdiProvider) ?? '';
+    _referans.text = widget.referansKodu ?? '';
+  }
+
+  @override
+  void didUpdateWidget(KayitEkrani eski) {
+    super.didUpdateWidget(eski);
+    // Ekran açıkken referans linki gelirse boş alan doldurulur; kullanıcının
+    // yazdığı kodun üstüne yazılmaz.
+    final kod = widget.referansKodu;
+    if (kod != null && kod != eski.referansKodu && _referans.text.isEmpty) {
+      _referans.text = kod;
+    }
   }
 
   @override
