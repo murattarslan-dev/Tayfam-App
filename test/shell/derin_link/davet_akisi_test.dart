@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,8 +16,8 @@ import 'package:tayfam/shell/derin_link/derin_link_rotalari.dart';
 import '../../features/tayfa/sahteler.dart';
 import '../../yardimcilar.dart';
 
-/// Biçimi geçerli sahte davet token'ı (gerçek değil).
-const String _token = 'Q2FtcEtvbnZveURhdmV0aVNhaHRlVG9rZW4xMjM0NTY';
+/// Biçimi geçerli, açıkça sahte davet değeri (gerçek değil).
+const String _token = 'sahte-davet-sahte-davet';
 
 const String _davetLinki = 'https://tayfam.app/davet#$_token';
 

@@ -56,8 +56,7 @@ final class DavetLinki extends GelenAdres {
   final String token;
 
   @override
-  bool operator ==(Object other) =>
-      other is DavetLinki && other.token == token;
+  bool operator ==(Object other) => other is DavetLinki && other.token == token;
 
   @override
   int get hashCode => token.hashCode;
@@ -74,8 +73,7 @@ final class ReferansLinki extends GelenAdres {
   final String kod;
 
   @override
-  bool operator ==(Object other) =>
-      other is ReferansLinki && other.kod == kod;
+  bool operator ==(Object other) => other is ReferansLinki && other.kod == kod;
 
   @override
   int get hashCode => kod.hashCode;

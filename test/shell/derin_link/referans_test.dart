@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
@@ -18,9 +19,7 @@ Future<SahteOturum> _ac(WidgetTester tester, String link) async {
     tester,
     oturum: OturumDurumu.kayitBekliyor,
     overrides: hesapOverridelari(
-      tasima: SahteTasima({
-        'GET /v1/registration/requirements': surumGovdesi,
-      }),
+      tasima: SahteTasima({'GET /v1/registration/requirements': surumGovdesi}),
       oturum: oturum,
     ),
   );

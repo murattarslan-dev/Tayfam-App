@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/shell/derin_link/derin_link.dart';
 import 'package:tayfam/shell/derin_link/derin_link_kutusu.dart';
 
-/// Biçimi geçerli sahte davet token'ı (base64url, 43 karakter; gerçek değil).
-const String _token = 'AbCdEfGhIjKlMnOpQrStUvWxYz0123456789-_AbCdE';
+/// Biçimi geçerli, açıkça sahte davet değeri (base64url; gerçek değil).
+const String _token = 'sahte_davet-sahte_davet';
 
 GelenAdres _ayristir(String adres) => gelenAdresiAyristir(Uri.parse(adres));
 

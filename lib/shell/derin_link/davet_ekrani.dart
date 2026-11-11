@@ -211,9 +211,7 @@ class _Gonderildi extends StatelessWidget {
           const SizedBox(height: TayfamSpacing.s8),
           Text(
             m.derin_link_davet_gonderildi_aciklama,
-            style: yazi.bodyLarge?.copyWith(
-              color: context.renkler.metinGovde,
-            ),
+            style: yazi.bodyLarge?.copyWith(color: context.renkler.metinGovde),
           ),
           const SizedBox(height: TayfamSpacing.s24),
           BirincilEylem(etiket: m.derin_link_davet_tamam, onPressed: onTamam),
