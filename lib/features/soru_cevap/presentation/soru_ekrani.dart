@@ -8,6 +8,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/soru_cevap/application/cevap_listesi_notifier.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_notifier.dart';
 import 'package:tayfam/features/soru_cevap/presentation/cevap_karti.dart';
@@ -17,7 +18,7 @@ import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Soru işlemleri menüsünün seçenekleri.
-enum SoruIslemi { duzenle, sil }
+enum SoruIslemi { duzenle, sil, sikayet }
 
 /// Tek bir soru ve cevapları (`/t/<tayfaId>/sorular/<soruId>`; ADR-0018
 /// §4). Cevaplar "faydalı" oyuna göre sıralıdır ve sayfalıdır.
@@ -59,21 +60,29 @@ class SoruEkrani extends ConsumerWidget {
       appBar: AppBar(
         title: Text(metinler.soru_baslik),
         actions: [
-          if (soru != null && (kendisi || yonetimde))
+          if (soru != null)
             PopupMenuButton<SoruIslemi>(
               tooltip: metinler.soru_islemler,
               icon: const Icon(Icons.more_vert),
               onSelected: (islem) =>
                   unawaited(_soruIslemi(context, ref, soru, islem, kendisi)),
               itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: SoruIslemi.duzenle,
-                  child: Text(metinler.soru_duzenle),
-                ),
-                PopupMenuItem(
-                  value: SoruIslemi.sil,
-                  child: Text(metinler.soru_sil),
-                ),
+                if (kendisi || yonetimde) ...[
+                  PopupMenuItem(
+                    value: SoruIslemi.duzenle,
+                    child: Text(metinler.soru_duzenle),
+                  ),
+                  PopupMenuItem(
+                    value: SoruIslemi.sil,
+                    child: Text(metinler.soru_sil),
+                  ),
+                ],
+                // Başkasının sorusu şikâyet edilebilir (ADR-0018 §8).
+                if (!kendisi)
+                  PopupMenuItem(
+                    value: SoruIslemi.sikayet,
+                    child: Text(metinler.sikayet_et),
+                  ),
               ],
             ),
         ],
@@ -162,6 +171,15 @@ class SoruEkrani extends ConsumerWidget {
         }
         bildirimGoster(bildirim, metinler.soru_silindi);
         await Navigator.of(context).maybePop();
+      case SoruIslemi.sikayet:
+        await sikayetSayfasiniAc(
+          context,
+          SikayetHedefi.tayfada(
+            tayfaId: tayfaId,
+            tur: ReportTargetType.question,
+            id: soru.id,
+          ),
+        );
     }
   }
 }
@@ -342,6 +360,15 @@ class _Cevaplar extends ConsumerWidget {
           return;
         }
         bildirimGoster(bildirim, metinler.soru_cevap_silindi);
+      case CevapIslemi.sikayet:
+        await sikayetSayfasiniAc(
+          context,
+          SikayetHedefi.tayfada(
+            tayfaId: anahtar.tayfaId,
+            tur: ReportTargetType.answer,
+            id: cevap.id,
+          ),
+        );
     }
   }
 }

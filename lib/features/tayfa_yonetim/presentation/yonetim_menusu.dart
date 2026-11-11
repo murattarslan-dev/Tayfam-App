@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/katilim_istekleri_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/tayfa_ayarlari.dart';
@@ -16,13 +17,15 @@ import 'package:tayfam/l10n/app_localizations.dart';
 Widget tayfaUstMenusu(BuildContext context, String tayfaId) =>
     TayfaYonetimMenusu(tayfaId: tayfaId);
 
-enum _Secim { ayarlar, sessiz, ayril }
+enum _Secim { ayarlar, sessiz, sikayet, ayril }
 
 /// Tayfa ana sayfasının mor üst bölümündeki menü (ADR-0018 §1):
 ///
 /// - "Tayfa ayarları": yalnızca moderatör ve yöneticiye görünür; bekleyen
 ///   katılım isteği varsa menü düğmesinde ve girişte rozet.
 /// - "Bildirimleri sessize al" / "Bildirimleri aç".
+/// - "Tayfayı şikâyet et": yönetim dışındaki üyeye; yalnızca Tayfam ekibine
+///   gider (ADR-0018 §8).
 /// - "Tayfadan ayrıl" (onaylı).
 ///
 /// Rol yalnızca menüyü sadeleştirir; yetkiyi sunucu verir (kesin kural 5).
@@ -79,6 +82,15 @@ class TayfaYonetimMenusu extends ConsumerWidget {
               ),
             ),
           ),
+        if (!yonetimde)
+          PopupMenuItem(
+            value: _Secim.sikayet,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.flag_outlined),
+              title: Text(m.sikayet_tayfa_menu),
+            ),
+          ),
         PopupMenuItem(
           value: _Secim.ayril,
           child: ListTile(
@@ -112,6 +124,8 @@ class TayfaYonetimMenusu extends ConsumerWidget {
           hata,
           yeni ? m.yonetim_sessize_alindi : m.yonetim_sessizden_cikti,
         );
+      case _Secim.sikayet:
+        await sikayetSayfasiniAc(context, SikayetHedefi.tayfa(tayfaId));
       case _Secim.ayril:
         final ad =
             ref.read(tayfaOzetiProvider(tayfaId)).ad ?? m.tayfa_adi_bilinmiyor;

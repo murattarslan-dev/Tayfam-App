@@ -16,6 +16,7 @@ import 'package:tayfam/features/anket/application/anket_notifier.dart';
 import 'package:tayfam/features/anket/presentation/anket_ortak.dart';
 import 'package:tayfam/features/anket/presentation/anket_sonuclari.dart';
 import 'package:tayfam/features/anket/presentation/oy_verenler_sayfasi.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -57,20 +58,40 @@ class AnketEkrani extends ConsumerWidget {
     final simdi = ref.watch(anketSaatiProvider)().toUtc();
     final kapatabilir =
         anket != null && !anketKapali(anket, simdi) && _yonetebilir(ref, anket);
+    final acan = anket?.createdByUserId;
+    // Başkasının anketi şikâyet edilebilir (ADR-0018 §8).
+    final sikayetEdilebilir =
+        anket != null && (acan == null || !ref.watch(kendisiMiProvider(acan)));
     return Scaffold(
       appBar: AppBar(
         title: Text(m.anket_baslik),
         actions: [
-          if (kapatabilir)
+          if (kapatabilir || sikayetEdilebilir)
             PopupMenuButton<_AnketIslemi>(
               tooltip: m.anket_islemler,
               icon: const Icon(Icons.more_vert),
-              onSelected: (_) => unawaited(_kapat(context, ref)),
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: _AnketIslemi.kapat,
-                  child: Text(m.anket_kapat),
+              onSelected: (islem) => unawaited(switch (islem) {
+                _AnketIslemi.kapat => _kapat(context, ref),
+                _AnketIslemi.sikayet => sikayetSayfasiniAc(
+                  context,
+                  SikayetHedefi.tayfada(
+                    tayfaId: tayfaId,
+                    tur: ReportTargetType.poll,
+                    id: anketId,
+                  ),
                 ),
+              }),
+              itemBuilder: (_) => [
+                if (kapatabilir)
+                  PopupMenuItem(
+                    value: _AnketIslemi.kapat,
+                    child: Text(m.anket_kapat),
+                  ),
+                if (sikayetEdilebilir)
+                  PopupMenuItem(
+                    value: _AnketIslemi.sikayet,
+                    child: Text(m.sikayet_et),
+                  ),
               ],
             ),
         ],
@@ -160,7 +181,7 @@ class AnketEkrani extends ConsumerWidget {
   }
 }
 
-enum _AnketIslemi { kapat }
+enum _AnketIslemi { kapat, sikayet }
 
 class _AnketIcerigi extends ConsumerWidget {
   const _AnketIcerigi({

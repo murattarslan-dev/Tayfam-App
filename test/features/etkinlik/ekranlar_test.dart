@@ -288,7 +288,55 @@ void main() {
       });
       expect(find.text(arbMetni('etkinlik_karti_iptal')), findsOneWidget);
       expect(find.text('İptal gerekçesi: Hava kötü'), findsOneWidget);
-      expect(find.byTooltip(arbMetni('etkinlik_islemler')), findsNothing);
+      // İptal edilen etkinlikte yönetim işlemi kalmaz; şikâyet kalır.
+      await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('etkinlik_iptal_et')), findsNothing);
+      expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
+    });
+
+    testWidgets('üye etkinliği şikâyet eder: sahte etkinlik gerekçesi', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      const sikayetlerYolu = '/v1/tayfas/{tayfa_id}/reports';
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => etkinlikJson(),
+        'POST $sikayetlerYolu': (_) => {
+          'id': '9a8b7c6d-0000-4000-8000-000000000002',
+          'tayfa_id': ornekTayfaId,
+          'target_type': 'event',
+          'target_id': ornekEtkinlikId,
+          'reason': 'fake_event',
+          'status': 'open',
+          'created_at': '2026-11-11T10:00:00Z',
+        },
+      });
+      await _git(
+        tester,
+        tasima,
+        Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
+      );
+
+      await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('etkinlik_iptal_et')), findsNothing);
+      await tester.tap(find.text(arbMetni('sikayet_et')));
+      await tester.pumpAndSettle();
+      const gerekce = 'sikayet_gerekce_sahte_etkinlik';
+      for (final metin in [gerekce, 'sikayet_gonder']) {
+        final hedef = find.text(arbMetni(metin));
+        await tester.ensureVisible(hedef);
+        await tester.pumpAndSettle();
+        await tester.tap(hedef);
+        await tester.pumpAndSettle();
+      }
+
+      expect(tasima.giden('POST', sikayetlerYolu).single.govde, {
+        'target_type': 'event',
+        'target_id': ornekEtkinlikId,
+        'reason': 'fake_event',
+      });
     });
 
     testWidgets('biçimi bozuk kimlikle istek gitmez', (tester) async {
