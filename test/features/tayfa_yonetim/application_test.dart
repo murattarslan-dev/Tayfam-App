@@ -76,8 +76,11 @@ void main() {
 
     test('kendine ve banlıya işlem yok', () {
       expect(
-        uyeEylemleri(ben: Role.admin, hedef: _uye('member'), kendisi: true)
-            .herhangi,
+        uyeEylemleri(
+          ben: Role.admin,
+          hedef: _uye('member'),
+          kendisi: true,
+        ).herhangi,
         isFalse,
       );
       expect(
@@ -148,11 +151,7 @@ void main() {
         isFalse,
       );
       expect(
-        tayfaSessizde(
-          [t(tercihJson(seviye: 'all'))],
-          ornekTayfaId,
-          sabitSimdi,
-        ),
+        tayfaSessizde([t(tercihJson(seviye: 'all'))], ornekTayfaId, sabitSimdi),
         isFalse,
       );
     });
@@ -177,7 +176,7 @@ void main() {
           tayfa,
           ad: ' Klasikçiler ',
           aciklama: '',
-          ilgiAlanlari: {EventType.convoy},
+          ilgi: {EventType.convoy},
           katilim: JoinPolicy.approval,
           uyeEtkinlikAcar: false,
         ),
@@ -190,7 +189,7 @@ void main() {
         tayfa,
         ad: 'Klasikçiler',
         aciklama: ' Pazar buluşmaları ',
-        ilgiAlanlari: {EventType.hike, EventType.convoy},
+        ilgi: {EventType.hike, EventType.convoy},
         katilim: JoinPolicy.open,
         uyeEtkinlikAcar: false,
       );
@@ -203,10 +202,7 @@ void main() {
 
     test('ad ve açıklama doğrulaması', () {
       expect(bilgiHatasi(ad: ' ab ', aciklama: ''), BilgiHatasi.adUzunlugu);
-      expect(
-        bilgiHatasi(ad: 'a' * 51, aciklama: ''),
-        BilgiHatasi.adUzunlugu,
-      );
+      expect(bilgiHatasi(ad: 'a' * 51, aciklama: ''), BilgiHatasi.adUzunlugu);
       expect(
         bilgiHatasi(ad: 'Tayfa', aciklama: 'a' * 501),
         BilgiHatasi.aciklamaUzunlugu,
@@ -254,10 +250,7 @@ void main() {
             uyeListesiJson([uyeJson(uyeId1), uyeJson(uyeId2)]),
           ),
           'PUT $banYolu': (i) => i.yolParametreleri['user_id'] == uyeId2
-              ? const ApiProblem(
-                  type: ProblemType.roleHierarchy,
-                  status: 403,
-                )
+              ? const ApiProblem(type: ProblemType.roleHierarchy, status: 403)
               : null,
         },
       );
@@ -272,19 +265,13 @@ void main() {
       expect(await kap.read(saglayici.notifier).banla(uyeId1), isNull);
       final hata = await kap.read(saglayici.notifier).banla(uyeId2);
       expect(hata, isA<ApiProblem>());
-      expect(
-        kap.read(saglayici).value!.ogeler.map((u) => u.userId),
-        [uyeId2],
-      );
+      expect(kap.read(saglayici).value!.ogeler.map((u) => u.userId), [uyeId2]);
     });
 
     test('banlılar listesi status=banned ister', () async {
       final tasima = yonetimTasimasi();
       final kap = _kap(tasima);
-      final saglayici = uyelerProvider((
-        tayfaId: ornekTayfaId,
-        banlilar: true,
-      ));
+      final saglayici = uyelerProvider((tayfaId: ornekTayfaId, banlilar: true));
       kap.listen(saglayici, (_, _) {});
       await kap.read(saglayici.future);
       expect(tasima.giden('GET', uyelerYolu).single.sorgu['status'], 'banned');
@@ -294,9 +281,8 @@ void main() {
       var bekleyen = true;
       final tasima = yonetimTasimasi(
         yanitlar: {
-          'GET $isteklerYolu': (_) => istekListesiJson([
-            if (bekleyen) istekJson(uyeId1),
-          ]),
+          'GET $isteklerYolu': (_) =>
+              istekListesiJson([if (bekleyen) istekJson(uyeId1)]),
           'POST $onayYolu': (_) {
             bekleyen = false;
             return uyeJson(uyeId1);

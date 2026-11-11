@@ -34,7 +34,7 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   Tayfa eski, {
   required String ad,
   required String aciklama,
-  required Set<EventType> ilgiAlanlari,
+  required Set<EventType> ilgi,
   required JoinPolicy katilim,
   required bool uyeEtkinlikAcar,
 }) {
@@ -42,15 +42,14 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   final yeniAciklama = aciklama.trim();
   final eskiIlgi = eski.interests.where(ilgiAlanlari.contains).toSet();
   final ilgiDegisti =
-      eskiIlgi.length != ilgiAlanlari.length ||
-      !eskiIlgi.containsAll(ilgiAlanlari);
+      eskiIlgi.length != ilgi.length || !eskiIlgi.containsAll(ilgi);
   final istek = TayfaUpdateRequest(
     name: yeniAd == eski.name ? null : yeniAd,
     description: yeniAciklama == eski.description ? null : yeniAciklama,
     interests: ilgiDegisti
         ? [
             for (final t in ilgiAlanlari)
-              if (ilgiAlanlari.contains(t)) t,
+              if (ilgi.contains(t)) t,
           ]
         : null,
     joinPolicy: katilim == eski.joinPolicy ? null : katilim,

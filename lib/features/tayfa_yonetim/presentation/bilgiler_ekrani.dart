@@ -88,7 +88,7 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
       widget.tayfa,
       ad: _ad.text,
       aciklama: _aciklama.text,
-      ilgiAlanlari: _ilgi,
+      ilgi: _ilgi,
       katilim: _katilim,
       uyeEtkinlikAcar: _uyeEtkinlikAcar,
     );
