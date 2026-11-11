@@ -17,6 +17,7 @@ import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
 
+import 'features/bildirim/sahteler.dart';
 import 'features/birebir/sahteler.dart';
 import 'features/tayfa/sahteler.dart';
 
@@ -91,7 +92,8 @@ final class SahteSurumDenetleyici implements SurumDenetleyici {
 /// Oturum [oturum] ile başlar (`null` ise override edilmez; test kendi
 /// override'ını verir); sürüm denetimi [surumDenetleyici] ile (verilmezse
 /// güncelleme gerekmez). Tayfa uçları ve son tayfa deposu [tayfa] ile
-/// (verilmezse tayfa listesi boş); birebir mesaj uçları [birebir] ile
+/// (verilmezse tayfa listesi boş); bildirim uçları [bildirim] ile
+/// (verilmezse bildirim yok); birebir mesaj uçları [birebir] ile
 /// (verilmezse konuşma yok). Hoş geldin tanıtımı [tanitim] ile başlar
 /// (`null` ise override edilmez; varsayılan: gösterildi); cihaz ayarları
 /// [cihazAyarlari] deposundadır (verilmezse boş bellek deposu). Gerçek
@@ -103,6 +105,7 @@ Future<void> uygulamayiAc(
   OturumDurumu? oturum = OturumDurumu.acik,
   SurumDenetleyici? surumDenetleyici,
   List<Override>? tayfa,
+  List<Override>? bildirim,
   List<Override>? birebir,
   TanitimDurumu? tanitim = TanitimDurumu.gosterildi,
   CihazAyarlariDeposu? cihazAyarlari,
@@ -111,6 +114,7 @@ Future<void> uygulamayiAc(
     ProviderScope(
       overrides: [
         ...tayfa ?? tayfaOverridelari(),
+        ...bildirim ?? bildirimOverridelari(),
         ...birebir ?? birebirOverridelari(),
         if (oturum != null)
           oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),

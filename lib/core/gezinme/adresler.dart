@@ -33,12 +33,43 @@ abstract final class Adresler {
   static String duyuru(String tayfaId, String duyuruId) =>
       '${duyurular(tayfaId)}/$duyuruId';
 
+  /// Soru-cevap modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0018 §4).
+  static const sorularYolu = 'sorular';
+
+  /// Tayfanın soruları.
+  static String sorular(String tayfaId) => '${tayfa(tayfaId)}/$sorularYolu';
+
+  /// Tek bir sorunun ekranı ve cevapları.
+  static String soru(String tayfaId, String soruId) =>
+      '${sorular(tayfaId)}/$soruId';
+
   /// Etkinlik modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0015 §3).
   static const etkinliklerYolu = 'etkinlikler';
 
   /// Tayfanın yaklaşan etkinlikleri.
   static String etkinlikler(String tayfaId) =>
       '${tayfa(tayfaId)}/$etkinliklerYolu';
+
+  /// Anket modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0018 §5).
+  static const anketlerYolu = 'anketler';
+
+  /// Anket listesinde etkinlik süzgecinin sorgu parametresi.
+  static const anketEtkinlikParametresi = 'etkinlik';
+
+  /// Tayfanın anketleri; [etkinlikId] verilirse yalnızca o etkinliğin
+  /// anketleri.
+  static String anketler(String tayfaId, {String? etkinlikId}) {
+    final yol = '${tayfa(tayfaId)}/$anketlerYolu';
+    if (etkinlikId == null) return yol;
+    return Uri(
+      path: yol,
+      queryParameters: {anketEtkinlikParametresi: etkinlikId},
+    ).toString();
+  }
+
+  /// Tek bir anketin ekranı.
+  static String anket(String tayfaId, String anketId) =>
+      '${anketler(tayfaId)}/$anketId';
 
   /// Sohbet sekmesi.
   static const sohbet = '/sohbet';
@@ -123,6 +154,19 @@ abstract final class Adresler {
   /// Etkinlik düzenleme.
   static String etkinlikDuzenle(String tayfaId, String etkinlikId) =>
       '${etkinlik(tayfaId, etkinlikId)}/$etkinlikDuzenleYolu';
+
+  /// Profil sekmesindeki oturumlar ekranının profil altındaki yolu
+  /// (ADR-0018 §2).
+  static const oturumlarYolu = 'oturumlar';
+
+  /// Açık oturumların listesi.
+  static const oturumlar = '$profil/$oturumlarYolu';
+
+  /// Hesap silme ekranının profil altındaki yolu (ADR-0018 §2).
+  static const hesabiSilYolu = 'hesabi-sil';
+
+  /// Hesap silme açıklaması ve akışı.
+  static const hesabiSil = '$profil/$hesabiSilYolu';
 
   /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
   /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
