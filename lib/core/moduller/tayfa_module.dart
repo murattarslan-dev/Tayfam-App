@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 
 /// Tayfa başına açılıp kapanan bir modül (ADR-0002): `announcements`,
@@ -19,8 +20,14 @@ abstract interface class TayfaModule {
   /// sekmesinin geçmişinde kalır.
   List<RouteBase> get rotalar;
 
-  /// Tayfa ana sayfasında gösterilen kart.
+  /// Tayfa ana sayfasında, mor üst bölümün altında gösterilen bölüm
+  /// (ADR-0015 §1). Kayıt sırasıyla gösterilir.
   Widget anaSayfaKarti(BuildContext context, String tayfaId);
+
+  /// Ana sayfa aşağı çekilince bölümün verisini yeniden okur. Dönen
+  /// `Future` yenileme bitince tamamlanır; hata fırlatmaz (hata bölümde
+  /// gösterilir).
+  Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId);
 
   /// Tayfa sekmesinin alt gezinmesindeki giriş.
   TayfaModuluGirisi get gezinmeGirisi;
@@ -63,6 +70,16 @@ List<TayfaModule> gorunurModuller(
       if (acik.contains(modul.sunucuAnahtari)) modul,
   ];
 }
+
+/// Sunucunun `modules` alanında açık (`true`) olan modüllerin anahtarları.
+/// Alanı olmayan ya da `false` olan modül kapalı sayılır; istemci kapalı
+/// modülü gizler, yetki yine sunucudadır (kesin kural 5).
+Set<String> acikModulAnahtarlari(TayfaModules moduller) => {
+  if (moduller.announcements == true) Module.announcements.wire,
+  if (moduller.events == true) Module.events.wire,
+  if (moduller.qa == true) Module.qa.wire,
+  if (moduller.polls == true) Module.polls.wire,
+};
 
 /// Uygulamaya kayıtlı tayfa modülleri.
 ///

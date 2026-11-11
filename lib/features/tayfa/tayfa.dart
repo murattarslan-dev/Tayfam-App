@@ -1,8 +1,14 @@
 /// Tayfa özelliğinin dışa açık dosyası (ADR-0002): tayfa listesi ve aktif
 /// tayfa uzlaştırması, ana sayfa, değiştirme paneli, karşılama, kodla
-/// katılım ve oluşturma sihirbazı (ADR-0014).
+/// katılım ve oluşturma sihirbazı (ADR-0014). Tayfa özeti (rol, açık
+/// modüller) ve `client_request_id` üreticisi modüllerin kullanımı için
+/// dışa açıktır (ADR-0015).
 library;
 
+export 'package:tayfam/features/tayfa/application/olusturma_notifier.dart'
+    show istekKimligiUreticisiProvider;
+export 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart'
+    show TayfaOzeti, tayfaOzetiProvider;
 export 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart'
     show
         davetKisayoluProvider,

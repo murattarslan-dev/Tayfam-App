@@ -3,6 +3,7 @@ library;
 
 export 'package:tayfam/core/bilesenler/anket_cubugu.dart';
 export 'package:tayfam/core/bilesenler/birincil_eylem.dart';
+export 'package:tayfam/core/bilesenler/bolum_basligi.dart';
 export 'package:tayfam/core/bilesenler/cok_yakinda_rozeti.dart';
 export 'package:tayfam/core/bilesenler/etiket.dart';
 export 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
