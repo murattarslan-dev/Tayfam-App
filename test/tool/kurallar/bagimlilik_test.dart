@@ -100,6 +100,48 @@ void main() {
     expect(lisansiTani('Tüm hakları saklıdır.'), bilinmeyenLisans);
   });
 
+  test('gövdede başka lisansı anan metin kendi lisansıyla tanınır', () {
+    // MPL-2.0 (dbus, geoclue, gsettings): "Secondary License" tanımı
+    // GNU GPL, LGPL ve Affero GPL'yi anar; AGPL sayılmamalı.
+    const mpl = '''
+Mozilla Public License Version 2.0
+==================================
+
+1. Definitions
+--------------
+1.12. "Secondary License"
+    means either the GNU General Public License, Version 2.0, the GNU
+    Lesser General Public License, Version 2.1, the GNU Affero General
+    Public License, Version 3.0, or any later versions of those
+    licenses.
+''';
+    expect(lisansiTani(mpl), 'MPL-2.0');
+
+    // GPL-3.0'ın 13. maddesi Affero GPL'yi anar.
+    const gpl = '''
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+  13. Use with the GNU Affero General Public License.
+''';
+    expect(lisansiTani(gpl), 'GPL');
+
+    // LGPL-3.0 GPL'yi anar.
+    const lgpl = '''
+                   GNU LESSER GENERAL PUBLIC LICENSE
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public License.
+''';
+    expect(lisansiTani(lgpl), 'LGPL');
+
+    // Asıl AGPL metni hâlâ AGPL'dir.
+    const agpl = '''
+                    GNU AFFERO GENERAL PUBLIC LICENSE
+                       Version 3, 19 November 2007
+  ... the GNU General Public License ...
+''';
+    expect(lisansiTani(agpl), 'AGPL');
+  });
+
   test('izin verici olmayan yeni paket uyarı üretir', () {
     final d = kilitleriKarsilastir(kilidiOku(_onceki), kilidiOku(_sonraki));
     final uyarilar = lisansUyarilari(d, {
