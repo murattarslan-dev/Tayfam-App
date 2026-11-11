@@ -35,7 +35,8 @@ KendiCihazSifreli? kendiCihazPaketiniAc(Uint8List paket) {
 }
 
 /// Dolgusuz base64url.
-String b64urlKodla(Uint8List veri) => base64Url.encode(veri).replaceAll('=', '');
+String b64urlKodla(Uint8List veri) =>
+    base64Url.encode(veri).replaceAll('=', '');
 
 final RegExp _b64url = RegExp(r'^[A-Za-z0-9_-]*$');
 

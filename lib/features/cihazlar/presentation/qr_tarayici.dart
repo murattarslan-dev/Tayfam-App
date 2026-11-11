@@ -8,12 +8,11 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 ///
 /// Kamera izni yalnızca bu widget ekrana gelince (kullanıcı "Cihaz bağla"ya
 /// bastığında) istenir; görüntü saklanmaz ve gönderilmez.
-typedef QrTarayiciKurucu =
-    Widget Function({
-      required ValueChanged<String> kodOkundu,
-      required VoidCallback izinReddedildi,
-      required VoidCallback acilamadi,
-    });
+typedef QrTarayiciKurucu = Widget Function({
+  required ValueChanged<String> kodOkundu,
+  required VoidCallback izinReddedildi,
+  required VoidCallback acilamadi,
+});
 
 /// Uygulamanın QR tarayıcısı (`mobile_scanner`).
 final qrTarayiciProvider = Provider<QrTarayiciKurucu>(

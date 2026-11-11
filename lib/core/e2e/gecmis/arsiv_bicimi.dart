@@ -142,9 +142,7 @@ final class ArsivBicimi {
   final Random _rastgele = Random.secure();
   final Map<int, Future<Uint8List>> _turetilen = {};
 
-  static final Uint8List _bilgi = Uint8List.fromList(
-    utf8.encode(arsivBaglami),
-  );
+  static final Uint8List _bilgi = Uint8List.fromList(utf8.encode(arsivBaglami));
 
   Future<Uint8List> _anahtar(int surum, Uint8List gecmisAnahtari) {
     if (gecmisAnahtari.length != gecmisAnahtariUzunlugu) {

@@ -59,10 +59,7 @@ class CihazBaglaEkrani extends ConsumerWidget {
             ),
           ],
           QrGonderildi() => [
-            Text(
-              metinler.cihaz_tara_basarili,
-              style: context.yazi.titleMedium,
-            ),
+            Text(metinler.cihaz_tara_basarili, style: context.yazi.titleMedium),
             const SizedBox(height: TayfamSpacing.s16),
             BirincilEylem(
               etiket: metinler.cihaz_tamam,

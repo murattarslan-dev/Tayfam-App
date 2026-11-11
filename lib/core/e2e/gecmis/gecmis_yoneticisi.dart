@@ -172,21 +172,25 @@ final class GecmisYoneticisi extends Notifier<GecmisDurumu> {
       if (!bilgi.baskaEslestirilmisVar) unawaited(_guvenli(_ilkCihaz));
       return;
     }
-    unawaited(_guvenli(() async {
-      await _servisler.paylasimAlici.al();
-      if (bilgi.yenilemeGerekli) await _servisler.yenileyici.yenile();
-      await _servisler.yazici.bosalt();
-    }));
+    unawaited(
+      _guvenli(() async {
+        await _servisler.paylasimAlici.al();
+        if (bilgi.yenilemeGerekli) await _servisler.yenileyici.yenile();
+        await _servisler.yazici.bosalt();
+      }),
+    );
   }
 
   void _sinyal(E2eSinyali sinyal) {
     switch (sinyal) {
       case GecmisAnahtariPaylasildi() || E2eYenidenBaglandi():
         if (ref.read(e2eCihazDurumuKaynagiProvider).guncel == null) return;
-        unawaited(_guvenli(() async {
-          await _servisler.paylasimAlici.al();
-          await _servisler.yazici.bosalt();
-        }));
+        unawaited(
+          _guvenli(() async {
+            await _servisler.paylasimAlici.al();
+            await _servisler.yazici.bosalt();
+          }),
+        );
       case EslemeCevaplandi():
         // Eşleştirme ekranı kendisi dinler.
         break;

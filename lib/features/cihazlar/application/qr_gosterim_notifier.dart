@@ -65,15 +65,14 @@ final class QrGosterimNotifier extends Notifier<QrGosterimDurumu> {
 
   @override
   QrGosterimDurumu build() {
-    final abonelik = ref
-        .watch(e2eSinyalleriProvider)
-        .sinyaller
-        .listen((sinyal) {
-          if (sinyal is EslemeCevaplandi &&
-              sinyal.eslemeIstegiId == _oturum?.qr.istekId) {
-            unawaited(_cevabaBak());
-          }
-        });
+    final abonelik = ref.watch(e2eSinyalleriProvider).sinyaller.listen((
+      sinyal,
+    ) {
+      if (sinyal is EslemeCevaplandi &&
+          sinyal.eslemeIstegiId == _oturum?.qr.istekId) {
+        unawaited(_cevabaBak());
+      }
+    });
     ref.onDispose(() {
       unawaited(abonelik.cancel());
       _durdur();
@@ -120,11 +119,13 @@ final class QrGosterimNotifier extends Notifier<QrGosterimDurumu> {
 
   void _yoklamaKur() {
     _yoklama = ref.read(zamanlayiciProvider)(qrYoklamaAraligi, () {
-      unawaited(_cevabaBak().whenComplete(() {
-        if (ref.mounted && _oturum != null && state is QrGosteriliyor) {
-          _yoklamaKur();
-        }
-      }));
+      unawaited(
+        _cevabaBak().whenComplete(() {
+          if (ref.mounted && _oturum != null && state is QrGosteriliyor) {
+            _yoklamaKur();
+          }
+        }),
+      );
     });
   }
 

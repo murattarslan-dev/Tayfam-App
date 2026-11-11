@@ -167,6 +167,11 @@ jobs:
         #   kullanırken, tek seferlik. Android 12+ ikisini birlikte ister.
         # - CAMERA: QR ile cihaz eşleştirme (ADR-0020); yalnızca "Cihaz
         #   bağla" ekranında istenir.
+        # - ACCESS_NETWORK_STATE: mobile_scanner'ın gömülü ML Kit'i
+        #   (com.google.android.datatransport) birleştirir; normal düzey
+        #   izin, kullanıcıya sorulmaz. Kaldırılırsa ML Kit'in kendi
+        #   gönderim kodu SecurityException atabileceği için bırakıldı
+        #   (ADR-0020).
         # Arka plan konumu ve konum ön plan hizmeti izinleri ana manifestte
         # tools:node="remove" ile engellenir; gelirlerse iş kırılır.
         run: |
@@ -178,6 +183,7 @@ jobs:
           izinler=$(sed -n "s/^uses-permission\(-sdk-23\)\{0,1\}: name='\(android\.permission\.[^']*\)'.*/\2/p" "$RUNNER_TEMP/izinler.txt" | LC_ALL=C sort -u)
           beklenen=$(printf '%s\n' \
             android.permission.ACCESS_COARSE_LOCATION \
+            android.permission.ACCESS_NETWORK_STATE \
             android.permission.ACCESS_FINE_LOCATION \
             android.permission.CAMERA \
             android.permission.INTERNET)

@@ -20,8 +20,7 @@ class BuCihaziBaglaEkrani extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
     final durum = ref.watch(qrGosterimProvider);
-    void yenile() =>
-        unawaited(ref.read(qrGosterimProvider.notifier).yenile());
+    void yenile() => unawaited(ref.read(qrGosterimProvider.notifier).yenile());
 
     return CihazEkrani(
       baslik: metinler.cihaz_bu_cihazi_bagla_baslik,
@@ -71,10 +70,7 @@ class BuCihaziBaglaEkrani extends ConsumerWidget {
             ),
           ],
           QrTamamlandi() => [
-            Text(
-              metinler.cihaz_qr_tamamlandi,
-              style: context.yazi.titleMedium,
-            ),
+            Text(metinler.cihaz_qr_tamamlandi, style: context.yazi.titleMedium),
             const SizedBox(height: TayfamSpacing.s16),
             BirincilEylem(
               etiket: metinler.cihaz_tamam,

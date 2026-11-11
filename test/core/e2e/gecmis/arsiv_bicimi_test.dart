@@ -150,30 +150,33 @@ void main() {
       expect(await coz(icerik, surum: 2), isNull);
     });
 
-    test('başka anahtarla, bozuk baytla ya da yanlış biçimle çözülmez', () async {
-      final icerik = await sifrele();
-      final baska = ArsivBicimi(SahteSignalMotoru());
-      expect(
-        await baska.coz(
-          gecmisAnahtari: anahtar(2),
-          surum: 1,
-          kullaniciId: kullaniciId,
-          mesajId: mesajId(1),
-          icerik: icerik,
-        ),
-        isNull,
-      );
-      final bozuk = Uint8List.fromList(icerik)..[20] ^= 1;
-      expect(await coz(bozuk), isNull);
-      final surum = Uint8List.fromList(icerik)..[0] = 2;
-      expect(await coz(surum), isNull);
-      expect(await coz(Uint8List(10)), isNull);
-    });
+    test(
+      'başka anahtarla, bozuk baytla ya da yanlış biçimle çözülmez',
+      () async {
+        final icerik = await sifrele();
+        final baska = ArsivBicimi(SahteSignalMotoru());
+        expect(
+          await baska.coz(
+            gecmisAnahtari: anahtar(2),
+            surum: 1,
+            kullaniciId: kullaniciId,
+            mesajId: mesajId(1),
+            icerik: icerik,
+          ),
+          isNull,
+        );
+        final bozuk = Uint8List.fromList(icerik)..[20] ^= 1;
+        expect(await coz(bozuk), isNull);
+        final surum = Uint8List.fromList(icerik)..[0] = 2;
+        expect(await coz(surum), isNull);
+        expect(await coz(Uint8List(10)), isNull);
+      },
+    );
 
     test('düz metin biçimi: JSON alanları ve toString içerik yazmaz', () {
-      final json =
-          jsonDecode(utf8.decode(dolguyuKaldir(_duz.kodla())!))
-              as Map<String, Object?>;
+      final json = jsonDecode(
+        utf8.decode(dolguyuKaldir(_duz.kodla())!),
+      ) as Map<String, Object?>;
       expect(json, {
         'v': 1,
         'gonderen': karsiKullanici,

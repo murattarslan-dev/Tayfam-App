@@ -84,8 +84,9 @@ final class SahteKaynak implements E2eCihazDurumuKaynagi {
   E2eCihazBilgisi? _guncel;
   E2eCihazBilgisi? Function()? sonraki;
   int tazelemeSayisi = 0;
-  final StreamController<E2eCihazBilgisi?> _akis =
-      StreamController.broadcast(sync: true);
+  final StreamController<E2eCihazBilgisi?> _akis = StreamController.broadcast(
+    sync: true,
+  );
 
   void yayinla(E2eCihazBilgisi? b) {
     _guncel = b;
@@ -134,7 +135,10 @@ final class SahteKendiOturum implements KendiCihazOturumu {
     sifrelenen.add(cihazId);
     return KendiCihazSifreli(
       tur: SignalMesajTuru.onAnahtar,
-      sifreli: Uint8List.fromList([...utf8.encode('$buCihaz>$cihazId|'), ...duz]),
+      sifreli: Uint8List.fromList([
+        ...utf8.encode('$buCihaz>$cihazId|'),
+        ...duz,
+      ]),
     );
   }
 
@@ -145,8 +149,7 @@ final class SahteKendiOturum implements KendiCihazOturumu {
     }
     final onek = utf8.encode('$cihazId>$buCihaz|');
     if (sifreli.length < onek.length ||
-        base64.encode(sifreli.sublist(0, onek.length)) !=
-            base64.encode(onek)) {
+        base64.encode(sifreli.sublist(0, onek.length)) != base64.encode(onek)) {
       throw const SignalHatasi(SignalHatasiTuru.gecersizMesaj);
     }
     return Uint8List.fromList(sifreli.sublist(onek.length));
@@ -183,11 +186,10 @@ final class SahteTasima implements ApiTransport {
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
-    final istek = SahteIstek(
-      '$method $pathTemplate',
-      {...pathParams, ...query},
-      body,
-    );
+    final istek = SahteIstek('$method $pathTemplate', {
+      ...pathParams,
+      ...query,
+    }, body);
     istekler.add(istek);
     final yanit = yanitlar[istek.yol];
     if (yanit == null) throw StateError('Beklenmeyen istek: ${istek.yol}');
@@ -224,12 +226,15 @@ ApiProblem problem(ProblemType tur, {E2eCihazFarki? fark}) =>
     ApiProblem(type: tur, status: 409, cihazFarki: fark);
 
 /// `E2EDevice` JSON'u (complete cevabı).
-Map<String, Object?> cihazJson(String id, Uint8List k, {bool eslesmis = true}) =>
-    {
-      'id': id,
-      'device_number': 2,
-      'registration_id': 9,
-      'identity_key': base64.encode(k),
-      'paired': eslesmis,
-      'created_at': '2026-11-11T10:00:00Z',
-    };
+Map<String, Object?> cihazJson(
+  String id,
+  Uint8List k, {
+  bool eslesmis = true,
+}) => {
+  'id': id,
+  'device_number': 2,
+  'registration_id': 9,
+  'identity_key': base64.encode(k),
+  'paired': eslesmis,
+  'created_at': '2026-11-11T10:00:00Z',
+};
