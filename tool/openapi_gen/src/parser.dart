@@ -237,6 +237,11 @@ final class _Parser {
       enums[name] = _enumDef(name, schema, at);
       return;
     }
+    if (schema.containsKey('allOf')) {
+      _onlyAnnotationsBesides(schema, 'allOf', at);
+      classes[name] = _classDef(name, _mergeAllOf(schema, at, {name}), at);
+      return;
+    }
     if (schema['type'] == 'object' &&
         schema['additionalProperties'] is! Map<String, Object?>) {
       classes[name] = _classDef(name, schema, at);
@@ -245,6 +250,70 @@ final class _Parser {
     throw GenException(
       '$at: üst düzey şema yalnızca nesne ya da string enum olabilir',
     );
+  }
+
+  /// Üst düzey `allOf`: her parça bir nesne şemasına `$ref` ya da satır içi
+  /// nesnedir. Alanlar ve `required` sırayla tek düz sınıfta birleşir
+  /// (ör. `Problem` + ek alanlar). Aynı alan iki parçada varsa hata.
+  /// [seen] döngüsel referansı yakalar.
+  Map<String, Object?> _mergeAllOf(
+    Map<String, Object?> schema,
+    String at,
+    Set<String> seen,
+  ) {
+    final parts = _asList(schema['allOf'], '$at.allOf');
+    if (parts.isEmpty) throw GenException('$at: allOf boş');
+    final properties = <String, Object?>{};
+    final requiredNames = <Object?>[];
+    for (var i = 0; i < parts.length; i++) {
+      final partAt = '$at.allOf[$i]';
+      var part = _asMap(parts[i], partAt);
+      if (part.containsKey(r'$ref')) {
+        _onlyAnnotationsBesides(part, r'$ref', partAt);
+        final ref = _asString(part[r'$ref'], '$partAt.\$ref');
+        if (!ref.startsWith(_schemaRefPrefix)) {
+          throw GenException(
+            '$partAt: yalnızca yerel şema referansı desteklenir',
+          );
+        }
+        final refName = ref.substring(_schemaRefPrefix.length);
+        if (!seen.add(refName)) {
+          throw GenException('$partAt: döngüsel allOf: $refName');
+        }
+        final target = _schemas[refName];
+        if (target == null) {
+          throw GenException('$partAt: tanımsız şema: $refName');
+        }
+        part = _asMap(target, 'components.schemas.$refName');
+        if (part.containsKey('allOf')) {
+          part = _mergeAllOf(part, 'components.schemas.$refName', seen);
+        }
+      }
+      _checkKeys(part, partAt);
+      if (part['type'] != 'object' ||
+          part['additionalProperties'] is Map<String, Object?> ||
+          part.containsKey('allOf')) {
+        throw GenException('$partAt: allOf parçası nesne şeması olmalı');
+      }
+      if (part['properties'] != null) {
+        final partProps = _asMap(part['properties'], '$partAt.properties');
+        for (final entry in partProps.entries) {
+          if (properties.containsKey(entry.key)) {
+            throw GenException('$partAt: alan iki kez tanımlı: ${entry.key}');
+          }
+          properties[entry.key] = entry.value;
+        }
+      }
+      if (part['required'] != null) {
+        requiredNames.addAll(_asList(part['required'], '$partAt.required'));
+      }
+    }
+    return {
+      'type': 'object',
+      'properties': properties,
+      'required': requiredNames,
+      if (schema['description'] != null) 'description': schema['description'],
+    };
   }
 
   /// Şemadaki anahtarları denetler: desteklenmeyen yapı hata, tanınmayan
@@ -370,7 +439,8 @@ final class _Parser {
           return EnumRef(nameHint);
         }
         switch (format) {
-          case null || 'uuid' || 'uri' || 'date':
+          // `byte`: standart base64 metni; çözme işi kullanan katmandadır.
+          case null || 'uuid' || 'uri' || 'date' || 'byte':
             return const PrimitiveRef(Primitive.string);
           case 'date-time':
             return const PrimitiveRef(Primitive.dateTime);
@@ -824,6 +894,9 @@ final class _Parser {
     ];
     if (schema['format'] == 'date') {
       constraints.add('biçim: `YYYY-AA-GG` (saat dilimsiz tarih)');
+    }
+    if (schema['format'] == 'byte') {
+      constraints.add('biçim: standart base64');
     }
     if (schema['default'] != null) {
       constraints.add('varsayılan (sunucu): ${_docValue(schema['default'])}');

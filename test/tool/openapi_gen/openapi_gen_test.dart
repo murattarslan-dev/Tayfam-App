@@ -94,6 +94,7 @@ void main() {
           'id': {'type': 'string', 'format': 'uuid'},
           'created_at': {'type': 'string', 'format': 'date-time'},
           'birth_date': {'type': 'string', 'format': 'date'},
+          'key': {'type': 'string', 'format': 'byte'},
           'count': {'type': 'integer'},
           'big': {'type': 'integer', 'format': 'int64'},
           'ratio': {'type': 'number'},
@@ -136,6 +137,11 @@ void main() {
     test('date String kalır, belgede biçimi yazar', () {
       expect(models, contains('final String? birthDate;'));
       expect(models, contains('`YYYY-AA-GG`'));
+    });
+
+    test('byte String kalır, belgede base64 yazar', () {
+      expect(models, contains('final String? key;'));
+      expect(models, contains('biçim: standart base64'));
     });
 
     test('DateTime UTC yazılır ve okunur', () {
@@ -277,6 +283,67 @@ void main() {
 
     test('birden çok elemanlı allOf hata verir', () {
       final spec = _spec(schemas: holder([_ref('Tag'), _ref('Tag')]));
+      expect(() => _generate(spec), throwsA(isA<GenException>()));
+    });
+
+    test('üst düzey allOf alanları tek düz sınıfta birleştirir', () {
+      final models = _models(
+        _spec(
+          schemas: {
+            'Base': {
+              'type': 'object',
+              'required': ['kind'],
+              'properties': {
+                'kind': {'type': 'string'},
+              },
+            },
+            'Extended': {
+              'description': 'Genişletilmiş.',
+              'allOf': [
+                _ref('Base'),
+                {
+                  'type': 'object',
+                  'required': ['ids'],
+                  'properties': {
+                    'ids': {
+                      'type': 'array',
+                      'items': {'type': 'string', 'format': 'uuid'},
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ),
+      );
+      expect(models, contains('final class Extended {'));
+      expect(models, contains('/// Genişletilmiş.'));
+      expect(models, contains('required this.kind,'));
+      expect(models, contains('final List<String> ids;'));
+    });
+
+    test('üst düzey allOf parçalarında aynı alan hata verir', () {
+      final spec = _spec(
+        schemas: {
+          'Base': {
+            'type': 'object',
+            'properties': {
+              'kind': {'type': 'string'},
+            },
+          },
+          'Extended': {
+            'allOf': [
+              _ref('Base'),
+              {
+                'type': 'object',
+                'properties': {
+                  'kind': {'type': 'string'},
+                },
+              },
+            ],
+          },
+        },
+      );
       expect(() => _generate(spec), throwsA(isA<GenException>()));
     });
   });

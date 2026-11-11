@@ -9,17 +9,28 @@
 library;
 
 final class Account {
-  const Account({required this.referralCode, required this.activityVisibility});
+  const Account({
+    this.avatarUploadId,
+    required this.referralCode,
+    required this.activityVisibility,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory Account.fromJson(Map<String, Object?> json) => Account(
+    avatarUploadId: switch (json['avatar_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'Account.avatar_upload_id'),
+    },
     referralCode: _readString(json['referral_code'], 'Account.referral_code'),
     activityVisibility: ActivityVisibility.fromWire(
       _readString(json['activity_visibility'], 'Account.activity_visibility'),
     ),
   );
+
+  /// Avatar; linkleri `POST /v1/media/urls`.
+  final String? avatarUploadId;
 
   /// Örn. `TYF-8K2M4Q`; paylaşım linki `tayfam.app/r/<kod>`.
   final String referralCode;
@@ -28,6 +39,7 @@ final class Account {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (avatarUploadId case final value?) 'avatar_upload_id': value,
     'referral_code': referralCode,
     'activity_visibility': activityVisibility.wire,
   };
@@ -36,12 +48,16 @@ final class Account {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Account &&
+          avatarUploadId == other.avatarUploadId &&
           referralCode == other.referralCode &&
           activityVisibility == other.activityVisibility;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[referralCode, activityVisibility]);
+  int get hashCode => Object.hashAll(<Object?>[
+    avatarUploadId,
+    referralCode,
+    activityVisibility,
+  ]);
 }
 
 final class AccountUpdate {
@@ -904,6 +920,59 @@ final class AttendeeList {
   @override
   int get hashCode =>
       Object.hashAll(<Object?>[_deepHash(attendees), nextPageToken]);
+}
+
+final class AvatarRequest {
+  const AvatarRequest({required this.uploadId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AvatarRequest.fromJson(Map<String, Object?> json) => AvatarRequest(
+    uploadId: _readString(json['upload_id'], 'AvatarRequest.upload_id'),
+  );
+
+  final String uploadId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'upload_id': uploadId};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AvatarRequest && uploadId == other.uploadId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[uploadId]);
+}
+
+final class AvatarView {
+  const AvatarView({required this.avatarUploadId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AvatarView.fromJson(Map<String, Object?> json) => AvatarView(
+    avatarUploadId: _readString(
+      json['avatar_upload_id'],
+      'AvatarView.avatar_upload_id',
+    ),
+  );
+
+  final String avatarUploadId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'avatar_upload_id': avatarUploadId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AvatarView && avatarUploadId == other.avatarUploadId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[avatarUploadId]);
 }
 
 final class BlockedUser {
@@ -2217,6 +2286,88 @@ final class ConversationList {
       Object.hashAll(<Object?>[_deepHash(conversations), nextPageToken]);
 }
 
+/// Birebir konuşma tercihi; `mentions` yoktur.
+final class ConversationNotificationPreferenceRequest {
+  const ConversationNotificationPreferenceRequest({
+    required this.level,
+    this.muteUntil,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ConversationNotificationPreferenceRequest.fromJson(
+    Map<String, Object?> json,
+  ) => ConversationNotificationPreferenceRequest(
+    level: ConversationNotificationPreferenceRequestLevel.fromWire(
+      _readString(
+        json['level'],
+        'ConversationNotificationPreferenceRequest.level',
+      ),
+    ),
+    muteUntil: switch (json['mute_until']) {
+      null => null,
+      final Object v => _readDateTime(
+        v,
+        'ConversationNotificationPreferenceRequest.mute_until',
+      ),
+    },
+  );
+
+  final ConversationNotificationPreferenceRequestLevel level;
+
+  /// Yalnızca `none` ile; en fazla bir yıl sonrası.
+  final DateTime? muteUntil;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'level': level.wire,
+    if (muteUntil case final value?)
+      'mute_until': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ConversationNotificationPreferenceRequest &&
+          level == other.level &&
+          muteUntil == other.muteUntil;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[level, muteUntil]);
+}
+
+enum ConversationNotificationPreferenceRequestLevel {
+  all('all'),
+  none('none'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const ConversationNotificationPreferenceRequestLevel(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError(
+        'ConversationNotificationPreferenceRequestLevel.unknown gönderilemez',
+      ));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static ConversationNotificationPreferenceRequestLevel fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 /// `active` (serbest yazışma), `request_sent` (isteğiniz cevap
 /// bekliyor; reddedilse de böyle görünür), `request_received`
 /// (size gelen istek: cevap yazın, kabul edin ya da reddedin).
@@ -2538,6 +2689,348 @@ final class CreatedInvite {
   int get hashCode => Object.hashAll(<Object?>[invite, token]);
 }
 
+final class DataExport {
+  const DataExport({
+    required this.id,
+    required this.status,
+    this.failureReason,
+    required this.requestedAt,
+    this.readyAt,
+    this.expiresAt,
+    this.downloadedAt,
+    this.sizeBytes,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DataExport.fromJson(Map<String, Object?> json) => DataExport(
+    id: _readString(json['id'], 'DataExport.id'),
+    status: DataExportStatus.fromWire(
+      _readString(json['status'], 'DataExport.status'),
+    ),
+    failureReason: switch (json['failure_reason']) {
+      null => null,
+      final Object v => DataExportFailureReason.fromWire(
+        _readString(v, 'DataExport.failure_reason'),
+      ),
+    },
+    requestedAt: _readDateTime(json['requested_at'], 'DataExport.requested_at'),
+    readyAt: switch (json['ready_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'DataExport.ready_at'),
+    },
+    expiresAt: switch (json['expires_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'DataExport.expires_at'),
+    },
+    downloadedAt: switch (json['downloaded_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'DataExport.downloaded_at'),
+    },
+    sizeBytes: switch (json['size_bytes']) {
+      null => null,
+      final Object v => _readInt(v, 'DataExport.size_bytes'),
+    },
+  );
+
+  final String id;
+
+  /// `pending` (sırada), `processing` (toplanıyor), `ready` (7 gün
+  /// indirilebilir), `expired` (dosya ve anahtar silindi), `failed`
+  /// (30 günlük sınıra sayılmaz; tekrar talep açılabilir).
+  final DataExportStatus status;
+
+  /// Yalnızca `failed`: `unavailable` (bir servise ya da depolamaya
+  /// ulaşılamadı), `too_large` (arşiv 16 MiB'ı geçti; talebiniz elle
+  /// yanıtlanır), `timeout` (zamanında bitmedi), `failed`.
+  final DataExportFailureReason? failureReason;
+
+  final DateTime requestedAt;
+
+  final DateTime? readyAt;
+
+  final DateTime? expiresAt;
+
+  final DateTime? downloadedAt;
+
+  /// Şifreli dosyanın boyutu, `ready` iken.
+  final int? sizeBytes;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'status': status.wire,
+    if (failureReason case final value?) 'failure_reason': value.wire,
+    'requested_at': requestedAt.toUtc().toIso8601String(),
+    if (readyAt case final value?) 'ready_at': value.toUtc().toIso8601String(),
+    if (expiresAt case final value?)
+      'expires_at': value.toUtc().toIso8601String(),
+    if (downloadedAt case final value?)
+      'downloaded_at': value.toUtc().toIso8601String(),
+    if (sizeBytes case final value?) 'size_bytes': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DataExport &&
+          id == other.id &&
+          status == other.status &&
+          failureReason == other.failureReason &&
+          requestedAt == other.requestedAt &&
+          readyAt == other.readyAt &&
+          expiresAt == other.expiresAt &&
+          downloadedAt == other.downloadedAt &&
+          sizeBytes == other.sizeBytes;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    status,
+    failureReason,
+    requestedAt,
+    readyAt,
+    expiresAt,
+    downloadedAt,
+    sizeBytes,
+  ]);
+}
+
+final class DataExportDownload {
+  const DataExportDownload({
+    required this.url,
+    required this.expiresAt,
+    required this.key,
+    required this.sizeBytes,
+    required this.format,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DataExportDownload.fromJson(Map<String, Object?> json) =>
+      DataExportDownload(
+        url: _readString(json['url'], 'DataExportDownload.url'),
+        expiresAt: _readDateTime(
+          json['expires_at'],
+          'DataExportDownload.expires_at',
+        ),
+        key: _readString(json['key'], 'DataExportDownload.key'),
+        sizeBytes: _readInt(
+          json['size_bytes'],
+          'DataExportDownload.size_bytes',
+        ),
+        format: DataExportDownloadFormat.fromWire(
+          _readString(json['format'], 'DataExportDownload.format'),
+        ),
+      );
+
+  /// Şifreli dosyanın imzalı GET linki; `expires_at`'e kadar (5 dakika) taşıyan herkes indirebilir.
+  final String url;
+
+  final DateTime expiresAt;
+
+  /// 32 baytlık AES-256 anahtarı (base64).
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String key;
+
+  final int sizeBytes;
+
+  final DataExportDownloadFormat format;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'url': url,
+    'expires_at': expiresAt.toUtc().toIso8601String(),
+    'key': key,
+    'size_bytes': sizeBytes,
+    'format': format.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DataExportDownload &&
+          url == other.url &&
+          expiresAt == other.expiresAt &&
+          key == other.key &&
+          sizeBytes == other.sizeBytes &&
+          format == other.format;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[url, expiresAt, key, sizeBytes, format]);
+}
+
+enum DataExportDownloadFormat {
+  aes256GcmV1('aes-256-gcm-v1'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const DataExportDownloadFormat(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('DataExportDownloadFormat.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static DataExportDownloadFormat fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Yalnızca `failed`: `unavailable` (bir servise ya da depolamaya
+/// ulaşılamadı), `too_large` (arşiv 16 MiB'ı geçti; talebiniz elle
+/// yanıtlanır), `timeout` (zamanında bitmedi), `failed`.
+enum DataExportFailureReason {
+  unavailable('unavailable'),
+  tooLarge('too_large'),
+  timeout('timeout'),
+  failed('failed'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const DataExportFailureReason(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('DataExportFailureReason.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static DataExportFailureReason fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class DataExportList {
+  const DataExportList({required this.dataExports, this.nextRequestAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DataExportList.fromJson(Map<String, Object?> json) => DataExportList(
+    dataExports: List<DataExport>.unmodifiable(
+      _readList(json['data_exports'], 'DataExportList.data_exports').map(
+        (Object? e0) =>
+            DataExport.fromJson(_readObject(e0, 'DataExportList.data_exports')),
+      ),
+    ),
+    nextRequestAt: switch (json['next_request_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'DataExportList.next_request_at'),
+    },
+  );
+
+  final List<DataExport> dataExports;
+
+  /// Bir sonraki talebin açılabileceği an; yoksa şimdi açılabilir (süren talep yine engeller).
+  final DateTime? nextRequestAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'data_exports': <Object?>[for (final e0 in dataExports) e0.toJson()],
+    if (nextRequestAt case final value?)
+      'next_request_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DataExportList &&
+          _deepEquals(dataExports, other.dataExports) &&
+          nextRequestAt == other.nextRequestAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(dataExports), nextRequestAt]);
+}
+
+final class DataExportRequest {
+  const DataExportRequest({required this.clientRequestId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DataExportRequest.fromJson(Map<String, Object?> json) =>
+      DataExportRequest(
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'DataExportRequest.client_request_id',
+        ),
+      );
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DataExportRequest && clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[clientRequestId]);
+}
+
+/// `pending` (sırada), `processing` (toplanıyor), `ready` (7 gün
+/// indirilebilir), `expired` (dosya ve anahtar silindi), `failed`
+/// (30 günlük sınıra sayılmaz; tekrar talep açılabilir).
+enum DataExportStatus {
+  pending('pending'),
+  processing('processing'),
+  ready('ready'),
+  expired('expired'),
+  failed('failed'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const DataExportStatus(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('DataExportStatus.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static DataExportStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class DeclinedRequest {
   const DeclinedRequest({
     required this.conversationId,
@@ -2818,6 +3311,7 @@ final class DirectMessage {
     this.senderUserId,
     this.body,
     required this.deleted,
+    this.encryption,
     required this.createdAt,
   });
 
@@ -2839,6 +3333,12 @@ final class DirectMessage {
       final Object v => _readString(v, 'DirectMessage.body'),
     },
     deleted: _readBool(json['deleted'], 'DirectMessage.deleted'),
+    encryption: switch (json['encryption']) {
+      null => null,
+      final Object v => DirectMessageEncryption.fromWire(
+        _readString(v, 'DirectMessage.encryption'),
+      ),
+    },
     createdAt: _readDateTime(json['created_at'], 'DirectMessage.created_at'),
   );
 
@@ -2849,10 +3349,15 @@ final class DirectMessage {
   /// Gönderenin hesabı silindiyse yoktur.
   final String? senderUserId;
 
-  /// Silinmiş mesajda yoktur.
+  /// Silinmiş ve uçtan uca şifreli mesajda yoktur.
   final String? body;
 
   final bool deleted;
+
+  /// `server`: düz sürüm, metin sunucu anahtarıyla şifreli saklanır
+  /// (uçtan uca değildir; istemci bunu belirtir). `e2e`: içerik
+  /// yalnızca zarflarda ve arşivdedir.
+  final DirectMessageEncryption? encryption;
 
   final DateTime createdAt;
 
@@ -2863,6 +3368,7 @@ final class DirectMessage {
     if (senderUserId case final value?) 'sender_user_id': value,
     if (body case final value?) 'body': value,
     'deleted': deleted,
+    if (encryption case final value?) 'encryption': value.wire,
     'created_at': createdAt.toUtc().toIso8601String(),
   };
 
@@ -2875,6 +3381,7 @@ final class DirectMessage {
           senderUserId == other.senderUserId &&
           body == other.body &&
           deleted == other.deleted &&
+          encryption == other.encryption &&
           createdAt == other.createdAt;
 
   @override
@@ -2884,14 +3391,17 @@ final class DirectMessage {
     senderUserId,
     body,
     deleted,
+    encryption,
     createdAt,
   ]);
 }
 
+/// `body` ya da `envelopes`; ikisinden yalnızca biri.
 final class DirectMessageCreateRequest {
   const DirectMessageCreateRequest({
     required this.recipientUserId,
-    required this.body,
+    this.body,
+    this.envelopes,
     required this.clientRequestId,
   });
 
@@ -2904,7 +3414,20 @@ final class DirectMessageCreateRequest {
           json['recipient_user_id'],
           'DirectMessageCreateRequest.recipient_user_id',
         ),
-        body: _readString(json['body'], 'DirectMessageCreateRequest.body'),
+        body: switch (json['body']) {
+          null => null,
+          final Object v => _readString(v, 'DirectMessageCreateRequest.body'),
+        },
+        envelopes: switch (json['envelopes']) {
+          null => null,
+          final Object v => List<OutgoingEnvelope>.unmodifiable(
+            _readList(v, 'DirectMessageCreateRequest.envelopes').map(
+              (Object? e0) => OutgoingEnvelope.fromJson(
+                _readObject(e0, 'DirectMessageCreateRequest.envelopes'),
+              ),
+            ),
+          ),
+        },
         clientRequestId: _readString(
           json['client_request_id'],
           'DirectMessageCreateRequest.client_request_id',
@@ -2914,7 +3437,10 @@ final class DirectMessageCreateRequest {
   final String recipientUserId;
 
   /// Kısıtlar: minLength: 1; maxLength: 4000.
-  final String body;
+  final String? body;
+
+  /// Kısıtlar: minItems: 1; maxItems: 16.
+  final List<OutgoingEnvelope>? envelopes;
 
   /// İstemcinin ürettiği tekrar gönderim anahtarı.
   final String clientRequestId;
@@ -2922,7 +3448,9 @@ final class DirectMessageCreateRequest {
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'recipient_user_id': recipientUserId,
-    'body': body,
+    if (body case final value?) 'body': value,
+    if (envelopes case final value?)
+      'envelopes': <Object?>[for (final e0 in value) e0.toJson()],
     'client_request_id': clientRequestId,
   };
 
@@ -2932,11 +3460,48 @@ final class DirectMessageCreateRequest {
       other is DirectMessageCreateRequest &&
           recipientUserId == other.recipientUserId &&
           body == other.body &&
+          _deepEquals(envelopes, other.envelopes) &&
           clientRequestId == other.clientRequestId;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[recipientUserId, body, clientRequestId]);
+  int get hashCode => Object.hashAll(<Object?>[
+    recipientUserId,
+    body,
+    _deepHash(envelopes),
+    clientRequestId,
+  ]);
+}
+
+/// `server`: düz sürüm, metin sunucu anahtarıyla şifreli saklanır
+/// (uçtan uca değildir; istemci bunu belirtir). `e2e`: içerik
+/// yalnızca zarflarda ve arşivdedir.
+enum DirectMessageEncryption {
+  server('server'),
+  e2e('e2e'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const DirectMessageEncryption(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('DirectMessageEncryption.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static DirectMessageEncryption fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class DirectMessageList {
@@ -3019,11 +3584,1917 @@ final class DirectMessageSent {
   int get hashCode => Object.hashAll(<Object?>[message, conversation]);
 }
 
+final class E2EArchiveEntry {
+  const E2EArchiveEntry({
+    required this.messageId,
+    required this.conversationId,
+    required this.keyVersion,
+    required this.content,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EArchiveEntry.fromJson(
+    Map<String, Object?> json,
+  ) => E2EArchiveEntry(
+    messageId: _readString(json['message_id'], 'E2EArchiveEntry.message_id'),
+    conversationId: _readString(
+      json['conversation_id'],
+      'E2EArchiveEntry.conversation_id',
+    ),
+    keyVersion: _readInt(json['key_version'], 'E2EArchiveEntry.key_version'),
+    content: _readString(json['content'], 'E2EArchiveEntry.content'),
+    createdAt: _readDateTime(json['created_at'], 'E2EArchiveEntry.created_at'),
+  );
+
+  final String messageId;
+
+  final String conversationId;
+
+  final int keyVersion;
+
+  /// Kısıtlar: biçim: standart base64.
+  final String content;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'message_id': messageId,
+    'conversation_id': conversationId,
+    'key_version': keyVersion,
+    'content': content,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EArchiveEntry &&
+          messageId == other.messageId &&
+          conversationId == other.conversationId &&
+          keyVersion == other.keyVersion &&
+          content == other.content &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    messageId,
+    conversationId,
+    keyVersion,
+    content,
+    createdAt,
+  ]);
+}
+
+final class E2EArchiveEntryList {
+  const E2EArchiveEntryList({required this.entries, this.nextPageToken});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EArchiveEntryList.fromJson(Map<String, Object?> json) =>
+      E2EArchiveEntryList(
+        entries: List<E2EArchiveEntry>.unmodifiable(
+          _readList(json['entries'], 'E2EArchiveEntryList.entries').map(
+            (Object? e0) => E2EArchiveEntry.fromJson(
+              _readObject(e0, 'E2EArchiveEntryList.entries'),
+            ),
+          ),
+        ),
+        nextPageToken: switch (json['next_page_token']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'E2EArchiveEntryList.next_page_token',
+          ),
+        },
+      );
+
+  final List<E2EArchiveEntry> entries;
+
+  final String? nextPageToken;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EArchiveEntryList &&
+          _deepEquals(entries, other.entries) &&
+          nextPageToken == other.nextPageToken;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(entries), nextPageToken]);
+}
+
+final class E2EArchiveWrite {
+  const E2EArchiveWrite({
+    required this.historyKeyVersion,
+    required this.entries,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EArchiveWrite.fromJson(Map<String, Object?> json) =>
+      E2EArchiveWrite(
+        historyKeyVersion: _readInt(
+          json['history_key_version'],
+          'E2EArchiveWrite.history_key_version',
+        ),
+        entries: List<E2EArchiveWriteEntriesItem>.unmodifiable(
+          _readList(json['entries'], 'E2EArchiveWrite.entries').map(
+            (Object? e0) => E2EArchiveWriteEntriesItem.fromJson(
+              _readObject(e0, 'E2EArchiveWrite.entries'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: minimum: 1; maximum: 32767.
+  final int historyKeyVersion;
+
+  /// Kısıtlar: minItems: 1; maxItems: 50.
+  final List<E2EArchiveWriteEntriesItem> entries;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'history_key_version': historyKeyVersion,
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EArchiveWrite &&
+          historyKeyVersion == other.historyKeyVersion &&
+          _deepEquals(entries, other.entries);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[historyKeyVersion, _deepHash(entries)]);
+}
+
+final class E2EArchiveWriteEntriesItem {
+  const E2EArchiveWriteEntriesItem({
+    required this.messageId,
+    required this.content,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EArchiveWriteEntriesItem.fromJson(Map<String, Object?> json) =>
+      E2EArchiveWriteEntriesItem(
+        messageId: _readString(
+          json['message_id'],
+          'E2EArchiveWriteEntriesItem.message_id',
+        ),
+        content: _readString(
+          json['content'],
+          'E2EArchiveWriteEntriesItem.content',
+        ),
+      );
+
+  final String messageId;
+
+  /// 1 B – 32 KiB.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String content;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'message_id': messageId,
+    'content': content,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EArchiveWriteEntriesItem &&
+          messageId == other.messageId &&
+          content == other.content;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[messageId, content]);
+}
+
+final class E2EArchiveWritten {
+  const E2EArchiveWritten({required this.acceptedMessageIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EArchiveWritten.fromJson(Map<String, Object?> json) =>
+      E2EArchiveWritten(
+        acceptedMessageIds: List<String>.unmodifiable(
+          _readList(
+            json['accepted_message_ids'],
+            'E2EArchiveWritten.accepted_message_ids',
+          ).map(
+            (Object? e0) =>
+                _readString(e0, 'E2EArchiveWritten.accepted_message_ids'),
+          ),
+        ),
+      );
+
+  final List<String> acceptedMessageIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'accepted_message_ids': <Object?>[for (final e0 in acceptedMessageIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EArchiveWritten &&
+          _deepEquals(acceptedMessageIds, other.acceptedMessageIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(acceptedMessageIds)]);
+}
+
+final class E2EBundleRequest {
+  const E2EBundleRequest({this.deviceIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EBundleRequest.fromJson(Map<String, Object?> json) =>
+      E2EBundleRequest(
+        deviceIds: switch (json['device_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'E2EBundleRequest.device_ids').map(
+              (Object? e0) => _readString(e0, 'E2EBundleRequest.device_ids'),
+            ),
+          ),
+        },
+      );
+
+  /// Yalnızca bu cihazlar; boşsa tüm cihazlar.
+  ///
+  /// Kısıtlar: maxItems: 5.
+  final List<String>? deviceIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (deviceIds case final value?)
+      'device_ids': <Object?>[for (final e0 in value) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EBundleRequest && _deepEquals(deviceIds, other.deviceIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(deviceIds)]);
+}
+
+final class E2EDevice {
+  const E2EDevice({
+    required this.id,
+    required this.deviceNumber,
+    required this.registrationId,
+    required this.identityKey,
+    required this.paired,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EDevice.fromJson(Map<String, Object?> json) => E2EDevice(
+    id: _readString(json['id'], 'E2EDevice.id'),
+    deviceNumber: _readInt(json['device_number'], 'E2EDevice.device_number'),
+    registrationId: _readInt(
+      json['registration_id'],
+      'E2EDevice.registration_id',
+    ),
+    identityKey: _readString(json['identity_key'], 'E2EDevice.identity_key'),
+    paired: _readBool(json['paired'], 'E2EDevice.paired'),
+    createdAt: _readDateTime(json['created_at'], 'E2EDevice.created_at'),
+  );
+
+  final String id;
+
+  /// Signal adresindeki cihaz numarası.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 127.
+  final int deviceNumber;
+
+  final int registrationId;
+
+  /// Kısıtlar: biçim: standart base64.
+  final String identityKey;
+
+  /// Cihaz geçmiş anahtarını biliyor (arşive yazar ve okur).
+  final bool paired;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'device_number': deviceNumber,
+    'registration_id': registrationId,
+    'identity_key': identityKey,
+    'paired': paired,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EDevice &&
+          id == other.id &&
+          deviceNumber == other.deviceNumber &&
+          registrationId == other.registrationId &&
+          identityKey == other.identityKey &&
+          paired == other.paired &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    deviceNumber,
+    registrationId,
+    identityKey,
+    paired,
+    createdAt,
+  ]);
+}
+
+final class E2EDeviceRegistered {
+  const E2EDeviceRegistered({required this.device, required this.prekeyCounts});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EDeviceRegistered.fromJson(Map<String, Object?> json) =>
+      E2EDeviceRegistered(
+        device: E2EDevice.fromJson(
+          _readObject(json['device'], 'E2EDeviceRegistered.device'),
+        ),
+        prekeyCounts: E2EPreKeyCounts.fromJson(
+          _readObject(
+            json['prekey_counts'],
+            'E2EDeviceRegistered.prekey_counts',
+          ),
+        ),
+      );
+
+  final E2EDevice device;
+
+  final E2EPreKeyCounts prekeyCounts;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'device': device.toJson(),
+    'prekey_counts': prekeyCounts.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EDeviceRegistered &&
+          device == other.device &&
+          prekeyCounts == other.prekeyCounts;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[device, prekeyCounts]);
+}
+
+final class E2EDeviceRegistration {
+  const E2EDeviceRegistration({
+    required this.registrationId,
+    required this.identityKey,
+    required this.signedPrekey,
+    required this.kyberLastResortPrekey,
+    this.oneTimePrekeys,
+    this.kyberPrekeys,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EDeviceRegistration.fromJson(Map<String, Object?> json) =>
+      E2EDeviceRegistration(
+        registrationId: _readInt(
+          json['registration_id'],
+          'E2EDeviceRegistration.registration_id',
+        ),
+        identityKey: _readString(
+          json['identity_key'],
+          'E2EDeviceRegistration.identity_key',
+        ),
+        signedPrekey: E2ESignedPreKey.fromJson(
+          _readObject(
+            json['signed_prekey'],
+            'E2EDeviceRegistration.signed_prekey',
+          ),
+        ),
+        kyberLastResortPrekey: E2ESignedPreKey.fromJson(
+          _readObject(
+            json['kyber_last_resort_prekey'],
+            'E2EDeviceRegistration.kyber_last_resort_prekey',
+          ),
+        ),
+        oneTimePrekeys: switch (json['one_time_prekeys']) {
+          null => null,
+          final Object v => List<E2EPreKey>.unmodifiable(
+            _readList(v, 'E2EDeviceRegistration.one_time_prekeys').map(
+              (Object? e0) => E2EPreKey.fromJson(
+                _readObject(e0, 'E2EDeviceRegistration.one_time_prekeys'),
+              ),
+            ),
+          ),
+        },
+        kyberPrekeys: switch (json['kyber_prekeys']) {
+          null => null,
+          final Object v => List<E2ESignedPreKey>.unmodifiable(
+            _readList(v, 'E2EDeviceRegistration.kyber_prekeys').map(
+              (Object? e0) => E2ESignedPreKey.fromJson(
+                _readObject(e0, 'E2EDeviceRegistration.kyber_prekeys'),
+              ),
+            ),
+          ),
+        },
+      );
+
+  /// Kısıtlar: minimum: 1; maximum: 16380.
+  final int registrationId;
+
+  /// 33 bayt, 0x05 ile başlar.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String identityKey;
+
+  final E2ESignedPreKey signedPrekey;
+
+  final E2ESignedPreKey kyberLastResortPrekey;
+
+  /// Kısıtlar: maxItems: 100.
+  final List<E2EPreKey>? oneTimePrekeys;
+
+  /// Kısıtlar: maxItems: 100.
+  final List<E2ESignedPreKey>? kyberPrekeys;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'registration_id': registrationId,
+    'identity_key': identityKey,
+    'signed_prekey': signedPrekey.toJson(),
+    'kyber_last_resort_prekey': kyberLastResortPrekey.toJson(),
+    if (oneTimePrekeys case final value?)
+      'one_time_prekeys': <Object?>[for (final e0 in value) e0.toJson()],
+    if (kyberPrekeys case final value?)
+      'kyber_prekeys': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EDeviceRegistration &&
+          registrationId == other.registrationId &&
+          identityKey == other.identityKey &&
+          signedPrekey == other.signedPrekey &&
+          kyberLastResortPrekey == other.kyberLastResortPrekey &&
+          _deepEquals(oneTimePrekeys, other.oneTimePrekeys) &&
+          _deepEquals(kyberPrekeys, other.kyberPrekeys);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    registrationId,
+    identityKey,
+    signedPrekey,
+    kyberLastResortPrekey,
+    _deepHash(oneTimePrekeys),
+    _deepHash(kyberPrekeys),
+  ]);
+}
+
+final class E2EDeviceState {
+  const E2EDeviceState({
+    required this.device,
+    required this.prekeyCounts,
+    required this.historyKeyVersion,
+    required this.rotationNeeded,
+    required this.otherPairedDevice,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EDeviceState.fromJson(Map<String, Object?> json) => E2EDeviceState(
+    device: E2EDevice.fromJson(
+      _readObject(json['device'], 'E2EDeviceState.device'),
+    ),
+    prekeyCounts: E2EPreKeyCounts.fromJson(
+      _readObject(json['prekey_counts'], 'E2EDeviceState.prekey_counts'),
+    ),
+    historyKeyVersion: _readInt(
+      json['history_key_version'],
+      'E2EDeviceState.history_key_version',
+    ),
+    rotationNeeded: _readBool(
+      json['rotation_needed'],
+      'E2EDeviceState.rotation_needed',
+    ),
+    otherPairedDevice: _readBool(
+      json['other_paired_device'],
+      'E2EDeviceState.other_paired_device',
+    ),
+  );
+
+  final E2EDevice device;
+
+  final E2EPreKeyCounts prekeyCounts;
+
+  /// Hesabın geçmiş anahtarı sürümü; ilk cihaz anahtar alana kadar 0.
+  final int historyKeyVersion;
+
+  /// Eşleştirilmiş bir cihaz kaldırıldı; eşleştirilmiş bir cihaz anahtarı yenilemeli.
+  final bool rotationNeeded;
+
+  /// Hesabın eşleştirilmiş başka cihazı var (QR eşleştirme önerin).
+  final bool otherPairedDevice;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'device': device.toJson(),
+    'prekey_counts': prekeyCounts.toJson(),
+    'history_key_version': historyKeyVersion,
+    'rotation_needed': rotationNeeded,
+    'other_paired_device': otherPairedDevice,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EDeviceState &&
+          device == other.device &&
+          prekeyCounts == other.prekeyCounts &&
+          historyKeyVersion == other.historyKeyVersion &&
+          rotationNeeded == other.rotationNeeded &&
+          otherPairedDevice == other.otherPairedDevice;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    device,
+    prekeyCounts,
+    historyKeyVersion,
+    rotationNeeded,
+    otherPairedDevice,
+  ]);
+}
+
+/// `e2e-devices-changed` (409) cevabının ek alanları; cihaz listelerini
+/// tazeleyip tekrar deneyin.
+final class E2EDevicesChangedProblem {
+  const E2EDevicesChangedProblem({
+    required this.type,
+    required this.title,
+    required this.status,
+    this.detail,
+    this.instance,
+    this.requestId,
+    required this.missingDeviceIds,
+    required this.staleDeviceIds,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EDevicesChangedProblem.fromJson(Map<String, Object?> json) =>
+      E2EDevicesChangedProblem(
+        type: _readString(json['type'], 'E2EDevicesChangedProblem.type'),
+        title: _readString(json['title'], 'E2EDevicesChangedProblem.title'),
+        status: _readInt(json['status'], 'E2EDevicesChangedProblem.status'),
+        detail: switch (json['detail']) {
+          null => null,
+          final Object v => _readString(v, 'E2EDevicesChangedProblem.detail'),
+        },
+        instance: switch (json['instance']) {
+          null => null,
+          final Object v => _readString(v, 'E2EDevicesChangedProblem.instance'),
+        },
+        requestId: switch (json['request_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'E2EDevicesChangedProblem.request_id',
+          ),
+        },
+        missingDeviceIds: List<String>.unmodifiable(
+          _readList(
+            json['missing_device_ids'],
+            'E2EDevicesChangedProblem.missing_device_ids',
+          ).map(
+            (Object? e0) =>
+                _readString(e0, 'E2EDevicesChangedProblem.missing_device_ids'),
+          ),
+        ),
+        staleDeviceIds: List<String>.unmodifiable(
+          _readList(
+            json['stale_device_ids'],
+            'E2EDevicesChangedProblem.stale_device_ids',
+          ).map(
+            (Object? e0) =>
+                _readString(e0, 'E2EDevicesChangedProblem.stale_device_ids'),
+          ),
+        ),
+      );
+
+  final String type;
+
+  final String title;
+
+  final int status;
+
+  final String? detail;
+
+  final String? instance;
+
+  final String? requestId;
+
+  /// Zarf (ya da paylaşım) eksik cihazlar.
+  final List<String> missingDeviceIds;
+
+  /// Artık olmayan, değişmiş ya da iki kez verilen cihazlar.
+  final List<String> staleDeviceIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'type': type,
+    'title': title,
+    'status': status,
+    if (detail case final value?) 'detail': value,
+    if (instance case final value?) 'instance': value,
+    if (requestId case final value?) 'request_id': value,
+    'missing_device_ids': <Object?>[for (final e0 in missingDeviceIds) e0],
+    'stale_device_ids': <Object?>[for (final e0 in staleDeviceIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EDevicesChangedProblem &&
+          type == other.type &&
+          title == other.title &&
+          status == other.status &&
+          detail == other.detail &&
+          instance == other.instance &&
+          requestId == other.requestId &&
+          _deepEquals(missingDeviceIds, other.missingDeviceIds) &&
+          _deepEquals(staleDeviceIds, other.staleDeviceIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    type,
+    title,
+    status,
+    detail,
+    instance,
+    requestId,
+    _deepHash(missingDeviceIds),
+    _deepHash(staleDeviceIds),
+  ]);
+}
+
+final class E2EEnvelope {
+  const E2EEnvelope({
+    required this.id,
+    required this.messageId,
+    required this.conversationId,
+    required this.senderUserId,
+    required this.senderDeviceId,
+    required this.senderDeviceNumber,
+    required this.type,
+    required this.content,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EEnvelope.fromJson(Map<String, Object?> json) => E2EEnvelope(
+    id: _readString(json['id'], 'E2EEnvelope.id'),
+    messageId: _readString(json['message_id'], 'E2EEnvelope.message_id'),
+    conversationId: _readString(
+      json['conversation_id'],
+      'E2EEnvelope.conversation_id',
+    ),
+    senderUserId: _readString(
+      json['sender_user_id'],
+      'E2EEnvelope.sender_user_id',
+    ),
+    senderDeviceId: _readString(
+      json['sender_device_id'],
+      'E2EEnvelope.sender_device_id',
+    ),
+    senderDeviceNumber: _readInt(
+      json['sender_device_number'],
+      'E2EEnvelope.sender_device_number',
+    ),
+    type: E2EEnvelopeType.fromWire(
+      _readString(json['type'], 'E2EEnvelope.type'),
+    ),
+    content: _readString(json['content'], 'E2EEnvelope.content'),
+    createdAt: _readDateTime(json['created_at'], 'E2EEnvelope.created_at'),
+  );
+
+  final String id;
+
+  final String messageId;
+
+  final String conversationId;
+
+  final String senderUserId;
+
+  final String senderDeviceId;
+
+  final int senderDeviceNumber;
+
+  final E2EEnvelopeType type;
+
+  /// Kısıtlar: biçim: standart base64.
+  final String content;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'message_id': messageId,
+    'conversation_id': conversationId,
+    'sender_user_id': senderUserId,
+    'sender_device_id': senderDeviceId,
+    'sender_device_number': senderDeviceNumber,
+    'type': type.wire,
+    'content': content,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EEnvelope &&
+          id == other.id &&
+          messageId == other.messageId &&
+          conversationId == other.conversationId &&
+          senderUserId == other.senderUserId &&
+          senderDeviceId == other.senderDeviceId &&
+          senderDeviceNumber == other.senderDeviceNumber &&
+          type == other.type &&
+          content == other.content &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    messageId,
+    conversationId,
+    senderUserId,
+    senderDeviceId,
+    senderDeviceNumber,
+    type,
+    content,
+    createdAt,
+  ]);
+}
+
+final class E2EEnvelopeAck {
+  const E2EEnvelopeAck({required this.envelopeIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EEnvelopeAck.fromJson(Map<String, Object?> json) => E2EEnvelopeAck(
+    envelopeIds: List<String>.unmodifiable(
+      _readList(
+        json['envelope_ids'],
+        'E2EEnvelopeAck.envelope_ids',
+      ).map((Object? e0) => _readString(e0, 'E2EEnvelopeAck.envelope_ids')),
+    ),
+  );
+
+  /// Kısıtlar: minItems: 1; maxItems: 100.
+  final List<String> envelopeIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'envelope_ids': <Object?>[for (final e0 in envelopeIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EEnvelopeAck && _deepEquals(envelopeIds, other.envelopeIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(envelopeIds)]);
+}
+
+final class E2EEnvelopeList {
+  const E2EEnvelopeList({required this.envelopes, this.nextPageToken});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EEnvelopeList.fromJson(Map<String, Object?> json) =>
+      E2EEnvelopeList(
+        envelopes: List<E2EEnvelope>.unmodifiable(
+          _readList(json['envelopes'], 'E2EEnvelopeList.envelopes').map(
+            (Object? e0) => E2EEnvelope.fromJson(
+              _readObject(e0, 'E2EEnvelopeList.envelopes'),
+            ),
+          ),
+        ),
+        nextPageToken: switch (json['next_page_token']) {
+          null => null,
+          final Object v => _readString(v, 'E2EEnvelopeList.next_page_token'),
+        },
+      );
+
+  final List<E2EEnvelope> envelopes;
+
+  final String? nextPageToken;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'envelopes': <Object?>[for (final e0 in envelopes) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EEnvelopeList &&
+          _deepEquals(envelopes, other.envelopes) &&
+          nextPageToken == other.nextPageToken;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(envelopes), nextPageToken]);
+}
+
+enum E2EEnvelopeType {
+  whisper('whisper'),
+  prekey('prekey'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const E2EEnvelopeType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('E2EEnvelopeType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static E2EEnvelopeType fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class E2EHistoryKeyRotation {
+  const E2EHistoryKeyRotation({
+    required this.historyKeyVersion,
+    required this.shares,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EHistoryKeyRotation.fromJson(Map<String, Object?> json) =>
+      E2EHistoryKeyRotation(
+        historyKeyVersion: _readInt(
+          json['history_key_version'],
+          'E2EHistoryKeyRotation.history_key_version',
+        ),
+        shares: List<E2EHistoryKeyRotationSharesItem>.unmodifiable(
+          _readList(json['shares'], 'E2EHistoryKeyRotation.shares').map(
+            (Object? e0) => E2EHistoryKeyRotationSharesItem.fromJson(
+              _readObject(e0, 'E2EHistoryKeyRotation.shares'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: minimum: 1; maximum: 32767.
+  final int historyKeyVersion;
+
+  /// Kısıtlar: maxItems: 5.
+  final List<E2EHistoryKeyRotationSharesItem> shares;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'history_key_version': historyKeyVersion,
+    'shares': <Object?>[for (final e0 in shares) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EHistoryKeyRotation &&
+          historyKeyVersion == other.historyKeyVersion &&
+          _deepEquals(shares, other.shares);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[historyKeyVersion, _deepHash(shares)]);
+}
+
+final class E2EHistoryKeyRotationSharesItem {
+  const E2EHistoryKeyRotationSharesItem({
+    required this.deviceId,
+    required this.bundle,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EHistoryKeyRotationSharesItem.fromJson(Map<String, Object?> json) =>
+      E2EHistoryKeyRotationSharesItem(
+        deviceId: _readString(
+          json['device_id'],
+          'E2EHistoryKeyRotationSharesItem.device_id',
+        ),
+        bundle: _readString(
+          json['bundle'],
+          'E2EHistoryKeyRotationSharesItem.bundle',
+        ),
+      );
+
+  final String deviceId;
+
+  /// 1 B – 16 KiB.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String bundle;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'device_id': deviceId,
+    'bundle': bundle,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EHistoryKeyRotationSharesItem &&
+          deviceId == other.deviceId &&
+          bundle == other.bundle;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[deviceId, bundle]);
+}
+
+final class E2EHistoryKeyShare {
+  const E2EHistoryKeyShare({
+    required this.id,
+    required this.senderDeviceId,
+    required this.historyKeyVersion,
+    required this.bundle,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EHistoryKeyShare.fromJson(Map<String, Object?> json) =>
+      E2EHistoryKeyShare(
+        id: _readString(json['id'], 'E2EHistoryKeyShare.id'),
+        senderDeviceId: _readString(
+          json['sender_device_id'],
+          'E2EHistoryKeyShare.sender_device_id',
+        ),
+        historyKeyVersion: _readInt(
+          json['history_key_version'],
+          'E2EHistoryKeyShare.history_key_version',
+        ),
+        bundle: _readString(json['bundle'], 'E2EHistoryKeyShare.bundle'),
+        createdAt: _readDateTime(
+          json['created_at'],
+          'E2EHistoryKeyShare.created_at',
+        ),
+      );
+
+  final String id;
+
+  final String senderDeviceId;
+
+  final int historyKeyVersion;
+
+  /// Kısıtlar: biçim: standart base64.
+  final String bundle;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'sender_device_id': senderDeviceId,
+    'history_key_version': historyKeyVersion,
+    'bundle': bundle,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EHistoryKeyShare &&
+          id == other.id &&
+          senderDeviceId == other.senderDeviceId &&
+          historyKeyVersion == other.historyKeyVersion &&
+          bundle == other.bundle &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    senderDeviceId,
+    historyKeyVersion,
+    bundle,
+    createdAt,
+  ]);
+}
+
+final class E2EHistoryKeyShareList {
+  const E2EHistoryKeyShareList({required this.shares});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EHistoryKeyShareList.fromJson(Map<String, Object?> json) =>
+      E2EHistoryKeyShareList(
+        shares: List<E2EHistoryKeyShare>.unmodifiable(
+          _readList(json['shares'], 'E2EHistoryKeyShareList.shares').map(
+            (Object? e0) => E2EHistoryKeyShare.fromJson(
+              _readObject(e0, 'E2EHistoryKeyShareList.shares'),
+            ),
+          ),
+        ),
+      );
+
+  final List<E2EHistoryKeyShare> shares;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'shares': <Object?>[for (final e0 in shares) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EHistoryKeyShareList && _deepEquals(shares, other.shares);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(shares)]);
+}
+
+final class E2EHistoryKeyVersion {
+  const E2EHistoryKeyVersion({required this.historyKeyVersion});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EHistoryKeyVersion.fromJson(Map<String, Object?> json) =>
+      E2EHistoryKeyVersion(
+        historyKeyVersion: _readInt(
+          json['history_key_version'],
+          'E2EHistoryKeyVersion.history_key_version',
+        ),
+      );
+
+  final int historyKeyVersion;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'history_key_version': historyKeyVersion,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EHistoryKeyVersion &&
+          historyKeyVersion == other.historyKeyVersion;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[historyKeyVersion]);
+}
+
+final class E2EKeyEvent {
+  const E2EKeyEvent({
+    required this.id,
+    required this.deviceId,
+    required this.deviceNumber,
+    required this.type,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EKeyEvent.fromJson(Map<String, Object?> json) => E2EKeyEvent(
+    id: _readString(json['id'], 'E2EKeyEvent.id'),
+    deviceId: _readString(json['device_id'], 'E2EKeyEvent.device_id'),
+    deviceNumber: _readInt(json['device_number'], 'E2EKeyEvent.device_number'),
+    type: E2EKeyEventType.fromWire(
+      _readString(json['type'], 'E2EKeyEvent.type'),
+    ),
+    createdAt: _readDateTime(json['created_at'], 'E2EKeyEvent.created_at'),
+  );
+
+  final String id;
+
+  final String deviceId;
+
+  final int deviceNumber;
+
+  /// `identity_changed` yazılmaz (yeni kimlik anahtarı yeni cihazdır); ileriye dönük.
+  final E2EKeyEventType type;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'device_id': deviceId,
+    'device_number': deviceNumber,
+    'type': type.wire,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EKeyEvent &&
+          id == other.id &&
+          deviceId == other.deviceId &&
+          deviceNumber == other.deviceNumber &&
+          type == other.type &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, deviceId, deviceNumber, type, createdAt]);
+}
+
+final class E2EKeyEventList {
+  const E2EKeyEventList({required this.events, this.nextPageToken});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EKeyEventList.fromJson(Map<String, Object?> json) =>
+      E2EKeyEventList(
+        events: List<E2EKeyEvent>.unmodifiable(
+          _readList(json['events'], 'E2EKeyEventList.events').map(
+            (Object? e0) =>
+                E2EKeyEvent.fromJson(_readObject(e0, 'E2EKeyEventList.events')),
+          ),
+        ),
+        nextPageToken: switch (json['next_page_token']) {
+          null => null,
+          final Object v => _readString(v, 'E2EKeyEventList.next_page_token'),
+        },
+      );
+
+  final List<E2EKeyEvent> events;
+
+  final String? nextPageToken;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'events': <Object?>[for (final e0 in events) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EKeyEventList &&
+          _deepEquals(events, other.events) &&
+          nextPageToken == other.nextPageToken;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(events), nextPageToken]);
+}
+
+/// `identity_changed` yazılmaz (yeni kimlik anahtarı yeni cihazdır); ileriye dönük.
+enum E2EKeyEventType {
+  deviceAdded('device_added'),
+  deviceRemoved('device_removed'),
+  identityChanged('identity_changed'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const E2EKeyEventType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('E2EKeyEventType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static E2EKeyEventType fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class E2ELinkAnswer {
+  const E2ELinkAnswer({required this.historyKeyVersion, required this.answer});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2ELinkAnswer.fromJson(Map<String, Object?> json) => E2ELinkAnswer(
+    historyKeyVersion: _readInt(
+      json['history_key_version'],
+      'E2ELinkAnswer.history_key_version',
+    ),
+    answer: _readString(json['answer'], 'E2ELinkAnswer.answer'),
+  );
+
+  /// Kısıtlar: minimum: 1; maximum: 32767.
+  final int historyKeyVersion;
+
+  /// 1 B – 16 KiB.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String answer;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'history_key_version': historyKeyVersion,
+    'answer': answer,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2ELinkAnswer &&
+          historyKeyVersion == other.historyKeyVersion &&
+          answer == other.answer;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[historyKeyVersion, answer]);
+}
+
+final class E2ELinkRequest {
+  const E2ELinkRequest({
+    required this.linkRequestId,
+    required this.expiresAt,
+    required this.answered,
+    this.answer,
+    this.historyKeyVersion,
+    this.answeredByDeviceId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2ELinkRequest.fromJson(Map<String, Object?> json) => E2ELinkRequest(
+    linkRequestId: _readString(
+      json['link_request_id'],
+      'E2ELinkRequest.link_request_id',
+    ),
+    expiresAt: _readDateTime(json['expires_at'], 'E2ELinkRequest.expires_at'),
+    answered: _readBool(json['answered'], 'E2ELinkRequest.answered'),
+    answer: switch (json['answer']) {
+      null => null,
+      final Object v => _readString(v, 'E2ELinkRequest.answer'),
+    },
+    historyKeyVersion: switch (json['history_key_version']) {
+      null => null,
+      final Object v => _readInt(v, 'E2ELinkRequest.history_key_version'),
+    },
+    answeredByDeviceId: switch (json['answered_by_device_id']) {
+      null => null,
+      final Object v => _readString(v, 'E2ELinkRequest.answered_by_device_id'),
+    },
+  );
+
+  final String linkRequestId;
+
+  final DateTime expiresAt;
+
+  final bool answered;
+
+  /// Cevaplanınca.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String? answer;
+
+  /// Cevaplanınca.
+  final int? historyKeyVersion;
+
+  /// Cevaplanınca.
+  final String? answeredByDeviceId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'link_request_id': linkRequestId,
+    'expires_at': expiresAt.toUtc().toIso8601String(),
+    'answered': answered,
+    if (answer case final value?) 'answer': value,
+    if (historyKeyVersion case final value?) 'history_key_version': value,
+    if (answeredByDeviceId case final value?) 'answered_by_device_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2ELinkRequest &&
+          linkRequestId == other.linkRequestId &&
+          expiresAt == other.expiresAt &&
+          answered == other.answered &&
+          answer == other.answer &&
+          historyKeyVersion == other.historyKeyVersion &&
+          answeredByDeviceId == other.answeredByDeviceId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    linkRequestId,
+    expiresAt,
+    answered,
+    answer,
+    historyKeyVersion,
+    answeredByDeviceId,
+  ]);
+}
+
+final class E2ELinkRequestCreated {
+  const E2ELinkRequestCreated({
+    required this.linkRequestId,
+    required this.expiresAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2ELinkRequestCreated.fromJson(Map<String, Object?> json) =>
+      E2ELinkRequestCreated(
+        linkRequestId: _readString(
+          json['link_request_id'],
+          'E2ELinkRequestCreated.link_request_id',
+        ),
+        expiresAt: _readDateTime(
+          json['expires_at'],
+          'E2ELinkRequestCreated.expires_at',
+        ),
+      );
+
+  final String linkRequestId;
+
+  final DateTime expiresAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'link_request_id': linkRequestId,
+    'expires_at': expiresAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2ELinkRequestCreated &&
+          linkRequestId == other.linkRequestId &&
+          expiresAt == other.expiresAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[linkRequestId, expiresAt]);
+}
+
+final class E2EPreKey {
+  const E2EPreKey({required this.keyId, required this.publicKey});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPreKey.fromJson(Map<String, Object?> json) => E2EPreKey(
+    keyId: _readInt(json['key_id'], 'E2EPreKey.key_id'),
+    publicKey: _readString(json['public_key'], 'E2EPreKey.public_key'),
+  );
+
+  /// Kısıtlar: minimum: 0; maximum: 16777215.
+  final int keyId;
+
+  /// 33 bayt, 0x05 ile başlar.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String publicKey;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key_id': keyId,
+    'public_key': publicKey,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPreKey &&
+          keyId == other.keyId &&
+          publicKey == other.publicKey;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[keyId, publicKey]);
+}
+
+final class E2EPreKeyBundle {
+  const E2EPreKeyBundle({
+    required this.deviceId,
+    required this.deviceNumber,
+    required this.registrationId,
+    required this.identityKey,
+    required this.signedPrekey,
+    this.oneTimePrekey,
+    required this.kyberPrekey,
+    required this.kyberLastResort,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPreKeyBundle.fromJson(Map<String, Object?> json) =>
+      E2EPreKeyBundle(
+        deviceId: _readString(json['device_id'], 'E2EPreKeyBundle.device_id'),
+        deviceNumber: _readInt(
+          json['device_number'],
+          'E2EPreKeyBundle.device_number',
+        ),
+        registrationId: _readInt(
+          json['registration_id'],
+          'E2EPreKeyBundle.registration_id',
+        ),
+        identityKey: _readString(
+          json['identity_key'],
+          'E2EPreKeyBundle.identity_key',
+        ),
+        signedPrekey: E2ESignedPreKey.fromJson(
+          _readObject(json['signed_prekey'], 'E2EPreKeyBundle.signed_prekey'),
+        ),
+        oneTimePrekey: switch (json['one_time_prekey']) {
+          null => null,
+          final Object v => E2EPreKey.fromJson(
+            _readObject(v, 'E2EPreKeyBundle.one_time_prekey'),
+          ),
+        },
+        kyberPrekey: E2ESignedPreKey.fromJson(
+          _readObject(json['kyber_prekey'], 'E2EPreKeyBundle.kyber_prekey'),
+        ),
+        kyberLastResort: _readBool(
+          json['kyber_last_resort'],
+          'E2EPreKeyBundle.kyber_last_resort',
+        ),
+      );
+
+  final String deviceId;
+
+  final int deviceNumber;
+
+  final int registrationId;
+
+  /// Kısıtlar: biçim: standart base64.
+  final String identityKey;
+
+  final E2ESignedPreKey signedPrekey;
+
+  final E2EPreKey? oneTimePrekey;
+
+  final E2ESignedPreKey kyberPrekey;
+
+  final bool kyberLastResort;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'device_id': deviceId,
+    'device_number': deviceNumber,
+    'registration_id': registrationId,
+    'identity_key': identityKey,
+    'signed_prekey': signedPrekey.toJson(),
+    if (oneTimePrekey case final value?) 'one_time_prekey': value.toJson(),
+    'kyber_prekey': kyberPrekey.toJson(),
+    'kyber_last_resort': kyberLastResort,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPreKeyBundle &&
+          deviceId == other.deviceId &&
+          deviceNumber == other.deviceNumber &&
+          registrationId == other.registrationId &&
+          identityKey == other.identityKey &&
+          signedPrekey == other.signedPrekey &&
+          oneTimePrekey == other.oneTimePrekey &&
+          kyberPrekey == other.kyberPrekey &&
+          kyberLastResort == other.kyberLastResort;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    deviceId,
+    deviceNumber,
+    registrationId,
+    identityKey,
+    signedPrekey,
+    oneTimePrekey,
+    kyberPrekey,
+    kyberLastResort,
+  ]);
+}
+
+final class E2EPreKeyBundleList {
+  const E2EPreKeyBundleList({required this.bundles});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPreKeyBundleList.fromJson(Map<String, Object?> json) =>
+      E2EPreKeyBundleList(
+        bundles: List<E2EPreKeyBundle>.unmodifiable(
+          _readList(json['bundles'], 'E2EPreKeyBundleList.bundles').map(
+            (Object? e0) => E2EPreKeyBundle.fromJson(
+              _readObject(e0, 'E2EPreKeyBundleList.bundles'),
+            ),
+          ),
+        ),
+      );
+
+  final List<E2EPreKeyBundle> bundles;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'bundles': <Object?>[for (final e0 in bundles) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPreKeyBundleList && _deepEquals(bundles, other.bundles);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(bundles)]);
+}
+
+final class E2EPreKeyCounts {
+  const E2EPreKeyCounts({
+    required this.ec,
+    required this.kyber,
+    required this.low,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPreKeyCounts.fromJson(Map<String, Object?> json) =>
+      E2EPreKeyCounts(
+        ec: _readInt(json['ec'], 'E2EPreKeyCounts.ec'),
+        kyber: _readInt(json['kyber'], 'E2EPreKeyCounts.kyber'),
+        low: _readBool(json['low'], 'E2EPreKeyCounts.low'),
+      );
+
+  final int ec;
+
+  final int kyber;
+
+  /// Bir türden 10'dan az kaldı; yükleyin.
+  final bool low;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'ec': ec,
+    'kyber': kyber,
+    'low': low,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPreKeyCounts &&
+          ec == other.ec &&
+          kyber == other.kyber &&
+          low == other.low;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[ec, kyber, low]);
+}
+
+final class E2EPreKeyUpload {
+  const E2EPreKeyUpload({
+    this.signedPrekey,
+    this.kyberLastResortPrekey,
+    this.oneTimePrekeys,
+    this.kyberPrekeys,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPreKeyUpload.fromJson(Map<String, Object?> json) =>
+      E2EPreKeyUpload(
+        signedPrekey: switch (json['signed_prekey']) {
+          null => null,
+          final Object v => E2ESignedPreKey.fromJson(
+            _readObject(v, 'E2EPreKeyUpload.signed_prekey'),
+          ),
+        },
+        kyberLastResortPrekey: switch (json['kyber_last_resort_prekey']) {
+          null => null,
+          final Object v => E2ESignedPreKey.fromJson(
+            _readObject(v, 'E2EPreKeyUpload.kyber_last_resort_prekey'),
+          ),
+        },
+        oneTimePrekeys: switch (json['one_time_prekeys']) {
+          null => null,
+          final Object v => List<E2EPreKey>.unmodifiable(
+            _readList(v, 'E2EPreKeyUpload.one_time_prekeys').map(
+              (Object? e0) => E2EPreKey.fromJson(
+                _readObject(e0, 'E2EPreKeyUpload.one_time_prekeys'),
+              ),
+            ),
+          ),
+        },
+        kyberPrekeys: switch (json['kyber_prekeys']) {
+          null => null,
+          final Object v => List<E2ESignedPreKey>.unmodifiable(
+            _readList(v, 'E2EPreKeyUpload.kyber_prekeys').map(
+              (Object? e0) => E2ESignedPreKey.fromJson(
+                _readObject(e0, 'E2EPreKeyUpload.kyber_prekeys'),
+              ),
+            ),
+          ),
+        },
+      );
+
+  final E2ESignedPreKey? signedPrekey;
+
+  final E2ESignedPreKey? kyberLastResortPrekey;
+
+  /// Kısıtlar: maxItems: 100.
+  final List<E2EPreKey>? oneTimePrekeys;
+
+  /// Kısıtlar: maxItems: 100.
+  final List<E2ESignedPreKey>? kyberPrekeys;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (signedPrekey case final value?) 'signed_prekey': value.toJson(),
+    if (kyberLastResortPrekey case final value?)
+      'kyber_last_resort_prekey': value.toJson(),
+    if (oneTimePrekeys case final value?)
+      'one_time_prekeys': <Object?>[for (final e0 in value) e0.toJson()],
+    if (kyberPrekeys case final value?)
+      'kyber_prekeys': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPreKeyUpload &&
+          signedPrekey == other.signedPrekey &&
+          kyberLastResortPrekey == other.kyberLastResortPrekey &&
+          _deepEquals(oneTimePrekeys, other.oneTimePrekeys) &&
+          _deepEquals(kyberPrekeys, other.kyberPrekeys);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    signedPrekey,
+    kyberLastResortPrekey,
+    _deepHash(oneTimePrekeys),
+    _deepHash(kyberPrekeys),
+  ]);
+}
+
+final class E2EPublicDevice {
+  const E2EPublicDevice({
+    required this.id,
+    required this.deviceNumber,
+    required this.registrationId,
+    required this.identityKey,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPublicDevice.fromJson(Map<String, Object?> json) =>
+      E2EPublicDevice(
+        id: _readString(json['id'], 'E2EPublicDevice.id'),
+        deviceNumber: _readInt(
+          json['device_number'],
+          'E2EPublicDevice.device_number',
+        ),
+        registrationId: _readInt(
+          json['registration_id'],
+          'E2EPublicDevice.registration_id',
+        ),
+        identityKey: _readString(
+          json['identity_key'],
+          'E2EPublicDevice.identity_key',
+        ),
+        createdAt: _readDateTime(
+          json['created_at'],
+          'E2EPublicDevice.created_at',
+        ),
+      );
+
+  final String id;
+
+  final int deviceNumber;
+
+  final int registrationId;
+
+  /// Kısıtlar: biçim: standart base64.
+  final String identityKey;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'device_number': deviceNumber,
+    'registration_id': registrationId,
+    'identity_key': identityKey,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPublicDevice &&
+          id == other.id &&
+          deviceNumber == other.deviceNumber &&
+          registrationId == other.registrationId &&
+          identityKey == other.identityKey &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    deviceNumber,
+    registrationId,
+    identityKey,
+    createdAt,
+  ]);
+}
+
+final class E2EPublicDeviceList {
+  const E2EPublicDeviceList({required this.devices});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EPublicDeviceList.fromJson(Map<String, Object?> json) =>
+      E2EPublicDeviceList(
+        devices: List<E2EPublicDevice>.unmodifiable(
+          _readList(json['devices'], 'E2EPublicDeviceList.devices').map(
+            (Object? e0) => E2EPublicDevice.fromJson(
+              _readObject(e0, 'E2EPublicDeviceList.devices'),
+            ),
+          ),
+        ),
+      );
+
+  final List<E2EPublicDevice> devices;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'devices': <Object?>[for (final e0 in devices) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EPublicDeviceList && _deepEquals(devices, other.devices);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(devices)]);
+}
+
+final class E2EShareAck {
+  const E2EShareAck({required this.shareIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2EShareAck.fromJson(Map<String, Object?> json) => E2EShareAck(
+    shareIds: List<String>.unmodifiable(
+      _readList(
+        json['share_ids'],
+        'E2EShareAck.share_ids',
+      ).map((Object? e0) => _readString(e0, 'E2EShareAck.share_ids')),
+    ),
+  );
+
+  /// Kısıtlar: minItems: 1; maxItems: 100.
+  final List<String> shareIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'share_ids': <Object?>[for (final e0 in shareIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2EShareAck && _deepEquals(shareIds, other.shareIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(shareIds)]);
+}
+
+final class E2ESignedPreKey {
+  const E2ESignedPreKey({
+    required this.keyId,
+    required this.publicKey,
+    required this.signature,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory E2ESignedPreKey.fromJson(Map<String, Object?> json) =>
+      E2ESignedPreKey(
+        keyId: _readInt(json['key_id'], 'E2ESignedPreKey.key_id'),
+        publicKey: _readString(
+          json['public_key'],
+          'E2ESignedPreKey.public_key',
+        ),
+        signature: _readString(json['signature'], 'E2ESignedPreKey.signature'),
+      );
+
+  /// Kısıtlar: minimum: 0; maximum: 16777215.
+  final int keyId;
+
+  /// EC imzalı ön anahtarda 33 bayt (0x05 ile), Kyber'de 1569 bayt.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String publicKey;
+
+  /// 64 bayt.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String signature;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key_id': keyId,
+    'public_key': publicKey,
+    'signature': signature,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is E2ESignedPreKey &&
+          keyId == other.keyId &&
+          publicKey == other.publicKey &&
+          signature == other.signature;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[keyId, publicKey, signature]);
+}
+
 /// Bir etkin üyenin gördüğü etkinlik. Türe özel ayrıntı (`convoy`,
 /// `camp`, `hike`, `fishing`, `gaming`, `sports`) yalnızca tek etkinlik
 /// yanıtında ve en fazla biri dolu gelir.
 final class Event {
   const Event({
+    this.coverUploadId,
     required this.id,
     required this.tayfaId,
     required this.type,
@@ -3065,6 +5536,10 @@ final class Event {
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory Event.fromJson(Map<String, Object?> json) => Event(
+    coverUploadId: switch (json['cover_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'Event.cover_upload_id'),
+    },
     id: _readString(json['id'], 'Event.id'),
     tayfaId: _readString(json['tayfa_id'], 'Event.tayfa_id'),
     type: EventType.fromWire(_readString(json['type'], 'Event.type')),
@@ -3162,6 +5637,9 @@ final class Event {
     },
   );
 
+  /// Kapak; linkleri `POST /v1/media/urls`. Serinin ürettiği etkinliklerde yoktur.
+  final String? coverUploadId;
+
   final String id;
 
   final String tayfaId;
@@ -3242,6 +5720,7 @@ final class Event {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (coverUploadId case final value?) 'cover_upload_id': value,
     'id': id,
     'tayfa_id': tayfaId,
     'type': type.wire,
@@ -3284,6 +5763,7 @@ final class Event {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Event &&
+          coverUploadId == other.coverUploadId &&
           id == other.id &&
           tayfaId == other.tayfaId &&
           type == other.type &&
@@ -3322,6 +5802,7 @@ final class Event {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    coverUploadId,
     id,
     tayfaId,
     type,
@@ -3397,6 +5878,7 @@ final class EventCancelRequest {
 /// `sports` için zorunlu, `general` için yoktur.
 final class EventCreateRequest {
   const EventCreateRequest({
+    this.coverUploadId,
     required this.type,
     required this.mode,
     required this.title,
@@ -3426,6 +5908,10 @@ final class EventCreateRequest {
   factory EventCreateRequest.fromJson(
     Map<String, Object?> json,
   ) => EventCreateRequest(
+    coverUploadId: switch (json['cover_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventCreateRequest.cover_upload_id'),
+    },
     type: EventType.fromWire(
       _readString(json['type'], 'EventCreateRequest.type'),
     ),
@@ -3517,6 +6003,9 @@ final class EventCreateRequest {
     ),
   );
 
+  /// İsteğe bağlı: kendi hazır `cover` yüklemeniz (bu tayfa için açılmış). Yalnızca bu etkinliğe bağlanır.
+  final String? coverUploadId;
+
   final EventType type;
 
   final EventMode mode;
@@ -3529,10 +6018,10 @@ final class EventCreateRequest {
   /// Kısıtlar: maxLength: 5000.
   final String? description;
 
-  /// Gelecekte
+  /// Gelecekte, en fazla iki yıl ileri.
   final DateTime startsAt;
 
-  /// Başlangıçtan sonra
+  /// Başlangıçtan sonra, en fazla 30 gün.
   final DateTime endsAt;
 
   /// Kısıtlar: maxLength: 120.
@@ -3575,6 +6064,7 @@ final class EventCreateRequest {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (coverUploadId case final value?) 'cover_upload_id': value,
     'type': type.wire,
     'mode': mode.wire,
     'title': title,
@@ -3602,6 +6092,7 @@ final class EventCreateRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is EventCreateRequest &&
+          coverUploadId == other.coverUploadId &&
           type == other.type &&
           mode == other.mode &&
           title == other.title &&
@@ -3626,6 +6117,7 @@ final class EventCreateRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    coverUploadId,
     type,
     mode,
     title,
@@ -3925,6 +6417,7 @@ enum EventType {
 /// Kısıtlar: minProperties: 1.
 final class EventUpdateRequest {
   const EventUpdateRequest({
+    this.coverUploadId,
     this.title,
     this.description,
     this.startsAt,
@@ -3949,104 +6442,110 @@ final class EventUpdateRequest {
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory EventUpdateRequest.fromJson(Map<String, Object?> json) =>
-      EventUpdateRequest(
-        title: switch (json['title']) {
-          null => null,
-          final Object v => _readString(v, 'EventUpdateRequest.title'),
-        },
-        description: switch (json['description']) {
-          null => null,
-          final Object v => _readString(v, 'EventUpdateRequest.description'),
-        },
-        startsAt: switch (json['starts_at']) {
-          null => null,
-          final Object v => _readDateTime(v, 'EventUpdateRequest.starts_at'),
-        },
-        endsAt: switch (json['ends_at']) {
-          null => null,
-          final Object v => _readDateTime(v, 'EventUpdateRequest.ends_at'),
-        },
-        mode: switch (json['mode']) {
-          null => null,
-          final Object v => EventMode.fromWire(
-            _readString(v, 'EventUpdateRequest.mode'),
-          ),
-        },
-        meetingPointName: switch (json['meeting_point_name']) {
-          null => null,
-          final Object v => _readString(
-            v,
-            'EventUpdateRequest.meeting_point_name',
-          ),
-        },
-        meetingPoint: switch (json['meeting_point']) {
-          null => null,
-          final Object v => LatLng.fromJson(
-            _readObject(v, 'EventUpdateRequest.meeting_point'),
-          ),
-        },
-        city: switch (json['city']) {
-          null => null,
-          final Object v => _readString(v, 'EventUpdateRequest.city'),
-        },
-        district: switch (json['district']) {
-          null => null,
-          final Object v => _readString(v, 'EventUpdateRequest.district'),
-        },
-        onlineUrl: switch (json['online_url']) {
-          null => null,
-          final Object v => _readString(v, 'EventUpdateRequest.online_url'),
-        },
-        capacity: switch (json['capacity']) {
-          null => null,
-          final Object v => _readInt(v, 'EventUpdateRequest.capacity'),
-        },
-        discoverable: switch (json['discoverable']) {
-          null => null,
-          final Object v => _readBool(v, 'EventUpdateRequest.discoverable'),
-        },
-        convoy: switch (json['convoy']) {
-          null => null,
-          final Object v => ConvoyDetailsInput.fromJson(
-            _readObject(v, 'EventUpdateRequest.convoy'),
-          ),
-        },
-        camp: switch (json['camp']) {
-          null => null,
-          final Object v => CampDetailsInput.fromJson(
-            _readObject(v, 'EventUpdateRequest.camp'),
-          ),
-        },
-        hike: switch (json['hike']) {
-          null => null,
-          final Object v => HikeDetails.fromJson(
-            _readObject(v, 'EventUpdateRequest.hike'),
-          ),
-        },
-        fishing: switch (json['fishing']) {
-          null => null,
-          final Object v => FishingDetails.fromJson(
-            _readObject(v, 'EventUpdateRequest.fishing'),
-          ),
-        },
-        gaming: switch (json['gaming']) {
-          null => null,
-          final Object v => GamingDetails.fromJson(
-            _readObject(v, 'EventUpdateRequest.gaming'),
-          ),
-        },
-        sports: switch (json['sports']) {
-          null => null,
-          final Object v => SportsDetails.fromJson(
-            _readObject(v, 'EventUpdateRequest.sports'),
-          ),
-        },
-        applyToSeries: switch (json['apply_to_series']) {
-          null => null,
-          final Object v => _readBool(v, 'EventUpdateRequest.apply_to_series'),
-        },
-      );
+  factory EventUpdateRequest.fromJson(
+    Map<String, Object?> json,
+  ) => EventUpdateRequest(
+    coverUploadId: switch (json['cover_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.cover_upload_id'),
+    },
+    title: switch (json['title']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.title'),
+    },
+    description: switch (json['description']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.description'),
+    },
+    startsAt: switch (json['starts_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventUpdateRequest.starts_at'),
+    },
+    endsAt: switch (json['ends_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventUpdateRequest.ends_at'),
+    },
+    mode: switch (json['mode']) {
+      null => null,
+      final Object v => EventMode.fromWire(
+        _readString(v, 'EventUpdateRequest.mode'),
+      ),
+    },
+    meetingPointName: switch (json['meeting_point_name']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.meeting_point_name'),
+    },
+    meetingPoint: switch (json['meeting_point']) {
+      null => null,
+      final Object v => LatLng.fromJson(
+        _readObject(v, 'EventUpdateRequest.meeting_point'),
+      ),
+    },
+    city: switch (json['city']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.city'),
+    },
+    district: switch (json['district']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.district'),
+    },
+    onlineUrl: switch (json['online_url']) {
+      null => null,
+      final Object v => _readString(v, 'EventUpdateRequest.online_url'),
+    },
+    capacity: switch (json['capacity']) {
+      null => null,
+      final Object v => _readInt(v, 'EventUpdateRequest.capacity'),
+    },
+    discoverable: switch (json['discoverable']) {
+      null => null,
+      final Object v => _readBool(v, 'EventUpdateRequest.discoverable'),
+    },
+    convoy: switch (json['convoy']) {
+      null => null,
+      final Object v => ConvoyDetailsInput.fromJson(
+        _readObject(v, 'EventUpdateRequest.convoy'),
+      ),
+    },
+    camp: switch (json['camp']) {
+      null => null,
+      final Object v => CampDetailsInput.fromJson(
+        _readObject(v, 'EventUpdateRequest.camp'),
+      ),
+    },
+    hike: switch (json['hike']) {
+      null => null,
+      final Object v => HikeDetails.fromJson(
+        _readObject(v, 'EventUpdateRequest.hike'),
+      ),
+    },
+    fishing: switch (json['fishing']) {
+      null => null,
+      final Object v => FishingDetails.fromJson(
+        _readObject(v, 'EventUpdateRequest.fishing'),
+      ),
+    },
+    gaming: switch (json['gaming']) {
+      null => null,
+      final Object v => GamingDetails.fromJson(
+        _readObject(v, 'EventUpdateRequest.gaming'),
+      ),
+    },
+    sports: switch (json['sports']) {
+      null => null,
+      final Object v => SportsDetails.fromJson(
+        _readObject(v, 'EventUpdateRequest.sports'),
+      ),
+    },
+    applyToSeries: switch (json['apply_to_series']) {
+      null => null,
+      final Object v => _readBool(v, 'EventUpdateRequest.apply_to_series'),
+    },
+  );
+
+  /// Kendi hazır `cover` yüklemeniz; `""` kapağı kaldırır, eski kapak
+  /// silinir. `apply_to_series: true` ile verilemez.
+  final String? coverUploadId;
 
   /// Kısıtlar: minLength: 1; maxLength: 120.
   final String? title;
@@ -4096,6 +6595,7 @@ final class EventUpdateRequest {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (coverUploadId case final value?) 'cover_upload_id': value,
     if (title case final value?) 'title': value,
     if (description case final value?) 'description': value,
     if (startsAt case final value?)
@@ -4122,6 +6622,7 @@ final class EventUpdateRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is EventUpdateRequest &&
+          coverUploadId == other.coverUploadId &&
           title == other.title &&
           description == other.description &&
           startsAt == other.startsAt &&
@@ -4144,6 +6645,7 @@ final class EventUpdateRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    coverUploadId,
     title,
     description,
     startsAt,
@@ -4168,6 +6670,7 @@ final class EventUpdateRequest {
 
 final class FishingCatch {
   const FishingCatch({
+    this.photoUploadId,
     required this.id,
     required this.userId,
     required this.species,
@@ -4181,6 +6684,10 @@ final class FishingCatch {
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory FishingCatch.fromJson(Map<String, Object?> json) => FishingCatch(
+    photoUploadId: switch (json['photo_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'FishingCatch.photo_upload_id'),
+    },
     id: _readString(json['id'], 'FishingCatch.id'),
     userId: _readString(json['user_id'], 'FishingCatch.user_id'),
     species: _readString(json['species'], 'FishingCatch.species'),
@@ -4196,6 +6703,9 @@ final class FishingCatch {
     ),
     createdAt: _readDateTime(json['created_at'], 'FishingCatch.created_at'),
   );
+
+  /// Fotoğraf; linkleri `POST /v1/media/urls`. Av kaydını gören her üye görür.
+  final String? photoUploadId;
 
   final String id;
 
@@ -4214,6 +6724,7 @@ final class FishingCatch {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (photoUploadId case final value?) 'photo_upload_id': value,
     'id': id,
     'user_id': userId,
     'species': species,
@@ -4227,6 +6738,7 @@ final class FishingCatch {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FishingCatch &&
+          photoUploadId == other.photoUploadId &&
           id == other.id &&
           userId == other.userId &&
           species == other.species &&
@@ -4237,6 +6749,7 @@ final class FishingCatch {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    photoUploadId,
     id,
     userId,
     species,
@@ -4249,6 +6762,7 @@ final class FishingCatch {
 
 final class FishingCatchCreateRequest {
   const FishingCatchCreateRequest({
+    this.photoUploadId,
     required this.species,
     required this.lengthCm,
     this.location,
@@ -4261,6 +6775,13 @@ final class FishingCatchCreateRequest {
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory FishingCatchCreateRequest.fromJson(Map<String, Object?> json) =>
       FishingCatchCreateRequest(
+        photoUploadId: switch (json['photo_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'FishingCatchCreateRequest.photo_upload_id',
+          ),
+        },
         species: _readString(
           json['species'],
           'FishingCatchCreateRequest.species',
@@ -4287,6 +6808,11 @@ final class FishingCatchCreateRequest {
         ),
       );
 
+  /// İsteğe bağlı: kendi hazır `catch_photo` yüklemeniz (bu tayfa için).
+  /// Fotoğrafın konum bilgisi (EXIF/GPS) işlemede silinmiştir; avın
+  /// konumu yalnızca `location` ve `visibility` ile paylaşılır.
+  final String? photoUploadId;
+
   /// Kısıtlar: minLength: 1; maxLength: 60.
   final String species;
 
@@ -4306,6 +6832,7 @@ final class FishingCatchCreateRequest {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (photoUploadId case final value?) 'photo_upload_id': value,
     'species': species,
     'length_cm': lengthCm,
     if (location case final value?) 'location': value.toJson(),
@@ -4317,6 +6844,7 @@ final class FishingCatchCreateRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FishingCatchCreateRequest &&
+          photoUploadId == other.photoUploadId &&
           species == other.species &&
           lengthCm == other.lengthCm &&
           location == other.location &&
@@ -4325,6 +6853,7 @@ final class FishingCatchCreateRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    photoUploadId,
     species,
     lengthCm,
     location,
@@ -5621,6 +8150,218 @@ enum ListTayfaReportsStatus {
   }
 }
 
+final class MediaUrls {
+  const MediaUrls({
+    required this.uploadId,
+    required this.previewUrl,
+    required this.previewContentType,
+    required this.fullUrl,
+    required this.fullContentType,
+    required this.width,
+    required this.height,
+    required this.expiresAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MediaUrls.fromJson(Map<String, Object?> json) => MediaUrls(
+    uploadId: _readString(json['upload_id'], 'MediaUrls.upload_id'),
+    previewUrl: _readString(json['preview_url'], 'MediaUrls.preview_url'),
+    previewContentType: MediaUrlsPreviewContentType.fromWire(
+      _readString(
+        json['preview_content_type'],
+        'MediaUrls.preview_content_type',
+      ),
+    ),
+    fullUrl: _readString(json['full_url'], 'MediaUrls.full_url'),
+    fullContentType: MediaUrlsFullContentType.fromWire(
+      _readString(json['full_content_type'], 'MediaUrls.full_content_type'),
+    ),
+    width: _readInt(json['width'], 'MediaUrls.width'),
+    height: _readInt(json['height'], 'MediaUrls.height'),
+    expiresAt: _readDateTime(json['expires_at'], 'MediaUrls.expires_at'),
+  );
+
+  final String uploadId;
+
+  /// Taşıyıcı link; log'a yazılmaz.
+  final String previewUrl;
+
+  final MediaUrlsPreviewContentType previewContentType;
+
+  final String fullUrl;
+
+  final MediaUrlsFullContentType fullContentType;
+
+  /// Full varyantın genişliği
+  final int width;
+
+  final int height;
+
+  /// Linklerin geçerliliği (1 saat).
+  final DateTime expiresAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'upload_id': uploadId,
+    'preview_url': previewUrl,
+    'preview_content_type': previewContentType.wire,
+    'full_url': fullUrl,
+    'full_content_type': fullContentType.wire,
+    'width': width,
+    'height': height,
+    'expires_at': expiresAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MediaUrls &&
+          uploadId == other.uploadId &&
+          previewUrl == other.previewUrl &&
+          previewContentType == other.previewContentType &&
+          fullUrl == other.fullUrl &&
+          fullContentType == other.fullContentType &&
+          width == other.width &&
+          height == other.height &&
+          expiresAt == other.expiresAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    uploadId,
+    previewUrl,
+    previewContentType,
+    fullUrl,
+    fullContentType,
+    width,
+    height,
+    expiresAt,
+  ]);
+}
+
+enum MediaUrlsFullContentType {
+  imageJpeg('image/jpeg'),
+  imageWebp('image/webp'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const MediaUrlsFullContentType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('MediaUrlsFullContentType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static MediaUrlsFullContentType fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class MediaUrlsList {
+  const MediaUrlsList({required this.media});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MediaUrlsList.fromJson(Map<String, Object?> json) => MediaUrlsList(
+    media: List<MediaUrls>.unmodifiable(
+      _readList(json['media'], 'MediaUrlsList.media').map(
+        (Object? e0) =>
+            MediaUrls.fromJson(_readObject(e0, 'MediaUrlsList.media')),
+      ),
+    ),
+  );
+
+  final List<MediaUrls> media;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'media': <Object?>[for (final e0 in media) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MediaUrlsList && _deepEquals(media, other.media);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(media)]);
+}
+
+enum MediaUrlsPreviewContentType {
+  imageJpeg('image/jpeg'),
+  imageWebp('image/webp'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const MediaUrlsPreviewContentType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('MediaUrlsPreviewContentType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static MediaUrlsPreviewContentType fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class MediaUrlsRequest {
+  const MediaUrlsRequest({required this.uploadIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MediaUrlsRequest.fromJson(Map<String, Object?> json) =>
+      MediaUrlsRequest(
+        uploadIds: List<String>.unmodifiable(
+          _readList(
+            json['upload_ids'],
+            'MediaUrlsRequest.upload_ids',
+          ).map((Object? e0) => _readString(e0, 'MediaUrlsRequest.upload_ids')),
+        ),
+      );
+
+  /// Kısıtlar: minItems: 1; maxItems: 100; uniqueItems: true.
+  final List<String> uploadIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'upload_ids': <Object?>[for (final e0 in uploadIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MediaUrlsRequest && _deepEquals(uploadIds, other.uploadIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(uploadIds)]);
+}
+
 final class MemberList {
   const MemberList({required this.members, this.nextPageToken});
 
@@ -6564,7 +9305,11 @@ final class Notification {
   /// konuşma okunana kadar konuşma başına tek bildirim) yalnızca
   /// "yeni" bilgisi taşır: hedef `dm_conversation`, `actor_id` ve
   /// `tayfa_id` yoktur, içerik de gönderen de yazılmaz; okunmamış
-  /// mesaj sayısını `unread_count` taşır. Tanınmayan değer `unknown`.
+  /// mesaj sayısını `unread_count` taşır. `data_export_ready` (KVKK
+  /// veri dışa aktarmanız 7 gün indirilebilir; hedef `data_export`,
+  /// `tayfa_id` ve `actor_id` yoktur; push çeviri anahtarları
+  /// `push_data_export_ready_title` ve `push_data_export_ready_body`).
+  /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
   /// Bildirim bir tayfayla ilgili değilse yoktur.
@@ -6576,7 +9321,8 @@ final class Notification {
   /// `membership` için `target_id` başvuran kullanıcının kimliğidir;
   /// `user` için bir kullanıcının kimliği (profilini açın); `report`
   /// için kendi şikâyetinizin kimliği; `dm_conversation` için
-  /// konuşmanızın kimliği.
+  /// konuşmanızın kimliği; `data_export` için kendi veri dışa
+  /// aktarma talebinizin kimliği (`GET /v1/me/data-exports/{data_export_id}`).
   final NotificationTargetType targetType;
 
   final String targetId;
@@ -6731,7 +9477,7 @@ final class NotificationPreference {
     ),
   );
 
-  /// Şimdilik yalnızca `tayfa`; kanal ve konuşma sonra gelir.
+  /// `tayfa` ya da `dm_conversation` (birebir konuşma); kanal sonra gelir.
   final NotificationPreferenceScopeType scopeType;
 
   final String scopeId;
@@ -6914,7 +9660,7 @@ enum NotificationPreferenceRequestLevel {
   }
 }
 
-/// Şimdilik yalnızca `tayfa`; kanal ve konuşma sonra gelir.
+/// `tayfa` ya da `dm_conversation` (birebir konuşma); kanal sonra gelir.
 enum NotificationPreferenceScopeType {
   tayfa('tayfa'),
   channel('channel'),
@@ -6949,7 +9695,8 @@ enum NotificationPreferenceScopeType {
 /// `membership` için `target_id` başvuran kullanıcının kimliğidir;
 /// `user` için bir kullanıcının kimliği (profilini açın); `report`
 /// için kendi şikâyetinizin kimliği; `dm_conversation` için
-/// konuşmanızın kimliği.
+/// konuşmanızın kimliği; `data_export` için kendi veri dışa
+/// aktarma talebinizin kimliği (`GET /v1/me/data-exports/{data_export_id}`).
 enum NotificationTargetType {
   tayfa('tayfa'),
   membership('membership'),
@@ -6959,6 +9706,7 @@ enum NotificationTargetType {
   user('user'),
   report('report'),
   dmConversation('dm_conversation'),
+  dataExport('data_export'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -7006,7 +9754,11 @@ enum NotificationTargetType {
 /// konuşma okunana kadar konuşma başına tek bildirim) yalnızca
 /// "yeni" bilgisi taşır: hedef `dm_conversation`, `actor_id` ve
 /// `tayfa_id` yoktur, içerik de gönderen de yazılmaz; okunmamış
-/// mesaj sayısını `unread_count` taşır. Tanınmayan değer `unknown`.
+/// mesaj sayısını `unread_count` taşır. `data_export_ready` (KVKK
+/// veri dışa aktarmanız 7 gün indirilebilir; hedef `data_export`,
+/// `tayfa_id` ve `actor_id` yoktur; push çeviri anahtarları
+/// `push_data_export_ready_title` ve `push_data_export_ready_body`).
+/// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
   eventUpdated('event_updated'),
@@ -7028,6 +9780,7 @@ enum NotificationType {
   reportResolved('report_resolved'),
   dmRequest('dm_request'),
   dmMessage('dm_message'),
+  dataExportReady('data_export_ready'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -7072,6 +9825,96 @@ enum NotificationWarningReason {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static NotificationWarningReason fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class OutgoingEnvelope {
+  const OutgoingEnvelope({
+    required this.deviceId,
+    required this.registrationId,
+    required this.type,
+    required this.content,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory OutgoingEnvelope.fromJson(Map<String, Object?> json) =>
+      OutgoingEnvelope(
+        deviceId: _readString(json['device_id'], 'OutgoingEnvelope.device_id'),
+        registrationId: _readInt(
+          json['registration_id'],
+          'OutgoingEnvelope.registration_id',
+        ),
+        type: OutgoingEnvelopeType.fromWire(
+          _readString(json['type'], 'OutgoingEnvelope.type'),
+        ),
+        content: _readString(json['content'], 'OutgoingEnvelope.content'),
+      );
+
+  final String deviceId;
+
+  /// Gönderenin bu cihazla oturumundaki kayıt kimliği; değişmişse cihaz değişmiştir.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 16380.
+  final int registrationId;
+
+  /// Signal CiphertextMessageType (2 whisper, 3 prekey).
+  final OutgoingEnvelopeType type;
+
+  /// Opak Signal mesajı, 1 B – 64 KiB.
+  ///
+  /// Kısıtlar: biçim: standart base64.
+  final String content;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'device_id': deviceId,
+    'registration_id': registrationId,
+    'type': type.wire,
+    'content': content,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OutgoingEnvelope &&
+          deviceId == other.deviceId &&
+          registrationId == other.registrationId &&
+          type == other.type &&
+          content == other.content;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[deviceId, registrationId, type, content]);
+}
+
+/// Signal CiphertextMessageType (2 whisper, 3 prekey).
+enum OutgoingEnvelopeType {
+  whisper('whisper'),
+  prekey('prekey'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const OutgoingEnvelopeType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('OutgoingEnvelopeType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static OutgoingEnvelopeType fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;
@@ -7644,6 +10487,73 @@ final class Problem {
     instance,
     requestId,
   ]);
+}
+
+final class PushTokenRegistration {
+  const PushTokenRegistration({required this.token, required this.platform});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory PushTokenRegistration.fromJson(Map<String, Object?> json) =>
+      PushTokenRegistration(
+        token: _readString(json['token'], 'PushTokenRegistration.token'),
+        platform: PushTokenRegistrationPlatform.fromWire(
+          _readString(json['platform'], 'PushTokenRegistration.platform'),
+        ),
+      );
+
+  /// FCM kayıt token'ı. Log'a yazılmaz.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 1024; pattern: `^[A-Za-z0-9:_.-]+$`.
+  final String token;
+
+  final PushTokenRegistrationPlatform platform;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'token': token,
+    'platform': platform.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PushTokenRegistration &&
+          token == other.token &&
+          platform == other.platform;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[token, platform]);
+}
+
+enum PushTokenRegistrationPlatform {
+  android('android'),
+  ios('ios'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const PushTokenRegistrationPlatform(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('PushTokenRegistrationPlatform.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static PushTokenRegistrationPlatform fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class Question {
@@ -9110,6 +12020,7 @@ final class TagList {
 
 final class Tayfa {
   const Tayfa({
+    this.coverUploadId,
     required this.id,
     required this.name,
     required this.description,
@@ -9130,6 +12041,10 @@ final class Tayfa {
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory Tayfa.fromJson(Map<String, Object?> json) => Tayfa(
+    coverUploadId: switch (json['cover_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'Tayfa.cover_upload_id'),
+    },
     id: _readString(json['id'], 'Tayfa.id'),
     name: _readString(json['name'], 'Tayfa.name'),
     description: _readString(json['description'], 'Tayfa.description'),
@@ -9165,6 +12080,9 @@ final class Tayfa {
     createdAt: _readDateTime(json['created_at'], 'Tayfa.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Tayfa.updated_at'),
   );
+
+  /// Kapak; linkleri `POST /v1/media/urls`.
+  final String? coverUploadId;
 
   final String id;
 
@@ -9204,6 +12122,7 @@ final class Tayfa {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (coverUploadId case final value?) 'cover_upload_id': value,
     'id': id,
     'name': name,
     'description': description,
@@ -9226,6 +12145,7 @@ final class Tayfa {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Tayfa &&
+          coverUploadId == other.coverUploadId &&
           id == other.id &&
           name == other.name &&
           description == other.description &&
@@ -9243,6 +12163,7 @@ final class Tayfa {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    coverUploadId,
     id,
     name,
     description,
@@ -9437,6 +12358,7 @@ enum TayfaStatus {
 /// Kısıtlar: minProperties: 1.
 final class TayfaUpdateRequest {
   const TayfaUpdateRequest({
+    this.coverUploadId,
     this.name,
     this.description,
     this.interests,
@@ -9449,6 +12371,13 @@ final class TayfaUpdateRequest {
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory TayfaUpdateRequest.fromJson(Map<String, Object?> json) =>
       TayfaUpdateRequest(
+        coverUploadId: switch (json['cover_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'TayfaUpdateRequest.cover_upload_id',
+          ),
+        },
         name: switch (json['name']) {
           null => null,
           final Object v => _readString(v, 'TayfaUpdateRequest.name'),
@@ -9482,6 +12411,10 @@ final class TayfaUpdateRequest {
         },
       );
 
+  /// Kendi hazır `cover` yüklemeniz (bu tayfa için açılmış); `""` kapağı
+  /// kaldırır. Eski kapak silinir. Yönetici yetkisi gerekir.
+  final String? coverUploadId;
+
   /// Kısıtlar: minLength: 3; maxLength: 50.
   final String? name;
 
@@ -9498,6 +12431,7 @@ final class TayfaUpdateRequest {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (coverUploadId case final value?) 'cover_upload_id': value,
     if (name case final value?) 'name': value,
     if (description case final value?) 'description': value,
     if (interests case final value?)
@@ -9511,6 +12445,7 @@ final class TayfaUpdateRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TayfaUpdateRequest &&
+          coverUploadId == other.coverUploadId &&
           name == other.name &&
           description == other.description &&
           _deepEquals(interests, other.interests) &&
@@ -9519,6 +12454,7 @@ final class TayfaUpdateRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    coverUploadId,
     name,
     description,
     _deepHash(interests),
@@ -9590,6 +12526,611 @@ final class UnreadNotificationCount {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[unreadCount]);
+}
+
+final class Upload {
+  const Upload({
+    required this.id,
+    required this.purpose,
+    required this.status,
+    this.rejectReason,
+    this.tayfaId,
+    required this.sizeBytes,
+    required this.createdAt,
+    required this.attached,
+    this.urls,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory Upload.fromJson(Map<String, Object?> json) => Upload(
+    id: _readString(json['id'], 'Upload.id'),
+    purpose: UploadPurpose.fromWire(
+      _readString(json['purpose'], 'Upload.purpose'),
+    ),
+    status: UploadStatus.fromWire(_readString(json['status'], 'Upload.status')),
+    rejectReason: switch (json['reject_reason']) {
+      null => null,
+      final Object v => UploadRejectReason.fromWire(
+        _readString(v, 'Upload.reject_reason'),
+      ),
+    },
+    tayfaId: switch (json['tayfa_id']) {
+      null => null,
+      final Object v => _readString(v, 'Upload.tayfa_id'),
+    },
+    sizeBytes: _readInt(json['size_bytes'], 'Upload.size_bytes'),
+    createdAt: _readDateTime(json['created_at'], 'Upload.created_at'),
+    attached: _readBool(json['attached'], 'Upload.attached'),
+    urls: switch (json['urls']) {
+      null => null,
+      final Object v => MediaUrls.fromJson(_readObject(v, 'Upload.urls')),
+    },
+  );
+
+  final String id;
+
+  final UploadPurpose purpose;
+
+  final UploadStatus status;
+
+  final UploadRejectReason? rejectReason;
+
+  final String? tayfaId;
+
+  /// İki varyantın boyutları birlikte.
+  final int sizeBytes;
+
+  final DateTime createdAt;
+
+  /// Bir içerik dosyayı kullanıyor. Hazır ama 7 gün bağlanmayan dosya silinir.
+  final bool attached;
+
+  /// Yalnızca `ready` iken.
+  final MediaUrls? urls;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'purpose': purpose.wire,
+    'status': status.wire,
+    if (rejectReason case final value?) 'reject_reason': value.wire,
+    if (tayfaId case final value?) 'tayfa_id': value,
+    'size_bytes': sizeBytes,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'attached': attached,
+    if (urls case final value?) 'urls': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Upload &&
+          id == other.id &&
+          purpose == other.purpose &&
+          status == other.status &&
+          rejectReason == other.rejectReason &&
+          tayfaId == other.tayfaId &&
+          sizeBytes == other.sizeBytes &&
+          createdAt == other.createdAt &&
+          attached == other.attached &&
+          urls == other.urls;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    purpose,
+    status,
+    rejectReason,
+    tayfaId,
+    sizeBytes,
+    createdAt,
+    attached,
+    urls,
+  ]);
+}
+
+final class UploadCompleteRequest {
+  const UploadCompleteRequest({required this.width, required this.height});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory UploadCompleteRequest.fromJson(Map<String, Object?> json) =>
+      UploadCompleteRequest(
+        width: _readInt(json['width'], 'UploadCompleteRequest.width'),
+        height: _readInt(json['height'], 'UploadCompleteRequest.height'),
+      );
+
+  /// Full varyantın genişliği (piksel).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 1600.
+  final int width;
+
+  /// Kısıtlar: minimum: 1; maximum: 1600.
+  final int height;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'width': width,
+    'height': height,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UploadCompleteRequest &&
+          width == other.width &&
+          height == other.height;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[width, height]);
+}
+
+final class UploadCreateRequest {
+  const UploadCreateRequest({
+    required this.purpose,
+    required this.variants,
+    this.tayfaId,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory UploadCreateRequest.fromJson(Map<String, Object?> json) =>
+      UploadCreateRequest(
+        purpose: UploadPurpose.fromWire(
+          _readString(json['purpose'], 'UploadCreateRequest.purpose'),
+        ),
+        variants: List<UploadVariant>.unmodifiable(
+          _readList(json['variants'], 'UploadCreateRequest.variants').map(
+            (Object? e0) => UploadVariant.fromJson(
+              _readObject(e0, 'UploadCreateRequest.variants'),
+            ),
+          ),
+        ),
+        tayfaId: switch (json['tayfa_id']) {
+          null => null,
+          final Object v => _readString(v, 'UploadCreateRequest.tayfa_id'),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'UploadCreateRequest.client_request_id',
+        ),
+      );
+
+  final UploadPurpose purpose;
+
+  /// Tam bir `preview` ve bir `full`.
+  ///
+  /// Kısıtlar: minItems: 2; maxItems: 2.
+  final List<UploadVariant> variants;
+
+  /// `cover` ve `catch_photo` için zorunlu; `avatar`'da verilmez.
+  final String? tayfaId;
+
+  /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'purpose': purpose.wire,
+    'variants': <Object?>[for (final e0 in variants) e0.toJson()],
+    if (tayfaId case final value?) 'tayfa_id': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UploadCreateRequest &&
+          purpose == other.purpose &&
+          _deepEquals(variants, other.variants) &&
+          tayfaId == other.tayfaId &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    purpose,
+    _deepHash(variants),
+    tayfaId,
+    clientRequestId,
+  ]);
+}
+
+final class UploadCreated {
+  const UploadCreated({required this.upload, required this.targets});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory UploadCreated.fromJson(Map<String, Object?> json) => UploadCreated(
+    upload: Upload.fromJson(
+      _readObject(json['upload'], 'UploadCreated.upload'),
+    ),
+    targets: List<UploadTarget>.unmodifiable(
+      _readList(json['targets'], 'UploadCreated.targets').map(
+        (Object? e0) =>
+            UploadTarget.fromJson(_readObject(e0, 'UploadCreated.targets')),
+      ),
+    ),
+  );
+
+  final Upload upload;
+
+  /// Her varyant için bir hedef; tekrar gönderimde yükleme artık `pending` değilse boş.
+  final List<UploadTarget> targets;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'upload': upload.toJson(),
+    'targets': <Object?>[for (final e0 in targets) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UploadCreated &&
+          upload == other.upload &&
+          _deepEquals(targets, other.targets);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[upload, _deepHash(targets)]);
+}
+
+/// `cover` tayfa ya da etkinlik kapağıdır.
+enum UploadPurpose {
+  avatar('avatar'),
+  catchPhoto('catch_photo'),
+  cover('cover'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const UploadPurpose(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('UploadPurpose.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadPurpose fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `not_image`: bir varyant JPEG/WebP değil ya da bildirilen türde
+/// değil. `unsupported_type`: PNG, HEIC, GIF, animasyonlu WebP (istemci
+/// dönüştürmeli). `metadata_present`: EXIF (GPS dahil), XMP ya da IPTC
+/// var. `dimension_mismatch`: başlıktaki ölçü bildirilenden farklı ya
+/// da preview oranı tutmuyor. `size_mismatch`: saklanan boyut
+/// bildirilenden farklı. `too_large`: preview 400, full 1600 px'ten
+/// büyük. `failed`: dosyadan bağımsız nedenlerle denetlenemedi.
+enum UploadRejectReason {
+  notImage('not_image'),
+  unsupportedType('unsupported_type'),
+  metadataPresent('metadata_present'),
+  dimensionMismatch('dimension_mismatch'),
+  sizeMismatch('size_mismatch'),
+  tooLarge('too_large'),
+  failed('failed'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const UploadRejectReason(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('UploadRejectReason.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadRejectReason fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `pending` (PUT ve tamamlama bekleniyor) → `ready` | `rejected`.
+/// `unknown`: istemciden yeni bir sunucu değeri.
+enum UploadStatus {
+  pending('pending'),
+  ready('ready'),
+  rejected('rejected'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const UploadStatus(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('UploadStatus.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class UploadTarget {
+  const UploadTarget({
+    required this.kind,
+    required this.method,
+    required this.url,
+    required this.headers,
+    required this.expiresAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory UploadTarget.fromJson(Map<String, Object?> json) => UploadTarget(
+    kind: UploadTargetKind.fromWire(
+      _readString(json['kind'], 'UploadTarget.kind'),
+    ),
+    method: UploadTargetMethod.fromWire(
+      _readString(json['method'], 'UploadTarget.method'),
+    ),
+    url: _readString(json['url'], 'UploadTarget.url'),
+    headers: Map<String, String>.unmodifiable(
+      _readObject(json['headers'], 'UploadTarget.headers').map(
+        (String k0, Object? e0) =>
+            MapEntry(k0, _readString(e0, 'UploadTarget.headers')),
+      ),
+    ),
+    expiresAt: _readDateTime(json['expires_at'], 'UploadTarget.expires_at'),
+  );
+
+  final UploadTargetKind kind;
+
+  final UploadTargetMethod method;
+
+  /// R2'ye imzalı PUT linki. Taşıyıcı link; log'a yazılmaz.
+  final String url;
+
+  /// PUT'ta aynen gönderilecek başlıklar (`Content-Type`, `Content-Length`).
+  final Map<String, String> headers;
+
+  final DateTime expiresAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'kind': kind.wire,
+    'method': method.wire,
+    'url': url,
+    'headers': <String, Object?>{
+      for (final e0 in headers.entries) e0.key: e0.value,
+    },
+    'expires_at': expiresAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UploadTarget &&
+          kind == other.kind &&
+          method == other.method &&
+          url == other.url &&
+          _deepEquals(headers, other.headers) &&
+          expiresAt == other.expiresAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    kind,
+    method,
+    url,
+    _deepHash(headers),
+    expiresAt,
+  ]);
+}
+
+enum UploadTargetKind {
+  preview('preview'),
+  full('full'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const UploadTargetKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('UploadTargetKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadTargetKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+enum UploadTargetMethod {
+  pUT('PUT'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const UploadTargetMethod(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('UploadTargetMethod.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadTargetMethod fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class UploadVariant {
+  const UploadVariant({
+    required this.kind,
+    required this.contentType,
+    required this.sizeBytes,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory UploadVariant.fromJson(Map<String, Object?> json) => UploadVariant(
+    kind: UploadVariantKind.fromWire(
+      _readString(json['kind'], 'UploadVariant.kind'),
+    ),
+    contentType: UploadVariantContentType.fromWire(
+      _readString(json['content_type'], 'UploadVariant.content_type'),
+    ),
+    sizeBytes: _readInt(json['size_bytes'], 'UploadVariant.size_bytes'),
+  );
+
+  final UploadVariantKind kind;
+
+  final UploadVariantContentType contentType;
+
+  /// Dosyanın tam boyutu.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 10485760.
+  final int sizeBytes;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'kind': kind.wire,
+    'content_type': contentType.wire,
+    'size_bytes': sizeBytes,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UploadVariant &&
+          kind == other.kind &&
+          contentType == other.contentType &&
+          sizeBytes == other.sizeBytes;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[kind, contentType, sizeBytes]);
+}
+
+enum UploadVariantContentType {
+  imageJpeg('image/jpeg'),
+  imageWebp('image/webp'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const UploadVariantContentType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('UploadVariantContentType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadVariantContentType fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+enum UploadVariantKind {
+  preview('preview'),
+  full('full'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const UploadVariantKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('UploadVariantKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static UploadVariantKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class UploadView {
+  const UploadView({required this.upload});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory UploadView.fromJson(Map<String, Object?> json) => UploadView(
+    upload: Upload.fromJson(_readObject(json['upload'], 'UploadView.upload')),
+  );
+
+  final Upload upload;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'upload': upload.toJson()};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is UploadView && upload == other.upload;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[upload]);
 }
 
 final class UserProfile {

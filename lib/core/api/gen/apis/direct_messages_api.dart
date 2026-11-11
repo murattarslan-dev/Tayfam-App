@@ -33,8 +33,27 @@ final class DirectMessagesApi {
   /// dışında kontrol karakteri içeremez. Aynı `client_request_id` ile
   /// tekrar gönderim ilk mesajı döndürür; başka konuşmada kullanılmış
   /// değer `invalid-request`. Mesaj düzenlenemez. Düz sürümde mesajlar
-  /// sunucuda şifreli saklanır (uçtan uca şifreleme sonraki aşama).
-  /// Aynı kurallar WebSocket `dm.send` çerçevesinde de geçerlidir.
+  /// sunucuda şifreli saklanır. Aynı kurallar WebSocket `dm.send`
+  /// çerçevesinde de geçerlidir.
+  ///
+  /// **Uçtan uca şifreleme (Signal; #127, ADR-0018):** `body` yerine
+  /// `envelopes` gönderilir: alıcının **tüm** cihazlarına ve sizin
+  /// **diğer tüm** cihazlarınıza birer zarf (en fazla 16). Gönderen
+  /// cihaz, token'ın oturumuna kayıtlı cihazdır
+  /// (`POST /v1/me/e2e/device`; yoksa `e2e-device-not-registered`, 409).
+  /// Küme birebir aynı olmalıdır: eksik, fazla, aynı cihaza iki zarf ya
+  /// da kayıt kimliği değişmiş cihaz `e2e-devices-changed` (409,
+  /// `missing_device_ids` ve `stale_device_ids` ile;
+  /// `E2EDevicesChangedProblem`) döner; cihaz listelerini tazeleyip
+  /// tekrar deneyin. Alıcının cihazı yoksa `e2e-recipient-unavailable`
+  /// (409). Sunucu zarfları açmaz; mesaj içeriksiz saklanır
+  /// (`encryption: e2e`, `body` yok). Zarflar hedef cihaza
+  /// `GET /v1/me/e2e/envelopes` ve WebSocket `dm.envelope` ile gider.
+  /// Zarflı gönderim yalnızca REST'tedir (WebSocket çerçevesi 64 KB).
+  /// Gövde en fazla 1,5 MiB.
+  ///
+  /// **Geri düşüş yok:** sizin ya da alıcının E2E cihazı varsa `body`
+  /// ile gönderim `e2e-required` (409) alır.
   ///
   /// `POST /v1/direct-messages`
   Future<DirectMessageSent> sendDirectMessage({
@@ -105,6 +124,8 @@ final class DirectMessagesApi {
   /// önce; verilirse ondan yeniler en eski önce (yeniden bağlanınca
   /// eksikleri tamamlama, ADR-0005). Silinen mesaj yerinde
   /// `deleted: true` ve metinsiz durur ("Bu mesaj silindi").
+  /// `encryption: e2e` mesajın metni burada hiçbir zaman yoktur; içerik
+  /// zarfta ve arşivdedir (`…/archive`).
   ///
   /// `GET /v1/direct-messages/conversations/{conversation_id}/messages`
   ///
@@ -141,6 +162,8 @@ final class DirectMessagesApi {
   ///
   /// Metin hemen ve geri alınamaz biçimde silinir. Başkasının mesajı
   /// `message-not-found`. Silinmiş mesajı silmek bir şey değiştirmez.
+  /// Uçtan uca şifreli mesajın bekleyen zarfları ve iki tarafın arşiv
+  /// kayıtları da silinir.
   /// Engellemeden sonra da kendi mesajınızı silebilirsiniz.
   ///
   /// `DELETE /v1/direct-messages/conversations/{conversation_id}/messages/{message_id}`
@@ -268,6 +291,59 @@ final class DirectMessagesApi {
     await _transport.send(
       method: 'DELETE',
       pathTemplate: '/v1/direct-messages/declined-requests/{conversation_id}',
+      pathParams: {'conversation_id': conversationId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Bir konuşmanın geçmiş arşivi (sizin kayıtlarınız)
+  ///
+  /// Mesaj listesiyle aynı sayfalama (`after_message_id`). Yalnızca
+  /// eşleştirilmiş cihaz okur (`e2e-not-paired`, 409). Her kayıt kendi
+  /// `key_version`'ıyla çözülür.
+  ///
+  /// `GET /v1/direct-messages/conversations/{conversation_id}/archive`
+  ///
+  /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.
+  ///
+  /// [pageToken]: Önceki yanıtın `next_page_token` değeri; opak.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  Future<E2EArchiveEntryList> listE2EArchiveEntries({
+    required String conversationId,
+    int? pageSize,
+    String? pageToken,
+    String? afterMessageId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate:
+          '/v1/direct-messages/conversations/{conversation_id}/archive',
+      pathParams: {'conversation_id': conversationId},
+      query: {
+        if (pageSize != null) 'page_size': '$pageSize',
+        if (pageToken != null) 'page_token': pageToken,
+        if (afterMessageId != null) 'after_message_id': afterMessageId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return E2EArchiveEntryList.fromJson(
+      jsonObject(response, 'listE2EArchiveEntries'),
+    );
+  }
+
+  /// Bir konuşmanın arşiv kayıtlarınızı siler
+  ///
+  /// `DELETE /v1/direct-messages/conversations/{conversation_id}/archive`
+  Future<void> deleteE2EConversationArchive({
+    required String conversationId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate:
+          '/v1/direct-messages/conversations/{conversation_id}/archive',
       pathParams: {'conversation_id': conversationId},
       expect: ResponseKind.none,
       authenticated: true,
