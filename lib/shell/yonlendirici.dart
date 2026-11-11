@@ -14,6 +14,7 @@ import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
+import 'package:tayfam/shell/derin_link/derin_link_rotalari.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
 import 'package:tayfam/shell/yer_tutucu.dart';
 import 'package:tayfam/shell/yonlendirme.dart';
@@ -30,10 +31,18 @@ const String tayfaIdParametresi = Adresler.tayfaIdParametresi;
 /// Adresteki `/t/<id>` aktif tayfa değilse ve etkin üyeliklerdeyse aktif
 /// tayfa adrese göre değişir (ADR-0014 §1; [adresleEsitle]).
 ///
+/// Platformdan gelen derin link (Android App Links: soğuk açılışta ilk
+/// adres, sıcak açılışta `pushRouteInformation`) korumalardan önce
+/// bellekteki kutuya alınır ve yönlendirme kök adresle sürer; token
+/// adreste, gezinme geçmişinde ve log'da kalmaz (ADR-0018 §6, kesin kural
+/// 9). Bekleyen davet giriş, kayıt ve tanıtımdan sonra işlenir; referans
+/// kodu kayıt formunu doldurur ve oturum açılınca bırakılır.
+///
 /// `debugLogDiagnostics` kapalıdır: go_router açıkken tam adresleri
 /// loglar (CLAUDE.md, kesin kural 3).
 final yonlendiriciProvider = Provider<GoRouter>((ref) {
   final moduller = ref.watch(tayfaModulleriProvider);
+  final kutu = ref.watch(derinLinkKutusuProvider);
 
   final yenile = ValueNotifier<int>(0);
   ref.listen(oturumDurumuProvider, (_, _) => yenile.value++);
@@ -42,21 +51,35 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
   ref.listen(etkinTayfaIdleriProvider, (_, _) => yenile.value++);
   ref.listen(tayfalarYukleniyorProvider, (_, _) => yenile.value++);
   ref.listen(tanitimProvider, (_, _) => yenile.value++);
+  // Kayıt bitince (oturum açık) referans kodunun işi biter.
+  ref.listen(oturumDurumuProvider, (_, durum) {
+    if (durum == OturumDurumu.acik) kutu.referansiBirak();
+  });
 
   final yonlendirici = GoRouter(
     initialLocation: Adresler.kok,
     refreshListenable: yenile,
-    redirect: (context, state) => yonlendir(
-      oturum: ref.read(oturumDurumuProvider),
-      aktifTayfaId: ref.read(aktifTayfaIdProvider),
-      konum: state.uri,
-      guncellemeGerekli: ref.read(guncellemeProvider),
-      etkinTayfalar: ref.read(etkinTayfaIdleriProvider),
-      tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
-      tanitim: ref.read(tanitimProvider),
-    ),
+    redirect: (context, state) {
+      final oturum = ref.read(oturumDurumuProvider);
+      final konum = kutu.yakala(
+        state.uri,
+        oturumAcik: oturum == OturumDurumu.acik,
+      );
+      final hedef = yonlendir(
+        oturum: oturum,
+        aktifTayfaId: ref.read(aktifTayfaIdProvider),
+        konum: konum,
+        guncellemeGerekli: ref.read(guncellemeProvider),
+        etkinTayfalar: ref.read(etkinTayfaIdleriProvider),
+        tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
+        tanitim: ref.read(tanitimProvider),
+        davetBekliyor: kutu.davetBekliyor,
+      );
+      if (hedef != null) return hedef;
+      return identical(konum, state.uri) ? null : konum.toString();
+    },
     errorBuilder: (context, state) => const BulunamadiSayfasi(),
-    routes: rotalariOlustur(moduller),
+    routes: rotalariOlustur(moduller, kutu: kutu),
   );
 
   var kapandi = false;
@@ -93,9 +116,12 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
 /// korunur, Android geri tuşu önce açık sekmenin yığınında geri gider.
 ///
 /// [moduller]'ün rotaları `/t/:tayfaId` altına eklenir. Derin link
-/// rotaları (`/davet`, `/r/:kod`) ayrı pakette bu listenin üst düzeyine
-/// eklenir.
-List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
+/// rotaları (`shell/derin_link/`) bu listenin üst düzeyine eklenir; kayıt
+/// formu [kutu]'daki referans koduyla dolar.
+List<RouteBase> rotalariOlustur(
+  List<TayfaModule> moduller, {
+  DerinLinkKutusu? kutu,
+}) {
   return [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
@@ -175,7 +201,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
     ),
     GoRoute(
       path: Adresler.kayit,
-      builder: (context, state) => const KayitEkrani(),
+      builder: (context, state) =>
+          KayitEkrani(referansKodu: kutu?.referansKodu),
     ),
     GoRoute(
       path: Adresler.onay,
@@ -187,6 +214,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
       path: Adresler.tayfaOlustur,
       builder: (context, state) => const OlusturmaEkrani(),
     ),
+    // Davet linkinin ekranı (ADR-0018 §6); adreste token yoktur.
+    ...derinLinkRotalari(),
   ];
 }
 

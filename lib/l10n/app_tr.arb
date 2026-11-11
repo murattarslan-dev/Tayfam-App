@@ -3111,5 +3111,66 @@
   "yonetim_davet_iptal_edildi": "Davet linki iptal edildi.",
   "@yonetim_davet_iptal_edildi": {
     "description": "Davet linki iptal edilince kısa süre görünen bildirim."
+  },
+  "derin_link_davet_baslik": "Tayfa daveti",
+  "@derin_link_davet_baslik": {
+    "description": "Davet linkiyle açılan ekranın başlığı."
+  },
+  "derin_link_davet_kapat": "Kapat",
+  "@derin_link_davet_kapat": {
+    "description": "Davet ekranını kapatan düğmenin ipucu ve ekran okuyucu etiketi; daveti bırakır."
+  },
+  "derin_link_davet_yukleniyor": "Davet yükleniyor",
+  "@derin_link_davet_yukleniyor": {
+    "description": "Davet önizlemesi yüklenirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "derin_link_davet_ust_baslik": "Seni bu tayfaya davet ettiler",
+  "@derin_link_davet_ust_baslik": {
+    "description": "Davet ekranında tayfa adının üstündeki kısa satır."
+  },
+  "derin_link_davet_aciklama": "Katılınca tayfanın etkinliklerini, duyurularını ve sohbetini görürsün. Tayfa onaylı katılımlıysa yönetici onayından sonra katılırsın.",
+  "@derin_link_davet_aciklama": {
+    "description": "Davet ekranında katıl düğmesinin üstündeki açıklama."
+  },
+  "derin_link_davet_zaten_uye": "Bu tayfaya zaten üyesin ya da katılım isteğin onay bekliyor.",
+  "@derin_link_davet_zaten_uye": {
+    "description": "Davet edilen tayfaya zaten üye olan ya da isteği bekleyen kullanıcıya gösterilen metin."
+  },
+  "derin_link_davet_katil": "Tayfaya katıl",
+  "@derin_link_davet_katil": {
+    "description": "Davet linkiyle tayfaya katılan birincil düğme."
+  },
+  "derin_link_davet_vazgec": "Vazgeç",
+  "@derin_link_davet_vazgec": {
+    "description": "Daveti kabul etmeden ekranı kapatan ikincil düğme."
+  },
+  "derin_link_davet_tamam": "Tamam",
+  "@derin_link_davet_tamam": {
+    "description": "Davet ekranını kapatan düğme (istek gönderildi, zaten üye ya da hata durumunda)."
+  },
+  "derin_link_davet_gonderildi_baslik": "İsteğin gönderildi",
+  "@derin_link_davet_gonderildi_baslik": {
+    "description": "Onaylı katılımlı tayfaya davetle katılma isteği gönderilince görünen başlık."
+  },
+  "derin_link_davet_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın.",
+  "@derin_link_davet_gonderildi_aciklama": {
+    "description": "Davetle katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+  },
+  "derin_link_davet_gecersiz": "Bu davet linki açılamadı. Linki gönderen kişiden yenisini iste.",
+  "@derin_link_davet_gecersiz": {
+    "description": "Bekleyen davet yokken ya da link bozukken davet ekranında görünen metin."
+  },
+  "derin_link_tekrar_dene": "Tekrar dene",
+  "@derin_link_tekrar_dene": {
+    "description": "Davet önizlemesi bağlantı ya da sunucu hatasıyla yüklenemeyince görünen düğme."
+  },
+  "derin_link_davet_uye_sayisi": "{sayi, plural, other{{sayi} üye}}",
+  "@derin_link_davet_uye_sayisi": {
+    "description": "Davet ekranında tayfa adının altındaki üye sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
   }
 }
