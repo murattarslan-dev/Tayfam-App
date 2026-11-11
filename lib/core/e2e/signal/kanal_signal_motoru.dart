@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
