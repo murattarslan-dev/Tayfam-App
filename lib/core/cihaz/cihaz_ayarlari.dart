@@ -9,11 +9,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// aittir: oturum kapanınca, kullanıcı değişince silinmez. İçerik değildir;
 /// kim olduğun ya da ne yaptığın hakkında bilgi taşımaz.
 ///
-/// Yeni bayrak bu listeye bir değer olarak eklenir (ör. değerlendirme
-/// penceresinin "istendi" bayrağı, ADR-0016).
+/// Yeni bayrak bu listeye bir değer olarak eklenir.
 enum CihazBayragi {
   /// Hoş geldin tanıtımı gösterildi (atlandı ya da tamamlandı; ADR-0017).
-  tanitimGosterildi('tayfam.cihaz.tanitim_gosterildi');
+  tanitimGosterildi('tayfam.cihaz.tanitim_gosterildi'),
+
+  /// Uygulama değerlendirme penceresi istendi (ADR-0016). Anahtar, bayrak
+  /// ayrı bir depodayken kullanılanla aynıdır.
+  degerlendirmeIstendi('tayfam.degerlendirme_istendi');
 
   const CihazBayragi(this.anahtar);
 

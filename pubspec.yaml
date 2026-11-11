@@ -27,6 +27,12 @@ dependencies:
   # Google ile giriş (ADR-0012 §2); yayıncı flutter.dev.
   google_sign_in: ^7.2.0
   http: ^1.6.0
+  # İlk etkinlikten sonra mağazanın uygulama içi değerlendirme penceresi
+  # (ADR-0016 §4): Android'de Play In-App Review, iOS'ta
+  # SKStoreReviewController. Yalnızca isAvailable() ve requestReview();
+  # mağaza sayfası açılmaz. Kaynak github.com/britannio/in_app_review;
+  # izin gerektirmez.
+  in_app_review: ^2.0.12
   intl: ^0.20.3
   # flutter_map'in koordinat türü (ADR-0015 Sonuçlar); saf Dart, izin yok.
   latlong2: ^0.9.1
