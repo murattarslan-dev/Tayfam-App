@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/core/degerlendirme/degerlendirme_deposu.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/degerlendirme/magaza_degerlendirmesi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
@@ -24,12 +24,14 @@ bool etkinlikTamamlandi(Event etkinlik, DateTime simdi) =>
 ///
 /// Durum, bu çalışmada artık istenmeyecek olmasıdır (istendi, bayrak
 /// bulundu ya da mağaza kullanılamıyor). Kalıcı bayrak
-/// [degerlendirmeDeposuProvider]'dadır ve cihaza aittir: bu notifier
+/// [CihazBayragi.degerlendirmeIstendi]'dir ve cihaza aittir: bu notifier
 /// oturuma bağlı değildir, oturum kapanınca ne durum ne bayrak sıfırlanır.
 /// Sunucuya hiçbir şey gönderilmez; hiçbir şey loglanmaz.
 class DegerlendirmeNotifier extends Notifier<bool> {
   @override
   bool build() => false;
+
+  CihazAyarlariDeposu get _depo => ref.read(cihazAyarlariDeposuProvider);
 
   /// [etkinlikler] arasında tamamlanmış biri varsa ve pencere bu cihazda
   /// daha önce istenmediyse, mağaza da kullanılabiliyorsa `true`. Hata
@@ -39,7 +41,7 @@ class DegerlendirmeNotifier extends Notifier<bool> {
     final simdi = ref.read(etkinlikSaatiProvider)();
     if (!etkinlikler.any((e) => etkinlikTamamlandi(e, simdi))) return false;
     try {
-      if (await ref.read(degerlendirmeDeposuProvider).istendiMi()) {
+      if (await _depo.bayrakOku(CihazBayragi.degerlendirmeIstendi)) {
         if (ref.mounted) state = true;
         return false;
       }
@@ -62,7 +64,7 @@ class DegerlendirmeNotifier extends Notifier<bool> {
     if (state) return;
     state = true;
     try {
-      await ref.read(degerlendirmeDeposuProvider).isaretle();
+      await _depo.bayrakKoy(CihazBayragi.degerlendirmeIstendi);
       await ref.read(magazaDegerlendirmesiProvider).iste();
     } on Exception {
       // Mağaza sonucu bildirmez; hata da yok sayılır.

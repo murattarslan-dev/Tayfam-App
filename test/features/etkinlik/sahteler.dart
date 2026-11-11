@@ -6,7 +6,6 @@ import 'package:tayfam/core/api/gen/apis/users_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
-import 'package:tayfam/core/degerlendirme/degerlendirme_deposu.dart';
 import 'package:tayfam/core/degerlendirme/magaza_degerlendirmesi.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
@@ -316,8 +315,9 @@ const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 /// Etkinlik özelliğinin sahte bağımlılıkları: uçlar [tasima]'dan, saat
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
 /// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü ve
-/// türe özel araçları olan türler kayıtlıdır. Değerlendirme bayrağı
-/// bellekte; mağaza penceresi verilmezse kullanılamaz (istenmez).
+/// türe özel araçları olan türler kayıtlıdır. Mağaza değerlendirme
+/// penceresi verilmezse kullanılamaz (istenmez); değerlendirme bayrağı
+/// cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
 List<Override> etkinlikOverridelari({
   required SahteTayfaTasima tasima,
   SahteTakvimPaylasici? takvim,
@@ -326,7 +326,6 @@ List<Override> etkinlikOverridelari({
   KaroSaglayiciUretici? karolar,
   KonumServisi? konum,
   SonTayfaDeposu? sonTayfa,
-  DegerlendirmeDeposu? degerlendirme,
   MagazaDegerlendirmesi? magaza,
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa),
@@ -353,9 +352,6 @@ List<Override> etkinlikOverridelari({
     YuruyusTuru(),
     BalikTuru(),
   ]),
-  degerlendirmeDeposuProvider.overrideWithValue(
-    degerlendirme ?? BellekDegerlendirmeDeposu(),
-  ),
   magazaDegerlendirmesiProvider.overrideWithValue(
     magaza ?? SahteMagazaDegerlendirmesi(kullanilabilir: false),
   ),

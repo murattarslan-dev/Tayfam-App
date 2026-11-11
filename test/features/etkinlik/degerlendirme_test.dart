@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/core/degerlendirme/degerlendirme_deposu.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/degerlendirme/magaza_degerlendirmesi.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
@@ -39,14 +39,18 @@ const String _sayfa = 'sayfa';
 /// Bekleme süresinden biraz fazlası.
 const Duration _bekle = Duration(seconds: 3);
 
+/// Değerlendirme bayrağı konmuş mu.
+bool _istendi(BellekCihazAyarlariDeposu depo) =>
+    depo.konmuslar.contains(CihazBayragi.degerlendirmeIstendi);
+
 ProviderContainer _kap(
-  DegerlendirmeDeposu depo,
+  CihazAyarlariDeposu depo,
   MagazaDegerlendirmesi magaza, [
   List<Override> ek = const [],
 ]) {
   final kap = ProviderContainer(
     overrides: [
-      degerlendirmeDeposuProvider.overrideWithValue(depo),
+      cihazAyarlariDeposuProvider.overrideWithValue(depo),
       magazaDegerlendirmesiProvider.overrideWithValue(magaza),
       etkinlikSaatiProvider.overrideWithValue(() => sabitSimdi),
       ...ek,
@@ -57,10 +61,10 @@ ProviderContainer _kap(
 }
 
 List<Override> _overridelar(
-  DegerlendirmeDeposu depo,
+  CihazAyarlariDeposu depo,
   MagazaDegerlendirmesi magaza,
 ) => [
-  degerlendirmeDeposuProvider.overrideWithValue(depo),
+  cihazAyarlariDeposuProvider.overrideWithValue(depo),
   magazaDegerlendirmesiProvider.overrideWithValue(magaza),
   etkinlikSaatiProvider.overrideWithValue(() => sabitSimdi),
 ];
@@ -116,9 +120,16 @@ void main() {
   });
 
   group('DegerlendirmeNotifier', () {
+    test('bayrak anahtarı değişmedi', () {
+      expect(
+        CihazBayragi.degerlendirmeIstendi.anahtar,
+        'tayfam.degerlendirme_istendi',
+      );
+    });
+
     test('tamamlanmış etkinlik yoksa aday değildir', () async {
       final magaza = SahteMagazaDegerlendirmesi();
-      final kap = _kap(BellekDegerlendirmeDeposu(), magaza);
+      final kap = _kap(BellekCihazAyarlariDeposu(), magaza);
       final notifier = kap.read(degerlendirmeProvider.notifier);
 
       expect(
@@ -129,7 +140,7 @@ void main() {
     });
 
     test('bir kez: bayrak yazılır, ikinci kez istenmez', () async {
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi();
       final kap = _kap(depo, magaza);
       final notifier = kap.read(degerlendirmeProvider.notifier);
@@ -137,7 +148,7 @@ void main() {
       expect(await notifier.adayMi([_yaklasan(), _bitmis()]), isTrue);
       await notifier.iste();
       expect(magaza.istek, 1);
-      expect(depo.istendi, isTrue);
+      expect(_istendi(depo), isTrue);
 
       expect(await notifier.adayMi([_bitmis()]), isFalse);
       await notifier.iste();
@@ -145,7 +156,9 @@ void main() {
     });
 
     test('bayrak varsa (uygulama yeniden açıldı) istenmez', () async {
-      final depo = BellekDegerlendirmeDeposu(true);
+      final depo = BellekCihazAyarlariDeposu({
+        CihazBayragi.degerlendirmeIstendi,
+      });
       final magaza = SahteMagazaDegerlendirmesi();
       final kap = _kap(depo, magaza);
 
@@ -158,7 +171,7 @@ void main() {
     });
 
     test('bayrak oturum kapanınca silinmez', () async {
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi();
       final kap = _kap(depo, magaza, [
         oturumDurumuProvider.overrideWith(
@@ -171,7 +184,7 @@ void main() {
       kap.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
       await Future<void>.delayed(Duration.zero);
 
-      expect(depo.istendi, isTrue);
+      expect(_istendi(depo), isTrue);
       expect(kap.read(degerlendirmeProvider), isTrue);
 
       // Aynı cihazda başka bir oturum (yeni süreç): bayrak hâlâ orada.
@@ -184,7 +197,7 @@ void main() {
     });
 
     test('mağaza kullanılamıyorsa sessizce hiçbir şey yapılmaz', () async {
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi(kullanilabilir: false);
       final kap = _kap(depo, magaza);
 
@@ -193,7 +206,7 @@ void main() {
         isFalse,
       );
       expect(magaza.istek, 0);
-      expect(depo.istendi, isFalse);
+      expect(_istendi(depo), isFalse);
     });
 
     test('depo hatası sessizce yok sayılır', () async {
@@ -211,7 +224,7 @@ void main() {
     testWidgets('bitmiş etkinlikte kısa gecikmeyle bir kez ister', (
       tester,
     ) async {
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi();
       await widgetAc(
         tester,
@@ -228,7 +241,7 @@ void main() {
       expect(magaza.istek, 0);
       await tester.pump(_bekle);
       expect(magaza.istek, 1);
-      expect(depo.istendi, isTrue);
+      expect(_istendi(depo), isTrue);
 
       await tester.pump(_bekle);
       expect(magaza.istek, 1);
@@ -244,7 +257,7 @@ void main() {
             child: const Text(_sayfa),
           ),
         ),
-        overrides: _overridelar(BellekDegerlendirmeDeposu(), magaza),
+        overrides: _overridelar(BellekCihazAyarlariDeposu(), magaza),
       );
 
       await tester.pump(_bekle);
@@ -252,7 +265,7 @@ void main() {
     });
 
     testWidgets('mağaza kullanılamıyorsa istemez', (tester) async {
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi(kullanilabilir: false);
       await widgetAc(
         tester,
@@ -267,13 +280,13 @@ void main() {
 
       await tester.pump(_bekle);
       expect(magaza.istek, 0);
-      expect(depo.istendi, isFalse);
+      expect(_istendi(depo), isFalse);
     });
 
     testWidgets('üstte form açıkken istemez; form kapanınca ister', (
       tester,
     ) async {
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi();
       await widgetAc(
         tester,
@@ -297,7 +310,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.pump(_bekle);
       expect(magaza.istek, 0);
-      expect(depo.istendi, isFalse);
+      expect(_istendi(depo), isFalse);
 
       gezinme.pop();
       await tester.pumpAndSettle();
@@ -319,7 +332,7 @@ void main() {
             ),
           ),
         ),
-        overrides: _overridelar(BellekDegerlendirmeDeposu(), magaza),
+        overrides: _overridelar(BellekCihazAyarlariDeposu(), magaza),
       );
 
       unawaited(
@@ -337,7 +350,7 @@ void main() {
   group('ekranlar', () {
     testWidgets('bitmiş etkinliğin detayında bir kez ister', (tester) async {
       ekranBoyutu(tester);
-      final depo = BellekDegerlendirmeDeposu();
+      final depo = BellekCihazAyarlariDeposu();
       final magaza = SahteMagazaDegerlendirmesi();
       final tasima = etkinlikTasimasi({
         'GET $etkinlikYolu': (_) => etkinlikJson(
@@ -349,11 +362,8 @@ void main() {
       });
       await uygulamayiAc(
         tester,
-        tayfa: etkinlikOverridelari(
-          tasima: tasima,
-          degerlendirme: depo,
-          magaza: magaza,
-        ),
+        tayfa: etkinlikOverridelari(tasima: tasima, magaza: magaza),
+        cihazAyarlari: depo,
       );
       final yonlendirici = yonlendiriciyiAl(tester);
       final detay = Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId);
@@ -363,7 +373,7 @@ void main() {
 
       await tester.pump(_bekle);
       expect(magaza.istek, 1);
-      expect(depo.istendi, isTrue);
+      expect(_istendi(depo), isTrue);
 
       yonlendirici.go(Adresler.etkinlikler(ornekTayfaId));
       await tester.pumpAndSettle();
@@ -420,6 +430,11 @@ void main() {
           ),
         ),
         tayfa: etkinlikOverridelari(tasima: tasima, magaza: magaza),
+        overrides: [
+          cihazAyarlariDeposuProvider.overrideWithValue(
+            BellekCihazAyarlariDeposu(),
+          ),
+        ],
       );
 
       await tester.pump(_bekle);
@@ -429,10 +444,14 @@ void main() {
 }
 
 /// Okunamayan güvenli depo.
-final class _BozukDepo implements DegerlendirmeDeposu {
+final class _BozukDepo implements CihazAyarlariDeposu {
   @override
-  Future<bool> istendiMi() async => throw Exception('depo');
+  Future<bool> bayrakOku(CihazBayragi bayrak) async => throw Exception('depo');
 
   @override
-  Future<void> isaretle() async => throw Exception('depo');
+  Future<void> bayrakKoy(CihazBayragi bayrak) async => throw Exception('depo');
+
+  @override
+  Future<void> bayrakKaldir(CihazBayragi bayrak) async =>
+      throw Exception('depo');
 }
