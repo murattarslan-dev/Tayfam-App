@@ -16,7 +16,11 @@ enum CihazBayragi {
 
   /// Uygulama değerlendirme penceresi istendi (ADR-0016). Anahtar, bayrak
   /// ayrı bir depodayken kullanılanla aynıdır.
-  degerlendirmeIstendi('tayfam.degerlendirme_istendi');
+  degerlendirmeIstendi('tayfam.degerlendirme_istendi'),
+
+  /// Bildirim izni için açıklama kartı gösterildi (kabul ya da ret;
+  /// istemci ADR-0019 §3). Konmuşsa izin bir daha kendiliğinden sorulmaz.
+  bildirimIzniSoruldu('tayfam.cihaz.bildirim_izni_soruldu');
 
   const CihazBayragi(this.anahtar);
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
@@ -113,6 +116,8 @@ class KatilimNotifier extends Notifier<KatilimDurumu> {
       );
     }
     if (!ref.mounted) return;
+    // İlk gerçek ihtiyaç: bildirim izni açıklaması (istemci ADR-0019 §3).
+    unawaited(ref.read(bildirimIzniProvider.notifier).ihtiyacDogdu());
     if (etkin && uuidBicimindeMi(uyelik.tayfaId)) {
       aktif.sec(uyelik.tayfaId);
       state = KatilimDurumu(

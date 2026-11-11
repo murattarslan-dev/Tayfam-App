@@ -8,6 +8,7 @@ import 'package:tayfam/core/api/istek_kimligi.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
@@ -234,6 +235,8 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
       }
     }
     unawaited(liste.yenile());
+    // İlk gerçek ihtiyaç: bildirim izni açıklaması (istemci ADR-0019 §3).
+    unawaited(ref.read(bildirimIzniProvider.notifier).ihtiyacDogdu());
     state = mevcut._degistir(olusturulan: tayfa.id);
   }
 }
