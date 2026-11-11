@@ -244,7 +244,7 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
   /// mesaj "okunamıyor" kalır.
   Future<void> _arsiviGenislet(List<DirectMessage> mesajlar) async {
     final arsiv = konusmaArsiviProvider(konusmaId);
-    if (!ref.read(e2eEtkinProvider) || !ref.exists(arsiv)) return;
+    if (!ref.read(e2eEtkinProvider) || !ref.read(arsiv.exists)) return;
     final sifreliler = [
       for (final m in mesajlar)
         if (m.encryption == DirectMessageEncryption.e2e && !m.deleted) m.id,
