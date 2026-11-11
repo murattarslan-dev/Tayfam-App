@@ -249,7 +249,7 @@ final class SahteE2eSunucu {
   ) {
     if (cihaz == null) throw _problem(ProblemType.e2eDeviceNotRegistered);
     final alici = govde['recipient_user_id']! as String;
-    final istek = govde['client_request_id']! as String;
+    final istek = '$ben|${govde['client_request_id']! as String}';
     if (gonderimler[istek] case final onceki?) return onceki;
     final zarflar = [
       for (final z in govde['envelopes']! as List<Object?>)
