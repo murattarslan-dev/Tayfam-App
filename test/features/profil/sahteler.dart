@@ -109,9 +109,7 @@ List<Override> profilOverridelari({
   temaTercihiDeposuProvider.overrideWithValue(
     tema ?? BellekTemaTercihiDeposu(),
   ),
-  oturumDurumuProvider.overrideWith(
-    () => SabitOturumDurumu(OturumDurumu.acik),
-  ),
+  oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
   // Çıkış (`POST /v1/auth/sign-out`) için sahte HTTP; gerçek ağ yok.
   apiClientProvider.overrideWithValue(
     ApiClient(

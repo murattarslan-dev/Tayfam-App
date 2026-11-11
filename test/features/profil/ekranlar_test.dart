@@ -78,7 +78,12 @@ void main() {
 
         expect(tester.takeException(), isNull);
         expect(_metin('profil_oturum_bu_cihaz'), findsOneWidget);
-        expect(_metin('profil_diger_cihazlardan_cik'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          _metin('profil_diger_cihazlardan_cik'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(tester.takeException(), isNull);
       });
 
       testWidgets('hesap silme ekranı taşmıyor', (tester) async {

@@ -158,9 +158,9 @@ class _OturumSatiri extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final zaman = DateFormat.yMMMd(
-      metinler.localeName,
-    ).add_Hm().format(oturum.lastSeenAt.toLocal());
+    final zaman = DateFormat.yMMMd(metinler.localeName)
+        .add_Hm()
+        .format(oturum.lastSeenAt.toLocal());
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(switch (oturum.platform) {

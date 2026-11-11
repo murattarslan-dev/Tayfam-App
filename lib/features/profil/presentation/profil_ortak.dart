@@ -29,9 +29,8 @@ void profilBildirimi(ScaffoldMessengerState bildirim, String metin) {
 /// Referans linkini sistem paylaşım menüsüyle paylaşır. [dugme], iPad'de
 /// menünün bağlanacağı düğmenin bağlamıdır. Paylaşılan metin loglanmaz.
 Future<void> referansiPaylas(BuildContext dugme, WidgetRef ref, String kod) {
-  final metin = AppLocalizations.of(
-    dugme,
-  ).profil_referans_paylasim_metni(referansLinki(kod).toString());
+  final metin = AppLocalizations.of(dugme)
+      .profil_referans_paylasim_metni(referansLinki(kod).toString());
   final kutu = dugme.findRenderObject();
   final konum = kutu is RenderBox && kutu.hasSize
       ? kutu.localToGlobal(Offset.zero) & kutu.size

@@ -249,16 +249,16 @@ class _GorunurlukBolumuState extends ConsumerState<_GorunurlukBolumu> {
 String _gorunurlukAdi(AppLocalizations m, ActivityVisibility g) => switch (g) {
   ActivityVisibility.private => m.profil_gorunurluk_ozel,
   ActivityVisibility.tayfa => m.profil_gorunurluk_tayfa,
-  ActivityVisibility.public || ActivityVisibility.unknown =>
-    m.profil_gorunurluk_herkes,
+  ActivityVisibility.public ||
+  ActivityVisibility.unknown => m.profil_gorunurluk_herkes,
 };
 
 String _gorunurlukAciklamasi(AppLocalizations m, ActivityVisibility g) =>
     switch (g) {
       ActivityVisibility.private => m.profil_gorunurluk_ozel_aciklama,
       ActivityVisibility.tayfa => m.profil_gorunurluk_tayfa_aciklama,
-      ActivityVisibility.public || ActivityVisibility.unknown =>
-        m.profil_gorunurluk_herkes_aciklama,
+      ActivityVisibility.public ||
+      ActivityVisibility.unknown => m.profil_gorunurluk_herkes_aciklama,
     };
 
 /// Tema: cihaz ayarı, açık, koyu. Seçim güvenli depoda tutulur.
@@ -343,9 +343,8 @@ class _HesapBolumu extends ConsumerWidget {
           leading: const Icon(Icons.privacy_tip_outlined),
           title: Text(metinler.profil_aydinlatma),
           trailing: const Icon(Icons.open_in_new),
-          onTap: () => unawaited(
-            _hukukiMetniAc(context, ref, HukukiMetin.aydinlatma),
-          ),
+          onTap: () =>
+              unawaited(_hukukiMetniAc(context, ref, HukukiMetin.aydinlatma)),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,

@@ -135,28 +135,31 @@ void main() {
           .kapat(digerOturumId);
       expect(hata, isNull);
       expect(k.tasima.sayi('DELETE', '/v1/me/sessions/{session_id}'), 1);
-      expect(
-        k.kap.read(oturumlarProvider).value!.map((o) => o.sessionId),
-        [buOturumId, ucuncuOturumId],
-      );
+      expect(k.kap.read(oturumlarProvider).value!.map((o) => o.sessionId), [
+        buOturumId,
+        ucuncuOturumId,
+      ]);
     });
 
-    test('zaten kapanmış oturum (session-not-found) listeden çıkıyor', () async {
-      final k = _Kurulum(
-        yanitlar: {
-          oturumKapatYolu: () => problem(ProblemType.sessionNotFound, 404),
-        },
-      );
-      final sub = k.kap.listen(oturumlarProvider, (_, _) {});
-      addTearDown(sub.close);
-      await k.kap.read(oturumlarProvider.future);
+    test(
+      'zaten kapanmış oturum (session-not-found) listeden çıkıyor',
+      () async {
+        final k = _Kurulum(
+          yanitlar: {
+            oturumKapatYolu: () => problem(ProblemType.sessionNotFound, 404),
+          },
+        );
+        final sub = k.kap.listen(oturumlarProvider, (_, _) {});
+        addTearDown(sub.close);
+        await k.kap.read(oturumlarProvider.future);
 
-      final hata = await k.kap
-          .read(oturumlarProvider.notifier)
-          .kapat(digerOturumId);
-      expect(hata, isNull);
-      expect(k.kap.read(oturumlarProvider).value, hasLength(2));
-    });
+        final hata = await k.kap
+            .read(oturumlarProvider.notifier)
+            .kapat(digerOturumId);
+        expect(hata, isNull);
+        expect(k.kap.read(oturumlarProvider).value, hasLength(2));
+      },
+    );
 
     test('kapatılamazsa liste değişmiyor ve hata dönüyor', () async {
       final k = _Kurulum(
@@ -230,9 +233,7 @@ void main() {
     });
 
     test('başka bir Google hesabı seçilirse hiçbir hesap silinmiyor', () async {
-      final k = _Kurulum(
-        yanitlar: {profilYolu: () => profilJson(ben: false)},
-      );
+      final k = _Kurulum(yanitlar: {profilYolu: () => profilJson(ben: false)});
       await k.oturumuAc();
       final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
       addTearDown(sub.close);
@@ -240,10 +241,7 @@ void main() {
       await k.kap.read(hesapSilmeProvider.notifier).sil();
 
       expect(k.tasima.sayi('DELETE', '/v1/me'), 0);
-      expect(
-        k.kap.read(hesapSilmeProvider).hata,
-        isA<FarkliHesapHatasi>(),
-      );
+      expect(k.kap.read(hesapSilmeProvider).hata, isA<FarkliHesapHatasi>());
       // Yeni oturum kullanılmadı; eski oturum açık ve olay yayılmadı.
       expect(await k.oturum.store.durum(), isA<OturumAcik>());
       expect(k.olaylar, isEmpty);
@@ -261,17 +259,12 @@ void main() {
 
       expect(k.tasima.sayi('GET', '/v1/users/{user_id}/profile'), 0);
       expect(k.tasima.sayi('DELETE', '/v1/me'), 0);
-      expect(
-        k.kap.read(hesapSilmeProvider).hata,
-        isA<FarkliHesapHatasi>(),
-      );
+      expect(k.kap.read(hesapSilmeProvider).hata, isA<FarkliHesapHatasi>());
     });
 
     test('profil bulunamazsa (user-not-found) silinmiyor', () async {
       final k = _Kurulum(
-        yanitlar: {
-          profilYolu: () => problem(ProblemType.userNotFound, 404),
-        },
+        yanitlar: {profilYolu: () => problem(ProblemType.userNotFound, 404)},
       );
       await k.oturumuAc();
       final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
@@ -280,10 +273,7 @@ void main() {
       await k.kap.read(hesapSilmeProvider.notifier).sil();
 
       expect(k.tasima.sayi('DELETE', '/v1/me'), 0);
-      expect(
-        k.kap.read(hesapSilmeProvider).hata,
-        isA<FarkliHesapHatasi>(),
-      );
+      expect(k.kap.read(hesapSilmeProvider).hata, isA<FarkliHesapHatasi>());
     });
 
     test('reauthentication-required gelirse yeniden giriş isteniyor', () async {
@@ -316,9 +306,7 @@ void main() {
     });
 
     test('Google girişi hata verirse hata gösteriliyor', () async {
-      final k = _Kurulum(
-        google: SahteGoogle(hata: const GoogleGirisHatasi()),
-      );
+      final k = _Kurulum(google: SahteGoogle(hata: const GoogleGirisHatasi()));
       await k.oturumuAc();
       final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
       addTearDown(sub.close);
@@ -361,9 +349,7 @@ void main() {
 
     test('depo okunamazsa sistem kalıyor', () async {
       final kap = ProviderContainer.test(
-        overrides: [
-          temaTercihiDeposuProvider.overrideWithValue(_BozukDepo()),
-        ],
+        overrides: [temaTercihiDeposuProvider.overrideWithValue(_BozukDepo())],
       );
       final sub = kap.listen(temaTercihiProvider, (_, _) {});
       addTearDown(sub.close);

@@ -7,11 +7,14 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
+import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/profil/data/profil_deposu.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
+import '../features/profil/sahteler.dart' show SahteTasima, profilYanitlari;
 import '../features/tayfa/sahteler.dart';
 import '../yardimcilar.dart';
 
@@ -32,12 +35,21 @@ Future<void> _aktifTayfaSec(WidgetTester tester, String tayfaId) async {
   await tester.pumpAndSettle();
 }
 
+/// Profil sekmesinin uçları ve tema deposu için sahteler (gerçek ağ ve
+/// güvenli depo yok).
+List<Override> _profilSahteleri() => [
+  profilDeposuProvider.overrideWithValue(
+    ProfilDeposu(SahteTasima(profilYanitlari())),
+  ),
+  temaTercihiDeposuProvider.overrideWithValue(BellekTemaTercihiDeposu()),
+];
+
 void main() {
   testWidgets('tayfası yokken Tayfa sekmesi karşılamayı gösteriyor', (
     tester,
   ) async {
     ekranBoyutu(tester);
-    await uygulamayiAc(tester);
+    await uygulamayiAc(tester, overrides: _profilSahteleri());
 
     expect(find.byType(KarsilamaEkrani), findsOneWidget);
     expect(find.text(arbMetni('karsilama_kodum_var')), findsOneWidget);
@@ -306,7 +318,10 @@ void main() {
       await uygulamayiAc(
         tester,
         themeMode: mod,
-        overrides: [okunmamisSohbetSayisiProvider.overrideWithValue(12)],
+        overrides: [
+          okunmamisSohbetSayisiProvider.overrideWithValue(12),
+          ..._profilSahteleri(),
+        ],
       );
       expect(tester.takeException(), isNull);
 
