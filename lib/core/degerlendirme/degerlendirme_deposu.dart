@@ -44,7 +44,7 @@ final class GuvenliDegerlendirmeDeposu implements DegerlendirmeDeposu {
 /// Web geliştirme derlemesi ve testler: yalnızca bellek; tarayıcı deposuna
 /// hiçbir şey yazılmaz (ADR-0011).
 final class BellekDegerlendirmeDeposu implements DegerlendirmeDeposu {
-  BellekDegerlendirmeDeposu({bool istendi = false}) : _istendi = istendi;
+  BellekDegerlendirmeDeposu([this._istendi = false]);
 
   bool _istendi;
 

@@ -145,7 +145,7 @@ void main() {
     });
 
     test('bayrak varsa (uygulama yeniden açıldı) istenmez', () async {
-      final depo = BellekDegerlendirmeDeposu(istendi: true);
+      final depo = BellekDegerlendirmeDeposu(true);
       final magaza = SahteMagazaDegerlendirmesi();
       final kap = _kap(depo, magaza);
 
