@@ -271,7 +271,10 @@ void main() {
 
       final hata = await kap
           .read(saglayici.notifier)
-          .sonuclandir(liste.ogeler.first, ModerationReportResolution.dismissed);
+          .sonuclandir(
+            liste.ogeler.first,
+            ModerationReportResolution.dismissed,
+          );
 
       expect(hata, isNull);
       expect(tasima.giden('POST', cozumYolu).single.govde, {
