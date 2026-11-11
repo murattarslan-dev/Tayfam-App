@@ -124,7 +124,7 @@ class _Akis extends ConsumerWidget {
       for (final mesaj in durum.mesajlar)
         _mesajOgesi(context, ref, mesaj, gorulen: gorulen),
       _EskiMesajlar(durum: durum, onDahaEski: notifier.dahaEski),
-      if (_bant(konusma) case final bant?) bant,
+      ?_bant(konusma),
     ];
     return Column(
       children: [

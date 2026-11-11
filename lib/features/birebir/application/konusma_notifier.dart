@@ -257,12 +257,14 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
           );
     } on OturumYok catch (hata) {
       oturumKapandi(ref);
-      if (ref.mounted)
+      if (ref.mounted) {
         _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
+      }
       return;
     } on Exception catch (hata) {
-      if (ref.mounted)
+      if (ref.mounted) {
         _gideniDegistir(giden.istekKimligi, (g) => g.basarisiz(hata));
+      }
       return;
     }
     if (!ref.mounted) return;
@@ -291,10 +293,7 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
       mevcut._degistir(
         giden: [
           for (final g in mevcut.giden)
-            if (g.istekKimligi != istekKimligi)
-              g
-            else if (degistir(g) case final yeni?)
-              yeni,
+            if (g.istekKimligi != istekKimligi) g else ?degistir(g),
         ],
       ),
     );

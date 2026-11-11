@@ -12,7 +12,6 @@ import 'package:tayfam/features/birebir/application/konusma_notifier.dart';
 import 'package:tayfam/features/birebir/application/mesaj_kurallari.dart';
 import 'package:tayfam/features/birebir/application/reddedilenler_notifier.dart';
 
-import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
 import 'sahteler.dart';
 
