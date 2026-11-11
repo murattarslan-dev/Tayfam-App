@@ -102,7 +102,8 @@ void main() {
     testWidgets('kanal ekranı: mesajlar, silinen, yavaş mod (${tema.name})', (
       tester,
     ) async {
-      ekranBoyutu(tester, genislik: 320);
+      // 2× yazıda üç balon ve şeritler sığsın diye uzun ekran.
+      ekranBoyutu(tester, genislik: 320, yukseklik: 1200);
       ikiKatYazi(tester);
       final ortam = SohbetOrtami(
         kanallar: [kanalJson(kanalId1, ad: 'genel', yavas: 30)],
