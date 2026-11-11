@@ -36,11 +36,17 @@
     <uses-permission
         android:name="android.permission.USE_FINGERPRINT"
         tools:node="remove"/>
-    <!-- allowBackup="false": token'lar ve anahtarlar cihaz yedeğine gitmesin
-         (ADR-0005, ADR-0006, ADR-0010). -->
+    <!-- Yedekleme ve cihaz aktarımı tamamen kapalı (ADR-0005, ADR-0006,
+         ADR-0010, #12): token'lar ve anahtarlar ne buluta ne yeni cihaza
+         gider. allowBackup="false" bulut yedeğini kapatır, ama hedef SDK
+         31+ uygulamada cihazdan cihaza aktarımı kapatmaz; bunu
+         dataExtractionRules (API 31+) kapatır. fullBackupContent API 30 ve
+         öncesi içindir. CI'daki manifest denetimi üçünü de doğrular. -->
     <application
         android:label="Tayfam"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
