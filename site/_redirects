@@ -1,4 +1,10 @@
 /gizlilik  /yasal/aydinlatma-metni/2026-11-08/  302
-# Referans linki tayfam.app/r/<KOD>: uygulama yüklü değilse tek karşılama
-# sayfası gösterilir; adres (ve kod) değişmez (ADR-0018 §6).
-/r/:kod  /r/  200
+# Davet ve referans linkleri (ADR-0013 Notlar, ADR-0018 §6): uygulama
+# kuruluysa Android App Links bağlantıyı tarayıcıyı açmadan uygulamada açar.
+# Bu satırlara yalnızca uygulama kurulu değilken (ya da iOS ve bilgisayarda)
+# gelinir; kullanıcı mağazaya gönderilir. Sayfada JavaScript yoktur.
+# Hedefteki boş fragment ("#"), davet token'ını taşıyan fragment'ın mağaza
+# adresine geçmesini önler.
+/davet  https://play.google.com/store/apps/details?id=com.murattarslan.tayfam#  302
+/davet/  https://play.google.com/store/apps/details?id=com.murattarslan.tayfam#  302
+/r/*  https://play.google.com/store/apps/details?id=com.murattarslan.tayfam  302

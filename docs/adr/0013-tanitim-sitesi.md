@@ -85,3 +85,33 @@ Platform sahibi site için ayrı bir repo istemiyor.
 - **Ayrı repo:** platform sahibi istemedi.
 - **Cloudflare'in Git bağlantısı:** GitHub'da token gerektirmez, ama yayın
   CI'a bağlı olmaz ve Cloudflare'in GitHub uygulamasına repo erişimi verir.
+
+## Notlar
+
+- **2026-11-11 (platform sahibi):**
+  - **Davet ve referans linklerinin mağazaya yönlendirilmesi:**
+    - Uygulama kuruluysa Android App Links linki tarayıcıyı açmadan
+      uygulamada açar. Kurulu değilse `/davet` ve `/r/*` istekleri
+      `_redirects` ile Play Store'daki uygulama sayfasına 302 ile gider.
+    - Sayfada JavaScript yoktur (Tasarım Standartları).
+    - Davet hedefindeki boş fragment, token'ın mağaza adresine taşınmasını
+      önler. Kullanıcı uygulamayı kurduktan sonra davet linkine yeniden
+      dokunur; token mağazaya ya da yükleme referansına verilmez.
+    - Tarayıcıda açan herkes (iOS ve bilgisayar dahil) şimdilik Play'e
+      gider. iOS gelince bir Cloudflare Pages Function ile `User-Agent`'a
+      göre App Store ayrımı eklenir.
+    - Eski `/davet` ve `/r/` karşılama sayfaları kaldırıldı.
+  - **Aydınlatma metni:** `2026-11-08` sürümü pilot öncesi taslak sayılır ve
+    yerinde düzeltildi:
+    - yalnızca mobil uygulama,
+    - giriş şimdilik yalnızca Google,
+    - "varış bildirimi" terimi,
+    - birebir mesajların uçtan uca şifreleme gelene kadar sunucuda şifreli
+      saklanması,
+    - "Profil → Hesabı sil" yolu,
+    - OpenStreetMap aktarımı.
+
+    Hukuki incelemeden sonraki metin yeni bir sürüm yolunda yayımlanır ve
+    "yayımlanan sürüm değişmez" kuralı o sürümden itibaren uygulanır.
+  - **Destek adresi:** `support@tayfam.app`. Yönlendirme Cloudflare Email
+    Routing'dedir.
