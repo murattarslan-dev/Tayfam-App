@@ -16,8 +16,29 @@ abstract final class Adresler {
   /// Tayfaya bağlı adreslerin ilk parçası (`/t/<tayfaId>/…`).
   static const tayfaOneki = 't';
 
+  /// Tayfa rotasındaki kimlik parametresinin adı (`/t/:tayfaId`).
+  /// Modül rotaları tayfa kimliğini bu adla okur.
+  static const tayfaIdParametresi = 'tayfaId';
+
   /// Tayfa sekmesinin kökü: aktif tayfanın ana sayfası.
   static String tayfa(String tayfaId) => '/$tayfaOneki/$tayfaId';
+
+  /// Duyuru modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0015 §2).
+  static const duyurularYolu = 'duyurular';
+
+  /// Tayfanın duyuru listesi.
+  static String duyurular(String tayfaId) => '${tayfa(tayfaId)}/$duyurularYolu';
+
+  /// Tek bir duyurunun ekranı.
+  static String duyuru(String tayfaId, String duyuruId) =>
+      '${duyurular(tayfaId)}/$duyuruId';
+
+  /// Etkinlik modülünün `/t/<tayfaId>/` altındaki yolu (ADR-0015 §3).
+  static const etkinliklerYolu = 'etkinlikler';
+
+  /// Tayfanın yaklaşan etkinlikleri.
+  static String etkinlikler(String tayfaId) =>
+      '${tayfa(tayfaId)}/$etkinliklerYolu';
 
   /// Sohbet sekmesi.
   static const sohbet = '/sohbet';

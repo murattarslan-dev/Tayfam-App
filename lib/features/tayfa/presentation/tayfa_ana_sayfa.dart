@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
@@ -15,8 +16,13 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///
 /// [tayfaId] adresten gelir ve yalnızca biçimi doğrulanmıştır; tayfanın
 /// içeriği varsayılmaz, sunucudan gelir (ADR-0003). Sayfa açılınca tayfa
-/// `GET /v1/tayfas/{tayfa_id}` ile tazelenir (ADR-0014 §1). Yaklaşan
-/// etkinlikler, son duyurular ve modül kartları kendi paketlerinde eklenir.
+/// `GET /v1/tayfas/{tayfa_id}` ile tazelenir (ADR-0014 §1).
+///
+/// Mor üst bölümün altında açık modüllerin bölümleri kayıt sırasıyla
+/// gösterilir: yaklaşan etkinlikler, duyurular (ADR-0015 §1). Kapalı
+/// modülün bölümü hiç görünmez; görünürlüğe sunucunun `modules` alanı karar
+/// verir (ADR-0002). Aşağı çekince tayfa ve bölümler yenilenir; veri
+/// yalnızca bellektedir (ADR-0006).
 class TayfaAnaSayfa extends ConsumerWidget {
   const TayfaAnaSayfa({super.key, required this.tayfaId});
 
@@ -31,38 +37,60 @@ class TayfaAnaSayfa extends ConsumerWidget {
     final ad = ozet.ad ?? metinler.tayfa_adi_bilinmiyor;
     final kod = ozet.katilimKodu;
     final davetKodu = ref.watch(davetKisayoluProvider) == tayfaId ? kod : null;
+    final moduller = gorunurModuller(
+      ref.watch(tayfaModulleriProvider),
+      ozet.acikModuller,
+    );
     return Scaffold(
-      // Üst bölüm içerikle birlikte kayar; büyük yazıda da taşmaz.
-      body: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          TayfaUstBolumu(
-            ad: ad,
-            uyeSayisi: tayfa?.memberCount,
-            durum: tayfa == null ? null : tayfaDurumu(tayfa),
-            katilimKodu: kod,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (davetKodu != null) ...[
-                  DavetKisayolu(ad: ad, kod: davetKodu),
-                  const SizedBox(height: TayfamSpacing.s16),
-                ],
-                Text(
-                  metinler.tayfa_ana_sayfa_bos,
-                  style: context.yazi.bodyLarge?.copyWith(
-                    color: context.renkler.metinGovde,
-                  ),
-                ),
-              ],
+      body: RefreshIndicator(
+        onRefresh: () => _yenile(ref, moduller),
+        // Üst bölüm içerikle birlikte kayar; büyük yazıda da taşmaz.
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          children: [
+            TayfaUstBolumu(
+              ad: ad,
+              uyeSayisi: tayfa?.memberCount,
+              durum: tayfa == null ? null : tayfaDurumu(tayfa),
+              katilimKodu: kod,
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (davetKodu != null) ...[
+                    DavetKisayolu(ad: ad, kod: davetKodu),
+                    const SizedBox(height: TayfamSpacing.s16),
+                  ],
+                  if (moduller.isEmpty)
+                    Text(
+                      metinler.tayfa_ana_sayfa_bos,
+                      style: context.yazi.bodyLarge?.copyWith(
+                        color: context.renkler.metinGovde,
+                      ),
+                    )
+                  else
+                    for (final (sira, modul) in moduller.indexed) ...[
+                      if (sira > 0) const SizedBox(height: TayfamSpacing.s32),
+                      modul.anaSayfaKarti(context, tayfaId),
+                    ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  /// Tayfayı ve görünen bölümleri birlikte yeniler; hepsi bitince döner.
+  Future<void> _yenile(WidgetRef ref, List<TayfaModule> moduller) async {
+    await Future.wait([
+      ref.read(tayfaGorunumuProvider(tayfaId).notifier).yenile(),
+      for (final modul in moduller) modul.anaSayfayiYenile(ref, tayfaId),
+    ]);
   }
 }
 
