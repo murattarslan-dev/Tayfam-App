@@ -112,6 +112,14 @@ final class _Gecmis {
 
 Finder _metin(String anahtar) => find.text(arbMetni(anahtar));
 
+/// Görünür kılıp dokunur (2× yazıda düğme ekranın altında kalabilir).
+Future<void> _dokun(WidgetTester tester, Finder hedef) async {
+  await tester.ensureVisible(hedef);
+  await tester.pumpAndSettle();
+  await tester.tap(hedef);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   late Map<String, Object?> arsivKaydi;
 
@@ -209,8 +217,7 @@ void main() {
         expect(_metin('cihaz_tek_cihaz_bilgi_baslik'), findsOneWidget);
         expect(_metin('cihaz_eski_arsiv_okunamaz'), findsNothing);
         expect(tester.takeException(), isNull);
-        await tester.tap(_metin('cihaz_anladim'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, _metin('cihaz_anladim'));
         expect(_metin('cihaz_tek_cihaz_bilgi_baslik'), findsNothing);
       });
 
@@ -230,8 +237,7 @@ void main() {
         expect(_metin('cihaz_eski_arsiv_okunamaz'), findsOneWidget);
         expect(_metin('cihaz_tek_cihaz_bilgi_baslik'), findsNothing);
         expect(tester.takeException(), isNull);
-        await tester.tap(_metin('cihaz_anladim'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, _metin('cihaz_anladim'));
         expect(_metin('cihaz_eski_arsiv_okunamaz'), findsNothing);
       });
     }
