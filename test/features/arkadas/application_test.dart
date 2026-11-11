@@ -56,10 +56,7 @@ void main() {
       expect(tasima.giden('POST', isteklerYolu).single.govde, {
         'user_id': kisiId1,
       });
-      expect(
-        kap.read(arkadasBulmaProvider).value?.durum,
-        FriendState.outgoing,
-      );
+      expect(kap.read(arkadasBulmaProvider).value?.durum, FriendState.outgoing);
     });
 
     test('bulunamayan kod hata olarak kalır', () async {
@@ -100,10 +97,16 @@ void main() {
       addTearDown(dinleyici.close);
       final ilk = await kap.read(arkadaslarProvider.future);
       expect(ilk.ogeler.map((a) => a.userId), [kisiId1]);
-      expect(tasima.giden('GET', arkadaslarYolu).single.sorgu['page_size'], '50');
+      expect(
+        tasima.giden('GET', arkadaslarYolu).single.sorgu['page_size'],
+        '50',
+      );
 
       await kap.read(arkadaslarProvider.notifier).dahaFazla();
-      expect(tasima.giden('GET', arkadaslarYolu).last.sorgu['page_token'], 's2');
+      expect(
+        tasima.giden('GET', arkadaslarYolu).last.sorgu['page_token'],
+        's2',
+      );
 
       final hata = await kap.read(arkadaslarProvider.notifier).cikar(kisiId1);
       expect(hata, isNull);
@@ -111,10 +114,9 @@ void main() {
         tasima.giden('DELETE', arkadasYolu).single.yolParametreleri['user_id'],
         kisiId1,
       );
-      expect(
-        kap.read(arkadaslarProvider).value!.ogeler.map((a) => a.userId),
-        [kisiId2],
-      );
+      expect(kap.read(arkadaslarProvider).value!.ogeler.map((a) => a.userId), [
+        kisiId2,
+      ]);
     });
 
     test('gelen isteği kabul edince arkadaş listesi tazelenir', () async {
@@ -208,10 +210,8 @@ void main() {
     test('istek gönderince durum yansır ve profil tazelenir', () async {
       var durum = '';
       final tasima = arkadasTasimasi({
-        'GET $profilYolu': (_) => kisiProfiliJson(
-          kisiId1,
-          durum: durum.isEmpty ? null : durum,
-        ),
+        'GET $profilYolu': (_) =>
+            kisiProfiliJson(kisiId1, durum: durum.isEmpty ? null : durum),
         'POST $isteklerYolu': (_) {
           durum = 'outgoing';
           return arkadasJson(kisiId1, durum: 'outgoing');
@@ -267,9 +267,7 @@ void main() {
       addTearDown(d.close);
       await kap.read(profil.future);
 
-      final hata = await kap
-          .read(profil.notifier)
-          .tayfayaDavetEt(ornekTayfaId);
+      final hata = await kap.read(profil.notifier).tayfayaDavetEt(ornekTayfaId);
       expect(hata, isA<ApiProblem>());
       final istek = tasima.giden('POST', tayfaDavetiYolu).single;
       expect(istek.yolParametreleri['tayfa_id'], ornekTayfaId);

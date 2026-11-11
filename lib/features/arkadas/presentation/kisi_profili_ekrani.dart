@@ -206,7 +206,10 @@ class _UstState extends ConsumerState<_Ust> {
               onPressed: pasif
                   ? null
                   : () => unawaited(
-                      _calistir(_notifier.kabulEt, m.arkadas_artik_arkadassiniz),
+                      _calistir(
+                        _notifier.kabulEt,
+                        m.arkadas_artik_arkadassiniz,
+                      ),
                     ),
             ),
             IkincilEylem(
@@ -239,9 +242,7 @@ class _UstState extends ConsumerState<_Ust> {
             IkincilEylem(
               etiket: m.arkadas_cikar,
               ikon: Icons.person_remove_outlined,
-              onPressed: pasif
-                  ? null
-                  : () => unawaited(_arkadasliktanCikar()),
+              onPressed: pasif ? null : () => unawaited(_arkadasliktanCikar()),
             ),
           ],
           UserProfileFriendState.unknown => const <Widget>[],
@@ -466,7 +467,10 @@ class _KayitKarti extends StatelessWidget {
             style: context.yazi.titleMedium,
           ),
           const SizedBox(height: TayfamSpacing.s4),
-          Text(m.arkadas_gecmis_tarih(kayit.startedAt.toLocal()), style: ikincil),
+          Text(
+            m.arkadas_gecmis_tarih(kayit.startedAt.toLocal()),
+            style: ikincil,
+          ),
           if (tayfa != null) Text(tayfa, style: ikincil),
           if (yer.isNotEmpty) Text(yer, style: ikincil),
           if (sure != null) Text(m.arkadas_gecmis_sure(sure), style: ikincil),

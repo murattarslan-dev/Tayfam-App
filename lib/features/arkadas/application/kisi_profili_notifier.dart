@@ -76,14 +76,12 @@ class KisiProfiliNotifier extends AsyncNotifier<UserProfile> {
 
   /// Kişiyi [tayfaId] tayfasına davet eder. Arkadaş olmayan, banlı ya da
   /// başvurusu bekleyen kişiyi sunucu reddeder.
-  Future<Object?> tayfayaDavetEt(String tayfaId) => arkadasIslemi(
-    ref,
-    () async {
-      await ref
-          .read(arkadasDeposuProvider)
-          .tayfayaDavetEt(tayfaId, kullaniciId);
-    },
-  );
+  Future<Object?> tayfayaDavetEt(String tayfaId) =>
+      arkadasIslemi(ref, () async {
+        await ref
+            .read(arkadasDeposuProvider)
+            .tayfayaDavetEt(tayfaId, kullaniciId);
+      });
 
   void _durumuYansit(UserProfileFriendState? durum) {
     if (!ref.mounted) return;

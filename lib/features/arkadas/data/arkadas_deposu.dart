@@ -87,10 +87,9 @@ final class ArkadasDeposu {
       _ben.unblockUser(userId: kullaniciId);
 
   /// `POST /v1/referral-lookups`: kod gövdededir.
-  Future<ReferredUser> kodlaBul(String kod) =>
-      _referans.lookupReferralCode(
-        body: ReferralLookupRequest(referralCode: kod),
-      );
+  Future<ReferredUser> kodlaBul(String kod) => _referans.lookupReferralCode(
+    body: ReferralLookupRequest(referralCode: kod),
+  );
 
   /// `POST /v1/tayfas/{tayfa_id}/invitations`: arkadaşı tayfaya davet eder.
   Future<Invitation> tayfayaDavetEt(String tayfaId, String kullaniciId) =>

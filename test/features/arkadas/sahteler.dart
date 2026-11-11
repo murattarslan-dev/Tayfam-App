@@ -115,10 +115,7 @@ SahteTayfaTasima arkadasTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       'GET $davetlerimYolu',
       () => yanit({'invitations': <Object?>[]}),
     )
-    ..putIfAbsent(
-      'GET $gecmisYolu',
-      () => yanit({'records': <Object?>[]}),
-    )
+    ..putIfAbsent('GET $gecmisYolu', () => yanit({'records': <Object?>[]}))
     ..putIfAbsent(
       'GET $profilYolu',
       () =>

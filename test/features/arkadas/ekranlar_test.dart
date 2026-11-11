@@ -185,10 +185,7 @@ void main() {
         'DELETE $arkadasYolu': yanit(null),
       });
       await _ac(tester, const ArkadasIstekleriEkrani(), tasima);
-      expect(
-        find.text(arbMetni('arkadas_istekler_gelen_bos')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('arkadas_istekler_gelen_bos')), findsOneWidget);
 
       await _dokun(tester, find.text(arbMetni('arkadas_istekler_giden')));
       await _dokun(tester, find.text(arbMetni('arkadas_geri_cek')));
@@ -278,11 +275,7 @@ void main() {
           return arkadasJson(kisiId1, durum: 'outgoing');
         },
       });
-      await _ac(
-        tester,
-        const KisiProfiliEkrani(kullaniciId: kisiId1),
-        tasima,
-      );
+      await _ac(tester, const KisiProfiliEkrani(kullaniciId: kisiId1), tasima);
       expect(find.text(arbMetni('arkadas_gecmis_gizli')), findsOneWidget);
       expect(find.text(arbMetni('arkadas_ortak_tayfa_yok')), findsOneWidget);
       expect(tasima.giden('GET', gecmisYolu), isEmpty);

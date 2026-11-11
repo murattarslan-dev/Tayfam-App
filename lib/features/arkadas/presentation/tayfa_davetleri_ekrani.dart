@@ -122,7 +122,10 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
                 KullaniciAdiMetni(kullaniciId: davetEden, style: ikincil),
               ],
             ),
-          Text(m.arkadas_davet_zamani(davet.invitedAt.toLocal()), style: ikincil),
+          Text(
+            m.arkadas_davet_zamani(davet.invitedAt.toLocal()),
+            style: ikincil,
+          ),
           const SizedBox(height: TayfamSpacing.s12),
           Wrap(
             spacing: TayfamSpacing.s8,

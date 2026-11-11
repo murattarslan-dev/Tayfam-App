@@ -30,8 +30,10 @@ final class KisiProfiliBilgisi {
 ///
 /// Düğmenin görünmesi yalnızca arayüzü sadeleştirir; mesaj isteği gibi
 /// kurallara sunucu karar verir (kesin kural 5).
-typedef KisiProfiliEylemi =
-    Widget? Function(BuildContext context, KisiProfiliBilgisi kisi);
+typedef KisiProfiliEylemi = Widget? Function(
+  BuildContext context,
+  KisiProfiliBilgisi kisi,
+);
 
 /// Kişi profilindeki ek eylemler. Varsayılanı boştur; eylem ekleyen paket
 /// `shell/kayitlar.dart`'ta bu provider'ı override eder.

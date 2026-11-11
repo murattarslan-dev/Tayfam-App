@@ -40,10 +40,7 @@ class ArkadaslarNotifier extends SayfaliListeNotifier<Friend> {
 
 /// Arkadaş listesi.
 final arkadaslarProvider =
-    AsyncNotifierProvider.autoDispose<
-      ArkadaslarNotifier,
-      SayfaliListe<Friend>
-    >(
+    AsyncNotifierProvider.autoDispose<ArkadaslarNotifier, SayfaliListe<Friend>>(
       ArkadaslarNotifier.new,
       name: 'arkadaslarProvider',
       retry: yenidenDenemeYok,
@@ -65,9 +62,8 @@ class ArkadasIstekleriNotifier extends SayfaliListeNotifier<Friend> {
   }
 
   @override
-  Future<Sayfa<Friend>> sayfaGetir(String? sayfaToken) => ref
-      .read(arkadasDeposuProvider)
-      .istekler(yon, sayfaToken: sayfaToken);
+  Future<Sayfa<Friend>> sayfaGetir(String? sayfaToken) =>
+      ref.read(arkadasDeposuProvider).istekler(yon, sayfaToken: sayfaToken);
 
   @override
   String kimlik(Friend oge) => oge.userId;

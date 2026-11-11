@@ -22,4 +22,3 @@ Future<Object?> arkadasIslemi(Ref ref, Future<void> Function() islem) async {
 
 /// Hata otomatik yeniden denenmez; ekranlar "Tekrar dene" sunar.
 Duration? yenidenDenemeYok(int deneme, Object hata) => null;
-
