@@ -6,6 +6,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart';
+import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -24,6 +25,11 @@ typedef EtkinlikOlusturucu = void Function(
 /// verildiyse "Etkinlik aç" kısayolu eklenir; kısayol yalnızca
 /// kolaylıktır, yetkiyi sunucu verir (kesin kural 5). Oluşturma sihirbazı
 /// etkinlik çekirdeği paketiyle gelir (issue #38).
+///
+/// Elindeki listede bitmiş ve cevabı "Geliyorum" olan bir etkinlik varsa
+/// uygulama değerlendirme penceresi için fırsat denetlenir (ADR-0016;
+/// [DegerlendirmeFirsati]). Liste yalnızca bitmemiş etkinlikleri getirdiği
+/// için bu, liste okunduktan sonra biten etkinlikte olur.
 class EtkinlikBolumu extends ConsumerWidget {
   const EtkinlikBolumu({super.key, required this.tayfaId, this.olustur});
 
@@ -41,60 +47,65 @@ class EtkinlikBolumu extends ConsumerWidget {
     final liste = durum.value;
     final hata = durum.error;
     final gosterilen = liste?.ogeler.take(anaSayfaEtkinlikSayisi).toList();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        BolumBasligi(
-          baslik: metinler.tayfa_ana_etkinlikler_baslik,
-          tumuEtiketi: metinler.tayfa_ana_tum_etkinlikler,
-          onTumu: () => context.go(Adresler.etkinlikler(tayfaId)),
-        ),
-        const SizedBox(height: TayfamSpacing.s8),
-        if (gosterilen == null && hata != null) ...[
-          HataSatiri.hatadan(hata),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: TextButton(
-              onPressed: () => ref.invalidate(etkinlikListesiProvider(tayfaId)),
-              style: TextButton.styleFrom(
-                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-              ),
-              child: Text(metinler.tayfa_ana_tekrar_dene),
-            ),
+    return DegerlendirmeFirsati(
+      etkinlikler: liste?.ogeler ?? const [],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BolumBasligi(
+            baslik: metinler.tayfa_ana_etkinlikler_baslik,
+            tumuEtiketi: metinler.tayfa_ana_tum_etkinlikler,
+            onTumu: () => context.go(Adresler.etkinlikler(tayfaId)),
           ),
-        ] else if (gosterilen == null)
-          Center(
-            child: CircularProgressIndicator(
-              semanticsLabel: metinler.tayfa_ana_etkinlikler_yukleniyor,
-            ),
-          )
-        else if (gosterilen.isEmpty) ...[
-          Text(
-            metinler.tayfa_ana_etkinlikler_bos,
-            style: context.yazi.bodyLarge?.copyWith(
-              color: context.renkler.metinGovde,
-            ),
-          ),
-          if (acabilir && olustur != null) ...[
-            const SizedBox(height: TayfamSpacing.s12),
+          const SizedBox(height: TayfamSpacing.s8),
+          if (gosterilen == null && hata != null) ...[
+            HataSatiri.hatadan(hata),
             Align(
               alignment: AlignmentDirectional.centerStart,
-              child: BirincilEylem(
-                etiket: metinler.tayfa_ana_etkinlik_ac,
-                ikon: Icons.add,
-                onPressed: () => olustur(context, tayfaId),
+              child: TextButton(
+                onPressed: () =>
+                    ref.invalidate(etkinlikListesiProvider(tayfaId)),
+                style: TextButton.styleFrom(
+                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+                ),
+                child: Text(metinler.tayfa_ana_tekrar_dene),
               ),
             ),
-          ],
-        ] else
-          for (final (sira, etkinlik) in gosterilen.indexed) ...[
-            if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-            EtkinlikKarti(
-              etkinlik: etkinlik,
-              onTap: () => context.go(Adresler.etkinlik(tayfaId, etkinlik.id)),
+          ] else if (gosterilen == null)
+            Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: metinler.tayfa_ana_etkinlikler_yukleniyor,
+              ),
+            )
+          else if (gosterilen.isEmpty) ...[
+            Text(
+              metinler.tayfa_ana_etkinlikler_bos,
+              style: context.yazi.bodyLarge?.copyWith(
+                color: context.renkler.metinGovde,
+              ),
             ),
-          ],
-      ],
+            if (acabilir && olustur != null) ...[
+              const SizedBox(height: TayfamSpacing.s12),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: BirincilEylem(
+                  etiket: metinler.tayfa_ana_etkinlik_ac,
+                  ikon: Icons.add,
+                  onPressed: () => olustur(context, tayfaId),
+                ),
+              ),
+            ],
+          ] else
+            for (final (sira, etkinlik) in gosterilen.indexed) ...[
+              if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
+              EtkinlikKarti(
+                etkinlik: etkinlik,
+                onTap: () =>
+                    context.go(Adresler.etkinlik(tayfaId, etkinlik.id)),
+              ),
+            ],
+        ],
+      ),
     );
   }
 }

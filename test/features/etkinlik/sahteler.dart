@@ -6,6 +6,7 @@ import 'package:tayfam/core/api/gen/apis/users_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
+import 'package:tayfam/core/degerlendirme/magaza_degerlendirmesi.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
@@ -292,13 +293,31 @@ final class SahteKonumServisi implements KonumServisi {
   }
 }
 
+/// Sahte mağaza değerlendirme penceresi: istekleri sayar (ADR-0016).
+final class SahteMagazaDegerlendirmesi implements MagazaDegerlendirmesi {
+  SahteMagazaDegerlendirmesi({this.kullanilabilir = true});
+
+  final bool kullanilabilir;
+  int istek = 0;
+
+  @override
+  Future<bool> kullanilabilirMi() async => kullanilabilir;
+
+  @override
+  Future<void> iste() async {
+    istek++;
+  }
+}
+
 /// Sahte istek kimliği (UUID v4 biçiminde).
 const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 
 /// Etkinlik özelliğinin sahte bağımlılıkları: uçlar [tasima]'dan, saat
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
 /// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü ve
-/// türe özel araçları olan türler kayıtlıdır.
+/// türe özel araçları olan türler kayıtlıdır. Mağaza değerlendirme
+/// penceresi verilmezse kullanılamaz (istenmez); değerlendirme bayrağı
+/// cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
 List<Override> etkinlikOverridelari({
   required SahteTayfaTasima tasima,
   SahteTakvimPaylasici? takvim,
@@ -307,6 +326,7 @@ List<Override> etkinlikOverridelari({
   KaroSaglayiciUretici? karolar,
   KonumServisi? konum,
   SonTayfaDeposu? sonTayfa,
+  MagazaDegerlendirmesi? magaza,
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
@@ -332,4 +352,7 @@ List<Override> etkinlikOverridelari({
     YuruyusTuru(),
     BalikTuru(),
   ]),
+  magazaDegerlendirmesiProvider.overrideWithValue(
+    magaza ?? SahteMagazaDegerlendirmesi(kullanilabilir: false),
+  ),
 ];

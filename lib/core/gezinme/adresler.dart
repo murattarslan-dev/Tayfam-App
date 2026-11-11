@@ -109,4 +109,12 @@ abstract final class Adresler {
 
   /// Hesap silme açıklaması ve akışı.
   static const hesabiSil = '$profil/$hesabiSilYolu';
+
+  /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
+  /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
+  static const tayfaAyarlariYolu = 'ayarlar';
+
+  /// Tayfa ayarları ekranı.
+  static String tayfaAyarlari(String tayfaId) =>
+      '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
 }
