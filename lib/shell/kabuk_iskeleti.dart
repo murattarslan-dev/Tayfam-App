@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
+import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/okunmamis.dart';
@@ -13,14 +14,20 @@ import 'package:tayfam/shell/okunmamis.dart';
 /// Dar ekranda alt gezinme çubuğu, en az [TayfamSizes.genisEkranEsigi]
 /// genişlikte solda dikey gezinme çubuğu gösterilir (ADR-0004 §5).
 /// Sekmelerin sırası `yonlendirici.dart`'taki dalların sırasıyla aynıdır.
-/// Uygulama ön plana dönünce tayfa listesi yenilenir ([TayfaYenileyici]).
+/// Uygulama ön plana dönünce tayfa listesi ([TayfaYenileyici]) ve
+/// bildirimler ([BildirimYenileyici]) yenilenir; Bildirimler sekmesi
+/// açılınca da bildirimler yenilenir (ADR-0018 §3).
 class KabukIskeleti extends ConsumerWidget {
   const KabukIskeleti({super.key, required this.navigationShell});
 
   /// go_router'ın sekme dallarını tutan kabuğu.
   final StatefulNavigationShell navigationShell;
 
-  void _sekmeyeGit(int index) {
+  /// Bildirimler sekmesinin sırası (`yonlendirici.dart`'taki dallar).
+  static const int _bildirimlerSekmesi = 2;
+
+  void _sekmeyeGit(WidgetRef ref, int index) {
+    if (index == _bildirimlerSekmesi) bildirimleriYenile(ref);
     // Seçili sekmeye yeniden dokunmak o sekmenin köküne döndürür.
     navigationShell.goBranch(
       index,
@@ -69,7 +76,7 @@ class KabukIskeleti extends ConsumerWidget {
               right: false,
               child: NavigationRail(
                 selectedIndex: navigationShell.currentIndex,
-                onDestinationSelected: _sekmeyeGit,
+                onDestinationSelected: (i) => _sekmeyeGit(ref, i),
                 labelType: NavigationRailLabelType.all,
                 scrollable: true,
                 destinations: [
@@ -82,17 +89,21 @@ class KabukIskeleti extends ConsumerWidget {
                 ],
               ),
             ),
-            Expanded(child: TayfaYenileyici(child: navigationShell)),
+            Expanded(
+              child: BildirimYenileyici(
+                child: TayfaYenileyici(child: navigationShell),
+              ),
+            ),
           ],
         ),
       );
     }
 
     return Scaffold(
-      body: TayfaYenileyici(child: navigationShell),
+      body: BildirimYenileyici(child: TayfaYenileyici(child: navigationShell)),
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _sekmeyeGit,
+        onDestinationSelected: (i) => _sekmeyeGit(ref, i),
         destinations: [
           for (final sekme in sekmeler)
             NavigationDestination(

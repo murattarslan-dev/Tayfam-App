@@ -9,8 +9,12 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
 import 'package:tayfam/shell/yer_tutucu.dart';
@@ -22,8 +26,8 @@ const String tayfaIdParametresi = Adresler.tayfaIdParametresi;
 /// Uygulamanın yönlendiricisi (ADR-0003).
 ///
 /// Uygulama boyunca yaşar (Riverpod 3'te `autoDispose` olmayan provider
-/// kalıcıdır). Oturum durumu, aktif tayfa, tayfa listesi veya güncelleme
-/// durumu değişince korumalar ([yonlendir]) yeniden çalışır.
+/// kalıcıdır). Oturum durumu, aktif tayfa, tayfa listesi, güncelleme veya
+/// tanıtım durumu değişince korumalar ([yonlendir]) yeniden çalışır.
 ///
 /// Adresteki `/t/<id>` aktif tayfa değilse ve etkin üyeliklerdeyse aktif
 /// tayfa adrese göre değişir (ADR-0014 §1; [adresleEsitle]).
@@ -39,6 +43,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
   ref.listen(guncellemeProvider, (_, _) => yenile.value++);
   ref.listen(etkinTayfaIdleriProvider, (_, _) => yenile.value++);
   ref.listen(tayfalarYukleniyorProvider, (_, _) => yenile.value++);
+  ref.listen(tanitimProvider, (_, _) => yenile.value++);
 
   final yonlendirici = GoRouter(
     initialLocation: Adresler.kok,
@@ -50,6 +55,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
       guncellemeGerekli: ref.read(guncellemeProvider),
       etkinTayfalar: ref.read(etkinTayfaIdleriProvider),
       tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
+      tanitim: ref.read(tanitimProvider),
     ),
     errorBuilder: (context, state) => const BulunamadiSayfasi(),
     routes: rotalariOlustur(moduller),
@@ -108,7 +114,12 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
               builder: (context, state) => TayfaAnaSayfa(
                 tayfaId: state.pathParameters[tayfaIdParametresi]!,
               ),
-              routes: [for (final modul in moduller) ...modul.rotalar],
+              routes: [
+                for (final modul in moduller) ...modul.rotalar,
+                // Tayfa yönetimi modül değildir; her tayfada vardır
+                // (ADR-0002, ADR-0018 §1).
+                ...tayfaYonetimRotalari(),
+              ],
             ),
           ],
         ),
@@ -125,8 +136,7 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.bildirimler,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _bildirimlerBasligi),
+              builder: (context, state) => const BildirimlerEkrani(),
             ),
           ],
         ),
@@ -134,8 +144,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.profil,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _profilBasligi),
+              builder: (context, state) => const ProfilEkrani(),
+              routes: profilRotalari,
             ),
           ],
         ),
@@ -149,6 +159,16 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
     GoRoute(
       path: Adresler.guncelleme,
       builder: (context, state) => const GuncellemeEkrani(),
+    ),
+    // İlk açılıştaki hoş geldin tanıtımı (ADR-0017). Hedef yol girdi kabul
+    // edilir ve doğrulanır.
+    GoRoute(
+      path: Adresler.hosGeldin,
+      builder: (context, state) => HosGeldinEkrani(
+        hedef: guvenliHedef(
+          state.uri.queryParameters[Adresler.hedefParametresi],
+        ),
+      ),
     ),
     GoRoute(
       path: Adresler.giris,
@@ -172,5 +192,3 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
 }
 
 String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
-String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
-String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;

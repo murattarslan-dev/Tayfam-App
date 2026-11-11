@@ -10,11 +10,13 @@ import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
+import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
@@ -35,7 +37,9 @@ const double haritaOnizlemeYakinligi = 15;
 /// çevrimiçi bağlantı, organizatör, katılım ve sayılar, varış bildirimi
 /// (ADR-0015 §5), türe özel bilgiler ve araçlar (§6) ve katılımcılar
 /// (organizatör düzeltmesiyle). Takvime ekleme her zaman; düzenleme ve iptal
-/// `caller_can_manage` ise görünür.
+/// `caller_can_manage` ise görünür. Bitmiş ve cevabı "Geliyorum" olan
+/// etkinlikte uygulama değerlendirme penceresi için fırsat denetlenir
+/// (ADR-0016).
 ///
 /// Adresteki kimlikler girdi kabul edilir: biçimi bozuk etkinlik kimliği
 /// için istek gönderilmez.
@@ -110,7 +114,10 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: notifier.yenile,
         child: detay.when(
-          data: (etkinlik) => _Detay(anahtar: anahtar, etkinlik: etkinlik),
+          data: (etkinlik) => DegerlendirmeFirsati(
+            etkinlikler: [etkinlik],
+            child: _Detay(anahtar: anahtar, etkinlik: etkinlik),
+          ),
           error: (hata, _) => ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
@@ -259,6 +266,11 @@ class _Detay extends ConsumerWidget {
             _BilgiSatiri(etiket: etiket, deger: deger),
         ],
         if (arac != null) ...[const SizedBox(height: TayfamSpacing.s24), arac],
+        const SizedBox(height: TayfamSpacing.s16),
+        EtkinlikAnketleriBaglantisi(
+          tayfaId: anahtar.tayfaId,
+          etkinlikId: anahtar.etkinlikId,
+        ),
         const SizedBox(height: TayfamSpacing.s24),
         KatilimcilarBolumu(
           tayfaId: anahtar.tayfaId,

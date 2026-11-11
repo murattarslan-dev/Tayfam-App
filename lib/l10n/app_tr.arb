@@ -51,6 +51,164 @@
       }
     }
   },
+  "bildirim_hepsini_okundu_say": "Hepsini okundu say",
+  "@bildirim_hepsini_okundu_say": {
+    "description": "Bildirimler sekmesinde, okunmamış bildirim varken listenin üstündeki, bütün bildirimleri okundu işaretleyen düğme."
+  },
+  "bildirim_bos": "Henüz bildirimin yok.",
+  "@bildirim_bos": {
+    "description": "Bildirimler sekmesinde hiç bildirim yokken görünen metin."
+  },
+  "bildirim_yukleniyor": "Bildirimler yükleniyor",
+  "@bildirim_yukleniyor": {
+    "description": "Bildirimler sekmesindeki yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "bildirim_okunmadi": "Okunmadı",
+  "@bildirim_okunmadi": {
+    "description": "Okunmamış bir bildirimin kartındaki noktanın ekran okuyucu etiketi."
+  },
+  "bildirim_kisi_bilinmiyor": "Biri",
+  "@bildirim_kisi_bilinmiyor": {
+    "description": "Bildirim metninde adı geçen kişinin adı henüz bilinmiyorken ya da okunamadığında ad yerine geçen sözcük (ör. \"Biri sana arkadaşlık isteği gönderdi\")."
+  },
+  "bildirim_zaman": "{tarih}, {saat}",
+  "@bildirim_zaman": {
+    "description": "Bildirim kartında bildirimin geldiği gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "bildirim_etkinlik_eklendi": "Yeni bir etkinlik eklendi",
+  "@bildirim_etkinlik_eklendi": {
+    "description": "Bildirim metni: tayfada yeni bir etkinlik oluşturuldu (`event_created`). Tayfanın adı altta ayrı satırdadır; etkinliğin adı gösterilmez."
+  },
+  "bildirim_etkinlik_guncellendi": "Katıldığın bir etkinlik güncellendi",
+  "@bildirim_etkinlik_guncellendi": {
+    "description": "Bildirim metni: kullanıcının katıldığı bir etkinlik değişti (`event_updated`)."
+  },
+  "bildirim_etkinlik_iptal": "Katıldığın bir etkinlik iptal edildi",
+  "@bildirim_etkinlik_iptal": {
+    "description": "Bildirim metni: kullanıcının katıldığı bir etkinlik iptal edildi (`event_cancelled`)."
+  },
+  "bildirim_katilimciya_gectin": "Bekleme listesinden katılımcılara geçtin",
+  "@bildirim_katilimciya_gectin": {
+    "description": "Bildirim metni: kullanıcı bir etkinliğin bekleme listesinden katılımcılara geçti (`rsvp_promoted`)."
+  },
+  "bildirim_duyuru": "Yeni bir duyuru var",
+  "@bildirim_duyuru": {
+    "description": "Bildirim metni: tayfada yeni duyuru yayınlandı (`announcement`). Duyurunun başlığı gösterilmez."
+  },
+  "bildirim_cevap": "Soruna yeni bir cevap geldi",
+  "@bildirim_cevap": {
+    "description": "Bildirim metni: kullanıcının sorusu cevaplandı (`answer_received`). Cevap metni gösterilmez."
+  },
+  "bildirim_katilim_istegi": "{kisi} tayfaya katılmak istiyor",
+  "@bildirim_katilim_istegi": {
+    "description": "Bildirim metni (yönetim): bir kişi tayfaya katılım isteği gönderdi (`join_request`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_katilim_onaylandi": "Katılım isteğin onaylandı",
+  "@bildirim_katilim_onaylandi": {
+    "description": "Bildirim metni: kullanıcının tayfaya katılım isteği onaylandı (`join_approved`)."
+  },
+  "bildirim_silme_istendi": "Tayfanın silinmesi istendi",
+  "@bildirim_silme_istendi": {
+    "description": "Bildirim metni (yönetim): tayfa için silme talebi açıldı (`tayfa_deletion_requested`)."
+  },
+  "bildirim_uyari_hareketsiz": "Tayfa bir süredir hareketsiz; 7 gün içinde arşivlenecek",
+  "@bildirim_uyari_hareketsiz": {
+    "description": "Bildirim metni: tayfa hareketsiz olduğu için 7 gün içinde arşivlenecek (`tayfa_warned`, `inactive`)."
+  },
+  "bildirim_uyari_az_uye": "Tayfada çok az üye var; 7 gün içinde arşivlenecek",
+  "@bildirim_uyari_az_uye": {
+    "description": "Bildirim metni: tayfada çok az üye olduğu için 7 gün içinde arşivlenecek (`tayfa_warned`, `few_members`)."
+  },
+  "bildirim_uyari": "Tayfa 7 gün içinde arşivlenecek",
+  "@bildirim_uyari": {
+    "description": "Bildirim metni: tayfa 7 gün içinde arşivlenecek, gerekçe bilinmiyor (`tayfa_warned`)."
+  },
+  "bildirim_arsivlendi": "Tayfa arşivlendi",
+  "@bildirim_arsivlendi": {
+    "description": "Bildirim metni: tayfa arşivlendi (`tayfa_archived`)."
+  },
+  "bildirim_askiya_alindi": "Tayfa askıya alındı",
+  "@bildirim_askiya_alindi": {
+    "description": "Bildirim metni: tayfa platform tarafından askıya alındı (`tayfa_suspended`); gerekçe tayfa ayrıntısındadır."
+  },
+  "bildirim_aski_kaldirildi": "Tayfanın askısı kaldırıldı",
+  "@bildirim_aski_kaldirildi": {
+    "description": "Bildirim metni: tayfanın askısı kaldırıldı (`tayfa_unsuspended`)."
+  },
+  "bildirim_yuruyus_donmedi": "{kisi} yürüyüşten zamanında dönmedi",
+  "@bildirim_yuruyus_donmedi": {
+    "description": "Bildirim metni (güvenlik): bir yürüyüşçü planlanan zamanda dönmedi (`hike_overdue`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_arkadaslik_istegi": "{kisi} sana arkadaşlık isteği gönderdi",
+  "@bildirim_arkadaslik_istegi": {
+    "description": "Bildirim metni: kullanıcıya arkadaşlık isteği geldi (`friend_request`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_arkadaslik_kabul": "{kisi} arkadaşlık isteğini kabul etti",
+  "@bildirim_arkadaslik_kabul": {
+    "description": "Bildirim metni: kullanıcının arkadaşlık isteği kabul edildi (`friend_accepted`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_tayfa_daveti": "{kisi} seni bir tayfaya davet etti",
+  "@bildirim_tayfa_daveti": {
+    "description": "Bildirim metni: bir arkadaş kullanıcıyı tayfaya davet etti (`tayfa_invitation`).",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bildirim_sikayet_sonuclandi": "Şikâyetin sonuçlandı",
+  "@bildirim_sikayet_sonuclandi": {
+    "description": "Bildirim metni: kullanıcının şikâyeti sonuçlandı (`report_resolved`)."
+  },
+  "bildirim_mesaj_istegi": "Yeni bir mesaj isteğin var",
+  "@bildirim_mesaj_istegi": {
+    "description": "Bildirim metni: birebir mesaj isteği geldi (`dm_request`). Gönderen ve içerik hiçbir zaman yazılmaz."
+  },
+  "bildirim_mesaj": "Yeni birebir mesajın var",
+  "@bildirim_mesaj": {
+    "description": "Bildirim metni: yeni birebir mesaj geldi (`dm_message`). Gönderen ve içerik hiçbir zaman yazılmaz."
+  },
+  "bildirim_genel": "Yeni bir bildirimin var",
+  "@bildirim_genel": {
+    "description": "Bildirim metni: uygulamanın henüz tanımadığı bir bildirim türü."
+  },
   "gezinme_yer_tutucu_aciklama": "Bu bölüm hazırlanıyor.",
   "@gezinme_yer_tutucu_aciklama": {
     "description": "Henüz yapılmamış ekranların (sekme sayfaları, kodla katılma, tayfa oluşturma) ortasında görünen geçici açıklama."
@@ -2075,6 +2233,280 @@
       }
     }
   },
+  "anket_baslik": "Anket",
+  "@anket_baslik": {
+    "description": "Tek bir anketin ekranının üst çubuk başlığı."
+  },
+  "anket_yukleniyor": "Anketler yükleniyor",
+  "@anket_yukleniyor": {
+    "description": "Anketler okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "anket_ana_baslik": "Açık anketler",
+  "@anket_ana_baslik": {
+    "description": "Tayfa ana sayfasındaki anket bölümünün başlığı (ADR-0018 §5)."
+  },
+  "anket_ana_tumu": "Tüm anketler",
+  "@anket_ana_tumu": {
+    "description": "Tayfa ana sayfasındaki anket bölümünde bütün anketleri açan bağlantı."
+  },
+  "anket_ana_bos": "Şu an açık anket yok.",
+  "@anket_ana_bos": {
+    "description": "Tayfa ana sayfasında açık anket yokken bölümde görünen metin."
+  },
+  "anket_liste_baslik": "Anketler",
+  "@anket_liste_baslik": {
+    "description": "Tayfanın anket listesinin üst çubuk başlığı (açık ve kapanmış anketler) ve Tayfa sekmesindeki anket modülü girişinin etiketi."
+  },
+  "anket_liste_bos": "Henüz anket yok.",
+  "@anket_liste_bos": {
+    "description": "Anket listesi boşken görünen metin."
+  },
+  "anket_etkinlik_liste_baslik": "Etkinliğin anketleri",
+  "@anket_etkinlik_liste_baslik": {
+    "description": "Bir etkinliğe bağlı anketlerin listesinin başlığı; etkinlik detayındaki bağlantının metni de budur."
+  },
+  "anket_etkinlik_liste_bos": "Bu etkinliğe bağlı anket yok.",
+  "@anket_etkinlik_liste_bos": {
+    "description": "Etkinliğe bağlı anket listesi boşken görünen metin."
+  },
+  "anket_ac": "Anket aç",
+  "@anket_ac": {
+    "description": "Anket oluşturma formunu açan düğme; her üyeye gösterilir, yetkiyi sunucu verir."
+  },
+  "anket_acik": "Açık",
+  "@anket_acik": {
+    "description": "Oy alan anketin kartındaki ve ekranındaki durum etiketi."
+  },
+  "anket_kapandi": "Kapandı",
+  "@anket_kapandi": {
+    "description": "Kapanmış (oy almayan) anketin kartındaki ve ekranındaki durum etiketi."
+  },
+  "anket_gizli": "Gizli anket",
+  "@anket_gizli": {
+    "description": "Gizli (anonim) anketin etiketi. Gizli ankette kimin neye oy verdiği hiç kimseye gösterilmez."
+  },
+  "anket_gizli_aciklama": "Kimin neye oy verdiği kimseye gösterilmez, yöneticilere de.",
+  "@anket_gizli_aciklama": {
+    "description": "Gizli anketin ekranında ve oluşturma formunda gizliliği açıklayan metin (kesin kural 7)."
+  },
+  "anket_tek_secim": "Tek seçenek seçebilirsin",
+  "@anket_tek_secim": {
+    "description": "Tek seçimli anketin ekranında oy verme kuralı."
+  },
+  "anket_coklu_secim": "Birden çok seçenek seçebilirsin",
+  "@anket_coklu_secim": {
+    "description": "Çok seçimli anketin ekranında oy verme kuralı."
+  },
+  "anket_kapanis": "Kapanış: {tarih}, {saat}",
+  "@anket_kapanis": {
+    "description": "Açık anketin planlanan kapanma günü ve saati, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "anket_kapandi_zaman": "Kapandı: {tarih}, {saat}",
+  "@anket_kapandi_zaman": {
+    "description": "Kapanmış anketin kapandığı gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "anket_oy_veren_sayisi": "{sayi, plural, =0{Henüz oy yok} other{{sayi} kişi oy verdi}}",
+  "@anket_oy_veren_sayisi": {
+    "description": "Ankete oy veren kişi sayısı; çok seçimli ankette kişi bir kez sayılır.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "anket_esik_notu": "Sonuçlar {esik} oydan sonra görünür.",
+  "@anket_esik_notu": {
+    "description": "Gizli ankette oy veren sayısı eşiğin altındayken seçenek sayıları yerine görünen metin (kesin kural 7: az oyda sayım kimlik açabilir).",
+    "placeholders": {
+      "esik": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "anket_senin_oyun": "Senin oyun",
+  "@anket_senin_oyun": {
+    "description": "Kullanıcının kendi seçtiği seçeneğin yanındaki etiket; yalnızca kullanıcının kendisine görünür."
+  },
+  "anket_oy_verdin": "Oy verdin",
+  "@anket_oy_verdin": {
+    "description": "Kullanıcının oy verdiği anketin kartındaki etiket."
+  },
+  "anket_oy_ver": "Oy ver",
+  "@anket_oy_ver": {
+    "description": "Seçilen seçeneklerle oyu gönderen düğme."
+  },
+  "anket_oyu_degistir": "Oyunu değiştir",
+  "@anket_oyu_degistir": {
+    "description": "Oy vermiş kullanıcının seçimini yeniden yapmasını sağlayan düğme."
+  },
+  "anket_oyu_geri_cek": "Oyunu geri çek",
+  "@anket_oyu_geri_cek": {
+    "description": "Kullanıcının oyunu geri çeken düğme."
+  },
+  "anket_sonuclari_gor": "Sonuçları gör",
+  "@anket_sonuclari_gor": {
+    "description": "Oy vermeden sonuçlara geçen düğme."
+  },
+  "anket_oy_vermeye_don": "Oy vermeye dön",
+  "@anket_oy_vermeye_don": {
+    "description": "Sonuçlardan seçim ekranına dönen düğme (henüz oy verilmemişken)."
+  },
+  "anket_vazgec": "Vazgeç",
+  "@anket_vazgec": {
+    "description": "Oy değiştirmeden ya da onay penceresinden vazgeçme düğmesi."
+  },
+  "anket_oy_kaydedildi": "Oyun kaydedildi.",
+  "@anket_oy_kaydedildi": {
+    "description": "Oy verilince ya da değiştirilince kısa bildirim."
+  },
+  "anket_oy_geri_cekildi": "Oyun geri çekildi.",
+  "@anket_oy_geri_cekildi": {
+    "description": "Oy geri çekilince kısa bildirim."
+  },
+  "anket_islemler": "Anket işlemleri",
+  "@anket_islemler": {
+    "description": "Anket ekranındaki işlem menüsünün ipucu (anketi açan ya da yönetim)."
+  },
+  "anket_kapat": "Anketi kapat",
+  "@anket_kapat": {
+    "description": "Anketi erken kapatan menü öğesi ve onay düğmesi."
+  },
+  "anket_kapat_onay_baslik": "Anket kapatılsın mı?",
+  "@anket_kapat_onay_baslik": {
+    "description": "Anketi kapatma onayının başlığı."
+  },
+  "anket_kapat_onay_aciklama": "Kapanan ankette oy verilemez, oylar da değiştirilemez.",
+  "@anket_kapat_onay_aciklama": {
+    "description": "Anketi kapatma onayının açıklaması."
+  },
+  "anket_kapatildi": "Anket kapatıldı.",
+  "@anket_kapatildi": {
+    "description": "Anket kapatılınca kısa bildirim."
+  },
+  "anket_oy_verenler": "Oy verenler",
+  "@anket_oy_verenler": {
+    "description": "Açık (gizli olmayan) ankette bir seçeneğe oy verenlerin listesinin başlığı."
+  },
+  "anket_oy_verenler_bos": "Bu seçeneğe henüz oy veren yok.",
+  "@anket_oy_verenler_bos": {
+    "description": "Oy verenler listesi boşken görünen metin."
+  },
+  "anket_oy_verenler_ipucu": "Oy verenleri görmek için seçeneğe dokun.",
+  "@anket_oy_verenler_ipucu": {
+    "description": "Açık (gizli olmayan) ankette sonuçların altında görünen ipucu. Gizli ankette gösterilmez."
+  },
+  "anket_acan": "Açan",
+  "@anket_acan": {
+    "description": "Anket ekranında anketi açan kişinin adının önündeki etiket."
+  },
+  "anket_etkinlige_git": "Bağlı etkinliği aç",
+  "@anket_etkinlige_git": {
+    "description": "Bir etkinliğe bağlı anketin ekranında etkinliği açan bağlantı."
+  },
+  "anket_form_baslik": "Yeni anket",
+  "@anket_form_baslik": {
+    "description": "Anket oluşturma formunun üst çubuk başlığı."
+  },
+  "anket_form_soru": "Soru",
+  "@anket_form_soru": {
+    "description": "Anket formunda sorunun alan etiketi."
+  },
+  "anket_form_soru_hatasi": "Soru 1–200 karakter olmalı ve tek satırda yazılmalı.",
+  "@anket_form_soru_hatasi": {
+    "description": "Anket formunda soru geçersizken görünen hata."
+  },
+  "anket_form_secenek": "Seçenek {sira}",
+  "@anket_form_secenek": {
+    "description": "Anket formunda bir seçeneğin alan etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "anket_form_secenek_hatasi": "Seçenek 1–100 karakter olmalı ve tek satırda yazılmalı.",
+  "@anket_form_secenek_hatasi": {
+    "description": "Anket formunda bir seçenek geçersizken görünen hata."
+  },
+  "anket_form_secenek_tekrar": "Bu seçenek zaten var.",
+  "@anket_form_secenek_tekrar": {
+    "description": "Anket formunda aynı seçenek iki kez yazılınca görünen hata."
+  },
+  "anket_form_secenek_ekle": "Seçenek ekle",
+  "@anket_form_secenek_ekle": {
+    "description": "Anket formunda yeni seçenek alanı ekleyen düğme (en çok 10 seçenek)."
+  },
+  "anket_form_secenek_kaldir": "Seçeneği kaldır",
+  "@anket_form_secenek_kaldir": {
+    "description": "Anket formunda bir seçenek alanını kaldıran düğmenin ipucu (en az 2 seçenek kalır)."
+  },
+  "anket_form_coklu": "Birden çok seçenek seçilebilsin",
+  "@anket_form_coklu": {
+    "description": "Anket formunda çok seçimli anket anahtarı."
+  },
+  "anket_form_gizli": "Gizli anket",
+  "@anket_form_gizli": {
+    "description": "Anket formunda gizli (anonim) anket anahtarı."
+  },
+  "anket_form_gizli_notu": "İlk oydan sonra değiştirilemez.",
+  "@anket_form_gizli_notu": {
+    "description": "Anket formunda gizli anket anahtarının altındaki not."
+  },
+  "anket_form_kapanis_yok": "Kapanış zamanı yok; elle kapatılana kadar açık kalır.",
+  "@anket_form_kapanis_yok": {
+    "description": "Anket formunda kapanış zamanı seçilmemişken görünen metin."
+  },
+  "anket_form_kapanis_sec": "Kapanış zamanı seç",
+  "@anket_form_kapanis_sec": {
+    "description": "Anket formunda kapanış günü ve saatini seçtiren düğme."
+  },
+  "anket_form_kapanis_kaldir": "Kapanış zamanını kaldır",
+  "@anket_form_kapanis_kaldir": {
+    "description": "Anket formunda seçilen kapanış zamanını kaldıran düğme."
+  },
+  "anket_form_kapanis_hatasi": "Kapanış zamanı gelecekte ve en çok 365 gün sonra olmalı.",
+  "@anket_form_kapanis_hatasi": {
+    "description": "Anket formunda kapanış zamanı geçersizken görünen hata."
+  },
+  "anket_form_etkinlik_notu": "Anket bu etkinliğe bağlanacak.",
+  "@anket_form_etkinlik_notu": {
+    "description": "Etkinlikten açılan anket formunda görünen not."
+  },
+  "anket_form_gonder": "Anketi aç",
+  "@anket_form_gonder": {
+    "description": "Anket formunu gönderen düğme."
+  },
+  "anket_acildi": "Anket açıldı.",
+  "@anket_acildi": {
+    "description": "Anket açılınca kısa bildirim."
+  },
   "hesap_slogan": "Birlikte yapınca güzel.",
   "@hesap_slogan": {
     "description": "Giriş ekranında yazı logonun altındaki slogan (Notion: Marka)."
@@ -2258,6 +2690,268 @@
         "type": "DateTime",
         "format": "yMMMMd",
         "example": "2009-03-12"
+      }
+    }
+  },
+  "profil_tekrar_dene": "Tekrar dene",
+  "@profil_tekrar_dene": {
+    "description": "Profil, oturumlar ve hesap ayarları okunamadığında hatanın altındaki yeniden deneme düğmesi."
+  },
+  "profil_yukleniyor": "Yükleniyor",
+  "@profil_yukleniyor": {
+    "description": "Profil sekmesinde ve oturumlar ekranında bilgiler yüklenirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "profil_vazgec": "Vazgeç",
+  "@profil_vazgec": {
+    "description": "Profil ekranlarındaki onay pencerelerinde işlemi yapmadan kapatan düğme."
+  },
+  "profil_referans_baslik": "Referans kodun",
+  "@profil_referans_baslik": {
+    "description": "Profil sekmesindeki ilk bölümün başlığı; kullanıcının kendi referans kodu."
+  },
+  "profil_referans_aciklama": "Arkadaşlarını Tayfam'a bu kodla ya da linkle davet edebilirsin; seni bu kodla bulabilirler.",
+  "@profil_referans_aciklama": {
+    "description": "Profil sekmesinde referans kodunun altındaki açıklama."
+  },
+  "profil_referans_paylas": "Paylaş",
+  "@profil_referans_paylas": {
+    "description": "Referans linkini sistem paylaşım menüsüyle paylaşan düğme."
+  },
+  "profil_referans_kopyala": "Kodu kopyala",
+  "@profil_referans_kopyala": {
+    "description": "Referans kodunu panoya kopyalayan düğme."
+  },
+  "profil_referans_kopyalandi": "Kod kopyalandı",
+  "@profil_referans_kopyalandi": {
+    "description": "Referans kodu panoya kopyalanınca ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_referans_yenile": "Yeni kod al",
+  "@profil_referans_yenile": {
+    "description": "Yeni referans kodu üreten düğme; onay penceresinin onay düğmesi olarak da görünür."
+  },
+  "profil_referans_yenile_onay_baslik": "Yeni kod alınsın mı?",
+  "@profil_referans_yenile_onay_baslik": {
+    "description": "Yeni referans kodu üretmeden önceki onay penceresinin başlığı."
+  },
+  "profil_referans_yenile_onay_aciklama": "Eski kodun ve linkin hemen geçersiz olur.",
+  "@profil_referans_yenile_onay_aciklama": {
+    "description": "Yeni referans kodu üretmeden önceki onay penceresinin açıklaması."
+  },
+  "profil_referans_yenilendi": "Yeni kodun hazır.",
+  "@profil_referans_yenilendi": {
+    "description": "Yeni referans kodu üretilince ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_gorunurluk_baslik": "Katılım geçmişin",
+  "@profil_gorunurluk_baslik": {
+    "description": "Profil sekmesinde katılım geçmişinin kime görüneceğini seçtiren bölümün başlığı."
+  },
+  "profil_gorunurluk_aciklama": "Katıldığın etkinliklerin kime görüneceğini seç.",
+  "@profil_gorunurluk_aciklama": {
+    "description": "Katılım geçmişi görünürlüğü bölümünün açıklaması."
+  },
+  "profil_gorunurluk_ozel": "Yalnızca ben",
+  "@profil_gorunurluk_ozel": {
+    "description": "Katılım geçmişi görünürlüğü seçeneği: yalnızca kullanıcının kendisi (`private`)."
+  },
+  "profil_gorunurluk_ozel_aciklama": "Katılım geçmişini senden başka kimse göremez.",
+  "@profil_gorunurluk_ozel_aciklama": {
+    "description": "`Yalnızca ben` seçeneğinin açıklaması."
+  },
+  "profil_gorunurluk_tayfa": "Arkadaşlarım ve tayfalarım",
+  "@profil_gorunurluk_tayfa": {
+    "description": "Katılım geçmişi görünürlüğü seçeneği: arkadaşlar ve ortak tayfa üyeleri (`tayfa`, varsayılan)."
+  },
+  "profil_gorunurluk_tayfa_aciklama": "Arkadaşların tümünü görür; ortak tayfalarındaki üyeler son 14 günü göremez.",
+  "@profil_gorunurluk_tayfa_aciklama": {
+    "description": "`Arkadaşlarım ve tayfalarım` seçeneğinin açıklaması."
+  },
+  "profil_gorunurluk_herkes": "Herkes",
+  "@profil_gorunurluk_herkes": {
+    "description": "Katılım geçmişi görünürlüğü seçeneği: herkes (`public`)."
+  },
+  "profil_gorunurluk_herkes_aciklama": "Arkadaşların tümünü görür; diğer herkes son 14 günü göremez.",
+  "@profil_gorunurluk_herkes_aciklama": {
+    "description": "`Herkes` seçeneğinin açıklaması."
+  },
+  "profil_tema_baslik": "Tema",
+  "@profil_tema_baslik": {
+    "description": "Profil sekmesinde uygulamanın açık ya da koyu görünümünü seçtiren bölümün başlığı."
+  },
+  "profil_tema_sistem": "Cihaz ayarı",
+  "@profil_tema_sistem": {
+    "description": "Tema seçeneği: cihazın açık / koyu ayarını izler (varsayılan)."
+  },
+  "profil_tema_acik": "Açık",
+  "@profil_tema_acik": {
+    "description": "Tema seçeneği: her zaman açık tema."
+  },
+  "profil_tema_koyu": "Koyu",
+  "@profil_tema_koyu": {
+    "description": "Tema seçeneği: her zaman koyu tema."
+  },
+  "profil_hesap_baslik": "Hesap",
+  "@profil_hesap_baslik": {
+    "description": "Profil sekmesinde oturumlar, hukuki metinler, çıkış ve hesap silme satırlarının bölüm başlığı."
+  },
+  "profil_oturumlar": "Oturumlar",
+  "@profil_oturumlar": {
+    "description": "Profil sekmesinde açık oturumlar ekranını açan satır; o ekranın başlığı."
+  },
+  "profil_oturumlar_aciklama": "Hesabının açık olduğu cihazlar",
+  "@profil_oturumlar_aciklama": {
+    "description": "Oturumlar satırının altındaki açıklama."
+  },
+  "profil_aydinlatma": "Aydınlatma metni",
+  "@profil_aydinlatma": {
+    "description": "KVKK aydınlatma metnini tarayıcıda açan satır."
+  },
+  "profil_kosullar": "Kullanım koşulları",
+  "@profil_kosullar": {
+    "description": "Kullanım koşullarını tarayıcıda açan satır."
+  },
+  "profil_cikis": "Çıkış yap",
+  "@profil_cikis": {
+    "description": "Bu cihazdaki oturumu kapatıp giriş ekranına dönen satır."
+  },
+  "profil_cikis_suruyor": "Çıkış yapılıyor",
+  "@profil_cikis_suruyor": {
+    "description": "Çıkış sürerken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "profil_hesabi_sil": "Hesabı sil",
+  "@profil_hesabi_sil": {
+    "description": "Profil sekmesinde hesap silme ekranını açan satır."
+  },
+  "profil_oturum_android": "Android cihaz",
+  "@profil_oturum_android": {
+    "description": "Oturumlar listesinde Android cihazdaki oturumun adı."
+  },
+  "profil_oturum_ios": "iPhone ya da iPad",
+  "@profil_oturum_ios": {
+    "description": "Oturumlar listesinde iOS cihazdaki oturumun adı."
+  },
+  "profil_oturum_web": "Web tarayıcısı",
+  "@profil_oturum_web": {
+    "description": "Oturumlar listesinde web geliştirme derlemesindeki oturumun adı."
+  },
+  "profil_oturum_bilinmeyen": "Bilinmeyen cihaz",
+  "@profil_oturum_bilinmeyen": {
+    "description": "Oturumlar listesinde platformu bilinmeyen oturumun adı."
+  },
+  "profil_oturum_bu_cihaz": "Bu cihaz",
+  "@profil_oturum_bu_cihaz": {
+    "description": "Oturumlar listesinde şu an kullanılan cihazın oturumunun altında görünen işaret."
+  },
+  "profil_oturum_kapat": "Oturumu kapat",
+  "@profil_oturum_kapat": {
+    "description": "Oturumlar listesinde başka bir cihazın oturumunu kapatan düğmenin ipucu; onay penceresinin onay düğmesi."
+  },
+  "profil_oturum_kapat_onay_baslik": "Bu oturum kapatılsın mı?",
+  "@profil_oturum_kapat_onay_baslik": {
+    "description": "Başka bir cihazın oturumunu kapatmadan önceki onay penceresinin başlığı."
+  },
+  "profil_oturum_kapat_onay_aciklama": "O cihazda yeniden giriş yapman gerekir.",
+  "@profil_oturum_kapat_onay_aciklama": {
+    "description": "Başka bir cihazın oturumunu kapatmadan önceki onay penceresinin açıklaması."
+  },
+  "profil_oturum_kapatildi": "Oturum kapatıldı.",
+  "@profil_oturum_kapatildi": {
+    "description": "Bir oturum kapatılınca ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_diger_cihazlardan_cik": "Diğer cihazlardan çık",
+  "@profil_diger_cihazlardan_cik": {
+    "description": "Bu cihaz dışındaki bütün oturumları kapatan düğme; onay penceresinin onay düğmesi."
+  },
+  "profil_diger_onay_baslik": "Diğer cihazlardan çıkılsın mı?",
+  "@profil_diger_onay_baslik": {
+    "description": "Diğer cihazlardan çıkmadan önceki onay penceresinin başlığı."
+  },
+  "profil_diger_onay_aciklama": "Bu cihaz dışındaki bütün cihazlarda yeniden giriş yapman gerekir.",
+  "@profil_diger_onay_aciklama": {
+    "description": "Diğer cihazlardan çıkmadan önceki onay penceresinin açıklaması."
+  },
+  "profil_diger_kapatildi": "Diğer cihazlardan çıkıldı.",
+  "@profil_diger_kapatildi": {
+    "description": "Diğer oturumlar kapatılınca ekranın altında kısa süre görünen bildirim."
+  },
+  "profil_sil_baslik": "Hesabı sil",
+  "@profil_sil_baslik": {
+    "description": "Hesap silme ekranının başlığı."
+  },
+  "profil_sil_giris": "Hesabını silersen:",
+  "@profil_sil_giris": {
+    "description": "Hesap silme ekranında ne olacağını anlatan maddelerin girişi."
+  },
+  "profil_sil_madde_bilgiler": "Adın, profil fotoğrafın, doğum tarihin ve referans kodun hemen silinir.",
+  "@profil_sil_madde_bilgiler": {
+    "description": "Hesap silme açıklamasının maddesi: kişisel bilgiler."
+  },
+  "profil_sil_madde_oturumlar": "Bütün cihazlardaki oturumların kapanır ve tayfalarından çıkarsın.",
+  "@profil_sil_madde_oturumlar": {
+    "description": "Hesap silme açıklamasının maddesi: oturumlar ve tayfa üyelikleri."
+  },
+  "profil_sil_madde_icerik": "Yazdıkların ve paylaştıkların kalır; yazarı \"Silinmiş kullanıcı\" olarak görünür.",
+  "@profil_sil_madde_icerik": {
+    "description": "Hesap silme açıklamasının maddesi: içerikler silinmez, yazar adı yerine \"Silinmiş kullanıcı\" görünür."
+  },
+  "profil_sil_madde_geri_alma": "Silme geri alınamaz. Aynı Google hesabıyla yeniden giriş yaparsan yeni bir hesap açılır.",
+  "@profil_sil_madde_geri_alma": {
+    "description": "Hesap silme açıklamasının maddesi: geri alma yok."
+  },
+  "profil_sil_madde_yeniden_giris": "Silmeden önce Google ile yeniden giriş yapman istenir.",
+  "@profil_sil_madde_yeniden_giris": {
+    "description": "Hesap silme açıklamasının maddesi: yeniden Google girişi gerekir."
+  },
+  "profil_sil_dugme": "Hesabımı sil",
+  "@profil_sil_dugme": {
+    "description": "Hesap silme ekranında onay penceresini açan düğme."
+  },
+  "profil_sil_onay_baslik": "Hesabın silinsin mi?",
+  "@profil_sil_onay_baslik": {
+    "description": "Hesap silme onay penceresinin başlığı."
+  },
+  "profil_sil_onay_aciklama": "Bu işlem geri alınamaz. Google ile giriş yaptıktan sonra hesabın silinecek.",
+  "@profil_sil_onay_aciklama": {
+    "description": "Hesap silme onay penceresinin açıklaması."
+  },
+  "profil_sil_onay": "Google ile doğrula ve sil",
+  "@profil_sil_onay": {
+    "description": "Hesap silme onay penceresinde yeniden Google girişini başlatan düğme."
+  },
+  "profil_sil_suruyor": "Hesabın siliniyor",
+  "@profil_sil_suruyor": {
+    "description": "Hesap silme sürerken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "profil_sil_farkli_hesap": "Seçtiğin Google hesabı bu hesap değil. Hesabını açtığın Google hesabıyla tekrar dene.",
+  "@profil_sil_farkli_hesap": {
+    "description": "Hesap silmede yeniden girişte başka bir Google hesabı seçildiğinde görünen hata; hiçbir hesap silinmez."
+  },
+  "profil_referans_paylasim_metni": "Tayfam'da bana katıl: {link}",
+  "@profil_referans_paylasim_metni": {
+    "description": "Referans linki paylaşılırken sistem paylaşım menüsüne giden metin. {link} tayfam.app/r/<kod> adresidir.",
+    "placeholders": {
+      "link": {
+        "type": "String",
+        "example": "https://tayfam.app/r/TYF-8K2M4Q"
+      }
+    }
+  },
+  "profil_referans_kod_etiketi": "Referans kodun: {kod}",
+  "@profil_referans_kod_etiketi": {
+    "description": "Profil sekmesindeki referans kodunun ekran okuyucu etiketi.",
+    "placeholders": {
+      "kod": {
+        "type": "String",
+        "example": "TYF-8K2M4Q"
+      }
+    }
+  },
+  "profil_oturum_son_kullanim": "Son kullanım: {zaman}",
+  "@profil_oturum_son_kullanim": {
+    "description": "Oturumlar listesinde başka bir cihazın oturumunun son kullanıldığı zaman. {zaman} tarih ve saattir (12 Kas 2026 14:30).",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "12 Kas 2026 14:30"
       }
     }
   },
@@ -2664,5 +3358,688 @@
   "hata_message_request_not_found": "Bekleyen bir mesaj isteği yok.",
   "@hata_message_request_not_found": {
     "description": "Hata kodu `message-request-not-found`. Bu konuşmada kullanıcıyı bekleyen bir mesaj isteği olmadığında (kabul ya da ret denendiğinde) görünen hata."
+  },
+  "hosgeldin_atla": "Atla",
+  "@hosgeldin_atla": {
+    "description": "Hoş geldin tanıtımının her sayfasında, üstteki mor bölümde sağda duran metin düğmesi. Tanıtımı bitirir (bir daha gösterilmez) ve giriş ekranına geçer."
+  },
+  "hosgeldin_ileri": "İleri",
+  "@hosgeldin_ileri": {
+    "description": "Hoş geldin tanıtımının altındaki birincil düğme (son sayfa hariç); bir sonraki tanıtım sayfasına geçer."
+  },
+  "hosgeldin_baslayalim": "Başlayalım",
+  "@hosgeldin_baslayalim": {
+    "description": "Hoş geldin tanıtımının son sayfasındaki birincil düğme; tanıtımı bitirir ve giriş ekranına geçer."
+  },
+  "hosgeldin_sayfa": "Sayfa {sayfa} / {toplam}",
+  "@hosgeldin_sayfa": {
+    "description": "Hoş geldin tanıtımındaki sayfa göstergesinin (noktaların) ekran okuyucu etiketi; sayfa değişince okunur. Ekranda yazı olarak görünmez.",
+    "placeholders": {
+      "sayfa": {
+        "type": "int",
+        "example": "2"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "hosgeldin_tayfa_baslik": "Tayfan tek yerde",
+  "@hosgeldin_tayfa_baslik": {
+    "description": "Hoş geldin tanıtımının 1. sayfasının başlığı."
+  },
+  "hosgeldin_tayfa_metin": "Kulübün ya da arkadaş grubun: planlar, duyurular, sorular ve sohbet artık grup sohbetinde kaybolmaz.",
+  "@hosgeldin_tayfa_metin": {
+    "description": "Hoş geldin tanıtımının 1. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_etkinlik_baslik": "Etkinlikler kimin geldiğini bilir",
+  "@hosgeldin_etkinlik_baslik": {
+    "description": "Hoş geldin tanıtımının 2. sayfasının başlığı."
+  },
+  "hosgeldin_etkinlik_metin": "Geliyorum, belki ya da gelmiyorum de. Kontenjan dolunca bekleme listesi işler. Günü gelince \"Geldim\" demen yeter.",
+  "@hosgeldin_etkinlik_metin": {
+    "description": "Hoş geldin tanıtımının 2. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_soru_baslik": "Sorulan soru kaybolmaz",
+  "@hosgeldin_soru_baslik": {
+    "description": "Hoş geldin tanıtımının 3. sayfasının başlığı."
+  },
+  "hosgeldin_soru_metin": "Duyurular ana sayfada durur. Sorular cevaplarıyla aranabilir kalır, kararlar anketle verilir.",
+  "@hosgeldin_soru_metin": {
+    "description": "Hoş geldin tanıtımının 3. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_sohbet_baslik": "Sohbet de var, düzenli haliyle",
+  "@hosgeldin_sohbet_baslik": {
+    "description": "Hoş geldin tanıtımının 4. sayfasının başlığı."
+  },
+  "hosgeldin_sohbet_metin": "Kanallar ve birebir mesajlar. Birebir mesajlar uçtan uca şifrelidir; konumun hiçbir yere kaydedilmez.",
+  "@hosgeldin_sohbet_metin": {
+    "description": "Hoş geldin tanıtımının 4. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_katil_baslik": "Tayfana katıl ya da kendininkini aç",
+  "@hosgeldin_katil_baslik": {
+    "description": "Hoş geldin tanıtımının 5. (son) sayfasının başlığı."
+  },
+  "hosgeldin_katil_metin": "Davet linkine dokun, tayfa kodunu gir ya da kendi tayfanı birkaç adımda kur.",
+  "@hosgeldin_katil_metin": {
+    "description": "Hoş geldin tanıtımının 5. (son) sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_ornek_tayfa_adi": "Pazar Sürücüleri",
+  "@hosgeldin_ornek_tayfa_adi": {
+    "description": "Hoş geldin tanıtımının 1. sayfasındaki görselde (mor tayfa üst bölümü) uydurma örnek tayfa adı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_etkinlik_basligi": "Kaz Dağları yürüyüşü",
+  "@hosgeldin_ornek_etkinlik_basligi": {
+    "description": "Hoş geldin tanıtımının 2. sayfasındaki örnek etkinlik kartında uydurma etkinlik başlığı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_etkinlik_zamani": "Cumartesi, 07:30",
+  "@hosgeldin_ornek_etkinlik_zamani": {
+    "description": "Hoş geldin tanıtımının 2. sayfasındaki örnek etkinlik kartında etkinlik zamanı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_etkinlik_katilim": "14 kişi geliyor, 2 kişi bekleme listesinde",
+  "@hosgeldin_ornek_etkinlik_katilim": {
+    "description": "Hoş geldin tanıtımının 2. sayfasındaki örnek etkinlik kartında katılım satırı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_kisi_1": "SA",
+  "@hosgeldin_ornek_kisi_1": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartındaki ilk baş harf avatarı (uydurma kişi). Süstür."
+  },
+  "hosgeldin_ornek_kisi_2": "MK",
+  "@hosgeldin_ornek_kisi_2": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartındaki ikinci baş harf avatarı (uydurma kişi). Süstür."
+  },
+  "hosgeldin_ornek_kisi_3": "EY",
+  "@hosgeldin_ornek_kisi_3": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartındaki üçüncü baş harf avatarı (uydurma kişi). Süstür."
+  },
+  "hosgeldin_ornek_kisi_diger": "+{sayi}",
+  "@hosgeldin_ornek_kisi_diger": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartında baş harf avatarlarından sonra gelen, gösterilmeyen kişi sayısı. Süstür.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "11"
+      }
+    }
+  },
+  "hosgeldin_ornek_soru": "Rölantide tekleme neden olur?",
+  "@hosgeldin_ornek_soru": {
+    "description": "Hoş geldin tanıtımının 3. sayfasındaki örnek soru-cevap kartında uydurma soru. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_cevap": "Vakum hortumlarını da kontrol et, çatlak olabilir.",
+  "@hosgeldin_ornek_cevap": {
+    "description": "Hoş geldin tanıtımının 3. sayfasındaki örnek soru-cevap kartında uydurma cevap. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_anket": "Kamp hangi hafta sonu?",
+  "@hosgeldin_ornek_anket": {
+    "description": "Hoş geldin tanıtımının 3. sayfasındaki örnek anket kartında uydurma anket sorusu. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_anket_secenek_1": "14–15 Haziran",
+  "@hosgeldin_ornek_anket_secenek_1": {
+    "description": "Hoş geldin tanıtımının örnek anketindeki birinci (önde olan) seçenek. Süstür."
+  },
+  "hosgeldin_ornek_anket_secenek_2": "21–22 Haziran",
+  "@hosgeldin_ornek_anket_secenek_2": {
+    "description": "Hoş geldin tanıtımının örnek anketindeki ikinci seçenek. Süstür."
+  },
+  "hosgeldin_ornek_mesaj_gelen": "Cumartesi termosu ben getiriyorum.",
+  "@hosgeldin_ornek_mesaj_gelen": {
+    "description": "Hoş geldin tanıtımının 4. sayfasındaki örnek birebir sohbette gelen mesaj (uydurma). Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_mesaj_giden": "Süper, ben de ocağı alırım.",
+  "@hosgeldin_ornek_mesaj_giden": {
+    "description": "Hoş geldin tanıtımının 4. sayfasındaki örnek birebir sohbette giden mesaj (uydurma). Süstür; ekran okuyucu okumaz."
+  },
+  "yonetim_menu_ipucu": "Tayfa menüsü",
+  "@yonetim_menu_ipucu": {
+    "description": "Tayfa ana sayfasının mor üst bölümündeki menü düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "yonetim_menu_ipucu_bekleyen": "Tayfa menüsü, bekleyen katılım isteği var",
+  "@yonetim_menu_ipucu_bekleyen": {
+    "description": "Menü düğmesinin ipucu; yönetim rolündeki kullanıcı için bekleyen katılım isteği varken (düğmede rozet görünür)."
+  },
+  "yonetim_menu_ayarlar": "Tayfa ayarları",
+  "@yonetim_menu_ayarlar": {
+    "description": "Tayfa menüsünde, yalnızca moderatör ve yöneticiye görünen ayarlar girişi."
+  },
+  "yonetim_menu_bekleyen_var": "Bekleyen katılım isteği var",
+  "@yonetim_menu_bekleyen_var": {
+    "description": "Tayfa ayarları girişinin ve ayarlardaki katılım istekleri satırının alt metni; onay bekleyen istek varken görünür."
+  },
+  "yonetim_menu_sessize_al": "Bildirimleri sessize al",
+  "@yonetim_menu_sessize_al": {
+    "description": "Tayfa menüsünde, bu tayfanın bildirimlerini süresiz sessize alan giriş."
+  },
+  "yonetim_menu_sessizden_cikar": "Bildirimleri aç",
+  "@yonetim_menu_sessizden_cikar": {
+    "description": "Tayfa menüsünde, sessize alınmış tayfanın bildirimlerini yeniden açan giriş."
+  },
+  "yonetim_menu_ayril": "Tayfadan ayrıl",
+  "@yonetim_menu_ayril": {
+    "description": "Tayfa menüsünde tayfadan ayrılma girişi; onay penceresi açar."
+  },
+  "yonetim_sessize_alindi": "Bu tayfanın bildirimleri sessize alındı.",
+  "@yonetim_sessize_alindi": {
+    "description": "Tayfa sessize alınınca kısa süre görünen bildirim."
+  },
+  "yonetim_sessizden_cikti": "Bu tayfanın bildirimleri yeniden açık.",
+  "@yonetim_sessizden_cikti": {
+    "description": "Tayfanın bildirimleri yeniden açılınca kısa süre görünen bildirim."
+  },
+  "yonetim_ayril_baslik": "Tayfadan ayrılıyor musun?",
+  "@yonetim_ayril_baslik": {
+    "description": "Tayfadan ayrılma onay penceresinin başlığı."
+  },
+  "yonetim_ayril_aciklama": "{ad} tayfasından ayrılacaksın. Yeniden katılmak için kod ya da davet gerekir.",
+  "@yonetim_ayril_aciklama": {
+    "description": "Tayfadan ayrılma onay penceresinin açıklaması; ad, tayfanın adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      }
+    }
+  },
+  "yonetim_ayril_onayla": "Ayrıl",
+  "@yonetim_ayril_onayla": {
+    "description": "Tayfadan ayrılma onay penceresindeki onay düğmesi."
+  },
+  "yonetim_ayrildin": "Tayfadan ayrıldın.",
+  "@yonetim_ayrildin": {
+    "description": "Tayfadan ayrılınca kısa süre görünen bildirim."
+  },
+  "yonetim_vazgec": "Vazgeç",
+  "@yonetim_vazgec": {
+    "description": "Tayfa yönetimi onay pencerelerinde, değişiklik yapmadan kapatan düğme."
+  },
+  "yonetim_tekrar_dene": "Tekrar dene",
+  "@yonetim_tekrar_dene": {
+    "description": "Tayfa yönetimi ekranlarında liste okunamayınca görünen düğme."
+  },
+  "yonetim_daha_fazla": "Daha fazla göster",
+  "@yonetim_daha_fazla": {
+    "description": "Tayfa yönetimi listelerinde sonraki sayfayı okuyan düğme."
+  },
+  "yonetim_yukleniyor": "Yükleniyor",
+  "@yonetim_yukleniyor": {
+    "description": "Tayfa yönetimi ekranlarındaki yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "yonetim_ayarlar_baslik": "Tayfa ayarları",
+  "@yonetim_ayarlar_baslik": {
+    "description": "Tayfa ayarları ekranının başlığı."
+  },
+  "yonetim_istekler": "Katılım istekleri",
+  "@yonetim_istekler": {
+    "description": "Tayfa ayarlarındaki katılım istekleri girişi ve ekranının başlığı."
+  },
+  "yonetim_uyeler": "Üyeler",
+  "@yonetim_uyeler": {
+    "description": "Tayfa ayarlarındaki üyeler girişi ve ekranının başlığı."
+  },
+  "yonetim_davetler": "Davet linkleri",
+  "@yonetim_davetler": {
+    "description": "Tayfa ayarlarındaki davet linkleri girişi ve ekranının başlığı."
+  },
+  "yonetim_bilgiler": "Tayfa bilgileri",
+  "@yonetim_bilgiler": {
+    "description": "Tayfa ayarlarındaki (yalnızca yönetici) tayfa bilgileri girişi ve ekranının başlığı."
+  },
+  "yonetim_moduller": "Modüller",
+  "@yonetim_moduller": {
+    "description": "Tayfa ayarlarında modülleri açıp kapatma bölümünün başlığı."
+  },
+  "yonetim_moduller_aciklama": "Kapalı modül tayfada görünmez.",
+  "@yonetim_moduller_aciklama": {
+    "description": "Modüller bölümünün açıklaması."
+  },
+  "yonetim_modul_duyurular": "Duyurular",
+  "@yonetim_modul_duyurular": {
+    "description": "Modüller bölümünde duyuru modülünün anahtarı."
+  },
+  "yonetim_modul_etkinlikler": "Etkinlikler",
+  "@yonetim_modul_etkinlikler": {
+    "description": "Modüller bölümünde etkinlik modülünün anahtarı."
+  },
+  "yonetim_modul_soru_cevap": "Soru-cevap",
+  "@yonetim_modul_soru_cevap": {
+    "description": "Modüller bölümünde soru-cevap modülünün anahtarı."
+  },
+  "yonetim_modul_anketler": "Anketler",
+  "@yonetim_modul_anketler": {
+    "description": "Modüller bölümünde anket modülünün anahtarı."
+  },
+  "yonetim_modul_acildi": "Modül açıldı.",
+  "@yonetim_modul_acildi": {
+    "description": "Bir modül açılınca kısa süre görünen bildirim."
+  },
+  "yonetim_modul_kapandi": "Modül kapatıldı.",
+  "@yonetim_modul_kapandi": {
+    "description": "Bir modül kapatılınca kısa süre görünen bildirim."
+  },
+  "yonetim_kod_baslik": "Tayfa kodu",
+  "@yonetim_kod_baslik": {
+    "description": "Tayfa ayarlarında tayfa kodu bölümünün başlığı."
+  },
+  "yonetim_kod_yenile": "Kodu yenile",
+  "@yonetim_kod_yenile": {
+    "description": "Tayfa kodunu yenileyen düğme; onay penceresi açar."
+  },
+  "yonetim_kod_yenile_baslik": "Kod yenilensin mi?",
+  "@yonetim_kod_yenile_baslik": {
+    "description": "Tayfa kodunu yenileme onay penceresinin başlığı."
+  },
+  "yonetim_kod_yenile_aciklama": "Eski kod hemen geçersiz olur; paylaştığın eski kodla artık kimse katılamaz.",
+  "@yonetim_kod_yenile_aciklama": {
+    "description": "Tayfa kodunu yenileme onay penceresinin açıklaması."
+  },
+  "yonetim_kod_yenile_onayla": "Yenile",
+  "@yonetim_kod_yenile_onayla": {
+    "description": "Tayfa kodunu yenileme onay penceresindeki onay düğmesi."
+  },
+  "yonetim_kod_yenilendi": "Tayfa kodu yenilendi.",
+  "@yonetim_kod_yenilendi": {
+    "description": "Tayfa kodu yenilenince kısa süre görünen bildirim."
+  },
+  "yonetim_silme_baslik": "Tayfayı sil",
+  "@yonetim_silme_baslik": {
+    "description": "Tayfa ayarlarında silme bölümünün başlığı."
+  },
+  "yonetim_silme_aciklama": "Silme 72 saat sonra gerçekleşir. Bu sürede tayfa yalnızca okunabilir ve herhangi bir yönetici silmeyi iptal edebilir.",
+  "@yonetim_silme_aciklama": {
+    "description": "Silme bölümünün açıklaması; silme beklemiyorken görünür."
+  },
+  "yonetim_sil": "Tayfayı sil",
+  "@yonetim_sil": {
+    "description": "Tayfa silmeyi başlatan düğme; onay penceresi açar."
+  },
+  "yonetim_sil_onay_baslik": "Tayfa silinsin mi?",
+  "@yonetim_sil_onay_baslik": {
+    "description": "Tayfa silme onay penceresinin başlığı."
+  },
+  "yonetim_sil_onay_aciklama": "{ad} 72 saat sonra bütün içeriğiyle silinecek. Bu sürede silmeyi iptal edebilirsin.",
+  "@yonetim_sil_onay_aciklama": {
+    "description": "Tayfa silme onay penceresinin açıklaması; ad, tayfanın adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      }
+    }
+  },
+  "yonetim_sil_onayla": "Silmeyi başlat",
+  "@yonetim_sil_onayla": {
+    "description": "Tayfa silme onay penceresindeki onay düğmesi."
+  },
+  "yonetim_silme_planlandi": "Tayfa 72 saat sonra silinecek.",
+  "@yonetim_silme_planlandi": {
+    "description": "Tayfa silme başlatılınca kısa süre görünen bildirim."
+  },
+  "yonetim_silme_iptal": "Silmeyi iptal et",
+  "@yonetim_silme_iptal": {
+    "description": "Silme beklerken görünen, silmeyi iptal eden düğme."
+  },
+  "yonetim_silme_iptal_edildi": "Silme iptal edildi.",
+  "@yonetim_silme_iptal_edildi": {
+    "description": "Silme iptal edilince kısa süre görünen bildirim."
+  },
+  "yonetim_istekler_bos": "Bekleyen katılım isteği yok.",
+  "@yonetim_istekler_bos": {
+    "description": "Katılım istekleri ekranında istek yokken görünen metin."
+  },
+  "yonetim_istek_kaynak_link": "Davet linkiyle geldi",
+  "@yonetim_istek_kaynak_link": {
+    "description": "Katılım isteğinin kaynağı: davet linki."
+  },
+  "yonetim_istek_kaynak_dogrudan": "Doğrudan davetle geldi",
+  "@yonetim_istek_kaynak_dogrudan": {
+    "description": "Katılım isteğinin kaynağı: bir üyenin doğrudan daveti."
+  },
+  "yonetim_istek_kaynak_kod": "Tayfa koduyla geldi",
+  "@yonetim_istek_kaynak_kod": {
+    "description": "Katılım isteğinin kaynağı: tayfa kodu."
+  },
+  "yonetim_istek_kaynak_kesfet": "Keşfetten geldi",
+  "@yonetim_istek_kaynak_kesfet": {
+    "description": "Katılım isteğinin kaynağı: keşfet."
+  },
+  "yonetim_istek_kaynak_bilinmiyor": "Katılma isteği gönderdi",
+  "@yonetim_istek_kaynak_bilinmiyor": {
+    "description": "Katılım isteğinin kaynağı bilinmiyorken görünen genel metin."
+  },
+  "yonetim_istek_davet_eden": "Davet eden:",
+  "@yonetim_istek_davet_eden": {
+    "description": "Katılım isteğinde davet eden ya da linki açan kişinin adından önce gelen etiket."
+  },
+  "yonetim_istek_zamani": "{tarih} tarihinde istedi",
+  "@yonetim_istek_zamani": {
+    "description": "Katılım isteğinin gönderildiği gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-10"
+      }
+    }
+  },
+  "yonetim_onayla": "Onayla",
+  "@yonetim_onayla": {
+    "description": "Katılım isteğini onaylayan düğme."
+  },
+  "yonetim_reddet": "Reddet",
+  "@yonetim_reddet": {
+    "description": "Katılım isteğini reddeden düğme."
+  },
+  "yonetim_istek_onaylandi": "İstek onaylandı; artık tayfada.",
+  "@yonetim_istek_onaylandi": {
+    "description": "Katılım isteği onaylanınca kısa süre görünen bildirim."
+  },
+  "yonetim_istek_reddedildi": "İstek reddedildi.",
+  "@yonetim_istek_reddedildi": {
+    "description": "Katılım isteği reddedilince kısa süre görünen bildirim."
+  },
+  "yonetim_filtre_hepsi": "Hepsi",
+  "@yonetim_filtre_hepsi": {
+    "description": "Üyeler ekranında bütün etkin üyeleri gösteren filtre."
+  },
+  "yonetim_filtre_yonetici": "Yöneticiler",
+  "@yonetim_filtre_yonetici": {
+    "description": "Üyeler ekranında yöneticileri gösteren filtre."
+  },
+  "yonetim_filtre_moderator": "Moderatörler",
+  "@yonetim_filtre_moderator": {
+    "description": "Üyeler ekranında moderatörleri gösteren filtre."
+  },
+  "yonetim_filtre_uye": "Üyeler",
+  "@yonetim_filtre_uye": {
+    "description": "Üyeler ekranında üye rolündekileri gösteren filtre."
+  },
+  "yonetim_filtre_banli": "Banlananlar",
+  "@yonetim_filtre_banli": {
+    "description": "Üyeler ekranında banlananları gösteren filtre."
+  },
+  "yonetim_uyeler_bos": "Bu filtrede kimse yok.",
+  "@yonetim_uyeler_bos": {
+    "description": "Üyeler ekranında filtreye uyan kimse yokken görünen metin."
+  },
+  "yonetim_rol_admin": "Yönetici",
+  "@yonetim_rol_admin": {
+    "description": "Üye satırındaki rol: yönetici."
+  },
+  "yonetim_rol_moderator": "Moderatör",
+  "@yonetim_rol_moderator": {
+    "description": "Üye satırındaki rol: moderatör."
+  },
+  "yonetim_rol_member": "Üye",
+  "@yonetim_rol_member": {
+    "description": "Üye satırındaki rol: üye."
+  },
+  "yonetim_banli": "Banlı",
+  "@yonetim_banli": {
+    "description": "Banlananlar listesindeki üye satırının alt metni."
+  },
+  "yonetim_susturuldu": "Susturuldu",
+  "@yonetim_susturuldu": {
+    "description": "Üye satırında, üye susturulmuşken rolün yanında görünen metin."
+  },
+  "yonetim_uye_islemleri": "Üye işlemleri",
+  "@yonetim_uye_islemleri": {
+    "description": "Üye satırındaki işlem düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "yonetim_rol_yap_admin": "Yönetici yap",
+  "@yonetim_rol_yap_admin": {
+    "description": "Üye işlemleri panelinde rolü yönetici yapan giriş."
+  },
+  "yonetim_rol_yap_moderator": "Moderatör yap",
+  "@yonetim_rol_yap_moderator": {
+    "description": "Üye işlemleri panelinde rolü moderatör yapan giriş."
+  },
+  "yonetim_rol_yap_member": "Üye yap",
+  "@yonetim_rol_yap_member": {
+    "description": "Üye işlemleri panelinde rolü üye yapan giriş."
+  },
+  "yonetim_sustur_saat": "{sayi, plural, other{{sayi} saat sustur}}",
+  "@yonetim_sustur_saat": {
+    "description": "Üye işlemleri panelinde saat cinsinden susturma süresi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "yonetim_sustur_gun": "{sayi, plural, other{{sayi} gün sustur}}",
+  "@yonetim_sustur_gun": {
+    "description": "Üye işlemleri panelinde gün cinsinden susturma süresi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "yonetim_susturmayi_kaldir": "Susturmayı kaldır",
+  "@yonetim_susturmayi_kaldir": {
+    "description": "Üye işlemleri panelinde susturmayı hemen bitiren giriş."
+  },
+  "yonetim_cikar": "Tayfadan çıkar",
+  "@yonetim_cikar": {
+    "description": "Üye işlemleri panelinde üyeyi çıkaran giriş; onay penceresi açar."
+  },
+  "yonetim_banla": "Banla",
+  "@yonetim_banla": {
+    "description": "Üye işlemleri panelinde üyeyi banlayan giriş; onay penceresi açar."
+  },
+  "yonetim_cikar_baslik": "Tayfadan çıkarılsın mı?",
+  "@yonetim_cikar_baslik": {
+    "description": "Üyeyi çıkarma onay penceresinin başlığı."
+  },
+  "yonetim_cikar_aciklama": "Çıkarılan kişi daha sonra kodla ya da davetle tekrar katılabilir.",
+  "@yonetim_cikar_aciklama": {
+    "description": "Üyeyi çıkarma onay penceresinin açıklaması."
+  },
+  "yonetim_cikar_onayla": "Çıkar",
+  "@yonetim_cikar_onayla": {
+    "description": "Üyeyi çıkarma onay penceresindeki onay düğmesi."
+  },
+  "yonetim_banla_baslik": "Banlansın mı?",
+  "@yonetim_banla_baslik": {
+    "description": "Üyeyi banlama onay penceresinin başlığı."
+  },
+  "yonetim_banla_aciklama": "Banlanan kişi tayfadan çıkar ve kodla ya da davetle tekrar katılamaz.",
+  "@yonetim_banla_aciklama": {
+    "description": "Üyeyi banlama onay penceresinin açıklaması."
+  },
+  "yonetim_banla_onayla": "Banla",
+  "@yonetim_banla_onayla": {
+    "description": "Üyeyi banlama onay penceresindeki onay düğmesi."
+  },
+  "yonetim_rol_degisti": "Rol değiştirildi.",
+  "@yonetim_rol_degisti": {
+    "description": "Üyenin rolü değişince kısa süre görünen bildirim."
+  },
+  "yonetim_susturuldu_bildirim": "Üye susturuldu.",
+  "@yonetim_susturuldu_bildirim": {
+    "description": "Üye susturulunca kısa süre görünen bildirim."
+  },
+  "yonetim_susturma_kalkti": "Susturma kaldırıldı.",
+  "@yonetim_susturma_kalkti": {
+    "description": "Susturma kaldırılınca kısa süre görünen bildirim."
+  },
+  "yonetim_cikarildi": "Üye tayfadan çıkarıldı.",
+  "@yonetim_cikarildi": {
+    "description": "Üye çıkarılınca kısa süre görünen bildirim."
+  },
+  "yonetim_banlandi": "Üye banlandı.",
+  "@yonetim_banlandi": {
+    "description": "Üye banlanınca kısa süre görünen bildirim."
+  },
+  "yonetim_ad_etiketi": "Tayfa adı",
+  "@yonetim_ad_etiketi": {
+    "description": "Tayfa bilgileri formunda ad alanının etiketi."
+  },
+  "yonetim_ad_hata": "Tayfa adı 3–50 karakter olmalı.",
+  "@yonetim_ad_hata": {
+    "description": "Tayfa adı kısa ya da uzun olduğunda görünen hata."
+  },
+  "yonetim_aciklama_etiketi": "Açıklama",
+  "@yonetim_aciklama_etiketi": {
+    "description": "Tayfa bilgileri formunda açıklama alanının etiketi."
+  },
+  "yonetim_aciklama_hata": "Açıklama en çok 500 karakter olabilir.",
+  "@yonetim_aciklama_hata": {
+    "description": "Açıklama uzun olduğunda görünen hata."
+  },
+  "yonetim_ilgi_baslik": "İlgi alanları",
+  "@yonetim_ilgi_baslik": {
+    "description": "Tayfa bilgileri formunda ilgi alanları bölümünün başlığı."
+  },
+  "yonetim_katilim_baslik": "Katılım",
+  "@yonetim_katilim_baslik": {
+    "description": "Tayfa bilgileri formunda katılım politikası bölümünün başlığı."
+  },
+  "yonetim_uye_etkinlik": "Üyeler etkinlik açabilir",
+  "@yonetim_uye_etkinlik": {
+    "description": "Tayfa bilgileri formunda her üyenin etkinlik açmasına izin veren anahtar."
+  },
+  "yonetim_uye_etkinlik_aciklama": "Kapalıyken yalnızca moderatörler ve yöneticiler etkinlik açar.",
+  "@yonetim_uye_etkinlik_aciklama": {
+    "description": "Üyelerin etkinlik açma anahtarının açıklaması."
+  },
+  "yonetim_kaydet": "Kaydet",
+  "@yonetim_kaydet": {
+    "description": "Tayfa bilgileri formunu kaydeden düğme."
+  },
+  "yonetim_kaydedildi": "Tayfa bilgileri kaydedildi.",
+  "@yonetim_kaydedildi": {
+    "description": "Tayfa bilgileri kaydedilince kısa süre görünen bildirim."
+  },
+  "yonetim_davet_olustur": "Davet linki oluştur",
+  "@yonetim_davet_olustur": {
+    "description": "Davet linkleri ekranında yeni link seçeneklerini açan düğme."
+  },
+  "yonetim_davet_olustur_onayla": "Oluştur",
+  "@yonetim_davet_olustur_onayla": {
+    "description": "Davet linki seçenekleri panelinde linki oluşturan düğme."
+  },
+  "yonetim_davet_sure": "Geçerlilik",
+  "@yonetim_davet_sure": {
+    "description": "Davet linki seçeneklerinde süre bölümünün başlığı."
+  },
+  "yonetim_davet_sure_gun": "{sayi, plural, other{{sayi} gün}}",
+  "@yonetim_davet_sure_gun": {
+    "description": "Davet linkinin geçerlilik süresi seçeneği.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "yonetim_davet_kullanim": "Kaç kişi katılabilir",
+  "@yonetim_davet_kullanim": {
+    "description": "Davet linki seçeneklerinde kullanım sayısı bölümünün başlığı."
+  },
+  "yonetim_davet_kullanim_sayi": "{sayi, plural, other{{sayi} kişi}}",
+  "@yonetim_davet_kullanim_sayi": {
+    "description": "Davet linkinin kullanım sayısı seçeneği.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "yonetim_davet_hazir_baslik": "Davet linkin hazır",
+  "@yonetim_davet_hazir_baslik": {
+    "description": "Yeni davet linkinin paylaşım panelinin başlığı."
+  },
+  "yonetim_davet_hazir_aciklama": "Bu link yalnızca şimdi gösterilir; kapatınca bir daha göremezsin. Şimdi paylaş ya da kopyala.",
+  "@yonetim_davet_hazir_aciklama": {
+    "description": "Yeni davet linkinin paylaşım panelinin açıklaması."
+  },
+  "yonetim_davet_paylas": "Linki paylaş",
+  "@yonetim_davet_paylas": {
+    "description": "Davet linkini sistem paylaşım menüsüyle paylaşan düğme."
+  },
+  "yonetim_davet_kopyala": "Linki kopyala",
+  "@yonetim_davet_kopyala": {
+    "description": "Davet linkini panoya kopyalayan düğme."
+  },
+  "yonetim_davet_kopyalandi": "Davet linki kopyalandı.",
+  "@yonetim_davet_kopyalandi": {
+    "description": "Davet linki panoya kopyalanınca kısa süre görünen bildirim."
+  },
+  "yonetim_davet_paylasim_metni": "{ad} tayfasına Tayfam'da katıl:\n{link}",
+  "@yonetim_davet_paylasim_metni": {
+    "description": "Davet linki paylaşılırken gönderilen metin; ad tayfanın adı, link davet linkidir.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasikçiler"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://tayfam.app/davet#..."
+      }
+    }
+  },
+  "yonetim_davetler_bos": "Geçerli davet linki yok.",
+  "@yonetim_davetler_bos": {
+    "description": "Davet linkleri ekranında geçerli link yokken görünen metin."
+  },
+  "yonetim_davet_kullanim_durumu": "{kullanilan}/{enCok} kişi katıldı",
+  "@yonetim_davet_kullanim_durumu": {
+    "description": "Davet linki kartında kullanım durumu.",
+    "placeholders": {
+      "kullanilan": {
+        "type": "int",
+        "example": "3"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "yonetim_davet_bitis": "{tarih}, {saat} tarihine kadar geçerli",
+  "@yonetim_davet_bitis": {
+    "description": "Davet linki kartında linkin bitiş zamanı (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-20"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-20T09:00"
+      }
+    }
+  },
+  "yonetim_davet_acan": "Açan:",
+  "@yonetim_davet_acan": {
+    "description": "Davet linki kartında linki açan kişinin adından önce gelen etiket."
+  },
+  "yonetim_davet_iptal": "Linki iptal et",
+  "@yonetim_davet_iptal": {
+    "description": "Davet linki kartında linki geçersiz kılan düğme; onay penceresi açar."
+  },
+  "yonetim_davet_iptal_baslik": "Link iptal edilsin mi?",
+  "@yonetim_davet_iptal_baslik": {
+    "description": "Davet linkini iptal etme onay penceresinin başlığı."
+  },
+  "yonetim_davet_iptal_aciklama": "Bu linkle artık kimse katılamaz.",
+  "@yonetim_davet_iptal_aciklama": {
+    "description": "Davet linkini iptal etme onay penceresinin açıklaması."
+  },
+  "yonetim_davet_iptal_onayla": "İptal et",
+  "@yonetim_davet_iptal_onayla": {
+    "description": "Davet linkini iptal etme onay penceresindeki onay düğmesi."
+  },
+  "yonetim_davet_iptal_edildi": "Davet linki iptal edildi.",
+  "@yonetim_davet_iptal_edildi": {
+    "description": "Davet linki iptal edilince kısa süre görünen bildirim."
   }
 }
