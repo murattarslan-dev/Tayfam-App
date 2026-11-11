@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
 
 /// Uygulamanın tayfa modülleri (ADR-0002). Koddaki sabit listedir;
 /// çalışma zamanında dışarıdan modül yüklenmez. Modüller kendi
@@ -11,6 +12,8 @@ import 'package:tayfam/features/etkinlik/etkinlik.dart';
 const List<TayfaModule> tayfaModulKaydi = [
   EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
   DuyuruModulu(),
+  // Anket modülü (ADR-0018 Genel: üçüncü bölüm) buraya, sorulardan önce.
+  SoruCevapModulu(),
 ];
 
 /// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
