@@ -20,8 +20,10 @@ abstract interface class RealtimeSoketi {
 }
 
 /// [adres]'e [basliklar] ile bir bağlantı açar.
-typedef RealtimeBaglayici =
-    RealtimeSoketi Function(Uri adres, Map<String, String> basliklar);
+typedef RealtimeBaglayici = RealtimeSoketi Function(
+  Uri adres,
+  Map<String, String> basliklar,
+);
 
 /// Mobilde `IOWebSocketChannel` ile bağlantı (ADR-0007): erişim token'ı
 /// `Authorization` başlığındadır, URL'de değildir. Ping/pong platform

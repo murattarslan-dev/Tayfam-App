@@ -131,9 +131,7 @@ class _KanalFormuState extends ConsumerState<KanalFormu> {
     final kanal = widget.kanal;
     final secenekler = {...yavasModSecenekleri, _yavas}.toList()..sort();
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -193,7 +191,9 @@ class _KanalFormuState extends ConsumerState<KanalFormu> {
               ],
               const SizedBox(height: TayfamSpacing.s24),
               BirincilEylem(
-                etiket: kanal == null ? m.sohbet_form_olustur : m.sohbet_form_kaydet,
+                etiket: kanal == null
+                    ? m.sohbet_form_olustur
+                    : m.sohbet_form_kaydet,
                 onPressed: _gonderiliyor ? null : _kaydet,
               ),
               if (kanal != null) ...[

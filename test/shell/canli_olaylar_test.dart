@@ -17,7 +17,10 @@ void main() {
     await widgetAc(
       tester,
       const CanliOlaylar(child: SizedBox.shrink()),
-      tayfa: [...ortam.overridelar, ...bildirimOverridelari(tasima: bildirim)],
+      tayfa: [
+        ...ortam.overridelar,
+        ...bildirimOverridelari(tasima: bildirim),
+      ],
     );
     await tester.runAsync(() async {
       final soket = await ortam.baglan();

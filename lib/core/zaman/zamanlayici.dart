@@ -7,7 +7,10 @@ typedef SimdiOkuyucu = DateTime Function();
 
 /// [sure] sonra [gorev]'i bir kez çalıştıran zamanlayıcı kurar. Testlerde
 /// elle ilerletilen bir sahtesi verilir (gerçek bekleme yok).
-typedef ZamanlayiciKurucu = Timer Function(Duration sure, void Function() gorev);
+typedef ZamanlayiciKurucu = Timer Function(
+  Duration sure,
+  void Function() gorev,
+);
 
 /// Çekirdek altyapının (çevrimdışı kuyruk, WebSocket) saati.
 final simdiProvider = Provider<SimdiOkuyucu>(

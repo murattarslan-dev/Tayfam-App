@@ -143,8 +143,11 @@ void main() {
     tester,
   ) async {
     final ortam = SohbetOrtami();
-    ortam.tasima.yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] =
-        (_) => const ApiProblem(type: ProblemType.muted, status: 403);
+    ortam
+        .tasima
+        .yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] = (
+      _,
+    ) => const ApiProblem(type: ProblemType.muted, status: 403);
     await _ac(
       tester,
       const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),

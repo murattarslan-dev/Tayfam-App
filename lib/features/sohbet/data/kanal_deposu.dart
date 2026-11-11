@@ -68,8 +68,8 @@ final class KanalDeposu {
   );
 
   /// `DELETE …/messages/{message_id}`.
-  Future<void> sil(String tayfaId, String kanalId, String mesajId) => _api
-      .deleteChannelMessage(
+  Future<void> sil(String tayfaId, String kanalId, String mesajId) =>
+      _api.deleteChannelMessage(
         tayfaId: tayfaId,
         channelId: kanalId,
         messageId: mesajId,

@@ -51,8 +51,7 @@ final realtimeIstemcisiProvider = Provider<RealtimeIstemcisi>((ref) {
     baglayici: ref.watch(realtimeBaglayiciProvider),
     tokenAl: oturum.erisimTokeni,
     reddedildi: oturum.reddedildi,
-    oturumuKapat: () =>
-        oturum.kapat(OturumKapanisNedeni.sunucuSonlandirdi),
+    oturumuKapat: () => oturum.kapat(OturumKapanisNedeni.sunucuSonlandirdi),
     zamanlayici: ref.watch(zamanlayiciProvider),
     basliklar: {'X-Tayfam-Client-Version': ?surum},
   );

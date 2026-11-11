@@ -136,9 +136,7 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
     final yavas = kanal?.slowModeSeconds ?? 0;
     if (yavas > 0 && !yonetimde) {
       setState(() {
-        _bekleBitis = ref
-            .read(simdiProvider)()
-            .add(Duration(seconds: yavas));
+        _bekleBitis = ref.read(simdiProvider)().add(Duration(seconds: yavas));
       });
     }
   }
@@ -275,9 +273,7 @@ class _BilgiSeridi extends StatelessWidget {
             Expanded(
               child: Text(
                 metin,
-                style: context.yazi.bodySmall?.copyWith(
-                  color: r.tintMarkaUstu,
-                ),
+                style: context.yazi.bodySmall?.copyWith(color: r.tintMarkaUstu),
               ),
             ),
           ],
@@ -583,13 +579,12 @@ class _YazmaAlani extends StatelessWidget {
                 minLines: 1,
                 maxLines: 5,
                 maxLength: mesajEnUzun,
-                buildCounter:
-                    (
-                      _, {
-                      required currentLength,
-                      required isFocused,
-                      required maxLength,
-                    }) => null,
+                buildCounter: (
+                  _, {
+                  required currentLength,
+                  required isFocused,
+                  required maxLength,
+                }) => null,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(hintText: m.sohbet_mesaj_ipucu),
               ),

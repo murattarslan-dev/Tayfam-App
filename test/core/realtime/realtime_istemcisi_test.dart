@@ -85,15 +85,18 @@ void main() {
       expect(k.zaman.etkin, isEmpty);
     });
 
-    test('4003: token reddedildi bildirilir, hemen yeniden bağlanılır', () async {
-      final k = _Kurulum();
-      final ilk = await k.baglan();
-      await ilk.sunucuKapatti(4003);
-      expect(k.reddedilenler, ['eski-token']);
-      expect(k.soketler, hasLength(2));
-      expect(k.son.basliklar['Authorization'], 'Bearer yeni-token');
-      expect(k.zaman.etkin, isEmpty);
-    });
+    test(
+      '4003: token reddedildi bildirilir, hemen yeniden bağlanılır',
+      () async {
+        final k = _Kurulum();
+        final ilk = await k.baglan();
+        await ilk.sunucuKapatti(4003);
+        expect(k.reddedilenler, ['eski-token']);
+        expect(k.soketler, hasLength(2));
+        expect(k.son.basliklar['Authorization'], 'Bearer yeni-token');
+        expect(k.zaman.etkin, isEmpty);
+      },
+    );
 
     test('4001: oturum kapatılır, yeniden bağlanılmaz', () async {
       final k = _Kurulum();
@@ -121,27 +124,36 @@ void main() {
 
     test('geri çekilme 1, 2, 4 … 30 sn, ±%20', () {
       final r = Random(7);
-      for (final (deneme, taban) in [(0, 1), (1, 2), (2, 4), (4, 16), (9, 30)]) {
+      for (final (deneme, taban) in [
+        (0, 1),
+        (1, 2),
+        (2, 4),
+        (4, 16),
+        (9, 30),
+      ]) {
         final sure = yenidenBaglanmaBeklemesi(deneme, r).inMilliseconds;
         expect(sure, greaterThanOrEqualTo(taban * 800));
         expect(sure, lessThanOrEqualTo(taban * 1200));
       }
     });
 
-    test('arka planda 30 sn sonra kapanır, ön plana dönünce bağlanır', () async {
-      final k = _Kurulum();
-      final ilk = await k.baglan();
-      k.istemci.arkaPlana();
-      expect(k.zaman.etkin.single.sure, RealtimeIstemcisi.arkaPlanSuresi);
-      k.zaman.calistir();
-      await pumpEventQueue();
-      expect(ilk.kapatmaKodu, 1000);
-      expect(k.istemci.durum, RealtimeDurumu.kapali);
-      expect(k.zaman.etkin, isEmpty);
-      k.istemci.onPlana();
-      await pumpEventQueue();
-      expect(k.soketler, hasLength(2));
-    });
+    test(
+      'arka planda 30 sn sonra kapanır, ön plana dönünce bağlanır',
+      () async {
+        final k = _Kurulum();
+        final ilk = await k.baglan();
+        k.istemci.arkaPlana();
+        expect(k.zaman.etkin.single.sure, RealtimeIstemcisi.arkaPlanSuresi);
+        k.zaman.calistir();
+        await pumpEventQueue();
+        expect(ilk.kapatmaKodu, 1000);
+        expect(k.istemci.durum, RealtimeDurumu.kapali);
+        expect(k.zaman.etkin, isEmpty);
+        k.istemci.onPlana();
+        await pumpEventQueue();
+        expect(k.soketler, hasLength(2));
+      },
+    );
 
     test('30 sn dolmadan ön plana dönülürse bağlantı kalır', () async {
       final k = _Kurulum();
@@ -369,7 +381,11 @@ void main() {
         throwsA(
           isA<ApiProblem>()
               .having((p) => p.type, 'type', ProblemType.slowMode)
-              .having((p) => p.retryAfter, 'retryAfter', const Duration(seconds: 12)),
+              .having(
+                (p) => p.retryAfter,
+                'retryAfter',
+                const Duration(seconds: 12),
+              ),
         ),
       );
     });

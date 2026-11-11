@@ -205,12 +205,10 @@ class KanallarNotifier extends AsyncNotifier<List<Channel>> {
     final liste = kanallar ?? state.value;
     if (liste == null) return;
     final acik = ref.read(acikKanalProvider);
-    ref
-        .read(realtimeIstemcisiProvider)
-        .abonelikleriAyarla(tayfaId, [
-          for (final k in liste)
-            if (k.archivedAt == null) (tayfaId: tayfaId, kanalId: k.id),
-        ], oncelikli: acik?.tayfaId == tayfaId ? acik : null);
+    ref.read(realtimeIstemcisiProvider).abonelikleriAyarla(tayfaId, [
+      for (final k in liste)
+        if (k.archivedAt == null) (tayfaId: tayfaId, kanalId: k.id),
+    ], oncelikli: acik?.tayfaId == tayfaId ? acik : null);
   }
 
   void _degistir(String kanalId, Channel Function(Channel) degistir) {
@@ -225,21 +223,19 @@ class KanallarNotifier extends AsyncNotifier<List<Channel>> {
   }
 
   void _kuyrukOlayi(KuyrukOlayi olay) {
-    if (olay case KuyrukGonderildi(
-      isi: KanalMesajIsi(tayfaId: final t, :final kanalId),
-      :final ChannelMessage sonuc,
-    ) when t == tayfaId) {
+    if (olay
+        case KuyrukGonderildi(
+          isi: KanalMesajIsi(tayfaId: final t, :final kanalId),
+          :final ChannelMessage sonuc,
+        )
+        when t == tayfaId) {
       kendiMesajim(kanalId, sonuc.id);
     }
   }
 
   void _olay(RealtimeOlayi olay) {
     switch (olay) {
-      case KanalMesajiGeldi(
-            :final mesaj,
-            :final kanal,
-            geriAlindi: false,
-          )
+      case KanalMesajiGeldi(:final mesaj, :final kanal, geriAlindi: false)
           when kanal.tayfaId == tayfaId:
         if (_kendi.remove(mesaj.id)) return;
         if (ref.read(acikKanalProvider) == kanal) return;

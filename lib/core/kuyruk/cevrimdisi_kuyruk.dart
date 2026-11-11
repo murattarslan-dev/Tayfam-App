@@ -281,7 +281,7 @@ class CevrimdisiKuyruk extends Notifier<List<KuyrukOgesi>> {
       (o) => o._ile(durum: KuyrukDurumu.gonderiliyor, deneme: o.deneme),
     );
     Object? sonuc;
-    Object? hata;
+    Exception? hata;
     try {
       sonuc = await oge.isi.gonder();
     } on Exception catch (h) {
@@ -290,11 +290,15 @@ class CevrimdisiKuyruk extends Notifier<List<KuyrukOgesi>> {
     if (!ref.mounted || nesil != _nesil) return;
     _ucustakiGruplar.remove(oge.grup);
 
-    if (hata == null) {
-      sil(oge.istekKimligi);
-      _yay(KuyrukGonderildi(oge.isi, sonuc));
+    if (hata case final h?) {
+      _hatayiIsle(oge, h);
       return;
     }
+    sil(oge.istekKimligi);
+    _yay(KuyrukGonderildi(oge.isi, sonuc));
+  }
+
+  void _hatayiIsle(KuyrukOgesi oge, Exception hata) {
     if (hata is OturumYok) {
       // Oturum kapandı; kuyruk oturum durumu değişince temizlenir.
       return;

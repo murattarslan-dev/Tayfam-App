@@ -33,8 +33,7 @@ final class _Kurulum {
   }
 
   List<String> mesajKimlikleri() => [
-    for (final m
-        in kap.read(kanalAkisiProvider(_kanal1)).requireValue.mesajlar)
+    for (final m in kap.read(kanalAkisiProvider(_kanal1)).requireValue.mesajlar)
       m.id,
   ];
 }
@@ -116,7 +115,10 @@ void main() {
       await k.okunmamislar();
       await o.baglan();
       await pumpEventQueue();
-      expect(o.tasima.giden('GET', '/v1/tayfas/{tayfa_id}/channels'), hasLength(2));
+      expect(
+        o.tasima.giden('GET', '/v1/tayfas/{tayfa_id}/channels'),
+        hasLength(2),
+      );
     });
   });
 
@@ -145,17 +147,23 @@ void main() {
       expect(silinen.body, isNull);
     });
 
-    test('yeniden bağlanınca kaçırılanlar son mesajdan itibaren çekilir', () async {
-      final o = SohbetOrtami(mesajlar: [mesajJson(mesajId1)]);
-      final k = _Kurulum(o);
-      await k.akis();
-      await o.baglan();
-      await pumpEventQueue();
-      final cekilen = o.tasima
-          .giden('GET', '/v1/tayfas/{tayfa_id}/channels/{channel_id}/messages')
-          .last;
-      expect(cekilen.sorgu['after_message_id'], mesajId1);
-    });
+    test(
+      'yeniden bağlanınca kaçırılanlar son mesajdan itibaren çekilir',
+      () async {
+        final o = SohbetOrtami(mesajlar: [mesajJson(mesajId1)]);
+        final k = _Kurulum(o);
+        await k.akis();
+        await o.baglan();
+        await pumpEventQueue();
+        final cekilen = o.tasima
+            .giden(
+              'GET',
+              '/v1/tayfas/{tayfa_id}/channels/{channel_id}/messages',
+            )
+            .last;
+        expect(cekilen.sorgu['after_message_id'], mesajId1);
+      },
+    );
 
     test('bağlantı kapalıyken REST ile, aynı istek kimliğiyle gönderilir', () async {
       final o = SohbetOrtami();
@@ -173,7 +181,10 @@ void main() {
         isTrue,
       );
       await pumpEventQueue();
-      expect(k.kap.read(cevrimdisiKuyrukProvider).single.durum, KuyrukDurumu.bekliyor);
+      expect(
+        k.kap.read(cevrimdisiKuyrukProvider).single.durum,
+        KuyrukDurumu.bekliyor,
+      );
       k.kap.read(cevrimdisiKuyrukProvider.notifier).simdiDene();
       await pumpEventQueue();
       final gonderimler = o.tasima.giden(
@@ -192,18 +203,18 @@ void main() {
 
     test('bağlantı açıkken send çerçevesi; cevapsızsa REST, aynı id', () async {
       final o = SohbetOrtami();
-      o.tasima.yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] =
-          (_) => mesajJson(mesajId3, yazar: benimId);
+      o
+          .tasima
+          .yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] = (
+        _,
+      ) => mesajJson(mesajId3, yazar: benimId);
       final k = _Kurulum(o);
       await k.akis();
       final soket = await o.baglan();
       k.kap.read(kanalAkisiProvider(_kanal1).notifier).gonder('selam');
       await pumpEventQueue();
       final giden = soket.tur('send').single;
-      expect(
-        (giden['data']! as Map)['client_request_id'],
-        sahteIstekKimligi,
-      );
+      expect((giden['data']! as Map)['client_request_id'], sahteIstekKimligi);
       o.zaman.calistir(RealtimeIstemcisi.cevapSuresi);
       await pumpEventQueue();
       final rest = o.tasima
@@ -218,8 +229,11 @@ void main() {
 
     test('kalıcı hata (muted) gönderilemedi olur', () async {
       final o = SohbetOrtami();
-      o.tasima.yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] =
-          (_) => const ApiProblem(type: ProblemType.muted, status: 403);
+      o
+          .tasima
+          .yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] = (
+        _,
+      ) => const ApiProblem(type: ProblemType.muted, status: 403);
       final k = _Kurulum(o);
       await k.akis();
       k.kap.read(kanalAkisiProvider(_kanal1).notifier).gonder('selam');

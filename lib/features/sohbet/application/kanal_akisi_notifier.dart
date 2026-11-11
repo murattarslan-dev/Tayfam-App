@@ -191,10 +191,12 @@ class KanalAkisiNotifier extends AsyncNotifier<KanalAkisi> {
   }
 
   void _kuyrukOlayi(KuyrukOlayi olay) {
-    if (olay case KuyrukGonderildi(
-      isi: KanalMesajIsi(:final kanalId),
-      :final ChannelMessage sonuc,
-    ) when kanalId == kanal.kanalId) {
+    if (olay
+        case KuyrukGonderildi(
+          isi: KanalMesajIsi(:final kanalId),
+          :final ChannelMessage sonuc,
+        )
+        when kanalId == kanal.kanalId) {
       _yaz(sonuc);
     }
   }
