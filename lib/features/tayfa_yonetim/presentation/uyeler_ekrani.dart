@@ -167,9 +167,8 @@ class _UyeSatiri extends ConsumerWidget {
           ? IconButton(
               tooltip: m.yonetim_uye_islemleri,
               icon: const Icon(Icons.more_vert),
-              onPressed: () => unawaited(
-                _islemPaneliniAc(context, ref, eylemler, simdi),
-              ),
+              onPressed: () =>
+                  unawaited(_islemPaneliniAc(context, ref, eylemler, simdi)),
             )
           : null,
     );

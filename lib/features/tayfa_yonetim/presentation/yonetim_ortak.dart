@@ -193,7 +193,9 @@ class BosMetin extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       metin,
-      style: context.yazi.bodyLarge?.copyWith(color: context.renkler.metinGovde),
+      style: context.yazi.bodyLarge?.copyWith(
+        color: context.renkler.metinGovde,
+      ),
     );
   }
 }

@@ -73,7 +73,9 @@ class TayfaYonetimMenusu extends ConsumerWidget {
                     : Icons.notifications_off_outlined,
               ),
               title: Text(
-                sessiz ? m.yonetim_menu_sessizden_cikar : m.yonetim_menu_sessize_al,
+                sessiz
+                    ? m.yonetim_menu_sessizden_cikar
+                    : m.yonetim_menu_sessize_al,
               ),
             ),
           ),
@@ -111,8 +113,8 @@ class TayfaYonetimMenusu extends ConsumerWidget {
           yeni ? m.yonetim_sessize_alindi : m.yonetim_sessizden_cikti,
         );
       case _Secim.ayril:
-        final ad = ref.read(tayfaOzetiProvider(tayfaId)).ad ??
-            m.tayfa_adi_bilinmiyor;
+        final ad =
+            ref.read(tayfaOzetiProvider(tayfaId)).ad ?? m.tayfa_adi_bilinmiyor;
         final onay = await onayIste(
           context,
           baslik: m.yonetim_ayril_baslik,
@@ -125,9 +127,9 @@ class TayfaYonetimMenusu extends ConsumerWidget {
         // Uç, bekleyen isteği geri çekmeyle aynıdır
         // (`DELETE /v1/tayfas/{tayfa_id}/membership`); tayfa listesi
         // yenilenir ve aktif tayfa uzlaşır (ADR-0014 §1).
-        final hata = await ref.read(tayfalarimProvider.notifier).geriCek(
-          tayfaId,
-        );
+        final hata = await ref
+            .read(tayfalarimProvider.notifier)
+            .geriCek(tayfaId);
         if (hata == null) {
           bildirim
             ..hideCurrentSnackBar()

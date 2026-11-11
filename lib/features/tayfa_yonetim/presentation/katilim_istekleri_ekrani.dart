@@ -81,7 +81,9 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
     final m = AppLocalizations.of(context);
     final bildirici = SonucBildirici.al(context);
     setState(() => _gonderiliyor = true);
-    final notifier = ref.read(katilimIstekleriProvider(widget.tayfaId).notifier);
+    final notifier = ref.read(
+      katilimIstekleriProvider(widget.tayfaId).notifier,
+    );
     final kullanici = widget.istek.userId;
     final hata = onay
         ? await notifier.onayla(kullanici)

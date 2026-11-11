@@ -87,12 +87,17 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
               _Giris(
                 ikon: Icons.edit_outlined,
                 etiket: m.yonetim_bilgiler,
-                onTap: () =>
-                    context.go(AyarYollari.adres(tayfaId, AyarYollari.bilgiler)),
+                onTap: () => context.go(
+                  AyarYollari.adres(tayfaId, AyarYollari.bilgiler),
+                ),
               ),
               if (tayfa != null) ...[
                 _ModullerBolumu(tayfaId: tayfaId, tayfa: tayfa),
-                _KodBolumu(tayfaId: tayfaId, ad: ozet.ad, kod: ozet.katilimKodu),
+                _KodBolumu(
+                  tayfaId: tayfaId,
+                  ad: ozet.ad,
+                  kod: ozet.katilimKodu,
+                ),
                 _SilmeBolumu(tayfaId: tayfaId, ad: ozet.ad, tayfa: tayfa),
               ],
             ],
@@ -182,7 +187,11 @@ class _ModullerBolumu extends ConsumerWidget {
     final mesgul = ref.watch(tayfaAyarlariProvider(tayfaId));
     final moduller = tayfa.modules;
     final satirlar = <(Module, String, bool)>[
-      (Module.announcements, m.yonetim_modul_duyurular, moduller.announcements == true),
+      (
+        Module.announcements,
+        m.yonetim_modul_duyurular,
+        moduller.announcements == true,
+      ),
       (Module.events, m.yonetim_modul_etkinlikler, moduller.events == true),
       (Module.qa, m.yonetim_modul_soru_cevap, moduller.qa == true),
       (Module.polls, m.yonetim_modul_anketler, moduller.polls == true),
@@ -231,7 +240,11 @@ class _ModullerBolumu extends ConsumerWidget {
 /// Tayfa kodu: paylaşma, kopyalama ve yenileme (onaylı; eski kod hemen
 /// geçersiz olur). Kod yalnızca yöneticiye döner (sözleşme).
 class _KodBolumu extends ConsumerWidget {
-  const _KodBolumu({required this.tayfaId, required this.ad, required this.kod});
+  const _KodBolumu({
+    required this.tayfaId,
+    required this.ad,
+    required this.kod,
+  });
 
   final String tayfaId;
   final String? ad;
@@ -246,7 +259,10 @@ class _KodBolumu extends ConsumerWidget {
       baslik: m.yonetim_kod_baslik,
       children: [
         if (kod != null) ...[
-          SelectableText(m.tayfa_davet_kod(kod), style: context.yazi.titleMedium),
+          SelectableText(
+            m.tayfa_davet_kod(kod),
+            style: context.yazi.titleMedium,
+          ),
           const SizedBox(height: TayfamSpacing.s12),
           KodDugmeleri(ad: ad ?? m.tayfa_adi_bilinmiyor, kod: kod),
           const SizedBox(height: TayfamSpacing.s8),

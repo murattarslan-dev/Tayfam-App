@@ -44,8 +44,9 @@ class UyelerNotifier extends SayfaliListeNotifier<Membership> {
   }
 
   @override
-  Future<Sayfa<Membership>> sayfaGetir(String? sayfaToken) =>
-      ref.read(yonetimDeposuProvider).uyeler(
+  Future<Sayfa<Membership>> sayfaGetir(String? sayfaToken) => ref
+      .read(yonetimDeposuProvider)
+      .uyeler(
         anahtar.tayfaId,
         durum: anahtar.banlilar
             ? ListMembersStatus.banned
@@ -67,9 +68,8 @@ class UyelerNotifier extends SayfaliListeNotifier<Membership> {
   Future<Object?> sustur(String uyeId, Duration sure) {
     final bitis = ref.read(saatProvider)().toUtc().add(sure);
     return _islem(
-      () => ref
-          .read(yonetimDeposuProvider)
-          .sustur(anahtar.tayfaId, uyeId, bitis),
+      () =>
+          ref.read(yonetimDeposuProvider).sustur(anahtar.tayfaId, uyeId, bitis),
     );
   }
 
@@ -91,21 +91,20 @@ class UyelerNotifier extends SayfaliListeNotifier<Membership> {
     await ref.read(yonetimDeposuProvider).banla(anahtar.tayfaId, uyeId);
     _listedenCikar(uyeId);
     if (!ref.mounted) return;
-    final banlilar = uyelerProvider((
-      tayfaId: anahtar.tayfaId,
-      banlilar: true,
-    ));
+    final banlilar = uyelerProvider((tayfaId: anahtar.tayfaId, banlilar: true));
     if (ref.read(banlilar.exists)) ref.invalidate(banlilar);
   });
 
-  Future<Object?> _islem(Future<Membership> Function() islem) =>
-      yonetimIslemi(ref, () async {
-        final uye = await islem();
-        if (!ref.mounted) return;
-        ogeleriDegistir(
-          (ogeler) => [for (final u in ogeler) u.userId == uye.userId ? uye : u],
-        );
-      });
+  Future<Object?> _islem(Future<Membership> Function() islem) => yonetimIslemi(
+    ref,
+    () async {
+      final uye = await islem();
+      if (!ref.mounted) return;
+      ogeleriDegistir(
+        (ogeler) => [for (final u in ogeler) u.userId == uye.userId ? uye : u],
+      );
+    },
+  );
 
   void _listedenCikar(String uyeId) {
     if (!ref.mounted) return;

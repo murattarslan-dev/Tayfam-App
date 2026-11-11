@@ -59,10 +59,12 @@ class DavetlerNotifier extends AsyncNotifier<List<Invite>> {
   }) async {
     String? link;
     final hata = await yonetimIslemi(ref, () async {
-      final olusan = await ref.read(yonetimDeposuProvider).davetOlustur(
-        tayfaId,
-        InviteCreateRequest(ttlSeconds: sure.inSeconds, maxUses: kullanim),
-      );
+      final olusan = await ref
+          .read(yonetimDeposuProvider)
+          .davetOlustur(
+            tayfaId,
+            InviteCreateRequest(ttlSeconds: sure.inSeconds, maxUses: kullanim),
+          );
       link = davetLinki(olusan.token);
       if (!ref.mounted) return;
       final eski = state.value ?? const <Invite>[];

@@ -162,9 +162,8 @@ class _DavetSecenekleriState extends State<DavetSecenekleri> {
             child: BirincilEylem(
               etiket: m.yonetim_davet_olustur_onayla,
               ikon: Icons.add_link,
-              onPressed: () => Navigator.of(
-                context,
-              ).pop((sure: _sure, kullanim: _kullanim)),
+              onPressed: () =>
+                  Navigator.of(context).pop((sure: _sure, kullanim: _kullanim)),
             ),
           ),
         ],
@@ -222,7 +221,11 @@ class DavetLinkiPaylasimi extends ConsumerWidget {
                   etiket: m.yonetim_davet_paylas,
                   ikon: Icons.share_outlined,
                   onPressed: () => unawaited(
-                    _paylas(dugme, ref, m.yonetim_davet_paylasim_metni(ad, link)),
+                    _paylas(
+                      dugme,
+                      ref,
+                      m.yonetim_davet_paylasim_metni(ad, link),
+                    ),
                   ),
                 ),
               ),

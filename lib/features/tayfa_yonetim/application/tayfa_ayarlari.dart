@@ -93,19 +93,17 @@ class TayfaAyarlariNotifier extends Notifier<bool> {
 
   /// Bilgileri günceller (`PATCH`). Ad değiştiyse tayfa listesi de
   /// yenilenir.
-  Future<Object?> bilgileriKaydet(TayfaUpdateRequest istek) =>
-      _islem(() async {
-        await ref.read(yonetimDeposuProvider).bilgileriGuncelle(tayfaId, istek);
-        if (istek.name != null && ref.mounted) {
-          unawaited(ref.read(tayfalarimProvider.notifier).yenile());
-        }
-      });
+  Future<Object?> bilgileriKaydet(TayfaUpdateRequest istek) => _islem(() async {
+    await ref.read(yonetimDeposuProvider).bilgileriGuncelle(tayfaId, istek);
+    if (istek.name != null && ref.mounted) {
+      unawaited(ref.read(tayfalarimProvider.notifier).yenile());
+    }
+  });
 
   /// [modul]'ü açar ya da kapatır.
   Future<Object?> modulAyarla(Module modul, {required bool acik}) => _islem(
-    () => ref
-        .read(yonetimDeposuProvider)
-        .modulAyarla(tayfaId, modul, acik: acik),
+    () =>
+        ref.read(yonetimDeposuProvider).modulAyarla(tayfaId, modul, acik: acik),
   );
 
   /// Katılım kodunu yeniler; eski kod hemen geçersiz olur.

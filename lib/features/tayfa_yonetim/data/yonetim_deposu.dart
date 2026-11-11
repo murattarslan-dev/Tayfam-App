@@ -140,8 +140,10 @@ final class YonetimDeposu {
 
   /// `POST /v1/tayfas/{tayfa_id}/invites`. Dönen token yalnızca bu
   /// cevapta vardır.
-  Future<CreatedInvite> davetOlustur(String tayfaId, InviteCreateRequest istek) =>
-      _davetler.createInvite(tayfaId: tayfaId, body: istek);
+  Future<CreatedInvite> davetOlustur(
+    String tayfaId,
+    InviteCreateRequest istek,
+  ) => _davetler.createInvite(tayfaId: tayfaId, body: istek);
 
   /// `DELETE /v1/tayfas/{tayfa_id}/invites/{invite_id}`.
   Future<void> davetIptal(String tayfaId, String davetId) =>

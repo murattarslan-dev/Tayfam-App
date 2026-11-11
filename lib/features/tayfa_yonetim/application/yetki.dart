@@ -46,7 +46,10 @@ final class UyeEylemleri {
 
   /// En az bir işlem var.
   bool get herhangi =>
-      atanabilirRoller.isNotEmpty || susturabilir || cikarabilir || banlayabilir;
+      atanabilirRoller.isNotEmpty ||
+      susturabilir ||
+      cikarabilir ||
+      banlayabilir;
 }
 
 /// [ben] rolündeki kullanıcının [hedef] üyeye yapabilecekleri. Kendi
@@ -146,6 +149,9 @@ bool tayfaSessizde(
 
 /// Davet linki: token yalnızca fragment'tadır (kesin kural 9); sunucuya
 /// URL ile gitmez. Link log'a ve diske yazılmaz.
-String davetLinki(String token) =>
-    Uri(scheme: 'https', host: 'tayfam.app', path: '/davet', fragment: token)
-        .toString();
+String davetLinki(String token) => Uri(
+  scheme: 'https',
+  host: 'tayfam.app',
+  path: '/davet',
+  fragment: token,
+).toString();
