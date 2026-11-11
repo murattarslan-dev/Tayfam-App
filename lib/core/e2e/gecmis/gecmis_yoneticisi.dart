@@ -245,19 +245,17 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
   /// mesajlar yeniden yayılmaz (arşive tekrar yazılmaz).
   void _icerigeEkle(KonusmaArsivi arsiv) {
     if (arsiv.mesajlar.isEmpty || !ref.mounted) return;
-    ref
-        .read(birebirIcerikProvider.notifier)
-        .ekle([
-          for (final m in arsiv.mesajlar.values)
-            CozulmusBirebirMesaj(
-              mesajId: m.mesajId,
-              konusmaId: konusmaId,
-              gonderenKullaniciId: m.gonderenId,
-              metin: m.govde,
-              olusturma: m.olusturma,
-              kaynak: CozulmusMesajKaynagi.arsiv,
-            ),
-        ]);
+    ref.read(birebirIcerikProvider.notifier).ekle([
+      for (final m in arsiv.mesajlar.values)
+        CozulmusBirebirMesaj(
+          mesajId: m.mesajId,
+          konusmaId: konusmaId,
+          gonderenKullaniciId: m.gonderenId,
+          metin: m.govde,
+          olusturma: m.olusturma,
+          kaynak: CozulmusMesajKaynagi.arsiv,
+        ),
+    ]);
   }
 
   /// Daha eski bir sayfa okur ve ekler.
