@@ -267,7 +267,11 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
       case DmKonusmaKabulEdildi(:final konusmaId)
           when konusmaId == this.konusmaId:
         _durumuDegistir(ConversationStatus.active);
-      case DmOkundu(:final konusmaId, :final kullaniciId, :final sonOkunanMesajId)
+      case DmOkundu(
+            :final konusmaId,
+            :final kullaniciId,
+            :final sonOkunanMesajId,
+          )
           when konusmaId == this.konusmaId:
         _karsiOkudu(kullaniciId, sonOkunanMesajId);
       case Baglandi():

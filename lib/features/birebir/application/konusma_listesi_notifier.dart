@@ -47,10 +47,7 @@ class KonusmaListesiNotifier extends SayfaliListeNotifier<Conversation> {
     final oturum = ref.watch(oturumDurumuProvider);
     ref.watch(birebirDeposuProvider);
     if (oturum != OturumDurumu.acik) return const SayfaliListe(ogeler: []);
-    final olaylar = ref
-        .watch(realtimeIstemcisiProvider)
-        .olaylar
-        .listen(_olay);
+    final olaylar = ref.watch(realtimeIstemcisiProvider).olaylar.listen(_olay);
     ref.onDispose(olaylar.cancel);
     final kuyruk = ref
         .read(cevrimdisiKuyrukProvider.notifier)

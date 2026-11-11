@@ -108,7 +108,11 @@ void main() {
 
     testWidgets('konuşma yoksa boş durum', (tester) async {
       ekranBoyutu(tester);
-      await _ac(tester, const Scaffold(body: BirebirSekmesi()), birebirTasimasi());
+      await _ac(
+        tester,
+        const Scaffold(body: BirebirSekmesi()),
+        birebirTasimasi(),
+      );
       expect(find.text(arbMetni('birebir_bos')), findsOneWidget);
     });
 
