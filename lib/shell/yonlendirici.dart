@@ -10,6 +10,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
@@ -22,8 +23,8 @@ const String tayfaIdParametresi = Adresler.tayfaIdParametresi;
 /// Uygulamanın yönlendiricisi (ADR-0003).
 ///
 /// Uygulama boyunca yaşar (Riverpod 3'te `autoDispose` olmayan provider
-/// kalıcıdır). Oturum durumu, aktif tayfa, tayfa listesi veya güncelleme
-/// durumu değişince korumalar ([yonlendir]) yeniden çalışır.
+/// kalıcıdır). Oturum durumu, aktif tayfa, tayfa listesi, güncelleme veya
+/// tanıtım durumu değişince korumalar ([yonlendir]) yeniden çalışır.
 ///
 /// Adresteki `/t/<id>` aktif tayfa değilse ve etkin üyeliklerdeyse aktif
 /// tayfa adrese göre değişir (ADR-0014 §1; [adresleEsitle]).
@@ -39,6 +40,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
   ref.listen(guncellemeProvider, (_, _) => yenile.value++);
   ref.listen(etkinTayfaIdleriProvider, (_, _) => yenile.value++);
   ref.listen(tayfalarYukleniyorProvider, (_, _) => yenile.value++);
+  ref.listen(tanitimProvider, (_, _) => yenile.value++);
 
   final yonlendirici = GoRouter(
     initialLocation: Adresler.kok,
@@ -50,6 +52,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
       guncellemeGerekli: ref.read(guncellemeProvider),
       etkinTayfalar: ref.read(etkinTayfaIdleriProvider),
       tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
+      tanitim: ref.read(tanitimProvider),
     ),
     errorBuilder: (context, state) => const BulunamadiSayfasi(),
     routes: rotalariOlustur(moduller),
@@ -149,6 +152,16 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
     GoRoute(
       path: Adresler.guncelleme,
       builder: (context, state) => const GuncellemeEkrani(),
+    ),
+    // İlk açılıştaki hoş geldin tanıtımı (ADR-0017). Hedef yol girdi kabul
+    // edilir ve doğrulanır.
+    GoRoute(
+      path: Adresler.hosGeldin,
+      builder: (context, state) => HosGeldinEkrani(
+        hedef: guvenliHedef(
+          state.uri.queryParameters[Adresler.hedefParametresi],
+        ),
+      ),
     ),
     GoRoute(
       path: Adresler.giris,

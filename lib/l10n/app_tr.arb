@@ -2428,5 +2428,137 @@
   "hata_message_request_not_found": "Bekleyen bir mesaj isteği yok.",
   "@hata_message_request_not_found": {
     "description": "Hata kodu `message-request-not-found`. Bu konuşmada kullanıcıyı bekleyen bir mesaj isteği olmadığında (kabul ya da ret denendiğinde) görünen hata."
+  },
+  "hosgeldin_atla": "Atla",
+  "@hosgeldin_atla": {
+    "description": "Hoş geldin tanıtımının her sayfasında, üstteki mor bölümde sağda duran metin düğmesi. Tanıtımı bitirir (bir daha gösterilmez) ve giriş ekranına geçer."
+  },
+  "hosgeldin_ileri": "İleri",
+  "@hosgeldin_ileri": {
+    "description": "Hoş geldin tanıtımının altındaki birincil düğme (son sayfa hariç); bir sonraki tanıtım sayfasına geçer."
+  },
+  "hosgeldin_baslayalim": "Başlayalım",
+  "@hosgeldin_baslayalim": {
+    "description": "Hoş geldin tanıtımının son sayfasındaki birincil düğme; tanıtımı bitirir ve giriş ekranına geçer."
+  },
+  "hosgeldin_sayfa": "Sayfa {sayfa} / {toplam}",
+  "@hosgeldin_sayfa": {
+    "description": "Hoş geldin tanıtımındaki sayfa göstergesinin (noktaların) ekran okuyucu etiketi; sayfa değişince okunur. Ekranda yazı olarak görünmez.",
+    "placeholders": {
+      "sayfa": {
+        "type": "int",
+        "example": "2"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "hosgeldin_tayfa_baslik": "Tayfan tek yerde",
+  "@hosgeldin_tayfa_baslik": {
+    "description": "Hoş geldin tanıtımının 1. sayfasının başlığı."
+  },
+  "hosgeldin_tayfa_metin": "Kulübün ya da arkadaş grubun: planlar, duyurular, sorular ve sohbet artık grup sohbetinde kaybolmaz.",
+  "@hosgeldin_tayfa_metin": {
+    "description": "Hoş geldin tanıtımının 1. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_etkinlik_baslik": "Etkinlikler kimin geldiğini bilir",
+  "@hosgeldin_etkinlik_baslik": {
+    "description": "Hoş geldin tanıtımının 2. sayfasının başlığı."
+  },
+  "hosgeldin_etkinlik_metin": "Geliyorum, belki ya da gelmiyorum de. Kontenjan dolunca bekleme listesi işler. Günü gelince \"Geldim\" demen yeter.",
+  "@hosgeldin_etkinlik_metin": {
+    "description": "Hoş geldin tanıtımının 2. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_soru_baslik": "Sorulan soru kaybolmaz",
+  "@hosgeldin_soru_baslik": {
+    "description": "Hoş geldin tanıtımının 3. sayfasının başlığı."
+  },
+  "hosgeldin_soru_metin": "Duyurular ana sayfada durur. Sorular cevaplarıyla aranabilir kalır, kararlar anketle verilir.",
+  "@hosgeldin_soru_metin": {
+    "description": "Hoş geldin tanıtımının 3. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_sohbet_baslik": "Sohbet de var, düzenli haliyle",
+  "@hosgeldin_sohbet_baslik": {
+    "description": "Hoş geldin tanıtımının 4. sayfasının başlığı."
+  },
+  "hosgeldin_sohbet_metin": "Kanallar ve birebir mesajlar. Birebir mesajlar uçtan uca şifrelidir; konumun hiçbir yere kaydedilmez.",
+  "@hosgeldin_sohbet_metin": {
+    "description": "Hoş geldin tanıtımının 4. sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_katil_baslik": "Tayfana katıl ya da kendininkini aç",
+  "@hosgeldin_katil_baslik": {
+    "description": "Hoş geldin tanıtımının 5. (son) sayfasının başlığı."
+  },
+  "hosgeldin_katil_metin": "Davet linkine dokun, tayfa kodunu gir ya da kendi tayfanı birkaç adımda kur.",
+  "@hosgeldin_katil_metin": {
+    "description": "Hoş geldin tanıtımının 5. (son) sayfasının metni; başlığın altında görünür."
+  },
+  "hosgeldin_ornek_tayfa_adi": "Pazar Sürücüleri",
+  "@hosgeldin_ornek_tayfa_adi": {
+    "description": "Hoş geldin tanıtımının 1. sayfasındaki görselde (mor tayfa üst bölümü) uydurma örnek tayfa adı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_etkinlik_basligi": "Kaz Dağları yürüyüşü",
+  "@hosgeldin_ornek_etkinlik_basligi": {
+    "description": "Hoş geldin tanıtımının 2. sayfasındaki örnek etkinlik kartında uydurma etkinlik başlığı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_etkinlik_zamani": "Cumartesi, 07:30",
+  "@hosgeldin_ornek_etkinlik_zamani": {
+    "description": "Hoş geldin tanıtımının 2. sayfasındaki örnek etkinlik kartında etkinlik zamanı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_etkinlik_katilim": "14 kişi geliyor, 2 kişi bekleme listesinde",
+  "@hosgeldin_ornek_etkinlik_katilim": {
+    "description": "Hoş geldin tanıtımının 2. sayfasındaki örnek etkinlik kartında katılım satırı. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_kisi_1": "SA",
+  "@hosgeldin_ornek_kisi_1": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartındaki ilk baş harf avatarı (uydurma kişi). Süstür."
+  },
+  "hosgeldin_ornek_kisi_2": "MK",
+  "@hosgeldin_ornek_kisi_2": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartındaki ikinci baş harf avatarı (uydurma kişi). Süstür."
+  },
+  "hosgeldin_ornek_kisi_3": "EY",
+  "@hosgeldin_ornek_kisi_3": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartındaki üçüncü baş harf avatarı (uydurma kişi). Süstür."
+  },
+  "hosgeldin_ornek_kisi_diger": "+{sayi}",
+  "@hosgeldin_ornek_kisi_diger": {
+    "description": "Hoş geldin tanıtımının örnek etkinlik kartında baş harf avatarlarından sonra gelen, gösterilmeyen kişi sayısı. Süstür.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "11"
+      }
+    }
+  },
+  "hosgeldin_ornek_soru": "Rölantide tekleme neden olur?",
+  "@hosgeldin_ornek_soru": {
+    "description": "Hoş geldin tanıtımının 3. sayfasındaki örnek soru-cevap kartında uydurma soru. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_cevap": "Vakum hortumlarını da kontrol et, çatlak olabilir.",
+  "@hosgeldin_ornek_cevap": {
+    "description": "Hoş geldin tanıtımının 3. sayfasındaki örnek soru-cevap kartında uydurma cevap. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_anket": "Kamp hangi hafta sonu?",
+  "@hosgeldin_ornek_anket": {
+    "description": "Hoş geldin tanıtımının 3. sayfasındaki örnek anket kartında uydurma anket sorusu. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_anket_secenek_1": "14–15 Haziran",
+  "@hosgeldin_ornek_anket_secenek_1": {
+    "description": "Hoş geldin tanıtımının örnek anketindeki birinci (önde olan) seçenek. Süstür."
+  },
+  "hosgeldin_ornek_anket_secenek_2": "21–22 Haziran",
+  "@hosgeldin_ornek_anket_secenek_2": {
+    "description": "Hoş geldin tanıtımının örnek anketindeki ikinci seçenek. Süstür."
+  },
+  "hosgeldin_ornek_mesaj_gelen": "Cumartesi termosu ben getiriyorum.",
+  "@hosgeldin_ornek_mesaj_gelen": {
+    "description": "Hoş geldin tanıtımının 4. sayfasındaki örnek birebir sohbette gelen mesaj (uydurma). Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_mesaj_giden": "Süper, ben de ocağı alırım.",
+  "@hosgeldin_ornek_mesaj_giden": {
+    "description": "Hoş geldin tanıtımının 4. sayfasındaki örnek birebir sohbette giden mesaj (uydurma). Süstür; ekran okuyucu okumaz."
   }
 }
