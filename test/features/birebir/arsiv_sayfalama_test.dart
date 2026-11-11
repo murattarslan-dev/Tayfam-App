@@ -52,10 +52,9 @@ SahteTayfaTasima _birebir() => birebirTasimasi({
     _eskiMesajSayfasi => mesajListesiJson([
       _mesaj(_eski, zaman: '2026-11-01T10:00:00Z'),
     ]),
-    _ => mesajListesiJson(
-      [_mesaj(_yeni, zaman: '2026-11-10T10:00:00Z')],
-      sonraki: _eskiMesajSayfasi,
-    ),
+    _ => mesajListesiJson([
+      _mesaj(_yeni, zaman: '2026-11-10T10:00:00Z'),
+    ], sonraki: _eskiMesajSayfasi),
   },
 });
 
@@ -173,7 +172,9 @@ void main() {
         ikiKatYazi(tester);
         final o = _Gecmis(
           ilk: [yeniKayit],
-          ikinci: () => {'entries': [eskiKayit]},
+          ikinci: () => {
+            'entries': [eskiKayit],
+          },
         );
         await _ac(tester, o, tema: tema);
         expect(o.arsivIstekleri, hasLength(1));
@@ -196,7 +197,9 @@ void main() {
         'sayılır', (tester) async {
       final o = _Gecmis(
         ilk: [yeniKayit],
-        ikinci: () => {'entries': [_eskiSurumKaydi(_eski)]},
+        ikinci: () => {
+          'entries': [_eskiSurumKaydi(_eski)],
+        },
       );
       await _ac(tester, o);
       expect(_metin('cihaz_eski_mesajlar_okunamiyor'), findsNothing);
