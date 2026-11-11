@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:tayfam/core/guvenli_depo/guvenli_okuma.dart';
+
 /// Kullanıcının tema seçimi (ADR-0018 §2): sistemi izle, açık ya da koyu.
 enum TemaTercihi {
   /// Cihazın açık / koyu ayarını izler (varsayılan).
@@ -47,6 +49,7 @@ abstract interface class TemaTercihiDeposu {
 }
 
 /// Mobil: Android Keystore / iOS Keychain (`flutter_secure_storage`).
+/// Çözülemeyen kayıt okunurken silinir ve yok sayılır ([guvenliOku]).
 ///
 /// iOS'ta öteki kayıtlarla aynı erişim sınıfı (`first_unlock_this_device`):
 /// yedeğe ve başka cihaza geçmez.
@@ -65,7 +68,7 @@ final class GuvenliTemaTercihiDeposu implements TemaTercihiDeposu {
   static const String _anahtar = 'tayfam.tema';
 
   @override
-  Future<String?> oku() => _depo.read(key: _anahtar);
+  Future<String?> oku() => guvenliOku(_depo, _anahtar);
 
   @override
   Future<void> yaz(String deger) => _depo.write(key: _anahtar, value: deger);

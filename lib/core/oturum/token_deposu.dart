@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:tayfam/core/guvenli_depo/guvenli_okuma.dart';
+
 /// Depoda tutulan oturum kaydı: token çifti, süreleri ve yönlendirmenin
 /// ihtiyaç duyduğu iki bayrak (ADR-0005, ADR-0006).
 ///
@@ -92,6 +94,7 @@ abstract interface class TokenDeposu {
 }
 
 /// Mobil: Android Keystore / iOS Keychain (`flutter_secure_storage`).
+/// Çözülemeyen kayıt okunurken silinir ve yok sayılır ([guvenliOku]).
 ///
 /// iOS'ta `first_unlock_this_device`: cihaz ilk kez açıldıktan sonra arka
 /// planda da okunabilir, yedeğe ve başka cihaza geçmez (ADR-0005).
@@ -110,7 +113,7 @@ final class GuvenliTokenDeposu implements TokenDeposu {
   static const String _anahtar = 'tayfam.oturum';
 
   @override
-  Future<String?> oku() => _depo.read(key: _anahtar);
+  Future<String?> oku() => guvenliOku(_depo, _anahtar);
 
   @override
   Future<void> yaz(String kayit) => _depo.write(key: _anahtar, value: kayit);
