@@ -63,7 +63,11 @@ final class _SahteAyarlar implements AyarlarAcici {
 final class _Ortam {
   _Ortam({required bool eslesmis}) {
     kaynak = SahteKaynak(
-      bilgi(cihaz: eslesmis ? cihazA : cihazB, eslesmis: eslesmis, baska: !eslesmis),
+      bilgi(
+        cihaz: eslesmis ? cihazA : cihazB,
+        eslesmis: eslesmis,
+        baska: !eslesmis,
+      ),
     );
     final api = GecmisApi(tasima);
     final anahtarlar = GecmisAnahtariDeposu(BellekE2eDepo());
@@ -315,7 +319,9 @@ void main() {
       final depo = BellekE2eDepo();
       await widgetAc(
         tester,
-        const Scaffold(body: SingleChildScrollView(child: TekCihazBilgiKarti())),
+        const Scaffold(
+          body: SingleChildScrollView(child: TekCihazBilgiKarti()),
+        ),
         themeMode: ThemeMode.dark,
         overrides: [
           ...o.overrides,

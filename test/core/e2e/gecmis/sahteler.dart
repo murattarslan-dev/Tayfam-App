@@ -84,9 +84,8 @@ final class SahteKaynak implements E2eCihazDurumuKaynagi {
   GecmisCihazBilgisi? _guncel;
   GecmisCihazBilgisi? Function()? sonraki;
   int tazelemeSayisi = 0;
-  final StreamController<GecmisCihazBilgisi?> _akis = StreamController.broadcast(
-    sync: true,
-  );
+  final StreamController<GecmisCihazBilgisi?> _akis =
+      StreamController.broadcast(sync: true);
 
   void yayinla(GecmisCihazBilgisi? b) {
     _guncel = b;

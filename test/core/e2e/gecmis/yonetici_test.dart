@@ -105,7 +105,9 @@ void main() {
     test('eşleştirilmemiş ilk cihaz anahtarı alır; önceki sürüm varsa '
         '"eski arşiv okunamaz" bildirilir', () async {
       final kaynak = SahteKaynak(bilgi(eslesmis: false, surum: 2));
-      final tasima = SahteTasima({anahtarAl: (_) => {'history_key_version': 3}});
+      final tasima = SahteTasima({
+        anahtarAl: (_) => {'history_key_version': 3},
+      });
       final depo = BellekE2eDepo();
       final c = _kap(kaynak, tasima, depo: depo);
       c.listen(gecmisYoneticisiProvider, (_, _) {});
@@ -166,7 +168,9 @@ void main() {
     test('konuşma arşivi sağlayıcısı: E2E yoksa boş, eşleştirilmiş cihazda '
         'çözülmüş mesajlar', () async {
       final kaynak = SahteKaynak(null);
-      final tasima = SahteTasima({arsivOku: (_) => {'entries': <Object?>[]}});
+      final tasima = SahteTasima({
+        arsivOku: (_) => {'entries': <Object?>[]},
+      });
       final c = _kap(kaynak, tasima);
       final bos = await c.read(konusmaArsiviProvider(konusmaId).future);
       expect(bos.mesajlar, isEmpty);
@@ -190,9 +194,8 @@ void main() {
       istemciAdi: 'android',
     );
     try {
-      await GecmisApi(tasima).anahtariYenile(2, [
-        (cihazId: cihazB, paket: Uint8List(2)),
-      ]);
+      await GecmisApi(tasima)
+          .anahtariYenile(2, [(cihazId: cihazB, paket: Uint8List(2))]);
       fail('hata bekleniyordu');
     } on ApiProblem catch (p) {
       expect(p.type, ProblemType.e2eDevicesChanged);
