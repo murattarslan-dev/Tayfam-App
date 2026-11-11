@@ -4042,6 +4042,210 @@
   "@yonetim_davet_iptal_edildi": {
     "description": "Davet linki iptal edilince kısa süre görünen bildirim."
   },
+  "birebir_bos": "Henüz birebir konuşman yok. Bir kişinin profilinden ona mesaj gönderebilirsin.",
+  "@birebir_bos": {
+    "description": "Birebir konuşma yokken Sohbet sekmesinde görünen boş durum metni."
+  },
+  "birebir_yukleniyor": "Konuşmalar yükleniyor",
+  "@birebir_yukleniyor": {
+    "description": "Birebir konuşmalar, mesaj istekleri ya da reddedilenler okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "birebir_konusma_yukleniyor": "Mesajlar yükleniyor",
+  "@birebir_konusma_yukleniyor": {
+    "description": "Bir birebir konuşmanın mesajları okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "birebir_tekrar_dene": "Tekrar dene",
+  "@birebir_tekrar_dene": {
+    "description": "Birebir mesaj ekranlarında okunamayan listeyi yeniden okuyan ya da gönderilemeyen mesajı yeniden gönderen düğme."
+  },
+  "birebir_daha_fazla": "Daha fazla göster",
+  "@birebir_daha_fazla": {
+    "description": "Birebir konuşmalar, mesaj istekleri ve reddedilenler listesinde sonraki sayfayı okuyan düğme."
+  },
+  "birebir_daha_eski": "Önceki mesajlar",
+  "@birebir_daha_eski": {
+    "description": "Birebir konuşmanın başında daha eski mesajları okuyan düğme."
+  },
+  "birebir_istekler_baslik": "Mesaj istekleri",
+  "@birebir_istekler_baslik": {
+    "description": "Sohbet sekmesindeki mesaj istekleri girişinin ve mesaj istekleri ekranının başlığı."
+  },
+  "birebir_istekler_sayisi": "{sayi, plural, other{{sayi} bekleyen mesaj isteği}}",
+  "@birebir_istekler_sayisi": {
+    "description": "Mesaj istekleri girişindeki rozetin ekran okuyucu etiketi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "birebir_istekler_aciklama": "Seninle serbestçe yazışamayan kişilerin ilk mesajı burada bekler. Cevap yazarsan ya da kabul edersen konuşma başlar. Reddedersen gönderen bunu öğrenmez.",
+  "@birebir_istekler_aciklama": {
+    "description": "Mesaj istekleri ekranının üstündeki açıklama."
+  },
+  "birebir_istekler_bos": "Bekleyen mesaj isteğin yok.",
+  "@birebir_istekler_bos": {
+    "description": "Bekleyen mesaj isteği yokken mesaj istekleri ekranında görünen metin."
+  },
+  "birebir_reddedilenler": "Reddedilenler",
+  "@birebir_reddedilenler": {
+    "description": "Reddedilen mesaj istekleri ekranının başlığı ve mesaj istekleri ekranındaki giriş düğmesi."
+  },
+  "birebir_reddedilenler_aciklama": "Bu listeyi yalnızca sen görürsün. Listeden çıkardığın istek yeniden mesaj isteklerine düşer; gönderene bildirim gitmez.",
+  "@birebir_reddedilenler_aciklama": {
+    "description": "Reddedilenler ekranının üstündeki açıklama."
+  },
+  "birebir_reddedilenler_bos": "Reddettiğin bir istek yok.",
+  "@birebir_reddedilenler_bos": {
+    "description": "Reddedilen istek yokken reddedilenler ekranında görünen metin."
+  },
+  "birebir_reddedilen_tarih": "Reddedildi: {tarih}",
+  "@birebir_reddedilen_tarih": {
+    "description": "Reddedilenler listesinde isteğin reddedildiği gün, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMd",
+        "example": "2026-11-11"
+      }
+    }
+  },
+  "birebir_listeden_cikar": "Listeden çıkar",
+  "@birebir_listeden_cikar": {
+    "description": "Reddedilenler listesinde isteği yeniden mesaj isteklerine taşıyan düğme."
+  },
+  "birebir_listeden_cikarildi": "İstek yeniden mesaj isteklerine taşındı.",
+  "@birebir_listeden_cikarildi": {
+    "description": "Reddedilen istek listeden çıkarılınca kısa süre görünen bildirim."
+  },
+  "birebir_durum_istek_gonderildi": "İstek gönderildi",
+  "@birebir_durum_istek_gonderildi": {
+    "description": "Konuşma listesinde, kullanıcının gönderdiği ve cevap bekleyen mesaj isteğinin alt satırı."
+  },
+  "birebir_durum_istek_geldi": "Mesaj isteği",
+  "@birebir_durum_istek_geldi": {
+    "description": "Mesaj istekleri listesinde, kullanıcıya gelen isteğin alt satırı."
+  },
+  "birebir_son_mesaj": "{tarih}, {saat}",
+  "@birebir_son_mesaj": {
+    "description": "Konuşma listesinde son mesajın günü ve saati, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-11"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-11T18:30"
+      }
+    }
+  },
+  "birebir_mesaj_silindi": "Bu mesaj silindi",
+  "@birebir_mesaj_silindi": {
+    "description": "Silinmiş birebir mesajın balonunda metin yerine görünen yazı."
+  },
+  "birebir_yaz_ipucu": "Mesaj yaz",
+  "@birebir_yaz_ipucu": {
+    "description": "Birebir mesaj yazma alanının ipucu metni."
+  },
+  "birebir_gonder": "Gönder",
+  "@birebir_gonder": {
+    "description": "Birebir mesaj yazma alanındaki gönder düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "birebir_metin_gecersiz": "Mesaj en çok 4000 karakter olabilir ve yalnız boşluktan oluşamaz.",
+  "@birebir_metin_gecersiz": {
+    "description": "Yazılan birebir mesaj sözleşmenin kurallarına uymayınca yazma alanının üstünde görünen hata."
+  },
+  "birebir_gonderiliyor": "Gönderiliyor",
+  "@birebir_gonderiliyor": {
+    "description": "Sunucu henüz kabul etmemiş birebir mesajın altında saat ikonunun yanındaki durum."
+  },
+  "birebir_gonderilemedi": "Gönderilemedi",
+  "@birebir_gonderilemedi": {
+    "description": "Gönderilemeyen birebir mesajın altında uyarı ikonunun yanındaki durum."
+  },
+  "birebir_bekleyeni_sil": "Sil",
+  "@birebir_bekleyeni_sil": {
+    "description": "Gönderilemeyen birebir mesajı bellekten atan düğme."
+  },
+  "birebir_goruldu": "Görüldü",
+  "@birebir_goruldu": {
+    "description": "Karşı tarafın okuduğu en yeni giden mesajın altındaki okundu bilgisi."
+  },
+  "birebir_istek_bekliyor_bilgi": "Mesaj isteğin gönderildi. Karşı taraf kabul edene ya da cevap yazana kadar başka mesaj gönderemeyebilirsin.",
+  "@birebir_istek_bekliyor_bilgi": {
+    "description": "Kullanıcının gönderdiği mesaj isteği cevap beklerken konuşmanın başında görünen bilgi."
+  },
+  "birebir_istek_geldi_bilgi": "Sana bir mesaj isteği geldi. Cevap yazarsan ya da kabul edersen konuşma başlar. Reddedersen gönderen bunu öğrenmez.",
+  "@birebir_istek_geldi_bilgi": {
+    "description": "Kullanıcıya gelen mesaj isteğinin konuşmasında, kabul ve ret düğmelerinin üstündeki açıklama."
+  },
+  "birebir_kabul_et": "Kabul et",
+  "@birebir_kabul_et": {
+    "description": "Gelen mesaj isteğini kabul eden düğme."
+  },
+  "birebir_reddet": "Reddet",
+  "@birebir_reddet": {
+    "description": "Gelen mesaj isteğini reddeden düğme ve onay penceresindeki onay düğmesi."
+  },
+  "birebir_reddet_onay_baslik": "İstek reddedilsin mi?",
+  "@birebir_reddet_onay_baslik": {
+    "description": "Mesaj isteğini reddetme onay penceresinin başlığı."
+  },
+  "birebir_reddet_onay_aciklama": "Bu kişi, onu reddedilenlerden çıkarana kadar sana yazamaz. Reddettiğini öğrenmez.",
+  "@birebir_reddet_onay_aciklama": {
+    "description": "Mesaj isteğini reddetme onay penceresinin açıklaması."
+  },
+  "birebir_reddedildi": "İstek reddedildi.",
+  "@birebir_reddedildi": {
+    "description": "Mesaj isteği reddedilince kısa süre görünen bildirim."
+  },
+  "birebir_vazgec": "Vazgeç",
+  "@birebir_vazgec": {
+    "description": "Birebir mesaj onay pencerelerinde işlemi iptal eden düğme."
+  },
+  "birebir_silinmis_bilgi": "Bu hesap silindi; artık mesaj gönderemezsin.",
+  "@birebir_silinmis_bilgi": {
+    "description": "Karşı tarafın hesabı silinmiş konuşmanın başında görünen bilgi."
+  },
+  "birebir_mesaj_islemleri": "Mesaj işlemleri",
+  "@birebir_mesaj_islemleri": {
+    "description": "Birebir mesaj balonunda uzun basınca açılan işlemlerin ekran okuyucu ipucu."
+  },
+  "birebir_mesaji_sil": "Mesajı sil",
+  "@birebir_mesaji_sil": {
+    "description": "Kendi birebir mesajının işlem menüsünde silme seçeneği."
+  },
+  "birebir_sil_onay_baslik": "Mesaj silinsin mi?",
+  "@birebir_sil_onay_baslik": {
+    "description": "Birebir mesajı silme onay penceresinin başlığı."
+  },
+  "birebir_sil_onay_aciklama": "Mesaj iki taraftan da kalıcı olarak silinir.",
+  "@birebir_sil_onay_aciklama": {
+    "description": "Birebir mesajı silme onay penceresinin açıklaması."
+  },
+  "birebir_sil": "Sil",
+  "@birebir_sil": {
+    "description": "Birebir mesajı silme onay penceresindeki onay düğmesi."
+  },
+  "birebir_mesaj_silindi_bildirimi": "Mesaj silindi.",
+  "@birebir_mesaj_silindi_bildirimi": {
+    "description": "Birebir mesaj silinince kısa süre görünen bildirim."
+  },
+  "birebir_sikayet_et": "Şikâyet et",
+  "@birebir_sikayet_et": {
+    "description": "Gelen birebir mesajın işlem menüsünde şikâyet seçeneği; mesajın metni şikâyetle platforma iletilir."
+  },
+  "birebir_mesaj_gonder": "Mesaj gönder",
+  "@birebir_mesaj_gonder": {
+    "description": "Kişi profilindeki, o kişiyle birebir konuşmayı açan düğme."
+  },
+  "birebir_yeni_konusma_aciklama": "Bu kişiyle henüz konuşman yok. Arkadaş değilseniz ve birlikte bir etkinliğe katılmadıysanız ilk mesajın mesaj isteği olarak gider.",
+  "@birebir_yeni_konusma_aciklama": {
+    "description": "Henüz konuşma olmayan kişiye ilk mesaj yazılırken görünen açıklama."
+  },
   "arkadas_baslik": "Arkadaşlar",
   "@arkadas_baslik": {
     "description": "Arkadaşlar ekranının başlığı ve profil sekmesindeki giriş."

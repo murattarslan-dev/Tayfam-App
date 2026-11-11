@@ -69,6 +69,9 @@ void main() {
         ),
         isNull,
       );
+    });
+
+    test('birebir mesaj bildirimi konuşmayı açıyor', () {
       expect(
         bildirimAdresi(
           _bildirim(
@@ -77,7 +80,7 @@ void main() {
             hedefTuru: 'dm_conversation',
           ),
         ),
-        isNull,
+        Adresler.birebirKonusma(hedefId),
       );
     });
 
