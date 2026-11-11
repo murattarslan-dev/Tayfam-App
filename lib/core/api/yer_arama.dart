@@ -74,13 +74,12 @@ abstract interface class YerArayici {
 ///   bellektedir.
 final class NominatimArayici implements YerArayici {
   NominatimArayici({
-    required http.Client istemci,
+    required this._istemci,
     DateTime Function()? saat,
     Future<void> Function(Duration sure)? bekle,
     this.ulkeKodlari = varsayilanUlkeKodlari,
     this.zamanAsimi = const Duration(seconds: 15),
-  }) : _istemci = istemci,
-       _saat = saat ?? DateTime.now,
+  }) : _saat = saat ?? DateTime.now,
        _bekle = bekle ?? Future<void>.delayed;
 
   final http.Client _istemci;

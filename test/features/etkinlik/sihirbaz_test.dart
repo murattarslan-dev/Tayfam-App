@@ -181,10 +181,10 @@ void main() {
   });
 
   test('oyun ve spor: zorunlu alanlar ve gövde', () {
-    final oyun = EtkinlikTaslagi(
+    const oyun = EtkinlikTaslagi(
       istekKimligi: sahteEtkinlikIstekKimligi,
       tur: EventType.gaming,
-      ayrinti: const TurAyrintisi(oyun: ' Valorant '),
+      ayrinti: TurAyrintisi(oyun: ' Valorant '),
     );
     expect(adimHatalari(3, oyun, simdi: sabitSimdi), {TaslakHatasi.platform});
     expect(
@@ -194,7 +194,7 @@ void main() {
       ).gaming?.toJson(),
       {'game': 'Valorant', 'platform': 'pc'},
     );
-    final spor = EtkinlikTaslagi(
+    const spor = EtkinlikTaslagi(
       istekKimligi: sahteEtkinlikIstekKimligi,
       tur: EventType.sports,
     );

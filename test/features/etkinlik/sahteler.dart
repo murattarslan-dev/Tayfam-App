@@ -89,7 +89,7 @@ Map<String, Object?> etkinlikJson({
     'series_override': false,
     'created_at': '2026-11-01T10:00:00Z',
     'updated_at': '2026-11-01T10:00:00Z',
-    if (ayrinti != null) tur: ayrinti,
+    tur: ?ayrinti,
   };
 }
 
