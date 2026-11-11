@@ -8,12 +8,12 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 ///
 /// - Kimlikler sunucudan gelen girdidir (CLAUDE.md güvenlik ilkesi
 ///   "Doğrula"): UUID biçiminde değilse kullanılmaz.
-/// - Ekranı olan hedefler: etkinlik ve duyuru.
+/// - Ekranı olan hedefler: etkinlik, duyuru ve birebir konuşma
+///   (`dm_conversation`; tayfaya bağlı değildir).
 /// - Ekranı henüz olmayan ya da bilinmeyen hedef: bildirim bir tayfaya
 ///   bağlıysa o tayfanın ana sayfası açılır. Sonra eklenecekler: cevap →
 ///   soru detayı (`question_id`), `membership` → tayfa ayarlarındaki katılım
-///   istekleri, `report` → şikâyet sonucu, `dm_conversation` → birebir
-///   konuşma.
+///   istekleri, `report` → şikâyet sonucu.
 /// - Arkadaşlık (ADR-0018 §7): `friend_request` ve `friend_accepted` kişinin
 ///   profilini (`target_id`), `tayfa_invitation` gelen tayfa davetlerini
 ///   açar (davet edilen henüz üye olmadığı için tayfa sayfası açılmaz).
@@ -40,6 +40,8 @@ String? bildirimAdresi(Notification bildirim) {
       Adresler.etkinlik(tayfa, hedef),
     (NotificationTargetType.announcement, final tayfa?, final hedef?) =>
       Adresler.duyuru(tayfa, hedef),
+    (NotificationTargetType.dmConversation, _, final hedef?) =>
+      Adresler.birebirKonusma(hedef),
     _ => null,
   };
   if (ozel != null) return ozel;

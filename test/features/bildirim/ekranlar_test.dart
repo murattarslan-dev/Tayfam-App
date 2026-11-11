@@ -296,7 +296,7 @@ void main() {
           bildirimId1,
           tur: 'dm_request',
           tayfaId: null,
-          hedefTuru: 'dm_conversation',
+          hedefTuru: 'user',
         ),
       ], okunmamis: 1);
       await uygulamayiAc(

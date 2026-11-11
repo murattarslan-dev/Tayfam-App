@@ -1,14 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/features/bildirim/bildirim.dart';
+import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 
 /// Sohbet sekmesinin okunmamış sayısı (rozet; ADR-0003): aktif tayfanın
 /// kanallarındaki okunmamış mesajlar (WebSocket olaylarıyla canlı;
-/// ADR-0007). Birebir mesaj paketi kendi sayısını buraya ekler. 0 iken
+/// ADR-0007) ve birebir konuşmaların okunmamışları (ADR-0018 §9). 0 iken
 /// rozet gösterilmez.
 final okunmamisSohbetSayisiProvider = Provider<int>(
-  (ref) => ref.watch(okunmamisKanalSayisiProvider),
+  (ref) =>
+      ref.watch(okunmamisKanalSayisiProvider) +
+      ref.watch(birebirOkunmamisSayisiProvider),
   name: 'okunmamisSohbetSayisiProvider',
 );
 

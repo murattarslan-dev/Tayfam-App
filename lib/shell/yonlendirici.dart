@@ -12,6 +12,7 @@ import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
+import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/profil/profil.dart';
@@ -157,7 +158,9 @@ List<RouteBase> rotalariOlustur(
             ),
           ],
         ),
-        StatefulShellBranch(routes: [sohbetRotasi()]),
+        StatefulShellBranch(
+          routes: [sohbetRotasi(ekRotalar: birebirRotalari())],
+        ),
         StatefulShellBranch(
           routes: [
             GoRoute(
