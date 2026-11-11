@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 
 /// WebSocket olaylarını özelliklerin kabuk düzeyindeki işlerine bağlar
 /// (ADR-0007 "Diğer olaylar"): `notification` gelince bildirim rozeti ve
 /// (açıksa) bildirim listesi REST'ten yenilenir; çerçevede içerik yoktur.
-/// Kabuğun çevresine bir kez konur; kendisi bir şey çizmez.
+/// Uçtan uca şifrelemenin uygulama düzeyindeki işlerini de başlatır
+/// (cihaz kaydı, zarf alımı; ADR-0020). Kabuğun çevresine bir kez konur;
+/// kendisi bir şey çizmez.
 class CanliOlaylar extends ConsumerStatefulWidget {
   const CanliOlaylar({super.key, required this.child});
 
@@ -25,6 +28,7 @@ class _CanliOlaylarState extends ConsumerState<CanliOlaylar> {
   @override
   void initState() {
     super.initState();
+    ref.read(e2eYoneticisiProvider);
     _abonelik = ref.read(realtimeIstemcisiProvider).olaylar.listen((olay) {
       if (olay is BildirimGeldi && mounted) bildirimleriYenile(ref);
     });

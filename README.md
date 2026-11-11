@@ -12,6 +12,9 @@ Sunucu tarafı ayrı repodadır:
 
 - Kodlama kuralları ve iş akışı: [CLAUDE.md](CLAUDE.md)
 - Kararlar: [docs/adr/](docs/adr/README.md)
+- Birebir mesajlar Signal protokolüyle uçtan uca şifrelidir
+  ([ADR-0010](docs/adr/0010-signal-kutuphanesi.md),
+  [ADR-0020](docs/adr/0020-birebir-uctan-uca-sifreleme-istemci.md)).
 
 ## Lisans ve güvenlik
 

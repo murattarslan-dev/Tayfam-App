@@ -237,6 +237,14 @@ final class RealtimeIstemcisi {
     return gonderilenDm(veri);
   }
 
+  /// Teslim alınıp saklanan zarfları `dm.envelope_ack` ile onaylar
+  /// (1–100 kimlik; sunucu siler). Bağlantı açık değilse [RealtimeKapali],
+  /// cevap gelmezse [TimeoutException]; çağıran REST'e düşer
+  /// (`POST /v1/me/e2e/envelopes/ack`).
+  Future<void> zarflariOnayla(List<String> zarfIdleri) async {
+    await _istek('dm.envelope_ack', {'envelope_ids': zarfIdleri});
+  }
+
   /// Bağlantıyı ve akışları kapatır (provider bırakılınca).
   Future<void> dispose() async {
     _kapandi = true;
