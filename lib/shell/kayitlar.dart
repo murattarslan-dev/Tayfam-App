@@ -2,8 +2,10 @@ import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
+import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 
 /// Uygulamanın tayfa modülleri (ADR-0002). Koddaki sabit listedir;
@@ -13,6 +15,8 @@ import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 const List<TayfaModule> tayfaModulKaydi = [
   EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
   DuyuruModulu(),
+  AnketModulu(),
+  SoruCevapModulu(),
 ];
 
 /// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
