@@ -9,9 +9,11 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/kabuk_iskeleti.dart';
 import 'package:tayfam/shell/yer_tutucu.dart';
@@ -111,7 +113,12 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
               builder: (context, state) => TayfaAnaSayfa(
                 tayfaId: state.pathParameters[tayfaIdParametresi]!,
               ),
-              routes: [for (final modul in moduller) ...modul.rotalar],
+              routes: [
+                for (final modul in moduller) ...modul.rotalar,
+                // Tayfa yönetimi modül değildir; her tayfada vardır
+                // (ADR-0002, ADR-0018 §1).
+                ...tayfaYonetimRotalari(),
+              ],
             ),
           ],
         ),
@@ -128,8 +135,7 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
           routes: [
             GoRoute(
               path: Adresler.bildirimler,
-              builder: (context, state) =>
-                  const YerTutucuSayfa(baslik: _bildirimlerBasligi),
+              builder: (context, state) => const BildirimlerEkrani(),
             ),
           ],
         ),
@@ -185,5 +191,4 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
 }
 
 String _sohbetBasligi(AppLocalizations m) => m.gezinme_sekme_sohbet;
-String _bildirimlerBasligi(AppLocalizations m) => m.gezinme_sekme_bildirimler;
 String _profilBasligi(AppLocalizations m) => m.gezinme_sekme_profil;

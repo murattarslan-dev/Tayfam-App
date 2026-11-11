@@ -117,4 +117,12 @@ abstract final class Adresler {
   /// Etkinlik düzenleme.
   static String etkinlikDuzenle(String tayfaId, String etkinlikId) =>
       '${etkinlik(tayfaId, etkinlikId)}/$etkinlikDuzenleYolu';
+
+  /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
+  /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
+  static const tayfaAyarlariYolu = 'ayarlar';
+
+  /// Tayfa ayarları ekranı.
+  static String tayfaAyarlari(String tayfaId) =>
+      '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
 }
