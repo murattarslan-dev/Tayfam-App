@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/e2e/gecmis/arsiv_bicimi.dart';
 import 'package:tayfam/core/e2e/gecmis/bagimliliklar.dart';
-import 'package:tayfam/core/e2e/gecmis/dolgu.dart';
+import 'package:tayfam/core/e2e/mesaj/dolgu.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
 // Kendi cihazlar arası opak paketler (eşleştirme cevabı ve anahtar
@@ -91,10 +91,10 @@ Map<int, Uint8List>? _anahtarListesiOku(Object? liste) {
 }
 
 Uint8List _jsonDolgula(Map<String, Object?> json) =>
-    dolgula(Uint8List.fromList(utf8.encode(jsonEncode(json))));
+    dolguEkle(Uint8List.fromList(utf8.encode(jsonEncode(json))));
 
 Map<String, Object?>? _jsonDolgusuzOku(Uint8List dolgulu) {
-  final veri = dolguyuKaldir(dolgulu);
+  final veri = dolguKaldir(dolgulu);
   if (veri == null) return null;
   try {
     final json = jsonDecode(utf8.decode(veri));

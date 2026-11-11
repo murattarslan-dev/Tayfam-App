@@ -2,10 +2,10 @@
 /// (E2: `lib/core/e2e/depo/`, `cihaz/`, `mesaj/`) beklediği ince
 /// arayüzler.
 ///
-/// Bu dosyadaki soyut sınıflar çekirdeğin gerçek uygulamalarına mimari
-/// birleştirmede bağlanır (provider override'ı ya da provider gövdesinin
-/// değişmesi). Bağlanana kadar varsayılanlar "E2E yok" davranır: cihaz
-/// durumu `null`, akışlar boş; geçmiş katmanı hiçbir şey yapmaz.
+/// Bu dosyadaki soyut sınıflar çekirdeğin gerçek uygulamalarına
+/// `e2_baglantisi.dart`'ta bağlanır; testler arayüzleri sahteler. E2E
+/// hazır değilken (web, cihaz kaydı yok) cihaz durumu `null`'dır ve
+/// geçmiş katmanı hiçbir şey yapmaz.
 library;
 
 import 'dart:async';
@@ -15,7 +15,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/e2e/depo/e2e_deposu.dart';
+import 'package:tayfam/core/e2e/gecmis/e2_baglantisi.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
+import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/realtime/realtime.dart';
 
 /// Bu oturumun E2E cihazı ve oturumdaki kullanıcı (geçmiş katmanının
 /// gördüğü kadarı). E2'nin cihaz durumundan ve kimlik kaydından kurulur.
@@ -213,70 +218,42 @@ final class E2eYok
   Stream<E2eSinyali> get sinyaller => const Stream.empty();
 }
 
-/// Bağlanmamış depo, oturum ve motor: her çağrı [UnsupportedError].
-/// Cihaz durumu `null` olduğu sürece geçmiş katmanı bunları çağırmaz.
-final class _Baglanmamis implements E2eDepoErisimi, KendiCihazOturumu {
-  const _Baglanmamis();
-
-  static Never _yok() => throw UnsupportedError('E2E bağlanmadı');
-
-  @override
-  Future<Uint8List?> oku(String anahtar) async => _yok();
-
-  @override
-  Future<void> yaz(String anahtar, Uint8List deger) async => _yok();
-
-  @override
-  Future<void> sil(String anahtar) async => _yok();
-
-  @override
-  Future<Map<String, Uint8List>> onekliOku(String onek) async => _yok();
-
-  @override
-  Future<KendiCihazSifreli> sifrele(
-    String cihazId,
-    Uint8List duz, {
-    Uint8List? beklenenKimlik,
-  }) async => _yok();
-
-  @override
-  Future<Uint8List> coz(String cihazId, int tur, Uint8List sifreli) async =>
-      _yok();
-}
-
-/// Cihaz durumu (E2 bağlar).
+/// Cihaz durumu (E2'nin `e2eCihazProvider`'ı).
 final e2eCihazDurumuKaynagiProvider = Provider<E2eCihazDurumuKaynagi>(
-  (ref) => const E2eYok(),
+  e2CihazKaynagiKur,
   name: 'e2eCihazDurumuKaynagiProvider',
 );
 
-/// E2E güvenli deposu (E2 bağlar).
+/// E2E güvenli deposu (E2'nin `e2eDeposuProvider`'ı).
 final e2eDepoErisimiProvider = Provider<E2eDepoErisimi>(
-  (ref) => const _Baglanmamis(),
+  (ref) => E2DepoErisimi(ref.watch(e2eDeposuProvider)),
   name: 'e2eDepoErisimiProvider',
 );
 
-/// Kendi cihazlarıyla Signal oturumu (E2 bağlar).
+/// Kendi cihazlarıyla Signal oturumu (E2'nin `e2eOturumlariProvider`'ı).
 final kendiCihazOturumuProvider = Provider<KendiCihazOturumu>(
-  (ref) => const _Baglanmamis(),
+  (ref) => E2KendiCihazOturumu(
+    oturumlar: ref.watch(e2eOturumlariProvider),
+    kullaniciKimligi: ref.watch(sessionStoreProvider).kullaniciKimligi,
+  ),
   name: 'kendiCihazOturumuProvider',
 );
 
-/// Gönderilen ve çözülen birebir mesajlar (E2 bağlar).
+/// Gönderilen ve çözülen birebir mesajlar (E2'nin mesaj yayını).
 final cozulmusMesajAkisiProvider = Provider<CozulmusMesajAkisi>(
-  (ref) => const E2eYok(),
+  (ref) => E2MesajAkisi(ref.watch(e2eMesajYayiniProvider).akis),
   name: 'cozulmusMesajAkisiProvider',
 );
 
-/// Canlı E2E olayları (realtime bağlar).
+/// Canlı E2E olayları (realtime).
 final e2eSinyalleriProvider = Provider<E2eSinyalleri>(
-  (ref) => const E2eYok(),
+  (ref) => E2Sinyalleri(ref.watch(realtimeIstemcisiProvider).olaylar),
   name: 'e2eSinyalleriProvider',
 );
 
 /// Arşiv biçiminin kullandığı Signal motoru (yalnızca `hkdf` ve
-/// `aesGcmSiv*`). E1'in kanal uygulamasına bağlanır.
+/// `aesGcmSiv*`): E2'nin `e2eMotoruProvider`'ı.
 final gecmisMotoruProvider = Provider<SignalMotoru>(
-  (ref) => throw UnsupportedError('Signal motoru bağlanmadı'),
+  (ref) => ref.watch(e2eMotoruProvider),
   name: 'gecmisMotoruProvider',
 );

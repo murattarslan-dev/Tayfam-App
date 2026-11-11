@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/e2e/cihaz/e2e_cihaz.dart';
 import 'package:tayfam/core/e2e/gecmis/bagimliliklar.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_api.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
@@ -75,12 +76,13 @@ void main() {
       expect(c.read(qrOnerisiProvider), isFalse);
     });
 
-    test('E2E bağlı değilken (varsayılan) uyarı yok', () {
+    test('E2E kapalıyken (web, iOS) E2 bağlantısı null verir, uyarı yok', () {
       final c = ProviderContainer(
         overrides: [
           oturumDurumuProvider.overrideWith(
             () => SabitOturumDurumu(OturumDurumu.acik),
           ),
+          e2eEtkinProvider.overrideWithValue(false),
         ],
       );
       addTearDown(c.dispose);

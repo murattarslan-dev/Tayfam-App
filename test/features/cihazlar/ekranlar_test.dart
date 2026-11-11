@@ -118,6 +118,7 @@ final class _Ortam {
       () => SabitOturumDurumu(OturumDurumu.acik),
     ),
     e2eCihazDurumuKaynagiProvider.overrideWithValue(kaynak),
+    e2eSinyalleriProvider.overrideWithValue(const E2eYok()),
     eslemeServisiProvider.overrideWithValue(servis),
     simdiProvider.overrideWithValue(() => simdi),
     zamanlayiciProvider.overrideWithValue(zamanlayici.kur),

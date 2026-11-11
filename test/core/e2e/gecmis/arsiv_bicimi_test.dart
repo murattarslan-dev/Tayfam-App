@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/e2e/gecmis/arsiv_bicimi.dart';
-import 'package:tayfam/core/e2e/gecmis/dolgu.dart';
+import 'package:tayfam/core/e2e/mesaj/dolgu.dart';
 
 import '../signal/sahte_signal_motoru.dart';
 import 'sahteler.dart';
@@ -20,22 +20,22 @@ void main() {
     test('uzunluk her zaman 160\'ın katı ve geri alınır', () {
       for (final n in [0, 1, 158, 159, 160, 161, 400]) {
         final veri = Uint8List.fromList(List.generate(n, (i) => i & 0xff));
-        final dolgulu = dolgula(veri);
+        final dolgulu = dolguEkle(veri);
         expect(dolgulu.length % dolguBlogu, 0, reason: '$n');
         expect(dolgulu.length, greaterThan(n));
-        expect(dolguyuKaldir(dolgulu), veri);
+        expect(dolguKaldir(dolgulu), veri);
       }
     });
 
     test('159 bayt bir blok, 160 bayt iki blok', () {
-      expect(dolgula(Uint8List(159)).length, 160);
-      expect(dolgula(Uint8List(160)).length, 320);
+      expect(dolguEkle(Uint8List(159)).length, 160);
+      expect(dolguEkle(Uint8List(160)).length, 320);
     });
 
     test('bozuk dolgu reddedilir', () {
-      expect(dolguyuKaldir(Uint8List(0)), isNull);
-      expect(dolguyuKaldir(Uint8List(159)), isNull);
-      expect(dolguyuKaldir(Uint8List(160)), isNull); // işaret baytı yok
+      expect(dolguKaldir(Uint8List(0)), isNull);
+      expect(dolguKaldir(Uint8List(159)), isNull);
+      expect(dolguKaldir(Uint8List(160)), isNull); // işaret baytı yok
     });
   });
 
@@ -175,7 +175,7 @@ void main() {
 
     test('düz metin biçimi: JSON alanları ve toString içerik yazmaz', () {
       final json = jsonDecode(
-        utf8.decode(dolguyuKaldir(_duz.kodla())!),
+        utf8.decode(dolguKaldir(_duz.kodla())!),
       ) as Map<String, Object?>;
       expect(json, {
         'v': 1,
@@ -185,7 +185,7 @@ void main() {
         'govde': _duz.govde,
       });
       expect(_duz.toString(), isNot(contains('buluşalım')));
-      expect(ArsivDuzMetni.coz(dolgula(utf8.encode('{"v":2}'))), isNull);
+      expect(ArsivDuzMetni.coz(dolguEkle(utf8.encode('{"v":2}'))), isNull);
     });
   });
 }

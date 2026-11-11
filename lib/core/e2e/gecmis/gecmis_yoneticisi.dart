@@ -12,6 +12,7 @@ import 'package:tayfam/core/e2e/gecmis/gecmis_api.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yenileme.dart';
 import 'package:tayfam/core/e2e/gecmis/ilk_cihaz.dart';
 import 'package:tayfam/core/e2e/gecmis/paylasim_alici.dart';
+import 'package:tayfam/core/e2e/mesaj/birebir_icerik.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 
@@ -231,7 +232,32 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
   Future<KonusmaArsivi> build() async {
     final bilgi = ref.watch(gecmisCihazBilgisiProvider);
     if (bilgi == null) return const KonusmaArsivi.yok();
-    return ref.read(gecmisServisleriProvider).okuyucu.oku(konusmaId);
+    final arsiv = await ref
+        .read(gecmisServisleriProvider)
+        .okuyucu
+        .oku(konusmaId);
+    _icerigeEkle(arsiv);
+    return arsiv;
+  }
+
+  /// Çözülen kayıtları E2'nin bellekteki içeriğine verir; konuşma ekranı
+  /// `encryption: e2e` mesajların metnini oradan gösterir. Arşiv kaynaklı
+  /// mesajlar yeniden yayılmaz (arşive tekrar yazılmaz).
+  void _icerigeEkle(KonusmaArsivi arsiv) {
+    if (arsiv.mesajlar.isEmpty || !ref.mounted) return;
+    ref
+        .read(birebirIcerikProvider.notifier)
+        .ekle([
+          for (final m in arsiv.mesajlar.values)
+            CozulmusBirebirMesaj(
+              mesajId: m.mesajId,
+              konusmaId: konusmaId,
+              gonderenKullaniciId: m.gonderenId,
+              metin: m.govde,
+              olusturma: m.olusturma,
+              kaynak: CozulmusMesajKaynagi.arsiv,
+            ),
+        ]);
   }
 
   /// Daha eski bir sayfa okur ve ekler.
@@ -246,6 +272,7 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
           .okuyucu
           .oku(konusmaId, sayfa: sayfa);
       if (!ref.mounted) return;
+      _icerigeEkle(yeni);
       state = AsyncData(mevcut.ekle(yeni));
     } finally {
       _eskiOkunuyor = false;

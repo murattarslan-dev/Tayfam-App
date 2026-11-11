@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import 'package:tayfam/core/dogrulama/kimlik.dart';
-import 'package:tayfam/core/e2e/gecmis/dolgu.dart';
+import 'package:tayfam/core/e2e/mesaj/dolgu.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
 /// Arşiv kaydı biçimi (ADR-0020 "Geçmiş arşivi, eşleştirme ve yenileme").
@@ -84,7 +84,7 @@ final class ArsivDuzMetni {
   final String govde;
 
   /// Dolgulu UTF-8 JSON.
-  Uint8List kodla() => dolgula(
+  Uint8List kodla() => dolguEkle(
     Uint8List.fromList(
       utf8.encode(
         jsonEncode({
@@ -100,7 +100,7 @@ final class ArsivDuzMetni {
 
   /// [kodla]'nın tersi; bozuk ya da tanınmayan biçimde `null`.
   static ArsivDuzMetni? coz(Uint8List dolgulu) {
-    final veri = dolguyuKaldir(dolgulu);
+    final veri = dolguKaldir(dolgulu);
     if (veri == null) return null;
     try {
       final json = jsonDecode(utf8.decode(veri));
