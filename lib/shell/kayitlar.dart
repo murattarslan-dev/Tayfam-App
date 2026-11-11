@@ -6,7 +6,7 @@ import 'package:tayfam/features/etkinlik/etkinlik.dart';
 /// Uygulamanın tayfa modülleri (ADR-0002). Koddaki sabit listedir;
 /// çalışma zamanında dışarıdan modül yüklenmez. Modüller kendi
 /// paketlerinde bu listeye bir satırla eklenir.
-const List<TayfaModule> tayfaModulKaydi = [];
+const List<TayfaModule> tayfaModulKaydi = [EtkinlikModulu()];
 
 /// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
 /// listeye bir satırla eklenir.

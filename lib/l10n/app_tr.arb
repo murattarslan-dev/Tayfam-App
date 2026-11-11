@@ -375,6 +375,780 @@
   "@etkinlik_turu_general": {
     "description": "Etkinlik türünün adı: genel (belirli bir türe girmeyen buluşmalar; sunucunun henüz tanımadığı türler de bu adla görünür) (general). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
   },
+  "etkinlik_modul_adi": "Etkinlikler",
+  "@etkinlik_modul_adi": {
+    "description": "Etkinlik modülünün adı: tayfanın etkinlik listesi ekranının başlığı ve modülün gezinme girişi."
+  },
+  "etkinlik_liste_bos": "Yaklaşan etkinlik yok.",
+  "@etkinlik_liste_bos": {
+    "description": "Etkinlik listesinde bitmemiş etkinlik olmadığında görünen boş durum metni."
+  },
+  "etkinlik_ac": "Etkinlik aç",
+  "@etkinlik_ac": {
+    "description": "Etkinlik listesinde yetkili kullanıcıya görünen, oluşturma sihirbazını açan düğme."
+  },
+  "etkinlik_daha_fazla": "Daha fazla göster",
+  "@etkinlik_daha_fazla": {
+    "description": "Etkinlik ve katılımcı listelerinin sonunda sonraki sayfayı yükleyen düğme."
+  },
+  "etkinlik_tekrar_dene": "Tekrar dene",
+  "@etkinlik_tekrar_dene": {
+    "description": "Etkinlik listesi, detayı ya da katılımcılar okunamadığında hata metninin altındaki düğme."
+  },
+  "etkinlik_iptal_edildi": "İptal edildi",
+  "@etkinlik_iptal_edildi": {
+    "description": "İptal edilen etkinliğin kartında ve detayında görünen etiket."
+  },
+  "etkinlik_cevrimici": "Çevrimiçi",
+  "@etkinlik_cevrimici": {
+    "description": "Çevrimiçi etkinliğin kartında yer adı yerine ve detayında görünen metin."
+  },
+  "etkinlik_yer_gizli": "Yer bilgisi yok",
+  "@etkinlik_yer_gizli": {
+    "description": "Yüz yüze etkinliğin yer adı ve il/ilçe bilgisi kullanıcıya gelmediğinde (ör. katılımcılara özel balık noktası) kartta ve detayda görünen metin."
+  },
+  "etkinlik_turkiye_saati": "{zaman} (Türkiye saati)",
+  "@etkinlik_turkiye_saati": {
+    "description": "Cihaz Türkiye dışındaki bir saat dilimindeyken etkinlik zamanının yanına eklenen not. Zaman her zaman Türkiye saatiyle gösterilir.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "14 Kasım Cumartesi 09:00"
+      }
+    }
+  },
+  "etkinlik_zaman_araligi": "{baslangic} – {bitis}",
+  "@etkinlik_zaman_araligi": {
+    "description": "Etkinlik detayında başlangıç ve bitiş zamanı. Aynı gündeyse bitişte yalnızca saat vardır.",
+    "placeholders": {
+      "baslangic": {
+        "type": "String",
+        "example": "14 Kasım Cumartesi 09:00"
+      },
+      "bitis": {
+        "type": "String",
+        "example": "17:00"
+      }
+    }
+  },
+  "etkinlik_gelen": "{sayi, plural, =0{Henüz gelen yok} other{{sayiMetni} kişi geliyor}}",
+  "@etkinlik_gelen": {
+    "description": "Kontenjansız etkinliğin kartında \"Geliyorum\" diyenlerin sayısı. sayiMetni biçimlenmiş sayıdır.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      },
+      "sayiMetni": {
+        "type": "String",
+        "example": "12"
+      }
+    }
+  },
+  "etkinlik_gelen_kontenjan": "{gelen} / {kontenjan} kişi geliyor",
+  "@etkinlik_gelen_kontenjan": {
+    "description": "Kontenjanlı etkinliğin kartında gelen sayısı ve kontenjan.",
+    "placeholders": {
+      "gelen": {
+        "type": "String",
+        "example": "8"
+      },
+      "kontenjan": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  },
+  "etkinlik_cevabin": "Cevabın: {cevap}",
+  "@etkinlik_cevabin": {
+    "description": "Etkinlik kartında kullanıcının kendi katılım cevabı.",
+    "placeholders": {
+      "cevap": {
+        "type": "String",
+        "example": "Geliyorum"
+      }
+    }
+  },
+  "etkinlik_cevap_going": "Geliyorum",
+  "@etkinlik_cevap_going": {
+    "description": "Katılım cevabı: geliyorum (going). Detaydaki katılım seçimlerinde ve kartta görünür."
+  },
+  "etkinlik_cevap_maybe": "Belki",
+  "@etkinlik_cevap_maybe": {
+    "description": "Katılım cevabı: belki (maybe)."
+  },
+  "etkinlik_cevap_not_going": "Gelmiyorum",
+  "@etkinlik_cevap_not_going": {
+    "description": "Katılım cevabı: gelmiyorum (not_going)."
+  },
+  "etkinlik_cevap_waitlist": "Bekleme listesinde",
+  "@etkinlik_cevap_waitlist": {
+    "description": "Kullanıcının \"Geliyorum\" cevabı kontenjan dolu olduğu için bekleme listesine düştüğünde kartta görünen cevap."
+  },
+  "etkinlik_cevap_bilinmiyor": "Cevap verildi",
+  "@etkinlik_cevap_bilinmiyor": {
+    "description": "Sunucunun henüz tanımadığımız bir katılım cevabı döndürdüğünde kartta görünen genel metin."
+  },
+  "etkinlik_detay_baslik": "Etkinlik",
+  "@etkinlik_detay_baslik": {
+    "description": "Etkinlik detay ekranının üst çubuk başlığı."
+  },
+  "etkinlik_takvime_ekle": "Takvime ekle",
+  "@etkinlik_takvime_ekle": {
+    "description": "Etkinlik detayındaki takvim düğmesinin ipucu ve ekran okuyucu etiketi; .ics dosyasını paylaşım menüsüyle takvim uygulamasına verir."
+  },
+  "etkinlik_islemler": "Etkinlik işlemleri",
+  "@etkinlik_islemler": {
+    "description": "Etkinliği yönetebilen kullanıcıya görünen menü düğmesinin ipucu (düzenle, iptal et)."
+  },
+  "etkinlik_duzenle": "Düzenle",
+  "@etkinlik_duzenle": {
+    "description": "Etkinlik detayındaki menüde düzenleme ekranını açan seçenek."
+  },
+  "etkinlik_iptal_et": "İptal et",
+  "@etkinlik_iptal_et": {
+    "description": "Etkinlik detayındaki menüde iptal diyaloğunu açan seçenek."
+  },
+  "etkinlik_iptal_gerekcesi": "İptal gerekçesi: {gerekce}",
+  "@etkinlik_iptal_gerekcesi": {
+    "description": "İptal edilen etkinliğin detayında organizatörün yazdığı gerekçe.",
+    "placeholders": {
+      "gerekce": {
+        "type": "String",
+        "example": "Hava muhalefeti"
+      }
+    }
+  },
+  "etkinlik_seri_notu": "Bu etkinlik tekrarlayan bir serinin parçası.",
+  "@etkinlik_seri_notu": {
+    "description": "Tekrarlayan seriye ait etkinliğin detayında görünen bilgi."
+  },
+  "etkinlik_yer_baslik": "Buluşma noktası",
+  "@etkinlik_yer_baslik": {
+    "description": "Yüz yüze etkinliğin detayında yer bölümünün başlığı."
+  },
+  "etkinlik_haritada_ac": "Harita uygulamasında aç",
+  "@etkinlik_haritada_ac": {
+    "description": "Etkinlik detayında buluşma noktasını sistemin harita uygulamasında açan düğme; harita önizlemesinin ekran okuyucu etiketi."
+  },
+  "etkinlik_harita_acilamadi": "Harita uygulaması açılamadı.",
+  "@etkinlik_harita_acilamadi": {
+    "description": "Buluşma noktası sistemin harita uygulamasında açılamadığında görünen bildirim."
+  },
+  "etkinlik_baglanti_baslik": "Çevrimiçi bağlantı",
+  "@etkinlik_baglanti_baslik": {
+    "description": "Çevrimiçi etkinliğin detayında bağlantı bölümünün başlığı."
+  },
+  "etkinlik_baglantiyi_ac": "Bağlantıyı aç",
+  "@etkinlik_baglantiyi_ac": {
+    "description": "Çevrimiçi etkinliğin bağlantısını tarayıcıda açan düğme."
+  },
+  "etkinlik_baglanti_acilamadi": "Bağlantı açılamadı.",
+  "@etkinlik_baglanti_acilamadi": {
+    "description": "Çevrimiçi etkinlik bağlantısı açılamadığında görünen bildirim."
+  },
+  "etkinlik_organizator": "Organizatör",
+  "@etkinlik_organizator": {
+    "description": "Etkinlik detayında etkinliği açan kişinin bölüm başlığı."
+  },
+  "etkinlik_organizator_yok": "Hesabı silinmiş üye",
+  "@etkinlik_organizator_yok": {
+    "description": "Organizatörün hesabı silindiğinde detayda ad yerine görünen metin."
+  },
+  "etkinlik_uye": "Tayfa üyesi",
+  "@etkinlik_uye": {
+    "description": "Organizatörün ya da katılımcının adı okunurken veya okunamadığında görünen genel ad."
+  },
+  "etkinlik_aciklama_baslik": "Açıklama",
+  "@etkinlik_aciklama_baslik": {
+    "description": "Etkinlik detayında açıklama bölümünün başlığı."
+  },
+  "etkinlik_tur_bilgileri": "Ayrıntılar",
+  "@etkinlik_tur_bilgileri": {
+    "description": "Etkinlik detayında türe özel bilgilerin (kamp yeri, zorluk, oyun…) bölüm başlığı."
+  },
+  "etkinlik_katilim_baslik": "Katılım",
+  "@etkinlik_katilim_baslik": {
+    "description": "Etkinlik detayında katılım cevabı bölümünün başlığı."
+  },
+  "etkinlik_katilim_sayilari": "Geliyor: {gelen} · Belki: {belki}",
+  "@etkinlik_katilim_sayilari": {
+    "description": "Etkinlik detayında \"Geliyorum\" ve \"Belki\" diyenlerin sayısı.",
+    "placeholders": {
+      "gelen": {
+        "type": "String",
+        "example": "8"
+      },
+      "belki": {
+        "type": "String",
+        "example": "3"
+      }
+    }
+  },
+  "etkinlik_kontenjan_bilgi": "Kontenjan: {kontenjan}",
+  "@etkinlik_kontenjan_bilgi": {
+    "description": "Kontenjanlı etkinliğin detayında kontenjan.",
+    "placeholders": {
+      "kontenjan": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  },
+  "etkinlik_bekleyen_sayisi": "Bekleme listesinde: {sayi}",
+  "@etkinlik_bekleyen_sayisi": {
+    "description": "Etkinlik detayında bekleme listesindeki kişi sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "2"
+      }
+    }
+  },
+  "etkinlik_kontenjan_dolu": "Kontenjan dolu. \"Geliyorum\" seçersen bekleme listesine alınırsın.",
+  "@etkinlik_kontenjan_dolu": {
+    "description": "Kontenjan dolu etkinlikte, \"Geliyorum\" demeyen kullanıcıya katılım seçimlerinin altında görünen bilgi."
+  },
+  "etkinlik_bekleme_listesindesin": "Bekleme listesindesin. Yer açılınca katılımcı olursun.",
+  "@etkinlik_bekleme_listesindesin": {
+    "description": "Kullanıcının \"Geliyorum\" cevabı bekleme listesine düştüğünde katılım seçimlerinin altında görünen bilgi."
+  },
+  "etkinlik_katilim_kapali": "Bu etkinliğe artık cevap verilemez.",
+  "@etkinlik_katilim_kapali": {
+    "description": "İptal edilmiş ya da bitmiş etkinlikte katılım seçimlerinin altında görünen bilgi."
+  },
+  "etkinlik_katilimcilar_baslik": "Katılımcılar",
+  "@etkinlik_katilimcilar_baslik": {
+    "description": "Etkinlik detayında katılımcı listesinin başlığı."
+  },
+  "etkinlik_katilimci_going": "Geliyor",
+  "@etkinlik_katilimci_going": {
+    "description": "Katılımcılar listesinde \"Geliyorum\" diyenlerin sekmesi."
+  },
+  "etkinlik_katilimci_maybe": "Belki",
+  "@etkinlik_katilimci_maybe": {
+    "description": "Katılımcılar listesinde \"Belki\" diyenlerin sekmesi."
+  },
+  "etkinlik_katilimci_not_going": "Gelmiyor",
+  "@etkinlik_katilimci_not_going": {
+    "description": "Katılımcılar listesinde \"Gelmiyorum\" diyenlerin sekmesi."
+  },
+  "etkinlik_katilimci_waitlist": "Bekleme listesi",
+  "@etkinlik_katilimci_waitlist": {
+    "description": "Katılımcılar listesinde bekleme listesindekilerin sekmesi."
+  },
+  "etkinlik_katilimci_yok": "Bu listede kimse yok.",
+  "@etkinlik_katilimci_yok": {
+    "description": "Seçili katılımcı sekmesinde kimse olmadığında görünen metin."
+  },
+  "etkinlik_katildi": "Katıldı",
+  "@etkinlik_katildi": {
+    "description": "Katılımcılar listesinde katılımı doğrulanmış kişinin yanındaki etiket."
+  },
+  "etkinlik_kamp_yeri": "Kamp yeri",
+  "@etkinlik_kamp_yeri": {
+    "description": "Kamp etkinliğinde kamp yerinin adı: detayda bilgi etiketi, sihirbazda alan etiketi."
+  },
+  "etkinlik_kamp_su": "Su",
+  "@etkinlik_kamp_su": {
+    "description": "Kamp etkinliğinde su olup olmadığı: detayda bilgi etiketi, sihirbazda seçim başlığı."
+  },
+  "etkinlik_kamp_tuvalet": "Tuvalet",
+  "@etkinlik_kamp_tuvalet": {
+    "description": "Kamp etkinliğinde tuvalet olup olmadığı: detayda bilgi etiketi, sihirbazda seçim başlığı."
+  },
+  "etkinlik_kamp_notu": "Not",
+  "@etkinlik_kamp_notu": {
+    "description": "Kamp etkinliğinin notu: detayda bilgi etiketi, sihirbazda alan etiketi."
+  },
+  "etkinlik_var": "Var",
+  "@etkinlik_var": {
+    "description": "Kamp yerinde su ya da tuvalet var."
+  },
+  "etkinlik_yok": "Yok",
+  "@etkinlik_yok": {
+    "description": "Kamp yerinde su ya da tuvalet yok."
+  },
+  "etkinlik_bilinmiyor": "Bilinmiyor",
+  "@etkinlik_bilinmiyor": {
+    "description": "Kamp yerinde su ya da tuvalet olup olmadığı bilinmiyor."
+  },
+  "etkinlik_yuruyus_zorluk": "Zorluk",
+  "@etkinlik_yuruyus_zorluk": {
+    "description": "Yürüyüşün zorluğu: detayda bilgi etiketi, sihirbazda seçim etiketi."
+  },
+  "etkinlik_zorluk_degeri": "{zorluk} / 5",
+  "@etkinlik_zorluk_degeri": {
+    "description": "Yürüyüş zorluğu, beş üzerinden.",
+    "placeholders": {
+      "zorluk": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "etkinlik_zorluk_yok": "Belirtilmedi",
+  "@etkinlik_zorluk_yok": {
+    "description": "Sihirbazda yürüyüş zorluğu seçilmediğinde görünen seçenek."
+  },
+  "etkinlik_yuruyus_mesafe": "Mesafe",
+  "@etkinlik_yuruyus_mesafe": {
+    "description": "Yürüyüş mesafesinin detaydaki bilgi etiketi."
+  },
+  "etkinlik_km": "{mesafe} km",
+  "@etkinlik_km": {
+    "description": "Yürüyüş mesafesi, kilometre.",
+    "placeholders": {
+      "mesafe": {
+        "type": "String",
+        "example": "12,5"
+      }
+    }
+  },
+  "etkinlik_yuruyus_yukselti": "Yükselti",
+  "@etkinlik_yuruyus_yukselti": {
+    "description": "Yürüyüşün toplam yükseltisinin detaydaki bilgi etiketi."
+  },
+  "etkinlik_metre": "{metre} m",
+  "@etkinlik_metre": {
+    "description": "Yükselti, metre.",
+    "placeholders": {
+      "metre": {
+        "type": "String",
+        "example": "850"
+      }
+    }
+  },
+  "etkinlik_yuruyus_donus": "Beklenen dönüş",
+  "@etkinlik_yuruyus_donus": {
+    "description": "Yürüyüşten beklenen dönüş zamanı: detayda bilgi etiketi, sihirbazda alan etiketi."
+  },
+  "etkinlik_yuruyus_tolerans": "Dönüş toleransı",
+  "@etkinlik_yuruyus_tolerans": {
+    "description": "Beklenen dönüşten sonra alarm verilmeden önce beklenecek sürenin detaydaki bilgi etiketi."
+  },
+  "etkinlik_dakika": "{dakika} dk",
+  "@etkinlik_dakika": {
+    "description": "Süre, dakika.",
+    "placeholders": {
+      "dakika": {
+        "type": "String",
+        "example": "30"
+      }
+    }
+  },
+  "etkinlik_balik_gizlilik": "Buluşma noktasını kimler görür",
+  "@etkinlik_balik_gizlilik": {
+    "description": "Balık etkinliğinde buluşma noktasının görünürlüğü: detayda bilgi etiketi, sihirbazda seçim başlığı."
+  },
+  "etkinlik_balik_gizlilik_tayfa": "Bütün tayfa",
+  "@etkinlik_balik_gizlilik_tayfa": {
+    "description": "Balık etkinliğinde buluşma noktasını bütün tayfa görür."
+  },
+  "etkinlik_balik_gizlilik_participants": "Yalnızca katılımcılar",
+  "@etkinlik_balik_gizlilik_participants": {
+    "description": "Balık etkinliğinde buluşma noktasını yalnızca organizatör, yönetim ve \"Geliyorum\"/\"Belki\" diyenler görür."
+  },
+  "etkinlik_oyun": "Oyun",
+  "@etkinlik_oyun": {
+    "description": "Oyun etkinliğinde oynanacak oyunun adı: detayda bilgi etiketi, sihirbazda alan etiketi."
+  },
+  "etkinlik_oyun_platform": "Platform",
+  "@etkinlik_oyun_platform": {
+    "description": "Oyun etkinliğinin platformu: detayda bilgi etiketi, sihirbazda seçim etiketi."
+  },
+  "etkinlik_platform_pc": "Bilgisayar",
+  "@etkinlik_platform_pc": {
+    "description": "Oyun platformu: bilgisayar (pc)."
+  },
+  "etkinlik_platform_playstation": "PlayStation",
+  "@etkinlik_platform_playstation": {
+    "description": "Oyun platformu: PlayStation (marka adı, çevrilmez)."
+  },
+  "etkinlik_platform_xbox": "Xbox",
+  "@etkinlik_platform_xbox": {
+    "description": "Oyun platformu: Xbox (marka adı, çevrilmez)."
+  },
+  "etkinlik_platform_switch": "Nintendo Switch",
+  "@etkinlik_platform_switch": {
+    "description": "Oyun platformu: Nintendo Switch (marka adı, çevrilmez)."
+  },
+  "etkinlik_platform_mobile": "Mobil",
+  "@etkinlik_platform_mobile": {
+    "description": "Oyun platformu: telefon ve tablet (mobile)."
+  },
+  "etkinlik_platform_other": "Diğer",
+  "@etkinlik_platform_other": {
+    "description": "Oyun platformu: diğer (other)."
+  },
+  "etkinlik_spor": "Spor dalı",
+  "@etkinlik_spor": {
+    "description": "Spor etkinliğinin dalı: detayda bilgi etiketi, sihirbazda seçim etiketi."
+  },
+  "etkinlik_spor_football": "Futbol",
+  "@etkinlik_spor_football": {
+    "description": "Spor dalı: futbol."
+  },
+  "etkinlik_spor_table_football": "Langırt",
+  "@etkinlik_spor_table_football": {
+    "description": "Spor dalı: langırt (table_football)."
+  },
+  "etkinlik_spor_basketball": "Basketbol",
+  "@etkinlik_spor_basketball": {
+    "description": "Spor dalı: basketbol."
+  },
+  "etkinlik_spor_volleyball": "Voleybol",
+  "@etkinlik_spor_volleyball": {
+    "description": "Spor dalı: voleybol."
+  },
+  "etkinlik_spor_tennis": "Tenis",
+  "@etkinlik_spor_tennis": {
+    "description": "Spor dalı: tenis."
+  },
+  "etkinlik_spor_table_tennis": "Masa tenisi",
+  "@etkinlik_spor_table_tennis": {
+    "description": "Spor dalı: masa tenisi."
+  },
+  "etkinlik_spor_other": "Diğer",
+  "@etkinlik_spor_other": {
+    "description": "Spor dalı: diğer."
+  },
+  "etkinlik_spor_saha": "Saha",
+  "@etkinlik_spor_saha": {
+    "description": "Spor etkinliğinin sahası: detayda bilgi etiketi, sihirbazda alan etiketi."
+  },
+  "etkinlik_iptal_baslik": "Etkinliği iptal et",
+  "@etkinlik_iptal_baslik": {
+    "description": "İptal diyaloğunun başlığı."
+  },
+  "etkinlik_iptal_aciklama": "Etkinlik silinmez; üyeler iptal edildiğini ve gerekçesini görür. Bu işlem geri alınamaz.",
+  "@etkinlik_iptal_aciklama": {
+    "description": "İptal diyaloğundaki açıklama."
+  },
+  "etkinlik_iptal_gerekce_etiketi": "Gerekçe",
+  "@etkinlik_iptal_gerekce_etiketi": {
+    "description": "İptal diyaloğundaki gerekçe alanının etiketi."
+  },
+  "etkinlik_iptal_gerekce_hata": "Gerekçe yaz (en çok 500 karakter).",
+  "@etkinlik_iptal_gerekce_hata": {
+    "description": "İptal diyaloğunda gerekçe boşken ya da çok uzunken alanın altındaki hata."
+  },
+  "etkinlik_iptal_onayla": "İptal et",
+  "@etkinlik_iptal_onayla": {
+    "description": "İptal diyaloğunda iptali onaylayan düğme."
+  },
+  "etkinlik_vazgec": "Vazgeç",
+  "@etkinlik_vazgec": {
+    "description": "İptal diyaloğunu iptal etmeden kapatan düğme."
+  },
+  "etkinlik_olustur_baslik": "Etkinlik aç",
+  "@etkinlik_olustur_baslik": {
+    "description": "Etkinlik oluşturma sihirbazının üst çubuk başlığı."
+  },
+  "etkinlik_duzenle_baslik": "Etkinliği düzenle",
+  "@etkinlik_duzenle_baslik": {
+    "description": "Etkinlik düzenleme ekranının üst çubuk başlığı."
+  },
+  "etkinlik_adim": "Adım {adim} / {toplam}",
+  "@etkinlik_adim": {
+    "description": "Etkinlik sihirbazının üstünde hangi adımda olunduğu.",
+    "placeholders": {
+      "adim": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "etkinlik_ileri": "İleri",
+  "@etkinlik_ileri": {
+    "description": "Etkinlik sihirbazında sonraki adıma geçen düğme."
+  },
+  "etkinlik_geri": "Geri",
+  "@etkinlik_geri": {
+    "description": "Etkinlik sihirbazında önceki adıma dönen düğme."
+  },
+  "etkinlik_olustur_gonder": "Etkinliği aç",
+  "@etkinlik_olustur_gonder": {
+    "description": "Etkinlik oluşturma sihirbazının son adımında etkinliği oluşturan düğme."
+  },
+  "etkinlik_duzenle_gonder": "Kaydet",
+  "@etkinlik_duzenle_gonder": {
+    "description": "Etkinlik düzenlemenin son adımında değişiklikleri kaydeden düğme."
+  },
+  "etkinlik_seri_duzenleme_notu": "Bu etkinlik tekrarlayan bir serinin parçası. Değişiklik yalnızca bu etkinliği etkiler.",
+  "@etkinlik_seri_duzenleme_notu": {
+    "description": "Seriye ait etkinlik düzenlenirken sihirbazın üstünde görünen bilgi."
+  },
+  "etkinlik_tur_baslik": "Ne tür bir etkinlik?",
+  "@etkinlik_tur_baslik": {
+    "description": "Sihirbazın tür seçimi adımının başlığı."
+  },
+  "etkinlik_tur_hata": "Bir tür seç.",
+  "@etkinlik_tur_hata": {
+    "description": "Tür seçilmeden \"İleri\"ye basıldığında görünen hata."
+  },
+  "etkinlik_bilgi_baslik": "Başlık ve zaman",
+  "@etkinlik_bilgi_baslik": {
+    "description": "Sihirbazın başlık, açıklama, başlangıç ve bitiş adımının başlığı."
+  },
+  "etkinlik_baslik_etiketi": "Başlık",
+  "@etkinlik_baslik_etiketi": {
+    "description": "Sihirbazdaki etkinlik başlığı alanının etiketi."
+  },
+  "etkinlik_baslik_hata": "Başlık 1–120 karakter olmalı.",
+  "@etkinlik_baslik_hata": {
+    "description": "Etkinlik başlığı boşken ya da çok uzunken görünen hata."
+  },
+  "etkinlik_aciklama_etiketi": "Açıklama (isteğe bağlı)",
+  "@etkinlik_aciklama_etiketi": {
+    "description": "Sihirbazdaki açıklama alanının etiketi."
+  },
+  "etkinlik_aciklama_hata": "Açıklama en çok 5000 karakter olabilir.",
+  "@etkinlik_aciklama_hata": {
+    "description": "Açıklama çok uzunken görünen hata."
+  },
+  "etkinlik_baslangic": "Başlangıç",
+  "@etkinlik_baslangic": {
+    "description": "Sihirbazdaki başlangıç zamanı alanının etiketi."
+  },
+  "etkinlik_bitis": "Bitiş",
+  "@etkinlik_bitis": {
+    "description": "Sihirbazdaki bitiş zamanı alanının etiketi."
+  },
+  "etkinlik_zaman_sec": "Seç",
+  "@etkinlik_zaman_sec": {
+    "description": "Sihirbazda henüz seçilmemiş tarih ya da saat alanının düğme metni."
+  },
+  "etkinlik_temizle": "Temizle",
+  "@etkinlik_temizle": {
+    "description": "Sihirbazda isteğe bağlı bir zamanı (beklenen dönüş) silen düğme."
+  },
+  "etkinlik_baslangic_yok": "Başlangıç zamanını seç.",
+  "@etkinlik_baslangic_yok": {
+    "description": "Başlangıç seçilmeden \"İleri\"ye basıldığında görünen hata."
+  },
+  "etkinlik_baslangic_gecmis": "Başlangıç ileri bir zaman olmalı.",
+  "@etkinlik_baslangic_gecmis": {
+    "description": "Başlangıç geçmişte olduğunda görünen hata."
+  },
+  "etkinlik_bitis_hata": "Bitiş başlangıçtan sonra olmalı.",
+  "@etkinlik_bitis_hata": {
+    "description": "Bitiş seçilmediğinde ya da başlangıçtan önce olduğunda görünen hata."
+  },
+  "etkinlik_saatler_turkiye": "Saatler Türkiye saatidir.",
+  "@etkinlik_saatler_turkiye": {
+    "description": "Sihirbazda zaman alanlarının altındaki bilgi."
+  },
+  "etkinlik_yer_adim_baslik": "Nerede?",
+  "@etkinlik_yer_adim_baslik": {
+    "description": "Sihirbazın yer adımının başlığı."
+  },
+  "etkinlik_mod_yuz_yuze": "Yüz yüze",
+  "@etkinlik_mod_yuz_yuze": {
+    "description": "Etkinlik biçimi: yüz yüze (buluşma noktası)."
+  },
+  "etkinlik_mod_cevrimici": "Çevrimiçi",
+  "@etkinlik_mod_cevrimici": {
+    "description": "Etkinlik biçimi: çevrimiçi (bağlantı)."
+  },
+  "etkinlik_nokta_sec": "Haritada seç",
+  "@etkinlik_nokta_sec": {
+    "description": "Sihirbazda buluşma noktası seçicisini açan düğme."
+  },
+  "etkinlik_nokta_degistir": "Noktayı değiştir",
+  "@etkinlik_nokta_degistir": {
+    "description": "Buluşma noktası seçildikten sonra seçiciyi yeniden açan düğme."
+  },
+  "etkinlik_nokta_hata": "Buluşma noktasını haritada seç.",
+  "@etkinlik_nokta_hata": {
+    "description": "Yüz yüze etkinlikte nokta seçilmeden \"İleri\"ye basıldığında görünen hata."
+  },
+  "etkinlik_nokta_adi_etiketi": "Yer adı (isteğe bağlı)",
+  "@etkinlik_nokta_adi_etiketi": {
+    "description": "Buluşma noktasının adı alanının etiketi."
+  },
+  "etkinlik_il_etiketi": "İl",
+  "@etkinlik_il_etiketi": {
+    "description": "Sihirbazdaki il alanının etiketi."
+  },
+  "etkinlik_il_hata": "İli yaz (en çok 50 karakter).",
+  "@etkinlik_il_hata": {
+    "description": "İl boşken ya da çok uzunken görünen hata."
+  },
+  "etkinlik_ilce_etiketi": "İlçe",
+  "@etkinlik_ilce_etiketi": {
+    "description": "Sihirbazdaki ilçe alanının etiketi."
+  },
+  "etkinlik_ilce_hata": "İlçeyi yaz (en çok 50 karakter).",
+  "@etkinlik_ilce_hata": {
+    "description": "İlçe boşken ya da çok uzunken görünen hata."
+  },
+  "etkinlik_baglanti_etiketi": "Bağlantı (https://…)",
+  "@etkinlik_baglanti_etiketi": {
+    "description": "Çevrimiçi etkinlik bağlantısı alanının etiketi."
+  },
+  "etkinlik_baglanti_hata": "https:// ile başlayan geçerli bir bağlantı yaz.",
+  "@etkinlik_baglanti_hata": {
+    "description": "Çevrimiçi etkinlik bağlantısı geçersizken görünen hata."
+  },
+  "etkinlik_ayrinti_adim_baslik": "Ayrıntılar",
+  "@etkinlik_ayrinti_adim_baslik": {
+    "description": "Sihirbazın türe özel alanlar, kontenjan ve tekrar adımının başlığı."
+  },
+  "etkinlik_kontenjan_etiketi": "Kontenjan (boş bırakırsan sınırsız)",
+  "@etkinlik_kontenjan_etiketi": {
+    "description": "Kontenjan alanının etiketi."
+  },
+  "etkinlik_uzunluk_hata": "En çok {enCok} karakter olabilir.",
+  "@etkinlik_uzunluk_hata": {
+    "description": "Metin alanı çok uzunken görünen genel hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "etkinlik_sayi_hata": "0 ile {enCok} arasında bir tam sayı yaz.",
+  "@etkinlik_sayi_hata": {
+    "description": "Sayı alanı (kontenjan, mesafe, yükselti, tolerans) geçersizken görünen genel hata. Mesafede ondalık da kabul edilir.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "10000"
+      }
+    }
+  },
+  "etkinlik_aralik_hata": "{enAz} ile {enCok} arasında bir sayı yaz.",
+  "@etkinlik_aralik_hata": {
+    "description": "Tekrar aralığı ya da tekrar sayısı geçersizken görünen hata.",
+    "placeholders": {
+      "enAz": {
+        "type": "int",
+        "example": "1"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "52"
+      }
+    }
+  },
+  "etkinlik_secim_hata": "Bir seçenek seç.",
+  "@etkinlik_secim_hata": {
+    "description": "Zorunlu seçim (oyun platformu, spor dalı) yapılmadığında görünen hata."
+  },
+  "etkinlik_oyun_hata": "Oyunun adını yaz (en çok 60 karakter).",
+  "@etkinlik_oyun_hata": {
+    "description": "Oyun adı boşken ya da çok uzunken görünen hata."
+  },
+  "etkinlik_mesafe_etiketi": "Mesafe (km)",
+  "@etkinlik_mesafe_etiketi": {
+    "description": "Yürüyüş mesafesi alanının etiketi."
+  },
+  "etkinlik_yukselti_etiketi": "Yükselti (m)",
+  "@etkinlik_yukselti_etiketi": {
+    "description": "Yürüyüş yükseltisi alanının etiketi."
+  },
+  "etkinlik_donus_hata": "Dönüş başlangıçtan sonra olmalı.",
+  "@etkinlik_donus_hata": {
+    "description": "Beklenen dönüş başlangıçtan önce seçildiğinde görünen hata."
+  },
+  "etkinlik_tolerans_etiketi": "Dönüş toleransı, dakika (boş bırakırsan 30)",
+  "@etkinlik_tolerans_etiketi": {
+    "description": "Yürüyüş dönüş toleransı alanının etiketi."
+  },
+  "etkinlik_tekrar_baslik": "Tekrar",
+  "@etkinlik_tekrar_baslik": {
+    "description": "Sihirbazdaki tekrar bölümünün başlığı."
+  },
+  "etkinlik_tekrar_yok": "Tek seferlik",
+  "@etkinlik_tekrar_yok": {
+    "description": "Tekrar seçeneği: etkinlik tekrarlanmaz."
+  },
+  "etkinlik_tekrar_haftalik": "Her hafta",
+  "@etkinlik_tekrar_haftalik": {
+    "description": "Tekrar seçeneği: haftalık."
+  },
+  "etkinlik_tekrar_aylik": "Her ay",
+  "@etkinlik_tekrar_aylik": {
+    "description": "Tekrar seçeneği: aylık."
+  },
+  "etkinlik_tekrar_aralik_haftalik": "Kaç haftada bir",
+  "@etkinlik_tekrar_aralik_haftalik": {
+    "description": "Haftalık tekrarın aralık alanının etiketi."
+  },
+  "etkinlik_tekrar_aralik_aylik": "Kaç ayda bir",
+  "@etkinlik_tekrar_aralik_aylik": {
+    "description": "Aylık tekrarın aralık alanının etiketi."
+  },
+  "etkinlik_tekrar_aylik_not": "Her ay aynı günde tekrarlanır; o günü olmayan aylar atlanır.",
+  "@etkinlik_tekrar_aylik_not": {
+    "description": "Aylık tekrar seçildiğinde görünen bilgi (ör. 31'i olmayan aylar)."
+  },
+  "etkinlik_tekrar_bitis_yok": "Bitiş yok",
+  "@etkinlik_tekrar_bitis_yok": {
+    "description": "Tekrarın bitişi: yok."
+  },
+  "etkinlik_tekrar_bitis_sayi": "Belirli sayıda",
+  "@etkinlik_tekrar_bitis_sayi": {
+    "description": "Tekrarın bitişi: belirli sayıda tekrardan sonra."
+  },
+  "etkinlik_tekrar_bitis_tarih": "Belirli bir günde",
+  "@etkinlik_tekrar_bitis_tarih": {
+    "description": "Tekrarın bitişi: belirli bir günde."
+  },
+  "etkinlik_tekrar_sayi_etiketi": "Kaç kez",
+  "@etkinlik_tekrar_sayi_etiketi": {
+    "description": "Tekrar sayısı alanının etiketi."
+  },
+  "etkinlik_tekrar_son_gun": "Son gün",
+  "@etkinlik_tekrar_son_gun": {
+    "description": "Tekrarın son günü alanının etiketi."
+  },
+  "etkinlik_tekrar_tarih_hata": "Son gün başlangıçtan sonra ve en çok beş yıl içinde olmalı.",
+  "@etkinlik_tekrar_tarih_hata": {
+    "description": "Tekrarın son günü geçersizken görünen hata."
+  },
+  "etkinlik_harita_baslik": "Buluşma noktası seç",
+  "@etkinlik_harita_baslik": {
+    "description": "Harita seçicinin üst çubuk başlığı."
+  },
+  "etkinlik_harita_ara_etiketi": "Yer adı",
+  "@etkinlik_harita_ara_etiketi": {
+    "description": "Harita seçicideki arama alanının etiketi."
+  },
+  "etkinlik_harita_ara": "Ara",
+  "@etkinlik_harita_ara": {
+    "description": "Harita seçicide aramayı başlatan düğme. Arama yalnızca bu düğmeyle yapılır."
+  },
+  "etkinlik_harita_arama_hatasi": "Arama yapılamadı. Biraz sonra tekrar dene.",
+  "@etkinlik_harita_arama_hatasi": {
+    "description": "Harita seçicide ad araması başarısız olduğunda görünen hata."
+  },
+  "etkinlik_harita_sonuc_yok": "Sonuç bulunamadı.",
+  "@etkinlik_harita_sonuc_yok": {
+    "description": "Harita seçicide arama sonuç vermediğinde görünen metin."
+  },
+  "etkinlik_harita_ipucu": "Haritaya dokunarak iğne bırak ya da yer adıyla ara. Cihazının konumu kullanılmaz.",
+  "@etkinlik_harita_ipucu": {
+    "description": "Harita seçicideki yönerge."
+  },
+  "etkinlik_harita_sec": "Bu noktayı seç",
+  "@etkinlik_harita_sec": {
+    "description": "Harita seçicide seçilen noktayı sihirbaza veren düğme."
+  },
+  "etkinlik_harita_isaret": "Buluşma noktası",
+  "@etkinlik_harita_isaret": {
+    "description": "Haritadaki iğnenin ekran okuyucu etiketi."
+  },
+  "etkinlik_harita_atif": "© OpenStreetMap katkıda bulunanlar",
+  "@etkinlik_harita_atif": {
+    "description": "Haritanın köşesinde her zaman görünen OpenStreetMap atfı (lisans gereği). \"OpenStreetMap\" çevrilmez."
+  },
   "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
   "@karsilama_turler_etiketi": {
     "description": "Karşılama ekranındaki renkli etkinlik türü haplarının ekran okuyucu için grup etiketi."
