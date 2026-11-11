@@ -94,7 +94,7 @@ class _SikayetSayfasiState extends ConsumerState<SikayetSayfasi> {
     final mesgul = durum.gonderiliyor;
     final mesaj = switch (hedef.mesajMetni) {
       null => null,
-      final metin? => kanitMetni(metin),
+      final metin => kanitMetni(metin),
     };
     final platform =
         hedef.yalnizcaPlatform || _gerekce == ReportReason.staffConduct;
@@ -148,7 +148,7 @@ class _SikayetSayfasiState extends ConsumerState<SikayetSayfasi> {
                       title: Text(gerekceMetni(m, gerekce)),
                       subtitle: switch (gerekceAciklamasi(m, gerekce)) {
                         null => null,
-                        final aciklama? => Text(aciklama, style: govde),
+                        final aciklama => Text(aciklama, style: govde),
                       },
                     ),
                 ],

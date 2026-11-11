@@ -101,7 +101,7 @@ final class SikayetHedefi {
       description: kirpik.isEmpty ? null : kirpik,
       evidenceText: switch (mesajMetni) {
         null => null,
-        final metin? => kanitMetni(metin),
+        final metin => kanitMetni(metin),
       },
     );
   }
