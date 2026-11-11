@@ -267,8 +267,7 @@ class DisaAktarmaEylemNotifier extends Notifier<DisaAktarmaEylemDurumu> {
     DisaAktarmaCozucu cozucu,
   ) async {
     final adres = Uri.tryParse(bilgi.url);
-    if (bilgi.format != DataExportDownloadFormat.aes256GcmV1 ||
-        adres == null) {
+    if (bilgi.format != DataExportDownloadFormat.aes256GcmV1 || adres == null) {
       throw const DisaAktarmaHatasi(DisaAktarmaHataTuru.bicim);
     }
     final aad = DisaAktarmaBicimi.aad(talepId);

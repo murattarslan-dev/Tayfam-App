@@ -22,11 +22,8 @@ import 'disa_aktarma_sahteleri.dart';
 
 Future<void> _bekle() => Future<void>.delayed(Duration.zero);
 
-Matcher _hata(DisaAktarmaHataTuru tur) => isA<DisaAktarmaHatasi>().having(
-  (h) => h.tur,
-  'tur',
-  tur,
-);
+Matcher _hata(DisaAktarmaHataTuru tur) =>
+    isA<DisaAktarmaHatasi>().having((h) => h.tur, 'tur', tur);
 
 Matcher _problem(ProblemType tur) =>
     isA<ApiProblem>().having((p) => p.type, 'type', tur);
@@ -62,7 +59,7 @@ final class _Kurulum {
   final SahteTasima tasima;
   final SahteGoogle google;
   final SahteIndirici indirici;
-  final SahteOturum oturum = SahteOturum();
+  final SahteOturum oturum = _yenilenenOturum();
   final SahteZipPaylasici paylasici = SahteZipPaylasici();
   final SahteSignalMotoru motor = SahteSignalMotoru();
   final SahteZamanlayici zamanlayici = SahteZamanlayici();
@@ -84,6 +81,13 @@ final class _Kurulum {
   List<String> get yollar => [
     for (final i in tasima.istekler) '${i.method} ${i.yol}',
   ];
+}
+
+/// Her yenilemede yeni yenileme token'ı veren sahte oturum (aynı token
+/// ikinci kez gönderilirse `SessionStore` oturumu kapatır).
+SahteOturum _yenilenenOturum() {
+  var n = 1;
+  return SahteOturum(yenileme: () => oturum(n: ++n));
 }
 
 /// İlk girişin oturumu (sahteler: `oturum(n: 1)`).
@@ -244,7 +248,9 @@ void main() {
     test('süren talep varken yoklanıyor, hazır olunca duruyor', () async {
       var durum = 'processing';
       final k = _Kurulum(
-        yanitlar: {taleplerYolu: () => listeJson([talepJson(durum: durum)])},
+        yanitlar: {
+          taleplerYolu: () => listeJson([talepJson(durum: durum)]),
+        },
       );
       final sub = k.kap.listen(disaAktarmaListesiProvider, (_, _) {});
       addTearDown(sub.close);

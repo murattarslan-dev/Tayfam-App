@@ -12,8 +12,8 @@ final Uri _link = Uri.parse(
   'https://depo.ornek.test/exports/sahte?X-Amz-Signature=sahte-imza',
 );
 
-Matcher _hata(ImzaliIndirmeHataTuru tur) => isA<ImzaliIndirmeHatasi>()
-    .having((h) => h.tur, 'tur', tur);
+Matcher _hata(ImzaliIndirmeHataTuru tur) =>
+    isA<ImzaliIndirmeHatasi>().having((h) => h.tur, 'tur', tur);
 
 /// Gövdeyi [parcalar] hâlinde akıtan sahte istemci; gelen istekleri
 /// kaydeder. Gerçek ağ yok.
@@ -52,9 +52,7 @@ void main() {
     expect(istek.method, 'GET');
     expect(istek.url, _link);
     expect(istek.followRedirects, isFalse);
-    final basliklar = [
-      for (final k in istek.headers.keys) k.toLowerCase(),
-    ];
+    final basliklar = [for (final k in istek.headers.keys) k.toLowerCase()];
     expect(basliklar, isNot(contains('authorization')));
     expect(basliklar, isNot(contains('cookie')));
     expect(basliklar.where((k) => k.startsWith('x-tayfam')), isEmpty);

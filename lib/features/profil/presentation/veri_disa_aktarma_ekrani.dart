@@ -292,15 +292,14 @@ String _boyut(AppLocalizations m, int bayt) {
   return m.disa_aktarma_boyut_mb(sayi.format(bayt / mb));
 }
 
-String _durumAdi(AppLocalizations m, DataExportStatus durum) =>
-    switch (durum) {
-      DataExportStatus.pending => m.disa_aktarma_durum_bekliyor,
-      DataExportStatus.processing => m.disa_aktarma_durum_hazirlaniyor,
-      DataExportStatus.ready => m.disa_aktarma_durum_hazir,
-      DataExportStatus.expired => m.disa_aktarma_durum_suresi_doldu,
-      DataExportStatus.failed => m.disa_aktarma_durum_basarisiz,
-      DataExportStatus.unknown => m.disa_aktarma_durum_bilinmiyor,
-    };
+String _durumAdi(AppLocalizations m, DataExportStatus durum) => switch (durum) {
+  DataExportStatus.pending => m.disa_aktarma_durum_bekliyor,
+  DataExportStatus.processing => m.disa_aktarma_durum_hazirlaniyor,
+  DataExportStatus.ready => m.disa_aktarma_durum_hazir,
+  DataExportStatus.expired => m.disa_aktarma_durum_suresi_doldu,
+  DataExportStatus.failed => m.disa_aktarma_durum_basarisiz,
+  DataExportStatus.unknown => m.disa_aktarma_durum_bilinmiyor,
+};
 
 String _sebep(AppLocalizations m, DataExportFailureReason? sebep) =>
     switch (sebep) {

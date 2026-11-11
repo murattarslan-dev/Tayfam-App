@@ -81,9 +81,7 @@ void main() {
       testWidgets('talepler taşmıyor', (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
-        await _Ortam({
-          taleplerYolu: _karisikListe,
-        }).ac(tester, themeMode: mod);
+        await _Ortam({taleplerYolu: _karisikListe}).ac(tester, themeMode: mod);
 
         expect(tester.takeException(), isNull);
         expect(_metin('disa_aktarma_baslik'), findsOneWidget);

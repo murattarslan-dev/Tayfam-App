@@ -88,6 +88,7 @@ abstract final class DisaAktarmaBicimi {
   static const int dosyaEnCok = zipEnCok + ekBoyut;
 
   /// AAD'nin ASCII öneki (22 bayt).
+  // kural-istisnası: elle-uc — ADR-0022: API yolu değil, şifreli dosyanın AAD öneki
   static const String aadOneki = 'tayfam/data-export/v1/';
 
   /// [dosya]'yı parçalarına ayırır. Sürüm baytı yanlışsa, dosya

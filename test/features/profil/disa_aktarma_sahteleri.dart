@@ -21,8 +21,7 @@ export 'sahteler.dart';
 /// Dışa aktarma uçlarının yol şablonları (sahte taşımanın anahtarları).
 const String talepAcYolu = 'POST /v1/me/data-exports';
 const String taleplerYolu = 'GET /v1/me/data-exports';
-const String indirmeYolu =
-    'POST /v1/me/data-exports/{data_export_id}/download';
+const String indirmeYolu = 'POST /v1/me/data-exports/{data_export_id}/download';
 
 /// Testlerde kullanılan, biçimi geçerli örnek talep kimlikleri.
 const String ornekTalepId = '0190f3a2-7b1c-7d4e-8f00-0123456789ab';
