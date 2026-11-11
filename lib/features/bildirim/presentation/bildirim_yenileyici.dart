@@ -11,7 +11,7 @@ import 'package:tayfam/features/bildirim/application/okunmamis_bildirim_notifier
 /// (ADR-0018 §3). Hata fırlatmaz.
 void bildirimleriYenile(WidgetRef ref) {
   unawaited(ref.read(okunmamisBildirimProvider.notifier).yenile());
-  if (ref.exists(bildirimListesiProvider)) {
+  if (ref.read(bildirimListesiProvider.exists)) {
     unawaited(ref.read(bildirimListesiProvider.notifier).yenile());
   }
 }
