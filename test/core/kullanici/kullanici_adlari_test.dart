@@ -119,4 +119,30 @@ void main() {
     expect(c.read(kullaniciAdlariProvider), isEmpty);
     expect(c.read(kullaniciAdlariProvider.notifier).calisan, 0);
   });
+
+  test('kendisi mi: profilin self alanı; bilinene kadar false', () async {
+    final c = ProviderContainer(
+      overrides: [
+        oturumDurumuProvider.overrideWith(
+          () => SabitOturumDurumu(OturumDurumu.acik),
+        ),
+        profilOkuyucuProvider.overrideWithValue(
+          (id) async => KullaniciAdi('Ad $id', ben: id == 'ben'),
+        ),
+      ],
+    );
+    addTearDown(c.dispose);
+    c
+      ..listen(kendisiMiProvider('ben'), (_, _) {})
+      ..listen(kendisiMiProvider('baska'), (_, _) {});
+    expect(c.read(kendisiMiProvider('ben')), isFalse);
+
+    await pumpEventQueue();
+    expect(c.read(kendisiMiProvider('ben')), isTrue);
+    expect(c.read(kendisiMiProvider('baska')), isFalse);
+    expect(
+      c.read(kullaniciAdlariProvider)['ben'],
+      const KullaniciAdi('Ad ben', ben: true),
+    );
+  });
 }

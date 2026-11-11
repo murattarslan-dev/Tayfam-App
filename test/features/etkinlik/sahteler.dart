@@ -7,9 +7,11 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
+import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
+import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
 
@@ -39,6 +41,31 @@ const String katilimcilarYolu =
 const String takvimYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/calendar';
 const String iptalYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/cancellation';
 const String profilYolu = '/v1/users/{user_id}/profile';
+const String varisYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/check-in';
+const String cikisYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/hike-start';
+const String donusYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/hike-return';
+const String malzemelerYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items';
+const String malzemeYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}';
+const String araclarYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles';
+const String aracYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles/{vehicle_id}';
+const String avlarYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches';
+const String avYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches/{catch_id}';
+const String duzeltmeYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance';
+
+/// Varış penceresi açık bir etkinliğin başlangıcı: [sabitSimdi]'den 10
+/// dakika sonra.
+final DateTime yakinBaslangic = sabitSimdi.add(const Duration(minutes: 10));
+
+/// Bitmiş (iki gün önce başlamış, üç saat sürmüş) bir etkinliğin
+/// başlangıcı; organizatör düzeltmesi ve av ekleme süresi içinde.
+final DateTime gecmisBaslangic = sabitSimdi.subtract(const Duration(days: 2));
 
 /// Örnek `Event` JSON'u (sözleşmedeki zorunlu alanlar dolu).
 Map<String, Object?> etkinlikJson({
@@ -57,6 +84,7 @@ Map<String, Object?> etkinlikJson({
   bool yonetebilir = false,
   bool iptal = false,
   String? seri,
+  String? katilim,
   Map<String, Object?>? ayrinti,
 }) {
   final bas = baslangic ?? ornekBaslangic;
@@ -86,6 +114,7 @@ Map<String, Object?> etkinlikJson({
     'waitlist_count': bekleyen,
     'caller_rsvp': ?cevap,
     'caller_can_manage': yonetebilir,
+    'caller_attendance': ?katilim,
     'series_id': ?seri,
     'series_override': false,
     'created_at': '2026-11-01T10:00:00Z',
@@ -140,11 +169,11 @@ Map<String, Object?> katilimcilarJson(
   'next_page_token': ?sonraki,
 };
 
-/// Kullanıcı profili JSON'u.
-Map<String, Object?> profilJson(String id, String ad) => {
+/// Kullanıcı profili JSON'u; [ben] oturumdaki kullanıcının kendisi.
+Map<String, Object?> profilJson(String id, String ad, {bool ben = false}) => {
   'user_id': id,
   'display_name': ad,
-  'self': false,
+  'self': ben,
   'mutual_tayfas': const <Object?>[],
   'activity_visible': false,
 };
@@ -173,6 +202,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       'GET $katilimcilarYolu',
       () =>
           (_) => katilimcilarJson([katilimciId]),
+    )
+    ..putIfAbsent(
+      'GET $avlarYolu',
+      () =>
+          (_) => {'catches': const <Object?>[]},
     )
     ..putIfAbsent(
       'GET $profilYolu',
@@ -227,20 +261,54 @@ final class SahteYerArayici implements YerArayici {
   }
 }
 
+/// Testlerdeki cihaz konumu (buluşma noktasının yakını).
+const LatLng sahteKonum = LatLng(lat: 40.600123, lng: 31.280456);
+
+/// Sahte konum servisi: verilen sonucu döndürür, çağrıları sayar.
+final class SahteKonumServisi implements KonumServisi {
+  SahteKonumServisi([this.sonuc = const KonumAlindi(sahteKonum)]);
+
+  KonumSonucu sonuc;
+  int okuma = 0;
+  int uygulamaAyarlari = 0;
+  int konumAyarlari = 0;
+
+  @override
+  Future<KonumSonucu> tekSeferlikKonum() async {
+    okuma++;
+    return sonuc;
+  }
+
+  @override
+  Future<bool> uygulamaAyarlariniAc() async {
+    uygulamaAyarlari++;
+    return true;
+  }
+
+  @override
+  Future<bool> konumAyarlariniAc() async {
+    konumAyarlari++;
+    return true;
+  }
+}
+
 /// Sahte istek kimliği (UUID v4 biçiminde).
 const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 
 /// Etkinlik özelliğinin sahte bağımlılıkları: uçlar [tasima]'dan, saat
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
-/// bağlantılar sahte, istek kimliği sabit. Etkinlik modülü kayıtlıdır.
+/// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü ve
+/// türe özel araçları olan türler kayıtlıdır.
 List<Override> etkinlikOverridelari({
   required SahteTayfaTasima tasima,
   SahteTakvimPaylasici? takvim,
   SahteBaglantiAcici? baglanti,
   YerArayici? arayici,
   KaroSaglayiciUretici? karolar,
+  KonumServisi? konum,
+  SonTayfaDeposu? sonTayfa,
 }) => [
-  ...tayfaOverridelari(tasima: tasima),
+  ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {
     final profil = await UsersApi(tasima).getUserProfile(userId: id);
@@ -257,4 +325,11 @@ List<Override> etkinlikOverridelari({
     () => sahteEtkinlikIstekKimligi,
   ),
   tayfaModulleriProvider.overrideWithValue(const [EtkinlikModulu()]),
+  konumServisiProvider.overrideWithValue(konum ?? SahteKonumServisi()),
+  etkinlikTurleriProvider.overrideWithValue(const [
+    KonvoyTuru(),
+    KampTuru(),
+    YuruyusTuru(),
+    BalikTuru(),
+  ]),
 ];
