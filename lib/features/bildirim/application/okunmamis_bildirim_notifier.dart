@@ -35,6 +35,19 @@ class OkunmamisBildirimNotifier extends AsyncNotifier<int> {
     }
   }
 
+  /// Push bildirimine dokunuldu (istemci ADR-0019 §6): [bildirimId]
+  /// sunucuda okundu işaretlenir (`PUT /v1/notifications/{id}/read`) ve
+  /// sayı yeniden okunur. Hata fırlatmaz.
+  Future<void> pushOkundu(String bildirimId) async {
+    if (ref.read(oturumDurumuProvider) != OturumDurumu.acik) return;
+    try {
+      await ref.read(bildirimDeposuProvider).okunduIsaretle(bildirimId);
+    } on Exception {
+      // Bildirim silinmiş ya da ağ yok; liste açılınca doğrusu görünür.
+    }
+    if (ref.mounted) await yenile();
+  }
+
   /// Bir bildirim okundu işaretlenince sayıyı bir azaltır (0'ın altına
   /// inmez).
   void azalt() {

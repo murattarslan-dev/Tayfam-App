@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
 import 'package:tayfam/features/birebir/application/birebir_islemi.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
@@ -111,6 +112,8 @@ class YeniMesajNotifier extends Notifier<YeniMesajDurumu> {
     );
     state = YeniMesajDurumu(giden: giden);
     unawaited(_gonder(giden));
+    // İlk gerçek ihtiyaç: bildirim izni açıklaması (istemci ADR-0019 §3).
+    unawaited(ref.read(bildirimIzniProvider.notifier).ihtiyacDogdu());
     return true;
   }
 

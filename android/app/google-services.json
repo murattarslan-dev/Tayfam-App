@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "73439258394",
+    "project_id": "tayfam-514116",
+    "storage_bucket": "tayfam-514116.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73439258394:android:87c8b7c5a9d0dec4276ea3",
+        "android_client_info": {
+          "package_name": "com.murattarslan.tayfam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "73439258394-uhd9m0b6mkc5k8eaoup6kgh57a49on4t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZg27MvYq_3befsv_wgOwFWhxPC0_405c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "73439258394-uhd9m0b6mkc5k8eaoup6kgh57a49on4t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

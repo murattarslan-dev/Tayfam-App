@@ -175,6 +175,12 @@ abstract final class Adresler {
   /// Hesap silme açıklaması ve akışı.
   static const hesabiSil = '$profil/$hesabiSilYolu';
 
+  /// Bildirim ayarlarının profil altındaki yolu (istemci ADR-0019 §3).
+  static const bildirimAyarlariYolu = 'bildirimler';
+
+  /// Cihazdaki bildirim izni ve sistem ayarı.
+  static const bildirimAyarlari = '$profil/$bildirimAyarlariYolu';
+
   /// KVKK veri dışa aktarma ekranının profil altındaki yolu (ADR-0022).
   static const veriDisaAktarmaYolu = 'verilerim';
 

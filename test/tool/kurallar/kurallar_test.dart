@@ -110,6 +110,7 @@ void main() {
       Kurallar.arbAciklama.ad,
       Kurallar.arbAnahtarAdi.ad,
       Kurallar.arbKullanilmayan.ad,
+      Kurallar.androidMetinleri.ad,
     };
     final eksik = [
       for (final k in Kurallar.hepsi)
@@ -176,6 +177,67 @@ void main() {
         ),
       );
       expect(bulgular, isEmpty, reason: _ozet(bulgular));
+    });
+
+    group('push metinleri (android-metinleri)', () {
+      const arb = '''
+{
+  "etkinlik_baslik": "Etkinlikler",
+  "@etkinlik_baslik": {"description": "Etkinlik listesinin başlığı."},
+  "push_event_created_title": "Yeni etkinlik",
+  "@push_event_created_title": {"description": "Push başlığı."},
+  "push_event_created_body": "Tayfa'nda & yeni",
+  "@push_event_created_body": {"description": "Push gövdesi."}
+}
+''';
+      const kodPush = 'String a(AppLocalizations m) => m.etkinlik_baslik;\n';
+
+      test('güncel strings.xml: bulgu yok, push anahtarı kullanılmış', () {
+        final bulgular = denetle(
+          DenetimGirdisi(
+            dartDosyalari: {'lib/shell/ornek.dart': kodPush},
+            arbDosyalari: {sablonArb: arb},
+            androidMetinleri: androidMetinleriniUret(arb),
+          ),
+        );
+        expect(bulgular, isEmpty, reason: _ozet(bulgular));
+        expect(
+          androidMetinleriniUret(arb),
+          contains(
+            '<string name="push_event_created_body">'
+            "Tayfa\\'nda &amp; yeni</string>",
+          ),
+        );
+      });
+
+      test('eski ya da eksik strings.xml hatadır', () {
+        for (final mevcut in [null, '<resources/>']) {
+          final bulgular = denetle(
+            DenetimGirdisi(
+              dartDosyalari: {'lib/shell/ornek.dart': kodPush},
+              arbDosyalari: {sablonArb: arb},
+              androidMetinleri: mevcut,
+            ),
+          );
+          expect(_say(bulgular), {
+            'android-metinleri': 1,
+          }, reason: _ozet(bulgular));
+        }
+      });
+
+      test('push anahtarı yoksa dosya aranmaz', () {
+        final bulgular = denetle(
+          DenetimGirdisi(
+            dartDosyalari: {'lib/shell/ornek.dart': kodPush},
+            arbDosyalari: {
+              sablonArb:
+                  '{"etkinlik_baslik": "E", '
+                  '"@etkinlik_baslik": {"description": "A."}}',
+            },
+          ),
+        );
+        expect(bulgular, isEmpty, reason: _ozet(bulgular));
+      });
     });
 
     test('okunamayan ARB hatadır', () {

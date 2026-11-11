@@ -17,6 +17,14 @@ dependencies:
   # Flutter (Android/iOS). Yerleşik karo önbelleği kapalı kullanılır
   # (ADR-0006).
   flutter_map: ^8.2.2
+  # Push bildirimleri (istemci ADR-0019; Tayfam-Api ADR-0019): FCM. Yayıncı
+  # firebase.google.com (FlutterFire, Google). Yalnızca firebase_core ve
+  # firebase_messaging; Analytics/Crashlytics yok, otomatik veri toplama
+  # manifestte kapalı. Android'de POST_NOTIFICATIONS, WAKE_LOCK,
+  # ACCESS_NETWORK_STATE ve c2dm RECEIVE izinlerini getirir. 17.x'in
+  # registration token API'leri deprecated olduğu için 16.7 hattı.
+  firebase_core: ^4.15.1
+  firebase_messaging: ^16.7.1
   flutter_secure_storage: ^11.2.0
   # Varış bildirimi ("Geldim", ADR-0015 §5): düğmeye basınca "uygulamayı
   # kullanırken" izniyle tek seferlik konum (getCurrentPosition). Konum
