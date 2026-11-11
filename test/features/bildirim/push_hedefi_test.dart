@@ -141,7 +141,7 @@ void main() {
     test('Android kaçırması', () {
       expect(
         androidKacir("Ali'nin \"x\" & <y>"),
-        r"Ali\'nin \"x\" &amp; &lt;y&gt;",
+        'Ali\\\'nin \\"x\\" &amp; &lt;y&gt;',
       );
       expect(androidKacir('@ad ?'), r'\@ad ?');
     });

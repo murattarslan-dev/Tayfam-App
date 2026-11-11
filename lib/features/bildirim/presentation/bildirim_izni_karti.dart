@@ -26,11 +26,21 @@ class BildirimIzniAlani extends ConsumerWidget {
     return Column(
       children: [
         Expanded(child: child),
-        if (goster) const BildirimIzniKarti(),
+        // Büyük yazıda kart ekranın yarısını aşarsa kendi içinde kayar.
+        if (goster)
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * _enFazlaOran,
+            ),
+            child: const SingleChildScrollView(child: BildirimIzniKarti()),
+          ),
       ],
     );
   }
 }
+
+/// Kartın kaplayabileceği en büyük ekran yüksekliği oranı.
+const double _enFazlaOran = .5;
 
 /// Bildirim izni açıklama kartı.
 class BildirimIzniKarti extends ConsumerWidget {
