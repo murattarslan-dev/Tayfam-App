@@ -1,0 +1,14 @@
+# gitleaks yapılandırması: varsayılan kurallar + daraltılmış istisnalar.
+# Commit'e bağlı tek tek istisnalar .gitleaksignore'dadır.
+
+[extend]
+useDefault = true
+
+# Firebase Android yapılandırması (istemci ADR-0019 §5): içindeki
+# "AIza…" API anahtarı her APK'da açıkça bulunan, public bir istemci
+# tanımlayıcısıdır (kesin kural 6); gizli değildir. İstisna yalnızca bu
+# dosya yolu ve yalnızca GCP API anahtarı kuralı içindir.
+[[allowlists]]
+description = "Firebase google-services.json (public istemci yapılandırması)"
+targetRules = ["gcp-api-key"]
+paths = ['''^android/app/google-services\.json$''']
