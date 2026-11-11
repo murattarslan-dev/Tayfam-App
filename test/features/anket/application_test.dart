@@ -124,7 +124,7 @@ void main() {
   group('oy verenler (gizli ankette istek yok)', () {
     test('gizli ankette uç çağrılmıyor, hata dönüyor', () async {
       final k = _Kurulum({
-        'GET $oyVerenlerYolu': yanit({'voters': []}),
+        'GET $oyVerenlerYolu': yanit({'voters': <Object?>[]}),
       });
       final anket = _anket(anketId1, gizli: true, oyVeren: 9, oylar: [9, 0, 0]);
       final saglayici = oyVerenlerProvider((

@@ -81,7 +81,7 @@ void main() {
           kendi: [secenekA],
         ),
         yanitlar: {
-          'GET $oyVerenlerYolu': yanit({'voters': []}),
+          'GET $oyVerenlerYolu': yanit({'voters': <Object?>[]}),
         },
       );
       await _anketiAc(tester, tasima);
@@ -124,7 +124,7 @@ void main() {
           kendi: [secenekB],
         ),
         yanitlar: {
-          'GET $oyVerenlerYolu': yanit({'voters': []}),
+          'GET $oyVerenlerYolu': yanit({'voters': <Object?>[]}),
         },
       );
       await _anketiAc(tester, tasima);
@@ -150,7 +150,7 @@ void main() {
         anketJson(anketId1, gizli: true, oyVeren: 8, oylar: [5, 3, 0]),
         rol: 'admin',
         yanitlar: {
-          'GET $oyVerenlerYolu': yanit({'voters': []}),
+          'GET $oyVerenlerYolu': yanit({'voters': <Object?>[]}),
         },
       );
       await _anketiAc(tester, tasima);
@@ -724,6 +724,9 @@ void main() {
         await _yaz(tester, alanlar.at(0), 'Çok uzun bir anket sorusu');
         await _yaz(tester, alanlar.at(1), 'Moda');
         await _yaz(tester, alanlar.at(2), 'Şile');
+        // Odaktaki alan kendini yeniden görünür yapmasın.
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
         await _dokun(tester, find.text(arbMetni('anket_form_gonder')));
         expect(find.byType(HataSatiri), findsOneWidget);
         expect(tester.takeException(), isNull);
