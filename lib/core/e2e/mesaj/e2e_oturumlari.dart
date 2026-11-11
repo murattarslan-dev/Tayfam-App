@@ -52,6 +52,14 @@ final class E2eOturumlari {
   /// Kimlik ve kayıt; yoksa [E2eHazirDegil].
   DepoKimligi get kimlik => depo.kimlik ?? (throw const E2eHazirDegil());
 
+  /// Bu cihazın Signal adresi (sunucudaki cihaz kimliği ve numarası);
+  /// libsignal iki adresi mesaja bağlar. Kayıtlı değilse [E2eHazirDegil].
+  SignalAdresi get yerelAdres {
+    final c = depo.cihaz;
+    if (c == null) throw const E2eHazirDegil();
+    return SignalAdresi(ad: c.id, cihazNo: c.no);
+  }
+
   /// [kullaniciId]'nin cihazları (önbellekten; [tazele] ya da önbellekte
   /// yoksa sunucudan). Tazelenen listede olmayan ya da kaydı değişen
   /// cihazların oturumu ve güvenilen kimliği silinir.
@@ -124,6 +132,7 @@ final class E2eOturumlari {
     final oturum = await motor.paketIsle(
       kimlik: k.kayit,
       kayitKimligi: k.kayitKimligi,
+      yerelAdres: yerelAdres,
       adres: SignalAdresi(ad: p.deviceId, cihazNo: p.deviceNumber),
       mevcutOturum: mevcut?.kayit,
       paket: OnAnahtarPaketi(
@@ -186,6 +195,7 @@ final class E2eOturumlari {
         final s = await motor.sifrele(
           kimlik: k.kayit,
           kayitKimligi: k.kayitKimligi,
+          yerelAdres: yerelAdres,
           adres: SignalAdresi(ad: hedef.cihaz.id, cihazNo: oturum.cihazNo),
           oturum: oturum.kayit,
           duz: duz,
@@ -217,6 +227,7 @@ final class E2eOturumlari {
   /// Çözülemezse [SignalHatasi]; depoya yazılamazsa [E2eDepoHatasi].
   Future<Uint8List> coz(E2EEnvelope z) async {
     final k = kimlik;
+    final yerel = yerelAdres;
     final cihazId = z.senderDeviceId;
     final adres = SignalAdresi(ad: cihazId, cihazNo: z.senderDeviceNumber);
     final sifreli = _bayt(z.content);
@@ -232,6 +243,7 @@ final class E2eOturumlari {
       final sonuc = await motor.coz(
         kimlik: k.kayit,
         kayitKimligi: k.kayitKimligi,
+        yerelAdres: yerel,
         adres: adres,
         tur: SignalMesajTuru.onAnahtar,
         sifreli: sifreli,
@@ -276,6 +288,7 @@ final class E2eOturumlari {
     final sonuc = await motor.coz(
       kimlik: k.kayit,
       kayitKimligi: k.kayitKimligi,
+      yerelAdres: yerel,
       adres: adres,
       tur: SignalMesajTuru.signal,
       sifreli: sifreli,
