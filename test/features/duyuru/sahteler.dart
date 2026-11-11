@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/misc.dart';
 
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/duyuru/data/duyuru_deposu.dart';
 import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
+import 'package:tayfam/features/sikayet/data/sikayet_deposu.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -25,6 +27,11 @@ const String duyuruYolu =
 const String sabitlemeYolu =
     '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}/pin';
 const String etkinliklerYolu = '/v1/tayfas/{tayfa_id}/events';
+const String sikayetlerYolu = '/v1/tayfas/{tayfa_id}/reports';
+
+/// Örnek duyuruların yazarı; [benimId] oturumdaki kullanıcıdır.
+const String yazarId = '00000000-0000-4000-8000-000000000001';
+const String benimId = '00000000-0000-4000-8000-0000000000aa';
 
 /// Örnek duyuru (`Announcement`) JSON'u.
 Map<String, Object?> duyuruJson(
@@ -33,10 +40,11 @@ Map<String, Object?> duyuruJson(
   String govde = 'Saat 9’da Moda’dayız.',
   bool sabit = false,
   String zaman = '2026-11-10T10:00:00Z',
+  String yazar = yazarId,
 }) => {
   'id': id,
   'tayfa_id': ornekTayfaId,
-  'author_user_id': '00000000-0000-4000-8000-000000000001',
+  'author_user_id': yazar,
   'title': baslik,
   'body': govde,
   'pinned': sabit,
@@ -136,5 +144,9 @@ List<Override> modulOverridelari(SahteTayfaTasima tasima) => [
   ...tayfaOverridelari(tasima: tasima),
   duyuruDeposuProvider.overrideWithValue(DuyuruDeposu(tasima)),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
+  sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
+  profilOkuyucuProvider.overrideWithValue(
+    (id) async => KullaniciAdi('Kişi', ben: id == benimId),
+  ),
   oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
 ];

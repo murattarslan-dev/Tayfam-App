@@ -3111,5 +3111,391 @@
   "yonetim_davet_iptal_edildi": "Davet linki iptal edildi.",
   "@yonetim_davet_iptal_edildi": {
     "description": "Davet linki iptal edilince kısa süre görünen bildirim."
+  },
+  "sikayet_et": "Şikâyet et",
+  "@sikayet_et": {
+    "description": "İçerik menülerindeki (duyuru, etkinlik vb.) şikâyet seçeneği; şikâyet sayfasını açar."
+  },
+  "sikayet_tayfa_menu": "Tayfayı şikâyet et",
+  "@sikayet_tayfa_menu": {
+    "description": "Tayfa ana sayfasının üst menüsünde tayfanın kendisini şikâyet etme seçeneği."
+  },
+  "sikayet_iletildi": "Şikâyetin iletildi. Aynı şeyi tekrar şikâyet etmen gerekmez.",
+  "@sikayet_iletildi": {
+    "description": "Şikâyet gönderilince (ya da aynı hedef daha önce şikâyet edildiyse) kısa süre görünen bildirim."
+  },
+  "sikayet_baslik": "Şikâyet et",
+  "@sikayet_baslik": {
+    "description": "Şikâyet sayfasının başlığı."
+  },
+  "sikayet_soru_uye": "Bu kişiyi neden şikâyet ediyorsun?",
+  "@sikayet_soru_uye": {
+    "description": "Bir üyeyi şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_tayfa": "Bu tayfayı neden şikâyet ediyorsun?",
+  "@sikayet_soru_tayfa": {
+    "description": "Tayfanın kendisini şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_duyuru": "Bu duyuruyu neden şikâyet ediyorsun?",
+  "@sikayet_soru_duyuru": {
+    "description": "Bir duyuruyu şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_etkinlik": "Bu etkinliği neden şikâyet ediyorsun?",
+  "@sikayet_soru_etkinlik": {
+    "description": "Bir etkinliği şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_soru": "Bu soruyu neden şikâyet ediyorsun?",
+  "@sikayet_soru_soru": {
+    "description": "Soru-cevaptaki bir soruyu şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_cevap": "Bu cevabı neden şikâyet ediyorsun?",
+  "@sikayet_soru_cevap": {
+    "description": "Soru-cevaptaki bir cevabı şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_anket": "Bu anketi neden şikâyet ediyorsun?",
+  "@sikayet_soru_anket": {
+    "description": "Bir anketi şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_av_kaydi": "Bu av kaydını neden şikâyet ediyorsun?",
+  "@sikayet_soru_av_kaydi": {
+    "description": "Balık etkinliğindeki bir av kaydını şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_mesaj": "Bu mesajı neden şikâyet ediyorsun?",
+  "@sikayet_soru_mesaj": {
+    "description": "Birebir mesajı şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_soru_genel": "Neden şikâyet ediyorsun?",
+  "@sikayet_soru_genel": {
+    "description": "Türü bilinmeyen bir şeyi şikâyet ederken sayfanın sorusu."
+  },
+  "sikayet_gizlilik": "Kimliğin şikâyet ettiğin kişiye ve tayfa yönetimine gösterilmez. Şikâyetin tayfanın moderatörlerine ve yöneticilerine gider.",
+  "@sikayet_gizlilik": {
+    "description": "Tayfa içindeki şikâyetlerde şikâyet sayfasındaki gizlilik notu."
+  },
+  "sikayet_gizlilik_platform": "Bu şikâyet yalnızca Tayfam ekibine gider; tayfa yönetimi görmez. Kimliğin şikâyet ettiğin kişiye gösterilmez.",
+  "@sikayet_gizlilik_platform": {
+    "description": "Tayfa, birebir mesaj ve yönetimin yetkiyi kötüye kullanması şikâyetlerinde gizlilik notu."
+  },
+  "sikayet_mesaj_iletilecek": "Şikâyetle birlikte iletilecek mesaj",
+  "@sikayet_mesaj_iletilecek": {
+    "description": "Birebir mesaj şikâyetinde, kullanıcının cihazından Tayfam ekibine iletilecek mesaj metninin başlığı."
+  },
+  "sikayet_mesaj_bos": "Bu mesajın metni boş olduğu için şikâyet edilemez.",
+  "@sikayet_mesaj_bos": {
+    "description": "Birebir mesaj şikâyetinde mesaj metni boşsa gösterilen hata."
+  },
+  "sikayet_gerekce_baslik": "Gerekçe",
+  "@sikayet_gerekce_baslik": {
+    "description": "Şikâyet sayfasındaki gerekçe listesinin başlığı."
+  },
+  "sikayet_gerekce_cocuk_guvenligi": "Çocuk ya da genç güvenliği",
+  "@sikayet_gerekce_cocuk_guvenligi": {
+    "description": "Şikâyet gerekçesi: çocuk/genç güvenliği (child_safety)."
+  },
+  "sikayet_gerekce_cocuk_guvenligi_aciklama": "Öncelikle incelenir ve hemen Tayfam ekibine de gider.",
+  "@sikayet_gerekce_cocuk_guvenligi_aciklama": {
+    "description": "Çocuk/genç güvenliği gerekçesinin altındaki açıklama."
+  },
+  "sikayet_gerekce_taciz": "Taciz ya da zorbalık",
+  "@sikayet_gerekce_taciz": {
+    "description": "Şikâyet gerekçesi: taciz (harassment)."
+  },
+  "sikayet_gerekce_nefret": "Nefret söylemi",
+  "@sikayet_gerekce_nefret": {
+    "description": "Şikâyet gerekçesi: nefret söylemi (hate_speech)."
+  },
+  "sikayet_gerekce_siddet": "Şiddet ya da tehdit",
+  "@sikayet_gerekce_siddet": {
+    "description": "Şikâyet gerekçesi: şiddet (violence)."
+  },
+  "sikayet_gerekce_cinsel": "Cinsel içerik",
+  "@sikayet_gerekce_cinsel": {
+    "description": "Şikâyet gerekçesi: cinsel içerik (sexual_content)."
+  },
+  "sikayet_gerekce_mahremiyet": "Kişisel bilgilerin paylaşılması",
+  "@sikayet_gerekce_mahremiyet": {
+    "description": "Şikâyet gerekçesi: mahremiyet ihlali (privacy)."
+  },
+  "sikayet_gerekce_taklit": "Başkasının yerine geçme",
+  "@sikayet_gerekce_taklit": {
+    "description": "Şikâyet gerekçesi: kimlik taklidi (impersonation)."
+  },
+  "sikayet_gerekce_sahte_etkinlik": "Sahte ya da yanıltıcı etkinlik",
+  "@sikayet_gerekce_sahte_etkinlik": {
+    "description": "Şikâyet gerekçesi: sahte etkinlik (fake_event); yalnızca etkinliklerde."
+  },
+  "sikayet_gerekce_yasadisi_ticaret": "Yasa dışı alım satım",
+  "@sikayet_gerekce_yasadisi_ticaret": {
+    "description": "Şikâyet gerekçesi: yasa dışı ticaret (illegal_trade)."
+  },
+  "sikayet_gerekce_uyusturucu": "Uyuşturucu",
+  "@sikayet_gerekce_uyusturucu": {
+    "description": "Şikâyet gerekçesi: uyuşturucu (drugs)."
+  },
+  "sikayet_gerekce_kumar": "Kumar ya da bahis",
+  "@sikayet_gerekce_kumar": {
+    "description": "Şikâyet gerekçesi: kumar (gambling)."
+  },
+  "sikayet_gerekce_tehlikeli": "Tehlikeli etkinlik",
+  "@sikayet_gerekce_tehlikeli": {
+    "description": "Şikâyet gerekçesi: tehlikeli faaliyet (dangerous_activity)."
+  },
+  "sikayet_gerekce_spam": "Spam ya da reklam",
+  "@sikayet_gerekce_spam": {
+    "description": "Şikâyet gerekçesi: spam."
+  },
+  "sikayet_gerekce_telif": "Telif hakkı ihlali",
+  "@sikayet_gerekce_telif": {
+    "description": "Şikâyet gerekçesi: telif hakkı (copyright)."
+  },
+  "sikayet_gerekce_yonetim": "Yönetimin yetkisini kötüye kullanması",
+  "@sikayet_gerekce_yonetim": {
+    "description": "Şikâyet gerekçesi: yönetici ya da moderatörün yetkisini kötüye kullanması (staff_conduct); yalnızca üye ve tayfa şikâyetinde."
+  },
+  "sikayet_gerekce_yonetim_aciklama": "Tayfa yönetimi görmez; yalnızca Tayfam ekibine gider.",
+  "@sikayet_gerekce_yonetim_aciklama": {
+    "description": "Yönetimin yetkiyi kötüye kullanması gerekçesinin altındaki açıklama."
+  },
+  "sikayet_gerekce_diger": "Diğer",
+  "@sikayet_gerekce_diger": {
+    "description": "Şikâyet gerekçesi: diğer (other); bilinmeyen gerekçe de bununla gösterilir."
+  },
+  "sikayet_not_etiketi": "Eklemek istediğin bir şey var mı? (isteğe bağlı)",
+  "@sikayet_not_etiketi": {
+    "description": "Şikâyet sayfasındaki isteğe bağlı not alanının etiketi."
+  },
+  "sikayet_not_yardim": "Notunu şikâyeti inceleyenler okur. Kişisel bilgi yazma.",
+  "@sikayet_not_yardim": {
+    "description": "Şikâyet notu alanının altındaki yardım metni."
+  },
+  "sikayet_gonder": "Şikâyeti gönder",
+  "@sikayet_gonder": {
+    "description": "Şikâyet sayfasındaki gönderme düğmesi; gerekçe seçilmeden pasiftir."
+  },
+  "sikayet_tur_uye": "Üye",
+  "@sikayet_tur_uye": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: üye."
+  },
+  "sikayet_tur_tayfa": "Tayfa",
+  "@sikayet_tur_tayfa": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: tayfa."
+  },
+  "sikayet_tur_duyuru": "Duyuru",
+  "@sikayet_tur_duyuru": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: duyuru."
+  },
+  "sikayet_tur_etkinlik": "Etkinlik",
+  "@sikayet_tur_etkinlik": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: etkinlik."
+  },
+  "sikayet_tur_soru": "Soru",
+  "@sikayet_tur_soru": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: soru."
+  },
+  "sikayet_tur_cevap": "Cevap",
+  "@sikayet_tur_cevap": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: cevap."
+  },
+  "sikayet_tur_anket": "Anket",
+  "@sikayet_tur_anket": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: anket."
+  },
+  "sikayet_tur_av_kaydi": "Av kaydı",
+  "@sikayet_tur_av_kaydi": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: balık etkinliğinin av kaydı."
+  },
+  "sikayet_tur_mesaj": "Mesaj",
+  "@sikayet_tur_mesaj": {
+    "description": "Şikâyet edilen şeyin türü: birebir mesaj."
+  },
+  "sikayet_tur_bilinmiyor": "Diğer",
+  "@sikayet_tur_bilinmiyor": {
+    "description": "Şikâyet edilen şeyin türü uygulamanın bilmediği bir değerse."
+  },
+  "sikayet_kuyruk_baslik": "Şikâyetler",
+  "@sikayet_kuyruk_baslik": {
+    "description": "Moderasyon kuyruğu ekranının başlığı ve tayfa ayarlarındaki girişin etiketi."
+  },
+  "sikayet_kuyruk_acik": "Açık",
+  "@sikayet_kuyruk_acik": {
+    "description": "Moderasyon kuyruğunda sonuçlanmamış şikâyetler sekmesi."
+  },
+  "sikayet_kuyruk_sonuclanan": "Sonuçlanan",
+  "@sikayet_kuyruk_sonuclanan": {
+    "description": "Moderasyon kuyruğunda sonuçlanmış şikâyetler sekmesi."
+  },
+  "sikayet_kuyruk_acik_aciklama": "Öncelikli şikâyetler önce, sonra eskiden yeniye. Şikâyet edenin kimliği gösterilmez. Önce içeriği kaldır ya da üyeye yaptırım uygula, sonra şikâyeti sonuçlandır.",
+  "@sikayet_kuyruk_acik_aciklama": {
+    "description": "Moderasyon kuyruğunun açık sekmesinin üstündeki açıklama."
+  },
+  "sikayet_kuyruk_sonuclanan_aciklama": "Son sonuçlanan önce. Kaldırılan duyuru, soru ve cevabı 30 gün içinde geri alabilirsin.",
+  "@sikayet_kuyruk_sonuclanan_aciklama": {
+    "description": "Moderasyon kuyruğunun sonuçlanan sekmesinin üstündeki açıklama."
+  },
+  "sikayet_kuyruk_acik_bos": "Bekleyen şikâyet yok.",
+  "@sikayet_kuyruk_acik_bos": {
+    "description": "Açık şikâyet yoksa gösterilen metin."
+  },
+  "sikayet_kuyruk_sonuclanan_bos": "Henüz sonuçlanan şikâyet yok.",
+  "@sikayet_kuyruk_sonuclanan_bos": {
+    "description": "Sonuçlanan şikâyet yoksa gösterilen metin."
+  },
+  "sikayet_kuyruk_onizleme": "İçerik: {baslik}",
+  "@sikayet_kuyruk_onizleme": {
+    "description": "Kuyruktaki şikâyette şikâyet edilen içeriğin başlığı ya da anket sorusu.",
+    "placeholders": {
+      "baslik": {
+        "type": "String",
+        "example": "Pazar buluşması"
+      }
+    }
+  },
+  "sikayet_kuyruk_icerik_gorunmuyor": "İçerik artık görünmüyor.",
+  "@sikayet_kuyruk_icerik_gorunmuyor": {
+    "description": "Şikâyet edilen içerik silinmiş ya da bulunamıyorsa kuyruktaki metin."
+  },
+  "sikayet_kuyruk_not": "Şikâyet edenin notu: {metin}",
+  "@sikayet_kuyruk_not": {
+    "description": "Şikâyet edenin isteğe bağlı notu; kimliği gösterilmez.",
+    "placeholders": {
+      "metin": {
+        "type": "String",
+        "example": "Sürekli reklam atıyor."
+      }
+    }
+  },
+  "sikayet_kuyruk_sikayet_edilen": "Şikâyet edilen:",
+  "@sikayet_kuyruk_sikayet_edilen": {
+    "description": "Şikâyet edilen kişinin (ya da içeriğin yazarının) adından önce gelen etiket."
+  },
+  "sikayet_kuyruk_zamani": "{tarih} tarihinde şikâyet edildi",
+  "@sikayet_kuyruk_zamani": {
+    "description": "Şikâyetin yapıldığı gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-10"
+      }
+    }
+  },
+  "sikayet_kuyruk_sonuclandiran": "Sonuçlandıran:",
+  "@sikayet_kuyruk_sonuclandiran": {
+    "description": "Şikâyeti sonuçlandıran moderatörün adından önce gelen etiket."
+  },
+  "sikayet_kuyruk_sonuc_zamani": "{tarih} tarihinde sonuçlandı",
+  "@sikayet_kuyruk_sonuc_zamani": {
+    "description": "Şikâyetin sonuçlandığı gün (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "yMMMMd",
+        "example": "2026-11-11"
+      }
+    }
+  },
+  "sikayet_oncelikli": "Öncelikli",
+  "@sikayet_oncelikli": {
+    "description": "Taraflardan biri 18 yaşından küçük olabilecek şikâyetlerin etiketi; kimin olduğu ve yaş gösterilmez."
+  },
+  "sikayet_oncelikli_aciklama": "Öncelikli: taraflardan biri 18 yaşından küçük olabilir",
+  "@sikayet_oncelikli_aciklama": {
+    "description": "Öncelikli etiketinin ekran okuyucu metni."
+  },
+  "sikayet_sonuclandir": "Sonuçlandır",
+  "@sikayet_sonuclandir": {
+    "description": "Kuyruktaki şikâyeti sonuçlandırma düğmesi ve seçim sayfasının başlığı."
+  },
+  "sikayet_sonuc_secim_aciklama": "Sonucu, içeriğin ya da üyenin kendi ekranında yaptığın işleme göre seç.",
+  "@sikayet_sonuc_secim_aciklama": {
+    "description": "Sonuçlandırma seçim sayfasının açıklaması."
+  },
+  "sikayet_sonuc_kaldirildi": "İçerik kaldırıldı",
+  "@sikayet_sonuc_kaldirildi": {
+    "description": "Şikâyet sonucu: içerik kaldırıldı (content_removed)."
+  },
+  "sikayet_sonuc_kaldirildi_aciklama": "İçeriği sildin ya da etkinliği iptal ettin.",
+  "@sikayet_sonuc_kaldirildi_aciklama": {
+    "description": "İçerik kaldırıldı seçeneğinin açıklaması."
+  },
+  "sikayet_sonuc_yaptirim": "Üyeye yaptırım uygulandı",
+  "@sikayet_sonuc_yaptirim": {
+    "description": "Şikâyet sonucu: şikâyet edilen kişi susturuldu ya da banlandı (member_sanctioned)."
+  },
+  "sikayet_sonuc_yaptirim_aciklama": "Kişiyi Üyeler ekranında susturdun ya da banladın.",
+  "@sikayet_sonuc_yaptirim_aciklama": {
+    "description": "Üyeye yaptırım seçeneğinin açıklaması."
+  },
+  "sikayet_sonuc_islem_yok": "İşlem gerekmiyor",
+  "@sikayet_sonuc_islem_yok": {
+    "description": "Şikâyet sonucu: işlem yapılmadı (dismissed)."
+  },
+  "sikayet_sonuc_islem_yok_aciklama": "Şikâyet kurallara aykırı bir şey göstermiyor.",
+  "@sikayet_sonuc_islem_yok_aciklama": {
+    "description": "İşlem gerekmiyor seçeneğinin açıklaması."
+  },
+  "sikayet_sonuc_bilinmiyor": "Sonuçlandı",
+  "@sikayet_sonuc_bilinmiyor": {
+    "description": "Sonuç uygulamanın bilmediği bir değerse gösterilen metin."
+  },
+  "sikayet_sonuclandi": "Şikâyet sonuçlandı.",
+  "@sikayet_sonuclandi": {
+    "description": "Şikâyet sonuçlandırılınca kısa süre görünen bildirim."
+  },
+  "sikayet_kaldir": "İçeriği kaldır",
+  "@sikayet_kaldir": {
+    "description": "Kuyruktaki şikâyette içeriği silip şikâyeti sonuçlandıran düğme; onay sorar."
+  },
+  "sikayet_kaldir_baslik": "İçerik kaldırılsın mı?",
+  "@sikayet_kaldir_baslik": {
+    "description": "İçeriği kaldırma onay penceresinin başlığı."
+  },
+  "sikayet_kaldir_aciklama": "İçerik herkesten gizlenir ve şikâyet \"İçerik kaldırıldı\" olarak sonuçlanır. 30 gün içinde geri alabilirsin.",
+  "@sikayet_kaldir_aciklama": {
+    "description": "İçeriği kaldırma onay penceresinin açıklaması."
+  },
+  "sikayet_kaldir_onayla": "Kaldır",
+  "@sikayet_kaldir_onayla": {
+    "description": "İçeriği kaldırma onay penceresindeki onay düğmesi."
+  },
+  "sikayet_kaldirildi": "İçerik kaldırıldı ve şikâyet sonuçlandı.",
+  "@sikayet_kaldirildi": {
+    "description": "İçerik kaldırılıp şikâyet sonuçlanınca kısa süre görünen bildirim."
+  },
+  "sikayet_icerigi_ac": "İçeriği aç",
+  "@sikayet_icerigi_ac": {
+    "description": "Kuyruktaki şikâyette şikâyet edilen duyuruyu ya da etkinliği açan düğme."
+  },
+  "sikayet_geri_al": "Geri al",
+  "@sikayet_geri_al": {
+    "description": "Kaldırılan duyuru, soru ya da cevabı geri getiren düğme ve onay penceresinin onay düğmesi."
+  },
+  "sikayet_geri_al_baslik": "İçerik geri alınsın mı?",
+  "@sikayet_geri_al_baslik": {
+    "description": "Kaldırılan içeriği geri alma onay penceresinin başlığı."
+  },
+  "sikayet_geri_al_aciklama": "İçerik yeniden herkese görünür. Şikâyetin sonucu değişmez.",
+  "@sikayet_geri_al_aciklama": {
+    "description": "Kaldırılan içeriği geri alma onay penceresinin açıklaması."
+  },
+  "sikayet_geri_alindi": "İçerik geri alındı.",
+  "@sikayet_geri_alindi": {
+    "description": "İçerik geri alınınca kısa süre görünen bildirim."
+  },
+  "sikayet_vazgec": "Vazgeç",
+  "@sikayet_vazgec": {
+    "description": "Moderasyon onay pencerelerindeki vazgeç düğmesi."
+  },
+  "sikayet_yukleniyor": "Şikâyetler yükleniyor",
+  "@sikayet_yukleniyor": {
+    "description": "Moderasyon kuyruğundaki yükleniyor göstergesinin ekran okuyucu metni."
+  },
+  "sikayet_daha_fazla": "Daha fazla göster",
+  "@sikayet_daha_fazla": {
+    "description": "Moderasyon kuyruğunda sonraki sayfayı yükleyen düğme."
+  },
+  "sikayet_tekrar_dene": "Tekrar dene",
+  "@sikayet_tekrar_dene": {
+    "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
   }
 }

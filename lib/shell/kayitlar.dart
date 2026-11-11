@@ -4,6 +4,7 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 
 /// Uygulamanın tayfa modülleri (ADR-0002). Koddaki sabit listedir;
@@ -33,4 +34,17 @@ final List<Override> kayitOverridelari = [
   etkinlikTurleriProvider.overrideWithValue(etkinlikTuruKaydi),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
+  // Tayfa ayarlarındaki ek girişler: moderasyon kuyruğu (ADR-0018 §8).
+  yonetimEkGirisleriProvider.overrideWithValue(yonetimEkGirisleri),
+];
+
+/// Tayfa ayarları ekranına başka paketlerin eklediği girişler; rotaları
+/// `shell/yonlendirici.dart`'ta `tayfaYonetimRotalari(ekRotalar:)` ile
+/// eklenir.
+const List<YonetimEkGirisi> yonetimEkGirisleri = [
+  YonetimEkGirisi(
+    ikon: moderasyonGirisIkonu,
+    etiket: moderasyonGirisEtiketi,
+    adres: moderasyonAdresi,
+  ),
 ];

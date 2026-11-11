@@ -72,6 +72,7 @@ void main() {
       expect(find.text(arbMetni('yonetim_menu_ayarlar')), findsNothing);
       expect(find.text(arbMetni('yonetim_menu_sessize_al')), findsOneWidget);
       expect(find.text(arbMetni('yonetim_menu_ayril')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_tayfa_menu')), findsOneWidget);
     });
 
     testWidgets('yönetici: bekleyen istek rozeti, ayarlara gider', (

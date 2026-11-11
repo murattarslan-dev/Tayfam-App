@@ -15,6 +15,7 @@ import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/features/sikayet/data/sikayet_deposu.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -330,6 +331,7 @@ List<Override> etkinlikOverridelari({
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
+  sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {
     final profil = await UsersApi(tasima).getUserProfile(userId: id);
     return KullaniciAdi(profil.displayName, ben: profil.self);

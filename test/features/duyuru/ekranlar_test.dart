@@ -250,14 +250,70 @@ void main() {
       );
     });
 
-    testWidgets('üyeye işlem menüsü yok', (tester) async {
+    testWidgets('üyeye yönetim işlemi yok; yalnızca şikâyet', (tester) async {
       ekranBoyutu(tester);
       await _duyuruyuAc(
         tester,
         _rolle('member', {'GET $duyuruYolu': yanit(duyuruJson(duyuruId1))}),
       );
 
+      await tester.tap(_islemMenusu);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('duyuru_sil')), findsNothing);
+      expect(find.text(arbMetni('duyuru_duzenle')), findsNothing);
+      expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
+    });
+
+    testWidgets('kendi duyurusunu şikâyet edemez; üyeye menü yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _duyuruyuAc(
+        tester,
+        _rolle('member', {
+          'GET $duyuruYolu': yanit(duyuruJson(duyuruId1, yazar: benimId)),
+        }),
+      );
+
       expect(_islemMenusu, findsNothing);
+    });
+
+    testWidgets('üye şikâyet eder: gerekçe seçilir, POST gider', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = _rolle('member', {
+        'GET $duyuruYolu': yanit(duyuruJson(duyuruId1)),
+        'POST $sikayetlerYolu': yanit({
+          'id': '9a8b7c6d-0000-4000-8000-000000000001',
+          'tayfa_id': ornekTayfaId,
+          'target_type': 'announcement',
+          'target_id': duyuruId1,
+          'reason': 'spam',
+          'status': 'open',
+          'created_at': '2026-11-11T10:00:00Z',
+        }),
+      });
+      await _duyuruyuAc(tester, tasima);
+
+      await tester.tap(_islemMenusu);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(arbMetni('sikayet_et')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('sikayet_soru_duyuru')), findsOneWidget);
+      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_spam')));
+      await tester.pumpAndSettle();
+      await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
+      await tester.pumpAndSettle();
+
+      final giden = tasima.giden('POST', sikayetlerYolu);
+      expect(giden, hasLength(1));
+      expect(giden.single.govde, {
+        'target_type': 'announcement',
+        'target_id': duyuruId1,
+        'reason': 'spam',
+      });
+      expect(find.text(arbMetni('sikayet_iletildi')), findsOneWidget);
     });
 
     testWidgets('yönetici siler: onay sorulur, sonra DELETE', (tester) async {
