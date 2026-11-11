@@ -73,9 +73,7 @@ class DuyurularEkrani extends ConsumerWidget {
                 if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
                 DuyuruKarti(
                   duyuru: duyuru,
-                  onTap: () => unawaited(
-                    context.push(Adresler.duyuru(tayfaId, duyuru.id)),
-                  ),
+                  onTap: () => context.go(Adresler.duyuru(tayfaId, duyuru.id)),
                 ),
               ],
               const SizedBox(height: TayfamSpacing.s16),

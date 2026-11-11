@@ -127,7 +127,8 @@ SahteTayfaTasima modulTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
 }
 
 /// Her istekte [deger]'i döndüren yanıt.
-TayfaYaniti yanit(Object? deger) => (_) => deger;
+TayfaYaniti yanit(Object? deger) =>
+    (_) => deger;
 
 /// Tayfa, duyuru ve etkinlik uçlarını [tasima]'ya bağlayan override'lar;
 /// oturum açık başlar. Gerçek ağ ve güvenli depo yok.

@@ -27,8 +27,7 @@ abstract final class Adresler {
   static const duyurularYolu = 'duyurular';
 
   /// Tayfanın duyuru listesi.
-  static String duyurular(String tayfaId) =>
-      '${tayfa(tayfaId)}/$duyurularYolu';
+  static String duyurular(String tayfaId) => '${tayfa(tayfaId)}/$duyurularYolu';
 
   /// Tek bir duyurunun ekranı.
   static String duyuru(String tayfaId, String duyuruId) =>

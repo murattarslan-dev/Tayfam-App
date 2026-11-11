@@ -11,8 +11,10 @@ import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Etkinlik oluşturmayı başlatan geri çağırma ("Etkinlik aç").
-typedef EtkinlikOlusturucu =
-    void Function(BuildContext context, String tayfaId);
+typedef EtkinlikOlusturucu = void Function(
+  BuildContext context,
+  String tayfaId,
+);
 
 /// Tayfa ana sayfasındaki "Yaklaşan etkinlikler" bölümü (ADR-0015 §1):
 /// en yakın üç etkinliğin kartı ve "Tümü" bağlantısı.

@@ -199,7 +199,10 @@ void main() {
       await _ac(
         tester,
         tasima,
-        moduller: [EtkinlikModulu(olustur: (_, _) {}), const DuyuruModulu()],
+        moduller: [
+          EtkinlikModulu(olustur: (_, _) {}),
+          const DuyuruModulu(),
+        ],
       );
 
       expect(find.text(arbMetni('tayfa_ana_etkinlik_ac')), findsOneWidget);

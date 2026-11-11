@@ -45,7 +45,9 @@ class DuyuruNotifier extends AsyncNotifier<Announcement> {
     final depo = ref.read(duyuruDeposuProvider);
     final (:tayfaId, :duyuruId) = anahtar;
     final duyuru = await depo.sabitle(tayfaId, duyuruId, sabit: sabit);
-    if (ref.mounted) duyuruyuYansit(ref, tayfaId, duyuru);
+    if (!ref.mounted) return;
+    state = AsyncData(duyuru);
+    _listeyeYansit(ref, tayfaId, duyuru);
   });
 
   /// Duyuruyu siler ve listeden çıkarır. Onay ekranda sorulur. Başarıda
@@ -85,10 +87,15 @@ final duyuruProvider = AsyncNotifierProvider.autoDispose
 Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
 
 /// Oluşturulan ya da değişen [duyuru]'yu açık olan liste ve detay
-/// durumlarına yansıtır.
+/// durumlarına yansıtır. Duyurunun kendi notifier'ından çağrılmaz (bir
+/// provider kendini izleyemez); o yalnızca listeyi günceller.
 void duyuruyuYansit(Ref ref, String tayfaId, Announcement duyuru) {
-  final liste = duyuruListesiProvider(tayfaId);
-  if (ref.exists(liste)) ref.read(liste.notifier).yansit(duyuru);
+  _listeyeYansit(ref, tayfaId, duyuru);
   final tek = duyuruProvider((tayfaId: tayfaId, duyuruId: duyuru.id));
   if (ref.exists(tek)) ref.read(tek.notifier).yansit(duyuru);
+}
+
+void _listeyeYansit(Ref ref, String tayfaId, Announcement duyuru) {
+  final liste = duyuruListesiProvider(tayfaId);
+  if (ref.exists(liste)) ref.read(liste.notifier).yansit(duyuru);
 }
