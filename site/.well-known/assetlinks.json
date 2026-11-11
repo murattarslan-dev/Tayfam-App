@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.murattarslan.tayfam",
+      "sha256_cert_fingerprints": [
+        "85:5E:F2:5E:F6:8A:EA:D1:30:0F:AE:0D:49:E1:1E:C8:0A:02:7B:93:6E:5D:CD:69:EB:B1:73:28:56:A4:55:4C"
+      ]
+    }
+  }
+]
