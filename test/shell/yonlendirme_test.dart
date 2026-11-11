@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/shell/yonlendirme.dart';
 
 import '../yardimcilar.dart';
@@ -12,6 +14,7 @@ String? _yonlendir(
   bool guncellemeGerekli = false,
   Set<String>? etkinTayfalar,
   bool tayfalarBekleniyor = false,
+  TanitimDurumu tanitim = TanitimDurumu.gosterildi,
 }) {
   return yonlendir(
     oturum: oturum,
@@ -20,6 +23,7 @@ String? _yonlendir(
     guncellemeGerekli: guncellemeGerekli,
     etkinTayfalar: etkinTayfalar,
     tayfalarBekleniyor: tayfalarBekleniyor,
+    tanitim: tanitim,
   );
 }
 
@@ -228,6 +232,102 @@ void main() {
       expect(adrestekiTayfaId(Uri.parse('/t/abc')), isNull);
       expect(adrestekiTayfaId(Uri.parse('/t')), isNull);
       expect(adrestekiTayfaId(Uri.parse('/profil')), isNull);
+    });
+  });
+
+  group('hoş geldin tanıtımı (ADR-0017)', () {
+    const yok = OturumDurumu.girisYok;
+    const gosterilmedi = TanitimDurumu.gosterilmedi;
+
+    test('oturum yokken gösterilmediyse tanıtıma gidiliyor', () {
+      for (final adres in ['/', '/giris', '/acilis', '/karsilama']) {
+        expect(
+          _yonlendir(adres, oturum: yok, tanitim: gosterilmedi),
+          '/hos-geldin',
+          reason: adres,
+        );
+      }
+      expect(
+        _yonlendir('/hos-geldin', oturum: yok, tanitim: gosterilmedi),
+        isNull,
+      );
+    });
+
+    test('sıra: sürüm denetimi → tanıtım → giriş', () {
+      expect(
+        _yonlendir(
+          '/hos-geldin',
+          oturum: yok,
+          tanitim: gosterilmedi,
+          guncellemeGerekli: true,
+        ),
+        '/guncelleme',
+      );
+      expect(
+        _yonlendir('/', oturum: OturumDurumu.yukleniyor, tanitim: gosterilmedi),
+        '/acilis',
+      );
+      expect(
+        _yonlendir('/', oturum: yok, tanitim: TanitimDurumu.yukleniyor),
+        '/acilis',
+      );
+      expect(
+        _yonlendir('/acilis', oturum: yok, tanitim: TanitimDurumu.yukleniyor),
+        isNull,
+      );
+      expect(_yonlendir('/hos-geldin', oturum: yok), '/giris');
+    });
+
+    test('gösterildiyse ya da oturum varsa tanıtım atlanıyor', () {
+      expect(_yonlendir('/', oturum: yok), '/giris');
+      expect(_yonlendir('/hos-geldin', tanitim: gosterilmedi), '/karsilama');
+      expect(_yonlendir('/', tanitim: gosterilmedi), '/karsilama');
+      expect(
+        _yonlendir(
+          '/hos-geldin',
+          oturum: OturumDurumu.kayitBekliyor,
+          tanitim: gosterilmedi,
+        ),
+        '/kayit',
+      );
+    });
+
+    test('gelinen adresin yolu tanıtım adresinde korunuyor', () {
+      final adres = _yonlendir('/sohbet', oturum: yok, tanitim: gosterilmedi);
+      expect(adres, Adresler.hosGeldinAdresi('/sohbet'));
+      final uri = Uri.parse(adres!);
+      expect(uri.path, '/hos-geldin');
+      expect(uri.queryParameters[Adresler.hedefParametresi], '/sohbet');
+
+      // Davet token'ı (fragment) ve sorgu hiçbir zaman taşınmaz.
+      final davet = Uri.parse(
+        _yonlendir('/davet#gizli-token', oturum: yok, tanitim: gosterilmedi)!,
+      );
+      expect(davet.queryParameters[Adresler.hedefParametresi], '/davet');
+      expect(davet.toString(), isNot(contains('gizli-token')));
+      expect(korunacakHedef(Uri.parse('/r/ORNEK1?kaynak=x')), '/r/ORNEK1');
+    });
+
+    test('kök, karşılama ve oturum ekranları hedef olarak korunmuyor', () {
+      for (final adres in ['', '/', '/karsilama', '/giris', '/hos-geldin']) {
+        expect(korunacakHedef(Uri.parse(adres)), isNull, reason: adres);
+      }
+    });
+
+    test('hedef parametresi doğrulanıyor', () {
+      expect(guvenliHedef('/sohbet'), '/sohbet');
+      expect(guvenliHedef('/t/$ornekTayfaId'), '/t/$ornekTayfaId');
+      for (final kotu in [
+        null,
+        '',
+        'sohbet',
+        '//ornek.test/x',
+        'https://ornek.test/x',
+        '/sohbet?x=1',
+        '/sohbet#x',
+      ]) {
+        expect(guvenliHedef(kotu), isNull, reason: kotu);
+      }
     });
   });
 }

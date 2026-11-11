@@ -30,6 +30,7 @@ olarak anar.
 | [0015](0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru modülleri, tayfa ana sayfası | Kabul edildi |
 | [0016](0016-uygulama-degerlendirme-penceresi.md) | İlk etkinlikten sonra uygulama değerlendirme penceresi | Kabul edildi |
 | [0017](0017-hosgeldin-tanitimi.md) | İlk açılışta hoş geldin tanıtımı | Kabul edildi |
+| [0018](0018-faz1-kalan-moduller.md) | Faz 1'in kalan modülleri ve dahili test sürümü | Kabul edildi |
 
 ## Şablon
 
