@@ -19,12 +19,10 @@ const int _onayEnFazla = 100;
 /// kazandırmaz. Ağ hatasında hiçbiri onaylanmaz.
 final class PaylasimAlici {
   PaylasimAlici({
-    required GecmisApi api,
-    required KendiCihazOturumu oturum,
-    required GecmisAnahtariDeposu anahtarlar,
-  }) : _api = api,
-       _oturum = oturum,
-       _anahtarlar = anahtarlar;
+    required this._api,
+    required this._oturum,
+    required this._anahtarlar,
+  });
 
   final GecmisApi _api;
   final KendiCihazOturumu _oturum;

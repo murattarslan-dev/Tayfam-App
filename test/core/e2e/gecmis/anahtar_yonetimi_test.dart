@@ -275,7 +275,7 @@ void main() {
 
     test('paylaşım yoksa onay isteği atılmaz', () async {
       final tasima = SahteTasima({
-        paylasimlarUc: (_) => {'shares': []},
+        paylasimlarUc: (_) => {'shares': <Object?>[]},
       });
       final alici = PaylasimAlici(
         api: GecmisApi(tasima),

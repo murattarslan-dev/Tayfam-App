@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,16 +31,12 @@ final class EslemeOturumu {
 /// kendi cihazları arasındaki Signal oturumuyla şifrelenir.
 final class EslemeServisi {
   EslemeServisi({
-    required GecmisApi api,
-    required KendiCihazOturumu oturum,
-    required GecmisAnahtariDeposu anahtarlar,
-    required E2eCihazDurumuKaynagi kaynak,
-    required PaylasimAlici paylasimAlici,
-  }) : _api = api,
-       _oturum = oturum,
-       _anahtarlar = anahtarlar,
-       _kaynak = kaynak,
-       _paylasimAlici = paylasimAlici;
+    required this._api,
+    required this._oturum,
+    required this._anahtarlar,
+    required this._kaynak,
+    required this._paylasimAlici,
+  });
 
   final GecmisApi _api;
   final KendiCihazOturumu _oturum;

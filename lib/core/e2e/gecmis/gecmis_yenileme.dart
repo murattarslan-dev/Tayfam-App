@@ -42,18 +42,13 @@ enum YenilemeSonucu {
 /// kabul etmiş olabilir.
 final class GecmisYenileyici {
   GecmisYenileyici({
-    required GecmisApi api,
-    required KendiCihazOturumu oturum,
-    required GecmisAnahtariDeposu anahtarlar,
-    required E2eCihazDurumuKaynagi kaynak,
-    required PaylasimAlici paylasimAlici,
-    required ArsivBicimi bicim,
-  }) : _api = api,
-       _oturum = oturum,
-       _anahtarlar = anahtarlar,
-       _kaynak = kaynak,
-       _paylasimAlici = paylasimAlici,
-       _bicim = bicim;
+    required this._api,
+    required this._oturum,
+    required this._anahtarlar,
+    required this._kaynak,
+    required this._paylasimAlici,
+    required this._bicim,
+  });
 
   final GecmisApi _api;
   final KendiCihazOturumu _oturum;
@@ -111,7 +106,7 @@ final class GecmisYenileyici {
             case ProblemType.e2eDevicesChanged:
               final fark = problem.cihazFarki;
               if (fark == null || (fark.eksik.isEmpty && fark.eski.isEmpty)) {
-                return vazgec(YenilemeSonucu.basarisiz);
+                return await vazgec(YenilemeSonucu.basarisiz);
               }
               hedefler
                 ..removeAll(fark.eski)
@@ -122,14 +117,14 @@ final class GecmisYenileyici {
               await _kaynak.tazele();
               return YenilemeSonucu.baskaCihazYeniledi;
             default:
-              return vazgec(YenilemeSonucu.basarisiz);
+              return await vazgec(YenilemeSonucu.basarisiz);
           }
         }
       }
-      return vazgec(YenilemeSonucu.basarisiz);
+      return await vazgec(YenilemeSonucu.basarisiz);
     } on Exception {
       // Bağlantı, şifreleme ya da depo hatası.
-      return vazgec(YenilemeSonucu.basarisiz);
+      return await vazgec(YenilemeSonucu.basarisiz);
     }
   }
 }

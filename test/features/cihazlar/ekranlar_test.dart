@@ -27,6 +27,15 @@ import '../../yardimcilar.dart';
 
 Finder _metin(String anahtar) => find.text(arbMetni(anahtar));
 
+/// Ekranda görünür kılıp dokunur (2× yazıda düğmeler ekranın altında
+/// kalabilir).
+Future<void> _dokun(WidgetTester tester, Finder hedef) async {
+  await tester.ensureVisible(hedef);
+  await tester.pumpAndSettle();
+  await tester.tap(hedef);
+  await tester.pumpAndSettle();
+}
+
 /// Kamerasız sahte tarayıcı: geri çağrıları teste verir.
 final class _SahteTarayici {
   ValueChanged<String>? kodOkundu;
@@ -156,8 +165,7 @@ void main() {
 
         // Yeni kod.
         o.simdi = DateTime.utc(2026, 11, 11, 19, 1);
-        await tester.tap(_metin('cihaz_qr_yenile'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, _metin('cihaz_qr_yenile'));
         expect(o.tasima.giden(istekAc), hasLength(2));
         expect(find.byType(QrKodu), findsOneWidget);
       });
@@ -183,12 +191,10 @@ void main() {
         expect(_metin('cihaz_kamera_izin_baslik'), findsOneWidget);
         expect(_metin('cihaz_kamera_izin_aciklama'), findsOneWidget);
 
-        await tester.tap(_metin('cihaz_ayarlari_ac'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, _metin('cihaz_ayarlari_ac'));
         expect(o.ayarlar.acilma, 1);
 
-        await tester.tap(_metin('cihaz_tara_tekrar'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, _metin('cihaz_tara_tekrar'));
         expect(find.byType(Placeholder), findsOneWidget);
       });
     });
@@ -304,8 +310,7 @@ void main() {
           return;
         }
         expect(_metin('cihaz_cikis_tek_cihaz_uyarisi'), findsOneWidget);
-        await tester.tap(_metin('cihaz_vazgec'));
-        await tester.pumpAndSettle();
+        await _dokun(tester, _metin('cihaz_vazgec'));
         expect(sonuc, isFalse);
       });
     }
@@ -330,8 +335,7 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       expect(_metin('cihaz_tek_cihaz_bilgi'), findsOneWidget);
-      await tester.tap(_metin('cihaz_anladim'));
-      await tester.pumpAndSettle();
+      await _dokun(tester, _metin('cihaz_anladim'));
       expect(_metin('cihaz_tek_cihaz_bilgi'), findsNothing);
     });
   });

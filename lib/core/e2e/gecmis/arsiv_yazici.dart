@@ -28,16 +28,12 @@ const int arsivKuyrukSiniri = 500;
 /// Diske hiçbir şey yazılmaz.
 final class ArsivYazici {
   ArsivYazici({
-    required GecmisApi api,
-    required ArsivBicimi bicim,
-    required GecmisAnahtariDeposu anahtarlar,
-    required E2eCihazDurumuKaynagi kaynak,
-    required PaylasimAlici paylasimAlici,
-  }) : _api = api,
-       _bicim = bicim,
-       _anahtarlar = anahtarlar,
-       _kaynak = kaynak,
-       _paylasimAlici = paylasimAlici;
+    required this._api,
+    required this._bicim,
+    required this._anahtarlar,
+    required this._kaynak,
+    required this._paylasimAlici,
+  });
 
   final GecmisApi _api;
   final ArsivBicimi _bicim;

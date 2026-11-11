@@ -40,12 +40,10 @@ final class IlkCihazQrGerekli extends IlkCihazSonucu {
 /// aday silinir.
 final class IlkCihazKurulumu {
   IlkCihazKurulumu({
-    required GecmisApi api,
-    required GecmisAnahtariDeposu anahtarlar,
-    required E2eCihazDurumuKaynagi kaynak,
-  }) : _api = api,
-       _anahtarlar = anahtarlar,
-       _kaynak = kaynak;
+    required this._api,
+    required this._anahtarlar,
+    required this._kaynak,
+  });
 
   final GecmisApi _api;
   final GecmisAnahtariDeposu _anahtarlar;

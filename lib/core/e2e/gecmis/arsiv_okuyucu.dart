@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 
@@ -88,14 +87,11 @@ final class KonusmaArsivi {
 /// Her konuşma açılışında yeniden indirilir; diske yazılmaz (ADR-0006).
 final class ArsivOkuyucu {
   ArsivOkuyucu({
-    required GecmisApi api,
-    required ArsivBicimi bicim,
-    required GecmisAnahtariDeposu anahtarlar,
-    required E2eCihazDurumuKaynagi kaynak,
-  }) : _api = api,
-       _bicim = bicim,
-       _anahtarlar = anahtarlar,
-       _kaynak = kaynak;
+    required this._api,
+    required this._bicim,
+    required this._anahtarlar,
+    required this._kaynak,
+  });
 
   final GecmisApi _api;
   final ArsivBicimi _bicim;

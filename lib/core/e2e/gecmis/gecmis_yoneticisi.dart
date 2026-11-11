@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,9 +22,8 @@ final class GecmisServisleri {
     required this.kaynak,
     required this.oturum,
     required E2eDepoErisimi depo,
-    required SignalMotoru Function() motor,
-  }) : anahtarlar = GecmisAnahtariDeposu(depo),
-       _motor = motor;
+    required this._motor,
+  }) : anahtarlar = GecmisAnahtariDeposu(depo);
 
   final GecmisApi api;
   final E2eCihazDurumuKaynagi kaynak;
