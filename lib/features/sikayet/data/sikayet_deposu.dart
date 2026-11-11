@@ -91,26 +91,26 @@ final class SikayetDeposu {
 
   /// Şikâyet edilen içeriği moderatör olarak siler (duyuru, soru, cevap,
   /// anket). Başka türler için [ArgumentError].
-  Future<void> icerigiKaldir(
-    String tayfaId,
-    ReportTargetType tur,
-    String id,
-  ) => switch (tur) {
-    ReportTargetType.announcement => _duyurular.deleteAnnouncement(
-      tayfaId: tayfaId,
-      announcementId: id,
-    ),
-    ReportTargetType.question => _sorular.deleteQuestion(
-      tayfaId: tayfaId,
-      questionId: id,
-    ),
-    ReportTargetType.answer => _cevaplar.deleteAnswer(
-      tayfaId: tayfaId,
-      answerId: id,
-    ),
-    ReportTargetType.poll => _anketler.deletePoll(tayfaId: tayfaId, pollId: id),
-    _ => throw ArgumentError.value(tur.name, 'tur'),
-  };
+  Future<void> icerigiKaldir(String tayfaId, ReportTargetType tur, String id) =>
+      switch (tur) {
+        ReportTargetType.announcement => _duyurular.deleteAnnouncement(
+          tayfaId: tayfaId,
+          announcementId: id,
+        ),
+        ReportTargetType.question => _sorular.deleteQuestion(
+          tayfaId: tayfaId,
+          questionId: id,
+        ),
+        ReportTargetType.answer => _cevaplar.deleteAnswer(
+          tayfaId: tayfaId,
+          answerId: id,
+        ),
+        ReportTargetType.poll => _anketler.deletePoll(
+          tayfaId: tayfaId,
+          pollId: id,
+        ),
+        _ => throw ArgumentError.value(tur.name, 'tur'),
+      };
 
   /// Moderasyonla gizlenen içeriği geri alır (`…/restoration`; duyuru,
   /// soru, cevap). 30 gün içinde ve yazarın rolü sizinkinden düşükse;

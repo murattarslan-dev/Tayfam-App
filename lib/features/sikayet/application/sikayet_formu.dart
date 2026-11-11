@@ -53,8 +53,7 @@ class SikayetFormuNotifier extends Notifier<SikayetGonderimi> {
       final tayfaId = hedef.tayfaId;
       if (!uuidBicimindeMi(hedef.id) ||
           (tayfaId != null && !uuidBicimindeMi(tayfaId)) ||
-          (hedef.mesajMetni != null &&
-              kanitMetni(hedef.mesajMetni!) == null)) {
+          (hedef.mesajMetni != null && kanitMetni(hedef.mesajMetni!) == null)) {
         throw const GecersizHedef();
       }
       final istek = hedef.istek(gerekce, not);

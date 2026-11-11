@@ -61,8 +61,7 @@ class AnketEkrani extends ConsumerWidget {
     final acan = anket?.createdByUserId;
     // Başkasının anketi şikâyet edilebilir (ADR-0018 §8).
     final sikayetEdilebilir =
-        anket != null &&
-        (acan == null || !ref.watch(kendisiMiProvider(acan)));
+        anket != null && (acan == null || !ref.watch(kendisiMiProvider(acan)));
     return Scaffold(
       appBar: AppBar(
         title: Text(m.anket_baslik),

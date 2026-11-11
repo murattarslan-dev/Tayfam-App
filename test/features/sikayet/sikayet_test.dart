@@ -77,10 +77,7 @@ Future<void> _kuyruguAc(
 void main() {
   group('SikayetHedefi', () {
     test('gerekçeler hedefe göre: sahte etkinlik, yönetim şikâyeti', () {
-      expect(
-        _duyuruHedefi.gerekceler,
-        isNot(contains(ReportReason.fakeEvent)),
-      );
+      expect(_duyuruHedefi.gerekceler, isNot(contains(ReportReason.fakeEvent)));
       expect(
         _duyuruHedefi.gerekceler,
         isNot(contains(ReportReason.staffConduct)),
@@ -123,10 +120,7 @@ void main() {
         _duyuruHedefi.istek(ReportReason.spam, '  reklam  ').description,
         'reklam',
       );
-      expect(
-        _duyuruHedefi.istek(ReportReason.spam, '   ').description,
-        isNull,
-      );
+      expect(_duyuruHedefi.istek(ReportReason.spam, '   ').description, isNull);
     });
 
     test('birebir mesaj metni kırpılır ve 2000 karakterde kesilir', () {
@@ -188,9 +182,7 @@ void main() {
       final saglayici = sikayetFormuProvider(hedef);
       kap.listen(saglayici, (_, _) {});
 
-      await kap
-          .read(saglayici.notifier)
-          .gonder(ReportReason.harassment, '');
+      await kap.read(saglayici.notifier).gonder(ReportReason.harassment, '');
 
       expect(tasima.giden('POST', sikayetlerYolu), isEmpty);
       expect(tasima.giden('POST', benimSikayetlerimYolu).single.govde, {
@@ -463,7 +455,7 @@ void main() {
       testWidgets('${tema.name}: 2× yazı, 320 dp; öncelik ve önizleme', (
         tester,
       ) async {
-        ekranBoyutu(tester, genislik: 320);
+        ekranBoyutu(tester, genislik: 320, yukseklik: 1600);
         ikiKatYazi(tester);
         final tasima = SahteTayfaTasima({
           'GET $sikayetlerYolu': yanit(
@@ -572,7 +564,7 @@ void main() {
     });
 
     testWidgets('sonuçlanan: kaldırılan cevap geri alınır', (tester) async {
-      ekranBoyutu(tester, genislik: 320);
+      ekranBoyutu(tester, genislik: 320, yukseklik: 1600);
       ikiKatYazi(tester);
       final tasima = SahteTayfaTasima({
         'GET $sikayetlerYolu': (i) => i.sorgu['status'] == 'resolved'

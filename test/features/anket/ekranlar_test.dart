@@ -75,6 +75,7 @@ Future<void> _yalnizcaSikayet(WidgetTester tester) async {
   await tester.tapAt(Offset.zero);
   await tester.pumpAndSettle();
 }
+
 final Finder _seninOyun = find.text(arbMetni('anket_senin_oyun'));
 final Finder _esikNotu = find.textContaining('5 oydan sonra görünür');
 

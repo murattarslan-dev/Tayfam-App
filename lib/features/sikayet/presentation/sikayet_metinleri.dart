@@ -48,26 +48,24 @@ String hedefTuruMetni(AppLocalizations m, ReportTargetType tur) =>
     };
 
 /// Şikâyet sayfasının sorusu ("Bu duyuruyu neden şikâyet ediyorsun?").
-String sikayetSorusu(AppLocalizations m, ReportTargetType tur) =>
-    switch (tur) {
-      ReportTargetType.user => m.sikayet_soru_uye,
-      ReportTargetType.tayfa => m.sikayet_soru_tayfa,
-      ReportTargetType.announcement => m.sikayet_soru_duyuru,
-      ReportTargetType.event => m.sikayet_soru_etkinlik,
-      ReportTargetType.question => m.sikayet_soru_soru,
-      ReportTargetType.answer => m.sikayet_soru_cevap,
-      ReportTargetType.poll => m.sikayet_soru_anket,
-      ReportTargetType.fishingCatch => m.sikayet_soru_av_kaydi,
-      ReportTargetType.dmMessage => m.sikayet_soru_mesaj,
-      ReportTargetType.unknown => m.sikayet_soru_genel,
-    };
+String sikayetSorusu(AppLocalizations m, ReportTargetType tur) => switch (tur) {
+  ReportTargetType.user => m.sikayet_soru_uye,
+  ReportTargetType.tayfa => m.sikayet_soru_tayfa,
+  ReportTargetType.announcement => m.sikayet_soru_duyuru,
+  ReportTargetType.event => m.sikayet_soru_etkinlik,
+  ReportTargetType.question => m.sikayet_soru_soru,
+  ReportTargetType.answer => m.sikayet_soru_cevap,
+  ReportTargetType.poll => m.sikayet_soru_anket,
+  ReportTargetType.fishingCatch => m.sikayet_soru_av_kaydi,
+  ReportTargetType.dmMessage => m.sikayet_soru_mesaj,
+  ReportTargetType.unknown => m.sikayet_soru_genel,
+};
 
 /// Sonuçlanan şikâyetin sonucu.
 String sonucMetni(AppLocalizations m, ModerationReportResolution? sonuc) =>
     switch (sonuc) {
       ModerationReportResolution.contentRemoved => m.sikayet_sonuc_kaldirildi,
-      ModerationReportResolution.memberSanctioned =>
-        m.sikayet_sonuc_yaptirim,
+      ModerationReportResolution.memberSanctioned => m.sikayet_sonuc_yaptirim,
       ModerationReportResolution.dismissed => m.sikayet_sonuc_islem_yok,
       ModerationReportResolution.unknown || null => m.sikayet_sonuc_bilinmiyor,
     };

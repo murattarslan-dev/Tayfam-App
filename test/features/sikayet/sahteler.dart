@@ -18,8 +18,7 @@ const String mesajId = '4d5e6f70-0000-4000-8000-000000000001';
 
 /// Uç yolları (sahte taşımanın anahtarları).
 const String sikayetlerYolu = '/v1/tayfas/{tayfa_id}/reports';
-const String cozumYolu =
-    '/v1/tayfas/{tayfa_id}/reports/{report_id}/resolution';
+const String cozumYolu = '/v1/tayfas/{tayfa_id}/reports/{report_id}/resolution';
 const String benimSikayetlerimYolu = '/v1/me/reports';
 const String duyuruYolu =
     '/v1/tayfas/{tayfa_id}/announcements/{announcement_id}';

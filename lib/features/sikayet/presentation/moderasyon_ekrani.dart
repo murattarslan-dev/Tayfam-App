@@ -234,8 +234,7 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
       useSafeArea: true,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (_) =>
-          _SonucSecimi(icerik: icerikMi(widget.sikayet.targetType)),
+      builder: (_) => _SonucSecimi(icerik: icerikMi(widget.sikayet.targetType)),
     );
     if (sonuc == null || !mounted) return;
     await _calistir(
@@ -364,9 +363,7 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
                   BirincilEylem(
                     etiket: m.sikayet_sonuclandir,
                     ikon: Icons.gavel_outlined,
-                    onPressed: _mesgul
-                        ? null
-                        : () => unawaited(_sonuclandir()),
+                    onPressed: _mesgul ? null : () => unawaited(_sonuclandir()),
                   ),
                 if (acik && kaldirilabilirTurler.contains(tur))
                   IkincilEylem(
@@ -419,9 +416,7 @@ class _OncelikEtiketi extends StatelessWidget {
             ),
             child: Text(
               m.sikayet_oncelikli,
-              style: context.yazi.labelMedium?.copyWith(
-                color: r.tintMangoUstu,
-              ),
+              style: context.yazi.labelMedium?.copyWith(color: r.tintMangoUstu),
             ),
           ),
         ),

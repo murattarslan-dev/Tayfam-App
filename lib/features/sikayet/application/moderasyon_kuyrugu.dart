@@ -71,8 +71,7 @@ Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
 ///
 /// Tayfaya bağlıdır: `family` + `autoDispose`; yalnızca bellektedir
 /// (ADR-0006). Yetkiyi sunucu verir (kesin kural 5).
-class ModerasyonKuyruguNotifier
-    extends SayfaliListeNotifier<ModerationReport> {
+class ModerasyonKuyruguNotifier extends SayfaliListeNotifier<ModerationReport> {
   ModerasyonKuyruguNotifier(this.anahtar);
 
   /// Tayfa ve sekme.
