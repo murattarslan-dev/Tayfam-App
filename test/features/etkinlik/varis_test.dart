@@ -333,12 +333,14 @@ http.Response _jsonYaniti(Object govde) => http.Response(
   headers: {'content-type': 'application/json'},
 );
 
-http.Response _problemYaniti(String tur, int durum) => http.Response(
-  jsonEncode({
-    'type': 'https://tayfam.app/problems/$tur',
-    'title': 'Çok uzak',
-    'status': durum,
-  }),
+http.Response _problemYaniti(String tur, int durum) => http.Response.bytes(
+  utf8.encode(
+    jsonEncode({
+      'type': '$problemTypeOnEki$tur',
+      'title': 'Sunucunun gizli başlığı',
+      'status': durum,
+    }),
+  ),
   durum,
   headers: {'content-type': 'application/problem+json'},
 );
