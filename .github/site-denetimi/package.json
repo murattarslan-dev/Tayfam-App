@@ -1,0 +1,9 @@
+{
+  "name": "tayfam-site-denetimi",
+  "private": true,
+  "description": "site/ için CI denetimleri (ADR-0013 §5). Yalnızca CI'da kullanılır.",
+  "license": "MIT",
+  "devDependencies": {
+    "html-validate": "11.17.0"
+  }
+}

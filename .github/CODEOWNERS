@@ -33,3 +33,7 @@
 
 # CI kural betiği (ADR-0009)
 /tool/kurallar/                         @murattarslan-dev
+
+# Tanıtım sitesi: uygulama linki doğrulama dosyaları (.well-known), hukuki
+# metinler ve davet linkinin açıldığı alan adı (ADR-0013 §2)
+/site/                                  @murattarslan-dev
