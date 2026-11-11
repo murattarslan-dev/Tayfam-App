@@ -186,9 +186,61 @@ eklenir. Bugün `Account` yalnızca referans kodu ve görünürlük taşıyor.
 - **CI çıktısı:** etiketle (`vX.Y.Z`) tetiklenen iş akışı, prod API
   adresiyle imzalı bir `.aab` üretir ve artefakt olarak yükler. Play'e
   yükleme ilk sürümde elle yapılır; Play API'siyle otomatik yükleme
-  sonraki iştir.
+  sonraki iştir (dahili test için yapıldı; aşağıdaki Notlar).
 - **Sürüm numarası:** `pubspec.yaml` `version`'ından alınır;
   `versionCode` her yüklemede artar.
+
+#### Notlar (2026-11-11, platform sahibi, sohbette)
+
+Play'e otomatik yükleme (issue #95, `.github/workflows/play-dahili.yml`):
+
+- **Geliştirme anahtarı = yükleme anahtarı.**
+  - Play App Signing kullanılır; Play `.aab`'ı kendi uygulama imzalama
+    anahtarıyla yeniden imzalar. Ayrı bir yükleme anahtarı üretilmez.
+  - `.aab`, mevcut `ANDROID_DEV_KEYSTORE_B64` / `_PASSWORD` /
+    `ANDROID_DEV_KEY_ALIAS` / `_KEY_PASSWORD` secret'larıyla, Gradle'ın
+    `TAYFAM_UPLOAD_*` ortam değişkenlerine verilerek imzalanır.
+  - Gerekçe: anahtar zaten her CI çalışmasında var. Yükleme yetkisi
+    anahtarda değil, Play API kimliğindedir; o kimlik yalnızca `main`'e
+    ve `play-dahili` ortamına bağlıdır.
+  - Anahtar sızarsa Play Console'dan yükleme anahtarı sıfırlanır.
+    Kullanıcıların cihazındaki imza (Play'in anahtarı) değişmez.
+  - `surum.yml`'nin `play-yayin` ortamındaki `ANDROID_UPLOAD_*`
+    secret'larıyla imzalanan `.aab`'ı Play'in kabul etmesi için bu
+    secret'lar da aynı anahtarı taşımalıdır.
+- **Her `main` birleşmesinde dahili test.**
+  - `main`'e her push'ta (ve yalnızca `main`'den elle) prod API'ye
+    (`https://api.tayfam.app`, `TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD`) bağlı
+    imzalı `.aab` derlenir ve Play'in `internal` kanalına yüklenir.
+  - Aynı anda tek çalışma; yeni birleşme eskisini iptal eder. Yalnızca en
+    son `main` gider.
+  - Sürüm notu (tr-TR) son commit başlığıdır; 500 karakterle sınırlanır.
+  - Sürüm durumu `PLAY_SURUM_DURUMU` değişkeniyle seçilir (varsayılan
+    `completed`). Uygulama Play'de hâlâ taslaksa `draft` gerekir.
+- **Anahtarsız Play API kimliği.**
+  - Google Cloud Workload Identity Federation ile GitHub OIDC token'ı kısa
+    ömürlü (15 dk), yalnızca `androidpublisher` kapsamlı bir erişim
+    token'ına çevrilir. JSON servis hesabı anahtarı yoktur.
+  - OIDC izni (`id-token: write`) yalnızca yükleme işindedir. Derleme işi,
+    üçüncü taraf kodu çalıştırdığı için bu izni almaz.
+  - Değişkenler: `GCP_WIF_SAGLAYICI`, `GCP_PLAY_SERVIS_HESABI`. Yoksa
+    derleme ve artefakt yine olur; yükleme uyarıyla atlanır. İlk `.aab`
+    Play Console'a elle yüklenir.
+  - Yükleme betiği `tool/play/dahili_yukle.py` yalnızca Python standart
+    kütüphanesini kullanır: `edits.insert` → `edits.bundles.upload` →
+    `edits.tracks.update` → `edits.commit`; hata ya da iptalde
+    `edits.delete`. Token ve yanıt gövdeleri log'a yazılmaz.
+- **versionCode kuralı.**
+  - Dahili test derlemesinde `versionCode` = `github.run_number` + 100;
+    `versionName` = `pubspec.yaml`'daki `X.Y.Z`.
+  - Taban, `pubspec.yaml`'daki `+N` ile (şu an `+1`) çakışmasın diye
+    vardır. Aynı çalışmanın yeniden denenmesi aynı kodu üretir. Önceki
+    deneme Play'e işlenmişse Play reddeder; yeni bir çalışma başlatılır.
+- **`surum.yml`'nin rolü.**
+  - `vX.Y.Z` etiketiyle tetiklenen, `pubspec.yaml` sürümüyle eşleşen
+    etiketli sürüm derlemesidir. İleride üretim kanalına giden yol odur.
+  - Aynı uygulamaya yüklenecekse etiketli sürümün `+N`'i son dahili test
+    `versionCode`'undan büyük olmalıdır.
 
 ### Dalgalar
 
