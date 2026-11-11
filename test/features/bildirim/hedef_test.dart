@@ -81,6 +81,34 @@ void main() {
       );
     });
 
+    test('arkadaşlık bildirimi kişinin profilini açıyor', () {
+      for (final tur in ['friend_request', 'friend_accepted']) {
+        expect(
+          bildirimAdresi(_bildirim(tur: tur, tayfaId: null, hedefTuru: 'user')),
+          Adresler.kisi(hedefId),
+          reason: tur,
+        );
+      }
+      expect(
+        bildirimAdresi(
+          _bildirim(
+            tur: 'friend_request',
+            tayfaId: null,
+            hedefTuru: 'user',
+            hedef: '../me',
+          ),
+        ),
+        isNull,
+      );
+    });
+
+    test('tayfa daveti gelen davetleri açıyor', () {
+      expect(
+        bildirimAdresi(_bildirim(tur: 'tayfa_invitation', hedefTuru: 'tayfa')),
+        Adresler.tayfaDavetleri,
+      );
+    });
+
     test('biçimi bozuk kimlik kullanılmıyor', () {
       expect(
         bildirimAdresi(_bildirim(hedef: '../../profil')),
