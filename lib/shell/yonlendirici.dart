@@ -9,6 +9,7 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
@@ -146,7 +147,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
             GoRoute(
               path: Adresler.profil,
               builder: (context, state) => const ProfilEkrani(),
-              routes: profilRotalari,
+              // Arkadaşlık ekranları da profilin altındadır (ADR-0018 §7).
+              routes: [...profilRotalari, ...arkadasRotalari],
             ),
           ],
         ),
@@ -189,5 +191,8 @@ List<RouteBase> rotalariOlustur(List<TayfaModule> moduller) {
       path: Adresler.tayfaOlustur,
       builder: (context, state) => const OlusturmaEkrani(),
     ),
+    // Kişi profili her sekmeden açılır; sekmelerin üstündedir
+    // (ADR-0018 §7).
+    kisiProfiliRotasi,
   ];
 }

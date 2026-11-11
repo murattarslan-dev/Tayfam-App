@@ -13,7 +13,10 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - Ekranı henüz olmayan ya da bilinmeyen hedef: bildirim bir tayfaya
 ///   bağlıysa o tayfanın ana sayfası açılır. Sonra eklenecekler: cevap →
 ///   soru detayı (`question_id`), `membership` → tayfa ayarlarındaki katılım
-///   istekleri, `user` → profil, `report` → şikâyet sonucu.
+///   istekleri, `report` → şikâyet sonucu.
+/// - Arkadaşlık (ADR-0018 §7): `friend_request` ve `friend_accepted` kişinin
+///   profilini (`target_id`), `tayfa_invitation` gelen tayfa davetlerini
+///   açar (davet edilen henüz üye olmadığı için tayfa sayfası açılmaz).
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını
@@ -21,6 +24,17 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 String? bildirimAdresi(Notification bildirim) {
   final tayfaId = _gecerli(bildirim.tayfaId);
   final hedefId = _gecerli(bildirim.targetId);
+  final arkadaslik = switch ((bildirim.type, bildirim.targetType, hedefId)) {
+    (
+      NotificationType.friendRequest || NotificationType.friendAccepted,
+      NotificationTargetType.user,
+      final kisi?,
+    ) =>
+      Adresler.kisi(kisi),
+    (NotificationType.tayfaInvitation, _, _) => Adresler.tayfaDavetleri,
+    _ => null,
+  };
+  if (arkadaslik != null) return arkadaslik;
   final ozel = switch ((bildirim.targetType, tayfaId, hedefId)) {
     (NotificationTargetType.event, final tayfa?, final hedef?) =>
       Adresler.etkinlik(tayfa, hedef),

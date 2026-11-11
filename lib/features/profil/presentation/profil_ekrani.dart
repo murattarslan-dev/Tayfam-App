@@ -9,6 +9,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
+import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/application/cikis_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
@@ -16,7 +17,8 @@ import 'package:tayfam/features/profil/application/hukuki_baglantilar.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Profil sekmesi (ADR-0018 §2): referans kodu, katılım geçmişi
+/// Profil sekmesi (ADR-0018 §2): referans kodu, arkadaşlık girişleri
+/// (ADR-0018 §7), katılım geçmişi
 /// görünürlüğü, tema, oturumlar, hukuki metinler, çıkış ve hesap silme.
 ///
 /// Hesap ayarları okunamazsa yalnızca o bölüm hata gösterir; tema, çıkış
@@ -41,6 +43,9 @@ class ProfilEkrani extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _ReferansBolumu(),
+                  SizedBox(height: TayfamSpacing.s24),
+                  // Arkadaşlar ve tayfa davetleri (ADR-0018 §7).
+                  ArkadaslikGirisleri(),
                   SizedBox(height: TayfamSpacing.s24),
                   _GorunurlukBolumu(),
                   SizedBox(height: TayfamSpacing.s24),

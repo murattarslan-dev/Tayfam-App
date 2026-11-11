@@ -175,4 +175,45 @@ abstract final class Adresler {
   /// Tayfa ayarları ekranı.
   static String tayfaAyarlari(String tayfaId) =>
       '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
+
+  /// Arkadaşlar ekranının profil altındaki yolu (ADR-0018 §7). Arkadaş
+  /// bulma, istekler ve engellenenler bunun altındadır.
+  static const arkadaslarYolu = 'arkadaslar';
+
+  /// Arkadaş listesi.
+  static const arkadaslar = '$profil/$arkadaslarYolu';
+
+  /// Referans koduyla arkadaş bulmanın arkadaşlar altındaki yolu.
+  static const arkadasBulYolu = 'bul';
+
+  /// Referans koduyla arkadaş bulma.
+  static const arkadasBul = '$arkadaslar/$arkadasBulYolu';
+
+  /// Arkadaşlık isteklerinin arkadaşlar altındaki yolu.
+  static const arkadasIstekleriYolu = 'istekler';
+
+  /// Gelen ve gönderilen arkadaşlık istekleri.
+  static const arkadasIstekleri = '$arkadaslar/$arkadasIstekleriYolu';
+
+  /// Engellenenlerin arkadaşlar altındaki yolu.
+  static const engellenenlerYolu = 'engellenenler';
+
+  /// Engellenen kullanıcılar.
+  static const engellenenler = '$arkadaslar/$engellenenlerYolu';
+
+  /// Gelen doğrudan tayfa davetlerinin profil altındaki yolu (ADR-0018 §7).
+  static const tayfaDavetleriYolu = 'tayfa-davetleri';
+
+  /// Gelen doğrudan tayfa davetleri.
+  static const tayfaDavetleri = '$profil/$tayfaDavetleriYolu';
+
+  /// Kişi profilinin ilk parçası (`/kisi/<kullaniciId>`). Kişi profili
+  /// sekmelerin üstünde açılır; her sekmeden gidilebilir.
+  static const kisiOneki = '/kisi';
+
+  /// Kişi profili rotasındaki kimlik parametresinin adı.
+  static const kisiIdParametresi = 'kullaniciId';
+
+  /// [kullaniciId]'nin profili (ad, ortak tayfalar, katılım geçmişi).
+  static String kisi(String kullaniciId) => '$kisiOneki/$kullaniciId';
 }

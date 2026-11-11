@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/features/anket/anket.dart';
+import 'package:tayfam/features/arkadas/arkadas.dart';
+import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
@@ -37,4 +39,6 @@ final List<Override> kayitOverridelari = [
   etkinlikTurleriProvider.overrideWithValue(etkinlikTuruKaydi),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
+  // Kişi profilinde "Mesaj gönder" (ADR-0018 §9).
+  kisiProfiliEylemleriProvider.overrideWithValue(const [mesajGonderEylemi]),
 ];

@@ -8,6 +8,7 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
+import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/birebir/presentation/kisi_konusmasi_ekrani.dart';
 import 'package:tayfam/features/birebir/presentation/konusma_ekrani.dart';
@@ -509,6 +510,36 @@ void main() {
       await tester.tap(find.text(arbMetni('birebir_mesaj_gonder')));
       await tester.pumpAndSettle();
       expect(find.text('kisi-$karsiId'), findsOneWidget);
+    });
+
+    testWidgets('kişi profili eylemi arkadaşa ya da ortak tayfadakine', (
+      tester,
+    ) async {
+      late BuildContext baglam;
+      await tester.pumpWidget(
+        Builder(
+          builder: (context) {
+            baglam = context;
+            return const SizedBox.shrink();
+          },
+        ),
+      );
+      KisiProfiliBilgisi kisi({bool arkadas = false, bool ortak = false}) =>
+          KisiProfiliBilgisi(
+            kullaniciId: karsiId,
+            gorunenAd: 'Deniz',
+            arkadas: arkadas,
+            ortakTayfaVar: ortak,
+          );
+      expect(mesajGonderEylemi(baglam, kisi()), isNull);
+      expect(
+        mesajGonderEylemi(baglam, kisi(arkadas: true)),
+        isA<MesajGonderDugmesi>(),
+      );
+      expect(
+        mesajGonderEylemi(baglam, kisi(ortak: true)),
+        isA<MesajGonderDugmesi>(),
+      );
     });
 
     testWidgets('istek reddedilince mesaj isteklerine dönülüyor', (
