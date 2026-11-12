@@ -11,12 +11,11 @@ import 'package:tayfam/features/cihazlar/data/qr_cozucu.dart';
 ///
 /// Kamera izni yalnızca bu widget ekrana gelince (kullanıcı "Cihaz bağla"ya
 /// bastığında) istenir; görüntü saklanmaz ve gönderilmez.
-typedef QrTarayiciKurucu =
-    Widget Function({
-      required ValueChanged<String> kodOkundu,
-      required VoidCallback izinReddedildi,
-      required VoidCallback acilamadi,
-    });
+typedef QrTarayiciKurucu = Widget Function({
+  required ValueChanged<String> kodOkundu,
+  required VoidCallback izinReddedildi,
+  required VoidCallback acilamadi,
+});
 
 /// Uygulamanın QR tarayıcısı (`camera` + ZXing'in Dart portu `zxing2`;
 /// ADR-0020 §7).

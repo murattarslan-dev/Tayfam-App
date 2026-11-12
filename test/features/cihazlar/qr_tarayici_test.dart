@@ -34,6 +34,8 @@ final class _SahteKamera extends CameraPlatform {
   final CameraException? hata;
   final StreamController<CameraImageData> kareler =
       StreamController<CameraImageData>.broadcast();
+  final StreamController<CameraErrorEvent> hatalar =
+      StreamController<CameraErrorEvent>.broadcast();
   CameraDescription? secilen;
   MediaSettings? ayarlar;
   ImageFormatGroup? bicim;
@@ -77,8 +79,7 @@ final class _SahteKamera extends CameraPlatform {
       );
 
   @override
-  Stream<CameraErrorEvent> onCameraError(int cameraId) =>
-      const Stream.empty();
+  Stream<CameraErrorEvent> onCameraError(int cameraId) => hatalar.stream;
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() =>
@@ -225,9 +226,7 @@ void main() {
   }
 
   testWidgets('izin dışı kamera hatası "açılamadı" olur', (tester) async {
-    final kamera = _SahteKamera(
-      hata: CameraException('CameraBusy', null),
-    );
+    final kamera = _SahteKamera(hata: CameraException('CameraBusy', null));
     final k = await _ac(tester, kamera);
     expect(k.izinYok, 0);
     expect(k.acilamadi, 1);

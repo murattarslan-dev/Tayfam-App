@@ -26,11 +26,8 @@ qrParlaklikDuzlemi(
   final genislik = kenar + 2 * solBosluk;
   final yukseklik = kenar + 2 * ustBosluk;
   final satirBaytlari = genislik + satirDolgusu;
-  final baytlar = Uint8List(satirBaytlari * yukseklik)..fillRange(
-    0,
-    satirBaytlari * yukseklik,
-    0xF0,
-  );
+  final baytlar = Uint8List(satirBaytlari * yukseklik)
+    ..fillRange(0, satirBaytlari * yukseklik, 0xF0);
   for (var y = 0; y < adet; y++) {
     for (var x = 0; x < adet; x++) {
       if (!goruntu.isDark(y, x)) continue;

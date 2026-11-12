@@ -196,8 +196,9 @@ jobs:
         #   listenin dışındadır (android.permission.* değil).
         # - CAMERA: QR ile cihaz eşleştirme (ADR-0020 §7, camera + zxing2);
         #   yalnızca "Cihaz bağla" ekranında istenir. camera eklentisinin
-        #   getirdiği RECORD_AUDIO ve WRITE_EXTERNAL_STORAGE ana manifestte
-        #   tools:node="remove" ile engellenir.
+        #   getirdiği RECORD_AUDIO, WRITE_EXTERNAL_STORAGE ve
+        #   READ_EXTERNAL_STORAGE ana manifestte tools:node="remove" ile
+        #   engellenir.
         # Arka plan konumu ve konum ön plan hizmeti izinleri ana manifestte
         # tools:node="remove" ile engellenir; gelirlerse iş kırılır.
         run: |

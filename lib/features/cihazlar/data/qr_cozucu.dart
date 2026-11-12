@@ -29,8 +29,7 @@ final class ParlaklikKaresi {
     required int genislik,
     required int yukseklik,
     required int satirBaytlari,
-  }) =>
-      _gecerli(baytlar, genislik, yukseklik, satirBaytlari)
+  }) => _gecerli(baytlar, genislik, yukseklik, satirBaytlari)
       ? ParlaklikKaresi(
           baytlar: baytlar,
           genislik: genislik,

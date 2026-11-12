@@ -29,14 +29,17 @@
         android:name="android.hardware.camera.any"
         android:required="false"
         tools:replace="android:required"/>
-    <!-- camera eklentisi video kaydı için mikrofon ve (API 28 ve öncesi)
-         harici depolama izni getirir; uygulama ses kaydetmez, kamera
-         görüntüsünü diske yazmaz (en az izin). -->
+    <!-- camera eklentisi (CameraX video dahil) mikrofon ve harici depolama
+         izinleri getirir; uygulama ses kaydetmez, kamera görüntüsünü diske
+         yazmaz, depodan okumaz (en az izin). -->
     <uses-permission
         android:name="android.permission.RECORD_AUDIO"
         tools:node="remove"/>
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:node="remove"/>
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:node="remove"/>
     <!-- Kütüphanelerin manifest birleştirmesiyle gelebilecek arka plan
          konumu ve konum ön plan hizmeti izinleri engellenir (en az izin).
