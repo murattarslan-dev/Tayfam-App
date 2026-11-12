@@ -79,8 +79,8 @@ final class YeniMesajDurumu {
   final String? konusmaId;
 }
 
-/// Henüz konuşma olmayan kişiye ilk mesaj (bağlantı açıksa `dm.send`,
-/// değilse `POST /v1/direct-messages`). İlk mesaj kuyruğa girmez: konuşma
+/// Henüz konuşma olmayan kişiye ilk mesaj (uçtan uca şifreli, yalnızca
+/// `POST /v1/direct-messages`; [BirebirGonderici]). İlk mesaj kuyruğa girmez: konuşma
 /// henüz yoktur; gönderilemezse "Tekrar dene" aynı `client_request_id`
 /// ile dener.
 ///
@@ -151,12 +151,7 @@ class YeniMesajNotifier extends Notifier<YeniMesajDurumu> {
       return;
     }
     if (!ref.mounted) return;
-    final liste = ref.read(konusmaListesiProvider.notifier);
-    if (sonuc.konusma case final konusma?) {
-      liste.yansit(konusma);
-    } else {
-      unawaited(liste.yenile());
-    }
+    ref.read(konusmaListesiProvider.notifier).yansit(sonuc.konusma);
     state = YeniMesajDurumu(konusmaId: sonuc.mesaj.conversationId);
   }
 }

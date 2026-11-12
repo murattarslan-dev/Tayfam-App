@@ -31,6 +31,8 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     final simdiki = state.value;
     if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
     return Account(
+      userId: simdiki.userId,
+      displayName: simdiki.displayName,
       avatarUploadId: simdiki.avatarUploadId,
       referralCode: kod,
       activityVisibility: simdiki.activityVisibility,
@@ -54,6 +56,8 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     final simdiki = state.value;
     if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
     return Account(
+      userId: simdiki.userId,
+      displayName: simdiki.displayName,
       avatarUploadId: avatarUploadId,
       referralCode: simdiki.referralCode,
       activityVisibility: simdiki.activityVisibility,

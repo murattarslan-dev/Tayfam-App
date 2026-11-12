@@ -3,7 +3,7 @@
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-11
 - **Karar veren:** Murat Tarslan
-- **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0002](0002-modul-yapisi.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0007](0007-websocket.md), [ADR-0010](0010-signal-kutuphanesi.md), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0018](0018-faz1-kalan-moduller.md); Tayfam-Api ADR-0005, ADR-0018; sözleşme 8ef8245
+- **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0002](0002-modul-yapisi.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0007](0007-websocket.md), [ADR-0010](0010-signal-kutuphanesi.md), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0018](0018-faz1-kalan-moduller.md); Tayfam-Api ADR-0005, ADR-0018; sözleşme 8ef8245, güncelleme 62feb2e (Tayfam-Api #151)
 
 ## Bağlam
 
@@ -19,8 +19,15 @@ anahtar yenileme). Platform sahibi 2026-11-11'de şunlara karar verdi:
 - Güvenlik kodu: TOFU + "güvenlik kodu değişti" uyarısı; elle
   karşılaştırma ekranı sonra.
 - Düz sürümde yazılmış birebir mesajlar sunucuda silinir (Tayfam-Api'de
-  ayrı iş); istemci düz mesajlara yalnızca "uçtan uca şifreli değil"
-  etiketi gösterir, taşıma kodu yoktur.
+  ayrı iş); istemcide taşıma kodu yoktur.
+- **Güncelleme 2026-11-12 (Tayfam-Api #151, sözleşme 62feb2e):** düz
+  sürüm tamamen kalktı. `POST /v1/direct-messages` yalnızca `envelopes`
+  alır (`body` → `invalid-request`), WebSocket `dm.send`/`dm.sent` yok,
+  `DirectMessage`'ta `body` yok ve `encryption` yalnızca `e2e`, düz
+  mesajlar sunucuda silindi, `e2e-required` artık dönmüyor. İstemciden
+  `dm.send` yolu, `encryption == server` dalları, "Uçtan uca şifreli
+  değil" etiketi ve açıklaması ve `e2e-required` işleme dalı kaldırıldı
+  (Tayfam-App #112).
 
 Bu ADR istemcinin nasıl yaptığını karara bağlar.
 
@@ -124,8 +131,8 @@ Bu ADR istemcinin nasıl yaptığını karara bağlar.
 
 ### Uyarılar ve etiketler
 
-- `encryption == server` mesajlara balon altında "Uçtan uca şifreli
-  değil" etiketi ve konuşma başında açıklama.
+- ~~`encryption == server` mesajlara "Uçtan uca şifreli değil" etiketi~~
+  (2026-11-12: düz mesaj kalmadı, etiket ve açıklama kaldırıldı).
 - Konuşma açılınca karşı tarafın anahtar olayları (son görülen olaydan
   sonrası) ve cihaz listesinin son bilinen kümeyle farkı denetlenir; yeni
   olay ya da fark "Güvenlik kodu değişti" satırı olur. Kişiye ilk bakışta
@@ -140,10 +147,15 @@ Bu ADR istemcinin nasıl yaptığını karara bağlar.
 ### Web geliştirme derlemesi
 
 E2E yoktur (ADR-0011): cihaz kaydedilmez, zarf alınmaz. Şifreli mesajlar
-"Şifreli mesaj" yer tutucusuyla görünür; şifreli mesaj içeren ya da
-`e2e-required` alan konuşmada yazma alanı yerine "yalnızca mobil
-uygulamada" boş durumu gösterilir. Düz sürüm (WebSocket `dm.send`, REST)
-yalnızca burada kalır.
+"Şifreli mesaj" yer tutucusuyla görünür; şifreli mesaj içeren konuşmada
+yazma alanı yerine "yalnızca mobil uygulamada" boş durumu gösterilir.
+iOS köprüsü yazılana kadar iOS da aynı davranır.
+
+**Güncelleme 2026-11-12 (Tayfam-Api #151):** düz sürüm burada da yoktur.
+Gönderim her zaman E2E yolundan gider; cihaz kaydı olmadığı için
+`e2e-device-not-registered` ile "gönderilemedi" olur (genel hata yolu,
+ayrı platform uyarısı ya da yeni metin yok; platform sahibi kararı
+2026-11-12 17:54). Düz metne sessizce geri düşülmez.
 
 ### Temizlik
 
@@ -346,6 +358,10 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
   sürümüne girer.
 - 2026-11-12: QR tarayıcıda ML Kit kullanılmaz (Google'a kullanım ölçümü
   gitmez); ZXing tabanlı tarayıcı (#115).
+- 2026-11-12 17:54: düz birebir yolu kaldırılırken E2E'nin olmadığı
+  platformlar (web geliştirme derlemesi, iOS) için yeni bir platform
+  uyarısı ya da çeviri anahtarı eklenmez; mevcut davranış en sade haliyle
+  kalır ve gönderim genel hata yolunu kullanır (#112).
 - Açık: tek telefonlu kullanıcıya çıkışta "geçmiş okunamaz olur" uyarısı
   ve kurtarma kodu (Tayfam-Api ADR-0005, sonra).
 

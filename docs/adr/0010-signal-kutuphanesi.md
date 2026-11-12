@@ -1,7 +1,7 @@
 # ADR-0010: Uçtan uca şifreleme için Signal kütüphanesi
 
 - **Durum:** Kabul edildi
-- **Tarih:** 2026-11-09, güncelleme 2026-11-10, 2026-11-11
+- **Tarih:** 2026-11-09, güncelleme 2026-11-10, 2026-11-11, 2026-11-12
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0011](0011-yalnizca-mobil.md); Tayfam-Api ADR-0005 (E2E tasarımı), ADR-0011; CLAUDE.md kesin kural 4; Notion: Proje Planı §6, Açık Kararlar ("Signal için Dart/Flutter kütüphanesi seçimi")
 
@@ -13,6 +13,9 @@ tüm cihazlarına ayrı zarflar, kullanıcının geçmiş anahtarıyla şifreli
 arşiv, QR ile geçmiş anahtarı aktarımı, "güvenlik kodu değişti" uyarısı.
 Kendi kriptografimizi yazmayız (kesin kural 4). Uygulama yalnızca mobildir
 (ADR-0011). Uygulama sırası: önce düz birebir mesaj, E2E modülün son adımı.
+**Not (2026-11-12):** düz sürüm kalktı; Tayfam-Api #151 ile birebir mesaj
+yalnızca uçtan uca şifrelidir, düz mesajlar sunucuda silindi ve istemcide
+düz gönderim yolu yoktur (ADR-0020, ADR-0007 birebir istisnası).
 
 ## Araştırma (2026-11-09)
 

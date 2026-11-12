@@ -29,15 +29,14 @@ final class DirectMessagesApi {
   /// patlama 10; tekrar gönderim de sayılır). Aşılınca `rate-limited`
   /// (429). Yavaş mod ve mesaj isteği sınırı ayrıca geçerlidir.
   ///
-  /// Metin 1–4000 karakter, yalnız boşluk olamaz; sekme ve satır sonu
-  /// dışında kontrol karakteri içeremez. Aynı `client_request_id` ile
-  /// tekrar gönderim ilk mesajı döndürür; başka konuşmada kullanılmış
-  /// değer `invalid-request`. Mesaj düzenlenemez. Düz sürümde mesajlar
-  /// sunucuda şifreli saklanır. Aynı kurallar WebSocket `dm.send`
-  /// çerçevesinde de geçerlidir.
+  /// Aynı `client_request_id` ile tekrar gönderim ilk mesajı döndürür;
+  /// başka konuşmada kullanılmış değer `invalid-request`. Mesaj
+  /// düzenlenemez.
   ///
-  /// **Uçtan uca şifreleme (Signal; #127, ADR-0018):** `body` yerine
-  /// `envelopes` gönderilir: alıcının **tüm** cihazlarına ve sizin
+  /// **Yalnızca uçtan uca şifreli (Signal; #127, ADR-0018):** düz metinli
+  /// gönderim yolu kaldırıldı (#151); istekte `body` alanı
+  /// `invalid-request` (400) alır. `envelopes` gönderilir: alıcının
+  /// **tüm** cihazlarına ve sizin
   /// **diğer tüm** cihazlarınıza birer zarf (en fazla 16). Gönderen
   /// cihaz, token'ın oturumuna kayıtlı cihazdır
   /// (`POST /v1/me/e2e/device`; yoksa `e2e-device-not-registered`, 409).
@@ -47,13 +46,10 @@ final class DirectMessagesApi {
   /// `E2EDevicesChangedProblem`) döner; cihaz listelerini tazeleyip
   /// tekrar deneyin. Alıcının cihazı yoksa `e2e-recipient-unavailable`
   /// (409). Sunucu zarfları açmaz; mesaj içeriksiz saklanır
-  /// (`encryption: e2e`, `body` yok). Zarflar hedef cihaza
+  /// (`encryption: e2e`). Zarflar hedef cihaza
   /// `GET /v1/me/e2e/envelopes` ve WebSocket `dm.envelope` ile gider.
-  /// Zarflı gönderim yalnızca REST'tedir (WebSocket çerçevesi 64 KB).
+  /// Gönderim yalnızca REST'tedir (WebSocket çerçevesi 64 KB).
   /// Gövde en fazla 1,5 MiB.
-  ///
-  /// **Geri düşüş yok:** sizin ya da alıcının E2E cihazı varsa `body`
-  /// ile gönderim `e2e-required` (409) alır.
   ///
   /// `POST /v1/direct-messages`
   Future<DirectMessageSent> sendDirectMessage({

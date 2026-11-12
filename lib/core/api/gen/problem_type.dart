@@ -12,6 +12,7 @@ enum ProblemType {
   missingClientHeader('missing-client-header'),
   clientOutdated('client-outdated'),
   invalidClientVersion('invalid-client-version'),
+  integrityRequired('integrity-required'),
   unauthenticated('unauthenticated'),
   notFound('not-found'),
   rateLimited('rate-limited'),

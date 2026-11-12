@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/e2e/gecmis/arsiv_okuyucu.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
@@ -25,8 +23,8 @@ import 'package:tayfam/features/birebir/presentation/sessiz_ogeleri.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Bir birebir konuşma (`/sohbet/birebir/<konusmaId>`; ADR-0018 §9, düz
-/// sürüm): mesaj akışı (en yeni altta), yazma alanı, okundu bilgisi,
+/// Bir birebir konuşma (`/sohbet/birebir/<konusmaId>`; ADR-0018 §9,
+/// ADR-0020): mesaj akışı (en yeni altta), yazma alanı, okundu bilgisi,
 /// mesaj isteğini kabul ve ret, kendi mesajını silme, mesaj şikâyeti ve
 /// üst menüde sessize alma.
 ///
@@ -156,16 +154,8 @@ class _Akis extends ConsumerWidget {
     final giden = alici == null
         ? const <GidenMesaj>[]
         : ref.watch(bekleyenBirebirProvider(alici)).reversed.toList();
-    // Web geliştirme derlemesinde şifreli konuşmaya yazılamaz (ADR-0020).
-    final yalnizcaMobil =
-        !e2e &&
-        (durum.sifreliVar ||
-            giden.any(
-              (g) => switch (g.hata) {
-                ApiProblem(type: ProblemType.e2eRequired) => true,
-                _ => false,
-              },
-            ));
+    // E2E'nin olmadığı derlemede şifreli konuşmaya yazılamaz (ADR-0020).
+    final yalnizcaMobil = !e2e && durum.sifreliVar;
     // Mesajlar ve E2E sistem satırları, en yeni önce.
     final akis = <(DateTime, Widget)>[
       for (final mesaj in durum.mesajlar)
@@ -194,11 +184,6 @@ class _Akis extends ConsumerWidget {
         const Padding(
           padding: EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
           child: EskiMesajlarOkunamiyor(),
-        ),
-      if (e2e && durum.duzVar)
-        E2eBilgiSatiri(
-          metin: m.e2e_sifreli_degil_aciklama,
-          ikon: Icons.lock_open_outlined,
         ),
       ?_bant(konusma),
     ];
@@ -266,13 +251,10 @@ class _Akis extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final e2e = ref.watch(e2eEtkinProvider);
     final giden = durum.gidenMi(mesaj);
-    final sifreli = mesaj.encryption == DirectMessageEncryption.e2e;
-    // Şifreli mesajın metni yalnızca bellekte çözülmüş içerikten gelir.
-    final cozulmus = sifreli ? icerik.mesajlar[mesaj.id]?.metin : null;
-    final govde = sifreli ? cozulmus : mesaj.body;
-    final metin = sifreli && cozulmus == null
-        ? (e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj)
-        : govde;
+    // Her birebir mesaj uçtan uca şifrelidir (Tayfam-Api #151); metin
+    // yalnızca bellekte çözülmüş içerikten gelir.
+    final govde = icerik.mesajlar[mesaj.id]?.metin;
+    final metin = govde ?? (e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj);
     final sikayet = ref.watch(birebirMesajSikayetiProvider);
     final silinebilir = giden && !mesaj.deleted;
     final sikayetEdilebilir =
@@ -283,7 +265,6 @@ class _Akis extends ConsumerWidget {
       metin: metin,
       giden: giden,
       goruldu: mesaj.id == gorulen,
-      sifreliDegil: e2e && mesaj.encryption == DirectMessageEncryption.server,
       onIslemler: silinebilir || sikayetEdilebilir
           ? () => unawaited(
               _islemler(

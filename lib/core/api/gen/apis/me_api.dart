@@ -490,7 +490,7 @@ final class MeApi {
     return E2EDevice.fromJson(jsonObject(response, 'completeE2ELinkRequest'));
   }
 
-  /// Kendi referans kodunuz ve katılım geçmişi görünürlüğünüz
+  /// Kendi kimliğiniz, adınız, referans kodunuz ve katılım geçmişi görünürlüğünüz
   ///
   /// `GET /v1/me/account`
   Future<Account> getAccount() async {

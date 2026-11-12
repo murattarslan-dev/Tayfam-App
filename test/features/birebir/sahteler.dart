@@ -1,13 +1,18 @@
 import 'dart:math';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/gen/apis/direct_messages_api.dart';
+import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
+import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
 import 'package:tayfam/features/birebir/application/konusma_notifier.dart';
 import 'package:tayfam/features/birebir/data/birebir_deposu.dart';
 import 'package:tayfam/features/birebir/data/sessiz_deposu.dart';
@@ -104,22 +109,99 @@ Map<String, Object?> konusmaListesiJson(
   String? sonraki,
 }) => {'conversations': konusmalar, 'next_page_token': ?sonraki};
 
-/// Örnek birebir mesaj (`DirectMessage`) JSON'u.
+/// Örnek birebir mesaj (`DirectMessage`) JSON'u. Her birebir mesaj uçtan
+/// uca şifrelidir ve içerik taşımaz (Tayfam-Api #151); metni testte
+/// [cozulmusIcerik] verir.
 Map<String, Object?> mesajJson(
   String id, {
   String konusma = konusmaId1,
   String? gonderen = karsiId,
-  String? metin = 'Selam, pazar geliyor musun?',
   bool silinmis = false,
   String zaman = '2026-11-10T10:00:00Z',
 }) => {
   'id': id,
   'conversation_id': konusma,
   'sender_user_id': ?gonderen,
-  'body': ?(silinmis ? null : metin),
   'deleted': silinmis,
+  'encryption': 'e2e',
   'created_at': zaman,
 };
+
+/// Bellekte çözülmüş içerik: mesaj kimliği → metin ([konusma]'da).
+BirebirIcerikDurumu cozulmusIcerik(
+  Map<String, String> metinler, {
+  String konusma = konusmaId1,
+}) => BirebirIcerikDurumu(
+  mesajlar: {
+    for (final MapEntry(key: id, value: metin) in metinler.entries)
+      id: CozulmusBirebirMesaj(
+        mesajId: id,
+        konusmaId: konusma,
+        gonderenKullaniciId: karsiId,
+        metin: metin,
+        olusturma: DateTime.utc(2026, 11, 10, 10),
+        kaynak: CozulmusMesajKaynagi.zarf,
+      ),
+  },
+);
+
+/// Bellekteki çözülmüş içerik sabit bir durumla başlar.
+class SabitIcerik extends BirebirIcerikNotifier {
+  SabitIcerik(this._ilk);
+
+  final BirebirIcerikDurumu _ilk;
+
+  @override
+  BirebirIcerikDurumu build() => _ilk;
+}
+
+/// E2E cihaz durumu sabit (ağ, Signal motoru ve kayıt yok).
+class SabitCihaz extends E2eCihazNotifier {
+  SabitCihaz(this._durum);
+
+  final E2eCihazBilgisi _durum;
+
+  @override
+  E2eCihazBilgisi build() => _durum;
+}
+
+/// Sahte zarf (testte şifreleme yok; içerik metni taşımaz).
+const OutgoingEnvelope sahteZarf = OutgoingEnvelope(
+  deviceId: '6f708192-0000-4000-8000-000000000001',
+  registrationId: 1,
+  type: OutgoingEnvelopeType.whisper,
+  content: 'AAAA',
+);
+
+/// Testteki şifreli gönderim: Signal yerine [sahteZarf]'la aynı REST
+/// isteğini (`POST /v1/direct-messages`, `envelopes`) [tasima]'ya atar ve
+/// gerçek gönderim gibi metni bellekteki içeriğe ekler. Gerçek E2E yolu
+/// `e2e_test.dart` ve `core/e2e/mesaj/` testlerindedir.
+SifreliGonderim sahteSifreliGonderim(Ref ref, ApiTransport tasima) =>
+    ({
+      required String aliciId,
+      required String metin,
+      required String istekKimligi,
+    }) async {
+      final sonuc = await DirectMessagesApi(tasima).sendDirectMessage(
+        body: DirectMessageCreateRequest(
+          recipientUserId: aliciId,
+          envelopes: const [sahteZarf],
+          clientRequestId: istekKimligi,
+        ),
+      );
+      ref.read(birebirIcerikProvider.notifier).ekle([
+        CozulmusBirebirMesaj(
+          mesajId: sonuc.message.id,
+          konusmaId: sonuc.message.conversationId,
+          gonderenKullaniciId: benId,
+          metin: metin,
+          olusturma: sonuc.message.createdAt,
+          kaynak: CozulmusMesajKaynagi.gonderildi,
+        ),
+      ]);
+      return sonuc;
+    };
 
 /// `GET …/messages` yanıtı.
 Map<String, Object?> mesajListesiJson(
@@ -162,17 +244,21 @@ SahteTayfaTasima birebirTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
 }
 
 /// Birebir uçlarını [tasima]'ya bağlayan override'lar; yenileme
-/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok. Uçtan uca
-/// şifreleme kapalıdır (düz sürüm yolu); E2E testleri kendi
-/// override'larını verir.
+/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok. Bu derlemede
+/// E2E yoktur (web/iOS gibi); gönderim [sahteSifreliGonderim]'le gider.
+/// E2E testleri kendi override'larını verir.
 List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) => [
   e2eEtkinProvider.overrideWithValue(false),
   ...birebirUcOverridelari(tasima),
 ];
 
 /// [birebirOverridelari]'nın E2E anahtarı olmadan hali (E2E testleri
-/// `e2eEtkinProvider`'ı kendisi verir).
-List<Override> birebirUcOverridelari([SahteTayfaTasima? tasima]) {
+/// `e2eEtkinProvider`'ı kendisi verir). [sahteGonderim] `false` ise
+/// gönderim gerçek E2E yolundan ([birebirGondericiProvider]) gider.
+List<Override> birebirUcOverridelari([
+  SahteTayfaTasima? tasima,
+  bool sahteGonderim = true,
+]) {
   final t = tasima ?? birebirTasimasi();
   // Bildirim tercihleri (sessize alma): varsayılan olarak tercih yok.
   t.yanitlar.putIfAbsent(
@@ -184,6 +270,10 @@ List<Override> birebirUcOverridelari([SahteTayfaTasima? tasima]) {
     birebirDeposuProvider.overrideWithValue(BirebirDeposu(t)),
     sessizDeposuProvider.overrideWithValue(SessizDeposu(t)),
     birebirYenilemeAraligiProvider.overrideWithValue(const Duration(days: 1)),
+    if (sahteGonderim)
+      birebirGondericiProvider.overrideWith(
+        (ref) => BirebirGonderici(sahteSifreliGonderim(ref, t)),
+      ),
   ];
 }
 
@@ -231,18 +321,27 @@ final class SahteRealtime {
 
 /// Birebir ve tayfa uçlarını [tasima]'ya bağlayan, oturumu [oturum] ile
 /// (varsayılan: açık) başlatan override'lar. WebSocket [realtime]'dan
-/// (verilmezse hiç bağlanmayan sahte).
+/// (verilmezse hiç bağlanmayan sahte). [cihaz] verilirse E2E cihaz
+/// durumu, [metinler] verilirse bellekteki çözülmüş içerik sabittir.
 List<Override> birebirEkranOverridelari(
   SahteTayfaTasima tasima, {
   OturumDurumu oturum = OturumDurumu.acik,
   SahteRealtime? realtime,
   bool e2e = false,
+  E2eCihazBilgisi? cihaz,
+  Map<String, String>? metinler,
+  bool sahteGonderim = true,
 }) {
   final r = realtime ?? SahteRealtime();
   return [
     ...tayfaOverridelari(tasima: tasima),
     e2eEtkinProvider.overrideWithValue(e2e),
-    ...birebirUcOverridelari(tasima),
+    ...birebirUcOverridelari(tasima, sahteGonderim),
+    if (cihaz != null) e2eCihazProvider.overrideWith(() => SabitCihaz(cihaz)),
+    if (metinler != null)
+      birebirIcerikProvider.overrideWith(
+        () => SabitIcerik(cozulmusIcerik(metinler)),
+      ),
     profilAdlari,
     oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
     realtimeIstemcisiProvider.overrideWithValue(r.istemci),

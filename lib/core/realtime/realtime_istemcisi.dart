@@ -222,21 +222,6 @@ final class RealtimeIstemcisi {
     return gonderilenKanalMesaji(veri);
   }
 
-  /// Birebir mesajı `dm.send` çerçevesiyle gönderir (abonelik gerekmez).
-  /// Hatalar [kanalaGonder] ile aynıdır.
-  Future<DmGonderimi> dmGonder({
-    required String aliciId,
-    required String metin,
-    required String istekKimligi,
-  }) async {
-    final veri = await _istek('dm.send', {
-      'recipient_user_id': aliciId,
-      'body': metin,
-      'client_request_id': istekKimligi,
-    });
-    return gonderilenDm(veri);
-  }
-
   /// Teslim alınıp saklanan zarfları `dm.envelope_ack` ile onaylar
   /// (1–100 kimlik; sunucu siler). Bağlantı açık değilse [RealtimeKapali],
   /// cevap gelmezse [TimeoutException]; çağıran REST'e düşer

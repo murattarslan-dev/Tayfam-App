@@ -5,6 +5,7 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
 import 'package:tayfam/features/birebir/application/kisi_konusmasi_notifier.dart';
 import 'package:tayfam/features/birebir/application/konusma_listesi_notifier.dart';
@@ -75,7 +76,7 @@ Map<String, TayfaYaniti> _konusmaYanitlari({
     mesajlar ??
         [
           mesajJson(mesajId2, zaman: '2026-11-10T11:00:00Z'),
-          mesajJson(mesajId1, gonderen: benId, metin: 'Merhaba'),
+          mesajJson(mesajId1, gonderen: benId),
         ],
   ),
 };
@@ -84,7 +85,6 @@ Map<String, Object?> _gonderimJson({String durum = 'active'}) => {
   'message': mesajJson(
     mesajId3,
     gonderen: benId,
-    metin: 'Geliyorum',
     zaman: '2026-11-10T12:00:00Z',
   ),
   'conversation': konusmaJson(
@@ -166,7 +166,7 @@ void main() {
       expect(d.gidenMi(d.mesajlar.last), isTrue);
     });
 
-    test('gönderim: gövdede alıcı, metin ve istek kimliği', () async {
+    test('gönderim: gövdede alıcı, zarflar ve istek kimliği', () async {
       final k = _Kurulum({
         ..._konusmaYanitlari(),
         'POST $gonderYolu': (_) => _gonderimJson(),
@@ -180,7 +180,7 @@ void main() {
       final istek = k.tasima.giden('POST', gonderYolu).single;
       expect(istek.govde, {
         'recipient_user_id': karsiId,
-        'body': 'Geliyorum',
+        'envelopes': [sahteZarf.toJson()],
         'client_request_id': sahteIstekKimligi,
       });
       final d = k.durum();
@@ -241,30 +241,67 @@ void main() {
       expect(k.bekleyen, isEmpty);
     });
 
-    test('bağlantı açıkken dm.send ile gidiyor', () async {
+    test('bağlantı açıkken de REST ile gidiyor', () async {
       final r = SahteRealtime();
-      final k = _Kurulum(_konusmaYanitlari(), null, r);
+      final k = _Kurulum(
+        {..._konusmaYanitlari(), 'POST $gonderYolu': (_) => _gonderimJson()},
+        null,
+        r,
+      );
       final n = await k.konusma();
       final soket = await r.baglan();
       expect(n.gonder('Geliyorum'), isTrue);
       await pumpEventQueue();
 
-      final cerceve = soket.tur('dm.send').single;
-      expect(cerceve['data'], {
-        'recipient_user_id': karsiId,
-        'body': 'Geliyorum',
-        'client_request_id': sahteIstekKimligi,
-      });
-      soket.cerceve('dm.sent', {
-        ...mesajJson(mesajId3, gonderen: benId, metin: 'Geliyorum'),
-        'created_at': '2026-11-10T12:00:00Z',
-        'conversation_status': 'active',
-      }, id: cerceve['id']! as String);
-      await pumpEventQueue();
-
-      expect(k.tasima.giden('POST', gonderYolu), isEmpty);
+      // Birebir mesaj WebSocket'ten gönderilmez (Tayfam-Api #151).
+      final dmCerceveleri = [
+        for (final c in soket.giden)
+          if ('${c['type']}'.startsWith('dm.')) c,
+      ];
+      expect(dmCerceveleri, isEmpty);
+      final istek = k.tasima.giden('POST', gonderYolu).single;
+      expect(
+        (istek.govde! as Map<String, Object?>)['client_request_id'],
+        sahteIstekKimligi,
+      );
       expect(k.bekleyen, isEmpty);
       expect(k.durum().mesajlar.first.id, mesajId3);
+    });
+
+    test('geçici hatada kuyruk aynı kimlikle yeniden deniyor', () async {
+      var deneme = 0;
+      final tasima = birebirTasimasi({
+        ..._konusmaYanitlari(),
+        'POST $gonderYolu': (_) =>
+            deneme++ == 0 ? const ApiOffline() : _gonderimJson(),
+      });
+      final r = SahteRealtime();
+      var simdi = DateTime.utc(2026, 11, 10, 12);
+      final kap = ProviderContainer.test(
+        overrides: [
+          ...birebirEkranOverridelari(tasima, realtime: r),
+          simdiProvider.overrideWithValue(() => simdi),
+        ],
+      );
+      final saglayici = konusmaProvider(konusmaId1);
+      kap.listen(saglayici, (_, _) {});
+      await kap.read(saglayici.future);
+      kap.read(saglayici.notifier).gonder('Geliyorum');
+      await _bekle();
+      final bekleyen = bekleyenBirebirProvider(karsiId);
+      expect(kap.read(bekleyen).single.durum, GidenDurumu.gonderiliyor);
+
+      // Bekleme dolunca kuyruk aynı işi yeniden gönderir (ADR-0006).
+      simdi = simdi.add(const Duration(seconds: 3));
+      r.zaman.calistir();
+      await _bekle();
+      final kimlikler = [
+        for (final i in tasima.giden('POST', gonderYolu))
+          (i.govde! as Map<String, Object?>)['client_request_id'],
+      ];
+      expect(kimlikler, [sahteIstekKimligi, sahteIstekKimligi]);
+      expect(kap.read(bekleyen), isEmpty);
+      expect(kap.read(saglayici).requireValue.mesajlar.first.id, mesajId3);
     });
 
     test('WebSocket olayları akışı güncelliyor', () async {
@@ -277,7 +314,7 @@ void main() {
         'id': mesajId4,
         'conversation_id': konusmaId1,
         'sender_user_id': karsiId,
-        'body': 'Yoldayım',
+        'encryption': 'e2e',
         'created_at': '2026-11-10T13:00:00Z',
       });
       soket.cerceve('dm.message_deleted', {
@@ -297,7 +334,7 @@ void main() {
       await pumpEventQueue();
 
       final d = k.durum();
-      expect(d.mesajlar.first.body, 'Yoldayım');
+      expect(d.mesajlar.first.id, mesajId4);
       expect(d.mesajlar.firstWhere((m) => m.id == mesajId2).deleted, isTrue);
       expect(d.mesajlar.firstWhere((m) => m.id == mesajId1).deleted, isFalse);
       expect(d.gorulenGidenId, mesajId1);
@@ -330,7 +367,6 @@ void main() {
       expect(await n.sil(mesajId1), isNull);
       final silinen = k.durum().mesajlar.firstWhere((m) => m.id == mesajId1);
       expect(silinen.deleted, isTrue);
-      expect(silinen.body, isNull);
       expect(k.tasima.giden('DELETE', mesajYolu).single.yolParametreleri, {
         'conversation_id': konusmaId1,
         'message_id': mesajId1,

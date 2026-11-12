@@ -1,9 +1,9 @@
 # ADR-0007: WebSocket bağlantısı, abonelikler ve mesaj gönderimi
 
 - **Durum:** Kabul edildi
-- **Tarih:** 2026-11-09
+- **Tarih:** 2026-11-09, güncelleme 2026-11-12 (birebir mesaj istisnası)
 - **Karar veren:** Murat Tarslan
-- **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md); Tayfam-Api ADR-0005, ADR-0014; OpenAPI `GET /v1/realtime`
+- **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0020](0020-birebir-uctan-uca-sifreleme-istemci.md); Tayfam-Api ADR-0005, ADR-0014, ADR-0018 §7; OpenAPI `GET /v1/realtime`
 
 ## Bağlam
 
@@ -63,11 +63,18 @@ mesajlar REST ile son görülen kimlikten çekilir ve mesaj gönderme "REST
 
 ### Mesaj gönderimi
 
-- Bağlantı açıksa kanal mesajı `send`, birebir mesaj `dm.send` çerçevesiyle
-  gönderilir; bağlantı kapalıysa ya da çerçeveye 10 saniyede cevap
-  gelmezse aynı `client_request_id` ile REST'e düşülür. Sunucu aynı id'yi
-  ikinci kayıt açmadan karşılar.
-- Çevrimdışı kuyruk (ADR-0006) aynı yolu kullanır.
+- Bağlantı açıksa kanal mesajı `send` çerçevesiyle gönderilir; bağlantı
+  kapalıysa ya da çerçeveye 10 saniyede cevap gelmezse aynı
+  `client_request_id` ile REST'e düşülür. Sunucu aynı id'yi ikinci kayıt
+  açmadan karşılar.
+- **Birebir mesaj istisnası (2026-11-12, Tayfam-Api #151):** birebir mesaj
+  yalnızca uçtan uca şifrelidir ve bağlantı açık da olsa kapalı da olsa
+  **yalnızca REST'ten** (`POST /v1/direct-messages`, `envelopes`) gider
+  (ADR-0020). WebSocket'e birebir mesaj çerçevesi yazılmaz; sunucu
+  `dm.send`'i kaldırdı (`unsupported_type`). Tekrar denemede aynı
+  `client_request_id` kullanılır. Teslim değişmedi: `dm.message_created`
+  (içeriksiz) ve `dm.envelope` WebSocket'ten gelir.
+- Çevrimdışı kuyruk (ADR-0006) aynı yolları kullanır.
 - Gelen `message.created` ve `dm.message_created` `id` ile tekilleştirilir;
   kendi mesajımız gönderimdeki geçici kaydın yerine geçer.
 - `slow_mode` ve `rate_limited`: sunucunun verdiği süre kadar beklenir;
@@ -105,7 +112,8 @@ mesajlar REST ile son görülen kimlikten çekilir ve mesaj gönderme "REST
 - Bağımlılık: `web_socket_channel`.
 - Testler: kapanma kodu tablosunun her satırı, yeniden bağlanmada
   aboneliklerin yeniden kurulması, WebSocket → REST düşüşünde aynı id,
-  tekilleştirme, `access_lost` sonrası durum temizliği.
+  tekilleştirme, `access_lost` sonrası durum temizliği; bağlantı açıkken
+  birebir mesajın WebSocket'e yazılmadan REST'ten gitmesi.
 - Uygulamanın arka plandan dönüşü ve yeniden bağlanma, `SessionStore`'un
   tek uçuşlu yenilemesini kullanır; ayrı bir yenileme yolu yoktur.
 

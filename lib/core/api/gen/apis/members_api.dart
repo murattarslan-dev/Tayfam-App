@@ -126,17 +126,22 @@ final class MembersApi {
 
   /// Etkin ya da bekleyen bir üyeyi banlar (moderatör, yönetici)
   ///
-  /// Banlanan kişi kodla ya da davetle tekrar katılamaz.
+  /// Banlanan kişi kodla ya da davetle tekrar katılamaz. Gövde isteğe
+  /// bağlıdır; gerekçe kapalı bir listeden seçilir, denetim kaydına ve
+  /// platform panelindeki üye listesine yazılır. Banlanan kişiye
+  /// gösterilmez.
   ///
   /// `PUT /v1/tayfas/{tayfa_id}/members/{user_id}/ban`
   Future<void> banMember({
     required String tayfaId,
     required String userId,
+    BanRequest? body,
   }) async {
     await _transport.send(
       method: 'PUT',
       pathTemplate: '/v1/tayfas/{tayfa_id}/members/{user_id}/ban',
       pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
+      body: body?.toJson(),
       expect: ResponseKind.none,
       authenticated: true,
     );

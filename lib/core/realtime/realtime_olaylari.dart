@@ -169,16 +169,6 @@ final class Baglandi extends RealtimeOlayi {
   const Baglandi();
 }
 
-/// `dm.send` cevabı (`dm.sent`): yazılan mesaj ve gönderenin gözünden
-/// konuşmanın durumu.
-@immutable
-final class DmGonderimi {
-  const DmGonderimi({required this.mesaj, required this.konusmaDurumu});
-
-  final DirectMessage mesaj;
-  final ConversationStatus konusmaDurumu;
-}
-
 // ------------------------------------------------------------- çerçeve
 
 /// Çözülmüş bir sunucu çerçevesi: tür, istemcinin verdiği kimlik ve veri.
@@ -304,20 +294,6 @@ ChannelMessage gonderilenKanalMesaji(Map<String, Object?> v) {
   _kimlik(v, 'id');
   _kimlik(v, 'channel_id');
   return ChannelMessage.fromJson({...v, 'deleted': false});
-}
-
-/// `dm.sent` cevabını çevirir.
-DmGonderimi gonderilenDm(Map<String, Object?> v) {
-  _kimlik(v, 'id');
-  _kimlik(v, 'conversation_id');
-  final durum = v['conversation_status'];
-  if (durum is! String) {
-    throw const FormatException('dm.sent.conversation_status');
-  }
-  return DmGonderimi(
-    mesaj: DirectMessage.fromJson({...v, 'deleted': false}),
-    konusmaDurumu: ConversationStatus.fromWire(durum),
-  );
 }
 
 /// `error` çerçevesini [ApiProblem]'e çevirir: `data.code` (`slow_mode`)

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/birebir/application/konusma_sessizlik_notifier.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
@@ -67,16 +68,20 @@ Future<void> _ac(
   tester,
   ekran,
   themeMode: tema,
-  tayfa: birebirEkranOverridelari(tasima),
+  tayfa: birebirEkranOverridelari(
+    tasima,
+    e2e: true,
+    cihaz: const E2eCihazBilgisi(durum: E2eCihazDurumu.hazirlaniyor),
+    metinler: const {mesajId1: 'Merhaba'},
+  ),
   overrides: [_saat],
 );
 
 SahteTayfaTasima _konusmaTasimasi([Map<String, TayfaYaniti> ek = const {}]) =>
     birebirTasimasi({
       'GET $konusmaYolu': (_) => konusmaJson(konusmaId1),
-      'GET $mesajlarYolu': (_) => mesajListesiJson([
-        mesajJson(mesajId1, gonderen: benId, metin: 'Merhaba'),
-      ]),
+      'GET $mesajlarYolu': (_) =>
+          mesajListesiJson([mesajJson(mesajId1, gonderen: benId)]),
       ...ek,
     });
 

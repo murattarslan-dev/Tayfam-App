@@ -173,8 +173,9 @@ eklenir. Bugün `Account` yalnızca referans kodu ve görünürlük taşıyor.
   sürümüne girer; istemci tasarımı [ADR-0020](0020-birebir-uctan-uca-sifreleme-istemci.md).
   - Mobil istemci girişten sonra E2E cihazını kaydeder; birebir mesajlar
     uçtan uca şifreli gider.
-  - Düz sürümde yazılmış mesajlar "uçtan uca şifreli değil" etiketiyle
-    görünür; sunucuda silinmeleri Tayfam-Api'de ayrı iştir.
+  - ~~Düz sürümde yazılmış mesajlar "uçtan uca şifreli değil" etiketiyle
+    görünür~~. **Güncelleme 2026-11-12 (Tayfam-Api #151):** düz sürüm
+    kalktı, düz mesajlar sunucuda silindi; etiket kaldırıldı (ADR-0020).
 
 ### 10. Sürüm hattı
 
