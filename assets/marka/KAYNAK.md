@@ -20,8 +20,8 @@
 - Android ve iOS uygulama ikonları bu yollardan `tool/ikon/ikon_uret.py`
   ile üretilir. Mağaza ve OAuth görselleri (`png/`) platform sahibinin
   konsollara yükleyeceği dosyalardır.
-- Eski "t" monogramı ("Hareket") bırakıldı; tanıtım sitesindeki (`site/`)
-  monogram ve çizim animasyonu ayrı bir işte değişecek.
+- Eski "t" monogramı ("Hareket") bırakıldı. Tanıtım sitesi (`site/`) de
+  yeni logoya geçti (#109); site logoyu kendi SVG'lerinde satır içi taşır.
 
 ## Google "G" işareti (`google_g.png`, `2.0x/`, `3.0x/`)
 
