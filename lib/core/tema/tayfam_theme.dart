@@ -24,10 +24,21 @@ abstract final class TayfamTheme {
   /// ([TayfamColors.markaYuzeyOdak]). `MarkaYuzeyi` bileşeni kullanır.
   static ThemeData markaYuzeyi(ThemeData tema) {
     final r = tema.extension<TayfamColors>()!;
-    return _olustur(r.markaYuzeyIcin(), tema.brightness);
+    // Mor yüzeyde brand dolgulu tür çipi (oyun) görünmez; koyu temanın tür
+    // renkleri (oyun brand-dark + ink) iki temada da kullanılır (Design:
+    // Giriş, "Oyun gecesi" çipi #A98BFF).
+    return _olustur(
+      r.markaYuzeyIcin(),
+      tema.brightness,
+      turRenkleri: TayfamTurRenkleri.koyu,
+    );
   }
 
-  static ThemeData _olustur(TayfamColors r, Brightness parlaklik) {
+  static ThemeData _olustur(
+    TayfamColors r,
+    Brightness parlaklik, {
+    TayfamTurRenkleri? turRenkleri,
+  }) {
     final renkSemasi = ColorScheme(
       brightness: parlaklik,
       primary: r.marka,
@@ -97,10 +108,10 @@ abstract final class TayfamTheme {
       colorScheme: renkSemasi,
       extensions: [
         r,
-        if (parlaklik == Brightness.dark)
-          TayfamTurRenkleri.koyu
-        else
-          TayfamTurRenkleri.acik,
+        turRenkleri ??
+            (parlaklik == Brightness.dark
+                ? TayfamTurRenkleri.koyu
+                : TayfamTurRenkleri.acik),
       ],
       fontFamily: TayfamTypography.aile,
       textTheme: metinTemasi,

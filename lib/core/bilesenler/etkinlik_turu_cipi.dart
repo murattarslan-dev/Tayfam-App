@@ -12,11 +12,17 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// metin rengi, türün ikonu ve adı (ADR-0004 Notlar, 2026-11-10). Renk,
 /// ikon ve ad etkinlik türü kaydından gelir; renk tek başına bilgi taşımaz.
 /// Yalnızca gösterir; dokunulmaz.
+///
+/// [buyuk] çip giriş ekranındaki tür haplarıdır (Design: Giriş): 15 px
+/// etiket, 18 px ikon, daha geniş iç boşluk.
 class EtkinlikTuruCipi extends StatelessWidget {
-  const EtkinlikTuruCipi({super.key, required this.tur});
+  const EtkinlikTuruCipi({super.key, required this.tur, this.buyuk = false});
 
   /// Gösterilecek tür; tanınmayan tür "genel" görünür.
   final EventType tur;
+
+  /// Büyük çip mi.
+  final bool buyuk;
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +34,9 @@ class EtkinlikTuruCipi extends StatelessWidget {
         borderRadius: TayfamRadii.hapKoseleri,
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: TayfamSpacing.s12,
-          vertical: TayfamSpacing.s4,
+        padding: EdgeInsets.symmetric(
+          horizontal: buyuk ? TayfamSpacing.s16 : TayfamSpacing.s12,
+          vertical: buyuk ? TayfamSpacing.s8 : TayfamSpacing.s4,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -38,7 +44,7 @@ class EtkinlikTuruCipi extends StatelessWidget {
             ExcludeSemantics(
               child: Icon(
                 girdi.ikon,
-                size: TayfamSizes.ikonKucuk,
+                size: buyuk ? TayfamSizes.ikonOrta : TayfamSizes.ikonKucuk,
                 color: cift.ustu,
               ),
             ),
@@ -46,7 +52,9 @@ class EtkinlikTuruCipi extends StatelessWidget {
             Flexible(
               child: Text(
                 girdi.ad(AppLocalizations.of(context)),
-                style: context.yazi.labelMedium?.copyWith(color: cift.ustu),
+                style:
+                    (buyuk ? context.yazi.labelLarge : context.yazi.labelMedium)
+                        ?.copyWith(color: cift.ustu),
               ),
             ),
           ],

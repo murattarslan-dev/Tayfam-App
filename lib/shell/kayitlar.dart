@@ -9,10 +9,12 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
+import 'package:tayfam/shell/derin_link/kayit_davet.dart';
 
 /// Uygulamanın tayfa modülleri (ADR-0002). Koddaki sabit listedir;
 /// çalışma zamanında dışarıdan modül yüklenmez. Modüller kendi
@@ -51,6 +53,9 @@ final List<Override> kayitOverridelari = [
   birebirBolumuProvider.overrideWithValue(_birebirBolumu),
   // Birebir mesaj şikâyeti: mesajın açık metni cihazdan (ADR-0018 §8).
   birebirMesajSikayetiProvider.overrideWithValue(_birebirMesajSikayeti),
+  // Kayıttan sonra bekleyen davet mevcut davet akışıyla işlenir
+  // (ADR-0012 §3, ADR-0018 §6).
+  kayitDavetProvider.overrideWith(KabukKayitDavetNotifier.new),
 ];
 
 /// Tayfa ayarları ekranına başka paketlerin eklediği girişler; rotaları

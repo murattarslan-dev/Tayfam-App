@@ -7,6 +7,7 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
+import 'package:tayfam/features/hesap/application/kayit_karsilamasi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 
@@ -128,7 +129,11 @@ class KayitNotifier extends AsyncNotifier<KayitDurumu> {
     return KayitDurumu(surumler: surumler);
   }
 
-  /// Formu gönderir. Sürerken ikinci çağrı yok sayılır.
+  /// Formu gönderir (tek istek, sihirbazın son adımında). Sürerken ikinci
+  /// çağrı yok sayılır.
+  ///
+  /// Başarıda hoş geldin ekranı [kayitKarsilamasiProvider] ile, oturum
+  /// açılmadan önce bekletilir; yönlendirici oturum açılınca oraya gider.
   Future<void> gonder(KayitBilgisi bilgi) async {
     final mevcut = state.value;
     if (mevcut == null || mevcut.gonderiliyor) return;
@@ -137,7 +142,10 @@ class KayitNotifier extends AsyncNotifier<KayitDurumu> {
     final depo = ref.read(hesapDeposuProvider);
     final oturum = ref.read(sessionStoreProvider);
     final engel = ref.read(hesapEngeliProvider.notifier);
+    final kosullar = ref.read(yasEngeliKosullariProvider.notifier);
+    final karsilama = ref.read(kayitKarsilamasiProvider.notifier);
     final oturumDurumu = ref.read(oturumDurumuProvider.notifier);
+    final ad = bilgi.ad ?? ref.read(googleAdiProvider)?.trim() ?? '';
     try {
       try {
         await depo.kayitOl(bilgi);
@@ -145,7 +153,8 @@ class KayitNotifier extends AsyncNotifier<KayitDurumu> {
         switch (problem.type) {
           case ProblemType.ageBlocked:
             // Hesap kalıcı kapandı, oturum sunucuda sonlandı: yerel kayıt
-            // silinir, giriş ekranı sade bilgi gösterir.
+            // silinir, yönlendirici sade bilgi ekranını gösterir.
+            kosullar.ayarla(surumler.adres(HukukiMetin.kosullar));
             engel.ayarla(HesapEngeli.yasSiniri);
             await oturum.kapat(OturumKapanisNedeni.sunucuSonlandirdi);
             return;
@@ -161,11 +170,14 @@ class KayitNotifier extends AsyncNotifier<KayitDurumu> {
             rethrow;
         }
       }
+      karsilama.baslat(ad);
       await oturum.yenile();
       _bitir(KayitDurumu(surumler: surumler));
     } on OturumYok {
+      karsilama.bitir();
       oturumDurumu.ayarla(OturumDurumu.girisYok);
     } on Exception catch (hata) {
+      karsilama.bitir();
       _bitir(KayitDurumu(surumler: surumler, hata: hata));
     }
   }

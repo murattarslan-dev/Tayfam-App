@@ -883,11 +883,11 @@
   "@tayfa_davet_kapat": {
     "description": "Davet kısayolu kartını kapatan ikon düğmesinin ekran okuyucu etiketi ve ipucu."
   },
-  "katilim_baslik": "Tayfaya kodla katıl",
+  "katilim_baslik": "Tayfa koduyla katıl",
   "@katilim_baslik": {
     "description": "Kodla katılma için alttan açılan sayfanın başlığı."
   },
-  "katilim_aciklama": "Tayfanın yöneticisinden aldığın kodu yaz.",
+  "katilim_aciklama": "Kodu tayfanın yöneticisinden alabilirsin. Davet linkin varsa ona dokunman yeterli.",
   "@katilim_aciklama": {
     "description": "Kodla katılma sayfasında başlığın altındaki açıklama."
   },
@@ -907,13 +907,39 @@
   "@katilim_gonderildi_baslik": {
     "description": "Onaylı katılımlı bir tayfaya kodla katılma isteği gönderilince sayfada görünen başlık."
   },
-  "katilim_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın. İsteğini tayfa panelinde \"Onay bekliyor\" olarak görebilirsin.",
+  "katilim_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca haber vereceğiz. O zamana kadar isteğin tayfa listende \"Onay bekliyor\" olarak durur; istersen oradan geri çekebilirsin.",
   "@katilim_gonderildi_aciklama": {
-    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama; tayfanın adı bilinmiyorsa."
   },
   "katilim_tamam": "Tamam",
   "@katilim_tamam": {
     "description": "Katılma isteği gönderildikten sonra sayfayı kapatan düğme."
+  },
+  "katilim_kod_yardim": "Büyük ya da küçük harf fark etmez.",
+  "@katilim_kod_yardim": {
+    "description": "Kodla katılma sayfasında kod alanının altındaki yardım metni."
+  },
+  "katilim_kod_gecersiz": "Bu kodla katılamadık. Kodu kontrol et ya da yöneticiden yeniden iste.",
+  "@katilim_kod_gecersiz": {
+    "description": "Kodla katılma sayfasında kod geçersizse (invalid-join-code) alanın altında görünen tek ve genel hata; kodun yanlış, yenilenmiş ya da banlı olunan tayfanın olduğu ayırt edilmez."
+  },
+  "katilim_tekrar_dene": "Tekrar dene",
+  "@katilim_tekrar_dene": {
+    "description": "Kodla katılma sayfasında bir hatadan sonra birincil düğmenin etiketi."
+  },
+  "katilim_gonderildi_tayfa": "{tayfa} tayfasının yöneticisi onaylayınca haber vereceğiz. O zamana kadar isteğin tayfa listende \"Onay bekliyor\" olarak durur; istersen oradan geri çekebilirsin.",
+  "@katilim_gonderildi_tayfa": {
+    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama; tayfanın adı biliniyorsa.",
+    "placeholders": {
+      "tayfa": {
+        "type": "String",
+        "example": "Klasik Otomobil Kulübü"
+      }
+    }
+  },
+  "katilim_baska_kod": "Başka bir kod gir",
+  "@katilim_baska_kod": {
+    "description": "Katılma isteği gönderildikten sonra kod alanına geri dönen düğme."
   },
   "olusturma_adim": "Adım {adim} / {toplam}",
   "@olusturma_adim": {
@@ -2519,6 +2545,46 @@
   "@hesap_slogan": {
     "description": "Giriş ekranında yazı logonun altındaki slogan (Notion: Marka)."
   },
+  "hesap_giris_baslik": "Tayfan tek yerde",
+  "@hesap_giris_baslik": {
+    "description": "Giriş ekranının alt bölümündeki başlık (Design: Giriş)."
+  },
+  "hesap_giris_aciklama": "Etkinlikler, duyurular, soru-cevap ve sohbet. Şifre yok; Google hesabınla birkaç saniyede girersin.",
+  "@hesap_giris_aciklama": {
+    "description": "Giriş ekranında başlığın altındaki açıklama (Android ve Apple düğmesi görünmeyen iOS)."
+  },
+  "hesap_giris_aciklama_apple": "Etkinlikler, duyurular, soru-cevap ve sohbet. Şifre yok; Apple ya da Google hesabınla girersin.",
+  "@hesap_giris_aciklama_apple": {
+    "description": "Giriş ekranında başlığın altındaki açıklama; iOS'ta Apple ile giriş düğmesi görünürken (Design: Giriş iOS)."
+  },
+  "hesap_giris_yasal": "Devam etmeden önce Aydınlatma Metni'ni ve Kullanım Koşulları'nı okuyabilirsin. Onayını kayıt adımında alacağız.",
+  "@hesap_giris_yasal": {
+    "description": "Giriş ekranında düğmenin altındaki küçük not; altında iki metnin bağlantısı var."
+  },
+  "hesap_giris_aydinlatma": "Aydınlatma Metni",
+  "@hesap_giris_aydinlatma": {
+    "description": "Giriş ekranındaki bağlantı; KVKK aydınlatma metninin güncel sürümünü tarayıcıda açar."
+  },
+  "hesap_giris_kosullar": "Kullanım Koşulları",
+  "@hesap_giris_kosullar": {
+    "description": "Giriş ekranındaki bağlantı; kullanım koşullarının güncel sürümünü tarayıcıda açar."
+  },
+  "hesap_davet_baslik": "Bir tayfaya davet edildin.",
+  "@hesap_davet_baslik": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranında mor alandaki büyük başlık (Design: Giriş davet)."
+  },
+  "hesap_davet_kart": "Tayfanın adını ve ayrıntılarını giriş yaptıktan sonra göreceksin.",
+  "@hesap_davet_kart": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranındaki kart; tayfa adı giriş öncesi bilinmez (davet önizlemesi oturum ister)."
+  },
+  "hesap_davet_giris_baslik": "Katılmak için giriş yap",
+  "@hesap_davet_giris_baslik": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranındaki başlık."
+  },
+  "hesap_davet_giris_aciklama": "Giriş yaptıktan sonra daveti görüp tayfaya katılabilirsin. Tayfa onaylıysa isteğin yöneticisine gider.",
+  "@hesap_davet_giris_aciklama": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranındaki açıklama."
+  },
   "hesap_acilis_yukleniyor": "Açılıyor",
   "@hesap_acilis_yukleniyor": {
     "description": "Açılış ekranının ve hesap ekranlarındaki yükleme durumunun ekran okuyucu etiketi; oturum bilgisi okunurken. Ekranda görünmez."
@@ -2579,14 +2645,6 @@
   "@hesap_hata_google": {
     "description": "Giriş ekranında Google giriş penceresi başlatılamadığında ya da tamamlanamadığında görünen hata (sunucuya gitmeden önce)."
   },
-  "hesap_kayit_baslik": "Hesabını oluştur",
-  "@hesap_kayit_baslik": {
-    "description": "Kayıt ekranının başlığı; Google girişinden sonra kaydı tamamlanmamış kullanıcı görür."
-  },
-  "hesap_kayit_aciklama": "Başlamak için birkaç bilgi yeterli.",
-  "@hesap_kayit_aciklama": {
-    "description": "Kayıt ekranında başlığın altındaki kısa açıklama."
-  },
   "hesap_kayit_ad": "Adın",
   "@hesap_kayit_ad": {
     "description": "Kayıt formundaki ad alanının etiketi; Google hesabındaki adla önceden doludur."
@@ -2623,13 +2681,13 @@
   "@hesap_kayit_gonder": {
     "description": "Kayıt formunu gönderen birincil düğme; önce doğum tarihi teyit penceresi açılır."
   },
-  "hesap_aydinlatma_onay": "Aydınlatma metnini okudum.",
+  "hesap_aydinlatma_onay": "Aydınlatma Metni'ni okudum.",
   "@hesap_aydinlatma_onay": {
-    "description": "Kayıt formunda aydınlatma metni onay kutusunun etiketi."
+    "description": "Kayıt sihirbazının onay adımında aydınlatma metni onay kutusunun etiketi."
   },
-  "hesap_kosullar_onay": "Kullanım koşullarını kabul ediyorum.",
+  "hesap_kosullar_onay": "Kullanım Koşulları'nı kabul ediyorum.",
   "@hesap_kosullar_onay": {
-    "description": "Kayıt formunda kullanım koşulları onay kutusunun etiketi."
+    "description": "Kayıt sihirbazının onay adımında kullanım koşulları onay kutusunun etiketi."
   },
   "hesap_aydinlatma_ac": "Aydınlatma metnini oku",
   "@hesap_aydinlatma_ac": {
@@ -2638,18 +2696,6 @@
   "hesap_kosullar_ac": "Kullanım koşullarını oku",
   "@hesap_kosullar_ac": {
     "description": "Onay kutusunun altındaki bağlantı; kullanım koşullarının gösterilen sürümünü tarayıcıda açar."
-  },
-  "hesap_aydinlatma_hata": "Devam etmek için aydınlatma metnini onayla.",
-  "@hesap_aydinlatma_hata": {
-    "description": "Kayıt formunda aydınlatma metni onaylanmadan gönderilmek istenince görünen hata."
-  },
-  "hesap_kosullar_hata": "Devam etmek için kullanım koşullarını kabul et.",
-  "@hesap_kosullar_hata": {
-    "description": "Kayıt formunda kullanım koşulları kabul edilmeden gönderilmek istenince görünen hata."
-  },
-  "hesap_teyit_baslik": "Doğum tarihini kontrol et",
-  "@hesap_teyit_baslik": {
-    "description": "Kayıt gönderilmeden önce açılan doğum tarihi teyit penceresinin başlığı."
   },
   "hesap_teyit_duzelt": "Düzelt",
   "@hesap_teyit_duzelt": {
@@ -2700,6 +2746,176 @@
         "example": "2009-03-12"
       }
     }
+  },
+  "hesap_kayit_adim": "Adım {adim} / {toplam}",
+  "@hesap_kayit_adim": {
+    "description": "Kayıt sihirbazının üstünde, logo blokları göstergesinin yanında hangi adımda olunduğunu gösteren metin; ekran okuyucu da bunu okur.",
+    "placeholders": {
+      "adim": {
+        "type": "int",
+        "example": "2"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "hesap_kayit_geri": "Geri",
+  "@hesap_kayit_geri": {
+    "description": "Kayıt sihirbazında önceki adıma dönen geri düğmesinin ekran okuyucu etiketi ve ipucu."
+  },
+  "hesap_kayit_selam": "Merhaba! Ben Tayfam.",
+  "@hesap_kayit_selam": {
+    "description": "Kayıt sihirbazının ilk adımında Tayfam'ın sohbet balonundaki selamı."
+  },
+  "hesap_kayit_ad_soru": "Önce tanışalım: tayfanda seni hangi adla görsünler?",
+  "@hesap_kayit_ad_soru": {
+    "description": "Kayıt sihirbazının ad adımında Tayfam'ın sorusu (sohbet balonu)."
+  },
+  "hesap_kayit_ad_yardim_google": "Google hesabındaki adını yazdık; istersen değiştir. Tayfandakiler seni bu adla görür.",
+  "@hesap_kayit_ad_yardim_google": {
+    "description": "Kayıt sihirbazında ad alanının altındaki yardım metni; alan Google hesabındaki adla doluyken."
+  },
+  "hesap_kayit_tanistik": "Tanıştığımıza sevindim, {ad}!",
+  "@hesap_kayit_tanistik": {
+    "description": "Kayıt sihirbazının doğum tarihi adımında Tayfam'ın ilk balonu; kullanıcının bir önceki adımda yazdığı ad.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
+  "hesap_kayit_dogum_soru": "Doğum günün ne zaman?",
+  "@hesap_kayit_dogum_soru": {
+    "description": "Kayıt sihirbazının doğum tarihi adımında Tayfam'ın sorusu."
+  },
+  "hesap_kayit_dogum_gizlilik": "Doğum gününü kimin göreceğini sen seçersin. Başta yalnızca arkadaşların görür, o da sadece gün ve ay.",
+  "@hesap_kayit_dogum_gizlilik": {
+    "description": "Kayıt sihirbazında doğum tarihi alanının altındaki kilit ikonlu gizlilik notu (Proje Planı §4: varsayılan görünürlük yalnızca arkadaşlar, yalnızca gün ve ay)."
+  },
+  "hesap_kayit_teyit_aciklama": "Bir kez daha bakalım; yanlış bir tarihi sonradan düzeltmek kolay değil.",
+  "@hesap_kayit_teyit_aciklama": {
+    "description": "Doğum tarihi teyit penceresinde sorunun altındaki açıklama. Yaş sınırından ya da sonucundan söz edilmez (ADR-0012 §3)."
+  },
+  "hesap_kayit_not_ettim": "Not ettim.",
+  "@hesap_kayit_not_ettim": {
+    "description": "Kayıt sihirbazının referans kodu adımında Tayfam'ın ilk balonu (doğum tarihi alındı)."
+  },
+  "hesap_kayit_referans_soru": "Seni Tayfam'a bir arkadaşın mı çağırdı? Sana bir referans kodu verdiyse buraya yaz.",
+  "@hesap_kayit_referans_soru": {
+    "description": "Kayıt sihirbazının referans kodu adımında Tayfam'ın sorusu."
+  },
+  "hesap_kayit_referans_ornek": "Örnek: TYF-8K2M4Q",
+  "@hesap_kayit_referans_ornek": {
+    "description": "Kayıt sihirbazında boş referans kodu alanında görünen örnek."
+  },
+  "hesap_kayit_referans_gec": "Kodum yok, geç",
+  "@hesap_kayit_referans_gec": {
+    "description": "Kayıt sihirbazında referans kodu adımını kodsuz geçen düğme."
+  },
+  "hesap_kayit_kodum_yok": "Kodum yok",
+  "@hesap_kayit_kodum_yok": {
+    "description": "Kayıt sihirbazının onay adımında, kullanıcının referans kodu adımındaki cevabı olarak giden sohbet balonunda görünen metin."
+  },
+  "hesap_kayit_sorun_degil": "Sorun değil. Son bir adım kaldı.",
+  "@hesap_kayit_sorun_degil": {
+    "description": "Kayıt sihirbazının onay adımında Tayfam'ın ilk balonu; referans kodu girilmediyse."
+  },
+  "hesap_kayit_tesekkurler": "Teşekkürler! Son bir adım kaldı.",
+  "@hesap_kayit_tesekkurler": {
+    "description": "Kayıt sihirbazının onay adımında Tayfam'ın ilk balonu; referans kodu girildiyse."
+  },
+  "hesap_kayit_onay_soru": "Herkes rahat etsin diye iki metnimiz var. Göz atıp onaylar mısın?",
+  "@hesap_kayit_onay_soru": {
+    "description": "Kayıt sihirbazının onay adımında Tayfam'ın sorusu."
+  },
+  "hesap_kayit_metni_ac": "Metni aç",
+  "@hesap_kayit_metni_ac": {
+    "description": "Kayıt sihirbazındaki her onay kutusunun altındaki bağlantı; metnin gösterilen sürümünü tarayıcıda açar. Ekran okuyucu hangi metin olduğunu ayrıca söyler."
+  },
+  "hesap_kayit_tamamla": "Tanışmayı tamamla",
+  "@hesap_kayit_tamamla": {
+    "description": "Kayıt sihirbazının son adımındaki birincil düğme; iki onay kutusu işaretlenince açılır ve kaydı gönderir."
+  },
+  "hesap_kayit_hosgeldin": "Hoş geldin, {ad}!",
+  "@hesap_kayit_hosgeldin": {
+    "description": "Kayıt bitince mor ekranda görünen büyük başlık; kullanıcının görünen adı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
+  "hesap_kayit_hosgeldin_adsiz": "Hoş geldin!",
+  "@hesap_kayit_hosgeldin_adsiz": {
+    "description": "Kayıt bitince görünen büyük başlık; ad bilinmiyorsa."
+  },
+  "hesap_kayit_hosgeldin_aciklama": "Tanışma tamam. Şimdi bir tayfaya katıl ya da kendi tayfanı kur; gerisi birlikte.",
+  "@hesap_kayit_hosgeldin_aciklama": {
+    "description": "Davet linki olmadan gelen kullanıcının hoş geldin ekranında başlığın altındaki metin."
+  },
+  "hesap_kayit_tayfa_kodum_var": "Tayfa kodum var",
+  "@hesap_kayit_tayfa_kodum_var": {
+    "description": "Hoş geldin ekranında kodla katılım sayfasını açan birincil düğme."
+  },
+  "hesap_kayit_tayfa_kur": "Kendi tayfamı kur",
+  "@hesap_kayit_tayfa_kur": {
+    "description": "Hoş geldin ekranında tayfa oluşturma sihirbazını açan düğme."
+  },
+  "hesap_kayit_davet_yukleniyor": "Davetin işleniyor",
+  "@hesap_kayit_davet_yukleniyor": {
+    "description": "Davet linkiyle gelen kullanıcının hoş geldin ekranında katılma isteği gönderilirken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "hesap_kayit_davet_bekliyor_aciklama": "Katılma isteğini gönderdik. Yönetici onaylayınca sana haber vereceğiz.",
+  "@hesap_kayit_davet_bekliyor_aciklama": {
+    "description": "Davet linkiyle gelen kullanıcının hoş geldin ekranındaki metin; tayfa onaylı katılımlıysa."
+  },
+  "hesap_kayit_davet_etkin_aciklama": "Tayfana katıldın. Hemen göz atabilirsin.",
+  "@hesap_kayit_davet_etkin_aciklama": {
+    "description": "Davet linkiyle gelen kullanıcının hoş geldin ekranındaki metin; tayfa açık katılımlıysa (üyelik hemen etkin)."
+  },
+  "hesap_kayit_davet_zaten_uye_aciklama": "Bu tayfada zaten üyesin ya da katılma isteğin onay bekliyor.",
+  "@hesap_kayit_davet_zaten_uye_aciklama": {
+    "description": "Davet linkiyle gelen kullanıcının hoş geldin ekranındaki metin; zaten üyeyse."
+  },
+  "hesap_kayit_davet_hata_aciklama": "Davetini şu an açamadık. Bir sonraki ekranda ayrıntısını görüp yeniden deneyebilirsin.",
+  "@hesap_kayit_davet_hata_aciklama": {
+    "description": "Davet linkiyle gelen kullanıcının hoş geldin ekranındaki metin; davet önizlenemediyse ya da katılma isteği gönderilemediyse."
+  },
+  "hesap_kayit_davet_onay_bekliyor": "Onay bekliyor",
+  "@hesap_kayit_davet_onay_bekliyor": {
+    "description": "Hoş geldin ekranındaki tayfa kartında, katılma isteği yöneticinin onayını beklerken görünen etiket."
+  },
+  "hesap_kayit_tamam": "Tamam",
+  "@hesap_kayit_tamam": {
+    "description": "Davetle gelen kullanıcının hoş geldin ekranını kapatan birincil düğme."
+  },
+  "hesap_kayit_tayfaya_git": "Tayfaya git",
+  "@hesap_kayit_tayfaya_git": {
+    "description": "Davetle hemen katılınan tayfanın ana sayfasını açan düğme (hoş geldin ekranı)."
+  },
+  "hesap_kayit_daveti_gor": "Daveti gör",
+  "@hesap_kayit_daveti_gor": {
+    "description": "Hoş geldin ekranında davet işlenemediyse davet ekranını (ayrıntı ve tekrar dene) açan düğme."
+  },
+  "hesap_kayit_engel_baslik": "Hesabını şu an oluşturamıyoruz",
+  "@hesap_kayit_engel_baslik": {
+    "description": "Kayıtta sunucu yaş koşulu yüzünden hesabı açmadığında görünen bilgi ekranının başlığı."
+  },
+  "hesap_kayit_engel_aciklama": "Girdiğin doğum tarihi Tayfam'ın yaş koşulunu karşılamıyor. Bu yüzden hesabın açılmadı ve bu hesapla yeniden deneyemezsin.",
+  "@hesap_kayit_engel_aciklama": {
+    "description": "Yaş koşulu bilgi ekranında başlığın altındaki açıklama. Yeniden deneme yolu yoktur."
+  },
+  "hesap_kayit_engel_kosullar": "Kullanım Koşulları",
+  "@hesap_kayit_engel_kosullar": {
+    "description": "Yaş koşulu bilgi ekranında kullanım koşullarının gösterilen sürümünü tarayıcıda açan bağlantı."
+  },
+  "hesap_kayit_engel_kapat": "Kapat",
+  "@hesap_kayit_engel_kapat": {
+    "description": "Yaş koşulu bilgi ekranında uygulamayı kapatan düğme."
   },
   "profil_tekrar_dene": "Tekrar dene",
   "@profil_tekrar_dene": {

@@ -47,6 +47,32 @@ abstract final class TayfamTypography {
     );
   }
 
+  /// Giriş ekranının mor üst alanındaki büyük başlık (slogan ya da davet
+  /// başlığı; Design: Giriş): 48 / 800 (wght 750) / 0.95, harf aralığı
+  /// −%4.5 (Standartlar: Display). ADR-0004 §4'teki uygulama içi ölçeğin
+  /// dışındadır; yalnızca giriş ekranında kullanılır.
+  static TextStyle markaBasligi(Color renk) {
+    const boyut = 48.0;
+    return _stil(
+      boyut,
+      buyukBaslikAgirligi,
+      .95,
+      renk,
+    ).copyWith(letterSpacing: boyut * -.045);
+  }
+
+  /// Giriş ekranının alt bölümündeki başlık (Design: Giriş): 24 / 700 /
+  /// 1.08, harf aralığı −%1.
+  static TextStyle girisBasligi(Color renk) {
+    const boyut = 24.0;
+    return _stil(
+      boyut,
+      FontWeight.w700,
+      1.08,
+      renk,
+    ).copyWith(letterSpacing: boyut * -.01);
+  }
+
   static TextStyle _stil(
     double boyut,
     FontWeight agirlik,
