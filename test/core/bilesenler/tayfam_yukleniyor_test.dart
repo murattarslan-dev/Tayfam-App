@@ -200,7 +200,8 @@ void main() {
       const Size.square(TayfamSizes.yukleniyorSatir),
     );
 
-    await tester.pump(TayfamMotion.yukleniyorGecikmesi);
+    // Denetleyici süre aşılınca tamamlanır (tam sınırda değil).
+    await tester.pump(TayfamMotion.yukleniyorGecikmesi + _ms(16));
     await tester.pump();
 
     expect(_boyaci, findsOneWidget);
