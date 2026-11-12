@@ -58,8 +58,9 @@ class DuyuruBolumu extends ConsumerWidget {
           ),
         ] else if (liste == null)
           Center(
-            child: CircularProgressIndicator(
-              semanticsLabel: metinler.duyuru_yukleniyor,
+            child: TayfamYukleniyor(
+              etiket: metinler.duyuru_yukleniyor,
+              gecikmeli: true,
             ),
           )
         else if (liste.ogeler.isEmpty) ...[

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- tool/ikon/splash_uret.py ile üretildi; elle düzenleme, betiği çalıştır. -->
+<!-- Açılış ekranı renkleri (açık); lib/core/tema/tayfam_logo_renkleri.dart
+     ile aynıdır. -->
+<resources>
+    <color name="splash_zemin">#5B2BE0</color>
+    <color name="splash_l">#FAF8FF</color>
+</resources>

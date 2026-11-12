@@ -13,7 +13,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 // onları ekran okuyucudan gizler ve dokunmaya kapatır; anlam sayfanın
 // başlığı ve metnindedir. Hepsi mor marka yüzeyinin üstünde durur.
 
-/// 1. sayfa: mor tayfa üst bölümü (monogram, örnek tayfa adı, üye sayısı).
+/// 1. sayfa: mor tayfa üst bölümü (logo, örnek tayfa adı, üye sayısı).
 class TayfaGorseli extends StatelessWidget {
   const TayfaGorseli({super.key});
 
@@ -25,7 +25,7 @@ class TayfaGorseli extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TayfamMonogram(boyut: TayfamSizes.logoBuyuk, zemin: r.markaYuzey),
+        TayfamLogo(boyut: TayfamSizes.logoBuyuk, zemin: r.markaYuzey),
         const SizedBox(height: TayfamSpacing.s16),
         Text(
           m.hosgeldin_ornek_tayfa_adi,

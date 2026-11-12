@@ -28,6 +28,9 @@ abstract final class TayfamSizes {
   /// Satır içi küçük ikon (kilit, çip ikonu).
   static const double ikonKucuk = 16;
 
+  /// Büyük etkinlik türü çipinin ikonu (giriş ekranı: 18 px).
+  static const double ikonOrta = 18;
+
   /// Düğme ikonu.
   static const double ikon = 20;
 
@@ -45,26 +48,66 @@ abstract final class TayfamSizes {
   /// Sohbet balonunun en fazla genişliği, kullanılabilir genişliğe oranla.
   static const double balonEnFazlaOran = .78;
 
-  /// Monogramın en küçük boyutu (Standartlar, Logo kullanımı: 16 px).
+  /// Logonun en küçük boyutu (Standartlar, Logo kullanımı: 16 px).
   static const double logoEnKucuk = 16;
 
-  /// Bu boyutun altında monogram yazısız kullanılır (Standartlar: 24 px).
+  /// Bu boyutun altında logo yazısız kullanılır (Standartlar: 24 px).
   static const double logoYaziEsigi = 24;
 
-  /// Açılış ve giriş ekranındaki yazılı logonun monogram boyutu.
+  /// Ekran başlığındaki yazılı logonun simge boyutu (giriş ekranının mor
+  /// üst alanı: 40 px simge, 26 px yazı).
+  static const double logoBaslik = 40;
+
+  /// Açılış ekranındaki logonun simge boyutu (splash: 120 px).
+  static const double logoSplash = 120;
+
+  /// Açılış ekranının altındaki "tayfam" yazısının punto boyu (splash:
+  /// 34 px). Görseldir; sistem yazı ölçeğiyle büyümez.
+  static const double acilisYaziPuntosu = 34;
+
+  /// Açılış animasyonunda yazının yükselmeye başladığı uzaklık (10 px).
+  static const double acilisYaziKaymasi = 10;
+
+  /// Yükleniyor animasyonu, düğme içinde (22 px).
+  static const double yukleniyorDugme = 22;
+
+  /// Yükleniyor animasyonu, satırda ve bölümde (32 px).
+  static const double yukleniyorSatir = 32;
+
+  /// Yükleniyor animasyonu, tam ekranda (72 px; tasarım 64–72).
+  static const double yukleniyorTamEkran = 72;
+
+  /// Yükleniyor dalgasında bloğun en küçük ölçeği (%70).
+  static const double yukleniyorEnKucukOlcek = .7;
+
+  /// Yükleniyor dalgasında bloğun en düşük saydamlığı.
+  static const double yukleniyorEnAzSaydamlik = .45;
+
+  /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
+  /// dokunma alanı 48'in üstünde).
+  static const double girisDugmesi = 52;
+
+  /// Giriş ekranındaki etkinlik türü çiplerinin hafif eğimleri (derece),
+  /// sırayla (Design: Giriş).
+  static const List<double> girisCipEgimleri = [-4, 3, -2, 5, -3, 2];
+
+  /// Davet kartındaki simge karosunun kenarı (Design: Giriş davet, 56 px).
+  static const double davetKarosu = 56;
+
+  /// Hoş geldin tanıtımındaki yazılı logonun simge boyutu.
   static const double logoBuyuk = 72;
 
-  /// Monogram ile "tayfam" yazısı arasındaki boşluk, monogram genişliğine
-  /// oranla (Standartlar: ~%30).
+  /// Simge ile "tayfam" yazısı arasındaki boşluk, simge genişliğine oranla
+  /// (Standartlar: ~%30).
   static const double logoYaziBoslukOrani = .3;
 
-  /// "tayfam" yazısının punto boyu, monogram boyuna oranla (tanıtım
-  /// sayfasındaki başlık: 36 px simge, 1.45rem ≈ 23.2 px yazı).
-  static const double logoYaziOrani = .645;
+  /// "tayfam" yazısının punto boyu, simge boyuna oranla (giriş ekranı
+  /// tasarımı: 40 px simge, 26 px yazı).
+  static const double logoYaziOrani = .65;
 
-  /// "tayfam" yazısının harf aralığı, punto boyuna oranla (tanıtım
-  /// sayfası: −0.03em).
-  static const double logoHarfAraligiOrani = -.03;
+  /// "tayfam" yazısının harf aralığı, punto boyuna oranla (Standartlar,
+  /// Display: −%4.5).
+  static const double logoHarfAraligiOrani = -.045;
 
   /// Haritadaki konvoy rotası çizgisinin kalınlığı.
   static const double rotaKalinligi = 4;

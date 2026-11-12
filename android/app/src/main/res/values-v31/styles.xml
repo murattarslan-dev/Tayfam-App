@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ açılış ekranı (SplashScreen API; Design: Splash açık).
+         Sistem düz zemin, ortada ikon ve altta marka görseli çizer; metin,
+         animasyonlu illüstrasyon ya da yükleme çubuğu eklenemez. Renkler
+         @color/splash_* kaynaklarından temaya göre gelir
+         (tool/ikon/splash_uret.py). Flutter ilk kareyi çizince
+         NormalTheme'e geçilir ve aynı logo Flutter'da canlandırılır
+         (AcilisEkrani). -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:windowSplashScreenBackground">@color/splash_zemin</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_simge</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/splash_yazi</item>
+    </style>
+</resources>

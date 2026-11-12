@@ -1,6 +1,7 @@
 /// Ortak bileşenler (ADR-0004 §3). Özellikler bu dosyayı import eder.
 library;
 
+export 'package:tayfam/core/bilesenler/acilis_logosu.dart';
 export 'package:tayfam/core/bilesenler/anket_cubugu.dart';
 export 'package:tayfam/core/bilesenler/birincil_eylem.dart';
 export 'package:tayfam/core/bilesenler/bolum_basligi.dart';
@@ -14,5 +15,6 @@ export 'package:tayfam/core/bilesenler/marka_yuzeyi.dart';
 export 'package:tayfam/core/bilesenler/odak_cercevesi.dart';
 export 'package:tayfam/core/bilesenler/sohbet_balonu.dart';
 export 'package:tayfam/core/bilesenler/tayfam_kart.dart';
-export 'package:tayfam/core/bilesenler/tayfam_monogram.dart';
+export 'package:tayfam/core/bilesenler/tayfam_logo.dart';
+export 'package:tayfam/core/bilesenler/tayfam_yukleniyor.dart';
 export 'package:tayfam/core/bilesenler/uctan_uca_sifreli_satiri.dart';

@@ -73,8 +73,9 @@ class EtkinlikBolumu extends ConsumerWidget {
             ),
           ] else if (gosterilen == null)
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: metinler.tayfa_ana_etkinlikler_yukleniyor,
+              child: TayfamYukleniyor(
+                etiket: metinler.tayfa_ana_etkinlikler_yukleniyor,
+                gecikmeli: true,
               ),
             )
           else if (gosterilen.isEmpty) ...[

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- tool/ikon/ikon_uret.py ile üretildi; elle düzenleme, betiği çalıştır. -->
+<!-- Android 13+ temalı ikon (monochrome) katmanı: tek renk logo, ön
+     katmanla aynı yerleşim. Başlatıcı yalnızca alfayı kullanır. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:translateX="24"
+        android:translateY="22.2">
+        <path
+            android:pathData="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z"
+            android:fillColor="#FFFFFFFF" />
+    </group>
+</vector>

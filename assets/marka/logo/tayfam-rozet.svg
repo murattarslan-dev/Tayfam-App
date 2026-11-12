@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Tayfam rozet">
+  <defs>
+    <clipPath id="tayfam-rozet-clip"><circle cx="50" cy="50" r="48"/></clipPath>
+  </defs>
+  <g clip-path="url(#tayfam-rozet-clip)">
+    <path d="M0 0 H40 V26 Q40 32 34 32 H0 Z" fill="#FFB000"/>
+    <path d="M52 0 H100 V32 H58 Q52 32 52 26 Z" fill="#FF3D68"/>
+    <path d="M60 44 H100 V64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"/>
+    <path d="M0 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H100 V100 H0 Z" fill="#5B2BE0"/>
+  </g>
+</svg>

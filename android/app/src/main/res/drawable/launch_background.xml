@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- tool/ikon/splash_uret.py ile üretildi; elle düzenleme, betiği çalıştır. -->
+<!-- Android 12 öncesi açılış zemini: düz zemin (açıkta brand, koyuda ink),
+     ortada logo, altta yazı logo (Design: Splash açık / koyu). Android 12+
+     values-v31/styles.xml'deki SplashScreen özniteliklerini kullanır. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+    <item android:drawable="@color/splash_zemin" />
+    <item
+        android:width="120dp"
+        android:height="120dp"
+        android:gravity="center"
+        android:drawable="@drawable/splash_logo" />
+    <item
+        android:width="200dp"
+        android:height="80dp"
+        android:bottom="32dp"
+        android:gravity="bottom|center_horizontal"
+        android:drawable="@drawable/splash_yazi" />
 </layer-list>
