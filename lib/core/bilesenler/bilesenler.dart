@@ -14,5 +14,5 @@ export 'package:tayfam/core/bilesenler/marka_yuzeyi.dart';
 export 'package:tayfam/core/bilesenler/odak_cercevesi.dart';
 export 'package:tayfam/core/bilesenler/sohbet_balonu.dart';
 export 'package:tayfam/core/bilesenler/tayfam_kart.dart';
-export 'package:tayfam/core/bilesenler/tayfam_monogram.dart';
+export 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 export 'package:tayfam/core/bilesenler/uctan_uca_sifreli_satiri.dart';

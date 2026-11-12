@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Tayfam">
+  <path d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"/>
+  <path d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"/>
+  <path d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"/>
+  <path d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#A98BFF"/>
+</svg>

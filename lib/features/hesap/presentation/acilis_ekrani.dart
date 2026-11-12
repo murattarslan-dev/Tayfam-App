@@ -5,7 +5,7 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Açılışta oturum kaydı güvenli depodan okunurken kısa süre görünen ekran
-/// (ADR-0012 §1). Yazılı logo (monogram + "tayfam") ve ilerleme
+/// (ADR-0012 §1). Yazılı logo (Dörtlü simge + "tayfam") ve ilerleme
 /// göstergesi; süs animasyonu yok.
 class AcilisEkrani extends StatelessWidget {
   const AcilisEkrani({super.key});
@@ -21,7 +21,7 @@ class AcilisEkrani extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const TayfamMonogram.yazili(baslik: true),
+                const TayfamLogo.yazili(baslik: true),
                 const SizedBox(height: TayfamSpacing.s24),
                 CircularProgressIndicator(
                   semanticsLabel: metinler.hesap_acilis_yukleniyor,

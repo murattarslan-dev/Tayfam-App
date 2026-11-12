@@ -11,8 +11,8 @@ import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
 import 'package:tayfam/features/hesap/presentation/hesap_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Giriş ekranı (ADR-0012 §2): mor marka yüzeyinde yazılı logo (turkuaz
-/// gövdeli monogram + "tayfam"), slogan ve "Google ile devam et".
+/// Giriş ekranı (ADR-0012 §2): mor marka yüzeyinde yazılı logo (L parçası
+/// #FAF8FF olan Dörtlü simge + "tayfam"), slogan ve "Google ile devam et".
 ///
 /// Hesap kalıcı kapandıysa (`age-blocked`) ya da kısıtlandıysa
 /// (`account-sanctioned`) düğme yerine sade bir bilgi gösterilir; yeniden
@@ -96,7 +96,7 @@ class GirisEkrani extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    TayfamMonogram.yazili(zemin: r.markaYuzey, baslik: true),
+                    TayfamLogo.yazili(zemin: r.markaYuzey, baslik: true),
                     const SizedBox(height: TayfamSpacing.s8),
                     Text(
                       metinler.hesap_slogan,
