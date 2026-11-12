@@ -8,8 +8,7 @@ import 'package:tayfam/core/api/gen/transport.dart';
 /// Profil ve hesap uçları (ADR-0018 §2). Yalnızca üretilmiş uç sınıflarını
 /// kullanır; bütün istekler tek `ApiClient`'tan geçer (ADR-0005).
 final class ProfilDeposu {
-  ProfilDeposu(ApiTransport istemci)
-    : _me = MeApi(istemci);
+  ProfilDeposu(ApiTransport istemci) : _me = MeApi(istemci);
 
   final MeApi _me;
 
