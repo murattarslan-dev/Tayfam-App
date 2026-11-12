@@ -31,6 +31,24 @@ final hesapEngeliProvider = NotifierProvider<HesapEngeliNotifier, HesapEngeli?>(
   name: 'hesapEngeliProvider',
 );
 
+/// `age-blocked` bilgi ekranındaki "Kullanım Koşulları" bağlantısının
+/// adresi: kayıtta gösterilen sürümün sayfası (ADR-0012 §4). Sürüm yalnızca
+/// sunucudan gelir; bilinmiyorsa bağlantı gösterilmez. Yalnızca bellekte.
+class YasEngeliKosullariNotifier extends Notifier<Uri?> {
+  @override
+  Uri? build() => null;
+
+  /// Gösterilen sürümün adresini kaydeder.
+  void ayarla(Uri adres) => state = adres;
+}
+
+/// `age-blocked` ekranındaki kullanım koşulları adresi (kalıcı, bellek).
+final yasEngeliKosullariProvider =
+    NotifierProvider<YasEngeliKosullariNotifier, Uri?>(
+      YasEngeliKosullariNotifier.new,
+      name: 'yasEngeliKosullariProvider',
+    );
+
 /// Google hesabının görünen adı; kayıt formunu önceden doldurmak için
 /// yalnızca bellekte tutulur (ADR-0012 §2). Oturum kapanınca silinir.
 class GoogleAdiNotifier extends Notifier<String?> {
