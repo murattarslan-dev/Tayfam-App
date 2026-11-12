@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
+import 'package:tayfam/features/birebir/presentation/sessiz_ogeleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Rozette gösterilen en büyük sayı; sözleşme okunmamışı en çok 100
@@ -10,12 +11,20 @@ import 'package:tayfam/l10n/app_localizations.dart';
 const int rozetEnCok = 99;
 
 /// Konuşma listesindeki bir satır: karşı tarafın adı, durum (istek) ya da
-/// son mesajın zamanı ve okunmamış sayısı. Mesaj içeriği listede
-/// gösterilmez (sözleşme son mesajı döndürmez).
+/// son mesajın zamanı, sessizse simge ve okunmamış sayısı. Mesaj içeriği
+/// listede gösterilmez (sözleşme son mesajı döndürmez).
 class KonusmaSatiri extends StatelessWidget {
-  const KonusmaSatiri({super.key, required this.konusma, required this.onTap});
+  const KonusmaSatiri({
+    super.key,
+    required this.konusma,
+    required this.onTap,
+    this.sessiz = false,
+  });
 
   final Conversation konusma;
+
+  /// Konuşma sessize alınmışsa adın yanında simge gösterilir.
+  final bool sessiz;
 
   final VoidCallback onTap;
 
@@ -62,6 +71,10 @@ class KonusmaSatiri extends StatelessWidget {
                   ],
                 ),
               ),
+              if (sessiz) ...[
+                const SizedBox(width: TayfamSpacing.s8),
+                const SessizSimgesi(),
+              ],
               if (okunmamis > 0) ...[
                 const SizedBox(width: TayfamSpacing.s8),
                 Semantics(

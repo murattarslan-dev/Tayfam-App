@@ -128,13 +128,15 @@
             <tr><th scope="row">Kullanıcı içeriği</th><td>Duyurular, etkinlikler, sorular, cevaplar, anket oyları, kanal mesajları, yüklediğin fotoğraflar (konum bilgisi silinerek)</td></tr>
             <tr><th scope="row">Etkinlik ve katılım</th><td>Katılım yanıtların, varış bildirimi ("Geldim") sonucu ve zamanı, katıldığın etkinliklerin türü, il/ilçesi ve süresi</td></tr>
             <tr><th scope="row">İsteğe bağlı etkinlik bilgileri</th><td>Konvoy aracı bilgileri ve plaka, av kaydı ve paylaşmayı seçtiğin av konumu</td></tr>
-            <tr><th scope="row">Birebir mesajlar</th><td>Şu an kanal mesajları gibi sunucuda şifreli saklanır. Uçtan uca şifreleme eklendiğinde içeriğini okuyamayız; o zaman yalnızca şifreli veri, gönderim zamanı ve okunma bilgisi sunucuda bulunur</td></tr>
+            <tr><th scope="row">Birebir mesajlar</th><td>Uçtan uca şifrelidir (Signal protokolü); içeriğini okuyamayız. Sunucuda yalnızca şifreli veri (cihazlarına teslim edilene kadar bekleyen şifreli zarflar ve yalnızca senin cihazlarında bulunan geçmiş anahtarınla şifreli mesaj arşivin), gönderim zamanı, gönderen ve alıcı bilgisi ve okunma bilgisi bulunur</td></tr>
+            <tr><th scope="row">Şifreleme anahtarları</th><td>Birebir mesajlaşma için cihazlarının açık anahtarları ve cihaz listesi (gizli anahtarlar yalnızca cihazında kalır); cihaz eklendi/çıkarıldı kayıtları</td></tr>
             <tr><th scope="row">Bildirim</th><td>Cihazının bildirim adresi (push token), bildirim tercihlerin</td></tr>
             <tr><th scope="row">Onay kayıtları</th><td>Bu metnin ve kullanım koşullarının hangi sürümünü ne zaman onayladığın</td></tr>
             <tr><th scope="row">Talep ve şikâyetler</th><td>Şikâyetlerin ve şikâyetine eklediğin içerik, veri dışa aktarma talepleri</td></tr>
           </tbody>
         </table>
       </div>
+      <p><strong>Kamera hakkında:</strong> Kamera yalnızca sen fotoğraf çekerken ve başka bir cihazını bağlamak için QR kod okuturken kullanılır; QR okutma sırasında görüntü kaydedilmez ve hiçbir yere gönderilmez.</p>
       <p><strong>Konum hakkında:</strong> Varış bildirimi ("Geldim") ve ileride gelecek yakındaki tayfaları bulma özelliği cihaz konumunu yalnızca o an kullanır; konumun kaydedilmez ve loglanmaz. Saklanan tek konum bilgisi, etkinliklerin buluşma noktası ve kendi tercihinle paylaştığın av konumlarıdır.</p>
 
       <h2 id="amaclar">3. Verileri hangi amaçlarla işliyoruz</h2>
@@ -193,7 +195,9 @@
             <tr><th scope="row">Konvoy plakası</th><td>Etkinlikten 30 gün sonra silinir</td></tr>
             <tr><th scope="row">Doğum tarihi</th><td>Hesap açık olduğu sürece; yanlışsa düzeltilmesini isteyebilirsin</td></tr>
             <tr><th scope="row">Bildirimler</th><td>90 gün</td></tr>
-            <tr><th scope="row">90 gün kullanılmayan cihaz kayıtları</th><td>90 gün</td></tr>
+            <tr><th scope="row">90 gün kullanılmayan cihaz kayıtları ve cihaz anahtarları</th><td>90 gün</td></tr>
+            <tr><th scope="row">Teslim edilmemiş şifreli birebir mesaj zarfları</th><td>En çok 30 gün (teslim edilince hemen silinir)</td></tr>
+            <tr><th scope="row">Şifreli birebir mesaj arşivi</th><td>Sen ya da mesajı gönderen silene, hesabın silinene kadar</td></tr>
             <tr><th scope="row">Denetim ve çözülmüş şikâyet kayıtları</th><td>1 yıl</td></tr>
             <tr><th scope="row">Veri dışa aktarma dosyaları</th><td>7 gün</td></tr>
             <tr><th scope="row">Onay kayıtları</th><td>[SÜRE: hukukçuyla belirlenecek]</td></tr>

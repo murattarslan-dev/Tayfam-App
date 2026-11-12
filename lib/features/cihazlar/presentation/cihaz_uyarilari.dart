@@ -89,7 +89,7 @@ class TekCihazBilgiKarti extends ConsumerWidget {
     final goster = ref.watch(tekCihazBilgisiProvider).value ?? false;
     if (!goster) return const SizedBox.shrink();
     final metinler = AppLocalizations.of(context);
-    return TayfamKart(
+    return _ListeKarti(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -127,7 +127,7 @@ class EskiArsivBilgisi extends ConsumerWidget {
     );
     if (!goster) return const SizedBox.shrink();
     final metinler = AppLocalizations.of(context);
-    return TayfamKart(
+    return _ListeKarti(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -145,6 +145,20 @@ class EskiArsivBilgisi extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Konuşma listesinin üstündeki bilgi kartı: diğer satırlardan dikey
+/// boşlukla ayrılır.
+class _ListeKarti extends StatelessWidget {
+  const _ListeKarti({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
+    child: TayfamKart(child: child),
+  );
 }
 
 /// Konuşmanın başında, eski mesajlar bu cihazda okunamıyorsa gösterilen
