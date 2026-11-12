@@ -58,6 +58,13 @@ abstract final class TayfamSizes {
   /// Açılış ekranındaki logonun simge boyutu (splash: 120 px).
   static const double logoSplash = 120;
 
+  /// Açılış ekranının altındaki "tayfam" yazısının punto boyu (splash:
+  /// 34 px). Görseldir; sistem yazı ölçeğiyle büyümez.
+  static const double acilisYaziPuntosu = 34;
+
+  /// Açılış animasyonunda yazının yükselmeye başladığı uzaklık (10 px).
+  static const double acilisYaziKaymasi = 10;
+
   /// Hoş geldin tanıtımındaki yazılı logonun simge boyutu.
   static const double logoBuyuk = 72;
 
