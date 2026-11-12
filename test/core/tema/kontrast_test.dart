@@ -46,6 +46,7 @@ List<_Cift> _ciftler(TayfamColors r) {
     ),
     _Cift('tintMarkaUstu / tintMarka', r.tintMarkaUstu, r.tintMarka, _metin),
     _Cift('tintMangoUstu / tintMango', r.tintMangoUstu, r.tintMango, _metin),
+    _Cift('tintTealUstu / tintTeal', r.tintTealUstu, r.tintTeal, _metin),
     _Cift(
       'gelenBalonUstu / gelenBalon',
       r.gelenBalonUstu,
@@ -105,6 +106,9 @@ void main() {
       ('ink / brand-dark', k.markaUstu, k.marka, 6.66),
       ('#CDBBFF / tint-brand-dark', k.tintMarkaUstu, k.tintMarka, 6.94),
       ('#FFD27A / tint-mango-dark', k.tintMangoUstu, k.tintMango, 7.72),
+      // 2026-11-12: turkuaz tint (İsteğin gönderildi ikonu).
+      ('#0B6B5D / tint-teal', a.tintTealUstu, a.tintTeal, 5.70),
+      ('#7FE8D6 / tint-teal-dark', k.tintTealUstu, k.tintTeal, 8.04),
       ('beyaz / bubble-in-dark', k.gelenBalonUstu, k.gelenBalon, 13.46),
       ('ink / nar', k.vurguUstu, k.nar, 5.21),
       ('ink / mango', k.vurguUstu, k.mango, 9.76),

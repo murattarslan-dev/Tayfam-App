@@ -31,6 +31,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.tintMarkaUstu,
     required this.tintMango,
     required this.tintMangoUstu,
+    required this.tintTeal,
+    required this.tintTealUstu,
     required this.gelenBalon,
     required this.gelenBalonUstu,
     required this.teal,
@@ -101,6 +103,14 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
 
   /// [tintMango] üzerindeki metin (açık: honey, koyu: #FFD27A).
   final Color tintMangoUstu;
+
+  /// Başarı/onay vurgulu kutu zemini, ör. "İsteğin gönderildi" ikonu
+  /// (açık: tint-teal #DDF7F2, koyu: tint-teal-dark #0F3F3A; 2026-11-12).
+  final Color tintTeal;
+
+  /// [tintTeal] üzerindeki metin ve ikon (açık: #0B6B5D, 5.70:1; koyu:
+  /// #7FE8D6, 8.04:1).
+  final Color tintTealUstu;
 
   /// Gelen sohbet balonu (açık: tint-brand, koyu: bubble-in-dark).
   final Color gelenBalon;
@@ -173,6 +183,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintMarkaUstu: _Palet.brand,
     tintMango: _Palet.tintMango,
     tintMangoUstu: _Palet.honey,
+    tintTeal: _Palet.tintTeal,
+    tintTealUstu: _Palet.tintTealMetin,
     gelenBalon: _Palet.tintBrand,
     gelenBalonUstu: _Palet.ink,
     teal: _Palet.teal,
@@ -206,6 +218,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintMarkaUstu: _Palet.tintBrandDarkMetin,
     tintMango: _Palet.tintMangoDark,
     tintMangoUstu: _Palet.tintMangoDarkMetin,
+    tintTeal: _Palet.tintTealDark,
+    tintTealUstu: _Palet.tintTealDarkMetin,
     gelenBalon: _Palet.bubbleInDark,
     gelenBalonUstu: _Palet.beyaz,
     teal: _Palet.teal,
@@ -239,6 +253,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? tintMarkaUstu,
     Color? tintMango,
     Color? tintMangoUstu,
+    Color? tintTeal,
+    Color? tintTealUstu,
     Color? gelenBalon,
     Color? gelenBalonUstu,
     Color? teal,
@@ -270,6 +286,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintMarkaUstu: tintMarkaUstu ?? this.tintMarkaUstu,
       tintMango: tintMango ?? this.tintMango,
       tintMangoUstu: tintMangoUstu ?? this.tintMangoUstu,
+      tintTeal: tintTeal ?? this.tintTeal,
+      tintTealUstu: tintTealUstu ?? this.tintTealUstu,
       gelenBalon: gelenBalon ?? this.gelenBalon,
       gelenBalonUstu: gelenBalonUstu ?? this.gelenBalonUstu,
       teal: teal ?? this.teal,
@@ -309,6 +327,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintMarkaUstu: l(tintMarkaUstu, other.tintMarkaUstu),
       tintMango: l(tintMango, other.tintMango),
       tintMangoUstu: l(tintMangoUstu, other.tintMangoUstu),
+      tintTeal: l(tintTeal, other.tintTeal),
+      tintTealUstu: l(tintTealUstu, other.tintTealUstu),
       gelenBalon: l(gelenBalon, other.gelenBalon),
       gelenBalonUstu: l(gelenBalonUstu, other.gelenBalonUstu),
       teal: l(teal, other.teal),
@@ -340,6 +360,8 @@ abstract final class _Palet {
   static const Color line = Color(0xFFE6E1F5);
   static const Color tintBrand = Color(0xFFECE4FF);
   static const Color tintMango = Color(0xFFFFF0CC);
+  static const Color tintTeal = Color(0xFFDDF7F2);
+  static const Color tintTealMetin = Color(0xFF0B6B5D);
   static const Color honey = Color(0xFF7A5A1E);
   static const Color beyaz = Color(0xFFFFFFFF);
 
@@ -353,6 +375,8 @@ abstract final class _Palet {
   static const Color tintBrandDarkMetin = Color(0xFFCDBBFF);
   static const Color tintMangoDark = Color(0xFF4A3A1A);
   static const Color tintMangoDarkMetin = Color(0xFFFFD27A);
+  static const Color tintTealDark = Color(0xFF0F3F3A);
+  static const Color tintTealDarkMetin = Color(0xFF7FE8D6);
   static const Color bubbleInDark = Color(0xFF33255C);
 
   // Tek gölge: rgba(91, 43, 224, .35).
