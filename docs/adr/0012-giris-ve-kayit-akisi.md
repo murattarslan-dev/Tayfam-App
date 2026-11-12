@@ -152,6 +152,8 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   yönlendirici oturum açılınca bir kez `/tanisma-tamam` hoş geldin ekranına
   gider (bellekteki bayrak; bekleyen davet orada mevcut davet akışıyla,
   ADR-0018 §6, işlenir). `age-blocked` bilgi ekranı giriş ekranından
-  ayrıldı (`/hesap-acilamadi`; oturum kapalıyken yalnızca o gösterilir,
-  "Kapat" uygulamayı kapatır). Kodla katılım sayfasının görünümü yenilendi;
-  mantık ADR-0014 §3'teki gibi.
+  ayrıldı (`/hesap-acilamadi`; oturum kapalıyken yalnızca o gösterilir).
+  "Kapat" uygulamayı kapatmaz (platform sahibi, 2026-11-12): yerel engel
+  durumu temizlenir ve kullanıcı giriş ekranına döner; Android ve iOS'ta
+  aynı. Kodla katılım sayfasının görünümü yenilendi; mantık ADR-0014
+  §3'teki gibi.

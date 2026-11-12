@@ -60,6 +60,8 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
   ref.listen(etkinTayfaIdleriProvider, (_, _) => yenile.value++);
   ref.listen(tayfalarYukleniyorProvider, (_, _) => yenile.value++);
   ref.listen(tanitimProvider, (_, _) => yenile.value++);
+  // Yaş engeli bilgi ekranı kapatılınca giriş ekranına dönülür.
+  ref.listen(hesapEngeliProvider, (_, _) => yenile.value++);
   // Kayıt bitince (oturum açık) referans kodunun işi biter.
   ref.listen(oturumDurumuProvider, (_, durum) {
     if (durum == OturumDurumu.acik) kutu.referansiBirak();
