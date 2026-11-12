@@ -238,9 +238,7 @@ class KayitIlerlemesi extends StatelessWidget {
           Flexible(
             child: Text(
               metinler.hesap_kayit_adim(adim, toplam),
-              style: context.yazi.labelMedium?.copyWith(
-                color: r.metinIkincil,
-              ),
+              style: context.yazi.labelMedium?.copyWith(color: r.metinIkincil),
             ),
           ),
         ],
@@ -296,8 +294,7 @@ class GidenCevap extends StatelessWidget {
   final String metin;
 
   @override
-  Widget build(BuildContext context) =>
-      SohbetBalonu(metin: metin, giden: true);
+  Widget build(BuildContext context) => SohbetBalonu(metin: metin, giden: true);
 }
 
 /// Alanın üstündeki etiket (15 px, 600–700).

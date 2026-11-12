@@ -192,9 +192,7 @@ void main() {
       expect(_adim(2), findsOneWidget);
     });
 
-    testWidgets('teyit penceresi: Düzelt kalır, Doğru ilerler', (
-      tester,
-    ) async {
+    testWidgets('teyit penceresi: Düzelt kalır, Doğru ilerler', (tester) async {
       final k = _Kurulum(googleAdi: 'Deniz Örnek');
       await _ac(tester, k);
       await _dokun(tester, _metin('hesap_kayit_gonder'));

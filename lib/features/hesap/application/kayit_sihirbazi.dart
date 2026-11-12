@@ -242,10 +242,7 @@ class KayitSihirbaziNotifier extends Notifier<KayitTaslagi> {
   }
 
   Set<KayitFormHatasi> _adimHatalari(KayitAdimi adim, {DateTime? bugun}) {
-    final sonuc = _denetle(
-      surumler: null,
-      bugun: bugun ?? DateTime.now(),
-    );
+    final sonuc = _denetle(surumler: null, bugun: bugun ?? DateTime.now());
     return {
       for (final h in sonuc.hatalar)
         if (_hataninAdimi(h) == adim) h,

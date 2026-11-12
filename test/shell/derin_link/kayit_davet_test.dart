@@ -44,8 +44,8 @@ Future<SahteTayfaTasima> _ac(
   }
   final tasima = SahteTayfaTasima();
   tasima.yanitlar
-    ..['POST /v1/invite-previews'] = (_) => _onizlemeJson()
-    ..['POST /v1/invite-joins'] = katilim;
+    ..['POST /v1/invite-previews'] = (_) =>
+        _onizlemeJson()..['POST /v1/invite-joins'] = katilim;
   if (liste != null) tasima.yanitlar['GET /v1/tayfas'] = liste;
   await uygulamayiAc(
     tester,
@@ -60,6 +60,10 @@ Future<SahteTayfaTasima> _ac(
 }
 
 Finder _metin(String anahtar) => find.text(arbMetni(anahtar));
+
+/// Hata iletisinde davet işleminin durumu (teşhis için).
+String _durum(WidgetTester tester) =>
+    tester.container().read(kayitDavetProvider).toString();
 
 void main() {
   testWidgets('linksiz: hoş geldin ekranı iki seçenekle', (tester) async {
@@ -84,7 +88,11 @@ void main() {
 
     expect(find.byType(KayitHosGeldinEkrani), findsOneWidget);
     expect(find.byType(DavetEkrani), findsNothing);
-    expect(find.text('Ege Klasikleri'), findsOneWidget);
+    expect(
+      find.text('Ege Klasikleri'),
+      findsOneWidget,
+      reason: _durum(tester),
+    );
     expect(_metin('hesap_kayit_davet_onay_bekliyor'), findsOneWidget);
     final govdeler = [
       for (final i in tasima.giden('POST', '/v1/invite-joins')) i.govde,
@@ -110,7 +118,11 @@ void main() {
       liste: (_) => listeJson([etkinJson(ornekTayfaId, ad: 'Ege Klasikleri')]),
     );
 
-    expect(_metin('hesap_kayit_davet_etkin_aciklama'), findsOneWidget);
+    expect(
+      _metin('hesap_kayit_davet_etkin_aciklama'),
+      findsOneWidget,
+      reason: _durum(tester),
+    );
     expect(_metin('hesap_kayit_davet_onay_bekliyor'), findsNothing);
 
     await tester.tap(_metin('hesap_kayit_tayfaya_git'));
@@ -121,8 +133,7 @@ void main() {
   testWidgets('katılım hata verirse davet ekranına geçiliyor', (tester) async {
     await _ac(
       tester,
-      katilim: (_) =>
-          const ApiProblem(type: ProblemType.internal, status: 500),
+      katilim: (_) => const ApiProblem(type: ProblemType.internal, status: 500),
     );
 
     expect(_metin('hesap_kayit_davet_hata_aciklama'), findsOneWidget);

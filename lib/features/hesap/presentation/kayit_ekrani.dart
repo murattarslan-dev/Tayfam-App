@@ -15,8 +15,10 @@ import 'package:tayfam/features/hesap/presentation/kayit_ogeleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Doğum tarihi seçici: seçilen tarihi ya da vazgeçilirse `null` döndürür.
-typedef DogumTarihiSecici =
-    Future<DateTime?> Function(BuildContext context, DateTime? secili);
+typedef DogumTarihiSecici = Future<DateTime?> Function(
+  BuildContext context,
+  DateTime? secili,
+);
 
 /// Sistem tarih seçicisi (ADR-0012 §3): `tr_TR`, ön seçili tarih yok,
 /// bugünden ileri seçilemez, yıl görünümüyle açılır.
@@ -234,14 +236,7 @@ class _KayitEkraniState extends ConsumerState<KayitEkrani> {
                   ),
                 ),
               ),
-              if (ilkAdim)
-                TextButton(
-                  onPressed: () =>
-                      unawaited(ref.read(kayitProvider.notifier).cikisYap()),
-                  child: Text(metinler.hesap_cikis_yap),
-                )
-              else
-                const SizedBox(width: TayfamSizes.dokunmaMin),
+              const SizedBox(width: TayfamSizes.dokunmaMin),
             ],
           ),
         ),
@@ -334,9 +329,24 @@ class _KayitEkraniState extends ConsumerState<KayitEkrani> {
     final kilitli = durum.gonderiliyor;
     switch (taslak.adim) {
       case KayitAdimi.ad:
-        return BirincilEylem(
-          etiket: metinler.hesap_kayit_gonder,
-          onPressed: _adiOnayla,
+        // Başka bir Google hesabıyla girmek için çıkış (eski formda da
+        // vardı); üst çubuk ilerleme göstergesine ayrıldı.
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BirincilEylem(
+              etiket: metinler.hesap_kayit_gonder,
+              onPressed: _adiOnayla,
+            ),
+            const SizedBox(height: TayfamSpacing.s8),
+            TextButton(
+              onPressed: () =>
+                  unawaited(ref.read(kayitProvider.notifier).cikisYap()),
+              style: TextButton.styleFrom(shape: const StadiumBorder()),
+              child: Text(metinler.hesap_cikis_yap),
+            ),
+          ],
         );
       case KayitAdimi.dogumTarihi:
         return BirincilEylem(

@@ -94,11 +94,7 @@ class _KodlaKatilmaSayfasiState extends ConsumerState<KodlaKatilmaSayfasi> {
                     : ref.watch(tayfaAdiProvider(tayfaId)),
                 onBaskaKod: _baskaKod,
               )
-            : _KodGirisi(
-                denetleyici: _kod,
-                durum: durum,
-                onGonder: _gonder,
-              ),
+            : _KodGirisi(denetleyici: _kod, durum: durum, onGonder: _gonder),
       ),
     );
   }
@@ -181,16 +177,10 @@ class _KodGirisi extends StatelessWidget {
                     horizontal: TayfamSpacing.s16,
                     vertical: TayfamSpacing.s16,
                   ),
-                  enabledBorder: kenar(
-                    r.girisKenari,
-                    TayfamSizes.vurguKenari,
-                  ),
+                  enabledBorder: kenar(r.girisKenari, TayfamSizes.vurguKenari),
                   focusedBorder: kenar(r.marka, TayfamSizes.alanOdakKenari),
                   errorBorder: kenar(r.nar, TayfamSizes.alanOdakKenari),
-                  focusedErrorBorder: kenar(
-                    r.nar,
-                    TayfamSizes.alanOdakKenari,
-                  ),
+                  focusedErrorBorder: kenar(r.nar, TayfamSizes.alanOdakKenari),
                   disabledBorder: kenar(r.cizgi, TayfamSizes.vurguKenari),
                 ),
               ),
