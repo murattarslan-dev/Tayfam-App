@@ -194,9 +194,10 @@ jobs:
         #   bağlantı durumuna bakar; kullanıcıya sorulmayan normal izinler.
         #   FCM'in com.google.android.c2dm.permission.RECEIVE izni bu
         #   listenin dışındadır (android.permission.* değil).
-        # - CAMERA: QR ile cihaz eşleştirme (ADR-0020); yalnızca "Cihaz
-        #   bağla" ekranında istenir. mobile_scanner'ın gömülü ML Kit'i de
-        #   ACCESS_NETWORK_STATE'i birleştirir (yukarıda zaten izinli).
+        # - CAMERA: QR ile cihaz eşleştirme (ADR-0020 §7, camera + zxing2);
+        #   yalnızca "Cihaz bağla" ekranında istenir. camera eklentisinin
+        #   getirdiği RECORD_AUDIO ve WRITE_EXTERNAL_STORAGE ana manifestte
+        #   tools:node="remove" ile engellenir.
         # Arka plan konumu ve konum ön plan hizmeti izinleri ana manifestte
         # tools:node="remove" ile engellenir; gelirlerse iş kırılır.
         run: |
@@ -216,6 +217,23 @@ jobs:
             android.permission.WAKE_LOCK)
           echo "Bulunan:"; echo "$izinler"
           test "$izinler" = "$beklenen"
+      - name: ML Kit yok
+        # ADR-0020 §7 (#115): QR, ZXing'in saf Dart portuyla (zxing2)
+        # çözülür; Google ML Kit (ve gömülü modeli) APK'ya girmez. ML Kit
+        # anonim kullanım ölçümü gönderiyordu.
+        run: |
+          set -euo pipefail
+          apk=build/app/outputs/flutter-apk/app-debug.apk
+          if unzip -l "$apk" | grep -iE 'mlkit|barcode_models'; then
+            echo "::error::APK'da ML Kit dosyası var."; exit 1
+          fi
+          dizin="$RUNNER_TEMP/dex"
+          rm -rf "$dizin"; mkdir -p "$dizin"
+          unzip -q -o "$apk" 'classes*.dex' -d "$dizin"
+          if grep -aqE 'Lcom/google/mlkit/|Lcom/google/android/gms/vision/' "$dizin"/classes*.dex; then
+            echo "::error::APK'da ML Kit sınıfı var."; exit 1
+          fi
+          echo "ML Kit yok."
       - name: Yedekleme ve cihaz aktarımı kapalı
         # #12 (ADR-0005, ADR-0006, ADR-0010): birleştirilmiş manifestte
         # allowBackup=false, dataExtractionRules (API 31+, bulut yedeği ve

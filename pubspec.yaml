@@ -40,6 +40,11 @@ dependencies:
   # Google ile giriş (ADR-0012 §2); yayıncı flutter.dev.
   google_sign_in: ^7.2.0
   http: ^1.6.0
+  # QR ile cihaz eşleştirmede kamera önizlemesi ve görüntü akışı (ADR-0020
+  # §7); yayıncı flutter.dev, BSD-3. Android CameraX, iOS AVFoundation. İzin:
+  # CAMERA (yalnızca "Cihaz bağla" ekranında istenir); paketin getirdiği
+  # RECORD_AUDIO ve WRITE_EXTERNAL_STORAGE manifestte kaldırılır.
+  camera: ^0.12.1
   # Galeriden ya da kameradan tek fotoğraf (ADR-0021 §1); yayıncı
   # flutter.dev, BSD-3. Android'de Photo Picker (izinsiz), kamera sistem
   # uygulamasıyla (CAMERA izni gerekmez); iOS'ta PHPicker. Android
@@ -57,12 +62,6 @@ dependencies:
   intl: ^0.20.3
   # flutter_map'in koordinat türü (ADR-0015 Sonuçlar); saf Dart, izin yok.
   latlong2: ^0.9.1
-  # QR ile cihaz eşleştirmede kamerayla QR okuma (ADR-0020). Yayıncı
-  # steenbakker.dev (doğrulanmış), BSD-3; Android CameraX + ML Kit (gömülü
-  # model: Play Hizmetleri olmayan Huawei cihazlarda da çalışır), iOS
-  # AVFoundation/Vision. İzin: CAMERA (yalnızca tarama ekranında istenir).
-  # Sürüm tam sabit.
-  mobile_scanner: 7.5.0
   # Eşleştirme QR'ını üretmek için (ADR-0020); çizim CustomPainter ile.
   # Yayıncı kevmoo.com (doğrulanmış), BSD-3, saf Dart, izin gerektirmez.
   # Sürüm tam sabit.
@@ -74,8 +73,16 @@ dependencies:
   # (ADR-0012 §1, §4); yayıncı flutter.dev.
   url_launcher: ^6.3.3
   web_socket_channel: ^3.0.3
+  # Kameradan gelen parlaklık düzleminde QR çözme (ADR-0020 §7): ZXing'in
+  # saf Dart portu; yayıncı xaha.dev (doğrulanmış), BSD-3 (ZXing kaynağı
+  # Apache-2.0). Yerel kod, ağ erişimi ve telemetri yok; izin gerektirmez.
+  # Sürüm tam sabit.
+  zxing2: 0.2.4
 
 dev_dependencies:
+  # QR tarayıcının testlerinde sahte kamera platformu (ADR-0020 §7);
+  # yayıncı flutter.dev, BSD-3; camera'nın kendi bağımlılığı.
+  camera_platform_interface: ^2.12.0
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0

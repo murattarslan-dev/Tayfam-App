@@ -289,18 +289,39 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
 | Paket | Sürüm | Yayıncı / lisans | Bakım | İzin | Platform |
 |---|---|---|---|---|---|
 | `qr` | 4.0.1 (tam sabit) | kevmoo.com (doğrulanmış), BSD-3 | Etkin (4.0.1: 2026-11) | Yok; saf Dart | Hepsi |
-| `mobile_scanner` | 7.5.0 (tam sabit) | steenbakker.dev (doğrulanmış), BSD-3 | Etkin, sık sürüm (7.5.0: 2026-11-01) | Android `CAMERA` (+ ML Kit'ten `ACCESS_NETWORK_STATE`); iOS `NSCameraUsageDescription` | Android (CameraX + ML Kit), iOS (AVFoundation/Vision) |
+| `camera` | ^0.12.1 | flutter.dev (doğrulanmış), BSD-3 | Etkin (Flutter ekibi) | Android `CAMERA` (eklentinin `RECORD_AUDIO` ve `WRITE_EXTERNAL_STORAGE`'ı manifestte kaldırılır; `camera.any` zorunlu değil); iOS `NSCameraUsageDescription` | Android (CameraX), iOS (AVFoundation) |
+| `zxing2` | 0.2.4 (tam sabit) | xaha.dev (doğrulanmış), BSD-3; ZXing kaynağı Apache-2.0 | Orta: son sürüm 2025-06, depo etkin (2026-11) | Yok; saf Dart (ağ, yerel kod, telemetri yok) | Hepsi |
 
-- **ML Kit gömülü sürüm** (`dev.steenbakker.mobile_scanner.useUnbundled=false`,
-  varsayılan; `android/gradle.properties`'te açıkça yazılı): model APK'nın
-  içinde (+3–10 MB); Play Hizmetleri olmayan cihazlarda (Huawei) çalışır.
+- **ZXing tabanlı tarayıcı (#115, platform sahibi 2026-11-12):** Google ML
+  Kit (`mobile_scanner`) kaldırıldı; ML Kit Google'a anonim kullanım ölçümü
+  gönderiyordu. `camera` arka kameranın YUV 4:2:0 görüntü akışını verir
+  (ses kapalı); ilk düzlem (parlaklık) `zxing2`'nin `QRCodeReader`'ıyla
+  (`HybridBinarizer`) ayrı isolate'ta çözülür. Yalnızca QR biçimi aranır;
+  aynı anda tek kare çözülür, ötekiler atlanır; kareler yalnızca bellekte
+  tutulur. İlk okunan QR'da akış durur; metnin ayrıştırılması ve
+  doğrulanması eşleştirme servisindedir. Uygulama arka plana geçince
+  kamera kapanır. Play Hizmetleri gerektirmez (Huawei'de de çalışır).
+- **Seçim gerekçesi:** Adaylar `flutter_zxing` (ZXing-C++ FFI, `camera` +
+  `image` + `image_picker` ile) ve `camera` + `zxing2` idi. Saf Dart seçildi:
+  kameradan gelen (saldırganın kontrol edebileceği) görüntü bellek güvenli
+  kodda çözülür; yerel kod derlenmez (NDK/CMake yok, derleme süresi ve
+  ikili tedarik zinciri yok); APK'ya yalnızca Dart kodu eklenir. Ekrandaki
+  QR'ı okumak için Java ZXing'in portu yeterli; QR'ın içeriği ASCII
+  olduğundan 0.2.4'teki ≥0x80 bayt karakter seti hatası bizi etkilemez.
+  `zxing2`'nin `PlanarYUVLuminanceSource`'u 0.2.4'te dışa açık olmadığından
+  satır dolgulu parlaklık kaynağı uygulamada yazıldı
+  (`lib/features/cihazlar/data/qr_cozucu.dart`).
+- Tarayıcı `qrTarayiciProvider` (`QrTarayiciKurucu`) arkasındadır; ekran
+  testleri sahte tarayıcıyla, tarayıcının kendisi sahte `CameraPlatform`
+  ile (`camera_platform_interface`, yalnızca geliştirme bağımlılığı) sınanır.
 - **Kamera izni** yalnızca "Cihaz bağla" ekranı açılınca istenir; görüntü
   saklanmaz ve gönderilmez. Reddedilirse açıklama; iOS'ta "Ayarları aç"
   (`app-settings:`), Android'de `url_launcher` uygulama ayarlarını
   açamadığı için yol metinle anlatılır ve "Tekrar tara" sunulur.
   `android.hardware.camera` zorunlu değil.
-- CI APK izin denetimine `CAMERA` eklendi. ML Kit'in birleştirdiği
-  `ACCESS_NETWORK_STATE` FCM (#76) nedeniyle listede zaten vardı.
+- CI APK izin denetimine `CAMERA` eklendi; `ACCESS_NETWORK_STATE` FCM
+  (ADR-0019) için listede kalır. CI ayrıca APK'da ML Kit sınıfı ve modeli
+  olmadığını denetler.
 
 #### Sapmalar ve açık konular
 
@@ -310,10 +331,9 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
   seçenek A; platform sahibi 2026-11-11). Sunucu değişmez; ADR-0018
   metnine not düşülmeli. Kendi bağlamamıza ya da HPKE'li bir sürüme
   geçilirse (seçenek B) QR biçimi `v2` olur.
-- ML Kit (gömülü) Google'a anonim kullanım ölçümü gönderir
-  (`datatransport`; `ACCESS_NETWORK_STATE`'i de o getirir, FCM için zaten
-  izinli). Platform sahibine sorulacak; kabul edilmezse ZXing tabanlı
-  tarayıcıya geçilir.
+- ~~ML Kit (gömülü) Google'a anonim kullanım ölçümü gönderir.~~
+  Kapandı: platform sahibi 2026-11-12'de reddetti; ZXing tabanlı
+  tarayıcıya geçildi (#115, yukarıda §7).
 - Yenilemede boş kümeyle ilk deneme bir fazla istek demektir; sözleşme
   eşleştirilmiş cihaz listesini vermediği için bilinçli seçim.
 
@@ -324,6 +344,8 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
 - 2026-11-11 19:00: Signal'in resmi Android paketi + Kotlin köprüsü;
   `libsignal_dart`, FRB ve Rust kullanılmaz; iOS sonra; E2E dahili test
   sürümüne girer.
+- 2026-11-12: QR tarayıcıda ML Kit kullanılmaz (Google'a kullanım ölçümü
+  gitmez); ZXing tabanlı tarayıcı (#115).
 - Açık: tek telefonlu kullanıcıya çıkışta "geçmiş okunamaz olur" uyarısı
   ve kurtarma kodu (Tayfam-Api ADR-0005, sonra).
 

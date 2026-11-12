@@ -16,13 +16,28 @@
          açıklama kartından sonra istenir. firebase_messaging de bu izni
          getirir; burada açıkça yazıldı. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <!-- QR ile cihaz eşleştirme (ADR-0020): eşleştirilmiş telefon yeni
-         telefondaki QR'ı okutur. İzin yalnızca "Cihaz bağla" ekranı
-         açılınca istenir; görüntü saklanmaz, gönderilmez. mobile_scanner
-         da aynı izni birleştirir; burada açıkça yazıldı. Kamera zorunlu
-         donanım değildir (kamerasız cihazda uygulama yine kurulur). -->
+    <!-- QR ile cihaz eşleştirme (ADR-0020 §7): eşleştirilmiş telefon yeni
+         telefondaki QR'ı okutur (camera + zxing2). İzin yalnızca "Cihaz
+         bağla" ekranı açılınca istenir; görüntü saklanmaz, gönderilmez.
+         camera eklentisi de aynı izni birleştirir; burada açıkça yazıldı.
+         Kamera zorunlu donanım değildir (kamerasız cihazda uygulama yine
+         kurulur); eklentinin zorunlu android.hardware.camera.any
+         bildirimi burada isteğe bağlı yapılır. -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false"
+        tools:replace="android:required"/>
+    <!-- camera eklentisi video kaydı için mikrofon ve (API 28 ve öncesi)
+         harici depolama izni getirir; uygulama ses kaydetmez, kamera
+         görüntüsünü diske yazmaz (en az izin). -->
+    <uses-permission
+        android:name="android.permission.RECORD_AUDIO"
+        tools:node="remove"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:node="remove"/>
     <!-- Kütüphanelerin manifest birleştirmesiyle gelebilecek arka plan
          konumu ve konum ön plan hizmeti izinleri engellenir (en az izin).
          Uygulama konum akışı ve arka plan konumu kullanmaz. -->
