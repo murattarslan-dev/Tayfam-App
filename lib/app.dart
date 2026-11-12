@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
 import 'package:tayfam/core/push/push_kaydi.dart';
 import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
@@ -30,6 +31,9 @@ class TayfamApp extends ConsumerWidget {
     // kurulur ve token oturumla eşitlenir. Push'suz derlemede (web, test)
     // hiç kurulmaz.
     if (ref.watch(pushPlatformuProvider).etkin) ref.watch(pushKaydiProvider);
+    // Uygulama bütünlüğü (istemci ADR-0023): Play Integrity token
+    // sağlayıcısı açılışta hazırlanır; Android dışında bir şey yapmaz.
+    ref.watch(butunlukHazirligiProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).uygulama_adi,
       locale: yerelAyar,

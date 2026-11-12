@@ -66,9 +66,8 @@ final class ButunlukKaniti {
 }
 
 /// Uygulamanın bütünlük sağlayıcısı (kalıcı). Android'de Play Integrity
-/// köprüsü; oluşturulurken token sağlayıcısı hazırlanır (uygulama açılışı:
-/// `SessionStore` bunu ilk okumada ister). Web geliştirme derlemesinde ve
-/// iOS'ta (App Attest iOS sürümüne kalır) [OlmayanButunlukSaglayici].
+/// köprüsü; web geliştirme derlemesinde ve iOS'ta (App Attest iOS sürümüne
+/// kalır) [OlmayanButunlukSaglayici].
 final butunlukSaglayiciProvider = Provider<ButunlukSaglayici>(
   _butunlukSaglayiciOlustur,
   name: 'butunlukSaglayiciProvider',
@@ -78,10 +77,15 @@ ButunlukSaglayici _butunlukSaglayiciOlustur(Ref ref) {
   if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
     return const OlmayanButunlukSaglayici();
   }
-  final saglayici = KanalButunlukSaglayici();
-  unawaited(saglayici.hazirla());
-  return saglayici;
+  return KanalButunlukSaglayici();
 }
+
+/// Uygulama açılışında token sağlayıcısını bir kez hazırlar (istemci
+/// ADR-0023 §3); kökteki `TayfamApp` izler. Hazırlık başarısızsa ilk token
+/// isteği yeniden dener.
+final butunlukHazirligiProvider = Provider<void>((ref) {
+  unawaited(ref.watch(butunlukSaglayiciProvider).hazirla());
+}, name: 'butunlukHazirligiProvider');
 
 /// Giriş ve yenilemenin kullandığı [ButunlukKaniti] (kalıcı).
 final butunlukKanitiProvider = Provider<ButunlukKaniti>(

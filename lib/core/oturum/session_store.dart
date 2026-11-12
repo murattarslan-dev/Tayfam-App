@@ -85,8 +85,10 @@ final class OturumYok implements Exception {
 
 /// `POST /v1/auth/refresh` çağrısı. [butunlukTokeni] varsa istekte
 /// `integrity_token` olarak gider (istemci ADR-0023).
-typedef TokenYenileyici =
-    Future<Session> Function(String yenilemeTokeni, {String? butunlukTokeni});
+typedef TokenYenileyici = Future<Session> Function(
+  String yenilemeTokeni, {
+  String? butunlukTokeni,
+});
 
 /// Yenileme token'ının özetine bağlı bütünlük kanıtı (istemci ADR-0023).
 /// Alınamazsa `null`; hata fırlatmaz ve süresi sınırlıdır.

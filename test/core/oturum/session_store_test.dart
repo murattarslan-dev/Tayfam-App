@@ -86,8 +86,7 @@ final class _SahteSunucu {
 }
 
 final class _Kurulum {
-  _Kurulum({DateTime? saat, YenilemeKaniti? kanit})
-    : saat = saat ?? _simdi {
+  _Kurulum({DateTime? saat, YenilemeKaniti? kanit}) : saat = saat ?? _simdi {
     oturum = SessionStore(
       depo: depo,
       yenileyici: sunucu.yenile,

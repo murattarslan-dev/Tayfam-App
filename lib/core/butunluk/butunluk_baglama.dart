@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 /// Giriş kanıtının bağlama önekidir (Tayfam-Api ADR-0022 §2).
+// kural-istisnası: elle-uc — API yolu değil, sunucuyla ortak bağlama öneki.
 const String _girisOneki = 'tayfam-integrity/v1/sign-in\n';
 
 /// Yenileme kanıtının bağlama önekidir (Tayfam-Api ADR-0022 §2).
+// kural-istisnası: elle-uc — API yolu değil, sunucuyla ortak bağlama öneki.
 const String _yenilemeOneki = 'tayfam-integrity/v1/refresh\n';
 
 /// `POST /v1/auth/sign-in` kanıtının `requestHash`'i (istemci ADR-0023 §2):
