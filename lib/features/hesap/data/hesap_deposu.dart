@@ -50,9 +50,8 @@ String tarihMetni(DateTime tarih) {
 /// sınıflarını kullanır; arayüze ham API modeli yerine [OnaySurumleri]
 /// verir.
 final class HesapDeposu {
-  HesapDeposu(ApiTransport istemci, {ButunlukKaniti? butunluk})
-    : _butunluk = butunluk,
-      _auth = AuthApi(istemci),
+  HesapDeposu(ApiTransport istemci, {this._butunluk})
+    : _auth = AuthApi(istemci),
       _kayit = RegistrationApi(istemci),
       _me = MeApi(istemci);
 
