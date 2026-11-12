@@ -19,7 +19,7 @@ name: Play dahili test
 # değişkenlerine verilir; Play App Signing kendi anahtarıyla yeniden imzalar.
 #
 # Değişkenler (repo ya da play-dahili ortamı; hepsi public değerlerdir):
-#   TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD  zorunlu; yoksa derleme durur.
+#   TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD  isteğe bağlı; yoksa uygulamadaki varsayılan web istemcisi (uyarıyla).
 #   GCP_WIF_SAGLAYICI                  projects/<no>/locations/global/
 #                                      workloadIdentityPools/<havuz>/
 #                                      providers/<sağlayıcı>
@@ -100,19 +100,23 @@ jobs:
             echo "surum_kodu=$kod"
           } >> "$GITHUB_OUTPUT"
       - name: Prod Google sunucu istemci kimliği
+        id: istemci
         env:
           ISTEMCI: ${{ vars.TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD }}
+          # Uygulamadaki varsayılan (lib/features/hesap/data/google_kimligi.dart); public.
+          VARSAYILAN: 73439258394-uhd9m0b6mkc5k8eaoup6kgh57a49on4t.apps.googleusercontent.com
         run: |
           set -euo pipefail
           if [ -z "$ISTEMCI" ]; then
-            echo "::error title=Değişken eksik::TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD tanımlı değil (play-dahili ortamı ya da repo değişkeni). Prod Google OAuth web istemcisinin kimliği olmalı."
-            exit 1
+            echo "::warning title=Değişken yok::TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD tanımlı değil; uygulamadaki varsayılan web istemcisi kullanılıyor. Prod API'nin GOOGLE_CLIENT_IDS listesinde olmalı."
+            ISTEMCI="$VARSAYILAN"
           fi
           if [[ ! "$ISTEMCI" =~ ^[0-9]+-[0-9a-z]+\.apps\.googleusercontent\.com$ ]]; then
             echo "::error title=Değişken geçersiz::TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD <sayı>-<kod>.apps.googleusercontent.com biçiminde değil."
             exit 1
           fi
           echo "Google sunucu istemcisi: $ISTEMCI"
+          echo "kimlik=$ISTEMCI" >> "$GITHUB_OUTPUT"
       - name: Yükleme anahtarı (geliştirme anahtarı)
         # Geliştirme anahtarı Play yükleme anahtarıdır (platform sahibi,
         # 2026-11-11). Dört secret da dolu olmalı; yoksa imzasız deneme
@@ -155,7 +159,7 @@ jobs:
         run: flutter pub get --enforce-lockfile
       - name: İmzalı .aab
         env:
-          ISTEMCI: ${{ vars.TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD }}
+          ISTEMCI: ${{ steps.istemci.outputs.kimlik }}
           SURUM_ADI: ${{ steps.surum.outputs.surum_adi }}
           SURUM_KODU: ${{ steps.surum.outputs.surum_kodu }}
           TAYFAM_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_DEV_KEYSTORE_PASSWORD }}
@@ -169,6 +173,27 @@ jobs:
             --dart-define=TAYFAM_API="$TAYFAM_API" \
             --dart-define=TAYFAM_GOOGLE_SUNUCU_ISTEMCI="$ISTEMCI" \
             --dart-define=TAYFAM_SURUM="$SURUM_ADI+$SURUM_KODU"
+      - name: İmzalı .apk (cihaza doğrudan kurulum)
+        # Play dahili test kanalı hazır olana kadar cihaza elle kurmak için
+        # (platform sahibi, 2026-11-12): aynı anahtar, aynı prod ayarları,
+        # yalnızca arm64-v8a ve armeabi-v7a; ABI başına ayrı ve küçük dosya.
+        env:
+          ISTEMCI: ${{ steps.istemci.outputs.kimlik }}
+          SURUM_ADI: ${{ steps.surum.outputs.surum_adi }}
+          SURUM_KODU: ${{ steps.surum.outputs.surum_kodu }}
+          TAYFAM_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_DEV_KEYSTORE_PASSWORD }}
+          TAYFAM_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_DEV_KEY_ALIAS }}
+          TAYFAM_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_DEV_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          flutter build apk --release --split-per-abi \
+            --target-platform android-arm64,android-arm \
+            --build-name="$SURUM_ADI" \
+            --build-number="$SURUM_KODU" \
+            --dart-define=TAYFAM_API="$TAYFAM_API" \
+            --dart-define=TAYFAM_GOOGLE_SUNUCU_ISTEMCI="$ISTEMCI" \
+            --dart-define=TAYFAM_SURUM="$SURUM_ADI+$SURUM_KODU"
+          ls -l build/app/outputs/flutter-apk/
       - name: Yükleme anahtarını sil
         if: always()
         run: rm -f "$RUNNER_TEMP/tayfam-yukleme.jks"
@@ -211,6 +236,17 @@ jobs:
           path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 14
+
+      - name: .apk (artefakt)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tayfam-dahili-${{ steps.surum.outputs.surum_kodu }}-apk
+          path: |
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          if-no-files-found: error
+          retention-days: 14
+
 
   yukle:
     name: yukle
