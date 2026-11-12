@@ -43,9 +43,8 @@ Future<SahteTayfaTasima> _ac(
     addTearDown(tester.platformDispatcher.clearDefaultRouteNameTestValue);
   }
   final tasima = SahteTayfaTasima();
-  tasima.yanitlar
-    ..['POST /v1/invite-previews'] = (_) =>
-        _onizlemeJson()..['POST /v1/invite-joins'] = katilim;
+  tasima.yanitlar['POST /v1/invite-previews'] = (_) => _onizlemeJson();
+  tasima.yanitlar['POST /v1/invite-joins'] = katilim;
   if (liste != null) tasima.yanitlar['GET /v1/tayfas'] = liste;
   await uygulamayiAc(
     tester,
@@ -88,11 +87,7 @@ void main() {
 
     expect(find.byType(KayitHosGeldinEkrani), findsOneWidget);
     expect(find.byType(DavetEkrani), findsNothing);
-    expect(
-      find.text('Ege Klasikleri'),
-      findsOneWidget,
-      reason: _durum(tester),
-    );
+    expect(find.text('Ege Klasikleri'), findsOneWidget, reason: _durum(tester));
     expect(_metin('hesap_kayit_davet_onay_bekliyor'), findsOneWidget);
     final govdeler = [
       for (final i in tasima.giden('POST', '/v1/invite-joins')) i.govde,
