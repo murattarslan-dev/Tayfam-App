@@ -2915,7 +2915,7 @@
   },
   "hesap_kayit_engel_kapat": "Kapat",
   "@hesap_kayit_engel_kapat": {
-    "description": "Yaş koşulu bilgi ekranında uygulamayı kapatan düğme."
+    "description": "Yaş koşulu bilgi ekranını kapatan düğme; uygulama kapanmaz, kullanıcı giriş ekranına döner."
   },
   "profil_tekrar_dene": "Tekrar dene",
   "@profil_tekrar_dene": {

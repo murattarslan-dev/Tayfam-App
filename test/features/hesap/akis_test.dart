@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
@@ -71,4 +72,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(GuncellemeEkrani), findsOneWidget);
   });
+
+  testWidgets('yaş engeli: yalnızca bilgi ekranı; Kapat girişe döndürür', (
+    tester,
+  ) async {
+    ekranBoyutu(tester);
+    await uygulamayiAc(
+      tester,
+      oturum: null,
+      overrides: [
+        ...hesapOverridelari(tasima: SahteTasima(), oturum: SahteOturum()),
+        hesapEngeliProvider.overrideWith(_YasEngeli.new),
+      ],
+    );
+
+    expect(find.byType(YasEngeliEkrani), findsOneWidget);
+    expect(find.byType(GirisEkrani), findsNothing);
+    yonlendiriciyiAl(tester).go('/giris');
+    await tester.pumpAndSettle();
+    expect(find.byType(YasEngeliEkrani), findsOneWidget);
+
+    await tester.tap(find.text(arbMetni('hesap_kayit_engel_kapat')));
+    await tester.pumpAndSettle();
+
+    // Uygulama kapanmaz: engel temizlenir, giriş ekranında kalınır.
+    expect(find.byType(YasEngeliEkrani), findsNothing);
+    expect(find.byType(GirisEkrani), findsOneWidget);
+    expect(find.text(arbMetni('hesap_google_ile_devam')), findsOneWidget);
+  });
+}
+
+class _YasEngeli extends HesapEngeliNotifier {
+  @override
+  HesapEngeli? build() => HesapEngeli.yasSiniri;
 }

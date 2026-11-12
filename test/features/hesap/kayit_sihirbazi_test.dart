@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
@@ -88,16 +89,16 @@ Future<void> _onayAdiminaGit(WidgetTester tester) async {
 }
 
 /// İlerleme göstergesinin blok renkleri.
-KayitBlokRenkleri _bloklar(WidgetTester tester) {
+LogoRenkleri _bloklar(WidgetTester tester) {
   final boya = tester.widget<CustomPaint>(
     find.descendant(
       of: find.byType(KayitIlerlemesi),
       matching: find.byWidgetPredicate(
-        (w) => w is CustomPaint && w.painter is KayitLogoBoyaci,
+        (w) => w is CustomPaint && w.painter is LogoBoyaci,
       ),
     ),
   );
-  return (boya.painter! as KayitLogoBoyaci).renkler;
+  return (boya.painter! as LogoBoyaci).renkler;
 }
 
 void main() {
@@ -134,18 +135,19 @@ void main() {
 
       final bos = r.cizgi;
 
-      expect(_bloklar(tester), KayitBlokRenkleri(r.mango, bos, bos, bos));
+      LogoRenkleri bloklar(Color nar, Color turkuaz, Color l) =>
+          LogoRenkleri(mango: r.mango, nar: nar, turkuaz: turkuaz, l: l);
+
+      expect(_bloklar(tester), bloklar(bos, bos, bos));
       await _dokun(tester, _metin('hesap_kayit_gonder'));
-      expect(_bloklar(tester), KayitBlokRenkleri(r.mango, r.nar, bos, bos));
+      expect(_bloklar(tester), bloklar(r.nar, bos, bos));
       await _dokun(tester, _metin('hesap_kayit_dogum_tarihi_bos'));
       await _dokun(tester, _metin('hesap_kayit_gonder'));
       await _dokun(tester, _metin('hesap_teyit_devam'));
-      expect(_bloklar(tester), KayitBlokRenkleri(r.mango, r.nar, r.teal, bos));
+      expect(_bloklar(tester), bloklar(r.nar, r.teal, bos));
       await _dokun(tester, _metin('hesap_kayit_referans_gec'));
-      expect(
-        _bloklar(tester),
-        KayitBlokRenkleri(r.mango, r.nar, r.teal, r.marka),
-      );
+      // Açık temada L parçası brand.
+      expect(_bloklar(tester), bloklar(r.nar, r.teal, r.marka));
     });
 
     testWidgets('boş ad ileri gitmiyor', (tester) async {
@@ -438,17 +440,17 @@ void main() {
       testWidgets('${tema.name} temada 2×; yeniden deneme yok', (tester) async {
         ikiKatYazi(tester);
         ekranBoyutu(tester);
-        var kapandi = 0;
         final acici = SahteAcici();
         final adres = Uri.parse(
           'https://tayfam.app/yasal/kullanim-kosullari/2026-11-08',
         );
         await widgetAc(
           tester,
-          YasEngeliEkrani(kapat: () => kapandi++),
+          const YasEngeliEkrani(),
           themeMode: tema,
           overrides: [
             disBaglantiAciciProvider.overrideWithValue(acici),
+            hesapEngeliProvider.overrideWith(_SabitEngel.new),
             yasEngeliKosullariProvider.overrideWith(
               () => _SabitKosullar(adres),
             ),
@@ -461,8 +463,11 @@ void main() {
 
         await _dokun(tester, _metin('hesap_kayit_engel_kosullar'));
         expect(acici.acilan, [adres]);
+        // Kapat uygulamayı kapatmaz; yerel engel ve adres temizlenir.
         await _dokun(tester, _metin('hesap_kayit_engel_kapat'));
-        expect(kapandi, 1);
+        final kap = tester.container();
+        expect(kap.read(hesapEngeliProvider), isNull);
+        expect(kap.read(yasEngeliKosullariProvider), isNull);
       });
     }
   });
@@ -493,4 +498,9 @@ class _SabitKosullar extends YasEngeliKosullariNotifier {
 
   @override
   Uri? build() => _adres;
+}
+
+class _SabitEngel extends HesapEngeliNotifier {
+  @override
+  HesapEngeli? build() => HesapEngeli.yasSiniri;
 }

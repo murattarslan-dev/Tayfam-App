@@ -223,12 +223,12 @@ class _Gonderildi extends StatelessWidget {
               height: TayfamSizes.ikonKutusu,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: r.teal,
+                color: r.tintTeal,
                 borderRadius: TayfamRadii.onizlemeKoseleri,
               ),
               child: Icon(
                 Icons.check,
-                color: r.vurguUstu,
+                color: r.tintTealUstu,
                 size: TayfamSizes.ikonKutusuIkonu,
               ),
             ),

@@ -1,6 +1,6 @@
 # ADR-0021: Fotoğraf yükleme ve görüntüleme
 
-- **Durum:** Önerildi
+- **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-11
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md),
@@ -71,7 +71,7 @@ galeri/kamera açamaz; paket gerekir (kesin kural 8).
   kendisi uygular. **Bilinen sınır:** Android yolu yansıtmalı yönleri
   (EXIF 2, 4, 5, 7) yalnızca döndürme olarak uygular; bu yönler pratikte
   bazı ön kameralarda görülür, sonuç aynalanmış görüntüdür (metadata
-  sızmaz). Kabul edildi.
+  sızmaz). Kabul edildi (platform sahibi, 2026-11-12: "aynalı fotoğraflara takılmayalım").
 - **Ölçek:** paketin kuralı `max(1, min(g/minG, y/minY))`'dir; görüntü
   **hiçbir zaman büyütülmez**. Uzun kenarı sınırlamak için yönelim gerekir;
   bu yüzden üç adım:
