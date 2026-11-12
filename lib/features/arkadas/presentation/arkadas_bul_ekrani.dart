@@ -84,9 +84,7 @@ class _ArkadasBulEkraniState extends ConsumerState<ArkadasBulEkrani> {
           const SizedBox(height: TayfamSpacing.s24),
           if (araniyor)
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: m.arkadas_yukleniyor,
-              ),
+              child: TayfamYukleniyor(etiket: m.arkadas_yukleniyor),
             )
           else if (hata != null)
             HataSatiri.hatadan(hata)

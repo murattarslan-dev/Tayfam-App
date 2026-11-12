@@ -72,9 +72,7 @@ class AnketlerEkrani extends ConsumerWidget {
               AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
             ] else if (liste == null)
               Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: m.anket_yukleniyor,
-                ),
+                child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.anket_yukleniyor, gecikmeli: true,),
               )
             else if (liste.ogeler.isEmpty)
               Text(
@@ -98,9 +96,7 @@ class AnketlerEkrani extends ConsumerWidget {
                 AnketTekrarDene(onPressed: () => _dahaFazla(ref)),
               ] else if (liste.dahaYukleniyor)
                 Center(
-                  child: CircularProgressIndicator(
-                    semanticsLabel: m.anket_yukleniyor,
-                  ),
+                  child: TayfamYukleniyor(etiket: m.anket_yukleniyor),
                 )
               else if (liste.dahaVar)
                 Center(

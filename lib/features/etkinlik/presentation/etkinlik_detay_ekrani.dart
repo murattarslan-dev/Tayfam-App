@@ -163,7 +163,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
               ),
             ],
           ),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, gecikmeli: true,)),
         ),
       ),
     );

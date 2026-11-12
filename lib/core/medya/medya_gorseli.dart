@@ -10,6 +10,7 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/medya_tasima.dart';
 import 'package:tayfam/core/api/problem_messages.dart';
 import 'package:tayfam/core/bilesenler/hata_satiri.dart';
+import 'package:tayfam/core/bilesenler/tayfam_yukleniyor.dart';
 import 'package:tayfam/core/medya/fotograf_secici.dart';
 import 'package:tayfam/core/medya/fotograf_yukleme.dart';
 import 'package:tayfam/core/medya/goruntu_hazirlama.dart';
@@ -92,9 +93,7 @@ class MedyaGorseli extends ConsumerWidget {
           children: [
             _bos(context, Icons.image_outlined),
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: m.medya_gorsel_yukleniyor,
-              ),
+              child: TayfamYukleniyor(etiket: m.medya_gorsel_yukleniyor, gecikmeli: true,),
             ),
           ],
         );
@@ -363,7 +362,7 @@ class _FotografAlaniState extends ConsumerState<FotografAlani> {
             children: [
               const SizedBox.square(
                 dimension: TayfamSizes.ikon,
-                child: CircularProgressIndicator(),
+                child: TayfamYukleniyor(boyut: TayfamSizes.ikon),
               ),
               const SizedBox(width: TayfamSpacing.s8),
               Expanded(

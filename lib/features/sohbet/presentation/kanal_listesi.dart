@@ -80,9 +80,7 @@ class KanalListesi extends ConsumerWidget {
             )
           else if (liste == null)
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: m.sohbet_kanallar_yukleniyor,
-              ),
+              child: TayfamYukleniyor(etiket: m.sohbet_kanallar_yukleniyor, gecikmeli: true,),
             )
           else if (liste.isEmpty)
             Padding(

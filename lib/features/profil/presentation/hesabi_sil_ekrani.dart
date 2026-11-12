@@ -86,9 +86,7 @@ class HesabiSilEkrani extends ConsumerWidget {
                     SizedBox(
                       height: TayfamSizes.dokunmaMin,
                       child: Center(
-                        child: CircularProgressIndicator(
-                          semanticsLabel: metinler.profil_sil_suruyor,
-                        ),
+                        child: TayfamYukleniyor(etiket: metinler.profil_sil_suruyor),
                       ),
                     )
                   else

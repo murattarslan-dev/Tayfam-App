@@ -122,9 +122,7 @@ class _KuyrukListesi extends ConsumerWidget {
               ),
             ] else if (liste.dahaYukleniyor)
               Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: m.sikayet_yukleniyor,
-                ),
+                child: TayfamYukleniyor(etiket: m.sikayet_yukleniyor),
               )
             else if (liste.dahaVar)
               Center(
@@ -142,9 +140,7 @@ class _KuyrukListesi extends ConsumerWidget {
             _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
           ] else
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: m.sikayet_yukleniyor,
-              ),
+              child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.sikayet_yukleniyor, gecikmeli: true,),
             ),
         ],
       ),

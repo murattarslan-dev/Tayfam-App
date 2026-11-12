@@ -65,6 +65,21 @@ abstract final class TayfamSizes {
   /// Açılış animasyonunda yazının yükselmeye başladığı uzaklık (10 px).
   static const double acilisYaziKaymasi = 10;
 
+  /// Yükleniyor animasyonu, düğme içinde (22 px).
+  static const double yukleniyorDugme = 22;
+
+  /// Yükleniyor animasyonu, satırda ve bölümde (32 px).
+  static const double yukleniyorSatir = 32;
+
+  /// Yükleniyor animasyonu, tam ekranda (72 px; tasarım 64–72).
+  static const double yukleniyorTamEkran = 72;
+
+  /// Yükleniyor dalgasında bloğun en küçük ölçeği (%70).
+  static const double yukleniyorEnKucukOlcek = .7;
+
+  /// Yükleniyor dalgasında bloğun en düşük saydamlığı.
+  static const double yukleniyorEnAzSaydamlik = .45;
+
   /// Hoş geldin tanıtımındaki yazılı logonun simge boyutu.
   static const double logoBuyuk = 72;
 

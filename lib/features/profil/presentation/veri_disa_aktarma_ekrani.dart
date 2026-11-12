@@ -106,9 +106,7 @@ class _TalepBolumu extends ConsumerWidget {
       return SizedBox(
         height: TayfamSizes.dokunmaMin,
         child: Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: metinler.disa_aktarma_talep_suruyor,
-          ),
+          child: TayfamYukleniyor(etiket: metinler.disa_aktarma_talep_suruyor,),
         ),
       );
     }
@@ -178,9 +176,7 @@ class _TalepListesi extends ConsumerWidget {
         );
       case AsyncLoading():
         return Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: metinler.disa_aktarma_yukleniyor,
-          ),
+          child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.disa_aktarma_yukleniyor, gecikmeli: true,),
         );
     }
   }
@@ -242,9 +238,7 @@ class _TalepKarti extends ConsumerWidget {
               SizedBox(
                 height: TayfamSizes.dokunmaMin,
                 child: Center(
-                  child: CircularProgressIndicator(
-                    semanticsLabel: metinler.disa_aktarma_indiriliyor,
-                  ),
+                  child: TayfamYukleniyor(etiket: metinler.disa_aktarma_indiriliyor,),
                 ),
               )
             else

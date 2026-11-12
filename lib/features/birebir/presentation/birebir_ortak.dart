@@ -128,7 +128,7 @@ class BirebirYukleniyor extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(TayfamSpacing.s16),
-        child: CircularProgressIndicator(semanticsLabel: etiket),
+        child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: etiket, gecikmeli: true,),
       ),
     );
   }

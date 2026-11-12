@@ -224,9 +224,7 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
                   ),
                 ),
                 _ => Center(
-                  child: CircularProgressIndicator(
-                    semanticsLabel: m.sohbet_mesajlar_yukleniyor,
-                  ),
+                  child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.sohbet_mesajlar_yukleniyor, gecikmeli: true,),
                 ),
               },
             ),
@@ -330,9 +328,7 @@ class _MesajListesi extends ConsumerWidget {
         ),
       if (akis.eskiYukleniyor)
         Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: m.sohbet_mesajlar_yukleniyor,
-          ),
+          child: TayfamYukleniyor(etiket: m.sohbet_mesajlar_yukleniyor),
         )
       else if (akis.eskiSayfa != null)
         Center(

@@ -57,9 +57,7 @@ class DuyurularEkrani extends ConsumerWidget {
               _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
             ] else if (liste == null)
               Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: metinler.duyuru_yukleniyor,
-                ),
+                child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.duyuru_yukleniyor, gecikmeli: true,),
               )
             else if (liste.ogeler.isEmpty)
               Text(
@@ -82,9 +80,7 @@ class DuyurularEkrani extends ConsumerWidget {
                 _TekrarDene(onPressed: () => _dahaFazla(ref)),
               ] else if (liste.dahaYukleniyor)
                 Center(
-                  child: CircularProgressIndicator(
-                    semanticsLabel: metinler.duyuru_yukleniyor,
-                  ),
+                  child: TayfamYukleniyor(etiket: metinler.duyuru_yukleniyor),
                 )
               else if (liste.dahaVar)
                 Center(

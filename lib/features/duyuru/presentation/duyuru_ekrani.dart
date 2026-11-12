@@ -100,9 +100,7 @@ class DuyuruEkrani extends ConsumerWidget {
                   ),
                 ] else
                   Center(
-                    child: CircularProgressIndicator(
-                      semanticsLabel: metinler.duyuru_yukleniyor,
-                    ),
+                    child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.duyuru_yukleniyor, gecikmeli: true,),
                   ),
               ],
             ),

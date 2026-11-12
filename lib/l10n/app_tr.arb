@@ -2179,6 +2179,10 @@
   "@bilesen_logo_etiketi": {
     "description": "Ortak bileşen: logonun (simge, yanında yazı olsun olmasın) ekran okuyucuda okunan adı. Ekranda görünmez; çevrilmez."
   },
+  "bilesen_yukleniyor": "Yükleniyor",
+  "@bilesen_yukleniyor": {
+    "description": "Ortak bileşen: yükleniyor animasyonunun (logo dalgası) varsayılan ekran okuyucu etiketi; hareketi azalt açıkken tam ekran yüklemede statik logonun altında da görünür."
+  },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {
     "description": "Ortak bileşen: birebir sohbetin üstündeki kilit ikonlu bilgi satırı. Mesajların uçtan uca şifrelendiğini söyler."

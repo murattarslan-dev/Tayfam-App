@@ -47,9 +47,7 @@ class _BildirimAyarlariEkraniState
     } else if (durum.izin == null) {
       icerik = [
         Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: m.bildirim_ayar_yukleniyor,
-          ),
+          child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.bildirim_ayar_yukleniyor, gecikmeli: true,),
         ),
       ];
     } else {

@@ -62,9 +62,7 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
                   ),
                 ] else if (liste == null)
                   Center(
-                    child: CircularProgressIndicator(
-                      semanticsLabel: m.bildirim_yukleniyor,
-                    ),
+                    child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.bildirim_yukleniyor, gecikmeli: true,),
                   )
                 else if (liste.ogeler.isEmpty)
                   Text(
@@ -101,9 +99,7 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
                     ),
                   ] else if (liste.dahaYukleniyor)
                     Center(
-                      child: CircularProgressIndicator(
-                        semanticsLabel: m.bildirim_yukleniyor,
-                      ),
+                      child: TayfamYukleniyor(etiket: m.bildirim_yukleniyor),
                     )
                   else if (liste.dahaVar)
                     Center(
