@@ -7,11 +7,14 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/medya/fotograf_yukleme.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
+import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/application/cikis_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
@@ -19,9 +22,9 @@ import 'package:tayfam/features/profil/application/hukuki_baglantilar.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Profil sekmesi (ADR-0018 §2): referans kodu, arkadaşlık girişleri
-/// (ADR-0018 §7), katılım geçmişi
-/// görünürlüğü, tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
+/// Profil sekmesi (ADR-0018 §2): avatar (ADR-0021), referans kodu,
+/// arkadaşlık girişleri (ADR-0018 §7), katılım geçmişi görünürlüğü,
+/// verilerimi indir (ADR-0022), tema, bildirimler (istemci ADR-0019), oturumlar, hukuki
 /// metinler, çıkış ve hesap silme.
 ///
 /// Hesap ayarları okunamazsa yalnızca o bölüm hata gösterir; tema, çıkış
@@ -45,12 +48,16 @@ class ProfilEkrani extends StatelessWidget {
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  _AvatarBolumu(),
+                  SizedBox(height: TayfamSpacing.s24),
                   _ReferansBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
                   // Arkadaşlar ve tayfa davetleri (ADR-0018 §7).
                   ArkadaslikGirisleri(),
                   SizedBox(height: TayfamSpacing.s24),
                   _GorunurlukBolumu(),
+                  SizedBox(height: TayfamSpacing.s24),
+                  _GizlilikBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
                   _TemaBolumu(),
                   SizedBox(height: TayfamSpacing.s24),
@@ -60,6 +67,137 @@ class ProfilEkrani extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Avatar: değiştir (galeri ya da kamera) ve kaldır (ADR-0021 §6).
+/// Fotoğraf hazırlanıp yüklenince `PUT /v1/me/avatar` ile bağlanır.
+class _AvatarBolumu extends ConsumerStatefulWidget {
+  const _AvatarBolumu();
+
+  @override
+  ConsumerState<_AvatarBolumu> createState() => _AvatarBolumuState();
+}
+
+class _AvatarBolumuState extends ConsumerState<_AvatarBolumu> {
+  final Object _alan = Object();
+  bool _kaydediliyor = false;
+
+  FotografAlaniAnahtari get _anahtar =>
+      (alan: _alan, amac: UploadPurpose.avatar, tayfaId: null);
+
+  Future<void> _sec() async {
+    final kaynak = await fotografKaynagiSor(context);
+    if (kaynak == null || !mounted) return;
+    await ref.read(fotografYuklemeProvider(_anahtar).notifier).sec(kaynak);
+  }
+
+  Future<void> _bagla(String uploadId) async {
+    final metinler = AppLocalizations.of(context);
+    final bildirim = ScaffoldMessenger.of(context);
+    setState(() => _kaydediliyor = true);
+    final hata = await ref
+        .read(hesapAyarlariProvider.notifier)
+        .avatarAyarla(uploadId);
+    if (!mounted) return;
+    setState(() => _kaydediliyor = false);
+    ref.read(fotografYuklemeProvider(_anahtar).notifier).sifirla();
+    profilBildirimi(
+      bildirim,
+      hata == null
+          ? metinler.profil_avatar_kaydedildi
+          : fotografHataMetni(metinler, hata),
+    );
+  }
+
+  Future<void> _kaldir() async {
+    final metinler = AppLocalizations.of(context);
+    final bildirim = ScaffoldMessenger.of(context);
+    setState(() => _kaydediliyor = true);
+    final hata = await ref.read(hesapAyarlariProvider.notifier).avatariKaldir();
+    if (!mounted) return;
+    setState(() => _kaydediliyor = false);
+    profilBildirimi(
+      bildirim,
+      hata == null
+          ? metinler.profil_avatar_kaldirildi
+          : fotografHataMetni(metinler, hata),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final metinler = AppLocalizations.of(context);
+    ref.listen(fotografYuklemeProvider(_anahtar), (_, yeni) {
+      if (yeni is FotografHazir) unawaited(_bagla(yeni.uploadId));
+    });
+    final hesap = ref.watch(hesapAyarlariProvider).value;
+    if (hesap == null) return const SizedBox.shrink();
+    final durum = ref.watch(fotografYuklemeProvider(_anahtar));
+    final mesgul = _kaydediliyor || durum is FotografIsleniyor;
+    final avatar = hesap.avatarUploadId;
+    final hata = durum is FotografYuklemeHatasi ? durum.hata : null;
+    return TayfamKart(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BolumBasligi(baslik: metinler.profil_avatar_baslik),
+          const SizedBox(height: TayfamSpacing.s16),
+          Center(
+            child: KullaniciAvatari(
+              avatarUploadId: avatar,
+              cap: TayfamSizes.avatarBuyuk,
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
+          Text(
+            metinler.profil_avatar_aciklama,
+            style: context.yazi.bodyMedium?.copyWith(
+              color: context.renkler.metinIkincil,
+            ),
+          ),
+          if (mesgul) ...[
+            const SizedBox(height: TayfamSpacing.s8),
+            Row(
+              children: [
+                const SizedBox.square(
+                  dimension: TayfamSizes.ikon,
+                  child: CircularProgressIndicator(),
+                ),
+                const SizedBox(width: TayfamSpacing.s8),
+                Expanded(child: Text(metinler.medya_yukleniyor)),
+              ],
+            ),
+          ],
+          if (hata != null) ...[
+            const SizedBox(height: TayfamSpacing.s8),
+            HataSatiri(metin: fotografHataMetni(metinler, hata)),
+          ],
+          const SizedBox(height: TayfamSpacing.s8),
+          Wrap(
+            spacing: TayfamSpacing.s8,
+            runSpacing: TayfamSpacing.s8,
+            children: [
+              TextButton.icon(
+                onPressed: mesgul ? null : () => unawaited(_sec()),
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: Text(
+                  avatar == null
+                      ? metinler.medya_fotograf_ekle
+                      : metinler.medya_fotograf_degistir,
+                ),
+              ),
+              if (avatar != null)
+                TextButton.icon(
+                  onPressed: mesgul ? null : () => unawaited(_kaldir()),
+                  icon: const Icon(Icons.delete_outline),
+                  label: Text(metinler.medya_fotograf_kaldir),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -269,6 +407,30 @@ String _gorunurlukAciklamasi(AppLocalizations m, ActivityVisibility g) =>
       ActivityVisibility.unknown => m.profil_gorunurluk_herkes_aciklama,
     };
 
+/// Gizlilik: KVKK veri dışa aktarma ("Verilerimi indir", ADR-0022).
+class _GizlilikBolumu extends StatelessWidget {
+  const _GizlilikBolumu();
+
+  @override
+  Widget build(BuildContext context) {
+    final metinler = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BolumBasligi(baslik: metinler.disa_aktarma_profil_bolum),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.download_outlined),
+          title: Text(metinler.disa_aktarma_baslik),
+          subtitle: Text(metinler.disa_aktarma_profil_aciklama),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.go(Adresler.veriDisaAktarma),
+        ),
+      ],
+    );
+  }
+}
+
 /// Tema: cihaz ayarı, açık, koyu. Seçim güvenli depoda tutulur.
 class _TemaBolumu extends ConsumerWidget {
   const _TemaBolumu();
@@ -330,6 +492,13 @@ class _HesapBolumu extends ConsumerWidget {
     await disBaglantiyiAc(context, ref, adres);
   }
 
+  /// Çıkış. Bu telefon şifreli mesaj geçmişinin anahtarını taşıyan tek
+  /// cihazsa önce uyarıyla onay istenir (ADR-0020).
+  Future<void> _cikisYap(BuildContext context, WidgetRef ref) async {
+    if (!await tekCihazCikisOnayi(context, ref)) return;
+    await ref.read(cikisProvider.notifier).cikisYap();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
@@ -361,6 +530,8 @@ class _HesapBolumu extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.go(Adresler.oturumlar),
         ),
+        // QR ile cihaz bağlama; E2E yoksa görünmez (ADR-0020).
+        const CihazBaglamaGirisi(),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.privacy_tip_outlined),
@@ -389,9 +560,7 @@ class _HesapBolumu extends ConsumerWidget {
                   ),
                 )
               : null,
-          onTap: cikiyor
-              ? null
-              : () => unawaited(ref.read(cikisProvider.notifier).cikisYap()),
+          onTap: cikiyor ? null : () => unawaited(_cikisYap(context, ref)),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,

@@ -3,12 +3,14 @@ import 'dart:math';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/birebir/application/konusma_notifier.dart';
 import 'package:tayfam/features/birebir/data/birebir_deposu.dart';
+import 'package:tayfam/features/birebir/data/sessiz_deposu.dart';
 
 import '../../core/realtime/sahte_soket.dart';
 import '../../core/zaman_sahteleri.dart';
@@ -51,6 +53,30 @@ const String retYolu =
 const String reddedilenlerYolu = '/v1/direct-messages/declined-requests';
 const String reddedilenYolu =
     '/v1/direct-messages/declined-requests/{conversation_id}';
+
+/// Bildirim tercihi uçlarının yol şablonları.
+const String tercihlerYolu = '/v1/notification-preferences';
+const String konusmaTercihiYolu =
+    '/v1/notification-preferences/conversations/{conversation_id}';
+
+/// Örnek birebir konuşma bildirim tercihi (`NotificationPreference`)
+/// JSON'u; [bitis] yoksa süresiz.
+Map<String, Object?> konusmaTercihiJson(
+  String konusma, {
+  String seviye = 'none',
+  String? bitis,
+  String kapsam = 'dm_conversation',
+}) => {
+  'scope_type': kapsam,
+  'scope_id': konusma,
+  'level': seviye,
+  'mute_until': ?bitis,
+  'updated_at': '2026-11-10T10:00:00Z',
+};
+
+/// `GET /v1/notification-preferences` yanıtı.
+Map<String, Object?> tercihListesiJson(List<Map<String, Object?>> tercihler) =>
+    {'preferences': tercihler};
 
 /// Örnek konuşma (`Conversation`) JSON'u.
 Map<String, Object?> konusmaJson(
@@ -136,11 +162,27 @@ SahteTayfaTasima birebirTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
 }
 
 /// Birebir uçlarını [tasima]'ya bağlayan override'lar; yenileme
-/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok.
-List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) {
+/// zamanlayıcısı test süresince tetiklenmez. Gerçek ağ yok. Uçtan uca
+/// şifreleme kapalıdır (düz sürüm yolu); E2E testleri kendi
+/// override'larını verir.
+List<Override> birebirOverridelari([SahteTayfaTasima? tasima]) => [
+  e2eEtkinProvider.overrideWithValue(false),
+  ...birebirUcOverridelari(tasima),
+];
+
+/// [birebirOverridelari]'nın E2E anahtarı olmadan hali (E2E testleri
+/// `e2eEtkinProvider`'ı kendisi verir).
+List<Override> birebirUcOverridelari([SahteTayfaTasima? tasima]) {
   final t = tasima ?? birebirTasimasi();
+  // Bildirim tercihleri (sessize alma): varsayılan olarak tercih yok.
+  t.yanitlar.putIfAbsent(
+    'GET $tercihlerYolu',
+    () =>
+        (_) => tercihListesiJson(const []),
+  );
   return [
     birebirDeposuProvider.overrideWithValue(BirebirDeposu(t)),
+    sessizDeposuProvider.overrideWithValue(SessizDeposu(t)),
     birebirYenilemeAraligiProvider.overrideWithValue(const Duration(days: 1)),
   ];
 }
@@ -194,11 +236,13 @@ List<Override> birebirEkranOverridelari(
   SahteTayfaTasima tasima, {
   OturumDurumu oturum = OturumDurumu.acik,
   SahteRealtime? realtime,
+  bool e2e = false,
 }) {
   final r = realtime ?? SahteRealtime();
   return [
     ...tayfaOverridelari(tasima: tasima),
-    ...birebirOverridelari(tasima),
+    e2eEtkinProvider.overrideWithValue(e2e),
+    ...birebirUcOverridelari(tasima),
     profilAdlari,
     oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
     realtimeIstemcisiProvider.overrideWithValue(r.istemci),

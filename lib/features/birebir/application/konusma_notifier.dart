@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
@@ -48,6 +50,16 @@ final class KonusmaDurumu {
 
   /// Okunacak daha eski mesaj var mı.
   bool get eskiVar => eskiSayfa != null;
+
+  /// Akışta uçtan uca şifreli mesaj var mı (web geliştirme derlemesinde
+  /// yazma alanı yerine "yalnızca mobil uygulamada" gösterilir).
+  bool get sifreliVar =>
+      mesajlar.any((m) => m.encryption == DirectMessageEncryption.e2e);
+
+  /// Akışta düz sürümde yazılmış (`encryption: server`) mesaj var mı.
+  bool get duzVar => mesajlar.any(
+    (m) => m.encryption == DirectMessageEncryption.server && !m.deleted,
+  );
 
   /// [mesaj] kullanıcının kendi mesajı mı. Karşı tarafın mesajında
   /// gönderen karşı taraftır; hesabı silinmişse gönderen yoktur.
@@ -124,6 +136,12 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
     ref.onDispose(kuyruk.cancel);
     final konusma = await depo.konusma(konusmaId);
     final sayfa = await depo.mesajlar(konusmaId);
+    // Karşı tarafın cihaz/anahtar değişiklikleri: "güvenlik kodu
+    // değişti" satırları (ADR-0020; en iyi çaba).
+    final karsi = konusma.otherUserId;
+    if (karsi != null && ref.read(e2eEtkinProvider)) {
+      unawaited(ref.read(e2eBirebirProvider).konusmaAcildi(karsi));
+    }
     return KonusmaDurumu(
       konusma: konusma,
       mesajlar: mesajlariBirlestir(const [], sayfa.ogeler),
@@ -196,6 +214,8 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
           .read(birebirDeposuProvider)
           .mesajlar(konusmaId, sayfaToken: token);
       if (!ref.mounted) return;
+      await _arsiviGenislet(sayfa.ogeler);
+      if (!ref.mounted) return;
       final simdiki = state.value;
       if (simdiki == null) return;
       final sonraki = _gecerliToken(sayfa.sonraki);
@@ -214,6 +234,27 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
       if (simdiki != null) {
         state = AsyncData(simdiki._degistir(eskiHatasi: hata));
       }
+    }
+  }
+
+  /// Eski sayfadaki şifreli mesajların metni için geçmiş arşivinin
+  /// sonraki sayfalarını ister (ADR-0020 §3). Arşiv konuşma ekranı
+  /// açıkken yaşar; ekran onu izlemiyorsa (E2E yok) istek atılmaz.
+  /// Arşiv okunamazsa mesajlar yine gösterilir; metni olmayan şifreli
+  /// mesaj "okunamıyor" kalır.
+  Future<void> _arsiviGenislet(List<DirectMessage> mesajlar) async {
+    final arsiv = konusmaArsiviProvider(konusmaId);
+    if (!ref.read(e2eEtkinProvider) || !ref.read(arsiv.exists)) return;
+    final sifreliler = [
+      for (final m in mesajlar)
+        if (m.encryption == DirectMessageEncryption.e2e && !m.deleted) m.id,
+    ];
+    try {
+      await ref.read(arsiv.notifier).kapsa(sifreliler);
+    } on OturumYok {
+      rethrow;
+    } on Exception {
+      // En iyi çaba; bir sonraki eski sayfada yeniden denenir.
     }
   }
 

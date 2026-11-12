@@ -1,7 +1,7 @@
 # ADR-0010: Uçtan uca şifreleme için Signal kütüphanesi
 
 - **Durum:** Kabul edildi
-- **Tarih:** 2026-11-09, güncelleme 2026-11-10
+- **Tarih:** 2026-11-09, güncelleme 2026-11-10, 2026-11-11
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0011](0011-yalnizca-mobil.md); Tayfam-Api ADR-0005 (E2E tasarımı), ADR-0011; CLAUDE.md kesin kural 4; Notion: Proje Planı §6, Açık Kararlar ("Signal için Dart/Flutter kütüphanesi seçimi")
 
@@ -53,10 +53,92 @@ tartışmalı.
    - Oturum kapanınca ve hesap silinince bu kayıtların hepsi silinir.
    - Web geliştirme derlemesinde E2E yüklenmez (ADR-0011).
 
+## Güncelleme 2026-11-11: resmi Android paketi + ince Kotlin köprüsü
+
+**Karar (platform sahibi, sohbette 19:00):** `libsignal_dart` (pub.dev
+`libsignal`) yerine Signal'in resmi `org.signal:libsignal-android` paketi
+ve onun üzerinde ince bir Kotlin köprüsü (platform kanalı) kullanılır.
+Rust araç zinciri ve Flutter Rust Bridge yoktur. iOS sonra aynı Dart
+arayüzüyle (`SignalMotoru`) Signal'in Swift paketi (`LibSignalClient`)
+üzerinde yazılır. Karar 1'deki "resmi Rust çekirdeği" aynen geçerlidir:
+Android paketi, Signal'in kendi derlediği aynı çekirdektir.
+
+### Araştırma özeti
+
+- **`libsignal_dart` 9.0.0 değerlendirmesi** (2026-11-11): kripto yeniden
+  yazılmamış, çekirdek upstream `libsignal` v0.106.0; ama yayıncı pub.dev'de
+  doğrulanmamış tek geliştirici (yapay zekâ destekli bakım), 11 ayda 9 büyük
+  sürüm ve kırıcı değişiklikler, yerel ikili derleme sırasında yayıncının
+  GitHub Releases'ından indiriliyor (özet dosyası ikiliyle aynı yerden),
+  her çağrıda durumu Dart'tan Rust'a taşıyan ~6,5 bin satır el yazımı
+  "durum tesisatı" (inceleme yükü ~1 gün, her sürümde yeniden). Hüküm
+  "şartlı kullanılabilir"di; pilottan önce fork'tan kendi derlememiz
+  önerilmişti.
+- **Resmi Android paketi:** Signal Messenger LLC yayınlıyor, Signal Android
+  uygulamasının kendisi kullanıyor, Java/Kotlin API'si kararlı ve
+  belgelenmiş. Signal'in Maven deposundan (`build-artifacts.signal.org`)
+  gelir; Gradle bağımlılık doğrulamasıyla SHA-256 sabitlenir. Köprü kodu
+  bizde ve küçüktür (`SignalIslemleri.kt`), inceleme yükü buraya iner.
+- **Sürüm:** `0.106.1`. Signal'in deposundaki en yeni sürüm `0.107.0`
+  (2026-11-10, bir günlük); Signal Android uygulamasının `main`'i
+  `0.106.1` kullanıyor. Signal'in sahada kullandığı sürüm seçildi.
+
+### Tasarım
+
+- **Durumsuz köprü:** kalıcı durum Dart'tadır (güvenli depo, karar 2).
+  Her çağrı gereken kayıtları (kimlik, oturum, ön anahtarlar) bayt olarak
+  alır, tek çağrılık bellek içi depoyla libsignal işlemini yapar, değişen
+  kayıtları (yeni oturum, tüketilen ön anahtar kimliği, Kyber kullanımı)
+  döner ve depoyu atar. Köprü hiçbir şey saklamaz ve log'lamaz;
+  libsignal'in kendi log'u açılmaz (`SignalProtocolLoggerProvider`
+  kurulmaz). Hata yalnızca türünü taşır (`gecersizMesaj`, `eskiMesaj`,
+  `oturumYok`, `gecersizAnahtar`, `bilinmeyen`).
+- Çağrılar Flutter'ın arka plan görev kuyruğunda çalışır; ana iş
+  parçacığı bloklanmaz.
+- **Kimlik güveni (TOFU) Dart'tadır;** köprünün deposu kimliği her zaman
+  güvenilir sayar.
+- **Kyber son çare anahtarı:** libsignal `markKyberPreKeyUsed(kyberId,
+  signedPreKeyId, baseKey)` ile bildirir; köprü bu üçlüyü döner, tekrar
+  denetimi (görülen üçlü kümesi) Dart'tadır. Java API mesajdaki Kyber
+  anahtar kimliğini açmadığı için çözmede aday Kyber kayıtlarının hepsi
+  verilir.
+- **Adres bağı:** libsignal 0.10x gönderen ve alıcı adreslerini mesajın
+  MAC'ine bağlar; adres adı sunucunun cihaz UUID'sidir, iki taraf aynı
+  adresleri kullanır.
+- Simetrik yapı taşları (HKDF-SHA256, AES-256-GCM-SIV, AES-256-GCM çözme)
+  ve güvenlik kodu (`NumericFingerprintGenerator`, sürüm 2, 5200
+  yineleme) de libsignal'in kendi uygulamalarıdır; kendi kriptomuz yoktur
+  (kesin kural 4).
+- **Paketleme:** yalnızca `arm64-v8a`, `armeabi-v7a`, `x86_64`;
+  libsignal-android'in API bağımlılığı olan masaüstü JVM paketinin yerel
+  kütüphaneleri ve libsignal'in test kütüphanesi APK'ya girmez. R8 kuralları
+  paketin kendi `META-INF/proguard/libsignal.pro` dosyasından gelir.
+  libsignal `java.time` kullandığı için çekirdek kütüphane desugaring'i
+  açıktır.
+- Web geliştirme derlemesinde ve iOS köprüsü yazılana kadar iOS'ta motor
+  `DesteklenmeyenSignalMotoru`'dur (her çağrı `UnsupportedError`).
+- **Test:** köprü, Signal'in masaüstü JVM paketiyle (`libsignal-client`,
+  aynı sürüm) gerçek libsignal üzerinde JVM birim testleriyle sınanır
+  (CI android işi, JDK 21); Dart tarafı sahte kanal ve `SahteSignalMotoru`
+  ile.
+
 ## Sonuçlar
 
-- Bağımlılık: `libsignal` (sabit sürüm, hassas alan). `flutter_secure_storage`
-  zaten var.
+- Bağımlılık (güncelleme 2026-11-11): Android'de
+  `org.signal:libsignal-android:0.106.1` (Signal'in Maven deposu, yalnızca
+  `org.signal` grubu bu depodan; SHA-256 `android/gradle/verification-metadata.xml`'de),
+  testte `org.signal:libsignal-client:0.106.1`, desugaring için
+  `com.android.tools:desugar_jdk_libs`. pub.dev'deki `libsignal` paketi
+  kullanılmaz. `flutter_secure_storage` zaten var.
+- Lisans değişmez: libsignal-android da AGPL-3.0'dır; dağıtılan APK bu
+  lisansa tabidir (karar 1).
+- Sürüm yükseltmesi yalnızca inceleme + PR ile yapılır: yeni sürümün
+  değişiklik notu ve Java API farkı okunur, özetler Signal Android
+  uygulamasının `gradle/verification-metadata.xml`'inden alınıp CI'daki
+  indirmeyle doğrulanır. Dependabot'ta Gradle ekosistemi yoktur; bu paket
+  için yalnızca GitHub güvenlik bildirimi gelir.
+- APK boyutu: libsignal'in yerel kütüphanesi ABI başına birkaç MB ekler
+  (mağaza `.aab`'ı ABI'ye göre bölünür).
 - ADR-0006'daki "token dışında diske bir şey yazılmaz" kuralı "token ve
   Signal anahtarları/durumu yalnızca güvenli depoda" olarak genişler.
 - Notion'da "Signal için Dart/Flutter kütüphanesi seçimi" açık kararı

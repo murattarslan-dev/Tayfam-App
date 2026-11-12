@@ -4,6 +4,7 @@ import 'package:http/testing.dart';
 
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/e2e/cihaz/e2e_cihaz.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
@@ -110,6 +111,9 @@ List<Override> profilOverridelari({
     tema ?? BellekTemaTercihiDeposu(),
   ),
   oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
+  // Cihaz bağlama girişi E2'nin cihaz durumunu okur; profil testlerinde
+  // uçtan uca şifreleme kapalı.
+  e2eEtkinProvider.overrideWithValue(false),
   // Çıkış (`POST /v1/auth/sign-out`) için sahte HTTP; gerçek ağ yok.
   apiClientProvider.overrideWithValue(
     ApiClient(

@@ -5,8 +5,8 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
 
-/// Kendi hesap ayarların (ADR-0018 §2): referans kodu ve katılım geçmişi
-/// görünürlüğü (`GET /v1/me/account`).
+/// Kendi hesap ayarların (ADR-0018 §2): referans kodu, katılım geçmişi
+/// görünürlüğü ve avatar (ADR-0021) (`GET /v1/me/account`).
 ///
 /// Yalnızca bellektedir (ADR-0006); oturum değişince sıfırlanır.
 class HesapAyarlariNotifier extends AsyncNotifier<Account> {
@@ -31,10 +31,34 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     final simdiki = state.value;
     if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
     return Account(
+      avatarUploadId: simdiki.avatarUploadId,
       referralCode: kod,
       activityVisibility: simdiki.activityVisibility,
     );
   });
+
+  /// Hazır [uploadId] yüklemesini avatar yapar (`PUT /v1/me/avatar`;
+  /// ADR-0021 §6). Başarıda `null`, aksi halde gösterilecek hata.
+  Future<Object?> avatarAyarla(String uploadId) => _islem(() async {
+    final yeni = await ref.read(profilDeposuProvider).avatarAyarla(uploadId);
+    return _avatarli(yeni);
+  });
+
+  /// Avatarı kaldırır (`DELETE /v1/me/avatar`). Başarıda `null`.
+  Future<Object?> avatariKaldir() => _islem(() async {
+    await ref.read(profilDeposuProvider).avatariKaldir();
+    return _avatarli(null);
+  });
+
+  Future<Account> _avatarli(String? avatarUploadId) async {
+    final simdiki = state.value;
+    if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
+    return Account(
+      avatarUploadId: avatarUploadId,
+      referralCode: simdiki.referralCode,
+      activityVisibility: simdiki.activityVisibility,
+    );
+  }
 
   Future<Object?> _islem(Future<Account> Function() islem) async {
     try {

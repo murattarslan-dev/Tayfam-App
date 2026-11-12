@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
+import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/surum/uygulama_surumu.dart';
 
 /// Tek satırlık API günlüğü yazıcısı.
@@ -231,12 +232,19 @@ final class HttpTasima implements ApiTransport {
   /// Hata yanıtını [ApiProblem]'e çevirir. `title` ve `detail` okunmaz.
   ApiProblem _problem(http.Response yanit) {
     var type = ProblemType.unknown;
+    E2eCihazFarki? cihazFarki;
     final tur = yanit.headers['content-type'] ?? '';
     if (tur.startsWith('application/problem+json')) {
       try {
         final json = jsonDecode(utf8.decode(yanit.bodyBytes));
         if (json is Map<String, Object?>) {
           type = problemTypeOku(json['type']);
+          if (type == ProblemType.e2eDevicesChanged) {
+            cihazFarki = E2eCihazFarki(
+              eksik: _kimlikler(json['missing_device_ids']),
+              eski: _kimlikler(json['stale_device_ids']),
+            );
+          }
         }
       } on FormatException {
         type = ProblemType.unknown;
@@ -247,6 +255,14 @@ final class HttpTasima implements ApiTransport {
       type: type,
       status: yanit.statusCode,
       retryAfter: bekle == null || bekle < 0 ? null : Duration(seconds: bekle),
+      cihazFarki: cihazFarki,
     );
   }
+
+  /// Problem gövdesindeki kimlik listesi; biçimi geçersiz öğe atlanır.
+  static List<String> _kimlikler(Object? liste) => [
+    if (liste is List<Object?>)
+      for (final k in liste)
+        if (k is String && uuidBicimindeMi(k)) k,
+  ];
 }

@@ -181,6 +181,12 @@ abstract final class Adresler {
   /// Cihazdaki bildirim izni ve sistem ayarı.
   static const bildirimAyarlari = '$profil/$bildirimAyarlariYolu';
 
+  /// KVKK veri dışa aktarma ekranının profil altındaki yolu (ADR-0022).
+  static const veriDisaAktarmaYolu = 'verilerim';
+
+  /// "Verilerimi indir": talep, durum ve indirme.
+  static const veriDisaAktarma = '$profil/$veriDisaAktarmaYolu';
+
   /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
   /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
   static const tayfaAyarlariYolu = 'ayarlar';
@@ -188,6 +194,19 @@ abstract final class Adresler {
   /// Tayfa ayarları ekranı.
   static String tayfaAyarlari(String tayfaId) =>
       '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
+
+  /// QR ile cihaz bağlamanın (eşleştirilmiş cihaz QR okutur) profil
+  /// altındaki yolu (ADR-0020).
+  static const cihazBaglaYolu = 'cihaz-bagla';
+
+  /// Eşleştirilmiş cihazda "Cihaz bağla" (QR okutma).
+  static const cihazBagla = '$profil/$cihazBaglaYolu';
+
+  /// Bu cihazı bağlamanın (yeni cihaz QR gösterir) profil altındaki yolu.
+  static const buCihaziBaglaYolu = 'bu-cihazi-bagla';
+
+  /// Eşleştirilmemiş cihazda "Bu cihazı bağla" (QR gösterme).
+  static const buCihaziBagla = '$profil/$buCihaziBaglaYolu';
 
   /// Arkadaşlar ekranının profil altındaki yolu (ADR-0018 §7). Arkadaş
   /// bulma, istekler ve engellenenler bunun altındadır.
