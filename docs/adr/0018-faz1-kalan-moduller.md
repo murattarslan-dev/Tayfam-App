@@ -262,8 +262,8 @@ göre mimari oturumunca belirlenir.
     Tayfalarım listesi). Alan yalnızca moderatör ve yöneticiye döner;
     alan yoksa ya da 0 ise rozet yoktur. `page_size=1` ile yoklama
     kaldırıldı. Tayfalarım listesinde de rozet gösterilir.
-  - Banlamada gerekçe **isteğe bağlıdır** (önceden §1 "gerekçe istenir" diyordu
-    yerine): şikâyet nedenleriyle aynı kapalı liste, `staff_conduct`
+  - Banlamada gerekçe **isteğe bağlıdır** (önceden §1 "gerekçe istenir"
+    diyordu): şikâyet nedenleriyle aynı kapalı liste, `staff_conduct`
     hariç, serbest metin yok (platform sahibi kararı, 2026-11-12; istemcide
     isteğe bağlı kalması 2026-11-12 19:55 sohbette teyit edildi).
     Gerekçe denetim kaydına ve platform paneline gider; banlanan kişiye
