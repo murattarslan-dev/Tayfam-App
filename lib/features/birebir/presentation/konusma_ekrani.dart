@@ -8,6 +8,8 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/e2e/gecmis/arsiv_okuyucu.dart';
+import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
@@ -19,6 +21,7 @@ import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_yazma_alani.dart';
+import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Bir birebir konuşma (`/sohbet/birebir/<konusmaId>`; ADR-0018 §9, düz
@@ -85,6 +88,12 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
     final durum = ref.watch(saglayici);
     final veri = durum.value;
     final hata = durum.error;
+    // Şifreli geçmiş arşivi konuşma açılınca indirilir ve ekran açık
+    // kaldıkça bellekte tutulur (ADR-0020 §3). E2E yoksa (web, iOS)
+    // istenmez.
+    final e2e = ref.watch(e2eEtkinProvider);
+    final arsiv = konusmaArsiviProvider(widget.konusmaId);
+    final eskiOkunamiyor = e2e && ref.watch(arsiv.select(_eskiOkunamiyor));
     return Scaffold(
       appBar: AppBar(
         title: veri == null
@@ -96,6 +105,7 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
           (final KonusmaDurumu veri, _) => _Akis(
             konusmaId: widget.konusmaId,
             durum: veri,
+            eskiOkunamiyor: eskiOkunamiyor,
           ),
           (null, final Object hata) => ListView(
             padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
@@ -111,12 +121,23 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
   }
 }
 
+bool _eskiOkunamiyor(AsyncValue<KonusmaArsivi> arsiv) =>
+    arsiv.value?.eskiMesajlarOkunamiyor ?? false;
+
 class _Akis extends ConsumerWidget {
-  const _Akis({required this.konusmaId, required this.durum});
+  const _Akis({
+    required this.konusmaId,
+    required this.durum,
+    required this.eskiOkunamiyor,
+  });
 
   final String konusmaId;
 
   final KonusmaDurumu durum;
+
+  /// Arşivde bu cihazda okunamayan eski mesajlar var (ya da cihaz
+  /// eşleştirilmemiş).
+  final bool eskiOkunamiyor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,6 +185,11 @@ class _Akis extends ConsumerWidget {
         ),
       for (final (_, oge) in akis) oge,
       _EskiMesajlar(durum: durum, onDahaEski: notifier.dahaEski),
+      if (eskiOkunamiyor)
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
+          child: EskiMesajlarOkunamiyor(),
+        ),
       if (e2e && durum.duzVar)
         E2eBilgiSatiri(
           metin: m.e2e_sifreli_degil_aciklama,
