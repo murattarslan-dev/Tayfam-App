@@ -114,6 +114,8 @@ void main() {
         expect(_yaziSaydamligi(tester), 0);
 
         await tester.pump(TayfamMotion.acilisToplam);
+        // Denetleyici son karede tamamlanır; bir kare daha.
+        await tester.pump();
 
         boyaci = _boyaci(tester);
         for (final blok in LogoBlogu.values) {
