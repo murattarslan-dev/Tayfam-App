@@ -21,12 +21,14 @@ import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_yazma_alani.dart';
+import 'package:tayfam/features/birebir/presentation/sessiz_ogeleri.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Bir birebir konuşma (`/sohbet/birebir/<konusmaId>`; ADR-0018 §9, düz
 /// sürüm): mesaj akışı (en yeni altta), yazma alanı, okundu bilgisi,
-/// mesaj isteğini kabul ve ret, kendi mesajını silme ve mesaj şikâyeti.
+/// mesaj isteğini kabul ve ret, kendi mesajını silme, mesaj şikâyeti ve
+/// üst menüde sessize alma.
 ///
 /// Ekran açıkken konuşma okundu işaretlenir. Yeni mesajlar WebSocket
 /// olaylarıyla gelir; bağlantı yokken ekran açık ve uygulama ön plandayken
@@ -99,6 +101,9 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
         title: veri == null
             ? null
             : KarsiTarafAdi(kullaniciId: veri.konusma.otherUserId),
+        actions: [
+          if (veri != null) KonusmaSessizMenusu(konusmaId: widget.konusmaId),
+        ],
       ),
       body: SafeArea(
         child: switch ((veri, hata)) {

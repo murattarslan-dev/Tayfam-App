@@ -10,6 +10,7 @@ import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/application/konusma_listesi_notifier.dart';
+import 'package:tayfam/features/birebir/application/konusma_sessizlik_notifier.dart';
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/konusma_satiri.dart';
@@ -42,6 +43,7 @@ class BirebirSekmesi extends ConsumerWidget {
   /// Listeyi yeniler. Başarısız olursa eldeki liste kalır ve hata kısa
   /// bildirimle gösterilir; liste yoksa hata satırı görünür.
   Future<void> _yenile(BuildContext context, WidgetRef ref) async {
+    ref.invalidate(konusmaSessizlikProvider);
     final hata = await ref.read(konusmaListesiProvider.notifier).yenile();
     if (hata == null || !context.mounted) return;
     if (ref.read(konusmaListesiProvider).hasValue) {
@@ -62,6 +64,8 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
     final istekSayisi = ref.watch(mesajIstekleriProvider).length;
     final liste = durum.value;
     final hata = durum.error;
+    final sessizlikler = ref.watch(konusmaSessizlikProvider).value;
+    final simdi = ref.read(birebirSaatiProvider)();
     final konusmalar = [
       for (final k in liste?.ogeler ?? const <Conversation>[])
         if (k.status != ConversationStatus.requestReceived) k,
@@ -92,6 +96,7 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
           for (final k in konusmalar)
             KonusmaSatiri(
               konusma: k,
+              sessiz: konusmaSessizde(sessizlikler, k.id, simdi),
               onTap: () => context.go(Adresler.birebirKonusma(k.id)),
             ),
           if (liste.dahaHatasi case final dahaHatasi?) ...[
