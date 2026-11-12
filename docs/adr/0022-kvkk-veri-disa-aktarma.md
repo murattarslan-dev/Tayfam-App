@@ -1,6 +1,6 @@
 # ADR-0022: KVKK veri dışa aktarma (istemci)
 
-- **Durum:** Önerildi
+- **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-11
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0010](0010-signal-kutuphanesi.md), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0018](0018-faz1-kalan-moduller.md) §2 (hesap silmedeki yeniden giriş); Tayfam-Api ADR-0021 ve `docs/data-export-format.md`; issue #79; Notion: KVKK Aydınlatma Metni md. 8 ("Verilerimi indir"), İstemci Geçiş Özeti (2026-11-11)

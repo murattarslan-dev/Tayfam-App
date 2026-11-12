@@ -1,6 +1,6 @@
 # ADR-0020: Birebir mesajda uçtan uca şifreleme (istemci)
 
-- **Durum:** Önerildi
+- **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-11
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0002](0002-modul-yapisi.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0007](0007-websocket.md), [ADR-0010](0010-signal-kutuphanesi.md), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0018](0018-faz1-kalan-moduller.md); Tayfam-Api ADR-0005, ADR-0018; sözleşme 8ef8245
@@ -312,8 +312,9 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
   geçilirse (seçenek B) QR biçimi `v2` olur.
 - ML Kit (gömülü) Google'a anonim kullanım ölçümü gönderir
   (`datatransport`; `ACCESS_NETWORK_STATE`'i de o getirir, FCM için zaten
-  izinli). Platform sahibine sorulacak; kabul edilmezse ZXing tabanlı
-  tarayıcıya geçilir.
+  izinli). **Karar (platform sahibi, 2026-11-12):** ZXing tabanlı
+  tarayıcıya geçilir; Google'a ölçüm gönderen ML Kit kullanılmaz
+  (ayrı issue; paket seçimi ve gerekçesi o PR'da bu bölüme işlenir).
 - Yenilemede boş kümeyle ilk deneme bir fazla istek demektir; sözleşme
   eşleştirilmiş cihaz listesini vermediği için bilinçli seçim.
 
