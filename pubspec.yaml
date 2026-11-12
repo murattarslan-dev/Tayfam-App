@@ -25,6 +25,11 @@ dependencies:
   # registration token API'leri deprecated olduğu için 16.7 hattı.
   firebase_core: ^4.15.1
   firebase_messaging: ^16.7.1
+  # Fotoğrafı cihazda çözme (HEIC dahil), EXIF yönünü uygulama, küçültme ve
+  # JPEG kodlama (ADR-0021 §2): platform kodlayıcıları (Android Bitmap,
+  # iOS UIImage/ImageIO). Yayıncı fluttercandies.com, MIT; izin eklemez.
+  # Metadata silmenin garantisi bu paket değil lib/core/medya/jpeg.dart.
+  flutter_image_compress: ^2.4.0
   flutter_secure_storage: ^11.2.0
   # Varış bildirimi ("Geldim", ADR-0015 §5): düğmeye basınca "uygulamayı
   # kullanırken" izniyle tek seferlik konum (getCurrentPosition). Konum
@@ -35,6 +40,14 @@ dependencies:
   # Google ile giriş (ADR-0012 §2); yayıncı flutter.dev.
   google_sign_in: ^7.2.0
   http: ^1.6.0
+  # Galeriden ya da kameradan tek fotoğraf (ADR-0021 §1); yayıncı
+  # flutter.dev, BSD-3. Android'de Photo Picker (izinsiz), kamera sistem
+  # uygulamasıyla (CAMERA izni gerekmez); iOS'ta PHPicker. Android
+  # uygulaması ve arayüzü yalnızca Photo Picker'ı açmak için doğrudan
+  # bağımlılıktır (aynı yayıncı).
+  image_picker: ^1.2.0
+  image_picker_android: ^0.8.13
+  image_picker_platform_interface: ^2.11.0
   # İlk etkinlikten sonra mağazanın uygulama içi değerlendirme penceresi
   # (ADR-0016 §4): Android'de Play In-App Review, iOS'ta
   # SKStoreReviewController. Yalnızca isAvailable() ve requestReview();

@@ -114,6 +114,7 @@ enum AvHatasi { tur, boy }
   LatLng? yer,
   FishingCatchCreateRequestVisibility gorunurluk =
       FishingCatchCreateRequestVisibility.self,
+  String? fotograf,
   required String istekKimligi,
 }) {
   final hatalar = <AvHatasi>{};
@@ -133,6 +134,7 @@ enum AvHatasi { tur, boy }
       lengthCm: yuvarlak,
       location: yer,
       visibility: yer == null ? null : gorunurluk,
+      photoUploadId: fotograf,
       clientRequestId: istekKimligi,
     ),
     hatalar: const {},

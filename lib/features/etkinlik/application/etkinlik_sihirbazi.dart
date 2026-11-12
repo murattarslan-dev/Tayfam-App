@@ -80,6 +80,12 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
     _ayarla(state.kopya(aciklama: aciklama));
   }
 
+  /// Kapak fotoğrafını ayarlar ya da kaldırır (`null`; ADR-0021 §6).
+  void kapakAyarla(String? uploadId) {
+    if (_kilitli) return;
+    _ayarla(state.kopya(kapak: uploadId));
+  }
+
   /// Başlangıcı ayarlar. Bitiş yoksa ya da başlangıçtan önceyse bitiş
   /// başlangıçtan iki saat sonraya alınır (kolaylık; kullanıcı değiştirir).
   void baslangicAyarla(DateTime baslangic) {

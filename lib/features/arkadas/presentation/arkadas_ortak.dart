@@ -21,9 +21,13 @@ class GirisSatiri extends StatelessWidget {
     required this.onTap,
     this.rozet = false,
     this.rozetEtiketi,
+    this.onde,
   });
 
   final IconData ikon;
+
+  /// İkonun yerine gösterilecek öğe (ör. kullanıcı avatarı; ADR-0021).
+  final Widget? onde;
   final String etiket;
   final VoidCallback onTap;
 
@@ -52,11 +56,13 @@ class GirisSatiri extends StatelessWidget {
                   child: Badge(
                     isLabelVisible: rozet,
                     smallSize: TayfamSizes.nokta,
-                    child: Icon(
-                      ikon,
-                      size: TayfamSizes.ikon,
-                      color: context.renkler.metinGovde,
-                    ),
+                    child:
+                        onde ??
+                        Icon(
+                          ikon,
+                          size: TayfamSizes.ikon,
+                          color: context.renkler.metinGovde,
+                        ),
                   ),
                 ),
                 const SizedBox(width: TayfamSpacing.s16),
