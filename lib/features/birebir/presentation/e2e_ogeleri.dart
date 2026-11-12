@@ -64,40 +64,7 @@ class E2eSatiriOgesi extends StatelessWidget {
   }
 }
 
-/// Düz sürümde yazılmış mesajın balon altı etiketi: "Uçtan uca şifreli
-/// değil".
-class SifreliDegilEtiketi extends StatelessWidget {
-  const SifreliDegilEtiketi({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final r = context.renkler;
-    return Padding(
-      padding: const EdgeInsets.only(top: TayfamSpacing.s4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ExcludeSemantics(
-            child: Icon(
-              Icons.lock_open_outlined,
-              size: TayfamSizes.ikonKucuk,
-              color: r.metinIkincil,
-            ),
-          ),
-          const SizedBox(width: TayfamSpacing.s4),
-          Flexible(
-            child: Text(
-              AppLocalizations.of(context).e2e_sifreli_degil,
-              style: context.yazi.bodySmall?.copyWith(color: r.metinIkincil),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// İkonlu bilgi satırı (konuşma başındaki açıklama, web boş durumu).
+/// İkonlu bilgi satırı (E2E'nin olmadığı derlemedeki boş durum).
 class E2eBilgiSatiri extends StatelessWidget {
   const E2eBilgiSatiri({super.key, required this.metin, required this.ikon});
 

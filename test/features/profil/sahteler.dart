@@ -41,7 +41,12 @@ const String ornekKod = 'TYF-8K2M4Q';
 Map<String, Object?> hesapJson({
   String kod = ornekKod,
   String gorunurluk = 'tayfa',
-}) => {'referral_code': kod, 'activity_visibility': gorunurluk};
+}) => {
+  'user_id': '00000000-0000-4000-8000-000000000001',
+  'display_name': 'Deniz Örnek',
+  'referral_code': kod,
+  'activity_visibility': gorunurluk,
+};
 
 /// `DeviceSession` JSON'u.
 Map<String, Object?> oturumJson(

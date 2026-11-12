@@ -33,6 +33,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.missingClientHeader => m.hata_missing_client_header,
   ProblemType.clientOutdated => m.hata_client_outdated,
   ProblemType.invalidClientVersion => m.hata_invalid_client_version,
+  ProblemType.integrityRequired => m.hata_integrity_required,
   ProblemType.unauthenticated => m.hata_unauthenticated,
   ProblemType.notFound => m.hata_not_found,
   ProblemType.rateLimited => m.hata_rate_limited,

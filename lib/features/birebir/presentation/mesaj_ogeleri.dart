@@ -4,15 +4,13 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
-import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Akıştaki bir birebir mesaj: sohbet balonu; silinmişse "Bu mesaj
-/// silindi"; karşı taraf okuduysa altında "Görüldü"; düz sürümde
-/// yazılmışsa (mobilde) altında "Uçtan uca şifreli değil" (ADR-0020).
+/// silindi"; karşı taraf okuduysa altında "Görüldü" (ADR-0020).
 ///
-/// [metin] gösterilecek içeriktir: düz mesajda `body`, şifreli mesajda
-/// bellekte çözülmüş içerik ya da yer tutucu metin.
+/// [metin] gösterilecek içeriktir: bellekte çözülmüş içerik ya da yer
+/// tutucu metin.
 ///
 /// Uzun basınca [onIslemler] çağrılır (sil, şikâyet et); işlem yoksa
 /// `null` verilir. Metin yalnızca ekrandadır; hiçbir yere yazılmaz.
@@ -23,7 +21,6 @@ class MesajOgesi extends StatelessWidget {
     required this.giden,
     this.metin,
     this.goruldu = false,
-    this.sifreliDegil = false,
     this.onIslemler,
   });
 
@@ -31,9 +28,6 @@ class MesajOgesi extends StatelessWidget {
 
   /// Balondaki metin; `null` ya da mesaj silinmişse "Bu mesaj silindi".
   final String? metin;
-
-  /// "Uçtan uca şifreli değil" etiketi gösterilir.
-  final bool sifreliDegil;
 
   /// Kullanıcının kendi mesajı.
   final bool giden;
@@ -65,7 +59,6 @@ class MesajOgesi extends StatelessWidget {
             )
           else
             balon,
-          if (sifreliDegil && !mesaj.deleted) const SifreliDegilEtiketi(),
           if (goruldu)
             Padding(
               padding: const EdgeInsets.only(top: TayfamSpacing.s4),

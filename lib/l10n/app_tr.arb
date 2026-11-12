@@ -3211,6 +3211,10 @@
   "@hata_invalid_client_version": {
     "description": "Hata kodu `invalid-client-version`. Sürüm başlığı bozuk ya da bu ortamda hizmet verilmeyen bir platformdan geldiğinde görünen hata."
   },
+  "hata_integrity_required": "Uygulama doğrulanamadı. Uygulamayı resmi mağazadan güncelleyip tekrar dene.",
+  "@hata_integrity_required": {
+    "description": "Hata kodu `integrity-required`. Oturumun uygulama bütünlüğü doğrulaması (Play Integrity) geçmediğinde görünen hata (Tayfam-Api ADR-0022). Bütünlük akışı ayrı işte (#80)."
+  },
   "hata_unauthenticated": "Oturumun sona erdi. Yeniden giriş yap.",
   "@hata_unauthenticated": {
     "description": "Hata kodu `unauthenticated`. Erişim token'ı eksik ya da geçersiz olduğunda görünen hata. Normalde bir akış tetikler (ADR-0005 §4); bu metin yalnızca yedek olarak gösterilir."
@@ -3649,7 +3653,7 @@
   },
   "hata_e2e_required": "Bu konuşma uçtan uca şifreli. Uygulamayı güncelleyip tekrar dene.",
   "@hata_e2e_required": {
-    "description": "Hata kodu `e2e-required`. Uçtan uca şifreli konuşmaya şifresiz mesaj gönderilmek istendiğinde görünen hata."
+    "description": "Hata kodu `e2e-required`. Sunucu bu kodu artık döndürmüyor (Tayfam-Api #151, düz gönderim yolu kaldırıldı); sözleşmenin problem listesinde durduğu için eşleme yedeği olarak kalır."
   },
   "hata_e2e_not_paired": "Bu cihaz mesaj geçmişine erişmek için eşleştirilmemiş.",
   "@hata_e2e_not_paired": {
@@ -5537,14 +5541,6 @@
   "sikayet_tekrar_dene": "Tekrar dene",
   "@sikayet_tekrar_dene": {
     "description": "Moderasyon kuyruğu yüklenemeyince gösterilen düğme."
-  },
-  "e2e_sifreli_degil": "Uçtan uca şifreli değil",
-  "@e2e_sifreli_degil": {
-    "description": "Düz sürümde yazılmış (encryption: server) birebir mesajın balonunun altındaki etiket."
-  },
-  "e2e_sifreli_degil_aciklama": "Bu konuşmadaki işaretli eski mesajlar uçtan uca şifreli değil. Yeni mesajlar uçtan uca şifrelenir.",
-  "@e2e_sifreli_degil_aciklama": {
-    "description": "Uçtan uca şifreli olmayan mesaj içeren birebir konuşmanın başındaki açıklama."
   },
   "e2e_mesaj_okunamiyor": "Bu şifreli mesaj bu cihazda okunamıyor.",
   "@e2e_mesaj_okunamiyor": {

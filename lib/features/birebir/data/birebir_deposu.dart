@@ -13,8 +13,9 @@ const int konusmaSayfaBoyutu = 30;
 /// Mesaj akışında bir sayfada istenen mesaj sayısı.
 const int mesajSayfaBoyutu = 30;
 
-/// Birebir mesaj uçları (ADR-0018 §9, düz sürüm). Yalnızca üretilmiş uç
-/// sınıfını kullanır; bütün istekler tek `ApiClient`'tan geçer
+/// Birebir mesaj uçları (ADR-0018 §9). Gönderim burada değil,
+/// uçtan uca şifreli olarak `core/e2e/mesaj/e2e_gonderici.dart`'tadır
+/// (ADR-0020). Yalnızca üretilmiş uç sınıfını kullanır; bütün istekler tek `ApiClient`'tan geçer
 /// (ADR-0005). Mesaj metni hiçbir yere yazılmaz ve loglanmaz.
 final class BirebirDeposu {
   BirebirDeposu(ApiTransport istemci) : _api = DirectMessagesApi(istemci);
@@ -53,20 +54,6 @@ final class BirebirDeposu {
     );
     return (ogeler: liste.messages, sonraki: liste.nextPageToken);
   }
-
-  /// `POST /v1/direct-messages`: [aliciId]'ye düz metin yazar. Aynı
-  /// [istekKimligi] ile tekrar gönderim ilk mesajı döndürür.
-  Future<DirectMessageSent> gonder({
-    required String aliciId,
-    required String metin,
-    required String istekKimligi,
-  }) => _api.sendDirectMessage(
-    body: DirectMessageCreateRequest(
-      recipientUserId: aliciId,
-      body: metin,
-      clientRequestId: istekKimligi,
-    ),
-  );
 
   /// `DELETE …/messages/{message_id}`: kendi mesajını siler.
   Future<void> sil(String konusmaId, String mesajId) =>

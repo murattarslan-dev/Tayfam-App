@@ -51,15 +51,10 @@ final class KonusmaDurumu {
   /// Okunacak daha eski mesaj var mı.
   bool get eskiVar => eskiSayfa != null;
 
-  /// Akışta uçtan uca şifreli mesaj var mı (web geliştirme derlemesinde
+  /// Akışta uçtan uca şifreli mesaj var mı (E2E'nin olmadığı derlemede
   /// yazma alanı yerine "yalnızca mobil uygulamada" gösterilir).
   bool get sifreliVar =>
       mesajlar.any((m) => m.encryption == DirectMessageEncryption.e2e);
-
-  /// Akışta düz sürümde yazılmış (`encryption: server`) mesaj var mı.
-  bool get duzVar => mesajlar.any(
-    (m) => m.encryption == DirectMessageEncryption.server && !m.deleted,
-  );
 
   /// [mesaj] kullanıcının kendi mesajı mı. Karşı tarafın mesajında
   /// gönderen karşı taraftır; hesabı silinmişse gönderen yoktur.
@@ -99,7 +94,7 @@ final class KonusmaDurumu {
 }
 
 /// Bir birebir konuşma: mesaj akışı, gönderme, silme, okundu işareti ve
-/// mesaj isteğini kabul ya da ret (ADR-0018 §9, düz sürüm).
+/// mesaj isteğini kabul ya da ret (ADR-0018 §9, ADR-0020).
 ///
 /// Ekran açıkken yaşar (`autoDispose`); oturum değişince yeniden kurulur.
 /// Mesajlar yalnızca bellektedir (ADR-0006) ve hiçbir yere yazılmaz,
@@ -108,8 +103,10 @@ final class KonusmaDurumu {
 /// - WebSocket olayları (`dm.message_created`, `dm.message_deleted`,
 ///   `dm.conversation_accepted`, `dm.read`) bellekteki durumu günceller;
 ///   bağlantı yeniden kurulunca kaçırılanlar REST'ten çekilir (ADR-0007).
-/// - Gönderim çevrimdışı kuyruktan geçer ([gonder]; ADR-0006): bağlantı
-///   açıksa `dm.send`, değilse aynı `client_request_id` ile REST. Bekleyen
+/// - Gönderim çevrimdışı kuyruktan geçer ([gonder]; ADR-0006): her zaman
+///   uçtan uca şifreli ve yalnızca REST'ten ([BirebirGonderici]); tekrar
+///   denemede aynı `client_request_id`. Birebir mesaj WebSocket'ten
+///   gönderilmez (ADR-0007 birebir istisnası). Bekleyen
 ///   mesajlar [bekleyenBirebirProvider]'dadır; gönderilen mesaj bekleyen
 ///   balonun yerine geçer.
 class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
@@ -297,7 +294,7 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
           :final BirebirGonderimi sonuc,
         )
         when sonuc.mesaj.conversationId == konusmaId) {
-      _mesajiYaz(sonuc.mesaj, durum: sonuc.durum, konusma: sonuc.konusma);
+      _mesajiYaz(sonuc.mesaj, konusma: sonuc.konusma);
     }
   }
 
@@ -325,28 +322,19 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
     }
   }
 
-  /// [mesaj]'ı akışa yazar; gönderimden geldiyse konuşmanın yeni durumunu
-  /// da ([durum] ya da sunucunun döndürdüğü [konusma]) yansıtır.
-  void _mesajiYaz(
-    DirectMessage mesaj, {
-    ConversationStatus? durum,
-    Conversation? konusma,
-  }) {
+  /// [mesaj]'ı akışa yazar; gönderimden geldiyse sunucunun döndürdüğü
+  /// [konusma]'yı da yansıtır.
+  void _mesajiYaz(DirectMessage mesaj, {Conversation? konusma}) {
     final mevcut = state.value;
     if (mevcut == null) return;
-    final yeniKonusma =
-        konusma ??
-        (durum == null
-            ? mevcut.konusma
-            : _konusmaDegistir(mevcut.konusma, durum: durum));
     state = AsyncData(
       mevcut._degistir(
-        konusma: yeniKonusma,
+        konusma: konusma ?? mevcut.konusma,
         mesajlar: mesajlariBirlestir(mevcut.mesajlar, [mesaj]),
       ),
     );
-    if (konusma != null || durum != null) {
-      ref.read(konusmaListesiProvider.notifier).yansit(yeniKonusma);
+    if (konusma != null) {
+      ref.read(konusmaListesiProvider.notifier).yansit(konusma);
     }
   }
 

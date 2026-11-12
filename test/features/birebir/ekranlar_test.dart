@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/app.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
@@ -31,9 +32,20 @@ Future<void> _ac(
   tester,
   ekran,
   themeMode: tema,
-  tayfa: birebirEkranOverridelari(tasima),
+  tayfa: birebirEkranOverridelari(
+    tasima,
+    e2e: true,
+    cihaz: const E2eCihazBilgisi(durum: E2eCihazDurumu.hazirlaniyor),
+    metinler: _metinler,
+  ),
   overrides: ek,
 );
+
+/// Konuşma 1'deki mesajların bellekte çözülmüş metinleri.
+const Map<String, String> _metinler = {
+  mesajId2: 'Pazar geliyor musun?',
+  mesajId1: 'Merhaba',
+};
 
 /// Konuşma 1: Deniz'den bir mesaj ve kullanıcının bir mesajı.
 SahteTayfaTasima _konusmaTasimasi({
@@ -49,13 +61,8 @@ SahteTayfaTasima _konusmaTasimasi({
     karsiOkundu: karsiOkundu,
   ),
   'GET $mesajlarYolu': (_) => mesajListesiJson([
-    mesajJson(
-      mesajId2,
-      gonderen: karsi,
-      metin: 'Pazar geliyor musun?',
-      zaman: '2026-11-10T11:00:00Z',
-    ),
-    mesajJson(mesajId1, gonderen: benId, metin: 'Merhaba'),
+    mesajJson(mesajId2, gonderen: karsi, zaman: '2026-11-10T11:00:00Z'),
+    mesajJson(mesajId1, gonderen: benId),
   ]),
   ...ek,
 });
@@ -165,7 +172,6 @@ void main() {
             'message': mesajJson(
               mesajId3,
               gonderen: benId,
-              metin: 'Geliyorum',
               zaman: '2026-11-10T12:00:00Z',
             ),
             'conversation': konusmaJson(konusmaId1),
@@ -182,11 +188,11 @@ void main() {
       expect(find.text(arbMetni('birebir_gonderiliyor')), findsNothing);
       final alan = tester.widget<TextField>(find.byType(TextField));
       expect(alan.controller!.text, isEmpty);
-      expect(
-        (tasima.giden('POST', gonderYolu).single.govde!
-            as Map<String, Object?>)['body'],
-        'Geliyorum',
-      );
+      final govde =
+          tasima.giden('POST', gonderYolu).single.govde!
+              as Map<String, Object?>;
+      expect(govde['envelopes'], [sahteZarf.toJson()]);
+      expect(govde.containsKey('body'), isFalse);
     });
 
     testWidgets('gönderilemeyen mesajda hata, tekrar dene ve sil', (
@@ -388,13 +394,12 @@ void main() {
           'POST $gonderYolu': (_) {
             gonderildi = true;
             return {
-              'message': mesajJson(mesajId1, gonderen: benId, metin: 'Selam'),
+              'message': mesajJson(mesajId3, gonderen: benId),
               'conversation': konusmaJson(konusmaId1, durum: 'request_sent'),
             };
           },
           'GET $mesajlarYolu': (_) => mesajListesiJson([
-            if (gonderildi)
-              mesajJson(mesajId1, gonderen: benId, metin: 'Selam'),
+            if (gonderildi) mesajJson(mesajId3, gonderen: benId),
           ]),
           'GET $konusmaYolu': (_) =>
               konusmaJson(konusmaId1, durum: 'request_sent'),

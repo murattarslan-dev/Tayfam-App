@@ -1,5 +1,5 @@
-/// Birebir mesaj özelliğinin dışa açık dosyası (ADR-0002, ADR-0018 §9,
-/// düz sürüm; uçtan uca şifreleme sonraki iştir): Sohbet sekmesindeki
+/// Birebir mesaj özelliğinin dışa açık dosyası (ADR-0002, ADR-0018 §9;
+/// uçtan uca şifreli, ADR-0020): Sohbet sekmesindeki
 /// konuşmalar ekranı ve bölümü, rotalar, kişi profilindeki "Mesaj gönder"
 /// düğmesi ve eylemi ve Sohbet sekmesi rozeti için okunmamış sayısı.
 library;

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
@@ -391,31 +392,24 @@ void main() {
       );
     });
 
-    test('dm.send ve dm.sent', () async {
+    test('dm.message_created içeriksiz çözülür', () async {
       final k = _Kurulum();
+      final olaylar = <RealtimeOlayi>[];
+      k.istemci.olaylar.listen(olaylar.add);
       final soket = await k.baglan();
-      final sonuc = k.istemci.dmGonder(
-        aliciId: kullanici,
-        metin: 'selam',
-        istekKimligi: istek,
-      );
-      final giden = soket.tur('dm.send').single;
-      expect(giden['data'], {
-        'recipient_user_id': kullanici,
-        'body': 'selam',
-        'client_request_id': istek,
-      });
-      soket.cerceve('dm.sent', {
+      soket.cerceve('dm.message_created', {
         'id': mesaj1,
         'conversation_id': kanal2,
         'sender_user_id': kullanici,
-        'body': 'selam',
+        'encryption': 'e2e',
         'created_at': '2026-11-11T10:00:00Z',
-        'conversation_status': 'request_sent',
-      }, id: giden['id']! as String);
-      final g = await sonuc;
-      expect(g.mesaj.conversationId, kanal2);
-      expect(g.konusmaDurumu.name, 'requestSent');
+      });
+      await pumpEventQueue();
+      final mesaj = (olaylar.last as DmMesajiGeldi).mesaj;
+      expect(mesaj.conversationId, kanal2);
+      expect(mesaj.encryption, DirectMessageEncryption.e2e);
+      // Birebir mesaj WebSocket'ten gönderilmez (Tayfam-Api #151).
+      expect(soket.tur('dm.send'), isEmpty);
     });
   });
 

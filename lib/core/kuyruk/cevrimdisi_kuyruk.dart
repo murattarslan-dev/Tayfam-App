@@ -10,7 +10,7 @@ import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
 
 /// Çevrimdışı kuyruğa giren bir iş (ADR-0006): kanal mesajı, birebir
-/// mesaj (düz sürüm), soru, cevap, katılım bildirimi.
+/// mesaj (uçtan uca şifreli; ADR-0020), soru, cevap, katılım bildirimi.
 ///
 /// İşi oluşturan özellik bu sınıftan türetir ve kendi alanlarını (ör.
 /// mesaj metni) ekler. Kuyruk işin içeriğine bakmaz, hiçbir yere yazmaz

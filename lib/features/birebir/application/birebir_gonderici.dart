@@ -1,50 +1,43 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
-import 'package:tayfam/core/realtime/realtime.dart';
-import 'package:tayfam/features/birebir/data/birebir_deposu.dart';
 
-/// Gönderilen birebir mesaj ve gönderenin gözünden konuşmanın durumu.
-/// REST'ten gidildiyse konuşmanın tamamı da vardır ([konusma]);
-/// WebSocket `dm.sent` yalnızca durumu döndürür.
+/// Gönderilen birebir mesaj ve gönderenin gözünden konuşmanın tamamı
+/// (`POST /v1/direct-messages` cevabı).
 @immutable
 final class BirebirGonderimi {
-  const BirebirGonderimi({
-    required this.mesaj,
-    required this.durum,
-    this.konusma,
-  });
+  const BirebirGonderimi({required this.mesaj, required this.konusma});
 
   final DirectMessage mesaj;
 
-  final ConversationStatus durum;
-
-  final Conversation? konusma;
+  final Conversation konusma;
 }
 
-/// Birebir mesajı sunucuya ileten tek nokta (ADR-0007 "Mesaj gönderimi",
-/// ADR-0020).
-///
-/// Mobilde ([E2eBirebir] verildiyse) mesaj uçtan uca şifrelenir ve
-/// yalnızca REST'ten (`envelopes`) gider; WebSocket'ten zarflı gönderim
-/// yoktur ve düz metne geri düşülmez. Web geliştirme derlemesinde düz
-/// sürüm kalır: bağlantı açıksa `dm.send` çerçevesiyle gönderilir;
-/// bağlantı kapalıysa, cevap gelmeden koparsa ya da 10 saniyede cevap
-/// gelmezse aynı
-/// [istekKimligi] ile REST'e (`POST /v1/direct-messages`) düşülür.
-/// Sunucunun hata çerçevesi kesin cevaptır, REST'e düşülmez. Metin hiçbir
-/// yere yazılmaz ve loglanmaz.
-final class BirebirGonderici {
-  const BirebirGonderici(this._realtime, this._depo, [this._e2e]);
+/// Şifreleyip `POST /v1/direct-messages` (`envelopes`) ile gönderen işlev;
+/// uygulamada [E2eBirebir.gonder].
+typedef SifreliGonderim = Future<DirectMessageSent> Function({
+  required String aliciId,
+  required String metin,
+  required String istekKimligi,
+});
 
-  final RealtimeIstemcisi _realtime;
-  final BirebirDeposu _depo;
-  final E2eBirebir? _e2e;
+/// Birebir mesajı sunucuya ileten tek nokta (ADR-0007 "Mesaj gönderimi"
+/// birebir istisnası, ADR-0020).
+///
+/// Birebir mesaj yalnızca uçtan uca şifreli gider (Tayfam-Api #151): her
+/// zaman [E2eBirebir] üzerinden, yalnızca REST'ten (`envelopes`);
+/// WebSocket'ten birebir mesaj gönderilmez ve düz metne geri düşülmez.
+/// Tekrar gönderimde aynı istek kimliği kullanılır. E2E'nin olmadığı
+/// derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS)
+/// cihaz hazır olmadığı için gönderim hata fırlatır ve genel hata yolundan
+/// "gönderilemedi" olur. Metin hiçbir yere yazılmaz ve loglanmaz.
+final class BirebirGonderici {
+  const BirebirGonderici(this._gonderim);
+
+  final SifreliGonderim _gonderim;
 
   /// [aliciId]'ye [metin]'i gönderir. Aynı iş her denemede aynı
   /// [istekKimligi] ile gönderilir; sunucu ikinci mesaj açmaz.
@@ -53,52 +46,18 @@ final class BirebirGonderici {
     required String metin,
     required String istekKimligi,
   }) async {
-    if (_e2e case final e2e?) {
-      final g = await e2e.gonder(
-        aliciId: aliciId,
-        metin: metin,
-        istekKimligi: istekKimligi,
-      );
-      return BirebirGonderimi(
-        mesaj: g.message,
-        durum: g.conversation.status,
-        konusma: g.conversation,
-      );
-    }
-    if (_realtime.durum == RealtimeDurumu.acik) {
-      try {
-        final g = await _realtime.dmGonder(
-          aliciId: aliciId,
-          metin: metin,
-          istekKimligi: istekKimligi,
-        );
-        return BirebirGonderimi(mesaj: g.mesaj, durum: g.konusmaDurumu);
-      } on RealtimeKapali {
-        // REST'e düşülür.
-      } on TimeoutException {
-        // REST'e düşülür.
-      }
-    }
-    final g = await _depo.gonder(
+    final g = await _gonderim(
       aliciId: aliciId,
       metin: metin,
       istekKimligi: istekKimligi,
     );
-    return BirebirGonderimi(
-      mesaj: g.message,
-      durum: g.conversation.status,
-      konusma: g.conversation,
-    );
+    return BirebirGonderimi(mesaj: g.message, konusma: g.conversation);
   }
 }
 
 /// Uygulamanın birebir mesaj göndericisi.
 final birebirGondericiProvider = Provider<BirebirGonderici>(
-  (ref) => BirebirGonderici(
-    ref.watch(realtimeIstemcisiProvider),
-    ref.watch(birebirDeposuProvider),
-    ref.watch(e2eEtkinProvider) ? ref.watch(e2eBirebirProvider) : null,
-  ),
+  (ref) => BirebirGonderici(ref.watch(e2eBirebirProvider).gonder),
   name: 'birebirGondericiProvider',
 );
 

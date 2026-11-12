@@ -42,7 +42,8 @@ yalnızca yönlendirme için iki oturum bayrağı (`registration_pending`,
 
 - Kuyruk `core/` altında, `keepAlive` bir provider olarak yalnızca bellekte
   tutulur (ADR-0001 kural 4).
-- **Kapsam:** kanal mesajı, birebir mesaj (düz sürüm), soru, cevap, katılım
+- **Kapsam:** kanal mesajı, birebir mesaj (2026-11-12'den beri yalnızca
+  uçtan uca şifreli, ADR-0020), soru, cevap, katılım
   bildirimi. Duyuru, etkinlik ve tayfa oluşturma kuyruğa girmez; çevrimdışı
   iken form açık kalır, gönderim bağlantı gelince yapılır.
 - Her öğe oluşturulduğu anda bir `client_request_id` alır; her denemede

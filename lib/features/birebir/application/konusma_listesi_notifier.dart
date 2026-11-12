@@ -68,12 +68,7 @@ class KonusmaListesiNotifier extends SayfaliListeNotifier<Conversation> {
 
   void _kuyrukOlayi(KuyrukOlayi olay) {
     if (olay case KuyrukGonderildi(:final BirebirGonderimi sonuc)) {
-      final konusma = sonuc.konusma;
-      if (konusma != null) {
-        yansit(konusma);
-      } else {
-        unawaited(yenile());
-      }
+      yansit(sonuc.konusma);
     }
   }
 
