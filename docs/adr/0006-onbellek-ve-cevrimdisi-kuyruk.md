@@ -88,3 +88,10 @@ yalnızca yönlendirme için iki oturum bayrağı (`registration_pending`,
   yönetimi gerekir. Platform sahibi istemedi.
 - **Şifreli yerel veritabanı ile çevrimdışı okuma:** çevrimdışı açılışta
   içerik görünür; ama cihazda kalıcı içerik, büyük bağımlılık ve göç yükü.
+
+## Notlar
+
+- **2026-11-12 (issue #80, [ADR-0023](0023-uygulama-butunlugu-istemci.md) §6):**
+  Güvenli depodaki oturum kaydına üçüncü bir içerik dışı değer eklenir:
+  sunucunun bildirdiği bir sonraki bütünlük denetimi zamanı
+  (`integrity_check_after`). Oturumla birlikte silinir.

@@ -65,6 +65,9 @@ final class _SahteGateway {
   /// Doluysa kimlikli her istek bu problemle reddedilir.
   bool herZaman401 = false;
 
+  /// Engelleme uçlarının kaç kez daha `integrity-required` döneceği.
+  int butunlukReddi = 0;
+
   String get gecerliErisim => 'erisim-$_surum';
 
   Future<http.Response> isle(http.Request istek) async {
@@ -102,6 +105,10 @@ final class _SahteGateway {
     }
     if (yol == '/v1/auth/sign-out') return http.Response('', 204);
     if (yol.startsWith('/v1/me/blocks')) {
+      if (butunlukReddi > 0) {
+        butunlukReddi--;
+        return _problem('integrity-required', 403);
+      }
       if (istek.method == 'GET') return _json({'users': <Object?>[]});
       return http.Response('', 204);
     }
@@ -124,11 +131,16 @@ final class _Kurulum {
     final status = StatusApi(tasima);
     oturum = SessionStore(
       depo: depo,
-      yenileyici: (token) =>
-          auth.refresh(body: RefreshRequest(refreshToken: token)),
+      yenileyici: (token, {butunlukTokeni}) => auth.refresh(
+        body: RefreshRequest(
+          refreshToken: token,
+          integrityToken: butunlukTokeni,
+        ),
+      ),
       yoklayici: () async {
         await status.getStatus();
       },
+      kanit: (_) async => 'kanit',
       bekle: (_) async {},
       gunluk: gunluk.add,
     );
@@ -171,6 +183,44 @@ void main() {
       expect(istek.headers['Authorization'], 'Bearer erisim-2');
       expect(istek.headers['X-Tayfam-Client'], 'ios');
     }
+  });
+
+  test('integrity-required: kanıtla yenilenip bir kez tekrarlanır', () async {
+    final k = _Kurulum();
+    await k.girisYap();
+    k.sunucu.butunlukReddi = 1;
+
+    await MeApi(k.istemci).blockUser(userId: '1');
+
+    final yenileme = k.sunucu.yenilemeIstekleri().single;
+    final govde = jsonDecode(yenileme.body) as Map<String, Object?>;
+    expect(govde['integrity_token'], 'kanit');
+    final engelleme = k.sunucu.istekler
+        .where((i) => i.url.path.startsWith('/v1/me/blocks'))
+        .toList();
+    expect(engelleme, hasLength(2));
+    expect(engelleme.last.headers['Authorization'], 'Bearer erisim-2');
+  });
+
+  test('integrity-required: ikinci ret hataya döner, döngü yok', () async {
+    final k = _Kurulum();
+    await k.girisYap();
+    k.sunucu.butunlukReddi = 99;
+
+    for (var i = 0; i < 2; i++) {
+      await expectLater(
+        MeApi(k.istemci).blockUser(userId: '1'),
+        throwsA(
+          isA<ApiProblem>().having(
+            (p) => p.type,
+            'type',
+            ProblemType.integrityRequired,
+          ),
+        ),
+      );
+    }
+    expect(k.sunucu.yenilemeSayisi, 1);
+    expect(await k.oturum.durum(), isA<OturumAcik>());
   });
 
   test('401 alan istek yenilenip bir kez tekrarlanır', () async {

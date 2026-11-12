@@ -8,6 +8,7 @@ import 'package:tayfam/core/api/gen/apis/me_api.dart';
 import 'package:tayfam/core/api/gen/apis/registration_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
+import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 
@@ -49,23 +50,31 @@ String tarihMetni(DateTime tarih) {
 /// sınıflarını kullanır; arayüze ham API modeli yerine [OnaySurumleri]
 /// verir.
 final class HesapDeposu {
-  HesapDeposu(ApiTransport istemci)
+  HesapDeposu(ApiTransport istemci, {this._butunluk})
     : _auth = AuthApi(istemci),
       _kayit = RegistrationApi(istemci),
       _me = MeApi(istemci);
 
+  final ButunlukKaniti? _butunluk;
   final AuthApi _auth;
   final RegistrationApi _kayit;
   final MeApi _me;
 
   /// `POST /v1/auth/sign-in`. ID token ve nonce yalnızca gövdeye gider.
-  Future<Session> girisYap(GoogleKimligi kimlik, {required String platform}) {
+  /// Nonce'a bağlı bütünlük kanıtı alınabilirse `integrity_token` olarak
+  /// eklenir, alınamazsa alan gönderilmez (istemci ADR-0023 §3).
+  Future<Session> girisYap(
+    GoogleKimligi kimlik, {
+    required String platform,
+  }) async {
+    final butunlukTokeni = await _butunluk?.giris(kimlik.nonce);
     return _auth.signIn(
       body: SignInRequest(
         provider: SignInRequestProvider.google,
         idToken: kimlik.idToken,
         nonce: kimlik.nonce,
         platform: SignInRequestPlatform.fromWire(platform),
+        integrityToken: butunlukTokeni,
       ),
     );
   }
@@ -115,7 +124,10 @@ final class HesapDeposu {
 
 /// Hesap uçlarının deposu; bütün istekler tek `ApiClient`'tan geçer.
 final hesapDeposuProvider = Provider<HesapDeposu>(
-  (ref) => HesapDeposu(ref.watch(apiClientProvider)),
+  (ref) => HesapDeposu(
+    ref.watch(apiClientProvider),
+    butunluk: ref.watch(butunlukKanitiProvider),
+  ),
   name: 'hesapDeposuProvider',
 );
 

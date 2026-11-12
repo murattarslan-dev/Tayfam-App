@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/gen/apis/status_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
 import 'package:tayfam/core/oturum/token_deposu.dart';
 
 /// Oturumun neden kapandığı. Yalnızca yönlendirme ve günlük içindir.
@@ -82,8 +83,16 @@ final class OturumYok implements Exception {
   String toString() => 'OturumYok';
 }
 
-/// `POST /v1/auth/refresh` çağrısı.
-typedef TokenYenileyici = Future<Session> Function(String yenilemeTokeni);
+/// `POST /v1/auth/refresh` çağrısı. [butunlukTokeni] varsa istekte
+/// `integrity_token` olarak gider (istemci ADR-0023).
+typedef TokenYenileyici = Future<Session> Function(
+  String yenilemeTokeni, {
+  String? butunlukTokeni,
+});
+
+/// Yenileme token'ının özetine bağlı bütünlük kanıtı (istemci ADR-0023).
+/// Alınamazsa `null`; hata fırlatmaz ve süresi sınırlıdır.
+typedef YenilemeKaniti = Future<String?> Function(String yenilemeTokeni);
 
 /// Yenilemeden önce sunucuya ulaşılabildiğini doğrulayan kimliksiz istek
 /// (`GET /v1/status`).
@@ -104,11 +113,16 @@ typedef BaglantiYoklayici = Future<void> Function();
 /// - Oturum kapanınca token'lar silinir ve [olaylar]'a [OturumKapali]
 ///   yayılır; kullanıcıya bağlı durum bunu dinleyerek sıfırlanır
 ///   (ADR-0001 kural 8).
+/// - Bütünlük (istemci ADR-0023): sunucunun bildirdiği
+///   `integrity_check_after` geçtiyse yenileme isteğine, bağlantı
+///   yoklandıktan sonra ve token harcanmadan önce, [YenilemeKaniti]'nin
+///   verdiği kanıt eklenir. Kanıt alınamazsa yenileme kanıtsız gider.
 final class SessionStore {
   SessionStore({
     required this._depo,
     required this._yenileyici,
     required this._yoklayici,
+    this._kanit,
     DateTime Function()? saat,
     Future<void> Function(Duration sure)? bekle,
     this._gunluk = varsayilanApiGunlugu,
@@ -124,6 +138,7 @@ final class SessionStore {
   final TokenDeposu _depo;
   final TokenYenileyici _yenileyici;
   final BaglantiYoklayici _yoklayici;
+  final YenilemeKaniti? _kanit;
   final DateTime Function() _saat;
   final Future<void> Function(Duration sure) _bekle;
   final ApiGunlugu _gunluk;
@@ -139,6 +154,14 @@ final class SessionStore {
   /// Her açılış ve kapanışta artar; eski oturuma ait bir yenilemenin sonucu
   /// yeni oturumun üstüne yazılmaz.
   int _nesil = 0;
+
+  /// Sonraki yenileme, zamanı gelmemiş olsa da bütünlük kanıtı taşır
+  /// (`integrity-required` alındı).
+  bool _kanitZorla = false;
+
+  /// `integrity-required` yüzünden kanıtla yenilenmiş son erişim token'ı;
+  /// bu token da reddedilirse bir daha yenilenmez.
+  String? _butunlukIcinYenilenen;
 
   Future<void>? _yukleme;
   Future<void>? _ucus;
@@ -158,6 +181,8 @@ final class SessionStore {
     _nesil++;
     _harcanan = null;
     _ucus = null;
+    _kanitZorla = false;
+    _butunlukIcinYenilenen = null;
     final kayit = _kayit(oturum);
     await _depo.yaz(kayit.kodla());
     _oturum = kayit;
@@ -192,6 +217,25 @@ final class SessionStore {
     if (oturum.erisimTokeni != reddedilen) return oturum.erisimTokeni;
     await _tekUcus();
     return _gecerliToken();
+  }
+
+  /// [reddedilen] token `integrity-required` aldı (sunucu `enforce`
+  /// modunda; istemci ADR-0023 §5): bir sonraki yenileme zamanından
+  /// bağımsız olarak kanıt taşır ve tek uçuşta yapılır. Yeni token'ı
+  /// döndürür; bu token için zaten kanıtla yenilendiyse `null` (istek
+  /// tekrarlanmaz, hata kullanıcıya gider). Başka bir istek token'ı zaten
+  /// değiştirdiyse güncel token döner.
+  Future<String?> butunlukGerekti(String reddedilen) async {
+    await _yukle();
+    final oturum = _oturum;
+    if (oturum == null) throw const OturumYok();
+    if (reddedilen == _butunlukIcinYenilenen) return null;
+    if (oturum.erisimTokeni != reddedilen) return oturum.erisimTokeni;
+    _kanitZorla = true;
+    await _tekUcus();
+    final yeni = _gecerliToken();
+    _butunlukIcinYenilenen = yeni;
+    return yeni;
   }
 
   /// Süreden bağımsız yeniler (tek uçuşta). Kayıt tamamlanınca ya da
@@ -256,6 +300,7 @@ final class SessionStore {
     kayitBekliyor: oturum.registrationPending,
     onayGerekli: oturum.consentRequired ?? false,
     kullaniciId: oturum.userId,
+    butunlukSonrasi: oturum.integrityCheckAfter?.toUtc(),
   );
 
   Future<void> _yukle() => _yukleme ??= _depodanOku();
@@ -305,6 +350,8 @@ final class SessionStore {
     _oturum = null;
     _harcanan = null;
     _ucus = null;
+    _kanitZorla = false;
+    _butunlukIcinYenilenen = null;
     await _depodanSilSessiz();
     if (acikti) {
       _gunluk('oturum: kapandı (${neden.name})');
@@ -337,11 +384,19 @@ final class SessionStore {
     await _yoklayici();
     if (nesil != _nesil) throw const OturumYok();
 
+    // Kanıt token harcanmadan önce alınır: süresi sınırlıdır ve bu sırada
+    // yenileme token'ı henüz gönderilmemiştir (10 sn tolerans etkilenmez).
+    final butunlukTokeni = await _butunlukKaniti(oturum);
+    if (nesil != _nesil) throw const OturumYok();
+
     _harcanan = oturum.yenilemeTokeni;
     await _depodanSilSessiz();
     final Session yeni;
     try {
-      yeni = await _yenileyici(oturum.yenilemeTokeni);
+      yeni = await _yenileyici(
+        oturum.yenilemeTokeni,
+        butunlukTokeni: butunlukTokeni,
+      );
     } on Exception catch (hata) {
       if (hata is ApiProblem && hata.type == ProblemType.refreshConflict) {
         await _catismadanSonra(oturum, nesil);
@@ -359,6 +414,22 @@ final class SessionStore {
     }
     if (nesil != _nesil) throw const OturumYok();
     await _guncelle(_kayit(yeni), yaz: true);
+  }
+
+  /// Zamanı geldiyse (ya da `integrity-required` alındıysa) yenileme
+  /// token'ının özetine bağlı kanıt; gerekmiyorsa ya da alınamazsa `null`.
+  Future<String?> _butunlukKaniti(KayitliOturum oturum) async {
+    final kanit = _kanit;
+    if (kanit == null) return null;
+    final sonrasi = oturum.butunlukSonrasi;
+    final zamani = sonrasi != null && !_saat().isBefore(sonrasi);
+    if (!zamani && !_kanitZorla) return null;
+    _kanitZorla = false;
+    try {
+      return await kanit(oturum.yenilemeTokeni);
+    } on Exception {
+      return null;
+    }
   }
 
   /// `refresh-conflict`: aynı token'la başka bir yenileme (başka bir
@@ -408,13 +479,16 @@ SessionStore _sessionStoreOlustur(Ref ref) {
   final tasima = ref.watch(httpTasimaProvider);
   final auth = AuthApi(tasima);
   final status = StatusApi(tasima);
+  final butunluk = ref.watch(butunlukKanitiProvider);
   final oturum = SessionStore(
     depo: ref.watch(tokenDeposuProvider),
-    yenileyici: (token) =>
-        auth.refresh(body: RefreshRequest(refreshToken: token)),
+    yenileyici: (token, {butunlukTokeni}) => auth.refresh(
+      body: RefreshRequest(refreshToken: token, integrityToken: butunlukTokeni),
+    ),
     yoklayici: () async {
       await status.getStatus();
     },
+    kanit: butunluk.yenileme,
   );
   ref.onDispose(oturum.dispose);
   return oturum;
