@@ -24,6 +24,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.markaUstu,
     required this.markaYuzey,
     required this.markaYuzeyUstu,
+    required this.acilisZemini,
     required this.birincilEylem,
     required this.birincilEylemUstu,
     required this.tintMarka,
@@ -76,6 +77,12 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
 
   /// [markaYuzey] üzerindeki metin; iki temada da beyaz.
   final Color markaYuzeyUstu;
+
+  /// Açılış ekranının (splash) zemini: açık temada brand, koyu temada ink
+  /// (Design: Splash açık / koyu). Üzerindeki yazı [markaYuzeyUstu]
+  /// (beyaz); native açılış ekranlarıyla aynı renk
+  /// (`tool/ikon/splash_uret.py`).
+  final Color acilisZemini;
 
   /// Birincil eylem zemini: açık zeminde brand, koyu zeminde mango.
   final Color birincilEylem;
@@ -159,6 +166,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     markaUstu: _Palet.beyaz,
     markaYuzey: _Palet.brand,
     markaYuzeyUstu: _Palet.beyaz,
+    acilisZemini: _Palet.brand,
     birincilEylem: _Palet.brand,
     birincilEylemUstu: _Palet.beyaz,
     tintMarka: _Palet.tintBrand,
@@ -191,6 +199,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     markaUstu: _Palet.ink,
     markaYuzey: _Palet.brand,
     markaYuzeyUstu: _Palet.beyaz,
+    acilisZemini: _Palet.ink,
     birincilEylem: _Palet.mango,
     birincilEylemUstu: _Palet.ink,
     tintMarka: _Palet.tintBrandDark,
@@ -223,6 +232,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? markaUstu,
     Color? markaYuzey,
     Color? markaYuzeyUstu,
+    Color? acilisZemini,
     Color? birincilEylem,
     Color? birincilEylemUstu,
     Color? tintMarka,
@@ -253,6 +263,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       markaUstu: markaUstu ?? this.markaUstu,
       markaYuzey: markaYuzey ?? this.markaYuzey,
       markaYuzeyUstu: markaYuzeyUstu ?? this.markaYuzeyUstu,
+      acilisZemini: acilisZemini ?? this.acilisZemini,
       birincilEylem: birincilEylem ?? this.birincilEylem,
       birincilEylemUstu: birincilEylemUstu ?? this.birincilEylemUstu,
       tintMarka: tintMarka ?? this.tintMarka,
@@ -291,6 +302,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       markaUstu: l(markaUstu, other.markaUstu),
       markaYuzey: l(markaYuzey, other.markaYuzey),
       markaYuzeyUstu: l(markaYuzeyUstu, other.markaYuzeyUstu),
+      acilisZemini: l(acilisZemini, other.acilisZemini),
       birincilEylem: l(birincilEylem, other.birincilEylem),
       birincilEylemUstu: l(birincilEylemUstu, other.birincilEylemUstu),
       tintMarka: l(tintMarka, other.tintMarka),

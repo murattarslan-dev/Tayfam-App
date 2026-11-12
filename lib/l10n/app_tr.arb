@@ -2517,7 +2517,7 @@
   },
   "hesap_acilis_yukleniyor": "Açılıyor",
   "@hesap_acilis_yukleniyor": {
-    "description": "Açılış ekranındaki ilerleme göstergesinin ekran okuyucu etiketi; oturum bilgisi okunurken."
+    "description": "Açılış ekranının ve hesap ekranlarındaki yükleme durumunun ekran okuyucu etiketi; oturum bilgisi okunurken. Ekranda görünmez."
   },
   "hesap_google_ile_devam": "Google ile devam et",
   "@hesap_google_ile_devam": {

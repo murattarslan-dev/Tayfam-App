@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/acilis_logosu.dart';
 import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
@@ -351,20 +352,18 @@ void main() {
       testWidgets('açılış ekranı ${tema.name} temada 2×', (tester) async {
         ekranBoyutu(tester);
         ikiKatYazi(tester);
-        // İlerleme göstergesi döndüğü için beklenip durulmaz.
-        await widgetAc(
-          tester,
-          const AcilisEkrani(),
-          themeMode: tema,
-          dur: false,
-        );
+        await widgetAc(tester, const AcilisEkrani(), themeMode: tema);
 
-        expect(find.byType(TayfamLogo), findsOneWidget);
+        expect(find.byType(AcilisLogosu), findsOneWidget);
         expect(_metin('bilesen_logo_yazisi'), findsOneWidget);
-        // Sayfa zemininde L parçası açık temada brand, koyu temada
-        // brand-dark.
+        // Zemin açık temada brand, koyu temada ink; L parçası mor zeminde
+        // #FAF8FF, ink zeminde brand-dark (native açılış ekranıyla aynı).
         final r = _renkler(tema);
-        final l = tema == ThemeMode.dark ? r.marka : r.markaYuzey;
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.backgroundColor, r.acilisZemini);
+        final l = tema == ThemeMode.dark
+            ? TayfamLogoRenkleri.lKoyuZemin
+            : TayfamLogoRenkleri.lMorZemin;
         expect(_lParcasi(tester), l);
         expect(tester.takeException(), isNull);
       });
