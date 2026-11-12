@@ -10,6 +10,8 @@ library;
 
 final class Account {
   const Account({
+    required this.userId,
+    required this.displayName,
     this.avatarUploadId,
     required this.referralCode,
     required this.activityVisibility,
@@ -19,6 +21,8 @@ final class Account {
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory Account.fromJson(Map<String, Object?> json) => Account(
+    userId: _readString(json['user_id'], 'Account.user_id'),
+    displayName: _readString(json['display_name'], 'Account.display_name'),
     avatarUploadId: switch (json['avatar_upload_id']) {
       null => null,
       final Object v => _readString(v, 'Account.avatar_upload_id'),
@@ -28,6 +32,12 @@ final class Account {
       _readString(json['activity_visibility'], 'Account.activity_visibility'),
     ),
   );
+
+  /// Kendi kullanıcı kimliğiniz.
+  final String userId;
+
+  /// Kendi görünen adınız.
+  final String displayName;
 
   /// Avatar; linkleri `POST /v1/media/urls`.
   final String? avatarUploadId;
@@ -39,6 +49,8 @@ final class Account {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'display_name': displayName,
     if (avatarUploadId case final value?) 'avatar_upload_id': value,
     'referral_code': referralCode,
     'activity_visibility': activityVisibility.wire,
@@ -48,12 +60,16 @@ final class Account {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Account &&
+          userId == other.userId &&
+          displayName == other.displayName &&
           avatarUploadId == other.avatarUploadId &&
           referralCode == other.referralCode &&
           activityVisibility == other.activityVisibility;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    userId,
+    displayName,
     avatarUploadId,
     referralCode,
     activityVisibility,
@@ -973,6 +989,38 @@ final class AvatarView {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[avatarUploadId]);
+}
+
+final class BanRequest {
+  const BanRequest({this.reason});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory BanRequest.fromJson(Map<String, Object?> json) => BanRequest(
+    reason: switch (json['reason']) {
+      null => null,
+      final Object v => ReportReason.fromWire(
+        _readString(v, 'BanRequest.reason'),
+      ),
+    },
+  );
+
+  /// İsteğe bağlı. Şikâyet nedenleriyle aynı liste; `staff_conduct`
+  /// kabul edilmez (`validation`, alan `reason`).
+  final ReportReason? reason;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (reason case final value?) 'reason': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is BanRequest && reason == other.reason;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[reason]);
 }
 
 final class BlockedUser {
@@ -3309,7 +3357,6 @@ final class DirectMessage {
     required this.id,
     required this.conversationId,
     this.senderUserId,
-    this.body,
     required this.deleted,
     this.encryption,
     required this.createdAt,
@@ -3328,10 +3375,6 @@ final class DirectMessage {
       null => null,
       final Object v => _readString(v, 'DirectMessage.sender_user_id'),
     },
-    body: switch (json['body']) {
-      null => null,
-      final Object v => _readString(v, 'DirectMessage.body'),
-    },
     deleted: _readBool(json['deleted'], 'DirectMessage.deleted'),
     encryption: switch (json['encryption']) {
       null => null,
@@ -3349,14 +3392,10 @@ final class DirectMessage {
   /// Gönderenin hesabı silindiyse yoktur.
   final String? senderUserId;
 
-  /// Silinmiş ve uçtan uca şifreli mesajda yoktur.
-  final String? body;
-
   final bool deleted;
 
-  /// `server`: düz sürüm, metin sunucu anahtarıyla şifreli saklanır
-  /// (uçtan uca değildir; istemci bunu belirtir). `e2e`: içerik
-  /// yalnızca zarflarda ve arşivdedir.
+  /// Her mesaj uçtan uca şifrelidir; içerik yalnızca zarflarda ve
+  /// arşivdedir (`server` değeri #151 ile kalktı).
   final DirectMessageEncryption? encryption;
 
   final DateTime createdAt;
@@ -3366,7 +3405,6 @@ final class DirectMessage {
     'id': id,
     'conversation_id': conversationId,
     if (senderUserId case final value?) 'sender_user_id': value,
-    if (body case final value?) 'body': value,
     'deleted': deleted,
     if (encryption case final value?) 'encryption': value.wire,
     'created_at': createdAt.toUtc().toIso8601String(),
@@ -3379,7 +3417,6 @@ final class DirectMessage {
           id == other.id &&
           conversationId == other.conversationId &&
           senderUserId == other.senderUserId &&
-          body == other.body &&
           deleted == other.deleted &&
           encryption == other.encryption &&
           createdAt == other.createdAt;
@@ -3389,19 +3426,17 @@ final class DirectMessage {
     id,
     conversationId,
     senderUserId,
-    body,
     deleted,
     encryption,
     createdAt,
   ]);
 }
 
-/// `body` ya da `envelopes`; ikisinden yalnızca biri.
+/// Düz metin (`body`) kabul edilmez (#151).
 final class DirectMessageCreateRequest {
   const DirectMessageCreateRequest({
     required this.recipientUserId,
-    this.body,
-    this.envelopes,
+    required this.envelopes,
     required this.clientRequestId,
   });
 
@@ -3414,20 +3449,16 @@ final class DirectMessageCreateRequest {
           json['recipient_user_id'],
           'DirectMessageCreateRequest.recipient_user_id',
         ),
-        body: switch (json['body']) {
-          null => null,
-          final Object v => _readString(v, 'DirectMessageCreateRequest.body'),
-        },
-        envelopes: switch (json['envelopes']) {
-          null => null,
-          final Object v => List<OutgoingEnvelope>.unmodifiable(
-            _readList(v, 'DirectMessageCreateRequest.envelopes').map(
-              (Object? e0) => OutgoingEnvelope.fromJson(
-                _readObject(e0, 'DirectMessageCreateRequest.envelopes'),
-              ),
+        envelopes: List<OutgoingEnvelope>.unmodifiable(
+          _readList(
+            json['envelopes'],
+            'DirectMessageCreateRequest.envelopes',
+          ).map(
+            (Object? e0) => OutgoingEnvelope.fromJson(
+              _readObject(e0, 'DirectMessageCreateRequest.envelopes'),
             ),
           ),
-        },
+        ),
         clientRequestId: _readString(
           json['client_request_id'],
           'DirectMessageCreateRequest.client_request_id',
@@ -3436,11 +3467,8 @@ final class DirectMessageCreateRequest {
 
   final String recipientUserId;
 
-  /// Kısıtlar: minLength: 1; maxLength: 4000.
-  final String? body;
-
   /// Kısıtlar: minItems: 1; maxItems: 16.
-  final List<OutgoingEnvelope>? envelopes;
+  final List<OutgoingEnvelope> envelopes;
 
   /// İstemcinin ürettiği tekrar gönderim anahtarı.
   final String clientRequestId;
@@ -3448,9 +3476,7 @@ final class DirectMessageCreateRequest {
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'recipient_user_id': recipientUserId,
-    if (body case final value?) 'body': value,
-    if (envelopes case final value?)
-      'envelopes': <Object?>[for (final e0 in value) e0.toJson()],
+    'envelopes': <Object?>[for (final e0 in envelopes) e0.toJson()],
     'client_request_id': clientRequestId,
   };
 
@@ -3459,24 +3485,20 @@ final class DirectMessageCreateRequest {
       identical(this, other) ||
       other is DirectMessageCreateRequest &&
           recipientUserId == other.recipientUserId &&
-          body == other.body &&
           _deepEquals(envelopes, other.envelopes) &&
           clientRequestId == other.clientRequestId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
     recipientUserId,
-    body,
     _deepHash(envelopes),
     clientRequestId,
   ]);
 }
 
-/// `server`: düz sürüm, metin sunucu anahtarıyla şifreli saklanır
-/// (uçtan uca değildir; istemci bunu belirtir). `e2e`: içerik
-/// yalnızca zarflarda ve arşivdedir.
+/// Her mesaj uçtan uca şifrelidir; içerik yalnızca zarflarda ve
+/// arşivdedir (`server` değeri #151 ile kalktı).
 enum DirectMessageEncryption {
-  server('server'),
   e2e('e2e'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
@@ -9315,7 +9337,8 @@ final class Notification {
   /// Bildirim bir tayfayla ilgili değilse yoktur.
   final String? tayfaId;
 
-  /// İşlemi yapan; sistem ya da silinmiş hesapsa yoktur.
+  /// İşlemi yapan; sistem ya da silinmiş hesapsa yoktur. Adı
+  /// `GET /v1/users/{user_id}/profile` verir (ortak tayfa gerekmez).
   final String? actorId;
 
   /// `membership` için `target_id` başvuran kullanıcının kimliğidir;
@@ -10133,6 +10156,7 @@ final class PollCreateRequest {
     this.multipleChoice,
     this.closesAt,
     this.eventId,
+    this.clientRequestId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -10163,6 +10187,13 @@ final class PollCreateRequest {
           null => null,
           final Object v => _readString(v, 'PollCreateRequest.event_id'),
         },
+        clientRequestId: switch (json['client_request_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'PollCreateRequest.client_request_id',
+          ),
+        },
       );
 
   /// Baştaki ve sondaki boşluklar atıldıktan sonra 1–200 karakter, tek satır.
@@ -10189,6 +10220,13 @@ final class PollCreateRequest {
   /// İsteğe bağlı; aynı tayfanın etkinliği.
   final String? eventId;
 
+  /// İsteğe bağlı. İstemcinin her oluşturma denemesi için bir kez
+  /// ürettiği, tekrar gönderimde aynen kullandığı UUID; aynı kişiden
+  /// tekrar gelirse ilk anket döner, ikinci anket açılmaz. Başka bir
+  /// tayfada ya da o anket silindikten sonra tekrar kullanılırsa
+  /// `validation` (alan `client_request_id`).
+  final String? clientRequestId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'question': question,
@@ -10198,6 +10236,7 @@ final class PollCreateRequest {
     if (closesAt case final value?)
       'closes_at': value.toUtc().toIso8601String(),
     if (eventId case final value?) 'event_id': value,
+    if (clientRequestId case final value?) 'client_request_id': value,
   };
 
   @override
@@ -10209,7 +10248,8 @@ final class PollCreateRequest {
           anonymous == other.anonymous &&
           multipleChoice == other.multipleChoice &&
           closesAt == other.closesAt &&
-          eventId == other.eventId;
+          eventId == other.eventId &&
+          clientRequestId == other.clientRequestId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -10219,6 +10259,7 @@ final class PollCreateRequest {
     multipleChoice,
     closesAt,
     eventId,
+    clientRequestId,
   ]);
 }
 
@@ -10972,7 +11013,7 @@ final class ReferredUser {
 }
 
 final class RefreshRequest {
-  const RefreshRequest({required this.refreshToken});
+  const RefreshRequest({required this.refreshToken, this.integrityToken});
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -10982,23 +11023,39 @@ final class RefreshRequest {
       json['refresh_token'],
       'RefreshRequest.refresh_token',
     ),
+    integrityToken: switch (json['integrity_token']) {
+      null => null,
+      final Object v => _readString(v, 'RefreshRequest.integrity_token'),
+    },
   );
 
   /// Kısıtlar: maxLength: 64.
   final String refreshToken;
 
+  /// İsteğe bağlı, Android: Play Integrity token'ı; yalnızca
+  /// `integrity_check_after` geçtiyse gönderilir, öncesinde yok
+  /// sayılır (ADR-0022). `requestHash` =
+  /// base64url(SHA-256("tayfam-integrity/v1/refresh\n" + SHA-256(refresh_token))), dolgusuz;
+  /// iç özet ham bayttır.
+  ///
+  /// Kısıtlar: maxLength: 16384.
+  final String? integrityToken;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'refresh_token': refreshToken,
+    if (integrityToken case final value?) 'integrity_token': value,
   };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is RefreshRequest && refreshToken == other.refreshToken;
+      other is RefreshRequest &&
+          refreshToken == other.refreshToken &&
+          integrityToken == other.integrityToken;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[refreshToken]);
+  int get hashCode => Object.hashAll(<Object?>[refreshToken, integrityToken]);
 }
 
 final class RegistrationRequest {
@@ -11560,6 +11617,7 @@ final class Session {
     required this.refreshExpiresAt,
     required this.registrationPending,
     this.consentRequired,
+    this.integrityCheckAfter,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -11586,6 +11644,10 @@ final class Session {
       null => null,
       final Object v => _readBool(v, 'Session.consent_required'),
     },
+    integrityCheckAfter: switch (json['integrity_check_after']) {
+      null => null,
+      final Object v => _readDateTime(v, 'Session.integrity_check_after'),
+    },
   );
 
   final String userId;
@@ -11607,6 +11669,10 @@ final class Session {
   /// yeni metinleri gösterip onay alır.
   final bool? consentRequired;
 
+  /// Bu zamandan sonraki ilk yenilemede `integrity_token` gönderilir
+  /// (ADR-0022). Bütünlük denetimi kapalıyken alan yoktur.
+  final DateTime? integrityCheckAfter;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'user_id': userId,
@@ -11617,6 +11683,8 @@ final class Session {
     'refresh_expires_at': refreshExpiresAt.toUtc().toIso8601String(),
     'registration_pending': registrationPending,
     if (consentRequired case final value?) 'consent_required': value,
+    if (integrityCheckAfter case final value?)
+      'integrity_check_after': value.toUtc().toIso8601String(),
   };
 
   @override
@@ -11630,7 +11698,8 @@ final class Session {
           refreshToken == other.refreshToken &&
           refreshExpiresAt == other.refreshExpiresAt &&
           registrationPending == other.registrationPending &&
-          consentRequired == other.consentRequired;
+          consentRequired == other.consentRequired &&
+          integrityCheckAfter == other.integrityCheckAfter;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -11642,6 +11711,7 @@ final class Session {
     refreshExpiresAt,
     registrationPending,
     consentRequired,
+    integrityCheckAfter,
   ]);
 }
 
@@ -11651,6 +11721,7 @@ final class SignInRequest {
     required this.idToken,
     required this.nonce,
     required this.platform,
+    this.integrityToken,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -11665,6 +11736,10 @@ final class SignInRequest {
     platform: SignInRequestPlatform.fromWire(
       _readString(json['platform'], 'SignInRequest.platform'),
     ),
+    integrityToken: switch (json['integrity_token']) {
+      null => null,
+      final Object v => _readString(v, 'SignInRequest.integrity_token'),
+    },
   );
 
   final SignInRequestProvider provider;
@@ -11678,12 +11753,20 @@ final class SignInRequest {
   /// `web` yalnızca prod dışında (ADR-0017).
   final SignInRequestPlatform platform;
 
+  /// İsteğe bağlı, Android: Play Integrity standard request token'ı
+  /// (ADR-0022). `requestHash` = base64url(SHA-256("tayfam-integrity/v1/sign-in\n" + nonce)),
+  /// dolgusuz.
+  ///
+  /// Kısıtlar: maxLength: 16384.
+  final String? integrityToken;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'provider': provider.wire,
     'id_token': idToken,
     'nonce': nonce,
     'platform': platform.wire,
+    if (integrityToken case final value?) 'integrity_token': value,
   };
 
   @override
@@ -11693,11 +11776,17 @@ final class SignInRequest {
           provider == other.provider &&
           idToken == other.idToken &&
           nonce == other.nonce &&
-          platform == other.platform;
+          platform == other.platform &&
+          integrityToken == other.integrityToken;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[provider, idToken, nonce, platform]);
+  int get hashCode => Object.hashAll(<Object?>[
+    provider,
+    idToken,
+    nonce,
+    platform,
+    integrityToken,
+  ]);
 }
 
 /// `web` yalnızca prod dışında (ADR-0017).
@@ -12033,6 +12122,7 @@ final class Tayfa {
     required this.memberCount,
     required this.membersCanCreateEvents,
     this.joinCode,
+    this.pendingJoinRequestCount,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -12077,6 +12167,10 @@ final class Tayfa {
       null => null,
       final Object v => _readString(v, 'Tayfa.join_code'),
     },
+    pendingJoinRequestCount: switch (json['pending_join_request_count']) {
+      null => null,
+      final Object v => _readInt(v, 'Tayfa.pending_join_request_count'),
+    },
     createdAt: _readDateTime(json['created_at'], 'Tayfa.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Tayfa.updated_at'),
   );
@@ -12116,6 +12210,12 @@ final class Tayfa {
   /// Yalnızca yöneticiye döner.
   final String? joinCode;
 
+  /// Onay bekleyen katılım istekleri; yalnızca istekleri onaylayabilen
+  /// moderatör ve yöneticiye döner, diğerlerinde alan yoktur.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int? pendingJoinRequestCount;
+
   final DateTime createdAt;
 
   final DateTime updatedAt;
@@ -12137,6 +12237,8 @@ final class Tayfa {
     'member_count': memberCount,
     'members_can_create_events': membersCanCreateEvents,
     if (joinCode case final value?) 'join_code': value,
+    if (pendingJoinRequestCount case final value?)
+      'pending_join_request_count': value,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
   };
@@ -12158,6 +12260,7 @@ final class Tayfa {
           memberCount == other.memberCount &&
           membersCanCreateEvents == other.membersCanCreateEvents &&
           joinCode == other.joinCode &&
+          pendingJoinRequestCount == other.pendingJoinRequestCount &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt;
 
@@ -12176,6 +12279,7 @@ final class Tayfa {
     memberCount,
     membersCanCreateEvents,
     joinCode,
+    pendingJoinRequestCount,
     createdAt,
     updatedAt,
   ]);

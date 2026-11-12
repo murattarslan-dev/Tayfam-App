@@ -92,9 +92,13 @@ final class UsersApi {
 
   /// Bir kullanıcının profili (ad, avatar, ortak tayfalar)
   ///
+  /// Ad ve avatar, ortak tayfanız ya da arkadaşlığınız olmasa da her
+  /// kullanıcı için döner; bildirimlerdeki `actor_id` ve `target_id`
+  /// (ör. `friend_request`, `tayfa_invitation`) kişinin adı bu uçtan
+  /// alınır. Bildirimler isim taşımaz.
   /// Ortak tayfalar yalnızca ikinizin de etkin üyesi olduğu tayfalardır.
-  /// Engel varsa (iki yönden biri) `user-not-found`, var olmayan kullanıcıyla
-  /// aynı cevap.
+  /// Engel varsa (iki yönden biri) ya da hesap silinmişse `user-not-found`,
+  /// var olmayan kullanıcıyla aynı cevap.
   ///
   /// `GET /v1/users/{user_id}/profile`
   Future<UserProfile> getUserProfile({required String userId}) async {

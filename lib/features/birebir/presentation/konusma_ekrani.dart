@@ -254,8 +254,7 @@ class _Akis extends ConsumerWidget {
     // Her birebir mesaj uçtan uca şifrelidir (Tayfam-Api #151); metin
     // yalnızca bellekte çözülmüş içerikten gelir.
     final govde = icerik.mesajlar[mesaj.id]?.metin;
-    final metin =
-        govde ?? (e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj);
+    final metin = govde ?? (e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj);
     final sikayet = ref.watch(birebirMesajSikayetiProvider);
     final silinebilir = giden && !mesaj.deleted;
     final sikayetEdilebilir =

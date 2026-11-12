@@ -67,16 +67,18 @@ Future<void> _ac(
   tester,
   ekran,
   themeMode: tema,
-  tayfa: birebirEkranOverridelari(tasima, metinler: const {mesajId1: 'Merhaba'}),
+  tayfa: birebirEkranOverridelari(
+    tasima,
+    metinler: const {mesajId1: 'Merhaba'},
+  ),
   overrides: [_saat],
 );
 
 SahteTayfaTasima _konusmaTasimasi([Map<String, TayfaYaniti> ek = const {}]) =>
     birebirTasimasi({
       'GET $konusmaYolu': (_) => konusmaJson(konusmaId1),
-      'GET $mesajlarYolu': (_) => mesajListesiJson([
-        mesajJson(mesajId1, gonderen: benId),
-      ]),
+      'GET $mesajlarYolu': (_) =>
+          mesajListesiJson([mesajJson(mesajId1, gonderen: benId)]),
       ...ek,
     });
 
