@@ -120,15 +120,19 @@ void main() {
     expect(c.read(kullaniciAdlariProvider.notifier).calisan, 0);
   });
 
-  test('kendisi mi: profilin self alanı; bilinene kadar false', () async {
+  test('kendisi mi: kendi kimliğiyle; bilinene kadar false', () async {
+    final kimlik = Completer<String>();
+    var profilIstegi = 0;
     final c = ProviderContainer(
       overrides: [
         oturumDurumuProvider.overrideWith(
           () => SabitOturumDurumu(OturumDurumu.acik),
         ),
-        profilOkuyucuProvider.overrideWithValue(
-          (id) async => KullaniciAdi('Ad $id', ben: id == 'ben'),
-        ),
+        kendiKimligiOkuyucuProvider.overrideWithValue(() => kimlik.future),
+        profilOkuyucuProvider.overrideWithValue((id) async {
+          profilIstegi++;
+          return KullaniciAdi('Ad $id');
+        }),
       ],
     );
     addTearDown(c.dispose);
@@ -137,12 +141,48 @@ void main() {
       ..listen(kendisiMiProvider('baska'), (_, _) {});
     expect(c.read(kendisiMiProvider('ben')), isFalse);
 
+    kimlik.complete('ben');
     await pumpEventQueue();
     expect(c.read(kendisiMiProvider('ben')), isTrue);
     expect(c.read(kendisiMiProvider('baska')), isFalse);
-    expect(
-      c.read(kullaniciAdlariProvider)['ben'],
-      const KullaniciAdi('Ad ben', ben: true),
+    // "Kendisi mi" için profil ucu (`self`) istenmez.
+    expect(profilIstegi, 0);
+  });
+
+  test('kendi kimliği okunamazsa kimse "kendisi" değil', () async {
+    final c = ProviderContainer(
+      overrides: [
+        oturumDurumuProvider.overrideWith(
+          () => SabitOturumDurumu(OturumDurumu.acik),
+        ),
+        kendiKimligiOkuyucuProvider.overrideWithValue(
+          () async => throw const ApiOffline(),
+        ),
+      ],
     );
+    addTearDown(c.dispose);
+    c.listen(kendisiMiProvider('ben'), (_, _) {});
+    await pumpEventQueue();
+    expect(c.read(kendisiMiProvider('ben')), isFalse);
+  });
+
+  test('oturum kapalıyken kendi kimliği istenmez', () async {
+    var istek = 0;
+    final c = ProviderContainer(
+      overrides: [
+        oturumDurumuProvider.overrideWith(
+          () => SabitOturumDurumu(OturumDurumu.girisYok),
+        ),
+        kendiKimligiOkuyucuProvider.overrideWithValue(() async {
+          istek++;
+          return 'ben';
+        }),
+      ],
+    );
+    addTearDown(c.dispose);
+    c.listen(kendisiMiProvider('ben'), (_, _) {});
+    await pumpEventQueue();
+    expect(c.read(kendisiMiProvider('ben')), isFalse);
+    expect(istek, 0);
   });
 }

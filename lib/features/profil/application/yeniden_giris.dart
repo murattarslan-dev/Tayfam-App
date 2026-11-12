@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/api_hatalari.dart';
-import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
@@ -22,9 +20,9 @@ final class FarkliHesapHatasi implements Exception {
 ///
 /// 1. Google'dan ID token alınır (`POST /v1/auth/sign-in`).
 /// 2. Gelen oturumun kullanıcısının bu oturumun kullanıcısı olduğu, eski
-///    oturumla `GET /v1/users/{user_id}/profile` `self` alanından
-///    doğrulanır. Başka bir hesap seçildiyse ya da yeni (kaydı bekleyen)
-///    bir hesap açıldıysa [FarkliHesapHatasi]; yeni oturum kullanılmaz.
+///    oturumla `GET /v1/me/account`'un `user_id` alanından doğrulanır.
+///    Başka bir hesap seçildiyse ya da yeni (kaydı bekleyen) bir hesap
+///    açıldıysa [FarkliHesapHatasi]; yeni oturum kullanılmaz.
 /// 3. Yeni oturum `SessionStore`'a verilir.
 ///
 /// ID token, nonce ve kullanıcı kimliği saklanmaz, loglanmaz.
@@ -49,26 +47,11 @@ final class YenidenGiris {
     final kimlik = await _google.girisYap();
     if (kimlik == null) return false;
     final yeni = await _hesap.girisYap(kimlik, platform: _platform);
-    if (yeni.registrationPending || !await _kendisiMi(yeni.userId)) {
+    if (yeni.registrationPending || !await _profil.kendisiMi(yeni.userId)) {
       throw const FarkliHesapHatasi();
     }
     await _oturum.oturumAc(yeni);
     return true;
-  }
-
-  /// [kullaniciId] bu oturumun kullanıcısı mı. Profil bulunamazsa (yeni ya
-  /// da erişilemeyen hesap) `false`.
-  Future<bool> _kendisiMi(String kullaniciId) async {
-    try {
-      return await _profil.kendisiMi(kullaniciId);
-    } on ApiProblem catch (problem) {
-      if (problem.type == ProblemType.userNotFound ||
-          problem.type == ProblemType.notFound ||
-          problem.type == ProblemType.invalidRequest) {
-        return false;
-      }
-      rethrow;
-    }
   }
 }
 

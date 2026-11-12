@@ -21,6 +21,9 @@ const String anketEtkinlikId = '2b3c4d5e-0000-4000-8000-000000000009';
 
 /// Oturumdaki kullanıcı ve başka bir üye.
 const String benimId = '00000000-0000-4000-8000-0000000000b1';
+
+/// Anket formunun sabit `client_request_id`'si (testlerde).
+const String anketIstekId = '7a8b9c0d-0000-4000-8000-0000000000c1';
 const String digerId = '00000000-0000-4000-8000-0000000000d2';
 
 /// Testlerin sabit saati (UTC).
@@ -100,10 +103,9 @@ List<Override> anketOverridelari(SahteTayfaTasima tasima) => [
   ...modulOverridelari(tasima),
   anketDeposuProvider.overrideWithValue(AnketDeposu(tasima)),
   anketSaatiProvider.overrideWithValue(() => anketSimdi),
+  anketIstekKimligiProvider.overrideWithValue(() => anketIstekId),
   profilOkuyucuProvider.overrideWithValue(
-    (id) async => KullaniciAdi(
-      id == benimId ? 'Ben Üye' : 'Ayşe Yılmaz',
-      ben: id == benimId,
-    ),
+    (id) async => KullaniciAdi(id == benimId ? 'Ben Üye' : 'Ayşe Yılmaz'),
   ),
+  kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
 ];

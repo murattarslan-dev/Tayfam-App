@@ -378,7 +378,7 @@ class _MesajSatiri extends ConsumerWidget {
         kullaniciAdlariProvider.select((adlar) => adlar[yazar]),
       );
     }
-    final ben = bilinen?.ben ?? false;
+    final ben = yazar != null && ref.watch(kendisiMiProvider(yazar));
     final gonderen = switch (bilinen) {
       _ when yazar == null => m.kullanici_silinmis,
       null => m.kullanici_genel,

@@ -65,6 +65,56 @@ void main() {
     expect(find.text(arbMetni('tayfa_tayfalarim_bos')), findsNothing);
   });
 
+  testWidgets('bekleyen katılım isteği sayısı rozette; 0 ya da yoksa yok', (
+    tester,
+  ) async {
+    ekranBoyutu(tester);
+    const ucuncuId = '7c6d5e4f-3a2b-4c1d-8e9f-0a1b2c3d4e5f';
+    final tasima = SahteTayfaTasima({
+      'GET /v1/tayfas': (_) => listeJson([
+        etkinJson(ornekTayfaId, ad: 'Klasikçiler', rol: 'admin', bekleyen: 3),
+        etkinJson(
+          ikinciTayfaId,
+          ad: 'Balıkçılar',
+          rol: 'moderator',
+          bekleyen: 0,
+        ),
+        // Üyeye alan hiç dönmez (yetki sunucuda).
+        etkinJson(ucuncuId, ad: 'Kampçılar'),
+      ]),
+    });
+    await uygulamayiAc(tester, tayfa: tayfaOverridelari(tasima: tasima));
+
+    await tester.tap(_adDugmesi);
+    await tester.pumpAndSettle();
+
+    final panel = find.byType(TayfaDegistirmePaneli);
+    expect(
+      find.descendant(of: panel, matching: find.byType(Badge)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: panel, matching: find.text('3')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: panel,
+        matching: find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.label == '3 bekleyen katılım isteği',
+        ),
+      ),
+      findsOneWidget,
+    );
+    // Sayı listeden gelir; istek listesi yoklanmaz.
+    expect(
+      tasima.istekler.where((i) => i.yol.endsWith('/join-requests')),
+      isEmpty,
+    );
+  });
+
   testWidgets('etkin tayfaya dokununca aktif tayfa ve adres değişiyor', (
     tester,
   ) async {
@@ -171,8 +221,18 @@ void main() {
       ikiKatYazi(tester);
       final tasima = SahteTayfaTasima({
         'GET /v1/tayfas': (_) => listeJson([
-          etkinJson(ornekTayfaId, ad: 'Çok uzun adlı klasik otomobil tayfası'),
-          etkinJson(ikinciTayfaId, ad: 'Balıkçılar'),
+          etkinJson(
+            ornekTayfaId,
+            ad: 'Çok uzun adlı klasik otomobil tayfası',
+            rol: 'admin',
+            bekleyen: 120,
+          ),
+          etkinJson(
+            ikinciTayfaId,
+            ad: 'Balıkçılar',
+            rol: 'moderator',
+            bekleyen: 4,
+          ),
           bekleyenJson(_bekleyenId, ad: 'Kamp ve doğa yürüyüşü tayfası'),
         ]),
       });
@@ -186,6 +246,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(TayfaDegistirmePaneli), findsOneWidget);
       expect(tester.takeException(), isNull);
+      expect(
+        find.descendant(
+          of: find.byType(TayfaDegistirmePaneli),
+          matching: find.text(arbMetni('gezinme_rozet_cok')),
+        ),
+        findsOneWidget,
+      );
     });
   }
 }

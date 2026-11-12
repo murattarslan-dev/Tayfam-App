@@ -99,6 +99,45 @@ void main() {
       expect(_okunmadi(), findsNWidgets(2));
     });
 
+    testWidgets('arkadaşlık isteği ve tayfa davetinde kişinin adı', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      const bilinmeyen = '5e6f7081-0000-4000-8000-000000000009';
+      await _ekraniAc(
+        tester,
+        _liste([
+          bildirimJson(
+            bildirimId1,
+            tur: 'friend_request',
+            tayfaId: null,
+            hedefTuru: 'user',
+            hedef: kisiId,
+          ),
+          bildirimJson(
+            bildirimId2,
+            tur: 'tayfa_invitation',
+            aktor: kisiId,
+            hedefTuru: 'tayfa',
+            hedef: bildirimTayfaId,
+          ),
+          // Engelli ya da silinmiş hesap (`user-not-found`): "Biri".
+          bildirimJson(
+            bildirimId3,
+            tur: 'friend_request',
+            tayfaId: null,
+            hedefTuru: 'user',
+            hedef: bilinmeyen,
+          ),
+        ]),
+      );
+
+      expect(find.text('Ayşe sana arkadaşlık isteği gönderdi'), findsOneWidget);
+      expect(find.text('Ayşe seni bir tayfaya davet etti'), findsOneWidget);
+      expect(find.text('Biri sana arkadaşlık isteği gönderdi'), findsOneWidget);
+      expect(find.text(arbMetni('kullanici_silinmis')), findsNothing);
+    });
+
     testWidgets('boşken boş metin; "Hepsini okundu say" yok', (tester) async {
       ekranBoyutu(tester);
       await _ekraniAc(tester, _liste(const []));

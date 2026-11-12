@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/misc.dart';
 
+import 'package:tayfam/core/api/gen/apis/me_api.dart';
 import 'package:tayfam/core/api/gen/apis/users_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
@@ -171,6 +172,17 @@ Map<String, Object?> katilimcilarJson(
   'next_page_token': ?sonraki,
 };
 
+/// `GET /v1/me/account` yolu (kendi kimliğin).
+const String hesapYolu = '/v1/me/account';
+
+/// Kendi hesabının (`Account`) JSON'u; [id] oturumdaki kullanıcı.
+Map<String, Object?> hesapJson(String id) => {
+  'user_id': id,
+  'display_name': 'Ben',
+  'referral_code': 'TYF-8K2M4Q',
+  'activity_visibility': 'tayfa',
+};
+
 /// Kullanıcı profili JSON'u; [ben] oturumdaki kullanıcının kendisi.
 Map<String, Object?> profilJson(String id, String ad, {bool ben = false}) => {
   'user_id': id,
@@ -334,8 +346,13 @@ List<Override> etkinlikOverridelari({
   sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {
     final profil = await UsersApi(tasima).getUserProfile(userId: id);
-    return KullaniciAdi(profil.displayName, ben: profil.self);
+    return KullaniciAdi(profil.displayName);
   }),
+  // Kendi kimliği `GET /v1/me/account`'tan (varsayılan yanıtı yoksa
+  // okunamaz ve kimse "kendisi" sayılmaz).
+  kendiKimligiOkuyucuProvider.overrideWithValue(
+    () async => (await MeApi(tasima).getAccount()).userId,
+  ),
   etkinlikSaatiProvider.overrideWithValue(() => sabitSimdi),
   karoSaglayiciProvider.overrideWithValue(karolar ?? (() => null)),
   takvimPaylasiciProvider.overrideWithValue(takvim ?? SahteTakvimPaylasici()),

@@ -9,8 +9,10 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
+import 'package:tayfam/features/tayfa/presentation/tayfa_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa değiştirme panelini alttan açar (ADR-0003, ADR-0014 §2).
@@ -143,6 +145,7 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           _EtkinTayfaSatiri(
             ad: _ad(metinler, tayfa),
             secili: tayfa.tayfaId == aktif,
+            bekleyen: bekleyenIstekRozeti(tayfa.tayfa),
             onTap: () {
               ref.read(aktifTayfaIdProvider.notifier).sec(tayfa.tayfaId);
               onTayfaSec(tayfa.tayfaId);
@@ -190,22 +193,45 @@ class _EtkinTayfaSatiri extends StatelessWidget {
     required this.ad,
     required this.secili,
     required this.onTap,
+    this.bekleyen,
   });
 
   final String ad;
   final bool secili;
   final VoidCallback onTap;
 
+  /// Onay bekleyen katılım isteği sayısı; yalnızca moderatör ve yöneticiye
+  /// gelir (`pending_join_request_count`). `null` ise rozet yok.
+  final int? bekleyen;
+
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
+    final bekleyen = this.bekleyen;
     return ListTile(
       selected: secili,
       leading: const ExcludeSemantics(child: Icon(Icons.groups_outlined)),
       title: Text(ad),
-      trailing: secili
-          ? Icon(Icons.check, semanticLabel: metinler.tayfa_secili)
-          : null,
+      trailing: !secili && bekleyen == null
+          ? null
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (bekleyen != null)
+                  Semantics(
+                    label: metinler.tayfa_bekleyen_istek_sayisi(bekleyen),
+                    child: ExcludeSemantics(
+                      child: Badge(
+                        label: Text(bekleyenRozetMetni(metinler, bekleyen)),
+                      ),
+                    ),
+                  ),
+                if (bekleyen != null && secili)
+                  const SizedBox(width: TayfamSpacing.s8),
+                if (secili)
+                  Icon(Icons.check, semanticLabel: metinler.tayfa_secili),
+              ],
+            ),
       onTap: onTap,
     );
   }

@@ -8,49 +8,47 @@ import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/apis/users_api.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/kullanici/kendi_kimligim.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 
+export 'package:tayfam/core/kullanici/kendi_kimligim.dart'
+    show kendiKimligiOkuyucuProvider, kendiKimligimProvider;
+
 /// Bir kullanıcının bilinen adı: görünen ad ya da hesabın silindiği
-/// (erişilemediği) bilgisi; profilin oturumdaki kullanıcıya ait olup
-/// olmadığı ([ben], sözleşmedeki `UserProfile.self`).
+/// (erişilemediği) bilgisi. Kişinin oturumdaki kullanıcı olup olmadığı
+/// buradan değil, kendi kimliğinden ([kendisiMiProvider]) bilinir.
 @immutable
 final class KullaniciAdi {
   /// Görünen ad.
-  const KullaniciAdi(String this.ad, {this.ben = false});
+  const KullaniciAdi(String this.ad);
 
-  /// Kullanıcı bulunamadı (hesap silinmiş ya da erişilemiyor).
-  const KullaniciAdi.silinmis() : ad = null, ben = false;
+  /// Kullanıcı bulunamadı (hesap silinmiş, engelli ya da erişilemiyor).
+  const KullaniciAdi.silinmis() : ad = null;
 
   /// Görünen ad; silinmiş kullanıcıda `null`.
   final String? ad;
-
-  /// Profil oturumdaki kullanıcının kendisi (`self`). Yalnızca arayüzü
-  /// sadeleştirmek içindir ("Aracını değiştir" gibi); yetki sunucudadır
-  /// (kesin kural 5).
-  final bool ben;
 
   /// Kullanıcı silinmiş ya da erişilemiyor.
   bool get silinmis => ad == null;
 
   @override
-  bool operator ==(Object other) =>
-      other is KullaniciAdi && other.ad == ad && other.ben == ben;
+  bool operator ==(Object other) => other is KullaniciAdi && other.ad == ad;
 
   @override
-  int get hashCode => Object.hash(ad, ben);
+  int get hashCode => ad.hashCode;
 }
 
-/// Bir kullanıcının görünen adını (ve kendisi olup olmadığını) sunucudan
-/// okur.
+/// Bir kullanıcının görünen adını sunucudan okur.
 typedef ProfilOkuyucu = Future<KullaniciAdi> Function(String kullaniciId);
 
-/// `GET /v1/users/{user_id}/profile` ile görünen ad ve `self`. Testlerde
-/// sahtesi verilir.
+/// `GET /v1/users/{user_id}/profile` ile görünen ad. Ad, ortak tayfa ya da
+/// arkadaşlık olmadan da döner; engel ya da silinmiş hesapta
+/// `user-not-found` (Tayfam-Api #150). Testlerde sahtesi verilir.
 final profilOkuyucuProvider = Provider<ProfilOkuyucu>((ref) {
   final api = UsersApi(ref.watch(apiClientProvider));
   return (kullaniciId) async {
     final profil = await api.getUserProfile(userId: kullaniciId);
-    return KullaniciAdi(profil.displayName, ben: profil.self);
+    return KullaniciAdi(profil.displayName);
   };
 }, name: 'profilOkuyucuProvider');
 
@@ -142,8 +140,9 @@ final kullaniciAdlariProvider =
       name: 'kullaniciAdlariProvider',
     );
 
-/// [kullaniciId] oturumdaki kullanıcının kendisi mi (profilin `self`
-/// alanı). Bilinmiyorsa profil istenir ve gelene kadar `false` döner.
+/// [kullaniciId] oturumdaki kullanıcının kendisi mi: kendi kimliğinle
+/// (`GET /v1/me/account` → `user_id`) karşılaştırılır. Kimlik henüz
+/// bilinmiyorsa ya da okunamadıysa `false`.
 ///
 /// Yalnızca arayüzü sadeleştirmek içindir (ör. kendi aracında "Değiştir");
 /// bir işlemin yapılıp yapılamayacağına sunucu karar verir (kesin kural 5).
@@ -151,8 +150,6 @@ final kendisiMiProvider = Provider.autoDispose.family<bool, String>((
   ref,
   kullaniciId,
 ) {
-  ref.read(kullaniciAdlariProvider.notifier).iste(kullaniciId);
-  return ref.watch(
-    kullaniciAdlariProvider.select((adlar) => adlar[kullaniciId]?.ben ?? false),
-  );
+  final kendi = ref.watch(kendiKimligimProvider.select((d) => d.value));
+  return kendi != null && kullaniciId.isNotEmpty && kendi == kullaniciId;
 }, name: 'kendisiMiProvider');

@@ -10,6 +10,7 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/uyeler_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/yetki.dart';
+import 'package:tayfam/features/tayfa_yonetim/presentation/ban_penceresi.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -241,15 +242,21 @@ class _UyeSatiri extends ConsumerWidget {
     _UyeIslemi secim,
   ) async {
     final m = AppLocalizations.of(context);
-    if (secim.tur == _IslemTuru.cikar || secim.tur == _IslemTuru.banla) {
-      final cikar = secim.tur == _IslemTuru.cikar;
+    if (secim.tur == _IslemTuru.cikar) {
       final onay = await onayIste(
         context,
-        baslik: cikar ? m.yonetim_cikar_baslik : m.yonetim_banla_baslik,
-        aciklama: cikar ? m.yonetim_cikar_aciklama : m.yonetim_banla_aciklama,
-        onay: cikar ? m.yonetim_cikar_onayla : m.yonetim_banla_onayla,
+        baslik: m.yonetim_cikar_baslik,
+        aciklama: m.yonetim_cikar_aciklama,
+        onay: m.yonetim_cikar_onayla,
       );
       if (!onay || !context.mounted) return;
+    }
+    // Banlarken isteğe bağlı gerekçe (kapalı liste; Tayfam-Api #150).
+    ReportReason? banGerekcesi;
+    if (secim.tur == _IslemTuru.banla) {
+      final karar = await banOnayiIste(context);
+      if (karar == null || !context.mounted) return;
+      banGerekcesi = karar.gerekce;
     }
     final bildirici = SonucBildirici.al(context);
     final notifier = ref.read(
@@ -270,7 +277,10 @@ class _UyeSatiri extends ConsumerWidget {
         m.yonetim_susturma_kalkti,
       ),
       _IslemTuru.cikar => (await notifier.cikar(kim), m.yonetim_cikarildi),
-      _IslemTuru.banla => (await notifier.banla(kim), m.yonetim_banlandi),
+      _IslemTuru.banla => (
+        await notifier.banla(kim, gerekce: banGerekcesi),
+        m.yonetim_banlandi,
+      ),
     };
     bildirici.bildir(hata, basari);
   }

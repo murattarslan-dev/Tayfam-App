@@ -151,6 +151,18 @@ class _AvatarBolumuState extends ConsumerState<_AvatarBolumu> {
               cap: TayfamSizes.avatarBuyuk,
             ),
           ),
+          // Kendi görünen adın (`GET /v1/me/account`; yalnızca bellekte).
+          if (hesap.displayName.trim().isNotEmpty) ...[
+            const SizedBox(height: TayfamSpacing.s12),
+            Text(
+              hesap.displayName,
+              key: const ValueKey('profil-kendi-adi'),
+              textAlign: TextAlign.center,
+              style: context.yazi.titleLarge?.copyWith(
+                color: context.renkler.metin,
+              ),
+            ),
+          ],
           const SizedBox(height: TayfamSpacing.s12),
           Text(
             metinler.profil_avatar_aciklama,

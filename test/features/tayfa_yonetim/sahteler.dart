@@ -116,12 +116,20 @@ Map<String, Object?> profilJson(String id) => {
   'activity_visible': false,
 };
 
-/// [rol]'deki kullanıcı için tayfa görünümü; [kod] ve [silinme] verilebilir.
+/// [rol]'deki kullanıcı için tayfa görünümü; [kod], [silinme] ve bekleyen
+/// katılım isteği sayısı ([bekleyen]; yalnızca yönetime döner) verilebilir.
 Map<String, Object?> yonetimGorunumu({
   String rol = 'admin',
   String? kod,
   String? silinme,
-}) => gorunumJson(ornekTayfaId, rol: rol, kod: kod, silinme: silinme);
+  int? bekleyen,
+}) => gorunumJson(
+  ornekTayfaId,
+  rol: rol,
+  kod: kod,
+  silinme: silinme,
+  bekleyen: bekleyen,
+);
 
 /// Varsayılan yanıtlarla sahte taşıma: [rol] görünümü, boş listeler, profil,
 /// sessiz olmayan tercih.
@@ -132,6 +140,10 @@ SahteTayfaTasima yonetimTasimasi({
   final tasima = SahteTayfaTasima(yanitlar);
   tasima.yanitlar
     ..putIfAbsent('GET $tayfaYolu', () => yanit(yonetimGorunumu(rol: rol)))
+    ..putIfAbsent(
+      'GET /v1/tayfas',
+      () => yanit(listeJson([etkinJson(ornekTayfaId, rol: rol)])),
+    )
     ..putIfAbsent('GET $uyelerYolu', () => yanit(uyeListesiJson([])))
     ..putIfAbsent('GET $isteklerYolu', () => yanit(istekListesiJson([])))
     ..putIfAbsent('GET $davetlerYolu', () => yanit({'invites': <Object?>[]}))
@@ -161,8 +173,9 @@ List<Override> yonetimOverridelari(
   yonetimDeposuProvider.overrideWithValue(YonetimDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {
     final profil = await UsersApi(tasima).getUserProfile(userId: id);
-    return KullaniciAdi(profil.displayName, ben: profil.self);
+    return KullaniciAdi(profil.displayName);
   }),
+  kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
   saatProvider.overrideWithValue(() => sabitSimdi),
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),

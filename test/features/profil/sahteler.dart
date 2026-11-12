@@ -37,13 +37,21 @@ const String ucuncuOturumId = '5e6f7a8b-0000-4000-8000-000000000003';
 /// Sahte referans kodu (gerçek değil).
 const String ornekKod = 'TYF-8K2M4Q';
 
+/// Oturumdaki kullanıcının kimliği (sahte oturumun `user_id`'si).
+const String benimKimligim = '00000000-0000-4000-8000-000000000001';
+
+/// Başka bir hesabın kimliği (yeniden girişte farklı hesap).
+const String baskaKimlik = '00000000-0000-4000-8000-000000000002';
+
 /// `Account` JSON'u.
 Map<String, Object?> hesapJson({
   String kod = ornekKod,
   String gorunurluk = 'tayfa',
+  String kimlik = benimKimligim,
+  String ad = 'Deniz Örnek',
 }) => {
-  'user_id': '00000000-0000-4000-8000-000000000001',
-  'display_name': 'Deniz Örnek',
+  'user_id': kimlik,
+  'display_name': ad,
   'referral_code': kod,
   'activity_visibility': gorunurluk,
 };

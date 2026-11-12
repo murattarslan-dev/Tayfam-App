@@ -282,7 +282,7 @@ final Override profilAdlari = profilOkuyucuProvider.overrideWithValue(
   (id) async => switch (id) {
     karsiId => const KullaniciAdi('Deniz'),
     digerId => const KullaniciAdi('Ece'),
-    _ => const KullaniciAdi('Ben', ben: true),
+    _ => const KullaniciAdi('Ben'),
   },
 );
 

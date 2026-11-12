@@ -38,8 +38,9 @@ Future<void> _duyuruyuAc(
   overrides: [
     sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
     profilOkuyucuProvider.overrideWithValue(
-      (id) async => KullaniciAdi('Kişi', ben: id == _benimId),
+      (id) async => const KullaniciAdi('Kişi'),
     ),
+    kendiKimligiOkuyucuProvider.overrideWithValue(() async => _benimId),
   ],
 );
 

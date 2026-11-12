@@ -88,6 +88,7 @@ Map<String, Object?> tayfaJson({
   String? kod,
   String? askida,
   String? silinme,
+  int? bekleyen,
 }) => {
   'id': id,
   'name': ad,
@@ -101,6 +102,7 @@ Map<String, Object?> tayfaJson({
   'member_count': uyeSayisi,
   'members_can_create_events': false,
   'join_code': ?kod,
+  'pending_join_request_count': ?bekleyen,
   'created_at': '2026-11-01T10:00:00Z',
   'updated_at': '2026-11-01T10:00:00Z',
 };
@@ -111,12 +113,13 @@ Map<String, Object?> etkinJson(
   String ad = 'Klasikçiler',
   String rol = 'member',
   String? kod,
+  int? bekleyen,
 }) => {
   'tayfa_id': id,
   'name': ad,
   'role': rol,
   'status': 'active',
-  'tayfa': tayfaJson(id: id, ad: ad, kod: kod),
+  'tayfa': tayfaJson(id: id, ad: ad, kod: kod, bekleyen: bekleyen),
 };
 
 /// Bekleyen istek satırı (`MyTayfa`) JSON'u: yalnızca kimlik ve ad.
@@ -143,6 +146,7 @@ Map<String, Object?> gorunumJson(
   String? kod,
   String? askida,
   String? silinme,
+  int? bekleyen,
 }) => {
   'tayfa': tayfaJson(
     id: id,
@@ -152,6 +156,7 @@ Map<String, Object?> gorunumJson(
     kod: kod,
     askida: askida,
     silinme: silinme,
+    bekleyen: bekleyen,
   ),
   'caller_role': rol,
 };

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/istek_kimligi.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/anket/application/anket_kurallari.dart';
@@ -66,6 +67,13 @@ Map<int, SecenekHatasi> secenekHatalari(List<String> secenekler) {
   }
   return hatalar;
 }
+
+/// Anket oluşturmanın `client_request_id` üreticisi; testlerde sabit
+/// değer verilir.
+final anketIstekKimligiProvider = Provider<String Function()>(
+  (ref) => yeniIstekKimligi,
+  name: 'anketIstekKimligiProvider',
+);
 
 /// Anket formunun anahtarı: tayfa ve (etkinlikten açıldıysa) etkinlik.
 typedef AnketFormuAnahtari = ({String tayfaId, String? etkinlikId});
@@ -141,16 +149,24 @@ final class AnketFormuDurumu {
 /// seçenek, tek ya da çoklu seçim, açık ya da gizli, isteğe bağlı kapanma
 /// zamanı; etkinlikten açıldıysa `event_id`.
 ///
-/// Sözleşmede `client_request_id` yoktur; gönderim sürerken ikinci
-/// gönderim engellenir. Bağlantı yoksa form açık kalır, girilenler
-/// korunur (ADR-0006). Başarıda anket listelere yansır.
+/// `client_request_id` form açılınca bir kez üretilir ve her denemede
+/// aynısı gönderilir (Tayfam-Api #150): ilk istek sunucuya ulaşıp cevabı
+/// kaybolduysa tekrarında ikinci anket açılmaz, ilk anket döner. Gönderim
+/// sürerken ikinci gönderim engellenir. Bağlantı yoksa form açık kalır,
+/// girilenler korunur (ADR-0006). Başarıda anket listelere yansır.
 class AnketFormuNotifier extends Notifier<AnketFormuDurumu> {
   AnketFormuNotifier(this.anahtar);
 
   final AnketFormuAnahtari anahtar;
 
+  /// Bu formun `client_request_id`'si; form kapanana kadar değişmez.
+  late String _istekKimligi;
+
   @override
-  AnketFormuDurumu build() => const AnketFormuDurumu();
+  AnketFormuDurumu build() {
+    _istekKimligi = ref.read(anketIstekKimligiProvider)();
+    return const AnketFormuDurumu();
+  }
 
   bool get _kilitli => state.gonderiliyor || state.tamamlanan != null;
 
@@ -226,6 +242,7 @@ class AnketFormuNotifier extends Notifier<AnketFormuDurumu> {
               multipleChoice: mevcut.coklu,
               closesAt: mevcut.kapanis,
               eventId: anahtar.etkinlikId,
+              clientRequestId: _istekKimligi,
             ),
           );
     } on OturumYok {
