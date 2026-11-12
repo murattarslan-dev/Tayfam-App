@@ -14,6 +14,9 @@ abstract final class TayfamRadii {
   /// Düğme ve giriş alanı (ikincil eylem dahil).
   static const double dugme = 12;
 
+  /// Giriş ekranının mor üst alanının alt köşeleri (Design: Giriş).
+  static const double ustPanel = 32;
+
   /// Sohbet balonu.
   static const double balon = 18;
 
@@ -31,5 +34,11 @@ abstract final class TayfamRadii {
   );
   static const BorderRadius dugmeKoseleri = BorderRadius.all(
     Radius.circular(dugme),
+  );
+
+  /// Yalnızca alt köşeleri [ustPanel] kadar yuvarlak (giriş ekranının mor
+  /// üst alanı).
+  static const BorderRadius ustPanelKoseleri = BorderRadius.vertical(
+    bottom: Radius.circular(ustPanel),
   );
 }

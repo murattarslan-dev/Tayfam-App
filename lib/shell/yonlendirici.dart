@@ -212,7 +212,10 @@ List<RouteBase> rotalariOlustur(
     ),
     GoRoute(
       path: Adresler.giris,
-      builder: (context, state) => const GirisEkrani(),
+      // Bekleyen davet varsa giriş ekranı davet görünümündedir (Design:
+      // Giriş davet); token ekrana gitmez, yalnızca "bekliyor mu".
+      builder: (context, state) =>
+          GirisEkrani(davetBekliyor: kutu?.davetBekliyor ?? false),
     ),
     GoRoute(
       path: Adresler.kayit,

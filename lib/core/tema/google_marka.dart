@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 /// kurallarındaki değerleri (Sign in with Google branding guidelines,
 /// Android; ADR-0012 §2).
 ///
-/// Düğme yalnızca mor marka yüzeyinde (iki temada da aynı) durduğu için
-/// kuralların "açık" (light) biçimi kullanılır: beyaz zemin, #747775 1 px
-/// kenar, #1F1F1F metin. Bu renkler Tayfam paletinin parçası değildir;
-/// yalnızca bu düğmede kullanılır.
+/// Açık temada kuralların "açık" (light) biçimi: beyaz zemin, #747775 1 px
+/// kenar, #1F1F1F metin; koyu temada "koyu" (dark) biçimi: #131314 zemin,
+/// #8E918F 1 px kenar, #E3E3E3 metin (Design: Giriş / Giriş koyu). Bu
+/// renkler Tayfam paletinin parçası değildir; yalnızca bu düğmede
+/// kullanılır.
 abstract final class GoogleMarka {
   /// Düğme zemini.
   static const Color zemin = Color(0xFFFFFFFF);
@@ -17,6 +18,15 @@ abstract final class GoogleMarka {
 
   /// Düğme metni.
   static const Color metin = Color(0xFF1F1F1F);
+
+  /// Koyu biçimde düğme zemini.
+  static const Color koyuZemin = Color(0xFF131314);
+
+  /// Koyu biçimde düğme kenarı (1 px).
+  static const Color koyuKenar = Color(0xFF8E918F);
+
+  /// Koyu biçimde düğme metni.
+  static const Color koyuMetin = Color(0xFFE3E3E3);
 
   /// Kenar kalınlığı.
   static const double kenarKalinligi = 1;

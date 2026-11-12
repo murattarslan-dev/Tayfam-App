@@ -2519,6 +2519,46 @@
   "@hesap_slogan": {
     "description": "Giriş ekranında yazı logonun altındaki slogan (Notion: Marka)."
   },
+  "hesap_giris_baslik": "Tayfan tek yerde",
+  "@hesap_giris_baslik": {
+    "description": "Giriş ekranının alt bölümündeki başlık (Design: Giriş)."
+  },
+  "hesap_giris_aciklama": "Etkinlikler, duyurular, soru-cevap ve sohbet. Şifre yok; Google hesabınla birkaç saniyede girersin.",
+  "@hesap_giris_aciklama": {
+    "description": "Giriş ekranında başlığın altındaki açıklama (Android ve Apple düğmesi görünmeyen iOS)."
+  },
+  "hesap_giris_aciklama_apple": "Etkinlikler, duyurular, soru-cevap ve sohbet. Şifre yok; Apple ya da Google hesabınla girersin.",
+  "@hesap_giris_aciklama_apple": {
+    "description": "Giriş ekranında başlığın altındaki açıklama; iOS'ta Apple ile giriş düğmesi görünürken (Design: Giriş iOS)."
+  },
+  "hesap_giris_yasal": "Devam etmeden önce Aydınlatma Metni'ni ve Kullanım Koşulları'nı okuyabilirsin. Onayını kayıt adımında alacağız.",
+  "@hesap_giris_yasal": {
+    "description": "Giriş ekranında düğmenin altındaki küçük not; altında iki metnin bağlantısı var."
+  },
+  "hesap_giris_aydinlatma": "Aydınlatma Metni",
+  "@hesap_giris_aydinlatma": {
+    "description": "Giriş ekranındaki bağlantı; KVKK aydınlatma metninin güncel sürümünü tarayıcıda açar."
+  },
+  "hesap_giris_kosullar": "Kullanım Koşulları",
+  "@hesap_giris_kosullar": {
+    "description": "Giriş ekranındaki bağlantı; kullanım koşullarının güncel sürümünü tarayıcıda açar."
+  },
+  "hesap_davet_baslik": "Bir tayfaya davet edildin.",
+  "@hesap_davet_baslik": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranında mor alandaki büyük başlık (Design: Giriş davet)."
+  },
+  "hesap_davet_kart": "Tayfanın adını ve ayrıntılarını giriş yaptıktan sonra göreceksin.",
+  "@hesap_davet_kart": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranındaki kart; tayfa adı giriş öncesi bilinmez (davet önizlemesi oturum ister)."
+  },
+  "hesap_davet_giris_baslik": "Katılmak için giriş yap",
+  "@hesap_davet_giris_baslik": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranındaki başlık."
+  },
+  "hesap_davet_giris_aciklama": "Giriş yaptıktan sonra daveti görüp tayfaya katılabilirsin. Tayfa onaylıysa isteğin yöneticisine gider.",
+  "@hesap_davet_giris_aciklama": {
+    "description": "Davet linkiyle gelen kullanıcının giriş ekranındaki açıklama."
+  },
   "hesap_acilis_yukleniyor": "Açılıyor",
   "@hesap_acilis_yukleniyor": {
     "description": "Açılış ekranının ve hesap ekranlarındaki yükleme durumunun ekran okuyucu etiketi; oturum bilgisi okunurken. Ekranda görünmez."
