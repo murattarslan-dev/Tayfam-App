@@ -28,9 +28,16 @@ const Set<String> _oturumAdresleri = {
 ///    adresinde taşınır; tanıtım bitince oraya gidilir. Bekleyen bir
 ///    davet varsa ([davetBekliyor]) hedef davet ekranıdır (`/davet`;
 ///    token adreste yoktur).
+/// 0b. Kayıtta `age-blocked` döndüyse ([yasEngeli]) oturum kapalıyken
+///    yalnızca "Hesabını şu an oluşturamıyoruz" ekranı gösterilir; engel
+///    yokken bu adreste kalınmaz (ADR-0012 §3).
 /// 1. Oturum açık değilse durumun ekranına gidilir (giriş yok → giriş;
 ///    kayıt bekliyor → kayıt; yeniden onay → onay). Bu kontrol yetki
 ///    değildir; yetki sunucudadır (CLAUDE.md, kesin kural 5).
+/// 1a. Kayıt az önce tamamlandıysa ([kayitKarsilamasi]) hoş geldin
+///    ekranına gidilir; bekleyen davet de orada, mevcut davet akışıyla
+///    işlenir. Ekrandan çıkılırken bayrak kapanır; bayraksız bu adreste
+///    kalınabilir (ekran kendisi yönlendirir).
 /// 2. Kök, oturum ekranları, açılış ve karşılama, kullanıcının ana
 ///    adresine çevrilir: aktif tayfa varsa `/t/<tayfaId>`; yoksa tayfa
 ///    listesi ilk kez okunurken ([tayfalarBekleniyor]) açılış ekranı,
@@ -56,11 +63,21 @@ String? yonlendir({
   bool tayfalarBekleniyor = false,
   TanitimDurumu tanitim = TanitimDurumu.gosterildi,
   bool davetBekliyor = false,
+  bool kayitKarsilamasi = false,
+  bool yasEngeli = false,
 }) {
   final yol = konum.path;
 
   if (guncellemeGerekli) {
     return yol == Adresler.guncelleme ? null : Adresler.guncelleme;
+  }
+
+  if (oturum == OturumDurumu.girisYok && yasEngeli) {
+    return yol == Adresler.hesapAcilamadi ? null : Adresler.hesapAcilamadi;
+  }
+  if (yol == Adresler.hesapAcilamadi) {
+    // Engel yokken bu ekranda kalınmaz.
+    return oturum == OturumDurumu.girisYok ? Adresler.giris : Adresler.kok;
   }
 
   if (oturum == OturumDurumu.girisYok) {
@@ -86,6 +103,10 @@ String? yonlendir({
   };
   if (oturumAdresi != null) {
     return yol == oturumAdresi ? null : oturumAdresi;
+  }
+
+  if (kayitKarsilamasi) {
+    return yol == Adresler.tanismaTamam ? null : Adresler.tanismaTamam;
   }
 
   if (davetBekliyor) {
