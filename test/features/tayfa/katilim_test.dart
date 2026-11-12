@@ -111,7 +111,7 @@ void main() {
   });
 
   for (final (tur, anahtar) in [
-    (ProblemType.invalidJoinCode, 'hata_invalid_join_code'),
+    (ProblemType.invalidJoinCode, 'katilim_kod_gecersiz'),
     (ProblemType.rateLimited, 'hata_rate_limited'),
   ]) {
     testWidgets('${tur.name}: ortak hata metni, sayfa açık', (tester) async {

@@ -126,4 +126,50 @@ abstract final class TayfamSizes {
 
   /// Av satırındaki fotoğraf küçük resminin kenarı.
   static const double fotografKucukResim = 72;
+
+  // Kayıt sihirbazı ("Tayfam'la tanışma"; ADR-0012 §3, tasarım:
+  // Kayit-*.dc.html).
+
+  /// Üstteki ilerleme göstergesinin logo boyutu.
+  static const double kayitIlerlemeLogosu = 30;
+
+  /// Sohbet balonunda konuşan Tayfam'ın rozet avatarı.
+  static const double tayfamAvatari = 36;
+
+  /// Kayıt sonrası hoş geldin ekranındaki tamamlanmış logo.
+  static const double hosGeldinLogosu = 132;
+
+  /// Davetle gelen kullanıcının hoş geldin ekranındaki logo (altında
+  /// tayfa kartı olduğu için daha küçük).
+  static const double hosGeldinDavetLogosu = 112;
+
+  /// Bilgi ekranı ve pencerelerdeki ikon kutusu (yaş engeli, tarih teyidi,
+  /// gönderildi).
+  static const double ikonKutusu = 56;
+
+  /// [ikonKutusu] içindeki ikon.
+  static const double ikonKutusuIkonu = 30;
+
+  /// Hoş geldin ekranındaki tayfa kartının harf kutusu.
+  static const double tayfaHarfKutusu = 52;
+
+  /// Hoş geldin başlığının punto boyu (Standartlar, Display: 48–106 px).
+  static const double karsilamaBaslikPuntosu = 52;
+
+  /// Hoş geldin başlığının satır yüksekliği (Display: 0.95).
+  static const double karsilamaSatirYuksekligi = .95;
+
+  /// Hoş geldin başlığının harf aralığı, punto boyuna oranla (Display:
+  /// −%4.5).
+  static const double karsilamaHarfAraligiOrani = -.045;
+
+  /// Kayıt ve katılım alanlarındaki büyük giriş metninin harf aralığı,
+  /// punto boyuna oranla (kod alanı: 0.12em).
+  static const double kodHarfAraligiOrani = .12;
+
+  /// Giriş alanı ve seçilmemiş kart kenarının kalınlığı (tasarım: 1.5 px).
+  static const double vurguKenari = 1.5;
+
+  /// Odaklı ya da hatalı giriş alanının kenar kalınlığı (tasarım: 2 px).
+  static const double alanOdakKenari = 2;
 }

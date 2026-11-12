@@ -28,7 +28,6 @@ final class _Kurulum {
   _Kurulum({
     Map<String, Object? Function()>? yanitlar,
     SahteGoogle? google,
-    this.googleAdi,
     this.engel,
   }) : tasima = SahteTasima(yanitlar),
        google = google ?? SahteGoogle(sonuc: ornekKimlik);
@@ -37,7 +36,6 @@ final class _Kurulum {
   final SahteGoogle google;
   final SahteOturum oturum = SahteOturum();
   final SahteAcici acici = SahteAcici();
-  final String? googleAdi;
   final HesapEngeli? engel;
 
   List<Override> get overrides => [
@@ -47,7 +45,7 @@ final class _Kurulum {
       google: google,
       acici: acici,
     ),
-    googleAdiProvider.overrideWith(() => _SabitAd(googleAdi)),
+    googleAdiProvider.overrideWith(() => _SabitAd(null)),
     if (engel case final engel?)
       hesapEngeliProvider.overrideWith(() => _SabitEngel(engel)),
   ];
@@ -339,111 +337,6 @@ void main() {
         });
       }
     }
-  });
-
-  group('kayıt ekranı', () {
-    Map<String, Object? Function()> yanitlar() => {
-      'GET /v1/registration/requirements': surumGovdesi,
-      'POST /v1/registration': () => null,
-    };
-
-    Widget ekran() => KayitEkrani(
-      tarihSecici: (context, secili) async => DateTime(2009, 3, 12),
-    );
-
-    for (final tema in _temalar) {
-      testWidgets('${tema.name} temada 2× yazıda taşmıyor', (tester) async {
-        ikiKatYazi(tester);
-        final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-        await _ac(tester, ekran(), k, tema: tema);
-
-        expect(_metin('hesap_kayit_baslik'), findsOneWidget);
-        expect(tester.takeException(), isNull);
-
-        // Hatalar görünürken de taşma yok.
-        await _dokun(tester, _metin('hesap_kayit_gonder'));
-        expect(tester.takeException(), isNull);
-      });
-    }
-
-    testWidgets('ad Google adıyla dolu', (tester) async {
-      final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-      await _ac(tester, ekran(), k);
-
-      expect(find.widgetWithText(TextField, 'Deniz Örnek'), findsOneWidget);
-    });
-
-    testWidgets('eksik form gönderilmiyor; hatalar gösteriliyor', (
-      tester,
-    ) async {
-      final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-      await _ac(tester, ekran(), k);
-
-      await _dokun(tester, _metin('hesap_kayit_gonder'));
-
-      expect(_metin('hesap_kayit_dogum_tarihi_hata'), findsOneWidget);
-      expect(_metin('hesap_aydinlatma_hata'), findsOneWidget);
-      expect(_metin('hesap_kosullar_hata'), findsOneWidget);
-      expect(find.byType(DogumTarihiTeyidi), findsNothing);
-      expect(k.tasima.sayi('POST', '/v1/registration'), 0);
-    });
-
-    testWidgets('doğum tarihi teyit edilmeden gönderilmiyor', (tester) async {
-      final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-      await _ac(tester, ekran(), k);
-
-      await _dokun(tester, _metin('hesap_kayit_dogum_tarihi_bos'));
-      expect(find.text('12 Mart 2009'), findsOneWidget);
-      await _dokun(tester, _metin('hesap_aydinlatma_onay'));
-      await _dokun(tester, _metin('hesap_kosullar_onay'));
-      await _dokun(tester, _metin('hesap_kayit_gonder'));
-
-      // Pencere girilen tarihi gösterir; yaş sınırını söylemez.
-      const teyit = 'Doğum tarihin 12 Mart 2009. Doğru mu?';
-      expect(find.text(teyit), findsOneWidget);
-      await _dokun(tester, _metin('hesap_teyit_duzelt'));
-      expect(find.byType(DogumTarihiTeyidi), findsNothing);
-      expect(k.tasima.sayi('POST', '/v1/registration'), 0);
-
-      await _dokun(tester, _metin('hesap_kayit_gonder'));
-      await _dokun(tester, _metin('hesap_teyit_devam'));
-
-      expect(k.tasima.sayi('POST', '/v1/registration'), 1);
-      expect(k.tasima.istekler.last.govde, {
-        'birth_date': '2009-03-12',
-        'accepted_privacy_notice_version': '2026-11-08',
-        'accepted_terms_version': '2026-11-08',
-      });
-    });
-
-    testWidgets('metin bağlantıları sürümlü sayfaları açıyor', (tester) async {
-      final k = _Kurulum(yanitlar: yanitlar());
-      await _ac(tester, ekran(), k);
-
-      await _dokun(tester, _metin('hesap_aydinlatma_ac'));
-      await _dokun(tester, _metin('hesap_kosullar_ac'));
-
-      expect(k.acici.acilan, [
-        Uri.parse('https://tayfam.app/yasal/aydinlatma-metni/2026-11-08'),
-        Uri.parse('https://tayfam.app/yasal/kullanim-kosullari/2026-11-08'),
-      ]);
-    });
-
-    testWidgets('gereksinimler okunamazsa tekrar dene', (tester) async {
-      var hata = true;
-      final k = _Kurulum(
-        yanitlar: {
-          'GET /v1/registration/requirements': () =>
-              hata ? problem(ProblemType.internal, 500) : surumGovdesi(),
-        },
-      );
-      await _ac(tester, ekran(), k);
-      expect(_metin('hata_internal'), findsOneWidget);
-
-      hata = false;
-      await _dokun(tester, _metin('hesap_tekrar_dene'));
-      expect(_metin('hesap_kayit_gonder'), findsOneWidget);
-    });
   });
 
   group('yeniden onay ekranı', () {

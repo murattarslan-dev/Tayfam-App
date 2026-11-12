@@ -60,7 +60,8 @@ final class KatilimDurumu {
   /// İstek başarılıysa sonucu.
   final KatilimSonucu? sonuc;
 
-  /// [sonuc] [KatilimSonucu.etkin] ise katılınan tayfa.
+  /// Katılınan (etkin) ya da isteği gönderilen (bekleyen) tayfa; adı
+  /// tayfa listesinden okunur.
   final String? tayfaId;
 }
 
@@ -125,8 +126,17 @@ class KatilimNotifier extends Notifier<KatilimDurumu> {
         tayfaId: uyelik.tayfaId,
       );
     } else {
-      state = const KatilimDurumu(sonuc: KatilimSonucu.bekliyor);
+      state = KatilimDurumu(
+        sonuc: KatilimSonucu.bekliyor,
+        tayfaId: uuidBicimindeMi(uyelik.tayfaId) ? uyelik.tayfaId : null,
+      );
     }
+  }
+
+  /// Sayfayı kod alanına döndürür ("Başka bir kod gir").
+  void sifirla() {
+    if (state.gonderiliyor) return;
+    state = const KatilimDurumu();
   }
 }
 

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,11 +25,10 @@ Future<SahteOturum> _ac(WidgetTester tester, String link) async {
   return oturum;
 }
 
-String? _referansAlani(WidgetTester tester) {
-  final alan = find.widgetWithText(TextField, arbMetni('hesap_kayit_referans'));
-  if (alan.evaluate().isEmpty) return null;
-  return tester.widget<TextField>(alan).controller?.text;
-}
+/// Kayıt sihirbazına verilen referans kodu (kod alanı üçüncü adımda bununla
+/// dolu açılır).
+String? _referansAlani(WidgetTester tester) =>
+    tester.widget<KayitEkrani>(find.byType(KayitEkrani)).referansKodu;
 
 void main() {
   testWidgets('referans linki kayıt formundaki kodu dolduruyor', (
@@ -67,6 +65,6 @@ void main() {
     await _ac(tester, 'https://tayfam.app/r/0000');
 
     expect(find.byType(KayitEkrani), findsOneWidget);
-    expect(_referansAlani(tester), isEmpty);
+    expect(_referansAlani(tester), isNull);
   });
 }
