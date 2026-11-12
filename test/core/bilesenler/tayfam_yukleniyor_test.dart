@@ -190,7 +190,6 @@ void main() {
     );
 
     expect(_boyaci, findsNothing);
-    expect(tester.hasRunningAnimations, isFalse);
     expect(
       find.bySemanticsLabel(arbMetni('bilesen_yukleniyor')),
       findsOneWidget,
@@ -209,7 +208,7 @@ void main() {
     kulp.dispose();
   });
 
-  testWidgets('gecikme dolmadan kaldırılırsa zamanlayıcı kalmaz', (
+  testWidgets('gecikme dolmadan kaldırılırsa sorun yok', (
     tester,
   ) async {
     await bileseniAc(

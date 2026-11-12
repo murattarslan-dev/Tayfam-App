@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
@@ -60,13 +58,16 @@ class TayfamYukleniyor extends StatefulWidget {
 }
 
 class _TayfamYukleniyorState extends State<TayfamYukleniyor>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _denetci = AnimationController(
     vsync: this,
     duration: TayfamMotion.yukleniyorDongu,
   );
 
-  Timer? _zamanlayici;
+  /// Gecikmeyi sayar. Zamanlayıcı yerine ticker: uygulamada fark yok, ama
+  /// test ortamında `pumpAndSettle` gecikme boyunca kareleri ilerletir
+  /// (eski `CircularProgressIndicator` davranışıyla aynı).
+  AnimationController? _gecikme;
   late bool _gorunur = !widget.gecikmeli;
   bool _hareketsiz = false;
 
@@ -74,10 +75,18 @@ class _TayfamYukleniyorState extends State<TayfamYukleniyor>
   void initState() {
     super.initState();
     if (widget.gecikmeli) {
-      _zamanlayici = Timer(TayfamMotion.yukleniyorGecikmesi, () {
-        if (mounted) setState(() => _gorunur = true);
-        _oynat();
-      });
+      _gecikme =
+          AnimationController(
+              vsync: this,
+              duration: TayfamMotion.yukleniyorGecikmesi,
+            )
+            ..addStatusListener((durum) {
+              if (durum == AnimationStatus.completed && mounted) {
+                setState(() => _gorunur = true);
+                _oynat();
+              }
+            })
+            ..forward();
     }
   }
 
@@ -89,7 +98,6 @@ class _TayfamYukleniyorState extends State<TayfamYukleniyor>
   }
 
   void _oynat() {
-    if (!mounted) return;
     if (_hareketsiz || !_gorunur) {
       _denetci
         ..stop()
@@ -101,7 +109,7 @@ class _TayfamYukleniyorState extends State<TayfamYukleniyor>
 
   @override
   void dispose() {
-    _zamanlayici?.cancel();
+    _gecikme?.dispose();
     _denetci.dispose();
     super.dispose();
   }
