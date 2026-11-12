@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
@@ -213,6 +214,8 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
           .read(birebirDeposuProvider)
           .mesajlar(konusmaId, sayfaToken: token);
       if (!ref.mounted) return;
+      await _arsiviGenislet(sayfa.ogeler);
+      if (!ref.mounted) return;
       final simdiki = state.value;
       if (simdiki == null) return;
       final sonraki = _gecerliToken(sayfa.sonraki);
@@ -231,6 +234,27 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
       if (simdiki != null) {
         state = AsyncData(simdiki._degistir(eskiHatasi: hata));
       }
+    }
+  }
+
+  /// Eski sayfadaki şifreli mesajların metni için geçmiş arşivinin
+  /// sonraki sayfalarını ister (ADR-0020 §3). Arşiv konuşma ekranı
+  /// açıkken yaşar; ekran onu izlemiyorsa (E2E yok) istek atılmaz.
+  /// Arşiv okunamazsa mesajlar yine gösterilir; metni olmayan şifreli
+  /// mesaj "okunamıyor" kalır.
+  Future<void> _arsiviGenislet(List<DirectMessage> mesajlar) async {
+    final arsiv = konusmaArsiviProvider(konusmaId);
+    if (!ref.read(e2eEtkinProvider) || !ref.read(arsiv.exists)) return;
+    final sifreliler = [
+      for (final m in mesajlar)
+        if (m.encryption == DirectMessageEncryption.e2e && !m.deleted) m.id,
+    ];
+    try {
+      await ref.read(arsiv.notifier).kapsa(sifreliler);
+    } on OturumYok {
+      rethrow;
+    } on Exception {
+      // En iyi çaba; bir sonraki eski sayfada yeniden denenir.
     }
   }
 

@@ -226,7 +226,7 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
   KonusmaArsiviNotifier(this.konusmaId);
 
   final String konusmaId;
-  bool _eskiOkunuyor = false;
+  Future<void>? _eskiOkuma;
 
   @override
   Future<KonusmaArsivi> build() async {
@@ -258,22 +258,46 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
     ]);
   }
 
-  /// Daha eski bir sayfa okur ve ekler.
-  Future<void> dahaEski() async {
+  /// Daha eski bir sayfa okur ve `message_id` ile birleştirir. Okuma
+  /// sürerken yapılan çağrılar aynı okumayı bekler.
+  Future<void> dahaEski() =>
+      _eskiOkuma ??= _dahaEskiOku().whenComplete(() => _eskiOkuma = null);
+
+  Future<void> _dahaEskiOku() async {
     final mevcut = state.value;
     final sayfa = mevcut?.sonrakiSayfa;
-    if (mevcut == null || sayfa == null || _eskiOkunuyor) return;
-    _eskiOkunuyor = true;
-    try {
-      final yeni = await ref
-          .read(gecmisServisleriProvider)
-          .okuyucu
-          .oku(konusmaId, sayfa: sayfa);
+    if (mevcut == null || sayfa == null) return;
+    final yeni = await ref
+        .read(gecmisServisleriProvider)
+        .okuyucu
+        .oku(konusmaId, sayfa: sayfa);
+    if (!ref.mounted) return;
+    _icerigeEkle(yeni);
+    state = AsyncData((state.value ?? mevcut).ekle(yeni));
+  }
+
+  /// Birebir konuşmanın eski bir sayfası açıldığında çağrılır: arşivin
+  /// sonraki sayfaları, [mesajIdleri]'nin hepsi okunan sayfalarda
+  /// görülene ya da arşiv bitene kadar (bir çağrıda en çok
+  /// [arsivSayfaEnCok] sayfa) okunur. Arşivde hiç olmayan mesaj (bu
+  /// cihaz eşleşmeden önce yazılmış) yüzünden fazladan okunan sayfa
+  /// bu sınırla tutulur.
+  Future<void> kapsa(Iterable<String> mesajIdleri) async {
+    final gereken = mesajIdleri.toSet();
+    if (gereken.isEmpty) return;
+    var mevcut = await future;
+    for (var tur = 0; tur < arsivSayfaEnCok; tur++) {
+      final token = mevcut.sonrakiSayfa;
+      if (mevcut.erisim != ArsivErisimi.okundu ||
+          token == null ||
+          gereken.every(mevcut.kayitlar.contains)) {
+        return;
+      }
+      await dahaEski();
       if (!ref.mounted) return;
-      _icerigeEkle(yeni);
-      state = AsyncData(mevcut.ekle(yeni));
-    } finally {
-      _eskiOkunuyor = false;
+      final simdiki = state.value;
+      if (simdiki == null || simdiki.sonrakiSayfa == token) return;
+      mevcut = simdiki;
     }
   }
 
@@ -282,16 +306,13 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
   void bellegeEkle(ArsivMesaji mesaj) {
     final mevcut = state.value;
     if (mevcut == null || mevcut.erisim != ArsivErisimi.okundu) return;
-    state = AsyncData(
-      KonusmaArsivi(
-        erisim: mevcut.erisim,
-        mesajlar: {...mevcut.mesajlar, mesaj.mesajId: mesaj},
-        okunamayan: mevcut.okunamayan,
-        sonrakiSayfa: mevcut.sonrakiSayfa,
-      ),
-    );
+    state = AsyncData(mevcut.mesajEkle(mesaj));
   }
 }
+
+/// Konuşmanın eski bir sayfası açıldığında arşivden bir seferde okunan en
+/// çok sayfa.
+const int arsivSayfaEnCok = 5;
 
 /// Konuşma kimliğine göre arşiv; konuşma ekranı kapanınca bellekten
 /// atılır.

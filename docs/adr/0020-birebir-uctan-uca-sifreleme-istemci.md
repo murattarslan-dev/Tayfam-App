@@ -217,6 +217,11 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
   cihazda olmayan sürüm, başka konuşmanın ya da doğrulanamayan kayıt
   "okunamayan" sayılır; varsa konuşmada "Eski mesajların bu cihazda
   okunamıyor" satırı gösterilir. Eşleştirilmemiş cihaz istek atmaz.
+  Konuşmanın eski bir sayfası açıldıkça, o sayfadaki şifreli mesajlar
+  okunan arşiv sayfalarında görülene ya da arşiv bitene kadar arşivin
+  sonraki sayfaları (opak `page_token`) istenir (bir seferde en çok 5) ve
+  `message_id` ile birleştirilir; aynı kayıt iki kez sayılmaz, bir sayfada
+  çözülemeyip başka sayfada çözülen kayıt "okunamayan" değildir.
 
 #### 4. QR eşleştirme
 
