@@ -58,9 +58,7 @@ void main() {
       expect(xml, contains('<style name="LaunchTheme"'), reason: klasor);
       expect(
         xml,
-        contains(
-          '"android:windowSplashScreenBackground">@color/splash_zemin<',
-        ),
+        contains('"android:windowSplashScreenBackground">@color/splash_zemin<'),
         reason: klasor,
       );
       expect(
@@ -83,7 +81,10 @@ void main() {
     expect(zemin, contains('@drawable/splash_logo'));
     expect(zemin, contains('@drawable/splash_yazi'));
     // Eski "?android:colorBackground" zemini kalmadı.
-    expect(File('$_res/drawable-v21/launch_background.xml').existsSync(), isFalse);
+    expect(
+      File('$_res/drawable-v21/launch_background.xml').existsSync(),
+      isFalse,
+    );
   });
 
   test('açılış ikonu ve logosu logonun yollarını kullanıyor', () {
@@ -112,9 +113,9 @@ void main() {
   });
 
   test('iOS açılış zemini açık ve koyu görünümde', () {
-    final json =
-        jsonDecode(_oku('$_ios/LaunchZemin.colorset/Contents.json'))
-            as Map<String, Object?>;
+    final json = jsonDecode(
+      _oku('$_ios/LaunchZemin.colorset/Contents.json'),
+    ) as Map<String, Object?>;
     final renkler = (json['colors']! as List<Object?>)
         .cast<Map<String, Object?>>();
     String hex(Map<String, Object?> girdi) {
@@ -132,7 +133,10 @@ void main() {
     expect(hex(renkler[1]), _hex(TayfamColors.koyu.acilisZemini));
 
     final storyboard = _oku('ios/Runner/Base.lproj/LaunchScreen.storyboard');
-    expect(storyboard, contains('<color key="backgroundColor" name="LaunchZemin"/>'));
+    expect(
+      storyboard,
+      contains('<color key="backgroundColor" name="LaunchZemin"/>'),
+    );
     expect(storyboard, contains('image="LaunchImage"'));
     expect(storyboard, contains('image="LaunchYazi"'));
   });

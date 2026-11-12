@@ -35,7 +35,10 @@ LogoBoyaci _boyaci(WidgetTester tester) {
 double _yaziSaydamligi(WidgetTester tester) {
   return tester
       .widget<Opacity>(
-        find.ancestor(of: find.byType(LogoYazisi), matching: find.byType(Opacity)),
+        find.ancestor(
+          of: find.byType(LogoYazisi),
+          matching: find.byType(Opacity),
+        ),
       )
       .opacity;
 }
