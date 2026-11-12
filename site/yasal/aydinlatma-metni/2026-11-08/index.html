@@ -122,7 +122,7 @@
           <tbody>
             <tr><th scope="row">Kimlik ve profil</th><td>Görünen ad, profil fotoğrafı (yüklersen), referans kodu, dil tercihi</td></tr>
             <tr><th scope="row">İletişim</th><td>Giriş yaptığın hesap sağlayıcısından (şu an Google) gelen e-posta adresi</td></tr>
-            <tr><th scope="row">Hesap ve işlem güvenliği</th><td>Giriş sağlayıcısı kimliği, cihaz bilgisi (platform), oturum kayıtları, güvenlik amaçlı kısa süreli işlenen IP adresi</td></tr>
+            <tr><th scope="row">Hesap ve işlem güvenliği</th><td>Giriş sağlayıcısı kimliği, cihaz bilgisi (platform), oturum kayıtları, güvenlik amaçlı kısa süreli işlenen IP adresi, uygulama bütünlüğü doğrulamasının sonucu (uygulamanın resmi sürüm olup olmadığı ve cihazın bütünlük seviyesi; girişte ve en çok 24 saatte bir)</td></tr>
             <tr><th scope="row">Doğum tarihi</th><td>Kayıtta zorunlu olarak alınır. Diğer kullanıcılara ne kadarının görüneceğini sen seçersin: yaşın ve doğum tarihin, yalnızca doğum günün (gün/ay) ya da hiçbiri. Varsayılan: yalnızca arkadaşların, yalnızca doğum günün</td></tr>
             <tr><th scope="row">Topluluk ve ilişkiler</th><td>Üye olduğun tayfalar ve rolün, arkadaşların, seni davet eden kişi, engellediğin kişiler</td></tr>
             <tr><th scope="row">Kullanıcı içeriği</th><td>Duyurular, etkinlikler, sorular, cevaplar, anket oyları, kanal mesajları, yüklediğin fotoğraflar (konum bilgisi silinerek)</td></tr>
@@ -171,7 +171,7 @@
           <ul>
             <li>Sunucu hizmeti: [TÜRKİYE'DEKİ VPS SAĞLAYICISI] (veriler Türkiye'de saklanır)</li>
             <li>Cloudflare: ağ güvenliği, içerik dağıtımı ve fotoğraf depolama</li>
-            <li>Google: hesapla giriş; Google ve Apple: cihaz bildirimlerinin iletilmesi</li>
+            <li>Google: hesapla giriş ve uygulama bütünlüğü doğrulaması (Play Integrity; Google'a hesap bilgin ya da içeriğin gitmez, yalnızca doğrulama isteği); Google ve Apple: cihaz bildirimlerinin iletilmesi</li>
             <li>OpenStreetMap Vakfı: etkinlik yeri seçilirken ve gösterilirken harita karoları ve adres araması (IP adresin ve baktığın bölge iletilir; cihaz konumun iletilmez)</li>
           </ul>
         </li>
@@ -179,7 +179,7 @@
       </ul>
 
       <h3 id="yurt-disi">Yurt dışına aktarım</h3>
-      <p>Cloudflare, Google, Apple ve OpenStreetMap Vakfı'nın sunucuları yurt dışında bulunabilir. Fotoğrafların, giriş bilgilerinin, bildirimlerin ve harita isteklerinin bu sağlayıcılar üzerinden işlenmesi yurt dışına aktarım sayılır. Bu aktarımlar KVKK md. 9'da öngörülen [AKTARIM DAYANAĞI: örn. Kurul'un ilan ettiği standart sözleşme] çerçevesinde yapılır.</p>
+      <p>Cloudflare, Google, Apple ve OpenStreetMap Vakfı'nın sunucuları yurt dışında bulunabilir. Fotoğrafların, giriş bilgilerinin, uygulama bütünlüğü doğrulamasının, bildirimlerin ve harita isteklerinin bu sağlayıcılar üzerinden işlenmesi yurt dışına aktarım sayılır. Bu aktarımlar KVKK md. 9'da öngörülen [AKTARIM DAYANAĞI: örn. Kurul'un ilan ettiği standart sözleşme] çerçevesinde yapılır.</p>
 
       <h2 id="toplama">6. Toplama yöntemi</h2>
       <p>Verilerin; uygulamayı kullanırken senin girdiğin bilgilerden, hesap sağlayıcınla (şu an Google) giriş yaptığında bu sağlayıcıdan ve uygulamanın çalışması sırasında otomatik olarak (oturum ve güvenlik kayıtları) elektronik ortamda toplanır.</p>
@@ -208,7 +208,7 @@
       <h2 id="haklar">8. Hakların</h2>
       <p>KVKK md. 11 kapsamında; verilerinin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmişse düzeltilmesini isteme, silinmesini veya yok edilmesini isteme, bu işlemlerin aktarılan üçüncü kişilere bildirilmesini isteme, otomatik sistemlerle analiz edilmesi sonucu aleyhine bir sonuç çıkmasına itiraz etme ve kanuna aykırı işleme nedeniyle zararın giderilmesini talep etme haklarına sahipsin.</p>
       <ul>
-        <li>Verilerinin bir kopyasını aşağıdaki adrese yazarak isteyebilirsin; uygulama içi dışa aktarma eklendiğinde <strong>Profil</strong> bölümünden de alabileceksin.</li>
+        <li>Verilerinin bir kopyasını uygulamada <strong>Profil → Gizlilik → Verilerimi indir</strong> bölümünden alabilir ya da aşağıdaki adrese yazarak isteyebilirsin.</li>
         <li>Hesabını uygulamada <strong>Profil → Hesabı sil</strong> bölümünden silebilirsin; adımlar <a href="/hesap-silme/">hesap silme sayfasında</a> da yazılı.</li>
         <li>Diğer talepler için [kvkk@tayfam.app] adresine yazabilirsin. Taleplerin en geç 30 gün içinde yanıtlanır.</li>
       </ul>
