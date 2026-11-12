@@ -102,9 +102,7 @@ class _Ortala extends StatelessWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: TayfamSizes.okumaGenisligi,
-        ),
+        constraints: const BoxConstraints(maxWidth: TayfamSizes.okumaGenisligi),
         child: child,
       ),
     );
@@ -222,9 +220,7 @@ class _DavetKarti extends StatelessWidget {
         ),
         _Ortala(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: TayfamSpacing.s24,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s24),
             child: TayfamKart(
               oneCikan: true,
               child: Row(
@@ -287,13 +283,10 @@ class _AltBolum extends ConsumerWidget {
         children: [
           Semantics(
             header: true,
-            child: Text(
-              switch (engel) {
-                HesapEngeli.yasSiniri => metinler.hesap_engel_yas_baslik,
-                HesapEngeli.kisitlandi => metinler.hesap_engel_kisit_baslik,
-              },
-              style: TayfamTypography.girisBasligi(r.metin),
-            ),
+            child: Text(switch (engel) {
+              HesapEngeli.yasSiniri => metinler.hesap_engel_yas_baslik,
+              HesapEngeli.kisitlandi => metinler.hesap_engel_kisit_baslik,
+            }, style: TayfamTypography.girisBasligi(r.metin)),
           ),
           const SizedBox(height: TayfamSpacing.s8),
           Text(switch (engel) {
@@ -345,9 +338,7 @@ class _AltBolum extends ConsumerWidget {
               SizedBox(
                 height: TayfamSizes.girisDugmesi,
                 child: Center(
-                  child: TayfamYukleniyor(
-                    etiket: metinler.hesap_giris_suruyor,
-                  ),
+                  child: TayfamYukleniyor(etiket: metinler.hesap_giris_suruyor),
                 ),
               )
             else
@@ -404,11 +395,7 @@ class _YasalNot extends ConsumerWidget {
               TextButton(
                 style: baglanti,
                 onPressed: () => unawaited(
-                  disBaglantiyiAc(
-                    context,
-                    ref,
-                    guncelHukukiMetinAdresi(metin),
-                  ),
+                  disBaglantiyiAc(context, ref, guncelHukukiMetinAdresi(metin)),
                 ),
                 child: Text(etiket),
               ),

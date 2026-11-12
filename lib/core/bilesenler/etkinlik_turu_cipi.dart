@@ -52,8 +52,9 @@ class EtkinlikTuruCipi extends StatelessWidget {
             Flexible(
               child: Text(
                 girdi.ad(AppLocalizations.of(context)),
-                style: (buyuk ? context.yazi.labelLarge : context.yazi.labelMedium)
-                    ?.copyWith(color: cift.ustu),
+                style:
+                    (buyuk ? context.yazi.labelLarge : context.yazi.labelMedium)
+                        ?.copyWith(color: cift.ustu),
               ),
             ),
           ],
