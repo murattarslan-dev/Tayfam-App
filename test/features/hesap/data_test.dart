@@ -6,6 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/butunluk/butunluk_baglama.dart';
+import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
+import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
@@ -98,6 +101,34 @@ void main() {
         'nonce': sahteNonce,
         'platform': 'android',
       });
+    });
+
+    test('giriş: bütünlük kanıtı nonce\'a bağlı, gövdede', () async {
+      final tasima = SahteTasima({
+        'POST /v1/auth/sign-in': () => oturum().toJson(),
+      });
+      final saglayici = _SahteButunluk('kanit');
+      final depo = HesapDeposu(
+        tasima,
+        butunluk: ButunlukKaniti(saglayici, gunluk: (_) {}),
+      );
+      await depo.girisYap(ornekKimlik, platform: 'android');
+      expect(saglayici.ozetler, [girisBaglamasi(sahteNonce)]);
+      final govde = tasima.istekler.single.govde as Map<String, Object?>;
+      expect(govde['integrity_token'], 'kanit');
+    });
+
+    test('giriş: kanıt alınamazsa alan gönderilmez', () async {
+      final tasima = SahteTasima({
+        'POST /v1/auth/sign-in': () => oturum().toJson(),
+      });
+      final depo = HesapDeposu(
+        tasima,
+        butunluk: ButunlukKaniti(_SahteButunluk(null), gunluk: (_) {}),
+      );
+      await depo.girisYap(ornekKimlik, platform: 'android');
+      final govde = tasima.istekler.single.govde as Map<String, Object?>;
+      expect(govde.containsKey('integrity_token'), isFalse);
     });
 
     test('kayıt gövdesi sözleşmedeki alanlarla', () async {
@@ -202,4 +233,21 @@ final class _SabitRastgele implements Random {
 
   @override
   double nextDouble() => 0;
+}
+
+/// Sabit sonuç dönen bütünlük sağlayıcısı; istenen özetleri kaydeder.
+final class _SahteButunluk implements ButunlukSaglayici {
+  _SahteButunluk(this.sonuc);
+
+  final String? sonuc;
+  final List<String> ozetler = [];
+
+  @override
+  Future<void> hazirla() async {}
+
+  @override
+  Future<String?> token(String istekOzeti) async {
+    ozetler.add(istekOzeti);
+    return sonuc;
+  }
 }

@@ -35,6 +35,7 @@ olarak anar.
 | [0020](0020-birebir-uctan-uca-sifreleme-istemci.md) | Birebir mesajda uçtan uca şifreleme (istemci) | Kabul edildi |
 | [0021](0021-fotograf-yukleme-ve-goruntuleme.md) | Fotoğraf yükleme ve görüntüleme | Kabul edildi |
 | [0022](0022-kvkk-veri-disa-aktarma.md) | KVKK veri dışa aktarma (istemci) | Kabul edildi |
+| [0023](0023-uygulama-butunlugu-istemci.md) | Uygulama bütünlüğü (istemci): Android Play Integrity | Önerildi |
 
 ## Şablon
 

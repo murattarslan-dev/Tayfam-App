@@ -22,7 +22,7 @@ Session _oturum({bool kayitBekliyor = false, bool? onayGerekli}) {
 
 SessionStore _store(TokenDeposu depo) => SessionStore(
   depo: depo,
-  yenileyici: (_) async => _oturum(),
+  yenileyici: (_, {butunlukTokeni}) async => _oturum(),
   yoklayici: () async {},
 );
 

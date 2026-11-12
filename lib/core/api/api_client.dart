@@ -18,6 +18,8 @@ import 'package:tayfam/core/oturum/session_store.dart';
 /// - Diğer uçlarda erişim token'ı `SessionStore`'dan alınır (gerekirse
 ///   önce tek uçuşta yenilenir). `unauthenticated` gelirse bir kez yenilenir
 ///   ve istek bir kez tekrarlanır; ikinci `unauthenticated` oturumu kapatır.
+/// - `integrity-required` gelirse (istemci ADR-0023 §5) bütünlük kanıtıyla
+///   bir kez yenilenir ve istek bir kez tekrarlanır.
 /// - Başlıklar, problem ayrıştırma, zaman aşımı ve günlük [HttpTasima]'dadır.
 final class ApiClient implements ApiTransport {
   ApiClient({required this._tasima, required this._oturum});
@@ -51,6 +53,13 @@ final class ApiClient implements ApiTransport {
     try {
       return await gonder(ilk);
     } on ApiProblem catch (problem) {
+      if (problem.type == ProblemType.integrityRequired) {
+        // istemci ADR-0023 §5: kanıtla bir kez yenilenir, istek bir kez
+        // tekrarlanır; yine reddedilirse hata çağırana gider.
+        final kanitli = await _oturum.butunlukGerekti(ilk);
+        if (kanitli == null) rethrow;
+        return gonder(kanitli);
+      }
       if (problem.type != ProblemType.unauthenticated) rethrow;
     }
 

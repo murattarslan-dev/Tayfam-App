@@ -45,6 +45,11 @@ dependencies:
   # CAMERA (yalnızca "Cihaz bağla" ekranında istenir); paketin getirdiği
   # RECORD_AUDIO ve WRITE_EXTERNAL_STORAGE manifestte kaldırılır.
   camera: ^0.12.1
+  # Uygulama bütünlüğü kanıtının bağlama değeri için SHA-256 (istemci
+  # ADR-0023 §2; iOS App Attest'te de aynı değer kullanılacak). Yayıncı
+  # dart.dev (Dart ekibi), BSD-3, saf Dart, izin gerektirmez. Zaten geçişli
+  # bağımlılıktı; pubspec.lock'taki sürüm (3.0.8) değişmez.
+  crypto: ^3.0.6
   # Galeriden ya da kameradan tek fotoğraf (ADR-0021 §1); yayıncı
   # flutter.dev, BSD-3. Android'de Photo Picker (izinsiz), kamera sistem
   # uygulamasıyla (CAMERA izni gerekmez); iOS'ta PHPicker. Android

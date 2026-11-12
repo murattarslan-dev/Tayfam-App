@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.murattarslan.tayfam.butunluk.ButunlukKoprusu
 import com.murattarslan.tayfam.e2e.SignalKoprusu
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -18,13 +19,16 @@ import io.flutter.plugin.common.MethodChannel
  *   açıklamaları Dart'tan (çeviri dosyasından) gelir. Bildirim içeriği bu
  *   kanaldan geçmez.
  * - `tayfam/e2e/signal` (istemci ADR-0010, ADR-0020): Signal köprüsü.
+ * - `tayfam/butunluk` (istemci ADR-0023): Play Integrity köprüsü.
  */
 class MainActivity : FlutterActivity() {
     private var signalKoprusu: SignalKoprusu? = null
+    private var butunlukKoprusu: ButunlukKoprusu? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         signalKoprusu = SignalKoprusu.kur(flutterEngine.dartExecutor.binaryMessenger)
+        butunlukKoprusu = ButunlukKoprusu.kur(flutterEngine.dartExecutor.binaryMessenger, this)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "tayfam/bildirim")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -41,6 +45,8 @@ class MainActivity : FlutterActivity() {
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         signalKoprusu?.birak()
         signalKoprusu = null
+        butunlukKoprusu?.birak()
+        butunlukKoprusu = null
         super.cleanUpFlutterEngine(flutterEngine)
     }
 

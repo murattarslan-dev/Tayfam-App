@@ -15,6 +15,7 @@ Session _oturum(
   Duration erisimOmru = const Duration(minutes: 15),
   bool kayitBekliyor = false,
   bool? onayGerekli,
+  DateTime? butunlukSonrasi,
 }) => Session(
   userId: '00000000-0000-4000-8000-000000000001',
   sessionId: '00000000-0000-4000-8000-000000000002',
@@ -24,6 +25,7 @@ Session _oturum(
   refreshExpiresAt: _simdi.add(const Duration(days: 90)),
   registrationPending: kayitBekliyor,
   consentRequired: onayGerekli,
+  integrityCheckAfter: butunlukSonrasi,
 );
 
 /// Yazma ve silmeleri sayan bellek deposu.
@@ -59,13 +61,17 @@ final class _SayanDepo implements TokenDeposu {
 /// belirler.
 final class _SahteSunucu {
   final List<String> gonderilen = [];
+
+  /// Her yenilemede gönderilen bütünlük token'ı (yoksa `null`).
+  final List<String?> kanitlar = [];
   int yoklama = 0;
   Object? yoklamaHatasi;
   Future<Session> Function(String token)? yanit;
   int _sayac = 1;
 
-  Future<Session> yenile(String token) {
+  Future<Session> yenile(String token, {String? butunlukTokeni}) {
     gonderilen.add(token);
+    kanitlar.add(butunlukTokeni);
     final ozel = yanit;
     if (ozel != null) return ozel(token);
     _sayac++;
@@ -80,11 +86,13 @@ final class _SahteSunucu {
 }
 
 final class _Kurulum {
-  _Kurulum({DateTime? saat}) : saat = saat ?? _simdi {
+  _Kurulum({DateTime? saat, YenilemeKaniti? kanit})
+    : saat = saat ?? _simdi {
     oturum = SessionStore(
       depo: depo,
       yenileyici: sunucu.yenile,
       yoklayici: sunucu.yokla,
+      kanit: kanit,
       saat: () => this.saat,
       bekle: (sure) async => beklemeler.add(sure),
       gunluk: gunluk.add,
@@ -471,6 +479,168 @@ void main() {
         expect(satir, isNot(contains('erisim-')));
         expect(satir, isNot(contains('yenileme-')));
       }
+    });
+  });
+
+  group('bütünlük kanıtı (istemci ADR-0023)', () {
+    test('integrity_check_after depoya yazılır ve okunur', () async {
+      final k = _Kurulum();
+      final sonra = _simdi.add(const Duration(hours: 24));
+      await k.oturum.oturumAc(_oturum(1, butunlukSonrasi: sonra));
+      final kayit = KayitliOturum.coz((await k.depo.oku())!);
+      expect(kayit?.butunlukSonrasi, sonra);
+    });
+
+    test('zamanı gelmeden yenilemede kanıt istenmez', () async {
+      final istenen = <String>[];
+      final k = _Kurulum(
+        kanit: (token) async {
+          istenen.add(token);
+          return 'kanit';
+        },
+      );
+      await k.oturum.oturumAc(
+        _oturum(
+          1,
+          erisimOmru: Duration.zero,
+          butunlukSonrasi: _simdi.add(const Duration(hours: 1)),
+        ),
+      );
+      expect(await k.oturum.erisimTokeni(), 'erisim-2');
+      expect(istenen, isEmpty);
+      expect(k.sunucu.kanitlar, [null]);
+    });
+
+    test('alan yoksa (denetim kapalı) kanıt istenmez', () async {
+      final istenen = <String>[];
+      final k = _Kurulum(
+        kanit: (token) async {
+          istenen.add(token);
+          return 'kanit';
+        },
+      );
+      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+      await k.oturum.erisimTokeni();
+      expect(istenen, isEmpty);
+      expect(k.sunucu.kanitlar, [null]);
+    });
+
+    test('zamanı geçtiyse yenileme kanıt taşır', () async {
+      final istenen = <String>[];
+      final k = _Kurulum(
+        kanit: (token) async {
+          istenen.add(token);
+          return 'kanit';
+        },
+      );
+      await k.oturum.oturumAc(
+        _oturum(
+          1,
+          erisimOmru: Duration.zero,
+          butunlukSonrasi: _simdi.subtract(const Duration(seconds: 1)),
+        ),
+      );
+      expect(await k.oturum.erisimTokeni(), 'erisim-2');
+      // Kanıt sağlayıcısına harcanmamış yenileme token'ı verilir (özeti
+      // orada alınır); yoklamadan sonra, gönderimden önce.
+      expect(istenen, ['yenileme-1']);
+      expect(k.sunucu.yoklama, 1);
+      expect(k.sunucu.kanitlar, ['kanit']);
+    });
+
+    test('kanıt alınamazsa yenileme kanıtsız gider', () async {
+      final k = _Kurulum(kanit: (_) async => null);
+      await k.oturum.oturumAc(
+        _oturum(1, erisimOmru: Duration.zero, butunlukSonrasi: _simdi),
+      );
+      expect(await k.oturum.erisimTokeni(), 'erisim-2');
+      expect(k.sunucu.kanitlar, [null]);
+    });
+
+    test('kanıt hatası yenilemeyi bozmaz', () async {
+      final k = _Kurulum(kanit: (_) async => throw const FormatException());
+      await k.oturum.oturumAc(
+        _oturum(1, erisimOmru: Duration.zero, butunlukSonrasi: _simdi),
+      );
+      expect(await k.oturum.erisimTokeni(), 'erisim-2');
+      expect(k.sunucu.kanitlar, [null]);
+    });
+
+    test('yeni yanıtın zamanı sonraki yenilemeyi belirler', () async {
+      final istenen = <String>[];
+      final k = _Kurulum(
+        kanit: (token) async {
+          istenen.add(token);
+          return 'kanit';
+        },
+      );
+      await k.oturum.oturumAc(
+        _oturum(1, erisimOmru: Duration.zero, butunlukSonrasi: _simdi),
+      );
+      k.sunucu.yanit = (_) async => _oturum(
+        2,
+        erisimOmru: Duration.zero,
+        butunlukSonrasi: _simdi.add(const Duration(hours: 24)),
+      );
+      await k.oturum.erisimTokeni();
+      k.sunucu.yanit = (_) async => _oturum(3);
+      await k.oturum.erisimTokeni();
+      expect(istenen, ['yenileme-1']);
+      expect(k.sunucu.kanitlar, ['kanit', null]);
+    });
+
+    test('kanıt beklenirken eşzamanlı istekler tek yenileme yapar', () async {
+      final kapi = Completer<String?>();
+      var istek = 0;
+      final k = _Kurulum(
+        kanit: (_) {
+          istek++;
+          return kapi.future;
+        },
+      );
+      await k.oturum.oturumAc(
+        _oturum(1, erisimOmru: Duration.zero, butunlukSonrasi: _simdi),
+      );
+      final tokenler = Future.wait([
+        for (var i = 0; i < 4; i++) k.oturum.erisimTokeni(),
+      ]);
+      await _akisBosalsin();
+      // Kanıt beklenirken yenileme token'ı henüz gönderilmedi.
+      expect(k.sunucu.gonderilen, isEmpty);
+      expect(await k.depodakiYenileme(), 'yenileme-1');
+      kapi.complete('kanit');
+      expect(await tokenler, List.filled(4, 'erisim-2'));
+      expect(istek, 1);
+      expect(k.sunucu.gonderilen, ['yenileme-1']);
+      expect(k.sunucu.kanitlar, ['kanit']);
+    });
+
+    test('integrity-required: kanıtla bir kez yenilenir', () async {
+      final k = _Kurulum(kanit: (_) async => 'kanit');
+      await k.oturum.oturumAc(
+        _oturum(1, butunlukSonrasi: _simdi.add(const Duration(hours: 5))),
+      );
+      final ilk = await k.oturum.erisimTokeni();
+      expect(await k.oturum.butunlukGerekti(ilk), 'erisim-2');
+      expect(k.sunucu.kanitlar, ['kanit']);
+      // Kanıtla alınan token da reddedilirse bir daha yenilenmez.
+      expect(await k.oturum.butunlukGerekti('erisim-2'), isNull);
+      expect(k.sunucu.gonderilen, ['yenileme-1']);
+    });
+
+    test('integrity-required: token zaten değiştiyse yenilemez', () async {
+      final k = _Kurulum(kanit: (_) async => 'kanit');
+      await k.oturum.oturumAc(_oturum(1));
+      expect(await k.oturum.butunlukGerekti('eski'), 'erisim-1');
+      expect(k.sunucu.gonderilen, isEmpty);
+    });
+
+    test('integrity-required zorlaması sonraki yenilemeye taşmaz', () async {
+      final k = _Kurulum(kanit: (_) async => 'kanit');
+      await k.oturum.oturumAc(_oturum(1));
+      await k.oturum.butunlukGerekti('erisim-1');
+      await k.oturum.yenile();
+      expect(k.sunucu.kanitlar, ['kanit', null]);
     });
   });
 }

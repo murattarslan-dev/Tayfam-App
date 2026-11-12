@@ -216,6 +216,11 @@ dependencies {
     implementation("org.signal:libsignal-android:0.106.1")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
+    // Uygulama bütünlüğü (istemci ADR-0023; Tayfam-Api ADR-0022): Google'ın
+    // resmi Play Integrity kütüphanesi (Google Maven), standard request.
+    // Sürüm tam sabit; yükseltme inceleme + PR ile.
+    implementation("com.google.android.play:integrity:1.6.0")
+
     // JVM birim testleri gerçek libsignal ile: masaüstü paketi linux-x86_64
     // yerel kodunu içerir (aynı sürüm).
     testImplementation("org.signal:libsignal-client:0.106.1")

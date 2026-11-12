@@ -7,7 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tayfam/core/guvenli_depo/guvenli_okuma.dart';
 
 /// Depoda tutulan oturum kaydı: token çifti, süreleri ve yönlendirmenin
-/// ihtiyaç duyduğu iki bayrak (ADR-0005, ADR-0006).
+/// ihtiyaç duyduğu iki bayrak (ADR-0005, ADR-0006) ve sunucunun bildirdiği
+/// bir sonraki bütünlük denetimi zamanı (istemci ADR-0023 §4).
 ///
 /// Kullanıcı içeriği taşımaz. `toString` token yazmaz.
 @immutable
@@ -20,6 +21,7 @@ final class KayitliOturum {
     required this.kayitBekliyor,
     required this.onayGerekli,
     this.kullaniciId,
+    this.butunlukSonrasi,
   });
 
   final String erisimTokeni;
@@ -37,6 +39,11 @@ final class KayitliOturum {
   /// yazılmış kayıtta yoktur; ilk yenilemede gelir.
   final String? kullaniciId;
 
+  /// `integrity_check_after`: bu zamandan sonraki ilk yenileme bütünlük
+  /// kanıtı taşır. Bütünlük denetimi kapalıysa ya da kayıt bu alan
+  /// eklenmeden önce yazıldıysa `null` (kanıt gönderilmez).
+  final DateTime? butunlukSonrasi;
+
   /// Depodaki tek kayda yazılan biçim.
   String kodla() => jsonEncode({
     'v': 1,
@@ -47,6 +54,7 @@ final class KayitliOturum {
     'kayit_bekliyor': kayitBekliyor,
     'onay_gerekli': onayGerekli,
     'kullanici': ?kullaniciId,
+    'butunluk_sonra': ?butunlukSonrasi?.toUtc().toIso8601String(),
   });
 
   /// [kodla] çıktısını okur; bozuk ya da tanınmayan kayıtta `null` döner.
@@ -61,6 +69,7 @@ final class KayitliOturum {
       final kayitBekliyor = json['kayit_bekliyor'];
       final onayGerekli = json['onay_gerekli'];
       final kullanici = json['kullanici'];
+      final butunlukSonra = json['butunluk_sonra'];
       if (erisim is! String ||
           erisimBitis is! String ||
           yenileme is! String ||
@@ -80,6 +89,9 @@ final class KayitliOturum {
         onayGerekli: onayGerekli,
         kullaniciId: kullanici is String && kullanici.isNotEmpty
             ? kullanici
+            : null,
+        butunlukSonrasi: butunlukSonra is String
+            ? DateTime.tryParse(butunlukSonra)?.toUtc()
             : null,
       );
     } on FormatException {
