@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- tool/ikon/ikon_uret.py ile üretildi; elle düzenleme, betiği çalıştır. -->
-<!-- Uyarlanabilir ikonun ön planı: tanıtım sitesindeki app-icon.svg'nin
-     monogramı (viewBox 64), 108 dp tuvalin ortasında, görünen 72 dp'nin
-     %70'i. Güvenli bölge (66 dp çap) dışına taşmaz. -->
+<!-- Uyarlanabilir ikonun ön katmanı (tayfam-android-foreground.svg):
+     logo (viewBox 100) 108 dp tuvalde scale(0.6), işaretin ortası
+     tuvalin ortasında (66 dp güvenli bölge); L parçası mor zemin
+     için #FAF8FF. Arka plan düz brand. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="0.7875"
-        android:scaleY="0.7875"
-        android:translateX="28.8"
-        android:translateY="28.8">
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:translateX="24"
+        android:translateY="22.2">
         <path
-            android:pathData="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7"
-            android:strokeColor="@color/ic_launcher_govde"
-            android:strokeWidth="10"
-            android:strokeLineCap="round" />
+            android:pathData="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z"
+            android:fillColor="@color/ic_launcher_mango" />
         <path
-            android:pathData="M14 27c10 0 22-2 34-6"
-            android:strokeColor="@color/ic_launcher_cizgi"
-            android:strokeWidth="10"
-            android:strokeLineCap="round" />
+            android:pathData="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z"
+            android:fillColor="@color/ic_launcher_nar" />
         <path
-            android:pathData="M47.5,13a4.5,4.5 0 1,0 9,0a4.5,4.5 0 1,0 -9,0"
-            android:fillColor="@color/ic_launcher_nokta" />
+            android:pathData="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z"
+            android:fillColor="@color/ic_launcher_turkuaz" />
+        <path
+            android:pathData="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z"
+            android:fillColor="@color/ic_launcher_l" />
     </group>
 </vector>

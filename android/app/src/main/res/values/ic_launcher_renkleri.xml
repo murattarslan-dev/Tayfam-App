@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- tool/ikon/ikon_uret.py ile üretildi; elle düzenleme, betiği çalıştır. -->
-<!-- Renkler lib/core/tema/tayfam_colors.dart token'larıyla aynıdır
-     (markaYuzey, teal, mango, nar); test/core/bilesenler/android_ikonu_test.dart
-     denetler. -->
+<!-- Renkler lib/core/tema/tayfam_logo_renkleri.dart ile aynıdır;
+     test/core/bilesenler/android_ikonu_test.dart denetler. -->
 <resources>
     <color name="ic_launcher_background">#5B2BE0</color>
-    <color name="ic_launcher_govde">#00C2A8</color>
-    <color name="ic_launcher_cizgi">#FFB000</color>
-    <color name="ic_launcher_nokta">#FF3D68</color>
+    <color name="ic_launcher_mango">#FFB000</color>
+    <color name="ic_launcher_nar">#FF3D68</color>
+    <color name="ic_launcher_turkuaz">#00C2A8</color>
+    <color name="ic_launcher_l">#FAF8FF</color>
 </resources>

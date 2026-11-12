@@ -4,6 +4,7 @@ library;
 export 'package:tayfam/core/tema/google_marka.dart';
 export 'package:tayfam/core/tema/kontrast.dart';
 export 'package:tayfam/core/tema/tayfam_colors.dart';
+export 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
 export 'package:tayfam/core/tema/tayfam_motion.dart';
 export 'package:tayfam/core/tema/tayfam_radii.dart';
 export 'package:tayfam/core/tema/tayfam_sizes.dart';

@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/problem_type.dart';
-import 'package:tayfam/core/bilesenler/tayfam_monogram.dart';
+import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
@@ -85,14 +86,12 @@ TayfamColors _renkler(ThemeMode tema) {
   return tema == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
 }
 
-/// Ekrandaki monogramın gövde rengi.
-Color _govde(WidgetTester tester) {
+/// Ekrandaki logonun L parçasının rengi.
+Color _lParcasi(WidgetTester tester) {
   final boya = tester.widget<CustomPaint>(
-    find.byWidgetPredicate(
-      (w) => w is CustomPaint && w.painter is MonogramBoyaci,
-    ),
+    find.byWidgetPredicate((w) => w is CustomPaint && w.painter is LogoBoyaci),
   );
-  return (boya.painter! as MonogramBoyaci).govde;
+  return (boya.painter! as LogoBoyaci).renkler.l;
 }
 
 void main() {
@@ -102,10 +101,10 @@ void main() {
         ikiKatYazi(tester);
         await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
 
-        expect(find.byType(TayfamMonogram), findsOneWidget);
+        expect(find.byType(TayfamLogo), findsOneWidget);
         expect(_metin('bilesen_logo_yazisi'), findsOneWidget);
-        // Mor marka yüzeyinde gövde iki temada da turkuaz.
-        expect(_govde(tester), _renkler(tema).teal);
+        // Mor marka yüzeyinde L parçası iki temada da #FAF8FF.
+        expect(_lParcasi(tester), TayfamLogoRenkleri.lMorZemin);
         expect(_metin('hesap_slogan'), findsOneWidget);
         expect(_metin('hesap_google_ile_devam'), findsOneWidget);
         expect(tester.takeException(), isNull);
@@ -360,12 +359,13 @@ void main() {
           dur: false,
         );
 
-        expect(find.byType(TayfamMonogram), findsOneWidget);
+        expect(find.byType(TayfamLogo), findsOneWidget);
         expect(_metin('bilesen_logo_yazisi'), findsOneWidget);
-        // Sayfa zemininde gövde açık temada brand, koyu temada turkuaz.
+        // Sayfa zemininde L parçası açık temada brand, koyu temada
+        // brand-dark.
         final r = _renkler(tema);
-        final govde = tema == ThemeMode.dark ? r.teal : r.markaYuzey;
-        expect(_govde(tester), govde);
+        final l = tema == ThemeMode.dark ? r.marka : r.markaYuzey;
+        expect(_lParcasi(tester), l);
         expect(tester.takeException(), isNull);
       });
     }

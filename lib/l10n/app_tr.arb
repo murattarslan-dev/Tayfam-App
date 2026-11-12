@@ -2173,11 +2173,11 @@
   },
   "bilesen_logo_yazisi": "tayfam",
   "@bilesen_logo_yazisi": {
-    "description": "Ortak bileşen: logoda monogramın yanındaki marka adı (açılış ve giriş ekranı). Markada küçük harfle yazılır; çevrilmez."
+    "description": "Ortak bileşen: logoda simgenin yanındaki marka adı (açılış ve giriş ekranı). Markada küçük harfle yazılır; çevrilmez."
   },
   "bilesen_logo_etiketi": "Tayfam",
   "@bilesen_logo_etiketi": {
-    "description": "Ortak bileşen: logonun (monogram, yanında yazı olsun olmasın) ekran okuyucuda okunan adı. Ekranda görünmez; çevrilmez."
+    "description": "Ortak bileşen: logonun (simge, yanında yazı olsun olmasın) ekran okuyucuda okunan adı. Ekranda görünmez; çevrilmez."
   },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {
