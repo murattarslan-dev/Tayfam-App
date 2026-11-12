@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
@@ -113,6 +114,10 @@ class _ArkadasSatiri extends StatelessWidget {
     return GirisSatiri(
       ikon: Icons.person_outline,
       etiket: arkadas.displayName,
+      onde: KullaniciAvatari(
+        ad: arkadas.displayName,
+        avatarUploadId: arkadas.avatarUploadId,
+      ),
       onTap: () => kisiyiAc(context, arkadas.userId),
     );
   }

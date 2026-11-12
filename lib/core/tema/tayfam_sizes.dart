@@ -71,4 +71,16 @@ abstract final class TayfamSizes {
 
   /// Haritadaki rota noktası işaretinin yarıçapı.
   static const double rotaNoktasi = 5;
+
+  /// Listelerdeki avatar çapı (ADR-0021 §5).
+  static const double avatarKucuk = 40;
+
+  /// Profildeki avatar çapı.
+  static const double avatarBuyuk = 96;
+
+  /// Kapak fotoğrafının en-boy oranı (tayfa ve etkinlik kapağı).
+  static const double kapakOrani = 16 / 9;
+
+  /// Av satırındaki fotoğraf küçük resminin kenarı.
+  static const double fotografKucukResim = 72;
 }

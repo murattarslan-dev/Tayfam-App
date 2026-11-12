@@ -7,6 +7,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
 import 'package:tayfam/features/etkinlik/application/arac_formlari.dart';
@@ -149,11 +150,25 @@ class _AvSatiri extends ConsumerWidget {
     final ikincil = context.yazi.bodyMedium?.copyWith(
       color: context.renkler.metinGovde,
     );
+    final fotograf = av.photoUploadId;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (fotograf != null && fotograf.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: TayfamRadii.onizlemeKoseleri,
+              child: SizedBox.square(
+                dimension: TayfamSizes.fotografKucukResim,
+                child: MedyaGorseli(
+                  uploadId: fotograf,
+                  etiket: m.medya_av_fotografi_etiketi,
+                ),
+              ),
+            ),
+            const SizedBox(width: TayfamSpacing.s12),
+          ],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,6 +268,7 @@ class _AvFormuState extends ConsumerState<AvFormu> {
   LatLng? _yer;
   FishingCatchCreateRequestVisibility _gorunurluk =
       FishingCatchCreateRequestVisibility.self;
+  String? _fotograf;
   Set<AvHatasi> _hatalar = const {};
   Object? _hata;
 
@@ -278,6 +294,7 @@ class _AvFormuState extends ConsumerState<AvFormu> {
       boy: _boy.text,
       yer: _yer,
       gorunurluk: _gorunurluk,
+      fotograf: _fotograf,
       istekKimligi: _istekKimligi,
     );
     final istek = sonuc.istek;
@@ -333,6 +350,18 @@ class _AvFormuState extends ConsumerState<AvFormu> {
                 : null,
             errorMaxLines: 2,
           ),
+        ),
+        const SizedBox(height: TayfamSpacing.s12),
+        Text(m.etkinlik_av_fotografi, style: context.yazi.titleSmall),
+        const SizedBox(height: TayfamSpacing.s8),
+        FotografAlani(
+          amac: UploadPurpose.catchPhoto,
+          tayfaId: widget.anahtar.tayfaId,
+          deger: _fotograf,
+          etiket: m.medya_av_fotografi_etiketi,
+          bicim: FotografAlaniBicimi.kare,
+          etkin: !mesgul,
+          onDegisti: (yeni) => setState(() => _fotograf = yeni),
         ),
         const SizedBox(height: TayfamSpacing.s12),
         if (yer == null)

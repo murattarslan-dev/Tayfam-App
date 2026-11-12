@@ -287,6 +287,7 @@ final class EtkinlikTaslagi {
     this.tekrar,
     this.ayrinti = const TurAyrintisi(),
     this.ayrintiDegisti = false,
+    this.kapak,
     this.hatalar = const {},
     this.gonderiliyor = false,
     this.hata,
@@ -319,6 +320,10 @@ final class EtkinlikTaslagi {
   /// zaman gönderilir; sunucu ayrıntıyı tamamen değiştirir).
   final bool ayrintiDegisti;
 
+  /// Kapak fotoğrafının yüklemesi (`null`: kapak yok; ADR-0021 §6).
+  /// Düzenlemede etkinliğin kapağıyla başlar.
+  final String? kapak;
+
   /// Gösterilen adımın hataları ("İleri"ye ya da gönder'e basılınca).
   final Set<TaslakHatasi> hatalar;
 
@@ -342,6 +347,7 @@ final class EtkinlikTaslagi {
     Object? tekrar = _ayni,
     TurAyrintisi? ayrinti,
     bool? ayrintiDegisti,
+    Object? kapak = _ayni,
     Set<TaslakHatasi>? hatalar,
     bool gonderiliyor = false,
     Object? hata,
@@ -359,6 +365,7 @@ final class EtkinlikTaslagi {
     tekrar: identical(tekrar, _ayni) ? this.tekrar : tekrar as TekrarSecimi?,
     ayrinti: ayrinti ?? this.ayrinti,
     ayrintiDegisti: ayrintiDegisti ?? this.ayrintiDegisti,
+    kapak: identical(kapak, _ayni) ? this.kapak : kapak as String?,
     hatalar: hatalar ?? this.hatalar,
     gonderiliyor: gonderiliyor,
     hata: hata,
@@ -390,6 +397,7 @@ EtkinlikTaslagi duzenlemeTaslagi(Event etkinlik, String istekKimligi) {
       baglanti: etkinlik.onlineUrl ?? '',
     ),
     kontenjan: etkinlik.capacity > 0 ? '${etkinlik.capacity}' : '',
+    kapak: etkinlik.coverUploadId,
     ayrinti: TurAyrintisi(
       kampYeri: camp?.siteName ?? '',
       su: camp?.hasWater,
@@ -677,6 +685,7 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     gaming: ayrinti.gaming,
     sports: ayrinti.sports,
     recurrence: tekrar == null ? null : tekrarKurali(tekrar),
+    coverUploadId: t.kapak,
     clientRequestId: t.istekKimligi,
   );
 }
@@ -728,6 +737,8 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
       t.ayrinti.rota.isEmpty &&
       (eski.convoy?.route?.isNotEmpty ?? false);
   final istek = EventUpdateRequest(
+    // Kaldırılan kapak "" ile gönderilir (sözleşme).
+    coverUploadId: t.kapak == eski.coverUploadId ? null : t.kapak ?? '',
     title: baslik == eski.title ? null : baslik,
     description: aciklama == eski.description ? null : aciklama,
     startsAt: zamanDegisti ? baslangic : null,

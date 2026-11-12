@@ -5,13 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/tayfa_ayarlari.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfa bilgileri (`/t/<tayfaId>/ayarlar/bilgiler`; ADR-0018 §1): ad,
+/// Tayfa bilgileri (`/t/<tayfaId>/ayarlar/bilgiler`; ADR-0018 §1): kapak
+/// fotoğrafı (ADR-0021), ad,
 /// açıklama, ilgi alanları, katılım politikası ve üyelerin etkinlik açıp
 /// açamayacağı. Yalnızca değişen alanlar gönderilir (`PATCH`).
 class TayfaBilgileriEkrani extends ConsumerWidget {
@@ -70,6 +72,7 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
       ? JoinPolicy.approval
       : widget.tayfa.joinPolicy;
   late bool _uyeEtkinlikAcar = widget.tayfa.membersCanCreateEvents;
+  late String? _kapak = widget.tayfa.coverUploadId;
   BilgiHatasi? _hata;
 
   @override
@@ -91,6 +94,7 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
       ilgi: _ilgi,
       katilim: _katilim,
       uyeEtkinlikAcar: _uyeEtkinlikAcar,
+      kapak: _kapak,
     );
     final bildirici = SonucBildirici.al(context);
     if (istek == null) {
@@ -113,6 +117,19 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
     return ListView(
       padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
       children: [
+        BolumBasligi(baslik: m.medya_kapak_etiketi),
+        const SizedBox(height: TayfamSpacing.s8),
+        Text(m.yonetim_kapak_aciklama, style: govde),
+        const SizedBox(height: TayfamSpacing.s8),
+        FotografAlani(
+          amac: UploadPurpose.cover,
+          tayfaId: widget.tayfaId,
+          deger: _kapak,
+          etiket: m.medya_kapak_etiketi,
+          etkin: !mesgul,
+          onDegisti: (yeni) => setState(() => _kapak = yeni),
+        ),
+        const SizedBox(height: TayfamSpacing.s16),
         TextField(
           controller: _ad,
           maxLength: tayfaAdiEnCok,

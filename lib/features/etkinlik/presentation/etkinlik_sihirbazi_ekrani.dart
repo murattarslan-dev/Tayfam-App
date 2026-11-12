@@ -8,6 +8,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
@@ -451,6 +452,23 @@ class _EtkinlikSihirbaziEkraniState
                 ? m.etkinlik_aciklama_hata
                 : null,
           ),
+        ),
+        const SizedBox(height: TayfamSpacing.s16),
+        Text(m.medya_kapak_etiketi, style: context.yazi.titleSmall),
+        Text(
+          m.etkinlik_kapak_aciklama,
+          style: context.yazi.bodyMedium?.copyWith(
+            color: context.renkler.metinIkincil,
+          ),
+        ),
+        const SizedBox(height: TayfamSpacing.s8),
+        FotografAlani(
+          amac: UploadPurpose.cover,
+          tayfaId: widget.tayfaId,
+          deger: t.kapak,
+          etiket: m.medya_kapak_etiketi,
+          etkin: !t.gonderiliyor,
+          onDegisti: _n.kapakAyarla,
         ),
         const SizedBox(height: TayfamSpacing.s16),
         _ZamanAlani(
