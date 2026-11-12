@@ -131,7 +131,8 @@ List<Override> arkadasOverridelari(SahteTayfaTasima tasima) => [
   arkadasDeposuProvider.overrideWithValue(ArkadasDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {
     final profil = await UsersApi(tasima).getUserProfile(userId: id);
-    return KullaniciAdi(profil.displayName, ben: profil.self);
+    return KullaniciAdi(profil.displayName);
   }),
+  kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
   oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
 ];

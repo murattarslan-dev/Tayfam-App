@@ -75,22 +75,39 @@ void main() {
       expect(find.text(arbMetni('sikayet_tayfa_menu')), findsOneWidget);
     });
 
-    testWidgets('yönetici: bekleyen istek rozeti, ayarlara gider', (
+    testWidgets('yönetici: bekleyen sayısı rozette, ayarlara gider', (
       tester,
     ) async {
       ekranBoyutu(tester);
       final tasima = _uygulamaTasimasi('admin', {
-        'GET $isteklerYolu': yanit(istekListesiJson([istekJson(uyeId1)])),
+        'GET $tayfaYolu': yanit(yonetimGorunumu(bekleyen: 3)),
       });
       await _uygulamayiAc(tester, tasima);
 
       expect(_rozetGorunur(tester), isTrue);
-      expect(tasima.giden('GET', isteklerYolu).first.sorgu['page_size'], '1');
+      expect(
+        find.descendant(of: _menu, matching: find.text('3')),
+        findsOneWidget,
+      );
+      // Sayı tayfa görünümünden gelir; istek listesi yoklanmaz.
+      expect(tasima.giden('GET', isteklerYolu), isEmpty);
       await _dokun(tester, _menu);
-      expect(find.text(arbMetni('yonetim_menu_bekleyen_var')), findsOneWidget);
+      expect(find.text('3 bekleyen katılım isteği'), findsOneWidget);
       await _dokun(tester, find.text(arbMetni('yonetim_menu_ayarlar')));
 
       expect(find.byType(TayfaAyarlariEkrani), findsOneWidget);
+    });
+
+    testWidgets('yönetici: bekleyen 0 ise rozet yok', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = _uygulamaTasimasi('admin', {
+        'GET $tayfaYolu': yanit(yonetimGorunumu(bekleyen: 0)),
+      });
+      await _uygulamayiAc(tester, tasima);
+
+      expect(_rozetGorunur(tester), isFalse);
+      await _dokun(tester, _menu);
+      expect(find.textContaining('bekleyen katılım isteği'), findsNothing);
     });
 
     testWidgets('üye bekleyen istekleri sormaz', (tester) async {
@@ -417,13 +434,68 @@ void main() {
       expect(find.text(arbMetni('yonetim_banla_aciklama')), findsOneWidget);
       await _dokun(tester, find.text(arbMetni('yonetim_banla_onayla')));
 
-      expect(
-        tasima.giden('PUT', banYolu).single.yolParametreleri['user_id'],
-        uyeId1,
-      );
+      final istek = tasima.giden('PUT', banYolu).single;
+      expect(istek.yolParametreleri['user_id'], uyeId1);
+      // Gerekçe seçilmediyse gövde yok.
+      expect(istek.govde, isNull);
       expect(find.text('Kişi 1'), findsNothing);
       expect(find.text(arbMetni('yonetim_banlandi')), findsOneWidget);
     });
+
+    testWidgets('banlarken gerekçe seçilebilir; staff_conduct yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = uyeTasimasi({'PUT $banYolu': yanit(null)});
+      await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
+
+      await _dokun(tester, islemDugmesi.last);
+      await _dokun(tester, find.text(arbMetni('yonetim_banla')));
+      expect(find.text(arbMetni('yonetim_ban_gerekce_baslik')), findsOneWidget);
+      expect(find.text(arbMetni('yonetim_ban_gerekce_yok')), findsOneWidget);
+      // Yönetim davranışı gerekçesi ban için geçerli değil (sözleşme).
+      expect(find.text(arbMetni('sikayet_gerekce_yonetim')), findsNothing);
+      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_spam')));
+      await _dokun(tester, find.text(arbMetni('yonetim_banla_onayla')));
+
+      expect(tasima.giden('PUT', banYolu).single.govde, {'reason': 'spam'});
+      // Gerekçe istemcide hiçbir yerde gösterilmez.
+      expect(find.text(arbMetni('sikayet_gerekce_spam')), findsNothing);
+      expect(find.text(arbMetni('yonetim_banlandi')), findsOneWidget);
+    });
+
+    testWidgets('ban penceresinde vazgeçilirse istek yok', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = uyeTasimasi({'PUT $banYolu': yanit(null)});
+      await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
+
+      await _dokun(tester, islemDugmesi.last);
+      await _dokun(tester, find.text(arbMetni('yonetim_banla')));
+      await _dokun(tester, find.text(arbMetni('yonetim_vazgec')));
+
+      expect(tasima.giden('PUT', banYolu), isEmpty);
+      expect(find.text('Kişi 1'), findsOneWidget);
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('ban penceresi ${mod.name} temada 2× yazıda taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          const UyelerEkrani(tayfaId: ornekTayfaId),
+          uyeTasimasi(),
+          themeMode: mod,
+        );
+
+        await _dokun(tester, islemDugmesi.last);
+        await _dokun(tester, find.text(arbMetni('yonetim_banla')));
+        expect(tester.takeException(), isNull);
+        expect(find.text(arbMetni('yonetim_ban_gerekce_yok')), findsOneWidget);
+      });
+    }
 
     testWidgets('moderatör moderatöre dokunamaz, rol değiştiremez', (
       tester,

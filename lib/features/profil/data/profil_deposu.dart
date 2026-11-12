@@ -2,21 +2,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/gen/apis/me_api.dart';
-import 'package:tayfam/core/api/gen/apis/users_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
 
 /// Profil ve hesap uçları (ADR-0018 §2). Yalnızca üretilmiş uç sınıflarını
 /// kullanır; bütün istekler tek `ApiClient`'tan geçer (ADR-0005).
 final class ProfilDeposu {
-  ProfilDeposu(ApiTransport istemci)
-    : _me = MeApi(istemci),
-      _users = UsersApi(istemci);
+  ProfilDeposu(ApiTransport istemci) : _me = MeApi(istemci);
 
   final MeApi _me;
-  final UsersApi _users;
 
-  /// `GET /v1/me/account`: referans kodu ve katılım geçmişi görünürlüğü.
+  /// `GET /v1/me/account`: kimlik, görünen ad, referans kodu ve katılım
+  /// geçmişi görünürlüğü.
   Future<Account> hesap() => _me.getAccount();
 
   /// `PATCH /v1/me/account`.
@@ -49,10 +46,11 @@ final class ProfilDeposu {
   /// `DELETE /v1/me/avatar` (dosya silinir).
   Future<void> avatariKaldir() => _me.deleteAvatar();
 
-  /// `GET /v1/users/{user_id}/profile`'ın `self` alanı: [kullaniciId]
-  /// oturumdaki kullanıcının kendisi mi.
+  /// [kullaniciId] oturumdaki kullanıcının kendisi mi:
+  /// `GET /v1/me/account`'un `user_id` alanıyla karşılaştırılır
+  /// (Tayfam-Api #150; profil ucunun `self` alanına dolaylı başvuru yok).
   Future<bool> kendisiMi(String kullaniciId) async =>
-      (await _users.getUserProfile(userId: kullaniciId)).self;
+      (await _me.getAccount()).userId == kullaniciId;
 
   /// `DELETE /v1/me` (204). Son 10 dakikada Google ile giriş yapılmamışsa
   /// `reauthentication-required`.

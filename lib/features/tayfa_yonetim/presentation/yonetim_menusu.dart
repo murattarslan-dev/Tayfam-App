@@ -8,7 +8,6 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
-import 'package:tayfam/features/tayfa_yonetim/application/katilim_istekleri_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/tayfa_ayarlari.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -22,7 +21,8 @@ enum _Secim { ayarlar, sessiz, sikayet, ayril }
 /// Tayfa ana sayfasının mor üst bölümündeki menü (ADR-0018 §1):
 ///
 /// - "Tayfa ayarları": yalnızca moderatör ve yöneticiye görünür; bekleyen
-///   katılım isteği varsa menü düğmesinde ve girişte rozet.
+///   katılım isteği varsa menü düğmesinde ve girişte sayılı rozet
+///   (`pending_join_request_count`).
 /// - "Bildirimleri sessize al" / "Bildirimleri aç".
 /// - "Tayfayı şikâyet et": yönetim dışındaki üyeye; yalnızca Tayfam ekibine
 ///   gider (ADR-0018 §8).
@@ -39,15 +39,17 @@ class TayfaYonetimMenusu extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final ozet = ref.watch(tayfaOzetiProvider(tayfaId));
     final yonetimde = ozet.yonetimde;
-    final bekleyen =
-        yonetimde &&
-        (ref.watch(bekleyenIstekVarProvider(tayfaId)).value ?? false);
+    // Sayı tayfa görünümündeki `pending_join_request_count`'tan gelir;
+    // alan yalnızca moderatör ve yöneticiye döner (yoksa rozet yok).
+    final sayi = ozet.bekleyenIstekSayisi;
+    final bekleyen = sayi != null;
     final sessiz = ref.watch(tayfaSessizProvider(tayfaId)).value;
     final renk = context.renkler.markaYuzeyUstu;
     return PopupMenuButton<_Secim>(
       tooltip: bekleyen ? m.yonetim_menu_ipucu_bekleyen : m.yonetim_menu_ipucu,
       icon: Badge(
         isLabelVisible: bekleyen,
+        label: sayi == null ? null : Text(bekleyenRozetMetni(m, sayi)),
         child: Icon(Icons.more_vert, color: renk),
       ),
       onSelected: (secim) => unawaited(_sec(context, ref, secim, sessiz)),
@@ -59,10 +61,13 @@ class TayfaYonetimMenusu extends ConsumerWidget {
               contentPadding: EdgeInsets.zero,
               leading: Badge(
                 isLabelVisible: bekleyen,
+                label: sayi == null ? null : Text(bekleyenRozetMetni(m, sayi)),
                 child: const Icon(Icons.settings_outlined),
               ),
               title: Text(m.yonetim_menu_ayarlar),
-              subtitle: bekleyen ? Text(m.yonetim_menu_bekleyen_var) : null,
+              subtitle: sayi == null
+                  ? null
+                  : Text(m.tayfa_bekleyen_istek_sayisi(sayi)),
             ),
           ),
         if (sessiz != null)

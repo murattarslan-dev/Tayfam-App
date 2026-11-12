@@ -76,6 +76,17 @@ void main() {
         expect(_metin('profil_gorunurluk_baslik'), findsOneWidget);
       });
 
+      testWidgets('uzun kendi adı taşmıyor', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _Ortam({
+          hesapYolu: () => hesapJson(ad: 'Deniz Örnekoğlu Uzunsoyadlıgiller'),
+        }).ac(tester, const ProfilEkrani(), themeMode: mod);
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Deniz Örnekoğlu Uzunsoyadlıgiller'), findsOneWidget);
+      });
+
       testWidgets('oturumlar ekranı taşmıyor', (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
@@ -159,6 +170,19 @@ void main() {
   });
 
   group('profil ekranı', () {
+    testWidgets('kendi adın hesaptan (`GET /v1/me/account`) gösteriliyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final o = _Ortam();
+      await o.ac(tester, const ProfilEkrani());
+
+      expect(find.byKey(const ValueKey('profil-kendi-adi')), findsOneWidget);
+      expect(find.text('Deniz Örnek'), findsOneWidget);
+      // Ad profil ucundan (`self`) değil, hesaptan gelir.
+      expect(o.tasima.sayi('GET', '/v1/users/{user_id}/profile'), 0);
+    });
+
     testWidgets('kod kopyalanıyor ve link paylaşılıyor', (tester) async {
       ekranBoyutu(tester);
       final o = _Ortam();
@@ -269,7 +293,7 @@ void main() {
 
     testWidgets('başka hesap seçilirse hata gösteriliyor', (tester) async {
       ekranBoyutu(tester);
-      final o = _Ortam({profilYolu: () => profilJson(ben: false)});
+      final o = _Ortam({hesapYolu: () => hesapJson(kimlik: baskaKimlik)});
       await o.ac(tester, const HesabiSilEkrani());
 
       await _kaydirVeDokun(tester, _metin('profil_sil_dugme'));

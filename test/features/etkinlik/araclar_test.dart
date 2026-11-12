@@ -37,6 +37,7 @@ Future<void> _detayiAc(
   KonumServisi? konum,
 }) async {
   tasima.yanitlar['GET $profilYolu'] = _profil;
+  tasima.yanitlar['GET $hesapYolu'] = (_) => hesapJson(katilimciId);
   await uygulamayiAc(
     tester,
     themeMode: themeMode,
@@ -504,6 +505,7 @@ void main() {
           },
         });
         tasima.yanitlar['GET $profilYolu'] = _profil;
+        tasima.yanitlar['GET $hesapYolu'] = (_) => hesapJson(katilimciId);
         await uygulamayiAc(
           tester,
           themeMode: tema,

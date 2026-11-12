@@ -411,7 +411,7 @@ void main() {
       await k.eylem.indir(_talep());
 
       expect(k.google.cagri, 1);
-      expect(k.yollar, [indirmeYolu, girisYolu, profilYolu, indirmeYolu]);
+      expect(k.yollar, [indirmeYolu, girisYolu, hesapYolu, indirmeYolu]);
       expect(k.paylasici.kopyalar.single, ornekZip());
       expect(k.durum.hata, isNull);
     });
@@ -437,7 +437,7 @@ void main() {
       final k = _Kurulum(
         yanitlar: {
           indirmeYolu: () => problem(ProblemType.reauthenticationRequired, 403),
-          profilYolu: () => profilJson(ben: false),
+          hesapYolu: () => hesapJson(kimlik: baskaKimlik),
         },
       );
       await k.oturumuAc();
@@ -446,7 +446,7 @@ void main() {
       await k.eylem.indir(_talep());
 
       expect(k.durum.hata, isA<FarkliHesapHatasi>());
-      expect(k.yollar, [indirmeYolu, girisYolu, profilYolu]);
+      expect(k.yollar, [indirmeYolu, girisYolu, hesapYolu]);
       expect(k.indirici.adresler, isEmpty);
       expect(await k.oturum.store.durum(), isA<OturumAcik>());
     });

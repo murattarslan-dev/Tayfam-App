@@ -96,6 +96,11 @@ final class TayfaOzeti {
     return acikModulAnahtarlari(tayfa.modules);
   }
 
+  /// Onay bekleyen katılım isteği sayısı (rozet). Alan yalnızca istekleri
+  /// onaylayabilen moderatör ve yöneticiye döner; alan yoksa ya da 0 ise
+  /// `null` ve rozet görünmez. Yetki kararı sunucudadır (kesin kural 5).
+  int? get bekleyenIstekSayisi => bekleyenIstekRozeti(tayfa);
+
   /// Paylaşılacak katılım kodu; yalnızca yöneticiye döner (sözleşme). Kod
   /// yoksa paylaşım düğmesi görünmez; bu bir kolaylıktır, yetki kararı
   /// değildir (kesin kural 5).
@@ -103,6 +108,13 @@ final class TayfaOzeti {
     final kod = tayfa?.joinCode;
     return kod == null || kod.isEmpty ? null : kod;
   }
+}
+
+/// [tayfa]'nın `pending_join_request_count` alanından rozet sayısı: alan
+/// yoksa (yetki yok) ya da 0 ise `null`.
+int? bekleyenIstekRozeti(Tayfa? tayfa) {
+  final sayi = tayfa?.pendingJoinRequestCount;
+  return sayi == null || sayi <= 0 ? null : sayi;
 }
 
 /// [tayfaId]'nin özeti: önce tazelenen görünümden, yoksa tayfa listesinden.

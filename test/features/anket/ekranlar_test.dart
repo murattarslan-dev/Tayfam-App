@@ -530,6 +530,7 @@ void main() {
         'options': ['Moda', 'Şile'],
         'anonymous': true,
         'multiple_choice': false,
+        'client_request_id': anketIstekId,
       });
       expect(find.text(arbMetni('anket_form_baslik')), findsNothing);
       expect(find.text(arbMetni('anket_acildi')), findsOneWidget);

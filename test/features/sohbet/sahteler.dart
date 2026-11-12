@@ -141,9 +141,10 @@ final class SohbetOrtami {
     zamanlayiciProvider.overrideWithValue(zaman.kur),
     profilOkuyucuProvider.overrideWithValue(
       (id) async => id == benimId
-          ? const KullaniciAdi('Ben', ben: true)
+          ? const KullaniciAdi('Ben')
           : const KullaniciAdi('Ayşe'),
     ),
+    kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
   ];
 }
 

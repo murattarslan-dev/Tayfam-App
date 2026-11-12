@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/islem.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/uyeler_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/data/yonetim_deposu.dart';
@@ -56,9 +57,11 @@ class KatilimIstekleriNotifier extends SayfaliListeNotifier<JoinRequest> {
           if (i.userId != uyeId) i,
       ],
     );
-    ref.invalidate(bekleyenIstekVarProvider(tayfaId));
-    if (!uyeEklendi) return;
+    // Bekleyen sayısı (`pending_join_request_count`) tayfa görünümünde ve
+    // Tayfalarım listesinde gelir; ikisi de sunucudan yeniden okunur.
     unawaited(gorunumuYenile(ref, tayfaId));
+    unawaited(ref.read(tayfalarimProvider.notifier).yenile());
+    if (!uyeEklendi) return;
     final uyeler = uyelerProvider((tayfaId: tayfaId, banlilar: false));
     if (ref.read(uyeler.exists)) ref.invalidate(uyeler);
   }
@@ -69,31 +72,5 @@ final katilimIstekleriProvider = AsyncNotifierProvider.autoDispose
     .family<KatilimIstekleriNotifier, SayfaliListe<JoinRequest>, String>(
       KatilimIstekleriNotifier.new,
       name: 'katilimIstekleriProvider',
-      retry: yenidenDenemeYok,
-    );
-
-/// Bekleyen katılım isteği var mı (menüdeki rozet; ADR-0018 §1). Yalnızca
-/// ilk kaydı ister. Moderatör ve yönetici dışında izlenmez; okunamazsa
-/// rozet gösterilmez.
-class BekleyenIstekNotifier extends AsyncNotifier<bool> {
-  BekleyenIstekNotifier(this.tayfaId);
-
-  /// Adresteki tayfa kimliği.
-  final String tayfaId;
-
-  @override
-  Future<bool> build() async {
-    ref.watch(oturumDurumuProvider);
-    final depo = ref.watch(yonetimDeposuProvider);
-    final sayfa = await depo.katilimIstekleri(tayfaId, sayfaBoyutu: 1);
-    return sayfa.ogeler.isNotEmpty;
-  }
-}
-
-/// [tayfaId]'de bekleyen katılım isteği var mı.
-final bekleyenIstekVarProvider = AsyncNotifierProvider.autoDispose
-    .family<BekleyenIstekNotifier, bool, String>(
-      BekleyenIstekNotifier.new,
-      name: 'bekleyenIstekVarProvider',
       retry: yenidenDenemeYok,
     );

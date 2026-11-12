@@ -48,7 +48,7 @@ ADR'nin Notlar bölümüne yazılır.
   - rol değiştirme,
   - susturma (1 saat, 1 gün, 7 gün),
   - çıkarma,
-  - banlama (gerekçe istenir, onaylı).
+  - banlama (onaylı; gerekçe isteğe bağlı, kapalı listeden — bkz. Notlar 2026-11-12).
 
   Kimse kendi seviyesindeki ya da üstündeki birine dokunamaz. İstemci
   yalnızca sadeleştirir; kararı sunucu verir.
@@ -253,6 +253,24 @@ Play'e otomatik yükleme (issue #95, `.github/workflows/play-dahili.yml`):
 
 Her dalga paralel alt oturumlarla yürür. Birleştirme sırası çakışmaya
 göre mimari oturumunca belirlenir.
+
+### Notlar
+
+- **2026-11-12 (issue #113, Tayfam-Api #150):**
+  - Bekleyen katılım isteği rozeti sayılıdır ve tayfanın
+    `pending_join_request_count` alanından gelir (tayfa görünümü ve
+    Tayfalarım listesi). Alan yalnızca moderatör ve yöneticiye döner;
+    alan yoksa ya da 0 ise rozet yoktur. `page_size=1` ile yoklama
+    kaldırıldı. Tayfalarım listesinde de rozet gösterilir.
+  - Banlamada gerekçe **isteğe bağlıdır** (önceden §1 "gerekçe istenir"
+    diyordu): şikâyet nedenleriyle aynı kapalı liste, `staff_conduct`
+    hariç, serbest metin yok (platform sahibi kararı, 2026-11-12; istemcide
+    isteğe bağlı kalması 2026-11-12 19:55 sohbette teyit edildi).
+    Gerekçe denetim kaydına ve platform paneline gider; banlanan kişiye
+    ve istemcinin hiçbir yerinde gösterilmez.
+  - Anket formu `client_request_id`'yi form açılınca bir kez üretir ve
+    tekrarlarda aynısını gönderir.
+  - Profil sekmesi kendi görünen adını `GET /v1/me/account`'tan gösterir.
 
 ## Sonuçlar
 

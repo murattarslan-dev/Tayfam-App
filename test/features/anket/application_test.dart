@@ -412,6 +412,7 @@ void main() {
           closesAt: kapanis,
         ).toJson()['closes_at'],
         'event_id': anketEtkinlikId,
+        'client_request_id': anketIstekId,
       });
       expect(k.kap.read(saglayici).tamamlanan?.id, anketId2);
       expect(k.kap.read(liste).requireValue.ogeler.first.id, anketId2);
@@ -430,6 +431,44 @@ void main() {
       expect(durum.hata, isA<ApiOffline>());
       expect(durum.soru, 'Nereye?');
       expect(durum.tamamlanan, isNull);
+    });
+
+    test('tekrar gönderimde aynı client_request_id gidiyor', () async {
+      var deneme = 0;
+      final k = _Kurulum({
+        'POST $anketlerYolu': (_) =>
+            ++deneme == 1 ? const ApiOffline() : anketJson(anketId2),
+      });
+      final saglayici = anketFormuProvider(anahtar);
+      k.kap.listen(saglayici, (_, _) {});
+      final form = k.kap.read(saglayici.notifier)
+        ..soruAyarla('Nereye?')
+        ..secenekAyarla(0, 'Moda')
+        ..secenekAyarla(1, 'Şile');
+      await form.gonder();
+      expect(k.kap.read(saglayici).hata, isA<ApiOffline>());
+      form.secenekAyarla(1, 'Kilyos');
+      await form.gonder();
+
+      final kimlikler = [
+        for (final i in k.tasima.giden('POST', anketlerYolu))
+          (i.govde! as Map<String, Object?>)['client_request_id'],
+      ];
+      expect(kimlikler, [anketIstekId, anketIstekId]);
+      expect(k.kap.read(saglayici).tamamlanan?.id, anketId2);
+    });
+
+    test('her yeni form kendi client_request_id değerini üretir', () async {
+      var sayac = 0;
+      String uret() => 'kimlik-${++sayac}';
+      final kap = ProviderContainer.test(
+        overrides: [anketIstekKimligiProvider.overrideWithValue(uret)],
+      );
+      kap.listen(anketFormuProvider(anahtar), (_, _) {}).close();
+      await pumpEventQueue();
+      kap.listen(anketFormuProvider(anahtar), (_, _) {});
+      // Form açılınca bir kez üretilir; kapanıp yeniden açılınca yenisi.
+      expect(sayac, 2);
     });
   });
 

@@ -34,3 +34,8 @@ Future<void> koduKopyala(
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(metin)));
 }
+
+/// Bekleyen katılım isteği rozetinde görünen kısa sayı (99'dan sonra
+/// "99+"; sekme rozetleriyle aynı biçim).
+String bekleyenRozetMetni(AppLocalizations m, int sayi) =>
+    sayi > 99 ? m.gezinme_rozet_cok : m.gezinme_rozet_sayi(sayi);

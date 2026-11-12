@@ -27,6 +27,8 @@ export 'package:tayfam/features/sikayet/application/sikayet_hedefi.dart'
     show SikayetHedefi;
 export 'package:tayfam/features/sikayet/presentation/moderasyon_ekrani.dart'
     show moderasyonAdresi;
+export 'package:tayfam/features/sikayet/presentation/sikayet_metinleri.dart'
+    show gerekceMetni;
 export 'package:tayfam/features/sikayet/presentation/sikayet_sayfasi.dart'
     show birebirMesajiSikayetEt, sikayetSayfasiniAc;
 

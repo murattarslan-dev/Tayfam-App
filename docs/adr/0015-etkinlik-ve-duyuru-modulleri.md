@@ -213,4 +213,12 @@ Platform sahibinin kararı (2026-11-11):
     engellenir. `USE_BIOMETRIC` ve `USE_FINGERPRINT` de kaldırılmıştır;
     Google girişi bunlar olmadan telefonda doğrulanmalıdır. CI, izinleri
     derlenen APK'dan denetler.
-
+- **2026-11-12 (issue #113, Tayfam-Api #150):**
+  - Oturumdaki kullanıcının kimliği artık `GET /v1/me/account`'un
+    `user_id` alanından okunur (`kendiKimligimProvider`, yalnızca bellekte,
+    oturum değişince yeniden). `kendisiMiProvider` bununla karşılaştırır;
+    profil ucunun `self` alanına ve ad önbelleğine dolaylı başvuru
+    kalktı. Ad önbelleği yalnızca adı tutar.
+  - Profil ucu ad ve avatarı ortak tayfa ya da arkadaşlık olmadan da
+    döndürür; engel ya da silinmiş hesapta `user-not-found`. Bildirim
+    kartında bu durumda ad yerine "Biri" yazılır.

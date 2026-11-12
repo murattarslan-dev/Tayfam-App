@@ -4,11 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/davetler_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/katilim_istekleri_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/tayfa_ayarlari.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/uyeler_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/yetki.dart';
+import 'package:tayfam/features/tayfa_yonetim/data/yonetim_deposu.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -268,6 +270,42 @@ void main() {
       expect(kap.read(saglayici).value!.ogeler.map((u) => u.userId), [uyeId2]);
     });
 
+    test('ban gerekçesi: kapalı liste gövdede; staff_conduct gitmez', () async {
+      final tasima = yonetimTasimasi(
+        yanitlar: {
+          'GET $uyelerYolu': yanit(
+            uyeListesiJson([uyeJson(uyeId1), uyeJson(uyeId2)]),
+          ),
+          'PUT $banYolu': yanit(null),
+        },
+      );
+      final kap = _kap(tasima);
+      final saglayici = uyelerProvider((
+        tayfaId: ornekTayfaId,
+        banlilar: false,
+      ));
+      kap.listen(saglayici, (_, _) {});
+      await kap.read(saglayici.future);
+      final n = kap.read(saglayici.notifier);
+
+      expect(await n.banla(uyeId1, gerekce: ReportReason.harassment), isNull);
+      expect(await n.banla(uyeId2, gerekce: ReportReason.staffConduct), isNull);
+
+      final istekler = tasima.giden('PUT', banYolu);
+      expect(istekler[0].govde, {'reason': 'harassment'});
+      expect(istekler[1].govde, isNull);
+    });
+
+    test('ban gerekçeleri: şikâyet nedenleri, staff_conduct hariç', () {
+      expect(banGerekceleri, isNot(contains(ReportReason.staffConduct)));
+      expect(banGerekceleri, isNot(contains(ReportReason.unknown)));
+      expect(banGerekceleri.toSet(), {
+        for (final r in ReportReason.values)
+          if (r != ReportReason.staffConduct && r != ReportReason.unknown) r,
+      });
+      expect(banGerekceleri.first, ReportReason.childSafety);
+    });
+
     test('banlılar listesi status=banned ister', () async {
       final tasima = yonetimTasimasi();
       final kap = _kap(tasima);
@@ -277,33 +315,62 @@ void main() {
       expect(tasima.giden('GET', uyelerYolu).single.sorgu['status'], 'banned');
     });
 
-    test('isteği onaylama listeden çıkarır, rozeti yeniler', () async {
-      var bekleyen = true;
+    test('onay listeden çıkarır, bekleyen sayısını yeniler', () async {
+      var bekleyen = 1;
       final tasima = yonetimTasimasi(
         yanitlar: {
+          'GET $tayfaYolu': (_) => yonetimGorunumu(bekleyen: bekleyen),
+          'GET /v1/tayfas': (_) => listeJson([
+            etkinJson(ornekTayfaId, rol: 'admin', bekleyen: bekleyen),
+          ]),
           'GET $isteklerYolu': (_) =>
-              istekListesiJson([if (bekleyen) istekJson(uyeId1)]),
+              istekListesiJson([if (bekleyen > 0) istekJson(uyeId1)]),
           'POST $onayYolu': (_) {
-            bekleyen = false;
+            bekleyen = 0;
             return uyeJson(uyeId1);
           },
         },
       );
       final kap = _kap(tasima);
       final liste = katilimIstekleriProvider(ornekTayfaId);
-      final rozet = bekleyenIstekVarProvider(ornekTayfaId);
-      kap.listen(liste, (_, _) {});
-      kap.listen(rozet, (_, _) {});
+      final gorunum = tayfaGorunumuProvider(ornekTayfaId);
+      final ozet = tayfaOzetiProvider(ornekTayfaId);
+      kap
+        ..listen(liste, (_, _) {})
+        ..listen(gorunum, (_, _) {})
+        ..listen(ozet, (_, _) {})
+        ..listen(tayfalarimProvider, (_, _) {});
       await kap.read(liste.future);
-      expect(await kap.read(rozet.future), isTrue);
-      expect(
-        tasima.giden('GET', isteklerYolu).first.sorgu['page_size'],
-        isNotNull,
-      );
+      await kap.read(gorunum.future);
+      await kap.read(tayfalarimProvider.future);
+      expect(kap.read(ozet).bekleyenIstekSayisi, 1);
+      final listeIstegi = tasima.giden('GET', '/v1/tayfas').length;
 
       expect(await kap.read(liste.notifier).onayla(uyeId1), isNull);
+      await pumpEventQueue();
       expect(kap.read(liste).value!.ogeler, isEmpty);
-      expect(await kap.read(rozet.future), isFalse);
+      // Sayı yeniden okunan görünümden gelir; 0 iken rozet yok.
+      expect(kap.read(ozet).bekleyenIstekSayisi, isNull);
+      expect(
+        tasima.giden('GET', '/v1/tayfas').length,
+        greaterThan(listeIstegi),
+      );
+      // `page_size=1` ile var/yok yoklaması yapılmaz.
+      expect(
+        tasima.giden('GET', isteklerYolu).map((i) => i.sorgu['page_size']),
+        everyElement(isNot('1')),
+      );
+    });
+
+    test('bekleyen sayısı: alan yoksa ya da 0 ise rozet yok', () {
+      TayfaOzeti ozet(int? bekleyen) => TayfaOzeti(
+        tayfa: Tayfa.fromJson(tayfaJson(id: ornekTayfaId, bekleyen: bekleyen)),
+        rol: Role.moderator,
+      );
+      expect(ozet(null).bekleyenIstekSayisi, isNull);
+      expect(ozet(0).bekleyenIstekSayisi, isNull);
+      expect(ozet(3).bekleyenIstekSayisi, 3);
+      expect(const TayfaOzeti().bekleyenIstekSayisi, isNull);
     });
 
     test('davet: token yalnızca dönen linkte, durumda yok', () async {

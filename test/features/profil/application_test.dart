@@ -208,7 +208,7 @@ void main() {
       expect(k.google.cagri, 1);
       expect(k.tasima.istekler.map((i) => '${i.method} ${i.yol}'), [
         girisYolu,
-        profilYolu,
+        hesapYolu,
         hesapSilYolu,
       ]);
       expect(k.kap.read(hesapSilmeProvider), const HesapSilmeDurumu());
@@ -233,7 +233,9 @@ void main() {
     });
 
     test('başka bir Google hesabı seçilirse hiçbir hesap silinmiyor', () async {
-      final k = _Kurulum(yanitlar: {profilYolu: () => profilJson(ben: false)});
+      final k = _Kurulum(
+        yanitlar: {hesapYolu: () => hesapJson(kimlik: baskaKimlik)},
+      );
       await k.oturumuAc();
       final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
       addTearDown(sub.close);
@@ -257,14 +259,14 @@ void main() {
 
       await k.kap.read(hesapSilmeProvider.notifier).sil();
 
-      expect(k.tasima.sayi('GET', '/v1/users/{user_id}/profile'), 0);
+      expect(k.tasima.sayi('GET', '/v1/me/account'), 0);
       expect(k.tasima.sayi('DELETE', '/v1/me'), 0);
       expect(k.kap.read(hesapSilmeProvider).hata, isA<FarkliHesapHatasi>());
     });
 
-    test('profil bulunamazsa (user-not-found) silinmiyor', () async {
+    test('kendi hesabı okunamazsa silinmiyor', () async {
       final k = _Kurulum(
-        yanitlar: {profilYolu: () => problem(ProblemType.userNotFound, 404)},
+        yanitlar: {hesapYolu: () => problem(ProblemType.unavailable, 503)},
       );
       await k.oturumuAc();
       final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
@@ -273,7 +275,8 @@ void main() {
       await k.kap.read(hesapSilmeProvider.notifier).sil();
 
       expect(k.tasima.sayi('DELETE', '/v1/me'), 0);
-      expect(k.kap.read(hesapSilmeProvider).hata, isA<FarkliHesapHatasi>());
+      expect(k.kap.read(hesapSilmeProvider).hata, isNotNull);
+      expect(await k.oturum.store.durum(), isA<OturumAcik>());
     });
 
     test('reauthentication-required gelirse yeniden giriş isteniyor', () async {

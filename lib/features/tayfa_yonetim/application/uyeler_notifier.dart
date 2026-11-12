@@ -86,14 +86,22 @@ class UyelerNotifier extends SayfaliListeNotifier<Membership> {
     _listedenCikar(uyeId);
   });
 
-  /// [uyeId]'yi banlar; kodla ya da davetle tekrar katılamaz.
-  Future<Object?> banla(String uyeId) => yonetimIslemi(ref, () async {
-    await ref.read(yonetimDeposuProvider).banla(anahtar.tayfaId, uyeId);
-    _listedenCikar(uyeId);
-    if (!ref.mounted) return;
-    final banlilar = uyelerProvider((tayfaId: anahtar.tayfaId, banlilar: true));
-    if (ref.read(banlilar.exists)) ref.invalidate(banlilar);
-  });
+  /// [uyeId]'yi banlar; kodla ya da davetle tekrar katılamaz. [gerekce]
+  /// isteğe bağlıdır (kapalı liste); yalnızca sunucuya gider, istemcide
+  /// saklanmaz ve gösterilmez.
+  Future<Object?> banla(String uyeId, {ReportReason? gerekce}) =>
+      yonetimIslemi(ref, () async {
+        await ref
+            .read(yonetimDeposuProvider)
+            .banla(anahtar.tayfaId, uyeId, gerekce: gerekce);
+        _listedenCikar(uyeId);
+        if (!ref.mounted) return;
+        final banlilar = uyelerProvider((
+          tayfaId: anahtar.tayfaId,
+          banlilar: true,
+        ));
+        if (ref.read(banlilar.exists)) ref.invalidate(banlilar);
+      });
 
   Future<Object?> _islem(Future<Membership> Function() islem) => yonetimIslemi(
     ref,

@@ -3819,10 +3819,6 @@
   "@yonetim_menu_ayarlar": {
     "description": "Tayfa menüsünde, yalnızca moderatör ve yöneticiye görünen ayarlar girişi."
   },
-  "yonetim_menu_bekleyen_var": "Bekleyen katılım isteği var",
-  "@yonetim_menu_bekleyen_var": {
-    "description": "Tayfa ayarları girişinin ve ayarlardaki katılım istekleri satırının alt metni; onay bekleyen istek varken görünür."
-  },
   "yonetim_menu_sessize_al": "Bildirimleri sessize al",
   "@yonetim_menu_sessize_al": {
     "description": "Tayfa menüsünde, bu tayfanın bildirimlerini süresiz sessize alan giriş."
@@ -6353,5 +6349,26 @@
   "birebir_sessiz_simge": "Sessizde",
   "@birebir_sessiz_simge": {
     "description": "Konuşma listesinde sessize alınmış konuşmanın simgesinin ekran okuyucu etiketi."
+  },
+  "tayfa_bekleyen_istek_sayisi": "{sayi, plural, other{{sayi} bekleyen katılım isteği}}",
+  "@tayfa_bekleyen_istek_sayisi": {
+    "description": "Onay bekleyen katılım isteği sayısı (yalnızca moderatör ve yöneticiye): tayfa menüsündeki ayarlar girişinin ve ayarlardaki katılım istekleri satırının alt metni, Tayfalarım listesindeki rozetin ekran okuyucu etiketi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_ban_gerekce_baslik": "Gerekçe (isteğe bağlı)",
+  "@yonetim_ban_gerekce_baslik": {
+    "description": "Üyeyi banlama onay penceresindeki gerekçe seçiminin başlığı."
+  },
+  "yonetim_ban_gerekce_aciklama": "Gerekçe yalnızca denetim kaydına ve Tayfam ekibine gider; banlanan kişiye gösterilmez.",
+  "@yonetim_ban_gerekce_aciklama": {
+    "description": "Banlama onay penceresinde gerekçe seçiminin altındaki kısa açıklama: gerekçenin nereye gittiği ve kime gösterilmediği."
+  },
+  "yonetim_ban_gerekce_yok": "Gerekçe belirtme",
+  "@yonetim_ban_gerekce_yok": {
+    "description": "Banlama onay penceresinde gerekçe vermeden banlama seçeneği (varsayılan)."
   }
 }

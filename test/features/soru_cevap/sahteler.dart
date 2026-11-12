@@ -124,8 +124,9 @@ List<Override> soruOverridelari(SahteTayfaTasima tasima) => [
   soruCevapDeposuProvider.overrideWithValue(SoruCevapDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue(
     (id) async => id == benimId
-        ? const KullaniciAdi(benimAdim, ben: true)
+        ? const KullaniciAdi(benimAdim)
         : const KullaniciAdi(digerAdi),
   ),
+  kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
   oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
 ];

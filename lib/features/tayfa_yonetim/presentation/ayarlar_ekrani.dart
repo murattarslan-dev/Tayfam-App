@@ -10,7 +10,6 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/ek_girisler.dart';
-import 'package:tayfam/features/tayfa_yonetim/application/katilim_istekleri_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/tayfa_ayarlari.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -44,9 +43,7 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final ozet = ref.watch(tayfaOzetiProvider(tayfaId));
     final yonetici = ozet.rol == Role.admin;
-    final bekleyen =
-        ozet.yonetimde &&
-        (ref.watch(bekleyenIstekVarProvider(tayfaId)).value ?? false);
+    final bekleyen = ozet.bekleyenIstekSayisi;
     final ekGirisler = ref.watch(yonetimEkGirisleriProvider);
     final tayfa = ozet.tayfa;
     return Scaffold(
@@ -61,7 +58,6 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
               ikon: Icons.how_to_reg_outlined,
               etiket: m.yonetim_istekler,
               rozet: bekleyen,
-              rozetEtiketi: m.yonetim_menu_bekleyen_var,
               onTap: () =>
                   context.go(AyarYollari.adres(tayfaId, AyarYollari.istekler)),
             ),
@@ -108,7 +104,6 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
   }
 
   Future<void> _yenile(WidgetRef ref) async {
-    ref.invalidate(bekleyenIstekVarProvider(tayfaId));
     await ref.read(tayfaGorunumuProvider(tayfaId).notifier).yenile();
   }
 }
@@ -118,27 +113,34 @@ class _Giris extends StatelessWidget {
     required this.ikon,
     required this.etiket,
     required this.onTap,
-    this.rozet = false,
-    this.rozetEtiketi,
+    this.rozet,
   });
 
   final IconData ikon;
   final String etiket;
   final VoidCallback onTap;
-  final bool rozet;
-  final String? rozetEtiketi;
+
+  /// Bekleyen sayı; `null` ise rozet yok.
+  final int? rozet;
 
   @override
   Widget build(BuildContext context) {
-    final rozetEtiketi = this.rozetEtiketi;
+    final m = AppLocalizations.of(context);
+    final rozet = this.rozet;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: TayfamSpacing.kenarMobil,
       ),
       minTileHeight: TayfamSizes.dokunmaMin,
-      leading: Badge(isLabelVisible: rozet, child: Icon(ikon)),
+      leading: Badge(
+        isLabelVisible: rozet != null,
+        label: rozet == null ? null : Text(bekleyenRozetMetni(m, rozet)),
+        child: Icon(ikon),
+      ),
       title: Text(etiket),
-      subtitle: rozet && rozetEtiketi != null ? Text(rozetEtiketi) : null,
+      subtitle: rozet == null
+          ? null
+          : Text(m.tayfa_bekleyen_istek_sayisi(rozet)),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );

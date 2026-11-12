@@ -108,9 +108,19 @@ final class YonetimDeposu {
   Future<void> cikar(String tayfaId, String uyeId) =>
       _uyeler.removeMember(tayfaId: tayfaId, userId: uyeId);
 
-  /// `PUT …/members/{user_id}/ban`.
-  Future<void> banla(String tayfaId, String uyeId) =>
-      _uyeler.banMember(tayfaId: tayfaId, userId: uyeId);
+  /// `PUT …/members/{user_id}/ban`. [gerekce] isteğe bağlıdır; verilirse
+  /// gövdede gider (`{"reason": …}`; Tayfam-Api #150), verilmezse gövde
+  /// yoktur. `staff_conduct` ve sözleşmede olmayan değer gönderilmez.
+  /// Gerekçe denetim kaydına ve platform paneline gider; banlanan kişiye
+  /// ve istemcide hiçbir yerde gösterilmez.
+  Future<void> banla(String tayfaId, String uyeId, {ReportReason? gerekce}) =>
+      _uyeler.banMember(
+        tayfaId: tayfaId,
+        userId: uyeId,
+        body: gerekce == null || !banGerekceleri.contains(gerekce)
+            ? null
+            : BanRequest(reason: gerekce),
+      );
 
   /// `GET /v1/tayfas/{tayfa_id}/join-requests`: eskiden yeniye.
   Future<Sayfa<JoinRequest>> katilimIstekleri(
@@ -174,3 +184,25 @@ final yonetimDeposuProvider = Provider<YonetimDeposu>(
   (ref) => YonetimDeposu(ref.watch(apiClientProvider)),
   name: 'yonetimDeposuProvider',
 );
+
+/// Banlarken seçilebilecek gerekçeler, gösterim sırasıyla (Tayfam-Api
+/// #150): şikâyet nedenleriyle aynı kapalı liste, `staff_conduct` hariç;
+/// serbest metin yok (platform sahibi kararı, 2026-11-12). Sıra şikâyet
+/// sayfasıyla aynıdır; "Çocuk/genç güvenliği" en başta.
+const List<ReportReason> banGerekceleri = [
+  ReportReason.childSafety,
+  ReportReason.harassment,
+  ReportReason.hateSpeech,
+  ReportReason.violence,
+  ReportReason.sexualContent,
+  ReportReason.privacy,
+  ReportReason.impersonation,
+  ReportReason.fakeEvent,
+  ReportReason.illegalTrade,
+  ReportReason.drugs,
+  ReportReason.gambling,
+  ReportReason.dangerousActivity,
+  ReportReason.spam,
+  ReportReason.copyright,
+  ReportReason.other,
+];

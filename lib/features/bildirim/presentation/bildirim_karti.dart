@@ -39,10 +39,13 @@ class BildirimKarti extends ConsumerWidget {
       final bilinen = ref.watch(
         kullaniciAdlariProvider.select((adlar) => adlar[kisiId]),
       );
+      // Ad, ortak tayfa ya da arkadaşlık olmadan da profil ucundan gelir
+      // (Tayfam-Api #150). Engel ya da silinmiş hesapta `user-not-found`:
+      // ad yerine "Biri". Ad yalnızca bellekteki önbellekte (ADR-0015
+      // Notlar), log'a yazılmaz.
       kisi = switch (bilinen) {
-        null => m.bildirim_kisi_bilinmiyor,
         KullaniciAdi(:final ad?) => ad,
-        KullaniciAdi() => m.kullanici_silinmis,
+        _ => m.bildirim_kisi_bilinmiyor,
       };
     }
 
