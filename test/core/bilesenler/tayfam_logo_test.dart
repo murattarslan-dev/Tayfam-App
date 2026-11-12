@@ -139,9 +139,10 @@ void main() {
         expect(sade(yollar[i].$1), sade(LogoYollari.tamRenk[blok]!));
       }
       final renkler = LogoRenkleri.zemineGore(TayfamColors.acik.zemin);
-      expect([for (final y in yollar) y.$2], [
-        for (final blok in _svgSirasi) _hex(renkler.blok(blok)),
-      ]);
+      expect(
+        [for (final y in yollar) y.$2],
+        [for (final blok in _svgSirasi) _hex(renkler.blok(blok))],
+      );
     });
 
     test('tayfam-logo-dark.svg (koyu zemin)', () {
