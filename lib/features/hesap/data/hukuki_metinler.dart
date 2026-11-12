@@ -75,3 +75,19 @@ final class OnaySurumleri {
   @override
   int get hashCode => Object.hash(aydinlatma, kosullar);
 }
+
+/// Metnin tayfam.app'teki **güncel** sürümüne yönlenen sabit adres.
+///
+/// Giriş ekranında oturum olmadığı için sunucunun istediği sürüm henüz
+/// bilinmez (`GET /v1/registration/requirements` oturum ister); kullanıcı
+/// metni okuyabilsin diye güncel sürüme yönlendiren sabit adres açılır.
+/// Onay, sürümlü sayfayla kayıt adımında alınır (ADR-0012 §3–§4).
+///
+/// - Aydınlatma metni: `https://tayfam.app/gizlilik` (sitedeki
+///   `_redirects` güncel sürüme yönlendirir).
+/// - Kullanım koşulları: `https://tayfam.app/kullanim-kosullari`; metin
+///   yayımlanınca sitenin `_redirects`'ine aynı biçimde eklenmelidir.
+Uri guncelHukukiMetinAdresi(HukukiMetin metin) => switch (metin) {
+  HukukiMetin.aydinlatma => Uri.https('tayfam.app', '/gizlilik'),
+  HukukiMetin.kosullar => Uri.https('tayfam.app', '/kullanim-kosullari'),
+};

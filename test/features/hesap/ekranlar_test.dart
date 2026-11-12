@@ -1,15 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/acilis_logosu.dart';
+import 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
 import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
+import 'package:tayfam/core/tema/google_marka.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
+import 'package:tayfam/core/tema/tayfam_sizes.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/hesap/presentation/apple_girisi.dart';
 import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
 
 import '../../yardimcilar.dart';
@@ -111,6 +118,156 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    for (final tema in _temalar) {
+      testWidgets('${tema.name}: tür çipleri, slogan ve tema biçimli Google', (
+        tester,
+      ) async {
+        await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
+
+        // Tasarımdaki altı tür, etkinlik türü kaydından, büyük çip.
+        final cipler = tester
+            .widgetList<EtkinlikTuruCipi>(find.byType(EtkinlikTuruCipi))
+            .toList();
+        expect([for (final c in cipler) c.tur], girisEkraniTurleri);
+        expect(cipler.every((c) => c.buyuk), isTrue);
+        // Mor yüzeyde oyun çipi brand-dark (brand zeminde brand görünmez).
+        final oyun = find.byWidgetPredicate(
+          (w) => w is EtkinlikTuruCipi && w.tur == EventType.gaming,
+        );
+        final oyunZemini = tester.widget<DecoratedBox>(
+          find.descendant(of: oyun, matching: find.byType(DecoratedBox)).first,
+        );
+        expect(
+          (oyunZemini.decoration as BoxDecoration).color,
+          TayfamTurRenkleri.koyu.cift(TurRengi.oyun).dolgu,
+        );
+
+        // Google düğmesi: açıkta beyaz + #747775, koyuda #131314 + #8E918F.
+        final dugme = tester.widget<OutlinedButton>(
+          find.descendant(
+            of: find.byType(GoogleIleDevamDugmesi),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        final stil = dugme.style!;
+        final koyu = tema == ThemeMode.dark;
+        expect(
+          stil.backgroundColor!.resolve({}),
+          koyu ? GoogleMarka.koyuZemin : GoogleMarka.zemin,
+        );
+        expect(
+          stil.side!.resolve({})!.color,
+          koyu ? GoogleMarka.koyuKenar : GoogleMarka.kenar,
+        );
+        expect(
+          tester.getSize(find.byType(GoogleIleDevamDugmesi)).height,
+          greaterThanOrEqualTo(TayfamSizes.girisDugmesi),
+        );
+        // Davet görünümü değil.
+        expect(_metin('hesap_davet_baslik'), findsNothing);
+        expect(_metin('hesap_giris_baslik'), findsOneWidget);
+        expect(_metin('hesap_giris_aciklama'), findsOneWidget);
+      });
+
+      testWidgets('${tema.name}: davet görünümü 2× yazıda taşmıyor', (
+        tester,
+      ) async {
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          const GirisEkrani(davetBekliyor: true),
+          _Kurulum(),
+          tema: tema,
+        );
+
+        expect(_metin('hesap_davet_baslik'), findsOneWidget);
+        expect(_metin('hesap_davet_kart'), findsOneWidget);
+        expect(_metin('hesap_davet_giris_baslik'), findsOneWidget);
+        expect(_metin('hesap_slogan'), findsNothing);
+        expect(find.byType(EtkinlikTuruCipi), findsNothing);
+        expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('bağlantılar metinlerin güncel sürümünü açıyor', (
+      tester,
+    ) async {
+      final k = _Kurulum();
+      await _ac(tester, const GirisEkrani(), k);
+
+      await _dokun(tester, _metin('hesap_giris_aydinlatma'));
+      await _dokun(tester, _metin('hesap_giris_kosullar'));
+
+      expect(k.acici.acilan, [
+        Uri.parse('https://tayfam.app/gizlilik'),
+        Uri.parse('https://tayfam.app/kullanim-kosullari'),
+      ]);
+    });
+
+    testWidgets('erişilebilirlik: dokunma alanı, etiket, kontrast', (
+      tester,
+    ) async {
+      await _ac(tester, const GirisEkrani(), _Kurulum());
+      final kulp = tester.ensureSemantics();
+      await tester.pump();
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      kulp.dispose();
+    });
+
+    testWidgets('iOS: Apple girişi uygulanmadığı için Apple düğmesi yok', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      await _ac(tester, const GirisEkrani(), _Kurulum());
+
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(_metin('hesap_giris_aciklama'), findsOneWidget);
+      expect(_metin('hesap_giris_aciklama_apple'), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    test('Apple düğmesi yalnızca iOS + bayrak + düğme varken', () {
+      Widget dugme(BuildContext context) => const SizedBox.shrink();
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.iOS,
+          bayrak: true,
+          dugme: dugme,
+        ),
+        isTrue,
+      );
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.iOS,
+          bayrak: false,
+          dugme: dugme,
+        ),
+        isFalse,
+      );
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.android,
+          bayrak: true,
+          dugme: dugme,
+        ),
+        isFalse,
+      );
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.iOS,
+          bayrak: true,
+          dugme: null,
+        ),
+        isFalse,
+      );
+      // Varsayılan derlemede bayrak kapalı.
+      expect(AppleGirisi.bayrak, isFalse);
+    });
 
     testWidgets('Google düğmesi resmi işaretle ve 48 dp', (tester) async {
       await _ac(tester, const GirisEkrani(), _Kurulum());

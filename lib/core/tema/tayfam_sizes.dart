@@ -28,6 +28,9 @@ abstract final class TayfamSizes {
   /// Satır içi küçük ikon (kilit, çip ikonu).
   static const double ikonKucuk = 16;
 
+  /// Büyük etkinlik türü çipinin ikonu (giriş ekranı: 18 px).
+  static const double ikonOrta = 18;
+
   /// Düğme ikonu.
   static const double ikon = 20;
 
@@ -79,6 +82,17 @@ abstract final class TayfamSizes {
 
   /// Yükleniyor dalgasında bloğun en düşük saydamlığı.
   static const double yukleniyorEnAzSaydamlik = .45;
+
+  /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
+  /// dokunma alanı 48'in üstünde).
+  static const double girisDugmesi = 52;
+
+  /// Giriş ekranındaki etkinlik türü çiplerinin hafif eğimleri (derece),
+  /// sırayla (Design: Giriş).
+  static const List<double> girisCipEgimleri = [-4, 3, -2, 5, -3, 2];
+
+  /// Davet kartındaki simge karosunun kenarı (Design: Giriş davet, 56 px).
+  static const double davetKarosu = 56;
 
   /// Hoş geldin tanıtımındaki yazılı logonun simge boyutu.
   static const double logoBuyuk = 72;
