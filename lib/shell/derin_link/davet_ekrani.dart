@@ -73,7 +73,11 @@ class DavetEkrani extends ConsumerWidget {
       );
     } else {
       icerik = Center(
-        child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.derin_link_davet_yukleniyor, gecikmeli: true,),
+        child: TayfamYukleniyor(
+          boyut: TayfamSizes.yukleniyorTamEkran,
+          etiket: metinler.derin_link_davet_yukleniyor,
+          gecikmeli: true,
+        ),
       );
     }
 

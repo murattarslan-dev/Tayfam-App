@@ -97,7 +97,10 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(TayfamSpacing.s16),
             child: Center(
-              child: TayfamYukleniyor(etiket: metinler.tayfa_yukleniyor, gecikmeli: true,),
+              child: TayfamYukleniyor(
+                etiket: metinler.tayfa_yukleniyor,
+                gecikmeli: true,
+              ),
             ),
           )
         else if (liste == null && hata != null)

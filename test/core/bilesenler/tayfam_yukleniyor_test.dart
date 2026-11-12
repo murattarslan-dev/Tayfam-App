@@ -127,7 +127,10 @@ void main() {
         .map((w) => w.painter! as LogoBoyaci)
         .toList();
     expect(boyacilar[0].renkler.l, TayfamLogoRenkleri.lMorZemin);
-    expect(boyacilar[1].renkler, LogoRenkleri.tek(TayfamLogoRenkleri.lMorZemin));
+    expect(
+      boyacilar[1].renkler,
+      LogoRenkleri.tek(TayfamLogoRenkleri.lMorZemin),
+    );
   });
 
   testWidgets('ekran okuyucu etiketi: varsayılan "Yükleniyor" ya da verilen', (

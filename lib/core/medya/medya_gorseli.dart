@@ -93,7 +93,10 @@ class MedyaGorseli extends ConsumerWidget {
           children: [
             _bos(context, Icons.image_outlined),
             Center(
-              child: TayfamYukleniyor(etiket: m.medya_gorsel_yukleniyor, gecikmeli: true,),
+              child: TayfamYukleniyor(
+                etiket: m.medya_gorsel_yukleniyor,
+                gecikmeli: true,
+              ),
             ),
           ],
         );

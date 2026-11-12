@@ -100,7 +100,11 @@ class DuyuruEkrani extends ConsumerWidget {
                   ),
                 ] else
                   Center(
-                    child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.duyuru_yukleniyor, gecikmeli: true,),
+                    child: TayfamYukleniyor(
+                      boyut: TayfamSizes.yukleniyorTamEkran,
+                      etiket: metinler.duyuru_yukleniyor,
+                      gecikmeli: true,
+                    ),
                   ),
               ],
             ),

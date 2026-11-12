@@ -73,7 +73,12 @@ class _EtkinlikDuzenlemeEkraniState
       final hata = detay.error;
       govde = hata != null
           ? HataSatiri.hatadan(hata)
-          : const Center(child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, gecikmeli: true,));
+          : const Center(
+              child: TayfamYukleniyor(
+                boyut: TayfamSizes.yukleniyorTamEkran,
+                gecikmeli: true,
+              ),
+            );
     }
     return Scaffold(
       appBar: AppBar(title: Text(m.etkinlik_duzenle_baslik)),

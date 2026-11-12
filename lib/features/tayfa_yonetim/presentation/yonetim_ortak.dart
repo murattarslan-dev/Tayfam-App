@@ -129,7 +129,11 @@ class ListeDurumu<T> extends StatelessWidget {
       );
     }
     return Center(
-      child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: AppLocalizations.of(context).yonetim_yukleniyor, gecikmeli: true,),
+      child: TayfamYukleniyor(
+        boyut: TayfamSizes.yukleniyorTamEkran,
+        etiket: AppLocalizations.of(context).yonetim_yukleniyor,
+        gecikmeli: true,
+      ),
     );
   }
 }
@@ -165,7 +169,7 @@ class SayfaSonu extends StatelessWidget {
     }
     if (yukleniyor) {
       return Center(
-        child: TayfamYukleniyor(etiket: m.yonetim_yukleniyor, gecikmeli: true,),
+        child: TayfamYukleniyor(etiket: m.yonetim_yukleniyor, gecikmeli: true),
       );
     }
     if (!dahaVar) return const SizedBox.shrink();

@@ -233,7 +233,11 @@ class _ReferansBolumu extends ConsumerWidget {
         );
       case AsyncLoading():
         icerik = Center(
-          child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.profil_yukleniyor, gecikmeli: true,),
+          child: TayfamYukleniyor(
+            boyut: TayfamSizes.yukleniyorTamEkran,
+            etiket: metinler.profil_yukleniyor,
+            gecikmeli: true,
+          ),
         );
     }
 
@@ -553,7 +557,10 @@ class _HesapBolumu extends ConsumerWidget {
           trailing: cikiyor
               ? SizedBox.square(
                   dimension: TayfamSizes.ikon,
-                  child: TayfamYukleniyor(boyut: TayfamSizes.ikon, etiket: metinler.profil_cikis_suruyor,),
+                  child: TayfamYukleniyor(
+                    boyut: TayfamSizes.ikon,
+                    etiket: metinler.profil_cikis_suruyor,
+                  ),
                 )
               : null,
           onTap: cikiyor ? null : () => unawaited(_cikisYap(context, ref)),

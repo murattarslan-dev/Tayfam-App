@@ -83,9 +83,7 @@ class _ArkadasBulEkraniState extends ConsumerState<ArkadasBulEkrani> {
           ),
           const SizedBox(height: TayfamSpacing.s24),
           if (araniyor)
-            Center(
-              child: TayfamYukleniyor(etiket: m.arkadas_yukleniyor),
-            )
+            Center(child: TayfamYukleniyor(etiket: m.arkadas_yukleniyor))
           else if (hata != null)
             HataSatiri.hatadan(hata)
           else if (bulunan != null)

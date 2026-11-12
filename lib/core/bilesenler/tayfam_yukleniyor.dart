@@ -185,7 +185,8 @@ BlokHali yukleniyorBlokHali(LogoBlogu blok, Duration gecen) {
     derinlik = TayfamMotion.yukleniyorEgrisi.transform(faz / tepe);
   } else if (faz < bitis) {
     derinlik =
-        1 - TayfamMotion.yukleniyorEgrisi.transform((faz - tepe) / (bitis - tepe));
+        1 -
+        TayfamMotion.yukleniyorEgrisi.transform((faz - tepe) / (bitis - tepe));
   } else {
     return BlokHali.normal;
   }

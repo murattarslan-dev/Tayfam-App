@@ -73,7 +73,10 @@ class EtkinlikBolumu extends ConsumerWidget {
             ),
           ] else if (gosterilen == null)
             Center(
-              child: TayfamYukleniyor(etiket: metinler.tayfa_ana_etkinlikler_yukleniyor, gecikmeli: true,),
+              child: TayfamYukleniyor(
+                etiket: metinler.tayfa_ana_etkinlikler_yukleniyor,
+                gecikmeli: true,
+              ),
             )
           else if (gosterilen.isEmpty) ...[
             Text(

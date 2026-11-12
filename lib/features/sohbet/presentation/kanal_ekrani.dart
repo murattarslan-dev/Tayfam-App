@@ -224,7 +224,11 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
                   ),
                 ),
                 _ => Center(
-                  child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.sohbet_mesajlar_yukleniyor, gecikmeli: true,),
+                  child: TayfamYukleniyor(
+                    boyut: TayfamSizes.yukleniyorTamEkran,
+                    etiket: m.sohbet_mesajlar_yukleniyor,
+                    gecikmeli: true,
+                  ),
                 ),
               },
             ),
@@ -327,9 +331,7 @@ class _MesajListesi extends ConsumerWidget {
           child: HataSatiri.hatadan(hata),
         ),
       if (akis.eskiYukleniyor)
-        Center(
-          child: TayfamYukleniyor(etiket: m.sohbet_mesajlar_yukleniyor),
-        )
+        Center(child: TayfamYukleniyor(etiket: m.sohbet_mesajlar_yukleniyor))
       else if (akis.eskiSayfa != null)
         Center(
           child: TextButton(

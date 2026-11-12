@@ -121,9 +121,7 @@ class _KuyrukListesi extends ConsumerWidget {
                     unawaited(ref.read(saglayici.notifier).dahaFazla()),
               ),
             ] else if (liste.dahaYukleniyor)
-              Center(
-                child: TayfamYukleniyor(etiket: m.sikayet_yukleniyor),
-              )
+              Center(child: TayfamYukleniyor(etiket: m.sikayet_yukleniyor))
             else if (liste.dahaVar)
               Center(
                 child: TextButton(
@@ -140,7 +138,11 @@ class _KuyrukListesi extends ConsumerWidget {
             _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
           ] else
             Center(
-              child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.sikayet_yukleniyor, gecikmeli: true,),
+              child: TayfamYukleniyor(
+                boyut: TayfamSizes.yukleniyorTamEkran,
+                etiket: m.sikayet_yukleniyor,
+                gecikmeli: true,
+              ),
             ),
         ],
       ),

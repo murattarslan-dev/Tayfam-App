@@ -33,7 +33,11 @@ class EtkinliklerEkrani extends ConsumerWidget {
     final liste = durum.value;
     final hata = durum.error;
     final yukleniyor = Center(
-      child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.tayfa_ana_etkinlikler_yukleniyor, gecikmeli: true,),
+      child: TayfamYukleniyor(
+        boyut: TayfamSizes.yukleniyorTamEkran,
+        etiket: metinler.tayfa_ana_etkinlikler_yukleniyor,
+        gecikmeli: true,
+      ),
     );
     final acabilir = ref.watch(tayfaOzetiProvider(tayfaId)).etkinlikAcabilir;
     return Scaffold(

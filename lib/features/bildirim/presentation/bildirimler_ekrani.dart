@@ -62,7 +62,11 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
                   ),
                 ] else if (liste == null)
                   Center(
-                    child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.bildirim_yukleniyor, gecikmeli: true,),
+                    child: TayfamYukleniyor(
+                      boyut: TayfamSizes.yukleniyorTamEkran,
+                      etiket: m.bildirim_yukleniyor,
+                      gecikmeli: true,
+                    ),
                   )
                 else if (liste.ogeler.isEmpty)
                   Text(

@@ -138,7 +138,9 @@ class _KatilimcilarBolumuState extends ConsumerState<KatilimcilarBolumu> {
               ),
             ),
           ],
-          loading: () => [const Center(child: TayfamYukleniyor(gecikmeli: true))],
+          loading: () => [
+            const Center(child: TayfamYukleniyor(gecikmeli: true)),
+          ],
         ),
       ],
     );

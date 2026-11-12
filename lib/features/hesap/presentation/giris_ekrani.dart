@@ -60,7 +60,10 @@ class GirisEkrani extends ConsumerWidget {
           SizedBox(
             height: TayfamSizes.dokunmaMin,
             child: Center(
-              child: TayfamYukleniyor(zemin: r.markaYuzey, etiket: metinler.hesap_giris_suruyor,),
+              child: TayfamYukleniyor(
+                zemin: r.markaYuzey,
+                etiket: metinler.hesap_giris_suruyor,
+              ),
             ),
           )
         else

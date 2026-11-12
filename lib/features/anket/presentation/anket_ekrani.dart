@@ -120,7 +120,11 @@ class AnketEkrani extends ConsumerWidget {
                     AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
                   ] else
                     Center(
-                      child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.anket_yukleniyor, gecikmeli: true,),
+                      child: TayfamYukleniyor(
+                        boyut: TayfamSizes.yukleniyorTamEkran,
+                        etiket: m.anket_yukleniyor,
+                        gecikmeli: true,
+                      ),
                     ),
                 ],
               ),

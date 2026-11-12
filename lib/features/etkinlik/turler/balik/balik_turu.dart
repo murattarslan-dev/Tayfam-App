@@ -100,7 +100,9 @@ class AvGunluguBolumu extends ConsumerWidget {
               ),
             ),
           ],
-          loading: () => [const Center(child: TayfamYukleniyor(gecikmeli: true))],
+          loading: () => [
+            const Center(child: TayfamYukleniyor(gecikmeli: true)),
+          ],
         ),
         const SizedBox(height: TayfamSpacing.s8),
         if (eklenebilir)

@@ -47,7 +47,11 @@ class _BildirimAyarlariEkraniState
     } else if (durum.izin == null) {
       icerik = [
         Center(
-          child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: m.bildirim_ayar_yukleniyor, gecikmeli: true,),
+          child: TayfamYukleniyor(
+            boyut: TayfamSizes.yukleniyorTamEkran,
+            etiket: m.bildirim_ayar_yukleniyor,
+            gecikmeli: true,
+          ),
         ),
       ];
     } else {

@@ -77,7 +77,11 @@ class YuklemeDurumu extends StatelessWidget {
     final hata = this.hata;
     if (yukleniyor || hata == null) {
       return Center(
-        child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.hesap_acilis_yukleniyor, gecikmeli: true,),
+        child: TayfamYukleniyor(
+          boyut: TayfamSizes.yukleniyorTamEkran,
+          etiket: metinler.hesap_acilis_yukleniyor,
+          gecikmeli: true,
+        ),
       );
     }
     return Center(

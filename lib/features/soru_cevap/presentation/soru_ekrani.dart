@@ -113,7 +113,11 @@ class SoruEkrani extends ConsumerWidget {
                     _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
                   ] else
                     Center(
-                      child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.soru_yukleniyor, gecikmeli: true,),
+                      child: TayfamYukleniyor(
+                        boyut: TayfamSizes.yukleniyorTamEkran,
+                        etiket: metinler.soru_yukleniyor,
+                        gecikmeli: true,
+                      ),
                     ),
                 ],
               ),
@@ -262,7 +266,11 @@ class _Cevaplar extends ConsumerWidget {
           _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
         ] else if (liste == null)
           Center(
-            child: TayfamYukleniyor(boyut: TayfamSizes.yukleniyorTamEkran, etiket: metinler.soru_cevap_yukleniyor, gecikmeli: true,),
+            child: TayfamYukleniyor(
+              boyut: TayfamSizes.yukleniyorTamEkran,
+              etiket: metinler.soru_cevap_yukleniyor,
+              gecikmeli: true,
+            ),
           )
         else if (liste.ogeler.isEmpty)
           Text(

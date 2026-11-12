@@ -51,7 +51,10 @@ class AnketBolumu extends ConsumerWidget {
           AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
         ] else if (liste == null)
           Center(
-            child: TayfamYukleniyor(etiket: m.anket_yukleniyor, gecikmeli: true,),
+            child: TayfamYukleniyor(
+              etiket: m.anket_yukleniyor,
+              gecikmeli: true,
+            ),
           )
         else if (acik.isEmpty) ...[
           Text(

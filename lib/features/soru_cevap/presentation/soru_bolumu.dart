@@ -50,7 +50,10 @@ class SoruBolumu extends ConsumerWidget {
           ),
         ] else if (liste == null)
           Center(
-            child: TayfamYukleniyor(etiket: metinler.soru_yukleniyor, gecikmeli: true,),
+            child: TayfamYukleniyor(
+              etiket: metinler.soru_yukleniyor,
+              gecikmeli: true,
+            ),
           )
         else if (liste.ogeler.isEmpty) ...[
           Text(
