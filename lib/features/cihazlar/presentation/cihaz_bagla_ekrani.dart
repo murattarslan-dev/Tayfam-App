@@ -53,9 +53,7 @@ class CihazBaglaEkrani extends ConsumerWidget {
           ],
           QrIsleniyor() => [
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: metinler.cihaz_tara_isleniyor,
-              ),
+              child: TayfamYukleniyor(etiket: metinler.cihaz_tara_isleniyor),
             ),
           ],
           QrGonderildi() => [

@@ -74,7 +74,7 @@ class AvGunluguBolumu extends ConsumerWidget {
               ),
             if (sayfali.dahaHatasi case final hata?) HataSatiri.hatadan(hata),
             if (sayfali.dahaYukleniyor)
-              const Center(child: CircularProgressIndicator())
+              const Center(child: TayfamYukleniyor())
             else if (sayfali.dahaVar)
               Align(
                 alignment: AlignmentDirectional.centerStart,
@@ -100,7 +100,9 @@ class AvGunluguBolumu extends ConsumerWidget {
               ),
             ),
           ],
-          loading: () => [const Center(child: CircularProgressIndicator())],
+          loading: () => [
+            const Center(child: TayfamYukleniyor(gecikmeli: true)),
+          ],
         ),
         const SizedBox(height: TayfamSpacing.s8),
         if (eklenebilir)

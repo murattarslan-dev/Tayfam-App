@@ -9,6 +9,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/application/giris_notifier.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
+import 'package:tayfam/features/hesap/application/kayit_karsilamasi.dart';
 import 'package:tayfam/features/hesap/application/kayit_notifier.dart';
 import 'package:tayfam/features/hesap/application/onay_notifier.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
@@ -182,12 +183,15 @@ void main() {
     test('başarılı kayıt sonrası yenileme ile oturum açılıyor', () async {
       final k = await kayitBekleyen({'POST /v1/registration': () => null});
       expect(k.durum, OturumDurumu.kayitBekliyor);
+      k.kap.read(googleAdiProvider.notifier).ayarla('Deniz Örnek');
 
       await k.kap.read(kayitProvider.notifier).gonder(_bilgi());
       await _bekle();
 
       expect(k.oturum.yenilemeSayisi, 1);
       expect(k.durum, OturumDurumu.acik);
+      // Hoş geldin ekranı bekletiliyor; ad değişmediyse Google adıyla.
+      expect(k.kap.read(kayitKarsilamasiProvider)?.ad, 'Deniz Örnek');
     });
 
     test('age-blocked: engel kaydediliyor, yerel oturum kapanıyor', () async {
@@ -199,6 +203,12 @@ void main() {
       await _bekle();
 
       expect(k.engel, HesapEngeli.yasSiniri);
+      // Bilgi ekranı gösterilen kullanım koşulları sürümünü açar.
+      expect(
+        k.kap.read(yasEngeliKosullariProvider),
+        Uri.parse('https://tayfam.app/yasal/kullanim-kosullari/2026-11-08'),
+      );
+      expect(k.kap.read(kayitKarsilamasiProvider), isNull);
       expect(k.durum, OturumDurumu.girisYok);
       expect(await k.oturum.store.durum(), isA<OturumKapali>());
       expect(k.oturum.yenilemeSayisi, 0);
@@ -226,6 +236,7 @@ void main() {
       expect(durum.hata, _problemOlan(ProblemType.consentOutdated));
       expect(durum.gonderiliyor, isFalse);
       expect(k.tasima.sayi('GET', '/v1/registration/requirements'), 2);
+      expect(k.kap.read(kayitKarsilamasiProvider), isNull);
     });
 
     test('already-registered: güncel bayraklarla devam ediliyor', () async {
@@ -239,6 +250,7 @@ void main() {
 
       expect(k.oturum.yenilemeSayisi, 1);
       expect(k.durum, OturumDurumu.acik);
+      expect(k.kap.read(kayitKarsilamasiProvider), isNotNull);
     });
 
     test('diğer hatalar formda gösteriliyor', () async {

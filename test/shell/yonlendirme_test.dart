@@ -15,6 +15,9 @@ String? _yonlendir(
   Set<String>? etkinTayfalar,
   bool tayfalarBekleniyor = false,
   TanitimDurumu tanitim = TanitimDurumu.gosterildi,
+  bool davetBekliyor = false,
+  bool kayitKarsilamasi = false,
+  bool yasEngeli = false,
 }) {
   return yonlendir(
     oturum: oturum,
@@ -24,12 +27,76 @@ String? _yonlendir(
     etkinTayfalar: etkinTayfalar,
     tayfalarBekleniyor: tayfalarBekleniyor,
     tanitim: tanitim,
+    davetBekliyor: davetBekliyor,
+    kayitKarsilamasi: kayitKarsilamasi,
+    yasEngeli: yasEngeli,
   );
 }
 
 const String _ucuncuTayfaId = '5e6f7a8b-9c0d-4e1f-a2b3-c4d5e6f7a8b9';
 
 void main() {
+  group('kayıt sonrası (ADR-0012 §3)', () {
+    test('kayıt yeni bittiyse hoş geldin ekranı, davetten önce', () {
+      for (final adres in ['/', '/kayit', '/karsilama', '/davet']) {
+        expect(
+          _yonlendir(adres, kayitKarsilamasi: true, davetBekliyor: true),
+          '/tanisma-tamam',
+          reason: adres,
+        );
+      }
+      expect(_yonlendir('/tanisma-tamam', kayitKarsilamasi: true), isNull);
+    });
+
+    test('hoş geldin bayrağı oturum açılmadan işlenmiyor', () {
+      expect(
+        _yonlendir(
+          '/',
+          oturum: OturumDurumu.kayitBekliyor,
+          kayitKarsilamasi: true,
+        ),
+        '/kayit',
+      );
+    });
+
+    test('bayrak kapandıysa hoş geldin ekranından çıkılabiliyor', () {
+      expect(_yonlendir('/tanisma-tamam'), isNull);
+      expect(_yonlendir('/tayfa-olustur'), isNull);
+      expect(_yonlendir('/tanisma-tamam', davetBekliyor: true), '/davet');
+    });
+
+    test('age-blocked: yalnızca bilgi ekranı, yeniden deneme yok', () {
+      for (final adres in ['/', '/giris', '/kayit', '/hos-geldin']) {
+        expect(
+          _yonlendir(
+            adres,
+            oturum: OturumDurumu.girisYok,
+            yasEngeli: true,
+            tanitim: TanitimDurumu.gosterilmedi,
+          ),
+          '/hesap-acilamadi',
+          reason: adres,
+        );
+      }
+      expect(
+        _yonlendir(
+          '/hesap-acilamadi',
+          oturum: OturumDurumu.girisYok,
+          yasEngeli: true,
+        ),
+        isNull,
+      );
+    });
+
+    test('engel yokken bilgi ekranında kalınmıyor', () {
+      expect(
+        _yonlendir('/hesap-acilamadi', oturum: OturumDurumu.girisYok),
+        '/giris',
+      );
+      expect(_yonlendir('/hesap-acilamadi'), '/');
+    });
+  });
+
   group('açılış ve güncelleme', () {
     test('güncelleme gerekiyorsa her adres güncelleme ekranına gidiyor', () {
       for (final oturum in OturumDurumu.values) {

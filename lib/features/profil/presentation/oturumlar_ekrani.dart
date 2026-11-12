@@ -47,8 +47,10 @@ class OturumlarEkrani extends ConsumerWidget {
         );
       case AsyncLoading():
         govde = Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: metinler.profil_yukleniyor,
+          child: TayfamYukleniyor(
+            boyut: TayfamSizes.yukleniyorTamEkran,
+            etiket: metinler.profil_yukleniyor,
+            gecikmeli: true,
           ),
         );
     }

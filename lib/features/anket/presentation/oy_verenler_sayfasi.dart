@@ -78,8 +78,10 @@ class OyVerenlerSayfasi extends ConsumerWidget {
           AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
         ] else if (liste == null)
           Center(
-            child: CircularProgressIndicator(
-              semanticsLabel: m.anket_yukleniyor,
+            child: TayfamYukleniyor(
+              boyut: TayfamSizes.yukleniyorTamEkran,
+              etiket: m.anket_yukleniyor,
+              gecikmeli: true,
             ),
           )
         else if (liste.ogeler.isEmpty)
@@ -105,11 +107,7 @@ class OyVerenlerSayfasi extends ConsumerWidget {
                   unawaited(ref.read(saglayici.notifier).dahaFazla()),
             ),
           ] else if (liste.dahaYukleniyor)
-            Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: m.anket_yukleniyor,
-              ),
-            )
+            Center(child: TayfamYukleniyor(etiket: m.anket_yukleniyor))
           else if (liste.dahaVar)
             Center(
               child: TextButton(

@@ -1,33 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Açılışta oturum kaydı güvenli depodan okunurken kısa süre görünen ekran
-/// (ADR-0012 §1). Yazılı logo (monogram + "tayfam") ve ilerleme
-/// göstergesi; süs animasyonu yok.
+/// Açılış ekranı (ADR-0012 §1; Design: Splash açık / koyu, issue #100).
+///
+/// Oturum kaydı güvenli depodan, tanıtım bayrağı ve tayfa listesi okunurken
+/// görünür. Native açılış ekranının devamıdır: aynı zemin (açık temada
+/// brand, koyu temada ink; `acilisZemini`), ortada logo, altta "tayfam"
+/// yazısı. Logo Flutter'ın ilk karesinde bloklarla kurulur
+/// ([AcilisLogosu]); "hareketi azalt" açıksa animasyonsuzdur.
+///
+/// Splash kuralı gereği ekranda metin ya da ilerleme göstergesi yoktur;
+/// ekran okuyucu "Tayfam" başlığını ve "Açılıyor" durumunu okur.
 class AcilisEkrani extends StatelessWidget {
   const AcilisEkrani({super.key});
 
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const TayfamMonogram.yazili(baslik: true),
-                const SizedBox(height: TayfamSpacing.s24),
-                CircularProgressIndicator(
-                  semanticsLabel: metinler.hesap_acilis_yukleniyor,
-                ),
-              ],
-            ),
+    final r = context.renkler;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      // acilisZemini iki temada da koyu (brand / ink); üstünde açık ikonlar.
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: r.acilisZemini,
+        body: SafeArea(
+          child: Semantics(
+            container: true,
+            liveRegion: true,
+            label: metinler.hesap_acilis_yukleniyor,
+            child: AcilisLogosu(zemin: r.acilisZemini),
           ),
         ),
       ),

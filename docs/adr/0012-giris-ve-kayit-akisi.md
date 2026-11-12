@@ -167,3 +167,13 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   - **Apple ile giriş:** iOS'ta düğmenin yeri Google'ın üstündedir; iOS
     + `TAYFAM_APPLE_GIRIS` derleme bayrağı + Apple girişinin yerel düğmesi
     verilmeden gösterilmez (Apple girişi hâlâ ertelenmiş durumda).
+- **2026-11-12 (#104, kayıt sihirbazı):** §3'teki form, kuralları
+  değişmeden adım adım sihirbaza ("Tayfam'la tanışma") çevrildi: ad →
+  doğum tarihi (teyit penceresi "Devam et"te) → isteğe bağlı referans kodu
+  → iki onay kutusu; gönderim yalnızca son adımda tek istekle. Başarıda
+  yönlendirici oturum açılınca bir kez `/tanisma-tamam` hoş geldin ekranına
+  gider (bellekteki bayrak; bekleyen davet orada mevcut davet akışıyla,
+  ADR-0018 §6, işlenir). `age-blocked` bilgi ekranı giriş ekranından
+  ayrıldı (`/hesap-acilamadi`; oturum kapalıyken yalnızca o gösterilir,
+  "Kapat" uygulamayı kapatır). Kodla katılım sayfasının görünümü yenilendi;
+  mantık ADR-0014 §3'teki gibi.

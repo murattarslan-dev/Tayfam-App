@@ -164,7 +164,7 @@ class _AvatarBolumuState extends ConsumerState<_AvatarBolumu> {
               children: [
                 const SizedBox.square(
                   dimension: TayfamSizes.ikon,
-                  child: CircularProgressIndicator(),
+                  child: TayfamYukleniyor(boyut: TayfamSizes.ikon),
                 ),
                 const SizedBox(width: TayfamSpacing.s8),
                 Expanded(child: Text(metinler.medya_yukleniyor)),
@@ -233,8 +233,10 @@ class _ReferansBolumu extends ConsumerWidget {
         );
       case AsyncLoading():
         icerik = Center(
-          child: CircularProgressIndicator(
-            semanticsLabel: metinler.profil_yukleniyor,
+          child: TayfamYukleniyor(
+            boyut: TayfamSizes.yukleniyorTamEkran,
+            etiket: metinler.profil_yukleniyor,
+            gecikmeli: true,
           ),
         );
     }
@@ -555,8 +557,9 @@ class _HesapBolumu extends ConsumerWidget {
           trailing: cikiyor
               ? SizedBox.square(
                   dimension: TayfamSizes.ikon,
-                  child: CircularProgressIndicator(
-                    semanticsLabel: metinler.profil_cikis_suruyor,
+                  child: TayfamYukleniyor(
+                    boyut: TayfamSizes.ikon,
+                    etiket: metinler.profil_cikis_suruyor,
                   ),
                 )
               : null,

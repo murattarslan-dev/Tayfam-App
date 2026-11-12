@@ -119,6 +119,14 @@ abstract final class Adresler {
   static const kayit = '/kayit';
   static const onay = '/onay';
 
+  /// Kayıt bitince bir kez gösterilen hoş geldin ekranı ("Tanışma tamam";
+  /// ADR-0012 §3). Yalnızca kayıttan sonra yönlendirmeyle açılır.
+  static const tanismaTamam = '/tanisma-tamam';
+
+  /// Kayıtta `age-blocked` dönünce gösterilen sade bilgi ekranı (ADR-0012
+  /// §3); yeniden deneme yolu yoktur.
+  static const hesapAcilamadi = '/hesap-acilamadi';
+
   /// Açılışta oturum kaydı okunurken gösterilen ekran (ADR-0012 §1).
   static const acilis = '/acilis';
 

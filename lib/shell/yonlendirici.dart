@@ -83,6 +83,8 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
         tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
         tanitim: ref.read(tanitimProvider),
         davetBekliyor: kutu.davetBekliyor,
+        kayitKarsilamasi: ref.read(kayitKarsilamasiProvider) != null,
+        yasEngeli: ref.read(hesapEngeliProvider) == HesapEngeli.yasSiniri,
       );
       if (hedef != null) return hedef;
       return identical(konum, state.uri) ? null : konum.toString();
@@ -212,7 +214,10 @@ List<RouteBase> rotalariOlustur(
     ),
     GoRoute(
       path: Adresler.giris,
-      builder: (context, state) => const GirisEkrani(),
+      // Bekleyen davet varsa giriş ekranı davet görünümündedir (Design:
+      // Giriş davet); token ekrana gitmez, yalnızca "bekliyor mu".
+      builder: (context, state) =>
+          GirisEkrani(davetBekliyor: kutu?.davetBekliyor ?? false),
     ),
     GoRoute(
       path: Adresler.kayit,
@@ -222,6 +227,15 @@ List<RouteBase> rotalariOlustur(
     GoRoute(
       path: Adresler.onay,
       builder: (context, state) => const OnayEkrani(),
+    ),
+    // Kayıt sonrası hoş geldin ve `age-blocked` bilgi ekranı (ADR-0012 §3).
+    GoRoute(
+      path: Adresler.tanismaTamam,
+      builder: (context, state) => const KayitHosGeldinEkrani(),
+    ),
+    GoRoute(
+      path: Adresler.hesapAcilamadi,
+      builder: (context, state) => const YasEngeliEkrani(),
     ),
     // Tayfa oluşturma sihirbazı kabuğun üstünde tam ekran açılır
     // (ADR-0014 §4). Kodla katılım alttan açılan bir sayfadır, rotası yok.

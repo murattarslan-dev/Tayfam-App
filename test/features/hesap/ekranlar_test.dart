@@ -1,13 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
-import 'package:tayfam/core/bilesenler/tayfam_monogram.dart';
+import 'package:tayfam/core/bilesenler/acilis_logosu.dart';
+import 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
+import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
+import 'package:tayfam/core/tema/google_marka.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
+import 'package:tayfam/core/tema/tayfam_sizes.dart';
+import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/hesap/presentation/apple_girisi.dart';
 import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
 
 import '../../yardimcilar.dart';
@@ -19,7 +28,6 @@ final class _Kurulum {
   _Kurulum({
     Map<String, Object? Function()>? yanitlar,
     SahteGoogle? google,
-    this.googleAdi,
     this.engel,
   }) : tasima = SahteTasima(yanitlar),
        google = google ?? SahteGoogle(sonuc: ornekKimlik);
@@ -28,7 +36,6 @@ final class _Kurulum {
   final SahteGoogle google;
   final SahteOturum oturum = SahteOturum();
   final SahteAcici acici = SahteAcici();
-  final String? googleAdi;
   final HesapEngeli? engel;
 
   List<Override> get overrides => [
@@ -38,7 +45,7 @@ final class _Kurulum {
       google: google,
       acici: acici,
     ),
-    googleAdiProvider.overrideWith(() => _SabitAd(googleAdi)),
+    googleAdiProvider.overrideWith(() => _SabitAd(null)),
     if (engel case final engel?)
       hesapEngeliProvider.overrideWith(() => _SabitEngel(engel)),
   ];
@@ -85,14 +92,12 @@ TayfamColors _renkler(ThemeMode tema) {
   return tema == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
 }
 
-/// Ekrandaki monogramın gövde rengi.
-Color _govde(WidgetTester tester) {
+/// Ekrandaki logonun L parçasının rengi.
+Color _lParcasi(WidgetTester tester) {
   final boya = tester.widget<CustomPaint>(
-    find.byWidgetPredicate(
-      (w) => w is CustomPaint && w.painter is MonogramBoyaci,
-    ),
+    find.byWidgetPredicate((w) => w is CustomPaint && w.painter is LogoBoyaci),
   );
-  return (boya.painter! as MonogramBoyaci).govde;
+  return (boya.painter! as LogoBoyaci).renkler.l;
 }
 
 void main() {
@@ -102,15 +107,165 @@ void main() {
         ikiKatYazi(tester);
         await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
 
-        expect(find.byType(TayfamMonogram), findsOneWidget);
+        expect(find.byType(TayfamLogo), findsOneWidget);
         expect(_metin('bilesen_logo_yazisi'), findsOneWidget);
-        // Mor marka yüzeyinde gövde iki temada da turkuaz.
-        expect(_govde(tester), _renkler(tema).teal);
+        // Mor marka yüzeyinde L parçası iki temada da #FAF8FF.
+        expect(_lParcasi(tester), TayfamLogoRenkleri.lMorZemin);
         expect(_metin('hesap_slogan'), findsOneWidget);
         expect(_metin('hesap_google_ile_devam'), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
     }
+
+    for (final tema in _temalar) {
+      testWidgets('${tema.name}: tür çipleri, slogan ve tema biçimli Google', (
+        tester,
+      ) async {
+        await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
+
+        // Tasarımdaki altı tür, etkinlik türü kaydından, büyük çip.
+        final cipler = tester
+            .widgetList<EtkinlikTuruCipi>(find.byType(EtkinlikTuruCipi))
+            .toList();
+        expect([for (final c in cipler) c.tur], girisEkraniTurleri);
+        expect(cipler.every((c) => c.buyuk), isTrue);
+        // Mor yüzeyde oyun çipi brand-dark (brand zeminde brand görünmez).
+        final oyun = find.byWidgetPredicate(
+          (w) => w is EtkinlikTuruCipi && w.tur == EventType.gaming,
+        );
+        final oyunZemini = tester.widget<DecoratedBox>(
+          find.descendant(of: oyun, matching: find.byType(DecoratedBox)).first,
+        );
+        expect(
+          (oyunZemini.decoration as BoxDecoration).color,
+          TayfamTurRenkleri.koyu.cift(TurRengi.oyun).dolgu,
+        );
+
+        // Google düğmesi: açıkta beyaz + #747775, koyuda #131314 + #8E918F.
+        final dugme = tester.widget<OutlinedButton>(
+          find.descendant(
+            of: find.byType(GoogleIleDevamDugmesi),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        final stil = dugme.style!;
+        final koyu = tema == ThemeMode.dark;
+        expect(
+          stil.backgroundColor!.resolve({}),
+          koyu ? GoogleMarka.koyuZemin : GoogleMarka.zemin,
+        );
+        expect(
+          stil.side!.resolve({})!.color,
+          koyu ? GoogleMarka.koyuKenar : GoogleMarka.kenar,
+        );
+        expect(
+          tester.getSize(find.byType(GoogleIleDevamDugmesi)).height,
+          greaterThanOrEqualTo(TayfamSizes.girisDugmesi),
+        );
+        // Davet görünümü değil.
+        expect(_metin('hesap_davet_baslik'), findsNothing);
+        expect(_metin('hesap_giris_baslik'), findsOneWidget);
+        expect(_metin('hesap_giris_aciklama'), findsOneWidget);
+      });
+
+      testWidgets('${tema.name}: davet görünümü 2× yazıda taşmıyor', (
+        tester,
+      ) async {
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          const GirisEkrani(davetBekliyor: true),
+          _Kurulum(),
+          tema: tema,
+        );
+
+        expect(_metin('hesap_davet_baslik'), findsOneWidget);
+        expect(_metin('hesap_davet_kart'), findsOneWidget);
+        expect(_metin('hesap_davet_giris_baslik'), findsOneWidget);
+        expect(_metin('hesap_slogan'), findsNothing);
+        expect(find.byType(EtkinlikTuruCipi), findsNothing);
+        expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('bağlantılar metinlerin güncel sürümünü açıyor', (
+      tester,
+    ) async {
+      final k = _Kurulum();
+      await _ac(tester, const GirisEkrani(), k);
+
+      await _dokun(tester, _metin('hesap_giris_aydinlatma'));
+      await _dokun(tester, _metin('hesap_giris_kosullar'));
+
+      expect(k.acici.acilan, [
+        Uri.parse('https://tayfam.app/gizlilik'),
+        Uri.parse('https://tayfam.app/kullanim-kosullari'),
+      ]);
+    });
+
+    testWidgets('erişilebilirlik: dokunma alanı, etiket, kontrast', (
+      tester,
+    ) async {
+      await _ac(tester, const GirisEkrani(), _Kurulum());
+      final kulp = tester.ensureSemantics();
+      await tester.pump();
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      kulp.dispose();
+    });
+
+    testWidgets('iOS: Apple girişi uygulanmadığı için Apple düğmesi yok', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      await _ac(tester, const GirisEkrani(), _Kurulum());
+
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(_metin('hesap_giris_aciklama'), findsOneWidget);
+      expect(_metin('hesap_giris_aciklama_apple'), findsNothing);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    test('Apple düğmesi yalnızca iOS + bayrak + düğme varken', () {
+      Widget dugme(BuildContext context) => const SizedBox.shrink();
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.iOS,
+          bayrak: true,
+          dugme: dugme,
+        ),
+        isTrue,
+      );
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.iOS,
+          bayrak: false,
+          dugme: dugme,
+        ),
+        isFalse,
+      );
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.android,
+          bayrak: true,
+          dugme: dugme,
+        ),
+        isFalse,
+      );
+      expect(
+        appleGirisiGorunur(
+          platform: TargetPlatform.iOS,
+          bayrak: true,
+          dugme: null,
+        ),
+        isFalse,
+      );
+      // Varsayılan derlemede bayrak kapalı.
+      expect(AppleGirisi.bayrak, isFalse);
+    });
 
     testWidgets('Google düğmesi resmi işaretle ve 48 dp', (tester) async {
       await _ac(tester, const GirisEkrani(), _Kurulum());
@@ -184,111 +339,6 @@ void main() {
     }
   });
 
-  group('kayıt ekranı', () {
-    Map<String, Object? Function()> yanitlar() => {
-      'GET /v1/registration/requirements': surumGovdesi,
-      'POST /v1/registration': () => null,
-    };
-
-    Widget ekran() => KayitEkrani(
-      tarihSecici: (context, secili) async => DateTime(2009, 3, 12),
-    );
-
-    for (final tema in _temalar) {
-      testWidgets('${tema.name} temada 2× yazıda taşmıyor', (tester) async {
-        ikiKatYazi(tester);
-        final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-        await _ac(tester, ekran(), k, tema: tema);
-
-        expect(_metin('hesap_kayit_baslik'), findsOneWidget);
-        expect(tester.takeException(), isNull);
-
-        // Hatalar görünürken de taşma yok.
-        await _dokun(tester, _metin('hesap_kayit_gonder'));
-        expect(tester.takeException(), isNull);
-      });
-    }
-
-    testWidgets('ad Google adıyla dolu', (tester) async {
-      final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-      await _ac(tester, ekran(), k);
-
-      expect(find.widgetWithText(TextField, 'Deniz Örnek'), findsOneWidget);
-    });
-
-    testWidgets('eksik form gönderilmiyor; hatalar gösteriliyor', (
-      tester,
-    ) async {
-      final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-      await _ac(tester, ekran(), k);
-
-      await _dokun(tester, _metin('hesap_kayit_gonder'));
-
-      expect(_metin('hesap_kayit_dogum_tarihi_hata'), findsOneWidget);
-      expect(_metin('hesap_aydinlatma_hata'), findsOneWidget);
-      expect(_metin('hesap_kosullar_hata'), findsOneWidget);
-      expect(find.byType(DogumTarihiTeyidi), findsNothing);
-      expect(k.tasima.sayi('POST', '/v1/registration'), 0);
-    });
-
-    testWidgets('doğum tarihi teyit edilmeden gönderilmiyor', (tester) async {
-      final k = _Kurulum(yanitlar: yanitlar(), googleAdi: 'Deniz Örnek');
-      await _ac(tester, ekran(), k);
-
-      await _dokun(tester, _metin('hesap_kayit_dogum_tarihi_bos'));
-      expect(find.text('12 Mart 2009'), findsOneWidget);
-      await _dokun(tester, _metin('hesap_aydinlatma_onay'));
-      await _dokun(tester, _metin('hesap_kosullar_onay'));
-      await _dokun(tester, _metin('hesap_kayit_gonder'));
-
-      // Pencere girilen tarihi gösterir; yaş sınırını söylemez.
-      const teyit = 'Doğum tarihin 12 Mart 2009. Doğru mu?';
-      expect(find.text(teyit), findsOneWidget);
-      await _dokun(tester, _metin('hesap_teyit_duzelt'));
-      expect(find.byType(DogumTarihiTeyidi), findsNothing);
-      expect(k.tasima.sayi('POST', '/v1/registration'), 0);
-
-      await _dokun(tester, _metin('hesap_kayit_gonder'));
-      await _dokun(tester, _metin('hesap_teyit_devam'));
-
-      expect(k.tasima.sayi('POST', '/v1/registration'), 1);
-      expect(k.tasima.istekler.last.govde, {
-        'birth_date': '2009-03-12',
-        'accepted_privacy_notice_version': '2026-11-08',
-        'accepted_terms_version': '2026-11-08',
-      });
-    });
-
-    testWidgets('metin bağlantıları sürümlü sayfaları açıyor', (tester) async {
-      final k = _Kurulum(yanitlar: yanitlar());
-      await _ac(tester, ekran(), k);
-
-      await _dokun(tester, _metin('hesap_aydinlatma_ac'));
-      await _dokun(tester, _metin('hesap_kosullar_ac'));
-
-      expect(k.acici.acilan, [
-        Uri.parse('https://tayfam.app/yasal/aydinlatma-metni/2026-11-08'),
-        Uri.parse('https://tayfam.app/yasal/kullanim-kosullari/2026-11-08'),
-      ]);
-    });
-
-    testWidgets('gereksinimler okunamazsa tekrar dene', (tester) async {
-      var hata = true;
-      final k = _Kurulum(
-        yanitlar: {
-          'GET /v1/registration/requirements': () =>
-              hata ? problem(ProblemType.internal, 500) : surumGovdesi(),
-        },
-      );
-      await _ac(tester, ekran(), k);
-      expect(_metin('hata_internal'), findsOneWidget);
-
-      hata = false;
-      await _dokun(tester, _metin('hesap_tekrar_dene'));
-      expect(_metin('hesap_kayit_gonder'), findsOneWidget);
-    });
-  });
-
   group('yeniden onay ekranı', () {
     Map<String, Object? Function()> yanitlar() => {
       'GET /v1/me/consents': surumGovdesi,
@@ -352,20 +402,19 @@ void main() {
       testWidgets('açılış ekranı ${tema.name} temada 2×', (tester) async {
         ekranBoyutu(tester);
         ikiKatYazi(tester);
-        // İlerleme göstergesi döndüğü için beklenip durulmaz.
-        await widgetAc(
-          tester,
-          const AcilisEkrani(),
-          themeMode: tema,
-          dur: false,
-        );
+        await widgetAc(tester, const AcilisEkrani(), themeMode: tema);
 
-        expect(find.byType(TayfamMonogram), findsOneWidget);
+        expect(find.byType(AcilisLogosu), findsOneWidget);
         expect(_metin('bilesen_logo_yazisi'), findsOneWidget);
-        // Sayfa zemininde gövde açık temada brand, koyu temada turkuaz.
+        // Zemin açık temada brand, koyu temada ink; L parçası mor zeminde
+        // #FAF8FF, ink zeminde brand-dark (native açılış ekranıyla aynı).
         final r = _renkler(tema);
-        final govde = tema == ThemeMode.dark ? r.teal : r.markaYuzey;
-        expect(_govde(tester), govde);
+        final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+        expect(scaffold.backgroundColor, r.acilisZemini);
+        final l = tema == ThemeMode.dark
+            ? TayfamLogoRenkleri.lKoyuZemin
+            : TayfamLogoRenkleri.lMorZemin;
+        expect(_lParcasi(tester), l);
         expect(tester.takeException(), isNull);
       });
     }

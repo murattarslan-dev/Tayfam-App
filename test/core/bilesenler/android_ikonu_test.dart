@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
+import 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
 
-// Android başlatıcı ikonu (issue #32): `tool/ikon/ikon_uret.py`'nin
-// ürettiği kaynaklar uygulamanın renk token'ları ve monogram yollarıyla
-// aynı mı.
+// Android başlatıcı ve bildirim ikonu (issue #98): `tool/ikon/ikon_uret.py`'nin
+// ürettiği kaynaklar logonun ("Dörtlü") yolları ve renkleriyle aynı mı.
 
 const String _res = 'android/app/src/main/res';
 
@@ -19,6 +19,10 @@ Uint8List _bayt(String yol) => File('$_res/$yol').readAsBytesSync();
 final RegExp _renkSatiri = RegExp(
   r'<color name="(\w+)">(#[0-9A-Fa-f]{6})</color>',
 );
+
+final RegExp _yolVerisi = RegExp(r'android:pathData="([^"]*)"');
+
+final RegExp _dolguRengi = RegExp(r'android:fillColor="([^"]*)"');
 
 String _hex(Color renk) {
   final rgb = renk.toARGB32() & 0xFFFFFF;
@@ -33,21 +37,36 @@ Map<String, String> _renkler() {
   };
 }
 
+/// SVG ve Dart'taki blok sırası: sol üst, sağ üst, sağ alt, L.
+final List<String> _yollar = [
+  for (final blok in [
+    LogoBlogu.mango,
+    LogoBlogu.nar,
+    LogoBlogu.turkuaz,
+    LogoBlogu.l,
+  ])
+    LogoYollari.tamRenk[blok]!,
+];
+
+List<String> _xmlYollari(String xml) => [
+  for (final m in _yolVerisi.allMatches(xml)) m.group(1)!,
+];
+
 void main() {
-  test('ikon renkleri tema token\'larıyla aynı', () {
-    const r = TayfamColors.acik;
+  test('ikon renkleri logo renkleriyle aynı', () {
     expect(_renkler(), {
-      'ic_launcher_background': _hex(r.markaYuzey),
-      'ic_launcher_govde': _hex(r.teal),
-      'ic_launcher_cizgi': _hex(r.mango),
-      'ic_launcher_nokta': _hex(r.nar),
+      'ic_launcher_background': _hex(TayfamLogoRenkleri.ikonZemini),
+      'ic_launcher_mango': _hex(TayfamLogoRenkleri.mango),
+      'ic_launcher_nar': _hex(TayfamLogoRenkleri.nar),
+      'ic_launcher_turkuaz': _hex(TayfamLogoRenkleri.turkuaz),
+      'ic_launcher_l': _hex(TayfamLogoRenkleri.lMorZemin),
     });
-    // Notion: Marka — uygulama ikonu brand zemin, turkuaz gövde.
-    expect(_hex(r.markaYuzey), '#5B2BE0');
-    expect(_hex(r.teal), '#00C2A8');
+    // Notion: Marka — uygulama ikonu brand zemin, L parçası #FAF8FF.
+    expect(_hex(TayfamLogoRenkleri.ikonZemini), '#5B2BE0');
+    expect(_hex(TayfamLogoRenkleri.lMorZemin), '#FAF8FF');
   });
 
-  test('uyarlanabilir ikon: brand arka plan, vektör ön plan', () {
+  test('uyarlanabilir ikon: brand arka plan, vektör ön ve tek renk katman', () {
     final xml = _oku('mipmap-anydpi-v26/ic_launcher.xml');
     expect(xml, contains('<adaptive-icon'));
     expect(
@@ -60,24 +79,41 @@ void main() {
         '<foreground android:drawable="@drawable/ic_launcher_foreground"',
       ),
     );
-  });
-
-  test('ön plan tanıtım sitesindeki monogram yollarını kullanıyor', () {
-    final xml = _oku('drawable/ic_launcher_foreground.xml');
-    expect(xml, contains('android:viewportWidth="108"'));
     expect(
       xml,
-      contains('android:pathData="M31 8c-1 14-3 26-1 36 2 9 10 13 18 7"'),
+      contains(
+        '<monochrome android:drawable="@drawable/ic_launcher_monochrome"',
+      ),
     );
-    expect(xml, contains('android:pathData="M14 27c10 0 22-2 34-6"'));
-    expect(xml, contains('android:strokeWidth="10"'));
-    expect(xml, contains('android:strokeLineCap="round"'));
-    expect(xml, contains('@color/ic_launcher_govde'));
-    expect(xml, contains('@color/ic_launcher_cizgi'));
-    expect(xml, contains('@color/ic_launcher_nokta'));
   });
 
-  test('ön plan güvenli bölgede (66 dp çap)', () {
+  test('ön katman logonun yollarını ve renklerini kullanıyor', () {
+    final xml = _oku('drawable/ic_launcher_foreground.xml');
+    expect(xml, contains('android:viewportWidth="108"'));
+    expect(_xmlYollari(xml), _yollar);
+    for (final ad in ['mango', 'nar', 'turkuaz', 'l']) {
+      expect(xml, contains('@color/ic_launcher_$ad'));
+    }
+  });
+
+  test('tek renk katman ve bildirim simgesi beyaz, aynı yollar', () {
+    for (final dosya in [
+      'drawable/ic_launcher_monochrome.xml',
+      'drawable/ic_bildirim.xml',
+    ]) {
+      final xml = _oku(dosya);
+      expect(_xmlYollari(xml), _yollar, reason: dosya);
+      final dolgular = {
+        for (final m in _dolguRengi.allMatches(xml)) m.group(1),
+      };
+      expect(dolgular, {'#FFFFFFFF'}, reason: dosya);
+    }
+    final bildirim = _oku('drawable/ic_bildirim.xml');
+    expect(bildirim, contains('android:width="24dp"'));
+    expect(bildirim, contains('android:viewportWidth="100"'));
+  });
+
+  test('ön katman güvenli bölgede (66 dp çap)', () {
     final xml = _oku('drawable/ic_launcher_foreground.xml');
     double ozellik(String ad) {
       final m = RegExp('android:$ad="([0-9.]+)"').firstMatch(xml)!;
@@ -85,14 +121,25 @@ void main() {
     }
 
     final olcek = ozellik('scaleX');
-    final kayma = ozellik('translateX');
     expect(ozellik('scaleY'), olcek);
-    expect(ozellik('translateY'), kayma);
-    // Monogram (viewBox 64) tuvalin ortasında.
-    expect(kayma + 32 * olcek, moreOrLessEquals(54));
-    // Merkezden en uzak nokta: nar noktasının dış kenarı, ≈ 32.1 birim.
-    const enUzak = 32.1;
-    expect(enUzak * olcek, lessThanOrEqualTo(33));
+    final kayma = Offset(ozellik('translateX'), ozellik('translateY'));
+    const merkez = Offset(54, 54);
+    // Logonun yolları üzerindeki en uzak nokta (eğriler dahil).
+    var enUzak = 0.0;
+    for (final d in _yollar) {
+      for (final metrik in svgYolu(d).computeMetrics()) {
+        for (var t = 0.0; t <= metrik.length; t += .25) {
+          final nokta = metrik.getTangentForOffset(t)!.position;
+          final uzaklik = (kayma + nokta * olcek - merkez).distance;
+          if (uzaklik > enUzak) enUzak = uzaklik;
+        }
+      }
+    }
+    expect(enUzak, lessThanOrEqualTo(33));
+    // İşaret ortalı: sınır kutusunun ortası (50, 53) tuvalin ortasında.
+    final orta = kayma + const Offset(50, 53) * olcek;
+    expect(orta.dx, moreOrLessEquals(merkez.dx));
+    expect(orta.dy, moreOrLessEquals(merkez.dy));
   });
 
   test('eski Android sürümleri için mdpi–xxxhdpi PNG\'ler', () {
