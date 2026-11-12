@@ -14,6 +14,7 @@ import 'package:tayfam/features/birebir/application/konusma_sessizlik_notifier.d
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/konusma_satiri.dart';
+import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Sohbet sekmesinin Birebir bölümü (ADR-0018 §9): mesaj isteklerine
@@ -72,7 +73,11 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (ref.watch(e2eEtkinProvider)) const E2eCihazUyarisi(),
+        if (ref.watch(e2eEtkinProvider)) ...const [
+          E2eCihazUyarisi(),
+          TekCihazBilgiKarti(),
+          EskiArsivBilgisi(),
+        ],
         _IstekleriAc(sayi: istekSayisi),
         const Divider(),
         if (liste == null && hata != null) ...[
