@@ -245,7 +245,11 @@ void main() {
     expect(kamera.kapatma, 0);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
-    expect(kamera.kapatma, 1);
+    // Akış durdurulur (dinleyici kalmaz).
     expect(kamera.kareler.hasListener, isFalse);
+    // Kamera kapatma zinciri tamamlanınca platform kamerası bırakılır.
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pump();
+    expect(kamera.kapatma, 1);
   });
 }
