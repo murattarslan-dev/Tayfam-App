@@ -49,7 +49,8 @@ modüllerden biri pilota yetişmezse metni çıkarılır.
 ### 3. Görsel dil
 
 - Görseller **uygulamanın kendi bileşenleriyle** çizilir: etkinlik kartı,
-  anket çubuğu, sohbet balonu, tür çipi, `MarkaYuzeyi`, monogram. Görsel
+  anket çubuğu, sohbet balonu, tür çipi, `MarkaYuzeyi`, logo (`TayfamLogo`;
+  2026-11-12'ye kadar monogramdı, bkz. Notlar). Görsel
   dosyası kullanılmaz. Böylece iki temada ve büyük yazı ölçeğinde doğru
   görünür (platform sahibi).
 - Örnek veriler tanıtım sitesindekiyle aynı ruhta ve uydurmadır: örnek
@@ -82,3 +83,11 @@ modüllerden biri pilota yetişmezse metni çıkarılır.
 - **Yalnızca hazır özellikler:** platform sahibi, pilota kadar
   tamamlanacak modülleri de anlatmayı seçti.
 - **İllüstrasyon:** dosya ve tasarım gerektirir, temaya uyumu zor.
+
+## Notlar
+
+- **2026-11-12 (platform sahibi):** §3'teki "monogram" artık yeni logo
+  `TayfamLogo`'dur (ADR-0004 Notlar 2026-11-12; eski `TayfamMonogram`
+  kaldırıldı, PR #99). Mor yüzeydeki tür çipleri iki temada da koyu temanın
+  tür renklerini kullanır (PR #106). Hoş geldin tanıtımı bir karşılama
+  ekranı olduğu için büyük yazı ölçeği (48 / 24 px) burada da serbesttir.

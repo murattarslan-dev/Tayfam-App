@@ -196,3 +196,40 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
     (`lib/core/api/gen/`) → kayıt girdisi + `TurRengi` anahtarı ve iki
     temada renk çifti + ARB adı (`etkinlik_turu_<değer>`) + kontrast
     testi. Derleyici, girdisi olmayan türü `switch`'te gösterir.
+- **2026-11-12 (platform sahibi): yeni logo, hareket ve yazı ölçeği
+  istisnaları.**
+  1. **Logo "Dörtlü".** Eski "t" monogramı ("Hareket", `TayfamMonogram`)
+     bırakıldı (Notion: Marka → Logo). Yeni ortak bileşen `TayfamLogo`
+     (`core/bilesenler/tayfam_logo.dart`): tam renk (`TayfamLogo`,
+     `TayfamLogo.yazili`), rozet (`TayfamLogo.rozet`) ve tek renk
+     (`TayfamLogo.tekRenk`). Dört blok `assets/marka/logo/*.svg`'deki
+     yollarla `CustomPainter` ile çizilir; SVG paketi yoktur. Blok renkleri
+     sabittir (sol üst mango, sağ üst nar, sağ alt turkuaz); L parçası
+     zemine göre: açık zeminde brand, koyu zeminde brand-dark #A98BFF, mor
+     zeminde #FAF8FF. Ham renkler `TayfamLogoRenkleri`'ndedir
+     (`core/tema/`). Uygulama ikonları, bildirim simgesi ve açılış
+     ekranları aynı yollardan üretilir (`tool/ikon/`). PR #99.
+  2. **Hareket istisnaları.** "Süs animasyonu yok" kuralının iki izinli
+     istisnası vardır; ikisi de "hareketi azalt" açıkken oynamaz:
+     - **Açılış logosu** (`AcilisLogosu`, `TayfamMotion.acilis*`): L,
+       mango, nar ve turkuaz bloklar sırayla kurulur, yazı yükselir; ~820
+       ms, **bir kez** oynar. Hareketi azalt açıksa logo doğrudan görünür.
+       PR #101.
+     - **Yükleniyor "Dalga"** (`TayfamYukleniyor`,
+       `TayfamMotion.yukleniyor*`): bloklar saat yönünde 175 ms arayla
+       1400 ms'lik döngüde küçülüp solar. "Çok yakında" nabzı gibi durum
+       göstergesidir (Notlar 2026-11-10, madde 3); 1 saniyeden kısa
+       beklemede gösterilmez. Hareketi azalt açıksa statik logo ve
+       erişilebilir "Yükleniyor" etiketi. PR #103.
+     Tanıtım sitesindeki logo kurulumu da aynı dili kullanır (yalnızca
+     CSS, `prefers-reduced-motion`'a uyar; ADR-0013, PR #109).
+  3. **Yazı ölçeği istisnası (§4).** Karşılama ekranlarında (giriş, kayıt
+     sonrası hoş geldin, hoş geldin tanıtımı gibi) büyük ölçek serbesttir:
+     48 px marka başlığı/slogan (`TayfamTypography.markaBasligi`: 48 / 800
+     (wght 750) / 0.95, harf aralığı −%4.5) ve 24 px başlık
+     (`TayfamTypography.girisBasligi`: 24 / 700 / 1.08, −%1). Uygulamanın
+     geri kalanında §4'teki ölçek geçerlidir. PR #106.
+  4. **Aynı işle gelen token'lar:** `TayfamColors.acilisZemini` (açılış
+     zemini: açık temada brand, koyu temada ink); mor marka yüzeyinin
+     altında iki temada da koyu temanın tür renkleri kullanılır (oyun
+     brand-dark; brand zeminde brand dolgu görünmez).

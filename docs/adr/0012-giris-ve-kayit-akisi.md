@@ -145,6 +145,28 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   (`TayfamMonogram`, PR #34); logo yazısı sistem yazı ölçeğiyle büyümez,
   görsel sayılır ve dar alanda orantılı küçülür. Genel `ProblemType` → çeviri eşlemesi (ADR-0005 §4)
   ayrı iş; bu akış yalnızca kendi hata kodlarını eşler.
+- **2026-11-12 (platform sahibi; PR #99, #101, #106):** Yukarıdaki notta
+  geçen monogram (`TayfamMonogram`) yerini yeni logoya bıraktı:
+  `TayfamLogo` (ADR-0004 Notlar 2026-11-12). Logo yazısı kuralları (sistem
+  yazı ölçeğiyle büyümez, dar alanda orantılı küçülür) aynen geçerlidir.
+  - **Açılış (§1):** açılış ekranı native açılış ekranının devamıdır
+    (açık temada brand, koyu temada ink zemin; ortada logo, altta yazı);
+    logo bir kez bloklarla kurulur, ekranda ilerleme göstergesi yoktur.
+  - **Giriş (§2):** mor üst alan (alt köşeler 32), etkinlik türü çipleri
+    ve slogan; altta başlık, açıklama, Google düğmesi (temaya göre
+    Google'ın açık/koyu biçimi) ve hukuki metinlerin bağlantıları. Giriş
+    öncesi metin sürümü bilinmediği için bağlantılar güncel sürüme
+    yönlenen sabit adreslerdir: `https://tayfam.app/gizlilik` ve
+    `https://tayfam.app/kullanim-kosullari` (ikincisi metin yayımlanınca
+    sitenin `_redirects`'ine eklenir); onay §3–§4'teki gibi kayıtta,
+    sürümlü sayfayla alınır.
+  - **Davet:** bekleyen davet varsa giriş ekranı davet görünümündedir
+    (ekran yalnızca "davet bekliyor mu" bilgisini alır, token gelmez).
+    Davet önizlemesi oturum istediği için tayfa adı giriş öncesi
+    gösterilmez.
+  - **Apple ile giriş:** iOS'ta düğmenin yeri Google'ın üstündedir; iOS
+    + `TAYFAM_APPLE_GIRIS` derleme bayrağı + Apple girişinin yerel düğmesi
+    verilmeden gösterilmez (Apple girişi hâlâ ertelenmiş durumda).
 - **2026-11-12 (#104, kayıt sihirbazı):** §3'teki form, kuralları
   değişmeden adım adım sihirbaza ("Tayfam'la tanışma") çevrildi: ad →
   doğum tarihi (teyit penceresi "Devam et"te) → isteğe bağlı referans kodu

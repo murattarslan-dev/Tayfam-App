@@ -105,7 +105,8 @@ ADR-0018 push'u v0.1.0'ın dışında bırakmıştı. Platform sahibi
   anahtarları "kullanılmayan" saymaz. Kaynak küçültme bu metinleri ve
   simgeyi silmesin diye `res/raw/tayfam_keep.xml` vardır.
 - Varsayılan kanal `tayfam_general`; varsayılan simge `ic_bildirim`
-  (monogramın tek renkli hali, `tool/ikon/ikon_uret.py` üretir); renk marka
+  (logonun tek renkli hali — 2026-11-12'ye kadar monogramdı, bkz. Notlar;
+  `tool/ikon/ikon_uret.py` üretir); renk marka
   yüzeyi (`ic_launcher_background`).
 
 ### 5. Dokunma ve ön plan
@@ -165,3 +166,12 @@ iznidir.
   yönetimi ve fork PR'larında kırılan derleme kazancı aşar.
 - **firebase_messaging 17.x ve FID kaydı:** sunucu sözleşmesi registration
   token bekliyor; FID ile gönderim Tayfam-Api'de ayrı bir karar olur.
+
+## Notlar
+
+- **2026-11-12 (platform sahibi; PR #99):** §4'teki varsayılan simge
+  `ic_bildirim` artık eski monogramın değil, yeni "Dörtlü" logonun tek
+  renkli (beyaz) halidir (`tayfam-tek-renk.svg`; `tool/ikon/ikon_uret.py`
+  üretir). Kaynak adı ve manifestteki `default_notification_icon` /
+  `default_notification_color` değişmedi. Uyarlanabilir uygulama ikonuna
+  Android 13+ temalı ikon için tek renk (monochrome) katman eklendi.

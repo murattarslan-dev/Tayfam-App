@@ -115,3 +115,9 @@ Platform sahibi site için ayrı bir repo istemiyor.
     "yayımlanan sürüm değişmez" kuralı o sürümden itibaren uygulanır.
   - **Destek adresi:** `support@tayfam.app`. Yönlendirme Cloudflare Email
     Routing'dedir.
+- **2026-11-12 (platform sahibi; PR #109):** Sitedeki "t" monogramı
+  (favicon, uygulama ikonu görseli, üst ve alt bilgi logoları) yeni
+  "Dörtlü" logoyla değişti; ana sayfadaki çizim animasyonu yerine
+  uygulamanın açılışıyla aynı blok kurulumu kullanılır (yalnızca CSS,
+  `prefers-reduced-motion`'a uyar; JavaScript yok, CSP değişmedi). Bkz.
+  ADR-0004 Notlar 2026-11-12.
