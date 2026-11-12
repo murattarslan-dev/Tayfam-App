@@ -39,12 +39,14 @@ enum LogoVaryanti {
 /// yazı sistemin yazı büyütme ayarıyla ölçeklenmez (oranı bozulmasın diye),
 /// dar alanda bütün logo orantılı küçülür.
 class TayfamLogo extends StatelessWidget {
-  /// Tam renk simge.
+  /// Tam renk simge. [renkler] verilirse bloklar o renklerdedir (ör. kayıt
+  /// sihirbazının ilerleme göstergesinde dolmamış bloklar çizgi renginde).
   const TayfamLogo({
     super.key,
     this.boyut = TayfamSizes.logoYaziEsigi,
     this.zemin,
     this.baslik = false,
+    this.renkler,
   }) : varyant = LogoVaryanti.tamRenk,
        yazili = false,
        renk = null,
@@ -59,6 +61,7 @@ class TayfamLogo extends StatelessWidget {
   }) : varyant = LogoVaryanti.tamRenk,
        yazili = true,
        renk = null,
+       renkler = null,
        assert(boyut >= TayfamSizes.logoEnKucuk);
 
   /// Rozet: bloklar daireye kesilmiş; zeminden bağımsız (L brand).
@@ -70,6 +73,7 @@ class TayfamLogo extends StatelessWidget {
        yazili = false,
        zemin = null,
        renk = null,
+       renkler = null,
        assert(boyut >= TayfamSizes.logoEnKucuk);
 
   /// Tek renk simge; [renk] verilmezse çevredeki ikon rengi.
@@ -81,6 +85,7 @@ class TayfamLogo extends StatelessWidget {
   }) : varyant = LogoVaryanti.tekRenk,
        yazili = false,
        zemin = null,
+       renkler = null,
        assert(boyut >= TayfamSizes.logoEnKucuk);
 
   /// Simgenin kenar uzunluğu (kare).
@@ -102,13 +107,17 @@ class TayfamLogo extends StatelessWidget {
   /// Logonun biçimi.
   final LogoVaryanti varyant;
 
+  /// Tam renk simgede blokların renkleri; verilmezse [zemin]'e göre
+  /// ([LogoRenkleri.zemineGore]).
+  final LogoRenkleri? renkler;
+
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
     final metinler = AppLocalizations.of(context);
     final zemin = this.zemin ?? r.zemin;
     final renkler = switch (varyant) {
-      LogoVaryanti.tamRenk => LogoRenkleri.zemineGore(zemin),
+      LogoVaryanti.tamRenk => this.renkler ?? LogoRenkleri.zemineGore(zemin),
       LogoVaryanti.rozet => LogoRenkleri.rozet,
       LogoVaryanti.tekRenk => LogoRenkleri.tek(
         renk ?? IconTheme.of(context).color ?? r.metin,
@@ -244,6 +253,17 @@ final class LogoRenkleri {
   final Color nar;
   final Color turkuaz;
   final Color l;
+
+  /// [a] ile [b] arasında [t] oranında geçiş (renklenme animasyonu).
+  static LogoRenkleri lerp(LogoRenkleri a, LogoRenkleri b, double t) {
+    Color ara(Color x, Color y) => Color.lerp(x, y, t)!;
+    return LogoRenkleri(
+      mango: ara(a.mango, b.mango),
+      nar: ara(a.nar, b.nar),
+      turkuaz: ara(a.turkuaz, b.turkuaz),
+      l: ara(a.l, b.l),
+    );
+  }
 
   /// [blok]'un rengi.
   Color blok(LogoBlogu blok) => switch (blok) {

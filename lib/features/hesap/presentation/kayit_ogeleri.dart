@@ -6,199 +6,28 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 // Kayıt sihirbazının ("Tayfam'la tanışma") ortak parçaları (ADR-0012 §3;
-// tasarım: Kayit-*.dc.html).
-//
-// Logo blokları burada küçük, özel bir çizimle çizilir: ortak `TayfamLogo`
-// bileşeni (feat/marka-logo-ikon) henüz main'de değil. O birleşince
-// ilerleme göstergesi, avatar ve hoş geldin logosu ona geçirilecek.
+// tasarım: Kayit-*.dc.html). Logo ortak `TayfamLogo` bileşenidir.
 
-/// Logonun dört bloğunun renkleri, saat yönünde: sol üst (mango), sağ üst
-/// (nar), sağ alt (turkuaz), L parçası.
-@immutable
-final class KayitBlokRenkleri {
-  const KayitBlokRenkleri(this.mango, this.nar, this.turkuaz, this.l);
-
-  final Color mango;
-  final Color nar;
-  final Color turkuaz;
-  final Color l;
-
-  /// İlk [doluSayisi] blok kendi renginde, kalanlar çizgi renginde
-  /// (ilerleme göstergesi: adım 1'de yalnız mango, 4'te dördü de).
-  factory KayitBlokRenkleri.ilerleme(
-    TayfamColors r, {
-    required int doluSayisi,
-  }) {
-    Color renk(int sira, Color dolu) => sira < doluSayisi ? dolu : r.cizgi;
-    return KayitBlokRenkleri(
-      renk(0, r.mango),
-      renk(1, r.nar),
-      renk(2, r.teal),
-      renk(3, r.marka),
-    );
-  }
-
-  /// Bütün bloklar dolu; L parçası [l].
-  factory KayitBlokRenkleri.tam(TayfamColors r, {required Color l}) =>
-      KayitBlokRenkleri(r.mango, r.nar, r.teal, l);
-
-  static KayitBlokRenkleri lerp(
-    KayitBlokRenkleri a,
-    KayitBlokRenkleri b,
-    double t,
-  ) {
-    Color l(Color x, Color y) => Color.lerp(x, y, t)!;
-    return KayitBlokRenkleri(
-      l(a.mango, b.mango),
-      l(a.nar, b.nar),
-      l(a.turkuaz, b.turkuaz),
-      l(a.l, b.l),
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      other is KayitBlokRenkleri &&
-      other.mango == mango &&
-      other.nar == nar &&
-      other.turkuaz == turkuaz &&
-      other.l == l;
-
-  @override
-  int get hashCode => Object.hash(mango, nar, turkuaz, l);
+/// İlerleme göstergesinin blok renkleri: ilk [doluSayisi] blok logonun
+/// kendi renginde (zemine göre; L açıkta brand, koyuda brand-dark),
+/// kalanlar çizgi renginde (line / line-dark).
+LogoRenkleri kayitIlerlemeRenkleri(TayfamColors r, {required int doluSayisi}) {
+  final tam = LogoRenkleri.zemineGore(r.zemin);
+  Color renk(LogoBlogu blok) =>
+      blok.index < doluSayisi ? tam.blok(blok) : r.cizgi;
+  return LogoRenkleri(
+    mango: renk(LogoBlogu.mango),
+    nar: renk(LogoBlogu.nar),
+    turkuaz: renk(LogoBlogu.turkuaz),
+    l: renk(LogoBlogu.l),
+  );
 }
 
-class _BlokRenkTween extends Tween<KayitBlokRenkleri> {
+class _BlokRenkTween extends Tween<LogoRenkleri> {
   _BlokRenkTween({super.end});
 
   @override
-  KayitBlokRenkleri lerp(double t) => KayitBlokRenkleri.lerp(begin!, end!, t);
-}
-
-/// Logonun dört bloğunu çizer (viewBox 100). [rozet] ise bloklar daireye
-/// kesilir (avatar). Yollar tasarımdaki SVG'lerle birebirdir.
-class KayitLogoBoyaci extends CustomPainter {
-  const KayitLogoBoyaci({required this.renkler, this.rozet = false});
-
-  final KayitBlokRenkleri renkler;
-  final bool rozet;
-
-  static const double _kutu = 100;
-
-  /// Tasarımdaki SVG yolunu çizer. Yalnızca mutlak `M`, `H`, `V`, `Q` ve
-  /// `Z` komutları kullanılır (Kayit-*.dc.html).
-  static Path _svg(String d) {
-    final parcalar = d.split(' ');
-    final yol = Path();
-    var x = 0.0;
-    var y = 0.0;
-    var i = 0;
-    double sayi() => double.parse(parcalar[i++]);
-    while (i < parcalar.length) {
-      final komut = parcalar[i];
-      final harf = komut[0];
-      final ilk = komut.length > 1 ? double.parse(komut.substring(1)) : null;
-      i++;
-      double ilkSayi() => ilk ?? sayi();
-      switch (harf) {
-        case 'M':
-          x = ilkSayi();
-          y = sayi();
-          yol.moveTo(x, y);
-        case 'H':
-          x = ilkSayi();
-          yol.lineTo(x, y);
-        case 'V':
-          y = ilkSayi();
-          yol.lineTo(x, y);
-        case 'Q':
-          final kx = ilkSayi();
-          final ky = sayi();
-          x = sayi();
-          y = sayi();
-          yol.quadraticBezierTo(kx, ky, x, y);
-        case 'Z':
-          yol.close();
-      }
-    }
-    return yol;
-  }
-
-  // Tam logo: sol üst, sağ üst, sağ alt, L.
-  static final List<Path> _tam = [
-    _svg(
-      'M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z',
-    ),
-    _svg(
-      'M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z',
-    ),
-    _svg(
-      'M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z',
-    ),
-    _svg(
-      'M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 '
-      'Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z',
-    ),
-  ];
-
-  // Rozet: bloklar kenara taşar, daireyle kesilir (avatar).
-  static final List<Path> _rozet = [
-    _svg('M0 0 H40 V26 Q40 32 34 32 H0 Z'),
-    _svg('M52 0 H100 V32 H58 Q52 32 52 26 Z'),
-    _svg('M60 44 H100 V64 H64 Q52 64 52 52 Q52 44 60 44 Z'),
-    _svg('M0 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H100 V100 H0 Z'),
-  ];
-
-  static final Path _daire = Path()
-    ..addOval(Rect.fromCircle(center: const Offset(50, 50), radius: 48));
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final olcek = size.shortestSide / _kutu;
-    canvas
-      ..save()
-      ..translate(
-        (size.width - _kutu * olcek) / 2,
-        (size.height - _kutu * olcek) / 2,
-      )
-      ..scale(olcek);
-    if (rozet) canvas.clipPath(_daire);
-    final yollar = rozet ? _rozet : _tam;
-    final liste = [renkler.mango, renkler.nar, renkler.turkuaz, renkler.l];
-    for (var i = 0; i < yollar.length; i++) {
-      canvas.drawPath(yollar[i], Paint()..color = liste[i]);
-    }
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(KayitLogoBoyaci eski) =>
-      eski.renkler != renkler || eski.rozet != rozet;
-}
-
-/// Logonun dört bloğu; görseldir, ekran okuyucu atlar (anlamı yanındaki
-/// metin taşır).
-class KayitLogosu extends StatelessWidget {
-  const KayitLogosu({
-    super.key,
-    required this.boyut,
-    required this.renkler,
-    this.rozet = false,
-  });
-
-  final double boyut;
-  final KayitBlokRenkleri renkler;
-  final bool rozet;
-
-  @override
-  Widget build(BuildContext context) {
-    return ExcludeSemantics(
-      child: CustomPaint(
-        size: Size.square(boyut),
-        painter: KayitLogoBoyaci(renkler: renkler, rozet: rozet),
-      ),
-    );
-  }
+  LogoRenkleri lerp(double t) => LogoRenkleri.lerp(begin!, end!, t);
 }
 
 /// Üstteki ilerleme göstergesi: logonun dört bloğu ve "Adım N / 4".
@@ -219,19 +48,22 @@ class KayitIlerlemesi extends StatelessWidget {
     final r = context.renkler;
     final metinler = AppLocalizations.of(context);
     final hareketsiz = MediaQuery.disableAnimationsOf(context);
-    final hedef = KayitBlokRenkleri.ilerleme(r, doluSayisi: adim);
+    final hedef = kayitIlerlemeRenkleri(r, doluSayisi: adim);
     return Semantics(
       container: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TweenAnimationBuilder<KayitBlokRenkleri>(
-            tween: _BlokRenkTween(end: hedef),
-            duration: hareketsiz ? Duration.zero : TayfamMotion.uzun,
-            curve: TayfamMotion.egri,
-            builder: (context, renkler, _) => KayitLogosu(
-              boyut: TayfamSizes.kayitIlerlemeLogosu,
-              renkler: renkler,
+          // Logo burada süstür; anlamı yanındaki "Adım N / 4" taşır.
+          ExcludeSemantics(
+            child: TweenAnimationBuilder<LogoRenkleri>(
+              tween: _BlokRenkTween(end: hedef),
+              duration: hareketsiz ? Duration.zero : TayfamMotion.uzun,
+              curve: TayfamMotion.egri,
+              builder: (context, renkler, _) => TayfamLogo(
+                boyut: TayfamSizes.kayitIlerlemeLogosu,
+                renkler: renkler,
+              ),
             ),
           ),
           const SizedBox(width: TayfamSpacing.s8),
@@ -256,15 +88,13 @@ class TayfamKonusuyor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final r = context.renkler;
     final metinler = AppLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        KayitLogosu(
-          boyut: TayfamSizes.tayfamAvatari,
-          rozet: true,
-          renkler: KayitBlokRenkleri.tam(r, l: r.marka),
+        // Avatar süstür; balonlar "Tayfam yazdı" diye okunur.
+        const ExcludeSemantics(
+          child: TayfamLogo.rozet(boyut: TayfamSizes.tayfamAvatari),
         ),
         const SizedBox(width: TayfamSpacing.s8),
         Expanded(
