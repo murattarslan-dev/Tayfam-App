@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/birebir/application/konusma_sessizlik_notifier.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
@@ -69,6 +70,8 @@ Future<void> _ac(
   themeMode: tema,
   tayfa: birebirEkranOverridelari(
     tasima,
+    e2e: true,
+    cihaz: const E2eCihazBilgisi(durum: E2eCihazDurumu.hazirlaniyor),
     metinler: const {mesajId1: 'Merhaba'},
   ),
   overrides: [_saat],
