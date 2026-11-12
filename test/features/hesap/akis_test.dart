@@ -43,7 +43,11 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(arbMetni('hesap_google_ile_devam')));
+    // Küçük ekranda (360×640) giriş düğmesi kaydırınca görünür.
+    final google = find.text(arbMetni('hesap_google_ile_devam'));
+    await tester.ensureVisible(google);
+    await tester.pumpAndSettle();
+    await tester.tap(google);
     await tester.pumpAndSettle();
     expect(find.byType(KayitEkrani), findsOneWidget);
 

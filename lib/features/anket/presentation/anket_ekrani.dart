@@ -120,8 +120,10 @@ class AnketEkrani extends ConsumerWidget {
                     AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
                   ] else
                     Center(
-                      child: CircularProgressIndicator(
-                        semanticsLabel: m.anket_yukleniyor,
+                      child: TayfamYukleniyor(
+                        boyut: TayfamSizes.yukleniyorTamEkran,
+                        etiket: m.anket_yukleniyor,
+                        gecikmeli: true,
                       ),
                     ),
                 ],

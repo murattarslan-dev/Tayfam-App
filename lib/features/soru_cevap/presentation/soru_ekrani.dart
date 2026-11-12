@@ -113,8 +113,10 @@ class SoruEkrani extends ConsumerWidget {
                     _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
                   ] else
                     Center(
-                      child: CircularProgressIndicator(
-                        semanticsLabel: metinler.soru_yukleniyor,
+                      child: TayfamYukleniyor(
+                        boyut: TayfamSizes.yukleniyorTamEkran,
+                        etiket: metinler.soru_yukleniyor,
+                        gecikmeli: true,
                       ),
                     ),
                 ],
@@ -264,8 +266,10 @@ class _Cevaplar extends ConsumerWidget {
           _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
         ] else if (liste == null)
           Center(
-            child: CircularProgressIndicator(
-              semanticsLabel: metinler.soru_cevap_yukleniyor,
+            child: TayfamYukleniyor(
+              boyut: TayfamSizes.yukleniyorTamEkran,
+              etiket: metinler.soru_cevap_yukleniyor,
+              gecikmeli: true,
             ),
           )
         else if (liste.ogeler.isEmpty)
@@ -292,9 +296,7 @@ class _Cevaplar extends ConsumerWidget {
             _TekrarDene(onPressed: () => _dahaFazla(ref)),
           ] else if (liste.dahaYukleniyor)
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: metinler.soru_cevap_yukleniyor,
-              ),
+              child: TayfamYukleniyor(etiket: metinler.soru_cevap_yukleniyor),
             )
           else if (liste.dahaVar)
             Center(

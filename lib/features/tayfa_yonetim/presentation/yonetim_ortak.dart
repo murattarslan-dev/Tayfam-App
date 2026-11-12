@@ -129,8 +129,10 @@ class ListeDurumu<T> extends StatelessWidget {
       );
     }
     return Center(
-      child: CircularProgressIndicator(
-        semanticsLabel: AppLocalizations.of(context).yonetim_yukleniyor,
+      child: TayfamYukleniyor(
+        boyut: TayfamSizes.yukleniyorTamEkran,
+        etiket: AppLocalizations.of(context).yonetim_yukleniyor,
+        gecikmeli: true,
       ),
     );
   }
@@ -167,7 +169,7 @@ class SayfaSonu extends StatelessWidget {
     }
     if (yukleniyor) {
       return Center(
-        child: CircularProgressIndicator(semanticsLabel: m.yonetim_yukleniyor),
+        child: TayfamYukleniyor(etiket: m.yonetim_yukleniyor, gecikmeli: true),
       );
     }
     if (!dahaVar) return const SizedBox.shrink();

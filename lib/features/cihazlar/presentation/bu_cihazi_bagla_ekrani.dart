@@ -30,9 +30,7 @@ class BuCihaziBaglaEkrani extends ConsumerWidget {
         ...switch (durum) {
           QrHazirlaniyor() => [
             Center(
-              child: CircularProgressIndicator(
-                semanticsLabel: metinler.cihaz_qr_hazirlaniyor,
-              ),
+              child: TayfamYukleniyor(etiket: metinler.cihaz_qr_hazirlaniyor),
             ),
           ],
           QrGosteriliyor(:final metin, :final kalan) => [

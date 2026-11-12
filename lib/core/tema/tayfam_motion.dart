@@ -58,4 +58,30 @@ abstract final class TayfamMotion {
 
   /// Yazının eğrisi: CSS `ease-out`.
   static const Curve acilisYaziEgrisi = Curves.easeOut;
+
+  // --- Yükleniyor animasyonu "Dalga" (Design: Yükleniyor, A; issue #102) -
+  //
+  // Bloklar saat yönünde (mango → nar → turkuaz → L) sırayla küçülüp solar
+  // ve geri gelir; sonsuz döngü. Durum göstergesidir (ADR-0004 Notlar 3'teki
+  // nabız gibi); "hareketi azalt" açıkken durur.
+
+  /// Bir dalga turu.
+  static const Duration yukleniyorDongu = Duration(milliseconds: 1400);
+
+  /// Ardışık iki bloğun başlangıcı arasındaki fark.
+  static const Duration yukleniyorAralik = Duration(milliseconds: 175);
+
+  /// Turun bu kesrinde blok en küçük ve en soluktur (CSS `20%`).
+  static const double yukleniyorTepe = .2;
+
+  /// Turun bu kesrinde blok yeniden normaldir (CSS `40%`); turun geri
+  /// kalanında durağandır.
+  static const double yukleniyorBitis = .4;
+
+  /// Dalganın eğrisi: CSS `ease-in-out` (her ara adımda).
+  static const Curve yukleniyorEgrisi = Curves.easeInOut;
+
+  /// Bu süreden kısa beklemelerde yükleniyor animasyonu gösterilmez
+  /// (titreme olmasın).
+  static const Duration yukleniyorGecikmesi = Duration(seconds: 1);
 }

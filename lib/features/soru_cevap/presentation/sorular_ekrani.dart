@@ -124,8 +124,10 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
               _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
             ] else if (liste == null)
               Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: metinler.soru_yukleniyor,
+                child: TayfamYukleniyor(
+                  boyut: TayfamSizes.yukleniyorTamEkran,
+                  etiket: metinler.soru_yukleniyor,
+                  gecikmeli: true,
                 ),
               )
             else if (liste.ogeler.isEmpty)
@@ -149,9 +151,7 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
                 _TekrarDene(onPressed: () => _dahaFazla(suzgec)),
               ] else if (liste.dahaYukleniyor)
                 Center(
-                  child: CircularProgressIndicator(
-                    semanticsLabel: metinler.soru_yukleniyor,
-                  ),
+                  child: TayfamYukleniyor(etiket: metinler.soru_yukleniyor),
                 )
               else if (liste.dahaVar)
                 Center(
