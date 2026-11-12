@@ -61,9 +61,14 @@ abstract interface class GoogleKimlikSaglayici {
 
 /// `google_sign_in` ile Google girişi (Android; iOS kapsam dışı, ADR-0012).
 ///
-/// `google_sign_in` nonce'u yalnızca `initialize` sırasında aldığı için
-/// uygulama süreci başına bir nonce üretilir; Google'daki çıkış her
-/// girişten önce yapılır ki hesap seçici açılsın.
+/// Her giriş denemesi (yeniden giriş dahil) `Random.secure()` ile yeni bir
+/// nonce üretir (ADR-0012 §2, istemci ADR-0023 §2): `google_sign_in` nonce'u
+/// yalnızca `initialize` sırasında aldığı için `initialize` her denemede o
+/// denemenin nonce'uyla yeniden çağrılır. Android uygulamasında
+/// (`google_sign_in_android`) `init` yalnızca parametreleri saklar; olay
+/// akışı olmadığı için tekrar çağrı abonelik çoğaltmaz. Google'daki çıkış her
+/// girişten sonra yapılır ki hesap seçici yeniden açılsın. Nonce loglanmaz,
+/// saklanmaz.
 final class GoogleSignInSaglayici implements GoogleKimlikSaglayici {
   GoogleSignInSaglayici({GoogleSignIn? google, String Function()? nonce})
     : _google = google ?? GoogleSignIn.instance,
@@ -72,26 +77,15 @@ final class GoogleSignInSaglayici implements GoogleKimlikSaglayici {
   final GoogleSignIn _google;
   final String Function() _nonceUret;
 
-  Future<String>? _hazirlik;
-
-  Future<String> _hazirla() => _hazirlik ??= _baslat();
-
-  Future<String> _baslat() async {
-    final nonce = _nonceUret();
-    await _google.initialize(
-      serverClientId: googleSunucuIstemciKimligi,
-      nonce: nonce,
-    );
-    return nonce;
-  }
-
   @override
   Future<GoogleKimligi?> girisYap() async {
-    final String nonce;
+    final nonce = _nonceUret();
     try {
-      nonce = await _hazirla();
+      await _google.initialize(
+        serverClientId: googleSunucuIstemciKimligi,
+        nonce: nonce,
+      );
     } on GoogleSignInException {
-      _hazirlik = null;
       throw const GoogleGirisHatasi();
     }
     if (!_google.supportsAuthenticate()) {
@@ -118,8 +112,8 @@ final class GoogleSignInSaglayici implements GoogleKimlikSaglayici {
   }
 }
 
-/// Uygulamanın Google kimlik sağlayıcısı (kalıcı: nonce süreç boyunca
-/// aynıdır).
+/// Uygulamanın Google kimlik sağlayıcısı (kalıcı; nonce her denemede
+/// yenidir).
 final googleKimlikSaglayiciProvider = Provider<GoogleKimlikSaglayici>(
   (ref) => GoogleSignInSaglayici(),
   name: 'googleKimlikSaglayiciProvider',

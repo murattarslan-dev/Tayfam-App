@@ -44,8 +44,11 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   `serverClientId` olarak API'nin kabul ettiği web OAuth istemci kimliği
   verilir (public bir değerdir, kesin kural 6); ID token'ın `aud`'u budur.
 - **Nonce:** `Random.secure()` ile 32 bayt, base64url. `google_sign_in`
-  nonce'u yalnızca `initialize` sırasında aldığı için uygulama süreci başına
-  bir nonce üretilir; nonce loglanmaz, diske yazılmaz. Sunucunun ürettiği
+  nonce'u yalnızca `initialize` sırasında aldığı için her giriş denemesinde
+  (yeniden giriş dahil) yeni bir nonce üretilir ve `initialize` onunla
+  yeniden çağrılır (2026-11-12, [ADR-0023](0023-uygulama-butunlugu-istemci.md)
+  Notlar; önceden süreç başına tek nonce vardı); nonce loglanmaz, diske
+  yazılmaz. Sunucunun ürettiği
   tek kullanımlık nonce Tayfam-Api ADR-0011 madde 15'te açık; gelince
   istemci ona geçer.
 - ID token yalnızca `POST /v1/auth/sign-in` gövdesine gider; saklanmaz,

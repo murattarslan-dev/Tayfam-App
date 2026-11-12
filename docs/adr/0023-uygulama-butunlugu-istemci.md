@@ -1,6 +1,6 @@
 # ADR-0023: Uygulama bütünlüğü (istemci)
 
-- **Durum:** Önerildi
+- **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-12
 - **Karar veren:** Murat Tarslan
 - **İlgili:** [ADR-0005](0005-api-istemcisi.md) (ApiClient, SessionStore, tek uçuşta yenileme), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0010](0010-signal-kutuphanesi.md) (Kotlin köprüsü düzeni), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0012](0012-giris-ve-kayit-akisi.md) (Google girişi, nonce); Tayfam-Api ADR-0022 ve sözleşmedeki `integrity_token`, `integrity_check_after`, `integrity-required` (62feb2e); issue #80
@@ -54,7 +54,10 @@ refresh:  base64url(SHA-256("tayfam-integrity/v1/refresh\n" + SHA-256(refresh_to
   bayttır** (hex ya da base64 değil). Metinler UTF-8.
 - Android'de `requestHash` olarak gider. Nonce, Google girişinde
   `google_sign_in`'e verilen ve `SignInRequest.nonce`'ta giden değerdir
-  (ADR-0012 §2).
+  (ADR-0012 §2). Nonce **her giriş denemesinde** (yeniden giriş dahil)
+  `Random.secure()` ile yeniden üretilir; böylece her girişin bağlama
+  değeri farklıdır (2026-11-12 düzeltmesi: önceden süreç başına tek nonce
+  vardı, bkz. Notlar).
 - **Yenileme token'ı Google'a gitmez**, Kotlin köprüsüne de gitmez: köprüye
   yalnızca özetin özeti verilir. Token, yenileme token'ı, nonce ve istek
   özeti hiçbir yere loglanmaz (kesin kural 3).
@@ -188,3 +191,18 @@ iki oturum bayrağı" listesine eklenen üçüncü değerdir; gerekçe:
   denetim ya da her açılışta Play çağrısı.
 - **`integrity-required`'da oturumu kapatmak:** kullanıcı muaf uçlara
   (hesap silme, veri talebi) ulaşamaz; Tayfam-Api ADR-0022 §6'ya aykırı.
+
+## Notlar
+
+- **2026-11-12 (platform sahibi, sohbette):** ADR §5 ve §6 dahil kabul
+  edildi. Aynı PR'da (#121) Google girişindeki nonce düzeltildi: önceden
+  `google_sign_in` yalnızca `initialize` sırasında nonce aldığı için süreç
+  başına tek nonce üretiliyordu; aynı süreçteki ikinci giriş (hesap silme
+  ya da veri dışa aktarmadaki yeniden giriş) aynı nonce'u ve aynı bütünlük
+  bağlamasını kullanıyordu. Artık her denemede yeni nonce üretilir ve
+  `initialize` o nonce'la yeniden çağrılır. `google_sign_in` belgesi
+  `initialize`'ın bir kez çağrılmasını ister; Android uygulaması
+  (`google_sign_in_android` 7.2.x) `init`'te yalnızca parametreleri saklar
+  ve olay akışı yoktur, bu yüzden tekrar çağrı güvenlidir. Paket
+  yükseltmelerinde bu varsayım yeniden doğrulanır; iOS girişinde (#122 ile
+  birlikte) ayrıca bakılır.
