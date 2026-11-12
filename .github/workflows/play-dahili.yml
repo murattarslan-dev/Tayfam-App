@@ -175,8 +175,10 @@ jobs:
             --dart-define=TAYFAM_SURUM="$SURUM_ADI+$SURUM_KODU"
       - name: İmzalı .apk (cihaza doğrudan kurulum)
         # Play dahili test kanalı hazır olana kadar cihaza elle kurmak için
-        # (platform sahibi, 2026-11-12): aynı anahtar, aynı prod ayarları,
-        # yalnızca arm64-v8a ve armeabi-v7a; ABI başına ayrı ve küçük dosya.
+        # (platform sahibi, 2026-11-12): aynı anahtar, aynı prod ayarları.
+        # Yalnızca arm64-v8a (güncel Android telefonların hepsi). --split-per-abi
+        # kullanılamaz: android/app'teki ndk.abiFilters (libsignal, ADR-0010)
+        # ile çakışır; Flutter kodu yalnızca arm64 derlenir.
         env:
           ISTEMCI: ${{ steps.istemci.outputs.kimlik }}
           SURUM_ADI: ${{ steps.surum.outputs.surum_adi }}
@@ -186,8 +188,8 @@ jobs:
           TAYFAM_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_DEV_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          flutter build apk --release --split-per-abi \
-            --target-platform android-arm64,android-arm \
+          flutter build apk --release \
+            --target-platform android-arm64 \
             --build-name="$SURUM_ADI" \
             --build-number="$SURUM_KODU" \
             --dart-define=TAYFAM_API="$TAYFAM_API" \
@@ -241,9 +243,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: tayfam-dahili-${{ steps.surum.outputs.surum_kodu }}-apk
-          path: |
-            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 14
 
