@@ -129,7 +129,7 @@ void main() {
     expect(boyacilar[0].renkler.l, TayfamLogoRenkleri.lMorZemin);
     expect(
       boyacilar[1].renkler,
-      LogoRenkleri.tek(TayfamLogoRenkleri.lMorZemin),
+      const LogoRenkleri.tek(TayfamLogoRenkleri.lMorZemin),
     );
   });
 
