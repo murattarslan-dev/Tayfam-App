@@ -166,18 +166,12 @@ class _KayitHosGeldinEkraniState extends ConsumerState<KayitHosGeldinEkrani> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Semantics(
-                            image: true,
-                            label: m.bilesen_logo_etiketi,
-                            child: KayitLogosu(
-                              boyut: davetle
-                                  ? TayfamSizes.hosGeldinDavetLogosu
-                                  : TayfamSizes.hosGeldinLogosu,
-                              renkler: KayitBlokRenkleri.tam(
-                                r,
-                                l: r.markaYuzeyUstu,
-                              ),
-                            ),
+                          // Mor zeminde L parçası #FAF8FF (TayfamLogo).
+                          TayfamLogo(
+                            boyut: davetle
+                                ? TayfamSizes.hosGeldinDavetLogosu
+                                : TayfamSizes.hosGeldinLogosu,
+                            zemin: r.markaYuzey,
                           ),
                           const SizedBox(height: TayfamSpacing.s32),
                           Semantics(
@@ -196,9 +190,9 @@ class _KayitHosGeldinEkraniState extends ConsumerState<KayitHosGeldinEkrani> {
                               child: Text(aciklama, style: govdeStili),
                             )
                           else
-                            CircularProgressIndicator(
-                              color: r.markaYuzeyUstu,
-                              semanticsLabel: m.hesap_kayit_davet_yukleniyor,
+                            TayfamYukleniyor(
+                              zemin: r.markaYuzey,
+                              etiket: m.hesap_kayit_davet_yukleniyor,
                             ),
                           if (sonuc != null) ...[
                             const SizedBox(height: TayfamSpacing.s24),

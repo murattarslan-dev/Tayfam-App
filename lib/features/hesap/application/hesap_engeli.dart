@@ -23,6 +23,15 @@ class HesapEngeliNotifier extends Notifier<HesapEngeli?> {
 
   /// Engeli kaydeder.
   void ayarla(HesapEngeli engel) => state = engel;
+
+  /// Yaş engeli bilgi ekranı kapatıldı: yerel engel ve gösterilen
+  /// koşullar adresi silinir; yönlendirici giriş ekranına döner (ADR-0012
+  /// Notlar, 2026-11-12). Oturum `age-blocked` anında zaten kapanmıştır;
+  /// hesabın kapalı olduğuna yine sunucu karar verir.
+  void temizle() {
+    ref.read(yasEngeliKosullariProvider.notifier).temizle();
+    state = null;
+  }
 }
 
 /// Uygulama süreci boyunca yaşayan hesap engeli (kalıcı).
@@ -40,6 +49,9 @@ class YasEngeliKosullariNotifier extends Notifier<Uri?> {
 
   /// Gösterilen sürümün adresini kaydeder.
   void ayarla(Uri adres) => state = adres;
+
+  /// Adresi siler.
+  void temizle() => state = null;
 }
 
 /// `age-blocked` ekranındaki kullanım koşulları adresi (kalıcı, bellek).

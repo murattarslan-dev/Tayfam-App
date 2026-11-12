@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/tema/tema.dart';
@@ -15,13 +12,13 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///
 /// Oturum sunucuda kapanmıştır ve yerel kayıt silinmiştir; yeniden deneme
 /// yolu yoktur. "Kullanım Koşulları" bağlantısı kayıtta gösterilen
-/// sürümün sayfasını açar; sürüm bilinmiyorsa gösterilmez. "Kapat"
-/// uygulamayı kapatır.
+/// sürümün sayfasını açar; sürüm bilinmiyorsa gösterilmez.
+///
+/// "Kapat" uygulamayı kapatmaz (platform sahibi, 2026-11-12): yerel engel
+/// durumu temizlenir ve yönlendirici giriş ekranına döner; iki platformda
+/// da aynıdır.
 class YasEngeliEkrani extends ConsumerWidget {
-  const YasEngeliEkrani({super.key, this.kapat = _uygulamayiKapat});
-
-  /// "Kapat"ın yaptığı; testlerde sahtesi verilir.
-  final VoidCallback kapat;
+  const YasEngeliEkrani({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -95,7 +92,8 @@ class YasEngeliEkrani extends ConsumerWidget {
                   ),
                   child: CerceveliEylem(
                     etiket: m.hesap_kayit_engel_kapat,
-                    onPressed: kapat,
+                    onPressed: () =>
+                        ref.read(hesapEngeliProvider.notifier).temizle(),
                   ),
                 ),
               ],
@@ -106,5 +104,3 @@ class YasEngeliEkrani extends ConsumerWidget {
     );
   }
 }
-
-void _uygulamayiKapat() => unawaited(SystemNavigator.pop());
