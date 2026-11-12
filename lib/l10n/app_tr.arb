@@ -883,11 +883,11 @@
   "@tayfa_davet_kapat": {
     "description": "Davet kısayolu kartını kapatan ikon düğmesinin ekran okuyucu etiketi ve ipucu."
   },
-  "katilim_baslik": "Tayfaya kodla katıl",
+  "katilim_baslik": "Tayfa koduyla katıl",
   "@katilim_baslik": {
     "description": "Kodla katılma için alttan açılan sayfanın başlığı."
   },
-  "katilim_aciklama": "Tayfanın yöneticisinden aldığın kodu yaz.",
+  "katilim_aciklama": "Kodu tayfanın yöneticisinden alabilirsin. Davet linkin varsa ona dokunman yeterli.",
   "@katilim_aciklama": {
     "description": "Kodla katılma sayfasında başlığın altındaki açıklama."
   },
@@ -907,13 +907,39 @@
   "@katilim_gonderildi_baslik": {
     "description": "Onaylı katılımlı bir tayfaya kodla katılma isteği gönderilince sayfada görünen başlık."
   },
-  "katilim_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın. İsteğini tayfa panelinde \"Onay bekliyor\" olarak görebilirsin.",
+  "katilim_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca haber vereceğiz. O zamana kadar isteğin tayfa listende \"Onay bekliyor\" olarak durur; istersen oradan geri çekebilirsin.",
   "@katilim_gonderildi_aciklama": {
-    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama; tayfanın adı bilinmiyorsa."
   },
   "katilim_tamam": "Tamam",
   "@katilim_tamam": {
     "description": "Katılma isteği gönderildikten sonra sayfayı kapatan düğme."
+  },
+  "katilim_kod_yardim": "Büyük ya da küçük harf fark etmez.",
+  "@katilim_kod_yardim": {
+    "description": "Kodla katılma sayfasında kod alanının altındaki yardım metni."
+  },
+  "katilim_kod_gecersiz": "Bu kodla katılamadık. Kodu kontrol et ya da yöneticiden yeniden iste.",
+  "@katilim_kod_gecersiz": {
+    "description": "Kodla katılma sayfasında kod geçersizse (invalid-join-code) alanın altında görünen tek ve genel hata; kodun yanlış, yenilenmiş ya da banlı olunan tayfanın olduğu ayırt edilmez."
+  },
+  "katilim_tekrar_dene": "Tekrar dene",
+  "@katilim_tekrar_dene": {
+    "description": "Kodla katılma sayfasında bir hatadan sonra birincil düğmenin etiketi."
+  },
+  "katilim_gonderildi_tayfa": "{tayfa} tayfasının yöneticisi onaylayınca haber vereceğiz. O zamana kadar isteğin tayfa listende \"Onay bekliyor\" olarak durur; istersen oradan geri çekebilirsin.",
+  "@katilim_gonderildi_tayfa": {
+    "description": "Katılma isteği gönderildikten sonra başlığın altındaki açıklama; tayfanın adı biliniyorsa.",
+    "placeholders": {
+      "tayfa": {
+        "type": "String",
+        "example": "Klasik Otomobil Kulübü"
+      }
+    }
+  },
+  "katilim_baska_kod": "Başka bir kod gir",
+  "@katilim_baska_kod": {
+    "description": "Katılma isteği gönderildikten sonra kod alanına geri dönen düğme."
   },
   "olusturma_adim": "Adım {adim} / {toplam}",
   "@olusturma_adim": {
