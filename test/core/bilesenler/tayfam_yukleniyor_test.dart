@@ -208,9 +208,7 @@ void main() {
     kulp.dispose();
   });
 
-  testWidgets('gecikme dolmadan kaldırılırsa sorun yok', (
-    tester,
-  ) async {
+  testWidgets('gecikme dolmadan kaldırılırsa sorun yok', (tester) async {
     await bileseniAc(
       tester,
       const Center(child: TayfamYukleniyor(gecikmeli: true)),
