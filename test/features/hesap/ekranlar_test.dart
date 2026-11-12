@@ -19,7 +19,6 @@ final class _Kurulum {
   _Kurulum({
     Map<String, Object? Function()>? yanitlar,
     SahteGoogle? google,
-    this.googleAdi,
     this.engel,
   }) : tasima = SahteTasima(yanitlar),
        google = google ?? SahteGoogle(sonuc: ornekKimlik);
@@ -28,7 +27,6 @@ final class _Kurulum {
   final SahteGoogle google;
   final SahteOturum oturum = SahteOturum();
   final SahteAcici acici = SahteAcici();
-  final String? googleAdi;
   final HesapEngeli? engel;
 
   List<Override> get overrides => [
@@ -38,7 +36,7 @@ final class _Kurulum {
       google: google,
       acici: acici,
     ),
-    googleAdiProvider.overrideWith(() => _SabitAd(googleAdi)),
+    googleAdiProvider.overrideWith(() => _SabitAd(null)),
     if (engel case final engel?)
       hesapEngeliProvider.overrideWith(() => _SabitEngel(engel)),
   ];
