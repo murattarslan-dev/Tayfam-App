@@ -58,7 +58,7 @@ void main() {
       expect(sirali.map((d) => d.id), [duyuruId2, duyuruId3, duyuruId1]);
     });
 
-    test('ana sayfada bütün sabitlenenler ve son üç duyuru', () {
+    test('ana sayfada bütün sabitlenenler ve son iki duyuru', () {
       final liste = duyuruSirala([
         _duyuru(duyuruId1, sabit: true, zaman: '2026-11-01T10:00:00Z'),
         _duyuru(duyuruId2, sabit: true, zaman: '2026-11-02T10:00:00Z'),
@@ -75,7 +75,6 @@ void main() {
         duyuruId1,
         '1a2b3c4d-0000-4000-8000-000000000006',
         duyuruId5,
-        duyuruId4,
       ]);
     });
   });

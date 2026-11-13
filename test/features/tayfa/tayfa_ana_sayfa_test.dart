@@ -428,7 +428,7 @@ void main() {
             rol: 'admin',
             kod: sahteKod,
             silinme: '2026-12-01T09:00:00Z',
-            uyeSayisi: 1250,
+            uyeSayisi: 1,
           ),
         ),
       );
