@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/bilesenler/odak_cercevesi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 
 /// Hesap durum ekranlarının ortak düzeni (tasarım: 20-hesap-durumlari;
