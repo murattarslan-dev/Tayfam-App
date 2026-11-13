@@ -84,7 +84,7 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
       children: [
         if (ref.watch(e2eEtkinProvider)) ...const [
           E2eCihazUyarisi(),
-          TekCihazBilgiKarti(),
+          TekCihazBilgisi(),
           EskiArsivBilgisi(),
         ],
         if (istekSayisi > 0) _IstekKarti(sayi: istekSayisi),

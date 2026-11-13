@@ -84,4 +84,9 @@ abstract final class TayfamMotion {
   /// Bu süreden kısa beklemelerde yükleniyor animasyonu gösterilmez
   /// (titreme olmasın).
   static const Duration yukleniyorGecikmesi = Duration(seconds: 1);
+
+  /// Cihaz bağlama tarayıcısındaki tarama çizgisinin bir yönlü geçişi
+  /// (tasarım: Cihaz-Tara). Durum göstergesidir; "hareketi azalt" açıkken
+  /// çizgi çerçevenin ortasında durur.
+  static const Duration taramaCizgisi = Duration(milliseconds: 1800);
 }

@@ -27,6 +27,16 @@ abstract final class TayfamRadii {
   /// Sohbet balonunun gönderen tarafındaki köşesi.
   static const double balonKuyruk = 6;
 
+  /// "Bu cihazı bağla" ekranındaki QR kartı (28 px; tasarım: Cihaz-QR).
+  static const double qrKarti = 28;
+
+  /// Kamera izni ekranındaki büyük ikon kutusu (30 px; tasarım:
+  /// Cihaz-Kamera-Izni).
+  static const double sonucKutusu = 30;
+
+  /// Tarayıcı çerçevesinin köşe kavisi (22 px; tasarım: Cihaz-Tara).
+  static const double taramaKosesi = 22;
+
   static const BorderRadius hapKoseleri = BorderRadius.all(
     Radius.circular(hap),
   );
@@ -41,6 +51,12 @@ abstract final class TayfamRadii {
   );
   static const BorderRadius secimKoseleri = BorderRadius.all(
     Radius.circular(secim),
+  );
+  static const BorderRadius qrKartiKoseleri = BorderRadius.all(
+    Radius.circular(qrKarti),
+  );
+  static const BorderRadius sonucKutusuKoseleri = BorderRadius.all(
+    Radius.circular(sonucKutusu),
   );
 
   /// Yalnızca alt köşeleri [ustPanel] kadar yuvarlak (giriş ekranının mor

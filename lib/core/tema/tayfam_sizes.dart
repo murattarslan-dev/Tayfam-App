@@ -264,4 +264,27 @@ abstract final class TayfamSizes {
 
   /// Tür kutusundaki seçili işaretinin dairesi (24 px).
   static const double seciliIsareti = 24;
+
+  // --- 2026-11-13 cihaz bağlama (Cihaz-*) -------------------------------
+
+  /// "Bu cihazı bağla" kartındaki QR'ın kenarı (220 px).
+  static const double qrKodu = 220;
+
+  /// Sonuç ve izin ekranlarındaki büyük ikon dairesi ya da kutusu (104 px).
+  static const double sonucIkonu = 104;
+
+  /// [sonucIkonu] içindeki ikon (52 px).
+  static const double sonucIkonuIcerik = 52;
+
+  /// Tarayıcıdaki köşeli çerçevenin en fazla kenarı (260 px).
+  static const double taramaCercevesi = 260;
+
+  /// Tarayıcı çerçevesinin bir köşe parçasının kenarı (44 px).
+  static const double taramaKosesi = 44;
+
+  /// Tarayıcı çerçevesinin çizgi kalınlığı (5 px).
+  static const double taramaKenari = 5;
+
+  /// Tarayıcıdaki tarama çizgisinin kalınlığı (3 px).
+  static const double taramaCizgisi = 3;
 }
