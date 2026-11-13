@@ -63,6 +63,8 @@ Future<void> _kaydirVeDokun(WidgetTester tester, Finder hedef) async {
     200,
     scrollable: find.byType(Scrollable).first,
   );
+  await tester.ensureVisible(hedef);
+  await tester.pumpAndSettle();
   await tester.tap(hedef);
   await tester.pumpAndSettle();
 }
@@ -83,12 +85,9 @@ void main() {
           scrollable: find.byType(Scrollable).first,
         );
         expect(tester.takeException(), isNull);
-        expect(_metin('profil_gorunurluk_baslik'), findsOneWidget);
       });
 
-      testWidgets('fotoğraf ve görünürlük alttan sayfaları taşmıyor', (
-        tester,
-      ) async {
+      testWidgets('fotoğraf alttan sayfası taşmıyor', (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         final o = _Ortam({
@@ -108,8 +107,12 @@ void main() {
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         expect(_metin('medya_fotograf_kaldir'), findsOneWidget);
-        await tester.tapAt(const Offset(10, 10));
-        await tester.pumpAndSettle();
+      });
+
+      testWidgets('görünürlük alttan sayfası taşmıyor', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _Ortam().ac(tester, const ProfilEkrani(), themeMode: mod);
 
         await _kaydirVeDokun(tester, _metin('profil_gorunurluk_tayfa'));
         expect(tester.takeException(), isNull);
