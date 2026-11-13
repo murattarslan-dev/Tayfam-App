@@ -147,7 +147,7 @@ class _TaramaGorunumu extends StatelessWidget {
               body: Stack(
                 fit: StackFit.expand,
                 children: [
-                  if (kamera != null) kamera,
+                  ?kamera,
                   // Çerçevenin dışını karartır (tasarımdaki radyal geçiş).
                   IgnorePointer(
                     child: DecoratedBox(
