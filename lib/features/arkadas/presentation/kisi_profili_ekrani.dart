@@ -91,6 +91,21 @@ class KisiProfiliEkrani extends ConsumerWidget {
                     )
                   else
                     const GizliGecmisKutusu(),
+                  // Her zaman görünen şikâyet bağlantısı (2026-11-13,
+                  // platform sahibi; issue #144). ⋯ menüsündeki satırla
+                  // aynı koşul ve aynı akış.
+                  if (!p.self && p.mutualTayfas.isNotEmpty) ...[
+                    const SizedBox(height: TayfamSpacing.s16),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: BaglantiEylemi(
+                        etiket: m.arkadas_sikayet_baglanti,
+                        ikon: Icons.flag_outlined,
+                        renk: context.renkler.narMetin,
+                        onPressed: () => unawaited(_sikayetEt(context, p)),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
