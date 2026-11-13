@@ -27,3 +27,7 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 | Duyuru, anket, soru-cevap | [`15-duyuru-anket-soru-cevap/`](15-duyuru-anket-soru-cevap/README.md) | 14 |
 | Karşılama ve davet linki | [`16-karsilama-ve-davet/`](16-karsilama-ve-davet/README.md) | 7 |
 | Şikâyet ve moderasyon | [`17-sikayet-ve-moderasyon/`](17-sikayet-ve-moderasyon/README.md) | 5 |
+| Hoş geldin tanıtımı | [`18-hosgeldin-tanitimi/`](18-hosgeldin-tanitimi/README.md) | 5 |
+| QR ile cihaz bağlama | [`19-cihaz-baglama/`](19-cihaz-baglama/README.md) | 7 |
+| Hesap durum ekranları | [`20-hesap-durumlari/`](20-hesap-durumlari/README.md) | 3 |
+| Listeler ve küçük ekranlar | [`21-listeler-ve-kucuk-ekranlar/`](21-listeler-ve-kucuk-ekranlar/README.md) | 8 |
