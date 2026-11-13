@@ -232,9 +232,7 @@ class _SatirIciCevap extends ConsumerWidget {
             Flexible(
               child: Text(
                 metin,
-                style: context.yazi.labelLarge?.copyWith(
-                  color: r.tintTealUstu,
-                ),
+                style: context.yazi.labelLarge?.copyWith(color: r.tintTealUstu),
               ),
             ),
           ],
