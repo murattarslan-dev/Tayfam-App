@@ -580,13 +580,9 @@ void main() {
         });
         await _detayiAc(tester, tasima, themeMode: tema, katilimcilar: true);
         final menu = find.byTooltip(arbMetni('etkinlik_duzeltme'));
-        await _gorunurYap(
-          tester,
-          find.text(arbMetni('etkinlik_duzeltme_bilgi')),
-        );
-        await tester.ensureVisible(menu);
-        await tester.pumpAndSettle();
         expect(find.text(arbMetni('etkinlik_duzeltme_bilgi')), findsOneWidget);
+        // Liste kartı büyük yazıda ekranın altında kalır; kaydırınca kurulur.
+        await _gorunurYap(tester, menu);
         // Kendi satırında (Mert) menü yok.
         expect(menu, findsOneWidget);
 
