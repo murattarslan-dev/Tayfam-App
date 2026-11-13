@@ -238,7 +238,7 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
   ayarlarının yeniden tasarımıyla gelir (PR'lar: tayfa menüsü ve paneli,
   ana sayfa, ayarlar).
   1. **Yeni renk token'ları:** `tintNar` (açık #FFE1E8, koyu #4A1A26) ve
-     `narMetin` (açık #B0123A, koyu #FF9FB4). Nar (#FF5C7A) beyaz ve tint
+     `narMetin` (açık #B0123A, koyu #FF9FB4). Nar (#FF3D68) beyaz ve tint
      zeminde metin için yetersizdir; yıkıcı eylem metni, "Banlı" etiketi
      ve nar rozet bu ikiliyle çizilir. Ölçülen kontrast: açık temada
      nar-metin beyazda 7.0:1, tint-nar'da 5.7:1; koyu temada #FF9FB4
