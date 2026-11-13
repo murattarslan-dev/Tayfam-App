@@ -812,6 +812,58 @@
   "@duyuru_form_kaydet": {
     "description": "Duyuru düzenleme formunda değişiklikleri kaydeden düğme."
   },
+  "duyuru_son_duyurular": "Son duyurular",
+  "@duyuru_son_duyurular": {
+    "description": "Duyurular listesinde sabitlenenlerden sonraki duyuruların bölüm başlığı."
+  },
+  "duyuru_bugun_saat": "Bugün {saat}",
+  "@duyuru_bugun_saat": {
+    "description": "Duyuru kartında bugün yayınlanan duyurunun zamanı, cihazın saatine göre (ör. 'Bugün 11:05').",
+    "placeholders": {
+      "saat": {
+        "type": "String",
+        "example": "11:05"
+      }
+    }
+  },
+  "duyuru_tarih_duzenlendi": "{tarih} · düzenlendi",
+  "@duyuru_tarih_duzenlendi": {
+    "description": "Duyuru ekranında, yayından sonra değişen duyurunun tarihi (ör. '2 Kasım 2026, 10:40 · düzenlendi').",
+    "placeholders": {
+      "tarih": {
+        "type": "String",
+        "example": "2 Kasım 2026, 10:40"
+      }
+    }
+  },
+  "duyuru_menu_sabitle_aciklama": "Ana sayfada ve listede en üstte durur",
+  "@duyuru_menu_sabitle_aciklama": {
+    "description": "Duyuru işlemleri sayfasında 'Sabitle' satırının açıklaması."
+  },
+  "duyuru_menu_sabitlemeyi_kaldir_aciklama": "Ana sayfada ve listede üstte durmaz",
+  "@duyuru_menu_sabitlemeyi_kaldir_aciklama": {
+    "description": "Duyuru işlemleri sayfasında 'Sabitlemeyi kaldır' satırının açıklaması."
+  },
+  "duyuru_menu_sil_aciklama": "Tayfadaki herkesten kaldırılır",
+  "@duyuru_menu_sil_aciklama": {
+    "description": "Duyuru işlemleri sayfasında 'Sil' satırının açıklaması."
+  },
+  "duyuru_form_sabitle": "Yayınlayınca sabitle",
+  "@duyuru_form_sabitle": {
+    "description": "Yeni duyuru formunda (yalnızca moderatör ve yöneticiye) yayından sonra duyuruyu sabitleyen anahtar."
+  },
+  "duyuru_form_sabitle_aciklama": "Ana sayfada ve listede en üstte durur. Yalnızca yönetim görür.",
+  "@duyuru_form_sabitle_aciklama": {
+    "description": "Yeni duyuru formundaki 'Yayınlayınca sabitle' anahtarının açıklaması."
+  },
+  "duyuru_form_duz_metin_notu": "Metin düz yazı olarak görünür; bağlantılar dokunulabilir olmaz.",
+  "@duyuru_form_duz_metin_notu": {
+    "description": "Duyuru formunun altındaki not: gövde biçimlendirilmez, bağlantılar dokunulabilir değildir."
+  },
+  "duyuru_yayinlandi_sabitlenemedi": "Duyuru yayınlandı ama sabitlenemedi. Duyurunun menüsünden yeniden deneyebilirsin.",
+  "@duyuru_yayinlandi_sabitlenemedi": {
+    "description": "Duyuru yayınlandıktan sonra sabitleme isteği başarısız olunca gösterilen kısa bildirim."
+  },
   "soru_liste_baslik": "Sorular",
   "@soru_liste_baslik": {
     "description": "Soru listesi ekranının üst çubuk başlığı ve Tayfa sekmesindeki soru-cevap modülü girişinin etiketi."

@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/duyuru/application/duyuru_notifier.dart';
@@ -15,17 +17,21 @@ import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Duyuru işlemleri menüsünün seçenekleri.
+/// Duyuru işlemleri sayfasının seçenekleri.
 enum DuyuruIslemi { duzenle, sabitle, sabitlemeyiKaldir, sil, sikayet }
 
-/// Tek bir duyuru (`/t/<tayfaId>/duyurular/<duyuruId>`; ADR-0015 §2):
-/// başlık, yayın zamanı ve gövde. Gövde düz metindir; markdown ya da HTML
-/// yorumlanmaz, bağlantılar dokunulabilir değildir.
+/// Tek bir duyuru (`/t/<tayfaId>/duyurular/<duyuruId>`; ADR-0015 §2;
+/// tasarım: Duyuru-Detay): "Sabitlendi" etiketi, büyük başlık, yazar
+/// (avatar + ad, ad önbelleğinden; yazar yalnızca burada görünür), yayın
+/// tarihi ("düzenlendi" `updated_at` > `created_at` ise) ve gövde. Gövde
+/// düz metindir; markdown ya da HTML yorumlanmaz, bağlantılar dokunulabilir
+/// değildir.
 ///
 /// Adresteki [duyuruId] girdi kabul edilir: UUID biçiminde değilse istek
-/// gönderilmez, "bulunamadı" gösterilir. Moderatör ve yöneticiye düzenleme,
-/// sabitleme ve (onaylı) silme menüsü gösterilir; kararı sunucu verir.
-/// Başkasının duyurusunda menüde "Şikâyet et" vardır (ADR-0018 §8).
+/// gönderilmez, "bulunamadı" gösterilir. ⋯ alttan sayfayı açar
+/// (tasarım: Duyuru-Menu): moderatör ve yöneticiye Düzenle, Sabitle /
+/// Sabitlemeyi kaldır ve (onaylı) Sil; kararı sunucu verir. Başkasının
+/// duyurusunda "Şikâyet et" vardır (ADR-0018 §8).
 class DuyuruEkrani extends ConsumerWidget {
   const DuyuruEkrani({
     super.key,
@@ -62,16 +68,25 @@ class DuyuruEkrani extends ConsumerWidget {
         (yazar == null || !ref.watch(kendisiMiProvider(yazar)));
     return Scaffold(
       appBar: AppBar(
-        title: Text(metinler.duyuru_baslik),
         actions: [
           if (duyuru != null && (yonetimde || sikayetEdilebilir))
-            _IslemMenusu(
-              duyuru: duyuru,
-              yonetimde: yonetimde,
-              sikayetEdilebilir: sikayetEdilebilir,
-              onSecildi: (islem) =>
-                  unawaited(_islemiYap(context, ref, duyuru, islem)),
+            IconButton(
+              tooltip: metinler.duyuru_islemler,
+              icon: const Icon(Icons.more_horiz),
+              style: IconButton.styleFrom(
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+              ),
+              onPressed: () => unawaited(
+                _menuyuAc(
+                  context,
+                  ref,
+                  duyuru,
+                  yonetimde: yonetimde,
+                  sikayetEdilebilir: sikayetEdilebilir,
+                ),
+              ),
             ),
+          const SizedBox(width: TayfamSpacing.s8),
         ],
       ),
       body: SafeArea(
@@ -82,7 +97,12 @@ class DuyuruEkrani extends ConsumerWidget {
               maxWidth: TayfamSizes.okumaGenisligi,
             ),
             child: ListView(
-              padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                TayfamSpacing.s20,
+                TayfamSpacing.s4,
+                TayfamSpacing.s20,
+                TayfamSpacing.s32,
+              ),
               children: [
                 if (duyuru != null)
                   _DuyuruIcerigi(duyuru: duyuru)
@@ -112,6 +132,64 @@ class DuyuruEkrani extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// ⋯ alttan sayfası (tasarım: Duyuru-Menu): başlıkta duyurunun adı.
+  Future<void> _menuyuAc(
+    BuildContext context,
+    WidgetRef ref,
+    Announcement duyuru, {
+    required bool yonetimde,
+    required bool sikayetEdilebilir,
+  }) async {
+    final m = AppLocalizations.of(context);
+    final secim = await altSayfaAc<DuyuruIslemi>(
+      context,
+      builder: (sayfa) {
+        void sec(DuyuruIslemi islem) => Navigator.of(sayfa).pop(islem);
+        return AltSayfaIcerigi(
+          baslik: duyuru.title,
+          children: [
+            if (yonetimde) ...[
+              MenuSatiri(
+                baslik: m.duyuru_duzenle,
+                ikon: Icons.edit_outlined,
+                onTap: () => sec(DuyuruIslemi.duzenle),
+              ),
+              if (duyuru.pinned)
+                MenuSatiri(
+                  baslik: m.duyuru_sabitlemeyi_kaldir,
+                  aciklama: m.duyuru_menu_sabitlemeyi_kaldir_aciklama,
+                  ikon: Icons.push_pin_outlined,
+                  onTap: () => sec(DuyuruIslemi.sabitlemeyiKaldir),
+                )
+              else
+                MenuSatiri(
+                  baslik: m.duyuru_sabitle,
+                  aciklama: m.duyuru_menu_sabitle_aciklama,
+                  ikon: Icons.push_pin_outlined,
+                  onTap: () => sec(DuyuruIslemi.sabitle),
+                ),
+              MenuSatiri(
+                baslik: m.duyuru_sil,
+                aciklama: m.duyuru_menu_sil_aciklama,
+                ikon: Icons.delete_outline,
+                tur: MenuSatiriTuru.yikici,
+                onTap: () => sec(DuyuruIslemi.sil),
+              ),
+            ],
+            if (sikayetEdilebilir)
+              MenuSatiri(
+                baslik: m.sikayet_et,
+                ikon: Icons.flag_outlined,
+                onTap: () => sec(DuyuruIslemi.sikayet),
+              ),
+          ],
+        );
+      },
+    );
+    if (secim == null || !context.mounted) return;
+    await _islemiYap(context, ref, duyuru, secim);
   }
 
   Future<void> _islemiYap(
@@ -163,78 +241,35 @@ class DuyuruEkrani extends ConsumerWidget {
   }
 }
 
-/// Silme onayı; onaylanırsa `true`.
+/// Silme onayı; onaylanırsa `true`. Son adım dolu yıkıcı düğmedir
+/// (ADR-0004 Notlar 2026-11-13).
 Future<bool> _silmeyiOnayla(BuildContext context) async {
-  final metinler = AppLocalizations.of(context);
   final onay = await showDialog<bool>(
     context: context,
-    builder: (pencere) => AlertDialog(
-      title: Text(metinler.duyuru_sil_onay_baslik),
-      content: Text(metinler.duyuru_sil_onay_aciklama),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(pencere).pop(false),
-          child: Text(metinler.duyuru_vazgec),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(pencere).pop(true),
-          child: Text(metinler.duyuru_sil),
-        ),
-      ],
-    ),
-  );
-  return onay ?? false;
-}
-
-class _IslemMenusu extends StatelessWidget {
-  const _IslemMenusu({
-    required this.duyuru,
-    required this.yonetimde,
-    required this.sikayetEdilebilir,
-    required this.onSecildi,
-  });
-
-  final Announcement duyuru;
-  final bool yonetimde;
-  final bool sikayetEdilebilir;
-  final ValueChanged<DuyuruIslemi> onSecildi;
-
-  @override
-  Widget build(BuildContext context) {
-    final metinler = AppLocalizations.of(context);
-    return PopupMenuButton<DuyuruIslemi>(
-      tooltip: metinler.duyuru_islemler,
-      icon: const Icon(Icons.more_vert),
-      onSelected: onSecildi,
-      itemBuilder: (_) => [
-        if (yonetimde) ...[
-          PopupMenuItem(
-            value: DuyuruIslemi.duzenle,
-            child: Text(metinler.duyuru_duzenle),
-          ),
-          if (duyuru.pinned)
-            PopupMenuItem(
-              value: DuyuruIslemi.sabitlemeyiKaldir,
-              child: Text(metinler.duyuru_sabitlemeyi_kaldir),
-            )
-          else
-            PopupMenuItem(
-              value: DuyuruIslemi.sabitle,
-              child: Text(metinler.duyuru_sabitle),
+    builder: (pencere) {
+      final metinler = AppLocalizations.of(pencere);
+      return AlertDialog(
+        title: Text(metinler.duyuru_sil_onay_baslik),
+        scrollable: true,
+        content: Text(metinler.duyuru_sil_onay_aciklama),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(pencere).pop(false),
+            style: TextButton.styleFrom(
+              minimumSize: const Size.square(TayfamSizes.dokunmaMin),
             ),
-          PopupMenuItem(
-            value: DuyuruIslemi.sil,
-            child: Text(metinler.duyuru_sil),
+            child: Text(metinler.duyuru_vazgec),
+          ),
+          YikiciEylem(
+            etiket: metinler.duyuru_sil,
+            dolu: true,
+            onPressed: () => Navigator.of(pencere).pop(true),
           ),
         ],
-        if (sikayetEdilebilir)
-          PopupMenuItem(
-            value: DuyuruIslemi.sikayet,
-            child: Text(metinler.sikayet_et),
-          ),
-      ],
-    );
-  }
+      );
+    },
+  );
+  return onay ?? false;
 }
 
 class _DuyuruIcerigi extends StatelessWidget {
@@ -245,6 +280,7 @@ class _DuyuruIcerigi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final yazi = context.yazi;
+    final r = context.renkler;
     final govde = duyuru.body.trim();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,19 +291,66 @@ class _DuyuruIcerigi extends StatelessWidget {
         ],
         Semantics(
           header: true,
-          child: Text(duyuru.title, style: yazi.headlineSmall),
+          child: Text(duyuru.title, style: yazi.headlineMedium),
         ),
-        const SizedBox(height: TayfamSpacing.s8),
-        DuyuruTarihi(zaman: duyuru.createdAt),
+        const SizedBox(height: TayfamSpacing.s12),
+        _YazarSatiri(duyuru: duyuru),
+        const SizedBox(height: TayfamSpacing.s12),
+        Divider(
+          height: TayfamSizes.kenar,
+          thickness: TayfamSizes.kenar,
+          color: r.cizgi,
+        ),
         if (govde.isNotEmpty) ...[
           const SizedBox(height: TayfamSpacing.s16),
           // Düz metin: biçim ve bağlantı yorumlanmaz (ADR-0015 §2).
-          SelectableText(
-            govde,
-            style: yazi.bodyLarge?.copyWith(color: context.renkler.metinGovde),
-          ),
+          SelectableText(govde, style: yazi.bodyLarge),
         ],
       ],
+    );
+  }
+}
+
+/// Yazar (avatar + ad, ad önbelleğinden; hesap silindiyse "Silinmiş
+/// kullanıcı") ve yayın tarihi. Avatar süstür; ad metni okunur.
+class _YazarSatiri extends StatelessWidget {
+  const _YazarSatiri({required this.duyuru});
+
+  final Announcement duyuru;
+
+  @override
+  Widget build(BuildContext context) {
+    final yazi = context.yazi;
+    final yazar = duyuru.authorUserId;
+    final adStili = yazi.titleSmall;
+    return MergeSemantics(
+      child: Row(
+        children: [
+          KimlikAvatari(
+            kullaniciId: yazar,
+            cap: TayfamSizes.ustCubukKutusu,
+          ),
+          const SizedBox(width: TayfamSpacing.s12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (yazar != null)
+                  KullaniciAdiMetni(kullaniciId: yazar, style: adStili)
+                else
+                  Text(
+                    AppLocalizations.of(context).kullanici_silinmis,
+                    style: adStili,
+                  ),
+                DuyuruTarihi(
+                  zaman: duyuru.createdAt,
+                  duzenlendi: duyuru.updatedAt.isAfter(duyuru.createdAt),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
