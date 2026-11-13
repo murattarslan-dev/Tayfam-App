@@ -8,6 +8,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
+import 'package:tayfam/features/arkadas/data/arkadas_deposu.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
 import 'package:tayfam/features/profil/profil.dart';
@@ -15,6 +16,7 @@ import 'package:tayfam/features/sohbet/data/kanal_deposu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/okunmamis.dart';
 
+import '../features/arkadas/sahteler.dart' show arkadasTasimasi;
 import '../features/profil/sahteler.dart' show SahteTasima, profilYanitlari;
 import '../features/tayfa/sahteler.dart';
 import '../yardimcilar.dart';
@@ -43,6 +45,8 @@ List<Override> _profilSahteleri() => [
     ProfilDeposu(SahteTasima(profilYanitlari())),
   ),
   temaTercihiDeposuProvider.overrideWithValue(BellekTemaTercihiDeposu()),
+  // Profil sekmesindeki arkadaşlar ve son katılımlar: boş listeler.
+  arkadasDeposuProvider.overrideWithValue(ArkadasDeposu(arkadasTasimasi())),
 ];
 
 void main() {

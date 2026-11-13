@@ -123,6 +123,12 @@ void main() {
         ikiKatYazi(tester);
         await _Ortam().ac(tester, const HesabiSilEkrani(), themeMode: mod);
         expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(
+          _metin('profil_sil_verileri_indir'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(tester.takeException(), isNull);
         expect(_metin('profil_sil_verileri_indir'), findsOneWidget);
         expect(_metin('profil_sil_dugme'), findsOneWidget);
       });
@@ -428,6 +434,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(o.tasima.sayi('DELETE', '/v1/me'), 0);
+      await tester.scrollUntilVisible(
+        _metin('profil_sil_farkli_hesap'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(_metin('profil_sil_farkli_hesap'), findsOneWidget);
     });
 

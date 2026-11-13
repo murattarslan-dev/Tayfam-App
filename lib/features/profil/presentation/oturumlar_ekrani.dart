@@ -209,9 +209,9 @@ class _OturumSatiri extends StatelessWidget {
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
     final r = context.renkler;
-    final zaman = DateFormat.yMMMd(
-      metinler.localeName,
-    ).add_Hm().format(oturum.lastSeenAt.toLocal());
+    final zaman = DateFormat.yMMMd(metinler.localeName)
+        .add_Hm()
+        .format(oturum.lastSeenAt.toLocal());
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: TayfamSpacing.s16,
@@ -264,14 +264,19 @@ class _OturumSatiri extends StatelessWidget {
             ),
           ),
           const SizedBox(width: TayfamSpacing.s8),
-          if (oturum.current)
-            Etiket(metin: metinler.profil_oturum_bu_cihaz, ton: EtiketTonu.teal)
-          else
-            YikiciEylem(
-              etiket: metinler.profil_oturum_kapat_kisa,
-              semantikEtiketi: metinler.profil_oturum_kapat,
-              onPressed: onKapat,
-            ),
+          // Büyük yazıda sağdaki öğe de sarar; satır taşmaz.
+          Flexible(
+            child: oturum.current
+                ? Etiket(
+                    metin: metinler.profil_oturum_bu_cihaz,
+                    ton: EtiketTonu.teal,
+                  )
+                : YikiciEylem(
+                    etiket: metinler.profil_oturum_kapat_kisa,
+                    semantikEtiketi: metinler.profil_oturum_kapat,
+                    onPressed: onKapat,
+                  ),
+          ),
         ],
       ),
     );

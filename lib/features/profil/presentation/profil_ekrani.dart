@@ -43,36 +43,33 @@ class ProfilEkrani extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: ListView(
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            TayfamSpacing.kenarMobil,
-            TayfamSpacing.s8,
-            TayfamSpacing.kenarMobil,
-            TayfamSpacing.s40,
-          ),
-          children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: TayfamSizes.okumaGenisligi,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _Baslik(kendiId: hesap?.userId),
-                    const _UstBolum(),
-                    // Arkadaşlar, istekler ve tayfa davetleri (ADR-0018 §7).
-                    const ArkadaslikGirisleri(),
-                    if (hesap != null) _KatilimBolumu(hesap: hesap),
-                    const _UygulamaBolumu(),
-                    const _GizlilikBolumu(),
-                    const SizedBox(height: TayfamSpacing.s32),
-                    const _CikisVeSilme(),
-                  ],
-                ),
-              ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: TayfamSizes.okumaGenisligi,
             ),
-          ],
+            // Bölümler ayrı liste öğeleridir; ekran dışındakiler tembel
+            // kurulur ve her biri ayrı kaydırılarak görünür yapılabilir.
+            child: ListView(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                TayfamSpacing.kenarMobil,
+                TayfamSpacing.s8,
+                TayfamSpacing.kenarMobil,
+                TayfamSpacing.s40,
+              ),
+              children: [
+                _Baslik(kendiId: hesap?.userId),
+                const _UstBolum(),
+                // Arkadaşlar, istekler ve tayfa davetleri (ADR-0018 §7).
+                const ArkadaslikGirisleri(),
+                if (hesap != null) _KatilimBolumu(hesap: hesap),
+                const _UygulamaBolumu(),
+                const _GizlilikBolumu(),
+                const SizedBox(height: TayfamSpacing.s32),
+                const _CikisVeSilme(),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -499,9 +496,7 @@ class _KatilimBolumuState extends ConsumerState<_KatilimBolumu> {
       context,
       secili: widget.hesap.activityVisibility,
     );
-    if (secim == null ||
-        secim == widget.hesap.activityVisibility ||
-        !mounted) {
+    if (secim == null || secim == widget.hesap.activityVisibility || !mounted) {
       return;
     }
     final metinler = AppLocalizations.of(context);
@@ -759,9 +754,8 @@ class _GizlilikBolumu extends ConsumerWidget {
               ikon: Icons.description_outlined,
               baslik: m.profil_kosullar,
               sag: disBaglanti,
-              onTap: () => unawaited(
-                _hukukiMetniAc(context, ref, HukukiMetin.kosullar),
-              ),
+              onTap: () =>
+                  unawaited(_hukukiMetniAc(context, ref, HukukiMetin.kosullar)),
             ),
           ],
         ),
