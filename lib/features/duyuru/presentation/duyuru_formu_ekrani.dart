@@ -95,9 +95,7 @@ class _DuyuruFormuEkraniState extends ConsumerState<DuyuruFormuEkrani> {
     // iner.
     final icerikte = eylemIcerigeIner(context);
     final gonder = BirincilEylem(
-      etiket: yeni
-          ? metinler.duyuru_form_yayinla
-          : metinler.duyuru_form_kaydet,
+      etiket: yeni ? metinler.duyuru_form_yayinla : metinler.duyuru_form_kaydet,
       onPressed: kilitli ? null : () => unawaited(_notifier.gonder()),
     );
     return Scaffold(
@@ -119,9 +117,7 @@ class _DuyuruFormuEkraniState extends ConsumerState<DuyuruFormuEkrani> {
         actions: [
           if (!icerikte)
             Padding(
-              padding: const EdgeInsetsDirectional.only(
-                end: TayfamSpacing.s12,
-              ),
+              padding: const EdgeInsetsDirectional.only(end: TayfamSpacing.s12),
               child: gonder,
             ),
         ],
