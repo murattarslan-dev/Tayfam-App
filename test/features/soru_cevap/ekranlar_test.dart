@@ -289,7 +289,7 @@ void main() {
     testWidgets('"En faydalı" yalnızca oy almış ilk cevapta', (tester) async {
       ekranBoyutu(tester, yukseklik: 1600);
       await _soruyuAc(tester, _detayTasimasi());
-      final etiket = find.text(arbMetni('soru_en_faydali'));
+      final etiket = find.text(arbMetni('soru_en_faydali'), findRichText: true);
       expect(etiket, findsOneWidget);
       expect(
         find.descendant(of: find.byType(CevapKarti).first, matching: etiket),
@@ -313,7 +313,10 @@ void main() {
         ),
       );
       expect(find.byType(CevapKarti), findsNWidgets(2));
-      expect(find.text(arbMetni('soru_en_faydali')), findsNothing);
+      expect(
+        find.text(arbMetni('soru_en_faydali'), findRichText: true),
+        findsNothing,
+      );
     });
 
     testWidgets('başkasının cevabına oy veriliyor, kendi cevabına değil', (

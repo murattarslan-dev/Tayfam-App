@@ -99,7 +99,9 @@ class _SoruFormuEkraniState extends ConsumerState<SoruFormuEkrani> {
         ),
         actions: [
           FormUstEylemi(
-            etiket: yeni ? metinler.soru_form_gonder : metinler.soru_form_kaydet,
+            etiket: yeni
+                ? metinler.soru_form_gonder
+                : metinler.soru_form_kaydet,
             onPressed: kilitli ? null : _gonder,
           ),
         ],
@@ -163,7 +165,10 @@ class _SoruFormuEkraniState extends ConsumerState<SoruFormuEkrani> {
                     child: Wrap(
                       spacing: TayfamSpacing.s4,
                       children: [
-                        Text(metinler.soru_form_etiketler, style: yazi.titleSmall),
+                        Text(
+                          metinler.soru_form_etiketler,
+                          style: yazi.titleSmall,
+                        ),
                         Text(
                           metinler.soru_form_etiketler_siniri,
                           style: yazi.titleSmall?.copyWith(

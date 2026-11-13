@@ -282,10 +282,7 @@ void main() {
 
       test('ilk cevabın oyu yoksa hiçbiri', () {
         expect(
-          enFaydaliCevapKimligi([
-            _cevap(cevapId1),
-            _cevap(cevapId2, oy: 4),
-          ]),
+          enFaydaliCevapKimligi([_cevap(cevapId1), _cevap(cevapId2, oy: 4)]),
           isNull,
         );
       });

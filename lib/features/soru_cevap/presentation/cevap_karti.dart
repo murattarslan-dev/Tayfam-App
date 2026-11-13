@@ -142,9 +142,8 @@ class FaydaliDugmesi extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = context.renkler;
     final metinler = AppLocalizations.of(context);
-    final sayiMetni = NumberFormat.decimalPattern(
-      metinler.localeName,
-    ).format(sayi);
+    final sayiMetni = NumberFormat.decimalPattern(metinler.localeName)
+        .format(sayi);
     final onPressed = this.onPressed;
     final pasif = onPressed == null;
     final (Color zemin, Color renk, Color? kenar) = isaretli
@@ -196,9 +195,7 @@ class FaydaliDugmesi extends StatelessWidget {
                       Flexible(
                         child: Text(
                           metinler.soru_faydali_dugme(sayiMetni),
-                          style: context.yazi.labelLarge?.copyWith(
-                            color: renk,
-                          ),
+                          style: context.yazi.labelLarge?.copyWith(color: renk),
                         ),
                       ),
                     ],
