@@ -85,3 +85,17 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
 - **Modüllere bağlı sekmeler** (ayrı Etkinlikler sekmesi): kapalı modülde
   iskelet değişiyor.
 - **Navigator 2.0'ı elle kullanmak:** daha çok kod, aynı sonuç.
+
+## Notlar
+
+- **2026-11-13 (platform sahibi, sohbette; tayfa ana sayfası yeniden
+  tasarımı):** Tayfa sekmesindeki ayrı modül alt gezinmesi kaldırıldı
+  (`TayfaModule.gezinmeGirisi`). Modüllere tayfa ana sayfasındaki
+  bölümlerin "Tümü" bağlantılarından gidilir; modül rotaları
+  (`/t/<tayfaId>/etkinlikler` …) aynen durur. Tayfa adına dokununca tayfa
+  değiştirme paneli, sağ üstteki ⋯ tayfa menüsü (alttan sayfa;
+  yönetici/moderatörde en üstte "Tayfa ayarları"), kişi+ ikonu davet
+  linki oluşturma açılır. Tayfa ayarları ve alt ekranları tam ekran
+  sayfalardır; alttan sayfalar yalnızca kısa işler içindir (Oluştur,
+  tayfa menüsü, tayfa değiştirme, üye işlemleri, yeni davet linki).
+  Ayrıntı: ADR-0015 Notlar 2026-11-13.

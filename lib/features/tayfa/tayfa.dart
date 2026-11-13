@@ -7,6 +7,8 @@
 /// ilgi alanı çipini ve paylaşıcıyı kullanır.
 library;
 
+export 'package:tayfam/features/tayfa/application/kurulum.dart'
+    show kuralGosterilsin, kurulumGosterilsin, tayfaSaatiProvider;
 export 'package:tayfam/features/tayfa/application/olusturma_notifier.dart'
     show ilgiAlanlari, istekKimligiUreticisiProvider;
 export 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart'

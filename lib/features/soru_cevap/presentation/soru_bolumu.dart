@@ -1,20 +1,21 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/goreli_zaman.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_listesi_notifier.dart';
-import 'package:tayfam/features/soru_cevap/presentation/soru_cevap_ortak.dart';
-import 'package:tayfam/features/soru_cevap/presentation/soru_karti.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfa ana sayfasındaki "Son sorular" bölümü (ADR-0018 Genel): en son
-/// [anaSayfaSoruSayisi] soru ve "Tümü" bağlantısı. Boşken kısa bir boş
-/// durum ve "Soru sor" kısayolu gösterilir (her üye soru sorabilir).
+/// Tayfa ana sayfasındaki "Son sorular" bölümü (ADR-0018 Genel, ADR-0015
+/// Notlar 2026-11-13; tasarım: Ana-Tam-Sayfa): en son [anaSayfaSoruSayisi]
+/// sorunun kısa satırı (başlık, "3 cevap · dün") ve "Tümü" bağlantısı.
+/// Boşken kısa bir boş durum gösterilir; "Soru sor" ana sayfanın
+/// "Oluştur" sayfasındadır.
 class SoruBolumu extends ConsumerWidget {
   const SoruBolumu({super.key, required this.tayfaId});
 
@@ -25,6 +26,7 @@ class SoruBolumu extends ConsumerWidget {
     final metinler = AppLocalizations.of(context);
     final saglayici = soruListesiProvider(anaSoruListesi(tayfaId));
     final durum = ref.watch(saglayici);
+    final simdi = ref.watch(simdiProvider)();
     final liste = durum.value;
     final hata = durum.error;
     return Column(
@@ -55,33 +57,67 @@ class SoruBolumu extends ConsumerWidget {
               gecikmeli: true,
             ),
           )
-        else if (liste.ogeler.isEmpty) ...[
+        else if (liste.ogeler.isEmpty)
           Text(
             metinler.soru_bos,
             style: context.yazi.bodyLarge?.copyWith(
               color: context.renkler.metinGovde,
             ),
+          )
+        else
+          ListeKarti(
+            children: [
+              for (final soru in liste.ogeler.take(anaSayfaSoruSayisi))
+                SoruSatiri(
+                  soru: soru,
+                  simdi: simdi,
+                  onTap: () => context.go(Adresler.soru(tayfaId, soru.id)),
+                ),
+            ],
           ),
-          const SizedBox(height: TayfamSpacing.s12),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: BirincilEylem(
-              etiket: metinler.soru_sor,
-              ikon: Icons.help_outline,
-              onPressed: () =>
-                  unawaited(soruFormunuAc(context, tayfaId: tayfaId)),
-            ),
-          ),
-        ] else
-          for (final (sira, soru)
-              in liste.ogeler.take(anaSayfaSoruSayisi).indexed) ...[
-            if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-            SoruKarti(
-              soru: soru,
-              onTap: () => context.go(Adresler.soru(tayfaId, soru.id)),
-            ),
-          ],
       ],
+    );
+  }
+}
+
+/// Ana sayfadaki kısa soru satırı.
+class SoruSatiri extends StatelessWidget {
+  const SoruSatiri({
+    super.key,
+    required this.soru,
+    required this.simdi,
+    this.onTap,
+  });
+
+  final Question soru;
+
+  /// Göreli zamanın hesaplandığı an.
+  final DateTime simdi;
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final yazi = context.yazi;
+    return ListeKartiSatiri(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(soru.title, style: yazi.titleMedium),
+          const SizedBox(height: TayfamSpacing.s4),
+          Text(
+            m.soru_satir_ozet(
+              m.soru_cevap_sayisi(soru.answerCount),
+              goreliGecmis(m, soru.createdAt, simdi),
+            ),
+            style: yazi.labelSmall?.copyWith(
+              color: context.renkler.metinIkincil,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

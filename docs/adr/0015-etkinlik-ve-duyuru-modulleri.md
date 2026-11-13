@@ -222,3 +222,43 @@ Platform sahibinin kararı (2026-11-11):
   - Profil ucu ad ve avatarı ortak tayfa ya da arkadaşlık olmadan da
     döndürür; engel ya da silinmiş hesapta `user-not-found`. Bildirim
     kartında bu durumda ad yerine "Biri" yazılır.
+- **2026-11-13 (platform sahibi, sohbette; tayfa ana sayfası yeniden
+  tasarımı, Notion: Proje Planı §4 madde 5):** Ana sayfa §1'den şu üç
+  noktada sapar; sapmalar onaylıdır.
+  1. **Sıradaki etkinlik ve katılım ana sayfadan.** Mor üst bölüme taşan
+     büyük "Sıradaki" kartı: iptal edilmemiş ve bitmemiş en yakın
+     etkinlik; tür çipi, geri sayım ("3 gün sonra", cihazın saat
+     diliminde takvim gününe göre), gün ve saat, yer, gelen/kontenjan
+     çubuğu ve **Geliyorum / Belki / Gelmiyorum** düğmeleri. Katılım
+     cevabı detaya gitmeden verilir; mantık detaydakiyle aynıdır (sunucunun
+     kaydettiği cevap ve sayıların yerel tahmini hemen, ardından liste
+     yeniden okunur). Kontenjan doluysa yeni bir davranış yoktur: detaydaki
+     gibi "Geliyorum" seçilir, sunucu bekleme listesine alır; kartta
+     "Kontenjan dolu …" ya da "Bekleme listesindesin …" yazar. Altında
+     "Yaklaşan" bölümünde sonraki iki etkinliğin kısa satırı (tarih kutusu,
+     "Tür · gün saat · yer", cevap ya da "Cevap ver").
+  2. **Tek "Oluştur" düğmesi.** Bölümlerdeki "Etkinlik aç" / "Duyuru yaz"
+     kısayolları kaldırıldı; sağ alttaki "Oluştur" alttan sayfayı açar:
+     Etkinlik aç, Duyuru yaz, Anket aç, Soru sor ve Tayfaya davet et.
+     Seçenekleri modüller `TayfaModule.olusturmaSecenegi` ile verir;
+     görünürlüğü sunucunun alanlarından (rol, `members_can_create_events`)
+     türetilir, yalnızca sadeleştirir (kesin kural 5). Boş bölümde yalnızca
+     kısa boş durum metni kalır. Bölümler kısaldı: Duyurular sabitlenenler
+     ve son 2, Açık anket 1, Son sorular 2 (kısa satır, "3 cevap · dün").
+     Duyurularda yazar adı gösterilmez (sözleşmede yalnızca kimlik var).
+  3. **Yeni tayfada "Tayfanı birlikte kuralım".** Yöneticiye, tayfa
+     açılalı 7 gün olmadıysa (`created_at`) ya da tayfayı bu oturumda
+     kendisi oluşturduysa; eski davet kısayolunun yerine geçer. Adımlar:
+     kuruldu (her zaman tamam), arkadaşlarını çağır (davet linki + kodu
+     kopyala; `member_count > 1` olunca tamam), açık modüllerin adımları
+     (`TayfaModule.kurulumAdimi`: ilk etkinlik — en az bir yaklaşan
+     etkinlik; bir duyuru sabitle — sabitlenmiş duyuru). Tamamlanma
+     yalnızca sunucu verisinden hesaplanır, diske yazılmaz; hepsi tamamsa
+     kart gizlenir. Kurulum döneminde üye sayısı 3'ün altındaysa "7 günde 3
+     üye" kuralı yazılır (Notion: Proje Planı §7).
+  - Yöneticiye ve moderatöre bekleyen katılım isteği satırı
+    (`pending_join_request_count`); dokununca katılım istekleri açılır.
+  - Silme planlanmış tayfanın durum şeridi mor yüzeyde ink kutudur;
+    yöneticiye "Silmeyi iptal et" gösterilir (kayıtla bağlanan düğme,
+    `tayfaSilmeIptaliProvider`). Tayfa sekmesindeki modül alt gezinmesi
+    kaldırıldı (bkz. ADR-0003 Notlar 2026-11-13).

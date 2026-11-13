@@ -10,19 +10,31 @@ import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_ekrani.dart';
 import 'package:tayfam/features/duyuru/presentation/duyurular_ekrani.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
+import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/etkinlik/presentation/siradaki_etkinlik_karti.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
 import '../../yardimcilar.dart';
 import '../duyuru/sahteler.dart';
+import '../etkinlik/sahteler.dart' show katilimYolu;
 import 'sahteler.dart';
 
 /// Tayfa ana sayfasının etkinlik ve duyuru bölümleri (ADR-0015 §1).
 const List<TayfaModule> _moduller = [EtkinlikModulu(), DuyuruModulu()];
 
+/// Testlerin sabit saati: etkinlikler (2026-11-14 06:00Z) yarın başlar.
+final DateTime _simdi = DateTime.utc(2026, 11, 13, 9);
+
 List<Override> _kayit(List<TayfaModule> moduller) => [
   tayfaModulleriProvider.overrideWithValue(moduller),
+  etkinlikSaatiProvider.overrideWithValue(() => _simdi),
+  simdiProvider.overrideWithValue(() => _simdi),
+  tayfaSaatiProvider.overrideWithValue(() => _simdi),
 ];
+
+final Finder _olustur = find.text(arbMetni('tayfa_olustur_dugmesi'));
 
 Future<void> _ac(
   WidgetTester tester,
@@ -96,18 +108,31 @@ void main() {
     );
     expect(find.text(arbMetni('tayfa_ana_sayfa_bos')), findsNothing);
 
-    // En yakın üç etkinlik.
-    expect(find.byType(EtkinlikKarti), findsNWidgets(3));
-    expect(find.text('Sabah konvoyu'), findsOneWidget);
+    // En yakın etkinlik "Sıradaki" kartında, sonraki ikisi Yaklaşan'da.
+    expect(
+      find.descendant(
+        of: find.byType(SiradakiEtkinlikKarti),
+        matching: find.text('Sabah konvoyu'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(YaklasanSatiri), findsNWidgets(2));
+    expect(find.text('Göl kampı'), findsOneWidget);
     expect(find.text('Oyun gecesi'), findsOneWidget);
     expect(find.text('Dördüncü etkinlik'), findsNothing);
+    // Cevapsız satırda "Cevap ver"; ay kısaltması intl'den ("Kas").
+    expect(find.text(arbMetni('etkinlik_cevap_ver')), findsNWidgets(2));
+    expect(find.text('Kas'), findsNWidgets(2));
 
-    // Bütün sabitlenenler ve son üç duyuru.
+    // Bütün sabitlenenler ve son iki duyuru (2026-11-13 tasarımı).
     expect(find.text('Sabit bir'), findsOneWidget);
     expect(find.text('Sabit iki'), findsOneWidget);
     expect(find.text('Son duyuru'), findsOneWidget);
-    expect(find.text('Daha önceki duyuru'), findsOneWidget);
+    expect(find.text('Önceki duyuru'), findsOneWidget);
+    expect(find.text('Daha önceki duyuru'), findsNothing);
     expect(find.text('En eski duyuru'), findsNothing);
+    // Duyuru yazarı gösterilmez; göreli zaman gösterilir.
+    expect(find.text('4 gün önce'), findsOneWidget);
 
     // Her bölümde "Tümü".
     expect(find.text(arbMetni('tayfa_ana_tumu')), findsNWidgets(2));
@@ -157,7 +182,7 @@ void main() {
   });
 
   group('boş durum', () {
-    testWidgets('üyeye kısayol yok', (tester) async {
+    testWidgets('üyeye kısayol ve "Oluştur" yok', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
       await _ac(tester, modulTasimasi());
 
@@ -165,9 +190,15 @@ void main() {
       expect(find.text(arbMetni('tayfa_ana_duyurular_bos')), findsOneWidget);
       expect(find.text(arbMetni('duyuru_yaz')), findsNothing);
       expect(find.text(arbMetni('tayfa_ana_etkinlik_ac')), findsNothing);
+      // Etkinlik açılamıyor, duyuru yazılamıyor: "Oluştur"un seçeneği yok.
+      expect(_olustur, findsNothing);
+      // Gösterecek etkinlik yoksa "Sıradaki" kartı boş.
+      expect(find.byType(YaklasanSatiri), findsNothing);
     });
 
-    testWidgets('yöneticiye "Duyuru yaz" ve "Etkinlik aç"', (tester) async {
+    testWidgets('yöneticiye "Oluştur"da "Duyuru yaz" ve "Etkinlik aç"', (
+      tester,
+    ) async {
       ekranBoyutu(tester, yukseklik: 1200);
       final acilan = <String>[];
       final tasima = modulTasimasi({
@@ -182,9 +213,20 @@ void main() {
         ],
       );
 
+      // Boş bölümde kısayol yok; seçenekler "Oluştur" sayfasında.
+      expect(find.text(arbMetni('duyuru_yaz')), findsNothing);
+      await tester.tap(_olustur);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('tayfa_olustur_baslik')), findsOneWidget);
       expect(find.text(arbMetni('duyuru_yaz')), findsOneWidget);
+      expect(
+        find.text(arbMetni('duyuru_olustur_aciklama')),
+        findsOneWidget,
+      );
       await tester.tap(find.text(arbMetni('tayfa_ana_etkinlik_ac')));
+      await tester.pumpAndSettle();
       expect(acilan, [ornekTayfaId]);
+      expect(find.text(arbMetni('tayfa_olustur_baslik')), findsNothing);
     });
 
     testWidgets('üye etkinlik açabiliyorsa "Etkinlik aç" görünüyor', (
@@ -205,6 +247,8 @@ void main() {
         ],
       );
 
+      await tester.tap(_olustur);
+      await tester.pumpAndSettle();
       expect(find.text(arbMetni('tayfa_ana_etkinlik_ac')), findsOneWidget);
       expect(find.text(arbMetni('duyuru_yaz')), findsNothing);
     });
@@ -216,6 +260,8 @@ void main() {
       });
       await _ac(tester, tasima);
 
+      await tester.tap(_olustur);
+      await tester.pumpAndSettle();
       await tester.tap(find.text(arbMetni('duyuru_yaz')));
       await tester.pumpAndSettle();
 
@@ -347,12 +393,108 @@ void main() {
       expect(tester.takeException(), isNull);
 
       await tester.dragUntilVisible(
-        find.text('Daha önceki duyuru'),
+        find.text('Önceki duyuru'),
         find.byType(ListView),
         const Offset(0, -300),
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
+
+      // "Oluştur" sayfası da 2× yazıda taşmıyor.
+      await tester.tap(_olustur);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('tayfa_olustur_baslik')), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   }
+
+  group('Sıradaki etkinlik kartından katılım (ADR-0015 Notlar 2026-11-13)', () {
+    SahteTayfaTasima tasima({
+      String? cevap,
+      int kontenjan = 0,
+      int gelen = 4,
+      Object? Function(TayfaIstegi)? rsvp,
+    }) => modulTasimasi({
+      'GET $etkinliklerYolu': yanit(
+        etkinlikListesiJson([
+          etkinlikJson(
+            etkinlikId1,
+            cevap: cevap,
+            kontenjan: kontenjan,
+            gelen: gelen,
+          ),
+        ]),
+      ),
+      'PUT $katilimYolu':
+          rsvp ?? (i) => {'status': (i.govde! as Map<String, Object?>)['status']},
+    });
+
+    testWidgets('"Belki" cevabı ana sayfadan gönderiliyor', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final t = tasima();
+      await _ac(tester, t);
+
+      final kart = find.byType(SiradakiEtkinlikKarti);
+      expect(
+        find.descendant(of: kart, matching: find.text('Sıradaki · yarın')),
+        findsOneWidget,
+      );
+      await tester.tap(
+        find.descendant(
+          of: kart,
+          matching: find.text(arbMetni('etkinlik_cevap_maybe')),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final istek = t.giden('PUT', katilimYolu).single;
+      expect(istek.yolParametreleri['event_id'], etkinlikId1);
+      expect(istek.govde, {'status': 'maybe'});
+      // Kaydedilen cevap hemen gösterilir; liste yeniden okunur.
+      expect(t.giden('GET', etkinliklerYolu).length, greaterThan(1));
+    });
+
+    testWidgets('kontenjan doluysa detaydaki bilgi metni', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ac(tester, tasima(kontenjan: 4));
+
+      expect(
+        find.text(arbMetni('etkinlik_kontenjan_dolu')),
+        findsOneWidget,
+      );
+      expect(find.text('· 4 kişilik'), findsOneWidget);
+    });
+
+    testWidgets('bekleme listesindeyse "Geliyorum" seçili, bilgi metni', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ac(tester, tasima(cevap: 'waitlist', kontenjan: 4));
+
+      expect(
+        find.text(arbMetni('etkinlik_bekleme_listesindesin')),
+        findsOneWidget,
+      );
+      final secili = tester.widget<Semantics>(
+        find
+            .ancestor(
+              of: find.text(arbMetni('etkinlik_cevap_going')),
+              matching: find.byWidgetPredicate(
+                (w) => w is Semantics && w.properties.selected != null,
+              ),
+            )
+            .first,
+      );
+      expect(secili.properties.selected, isTrue);
+    });
+
+    testWidgets('sunucu hatası gösteriliyor', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ac(tester, tasima(rsvp: (_) => const ApiOffline()));
+
+      await tester.tap(find.text(arbMetni('etkinlik_cevap_going')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('hata_baglanti_yok')), findsOneWidget);
+    });
+  });
 }

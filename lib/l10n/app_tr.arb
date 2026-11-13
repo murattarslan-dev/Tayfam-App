@@ -460,9 +460,14 @@
   "@tayfa_kurulum_kuruldu": {
     "description": "Kurulum kartının ilk (her zaman tamamlanmış) adımı."
   },
-  "tayfa_kurulum_tamamlandi": "Tamamlandı",
-  "@tayfa_kurulum_tamamlandi": {
-    "description": "Kurulum kartında tamamlanmış adımın ekran okuyucuya okunan durumu."
+  "tayfa_kurulum_tamam_adim": "{adim}, tamamlandı",
+  "@tayfa_kurulum_tamam_adim": {
+    "description": "Kurulum kartında tamamlanmış adımın ekran okuyucu etiketi (ör. \"Tayfayı kurdun, tamamlandı\").",
+    "placeholders": {
+      "adim": {
+        "type": "String"
+      }
+    }
   },
   "tayfa_kurulum_davet_baslik": "Arkadaşlarını çağır",
   "@tayfa_kurulum_davet_baslik": {

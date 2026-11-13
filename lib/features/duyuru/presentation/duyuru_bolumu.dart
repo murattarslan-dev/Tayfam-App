@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,18 +6,19 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/goreli_zaman.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/duyuru/application/duyuru_listesi_notifier.dart';
-import 'package:tayfam/features/duyuru/presentation/duyuru_karti.dart';
-import 'package:tayfam/features/duyuru/presentation/duyuru_ortak.dart';
-import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfa ana sayfasındaki "Duyurular" bölümü (ADR-0015 §1): önce bütün
-/// sabitlenenler, sonra son üç duyuru ve "Tümü" bağlantısı.
+/// Tayfa ana sayfasındaki "Duyurular" bölümü (ADR-0015 §1, Notlar
+/// 2026-11-13; tasarım: Ana-Tam-Sayfa): önce bütün sabitlenenler, sonra
+/// son [anaSayfaDuyuruSayisi] duyuru ve "Tümü" bağlantısı. Satırda
+/// "Sabitlendi" etiketi, başlık, gövdenin ilk iki satırı ve göreli zaman
+/// ("2 gün önce"); yazar adı gösterilmez (sözleşmede yalnızca kimlik var).
 ///
-/// Boşken kısa bir boş durum gösterilir; moderatör ve yöneticiye ayrıca
-/// "Duyuru yaz" kısayolu. Kısayol yalnızca kolaylıktır, yetkiyi sunucu
-/// verir (kesin kural 5).
+/// Boşken kısa bir boş durum gösterilir; "Duyuru yaz" kısayolu bölümde
+/// değil, ana sayfanın "Oluştur" sayfasındadır.
 class DuyuruBolumu extends ConsumerWidget {
   const DuyuruBolumu({super.key, required this.tayfaId});
 
@@ -29,7 +28,7 @@ class DuyuruBolumu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final metinler = AppLocalizations.of(context);
     final durum = ref.watch(duyuruListesiProvider(tayfaId));
-    final yonetimde = ref.watch(tayfaOzetiProvider(tayfaId)).yonetimde;
+    final simdi = ref.watch(simdiProvider)();
     final liste = durum.value;
     final hata = durum.error;
     final gosterilen = liste == null
@@ -63,34 +62,83 @@ class DuyuruBolumu extends ConsumerWidget {
               gecikmeli: true,
             ),
           )
-        else if (liste.ogeler.isEmpty) ...[
+        else if (liste.ogeler.isEmpty)
           Text(
             metinler.tayfa_ana_duyurular_bos,
             style: context.yazi.bodyLarge?.copyWith(
               color: context.renkler.metinGovde,
             ),
+          )
+        else
+          ListeKarti(
+            children: [
+              for (final duyuru in gosterilen)
+                DuyuruSatiri(
+                  duyuru: duyuru,
+                  simdi: simdi,
+                  onTap: () => context.go(Adresler.duyuru(tayfaId, duyuru.id)),
+                ),
+            ],
           ),
-          if (yonetimde) ...[
-            const SizedBox(height: TayfamSpacing.s12),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: BirincilEylem(
-                etiket: metinler.duyuru_yaz,
-                ikon: Icons.edit_outlined,
-                onPressed: () =>
-                    unawaited(duyuruFormunuAc(context, tayfaId: tayfaId)),
-              ),
-            ),
-          ],
-        ] else
-          for (final (sira, duyuru) in gosterilen.indexed) ...[
-            if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-            DuyuruKarti(
-              duyuru: duyuru,
-              onTap: () => context.go(Adresler.duyuru(tayfaId, duyuru.id)),
-            ),
-          ],
       ],
+    );
+  }
+}
+
+/// Ana sayfadaki kısa duyuru satırı. Gövde düz metindir; markdown ya da
+/// HTML yorumlanmaz (ADR-0015 §2).
+class DuyuruSatiri extends StatelessWidget {
+  const DuyuruSatiri({
+    super.key,
+    required this.duyuru,
+    required this.simdi,
+    this.onTap,
+  });
+
+  final Announcement duyuru;
+
+  /// Göreli zamanın hesaplandığı an.
+  final DateTime simdi;
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    final yazi = context.yazi;
+    final govde = duyuru.body.trim();
+    return ListeKartiSatiri(
+      onTap: onTap,
+      icBosluk: const EdgeInsets.all(TayfamSpacing.s16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (duyuru.pinned) ...[
+            Etiket(
+              metin: m.duyuru_sabit,
+              ton: EtiketTonu.mango,
+              ikon: Icons.push_pin_outlined,
+            ),
+            const SizedBox(height: TayfamSpacing.s8),
+          ],
+          Text(duyuru.title, style: yazi.titleMedium),
+          if (govde.isNotEmpty) ...[
+            const SizedBox(height: TayfamSpacing.s4),
+            Text(
+              govde,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: yazi.bodyMedium?.copyWith(color: r.metinGovde),
+            ),
+          ],
+          const SizedBox(height: TayfamSpacing.s4),
+          Text(
+            goreliGecmis(m, duyuru.createdAt, simdi),
+            style: yazi.labelSmall?.copyWith(color: r.metinIkincil),
+          ),
+        ],
+      ),
     );
   }
 }

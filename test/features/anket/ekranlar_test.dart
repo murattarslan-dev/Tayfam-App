@@ -560,7 +560,7 @@ void main() {
       expect(find.text('Kapalı soru'), findsNothing);
     });
 
-    testWidgets('açık anket yoksa boş durum ve "Anket aç"', (tester) async {
+    testWidgets('açık anket yoksa yalnızca boş durum', (tester) async {
       ekranBoyutu(tester);
       await widgetAc(
         tester,
@@ -568,7 +568,8 @@ void main() {
         tayfa: anketOverridelari(anketTasimasi()),
       );
       expect(find.text(arbMetni('anket_ana_bos')), findsOneWidget);
-      expect(find.text(arbMetni('anket_ac')), findsOneWidget);
+      // "Anket aç" ana sayfanın "Oluştur" sayfasında (2026-11-13).
+      expect(find.text(arbMetni('anket_ac')), findsNothing);
     });
 
     test('kayıtta sıra: etkinlikler, duyurular, anketler', () {

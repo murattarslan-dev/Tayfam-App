@@ -11,6 +11,10 @@ library;
 
 export 'package:tayfam/features/tayfa_yonetim/application/ek_girisler.dart'
     show YonetimEkGirisi, yonetimEkGirisleriProvider;
+export 'package:tayfam/features/tayfa_yonetim/presentation/ayarlar_ekrani.dart'
+    show silmeIptalDugmesi;
+export 'package:tayfam/features/tayfa_yonetim/presentation/davetler_ekrani.dart'
+    show tayfayaDavetEt;
 export 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_menusu.dart'
     show tayfaUstMenusu;
 export 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart'

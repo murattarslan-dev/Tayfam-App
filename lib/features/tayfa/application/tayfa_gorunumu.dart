@@ -89,6 +89,12 @@ final class TayfaOzeti {
   bool get etkinlikAcabilir =>
       yonetimde || (tayfa?.membersCanCreateEvents ?? false);
 
+  /// "Oluştur" sayfasındaki seçenekleri sadeleştirmek için rol ve izinler.
+  TayfaYetkisi get yetki => TayfaYetkisi(
+    rol: rol,
+    uyelerEtkinlikAcabilir: tayfa?.membersCanCreateEvents ?? false,
+  );
+
   /// Sunucunun açık dediği modüllerin anahtarları; tayfa bilinmiyorsa boş.
   Set<String> get acikModuller {
     final tayfa = this.tayfa;

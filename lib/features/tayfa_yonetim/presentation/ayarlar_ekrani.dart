@@ -297,6 +297,40 @@ class _KodBolumu extends ConsumerWidget {
   }
 }
 
+/// Tayfa ana sayfasının durum şeridindeki "Silmeyi iptal et" (tasarım:
+/// Ayar-Silme; `tayfaSilmeIptaliProvider`'a verilir). Mor yüzeyde mango
+/// zemin + ink. İptali sunucu yetkilendirir; sonuç kısa bildirimle
+/// gösterilir ve tayfa görünümü yenilenir.
+Widget silmeIptalDugmesi(BuildContext context, String tayfaId) =>
+    SilmeIptalDugmesi(tayfaId: tayfaId);
+
+/// "Silmeyi iptal et" düğmesi; işlem sürerken kapalıdır.
+class SilmeIptalDugmesi extends ConsumerWidget {
+  const SilmeIptalDugmesi({super.key, required this.tayfaId});
+
+  final String tayfaId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    final mesgul = ref.watch(tayfaAyarlariProvider(tayfaId));
+    return BirincilEylem(
+      etiket: m.yonetim_silme_iptal,
+      markaYuzeyinde: true,
+      onPressed: mesgul ? null : () => unawaited(_iptal(context, ref)),
+    );
+  }
+
+  Future<void> _iptal(BuildContext context, WidgetRef ref) async {
+    final m = AppLocalizations.of(context);
+    final bildirici = SonucBildirici.al(context);
+    final hata = await ref
+        .read(tayfaAyarlariProvider(tayfaId).notifier)
+        .silmeyiIptalEt();
+    bildirici.bildir(hata, m.yonetim_silme_iptal_edildi);
+  }
+}
+
 /// Tayfa silme: 72 saat bekleme; bu sürede herhangi bir yönetici iptal
 /// edebilir (sözleşme, ADR-0018 §1).
 class _SilmeBolumu extends ConsumerWidget {

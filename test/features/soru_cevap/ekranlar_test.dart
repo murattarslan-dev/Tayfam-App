@@ -203,7 +203,7 @@ void main() {
   });
 
   group('ana sayfa bölümü', () {
-    testWidgets('en son üç soru gösteriliyor', (tester) async {
+    testWidgets('en son iki soru kısa satırla gösteriliyor', (tester) async {
       ekranBoyutu(tester, yukseklik: 1600);
       await _bolumuAc(
         tester,
@@ -219,16 +219,18 @@ void main() {
         }),
       );
       expect(find.text(arbMetni('soru_bolum_baslik')), findsOneWidget);
-      expect(find.byType(SoruKarti), findsNWidgets(3));
+      expect(find.byType(SoruSatiri), findsNWidgets(2));
+      expect(find.text('Üçüncü soru burada'), findsNothing);
       expect(find.text('Dördüncü soru burada'), findsNothing);
       expect(find.text(arbMetni('soru_sor')), findsNothing);
     });
 
-    testWidgets('boşken "Soru sor" kısayolu', (tester) async {
+    testWidgets('boşken yalnızca boş durum', (tester) async {
       ekranBoyutu(tester);
       await _bolumuAc(tester, soruTasimasi());
       expect(find.text(arbMetni('soru_bos')), findsOneWidget);
-      expect(find.text(arbMetni('soru_sor')), findsOneWidget);
+      // "Soru sor" ana sayfanın "Oluştur" sayfasında (2026-11-13).
+      expect(find.text(arbMetni('soru_sor')), findsNothing);
     });
   });
 

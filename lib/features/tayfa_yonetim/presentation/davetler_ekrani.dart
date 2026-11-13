@@ -9,6 +9,8 @@ import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/davetler_notifier.dart';
+import 'package:tayfam/features/tayfa_yonetim/application/yetki.dart';
+import 'package:tayfam/features/tayfa_yonetim/data/yonetim_deposu.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -98,6 +100,46 @@ class DavetlerEkrani extends ConsumerWidget {
       builder: (_) => DavetLinkiPaylasimi(link: link, tayfaAdi: ad),
     );
   }
+}
+
+/// Tayfa ana sayfasından davet (kişi+ ikonu, "Oluştur" sayfasındaki
+/// "Tayfaya davet et", kurulum kartındaki "Davet linkini paylaş";
+/// `tayfaDavetiProvider`'a verilir): seçenekler, link oluşturma ve
+/// paylaşım. Her üye link açabilir; yetkiyi sunucu verir.
+///
+/// Link yalnızca oluşturma cevabında ve paylaşım sayfasının belleğinde
+/// yaşar; duruma, diske ve log'a yazılmaz (kesin kural 3, 9).
+Future<void> tayfayaDavetEt(BuildContext context, String tayfaId) async {
+  final secim = await altSayfaAc<({Duration sure, int kullanim})>(
+    context,
+    builder: (_) => const DavetSecenekleri(),
+  );
+  if (secim == null || !context.mounted) return;
+  final kap = ProviderScope.containerOf(context, listen: false);
+  final bildirici = SonucBildirici.al(context);
+  String? link;
+  try {
+    final olusan = await kap
+        .read(yonetimDeposuProvider)
+        .davetOlustur(
+          tayfaId,
+          InviteCreateRequest(
+            ttlSeconds: secim.sure.inSeconds,
+            maxUses: secim.kullanim,
+          ),
+        );
+    link = davetLinki(olusan.token);
+  } on Exception catch (hata) {
+    bildirici.bildir(hata, '');
+    return;
+  }
+  final paylasilacak = link;
+  if (paylasilacak == null || !context.mounted) return;
+  final ad = kap.read(tayfaOzetiProvider(tayfaId)).ad;
+  await altSayfaAc<void>(
+    context,
+    builder: (_) => DavetLinkiPaylasimi(link: paylasilacak, tayfaAdi: ad),
+  );
 }
 
 /// Yeni davet linkinin seçenekleri: geçerlilik süresi ve kullanım sayısı.

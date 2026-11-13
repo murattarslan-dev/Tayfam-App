@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,10 +12,11 @@ import 'package:tayfam/features/anket/presentation/anket_karti.dart';
 import 'package:tayfam/features/anket/presentation/anket_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfa ana sayfasındaki "Açık anketler" bölümü (ADR-0018 Genel): en
-/// yeni üç açık anket ve "Tüm anketler" bağlantısı. Açık anket yoksa kısa
-/// bir boş durum ve "Anket aç" kısayolu (her üye anket açabilir; yetkiyi
-/// sunucu verir).
+/// Tayfa ana sayfasındaki "Açık anketler" bölümü (ADR-0018 Genel, ADR-0015
+/// Notlar 2026-11-13): en yeni [anaSayfaAnketSayisi] açık anket (sonuç
+/// çubukları ve gizli anket eşiği ortak anket kartından) ve "Tüm anketler"
+/// bağlantısı. Açık anket yoksa kısa bir boş durum; "Anket aç" ana
+/// sayfanın "Oluştur" sayfasındadır.
 class AnketBolumu extends ConsumerWidget {
   const AnketBolumu({super.key, required this.tayfaId});
 
@@ -56,24 +55,14 @@ class AnketBolumu extends ConsumerWidget {
               gecikmeli: true,
             ),
           )
-        else if (acik.isEmpty) ...[
+        else if (acik.isEmpty)
           Text(
             m.anket_ana_bos,
             style: context.yazi.bodyLarge?.copyWith(
               color: context.renkler.metinGovde,
             ),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: IkincilEylem(
-              etiket: m.anket_ac,
-              ikon: Icons.add,
-              onPressed: () =>
-                  unawaited(anketFormunuAc(context, tayfaId: tayfaId)),
-            ),
-          ),
-        ] else
+          )
+        else
           for (final (sira, anket) in acik.indexed) ...[
             if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
             AnketKarti(

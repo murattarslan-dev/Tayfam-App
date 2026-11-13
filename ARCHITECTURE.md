@@ -41,7 +41,7 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0012](docs/adr/0012-giris-ve-kayit-akisi.md) | Giriş ve kayıt | Sürüm kontrolü, Google girişi, doğum tarihi teyidi, sürümlü hukuki metinler tayfam.app'te |
 | [0013](docs/adr/0013-tanitim-sitesi.md) | Tanıtım sitesi | `site/` klasörü, JavaScript yok, main'den CI ile Cloudflare Pages'e |
 | [0014](docs/adr/0014-tayfa-listesi-katilim-ve-olusturma.md) | Tayfa ve katılım | Son tayfa hatırlanır, bekleyenler panelde, kodla katılım, sihirbazla oluşturma, sistem paylaşımı |
-| [0015](docs/adr/0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru | İki bölümlü ana sayfa, sihirbaz, OSM harita seçici, varış bildiriminde tek seferlik konum |
+| [0015](docs/adr/0015-etkinlik-ve-duyuru-modulleri.md) | Etkinlik ve duyuru | Ana sayfa (2026-11-13: "Sıradaki" kartından katılım, tek "Oluştur", kurulum adımları), sihirbaz, OSM harita seçici, varış bildiriminde tek seferlik konum |
 | [0016](docs/adr/0016-uygulama-degerlendirme-penceresi.md) | Değerlendirme | "Geliyorum" dediği ilk etkinlik bitince mağaza penceresi, cihazda bir kez |
 | [0017](docs/adr/0017-hosgeldin-tanitimi.md) | Hoş geldin | İlk açılışta girişten önce 5 sayfa, cihazda bir kez, kendi bileşenlerle görseller |
 | [0018](docs/adr/0018-faz1-kalan-moduller.md) | Faz 1 kalanı | Tayfa yönetimi, profil, bildirim, soru-cevap, anket, derin link, arkadaşlık, şikâyet, sohbet; sürüm hattı (push ve E2E 2026-11-11'de sürüme alındı: ADR-0019, ADR-0020) |
