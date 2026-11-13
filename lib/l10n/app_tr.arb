@@ -3921,6 +3921,672 @@
   "@profil_sil_verileri_indir_aciklama": {
     "description": "Hesap silme ekranındaki \"Önce verilerini indir\" kısayolunun açıklaması."
   },
+  "profil_kaydet": "Kaydet",
+  "@profil_kaydet": {
+    "description": "Profilde adı düzenleme sayfasında ve profil tamamlama formunun son (ya da tek başına açılan) adımında kaydetme düğmesi."
+  },
+  "profil_liste_ayirici": ", ",
+  "@profil_liste_ayirici": {
+    "description": "Profilde ve kişi profilinde birden çok değeri (ilgi alanları, diller, sosyal medya) yan yana yazarken araya giren ayırıcı (ör. \"Türkçe, İngilizce\")."
+  },
+  "profil_ad_duzenle_etiketi": "Adını düzenle",
+  "@profil_ad_duzenle_etiketi": {
+    "description": "Profil sekmesinde adın yanındaki kalem düğmesinin ekran okuyucu etiketi ve ipucu."
+  },
+  "profil_ad_baslik": "Adın",
+  "@profil_ad_baslik": {
+    "description": "Adı düzenleme alttan sayfasının başlığı."
+  },
+  "profil_ad_aciklama": "Tayfalarında ve arkadaşlarına bu adla görünürsün.",
+  "@profil_ad_aciklama": {
+    "description": "Adı düzenleme alttan sayfasında başlığın altındaki açıklama."
+  },
+  "profil_ad_etiketi": "Ad",
+  "@profil_ad_etiketi": {
+    "description": "Adı düzenleme alttan sayfasındaki ad alanının etiketi."
+  },
+  "profil_ad_sinir": "Adını 24 saatte en fazla 3 kez değiştirebilirsin.",
+  "@profil_ad_sinir": {
+    "description": "Adı düzenleme alanının altındaki sınır notu (sunucu kuralı)."
+  },
+  "profil_ad_sinir_doldu": "Adını son 24 saatte 3 kez değiştirdin. Daha sonra tekrar dene.",
+  "@profil_ad_sinir_doldu": {
+    "description": "Ad değiştirme sınırı dolduğunda (`rate-limited`) ad alanının altındaki hata."
+  },
+  "profil_ad_kaydedildi": "Adın güncellendi.",
+  "@profil_ad_kaydedildi": {
+    "description": "Ad kaydedilince ekranın altında görünen kısa bildirim."
+  },
+  "profil_dogum_gunu": "Doğum günün",
+  "@profil_dogum_gunu": {
+    "description": "Profil → Gizlilik ve Tanıtım bilgilerin ekranındaki doğum günü görünürlüğü satırının başlığı."
+  },
+  "profil_dogum_gunu_soru": "Doğum günün kime görünsün?",
+  "@profil_dogum_gunu_soru": {
+    "description": "Doğum günü görünürlüğü alttan sayfasının başlığı."
+  },
+  "profil_dogum_gunu_aciklama": "Yalnızca arkadaşların görür. Seçtiğin anda kaydedilir.",
+  "@profil_dogum_gunu_aciklama": {
+    "description": "Doğum günü görünürlüğü alttan sayfasında başlığın altındaki açıklama."
+  },
+  "profil_dogum_gunu_gun_ay": "Yalnızca doğum günüm",
+  "@profil_dogum_gunu_gun_ay": {
+    "description": "Doğum günü görünürlüğü seçeneği (`birthday`, varsayılan): arkadaşlar gün ve ayı görür."
+  },
+  "profil_dogum_gunu_gun_ay_aciklama": "Arkadaşların gün ve ayı görür.",
+  "@profil_dogum_gunu_gun_ay_aciklama": {
+    "description": "\"Yalnızca doğum günüm\" seçeneğinin açıklaması; satırlarda şu anki ayarın özeti olarak da görünür."
+  },
+  "profil_dogum_gunu_tam": "Doğum tarihim ve yaşım",
+  "@profil_dogum_gunu_tam": {
+    "description": "Doğum günü görünürlüğü seçeneği (`full`): arkadaşlar tam tarihi ve yaşı görür."
+  },
+  "profil_dogum_gunu_tam_aciklama": "Arkadaşların tam tarihi ve yaşını görür.",
+  "@profil_dogum_gunu_tam_aciklama": {
+    "description": "\"Doğum tarihim ve yaşım\" seçeneğinin açıklaması; satırlarda şu anki ayarın özeti olarak da görünür."
+  },
+  "profil_dogum_gunu_gizli": "Kimse",
+  "@profil_dogum_gunu_gizli": {
+    "description": "Doğum günü görünürlüğü seçeneği (`hidden`): kimse görmez."
+  },
+  "profil_dogum_gunu_gizli_aciklama": "Doğum günün kimseye gösterilmez.",
+  "@profil_dogum_gunu_gizli_aciklama": {
+    "description": "\"Kimse\" seçeneğinin açıklaması; satırlarda şu anki ayarın özeti olarak da görünür."
+  },
+  "profil_tanitim_baslik": "Tanıtım bilgilerin",
+  "@profil_tanitim_baslik": {
+    "description": "Profil → Gizlilik'teki satırın ve açtığı ekranın başlığı (ilgi alanları, hakkımda, meslek, takım, diller, sosyal medya)."
+  },
+  "profil_tanitim_satir_aciklama": "İlgi alanların, hakkında yazdıkların ve sosyal medya",
+  "@profil_tanitim_satir_aciklama": {
+    "description": "Profil → Gizlilik'teki \"Tanıtım bilgilerin\" satırının açıklaması."
+  },
+  "profil_tanitim_aciklama": "Kişi profilinde \"Hakkında\" bölümünde görünür. Boş bıraktığın ya da paylaşmadığın alan görünmez; hangisini paylaşmadığın kimseye söylenmez.",
+  "@profil_tanitim_aciklama": {
+    "description": "Tanıtım bilgilerin ekranının üstündeki açıklama."
+  },
+  "profil_tanitim_bilgiler": "Bilgiler",
+  "@profil_tanitim_bilgiler": {
+    "description": "Tanıtım bilgilerin ekranında alanların listelendiği bölümün başlığı."
+  },
+  "profil_tanitim_kim_gorur": "Kim görür",
+  "@profil_tanitim_kim_gorur": {
+    "description": "Tanıtım bilgilerin ekranında \"Kim görsün\" ayarını açan satırın başlığı."
+  },
+  "profil_tanitim_eklenmedi": "Eklenmedi",
+  "@profil_tanitim_eklenmedi": {
+    "description": "Tanıtım bilgilerin ekranında henüz doldurulmamış alanın satırındaki özet."
+  },
+  "profil_alan_ilgiler": "İlgi alanların",
+  "@profil_alan_ilgiler": {
+    "description": "Tanıtım bilgilerin ekranındaki ilgi alanları satırının başlığı; profil tamamlama formunda ilgi çiplerinin ekran okuyucu etiketi."
+  },
+  "profil_alan_hakkimda": "Hakkımda",
+  "@profil_alan_hakkimda": {
+    "description": "Hakkımda alanının adı: Tanıtım bilgilerin satırı ve profil tamamlama formundaki metin alanının etiketi."
+  },
+  "profil_alan_meslek": "Meslek",
+  "@profil_alan_meslek": {
+    "description": "Meslek alanının adı: Tanıtım bilgilerin satırı, profil tamamlama formundaki alanın etiketi ve kişi profilindeki \"Hakkında\" satırı."
+  },
+  "profil_alan_takim": "Takım",
+  "@profil_alan_takim": {
+    "description": "Tutulan takım alanının adı: Tanıtım bilgilerin satırı, profil tamamlama formundaki alanın etiketi ve kişi profilindeki \"Hakkında\" satırı."
+  },
+  "profil_alan_diller": "Diller",
+  "@profil_alan_diller": {
+    "description": "Diller alanının adı: Tanıtım bilgilerin satırı ve kişi profilindeki \"Hakkında\" satırı."
+  },
+  "profil_alan_sosyal": "Sosyal medya",
+  "@profil_alan_sosyal": {
+    "description": "Sosyal medya alanının Tanıtım bilgilerin ekranındaki satır başlığı."
+  },
+  "profil_alan_dogum_gunu": "Doğum günü",
+  "@profil_alan_dogum_gunu": {
+    "description": "Kişi profilindeki \"Hakkında\" kartında doğum günü satırının adı."
+  },
+  "profil_sosyal_instagram": "Instagram",
+  "@profil_sosyal_instagram": {
+    "description": "Sosyal medya platformunun adı (Instagram); profil tamamlama formundaki alanın etiketi ve kişi profilindeki satır."
+  },
+  "profil_sosyal_x": "X",
+  "@profil_sosyal_x": {
+    "description": "Sosyal medya platformunun adı (X, eski adıyla Twitter); profil tamamlama formundaki alanın etiketi ve kişi profilindeki satır."
+  },
+  "profil_sosyal_tiktok": "TikTok",
+  "@profil_sosyal_tiktok": {
+    "description": "Sosyal medya platformunun adı (TikTok); profil tamamlama formundaki alanın etiketi ve kişi profilindeki satır."
+  },
+  "profil_sosyal_youtube": "YouTube",
+  "@profil_sosyal_youtube": {
+    "description": "Sosyal medya platformunun adı (YouTube); profil tamamlama formundaki alanın etiketi ve kişi profilindeki satır."
+  },
+  "profil_tamamla_daha_sonra": "Daha sonra doldur",
+  "@profil_tamamla_daha_sonra": {
+    "description": "Profil tamamlama formunun sağ üstündeki bağlantı; form 7 gün yeniden istenmez."
+  },
+  "profil_tamamla_ileri": "İleri",
+  "@profil_tamamla_ileri": {
+    "description": "Profil tamamlama formunda sonraki adıma geçen birincil düğme."
+  },
+  "profil_tamamla_paylasmak_istemiyorum": "Paylaşmak istemiyorum",
+  "@profil_tamamla_paylasmak_istemiyorum": {
+    "description": "Profil tamamlama formunda alanı reddeden bağlantı (alan cevaplanmış sayılır); Tanıtım bilgilerin ekranında reddedilen alanın özeti."
+  },
+  "profil_tamamla_kaydedildi": "Tanıtım bilgilerin kaydedildi.",
+  "@profil_tamamla_kaydedildi": {
+    "description": "Girişten sonra açılan profil tamamlama formu bitince görünen kısa bildirim."
+  },
+  "profil_tamamla_ilgi_baslik": "Neler yapmayı seversin?",
+  "@profil_tamamla_ilgi_baslik": {
+    "description": "Profil tamamlama formunun ilgi alanları adımının başlığı."
+  },
+  "profil_tamamla_ilgi_aciklama": "İstediğin kadarını seç.",
+  "@profil_tamamla_ilgi_aciklama": {
+    "description": "İlgi alanları adımında başlığın altındaki açıklama."
+  },
+  "profil_tamamla_ilgi_not": "Profilinde görünür; ortak ilgisi olanlar seni daha kolay tanır. Kimlerin göreceğini \"Kim görsün\" ayarı belirler.",
+  "@profil_tamamla_ilgi_not": {
+    "description": "İlgi alanları adımının altındaki bilgi notu."
+  },
+  "profil_tamamla_hakkimda_baslik": "Kendini birkaç cümleyle anlat",
+  "@profil_tamamla_hakkimda_baslik": {
+    "description": "Profil tamamlama formunun hakkımda adımının başlığı."
+  },
+  "profil_tamamla_hakkimda_aciklama": "Tayfandakiler seni tanısın.",
+  "@profil_tamamla_hakkimda_aciklama": {
+    "description": "Hakkımda adımında başlığın altındaki açıklama."
+  },
+  "profil_tamamla_hakkimda_not": "Kişi profilinde adının altında, \"Hakkında\" bölümünde görünür.",
+  "@profil_tamamla_hakkimda_not": {
+    "description": "Hakkımda adımının altındaki bilgi notu."
+  },
+  "profil_tamamla_meslek_baslik": "Ne iş yaparsın?",
+  "@profil_tamamla_meslek_baslik": {
+    "description": "Profil tamamlama formunun meslek adımının başlığı."
+  },
+  "profil_tamamla_meslek_aciklama": "Mesleğini ya da uğraşını tek satırda yaz.",
+  "@profil_tamamla_meslek_aciklama": {
+    "description": "Meslek adımında başlığın altındaki açıklama."
+  },
+  "profil_tamamla_takim_baslik": "Hangi takımı tutarsın?",
+  "@profil_tamamla_takim_baslik": {
+    "description": "Profil tamamlama formunun tutulan takım adımının başlığı."
+  },
+  "profil_tamamla_takim_aciklama": "Tuttuğun takımın adını yaz.",
+  "@profil_tamamla_takim_aciklama": {
+    "description": "Takım adımında başlığın altındaki açıklama."
+  },
+  "profil_tamamla_satir_not": "Kişi profilinde \"Hakkında\" bölümünde görünür.",
+  "@profil_tamamla_satir_not": {
+    "description": "Meslek ve takım adımlarının altındaki bilgi notu."
+  },
+  "profil_tamamla_dil_baslik": "Hangi dilleri konuşursun?",
+  "@profil_tamamla_dil_baslik": {
+    "description": "Profil tamamlama formunun diller adımının başlığı."
+  },
+  "profil_tamamla_dil_aciklama": "En fazla 5 dil seçebilirsin.",
+  "@profil_tamamla_dil_aciklama": {
+    "description": "Diller adımında başlığın altındaki açıklama (sözleşme: en çok 5 dil)."
+  },
+  "profil_tamamla_dil_ara": "Dil ara",
+  "@profil_tamamla_dil_ara": {
+    "description": "Diller adımındaki arama alanının ipucu."
+  },
+  "profil_tamamla_dil_bos": "Bu adla bir dil bulunamadı.",
+  "@profil_tamamla_dil_bos": {
+    "description": "Diller adımında aramaya uyan dil yokken görünen metin."
+  },
+  "profil_tamamla_dil_not": "Yabancı dilde konuşan biri tayfaya katıldığında kiminle anlaşabileceğini bilsin diye.",
+  "@profil_tamamla_dil_not": {
+    "description": "Diller adımının altındaki bilgi notu."
+  },
+  "profil_tamamla_sosyal_baslik": "Sosyal medyada neredesin?",
+  "@profil_tamamla_sosyal_baslik": {
+    "description": "Profil tamamlama formunun sosyal medya adımının başlığı."
+  },
+  "profil_tamamla_sosyal_aciklama": "Yalnızca kullanıcı adını yaz; bağlantıyı biz kurarız.",
+  "@profil_tamamla_sosyal_aciklama": {
+    "description": "Sosyal medya adımında başlığın altındaki açıklama."
+  },
+  "profil_tamamla_sosyal_ipucu": "kullanıcı adı",
+  "@profil_tamamla_sosyal_ipucu": {
+    "description": "Sosyal medya adımındaki her alanın ipucu (önünde sabit \"@\" vardır)."
+  },
+  "profil_tamamla_sosyal_hata": "Bu kullanıcı adı geçerli değil. Yalnızca harf, rakam ve platformun izin verdiği işaretleri kullan; bağlantı yazma.",
+  "@profil_tamamla_sosyal_hata": {
+    "description": "Sosyal medya adımında kullanıcı adı platformun kuralına uymadığında alanın altındaki hata."
+  },
+  "profil_tamamla_sosyal_not": "Sosyal medya hesapların, \"Kim görsün\" ayarı ne olursa olsun yalnızca arkadaşlarına görünür.",
+  "@profil_tamamla_sosyal_not": {
+    "description": "Sosyal medya adımının altındaki bilgi notu."
+  },
+  "profil_tamamla_gorunurluk_baslik": "Bu bilgileri kim görsün?",
+  "@profil_tamamla_gorunurluk_baslik": {
+    "description": "Profil tamamlama formunun son adımının (\"Kim görsün\") başlığı."
+  },
+  "profil_tamamla_gorunurluk_aciklama": "İlgi alanların, hakkında yazdıkların, mesleğin, takımın ve dillerin için geçerli.",
+  "@profil_tamamla_gorunurluk_aciklama": {
+    "description": "\"Kim görsün\" adımında başlığın altındaki açıklama."
+  },
+  "profil_tamamla_gorunurluk_not": "Sosyal medya hesapların her durumda en fazla arkadaşlarına görünür. Ayarı sonra Profil → Gizlilik'ten değiştirebilirsin.",
+  "@profil_tamamla_gorunurluk_not": {
+    "description": "\"Kim görsün\" adımının altındaki bilgi notu."
+  },
+  "profil_tanitim_gorunurluk_ortak": "Arkadaşların ve ortak tayfa üyelerin",
+  "@profil_tanitim_gorunurluk_ortak": {
+    "description": "\"Kim görsün\" seçeneği (`friends_and_mutual`, varsayılan); Tanıtım bilgilerin ekranında şu anki ayarın özeti."
+  },
+  "profil_tanitim_gorunurluk_ortak_aciklama": "Aynı tayfada olduğun herkes görür.",
+  "@profil_tanitim_gorunurluk_ortak_aciklama": {
+    "description": "\"Arkadaşların ve ortak tayfa üyelerin\" seçeneğinin açıklaması."
+  },
+  "profil_tanitim_gorunurluk_arkadaslar": "Yalnızca arkadaşların",
+  "@profil_tanitim_gorunurluk_arkadaslar": {
+    "description": "\"Kim görsün\" seçeneği (`friends`)."
+  },
+  "profil_tanitim_gorunurluk_arkadaslar_aciklama": "Ortak tayfadakiler görmez.",
+  "@profil_tanitim_gorunurluk_arkadaslar_aciklama": {
+    "description": "\"Yalnızca arkadaşların\" seçeneğinin açıklaması."
+  },
+  "profil_tanitim_gorunurluk_kimse": "Kimse",
+  "@profil_tanitim_gorunurluk_kimse": {
+    "description": "\"Kim görsün\" seçeneği (`none`)."
+  },
+  "profil_tanitim_gorunurluk_kimse_aciklama": "Bilgilerin yalnızca sende kalır.",
+  "@profil_tanitim_gorunurluk_kimse_aciklama": {
+    "description": "\"Kimse\" seçeneğinin açıklaması."
+  },
+  "arkadas_hakkinda": "Hakkında",
+  "@arkadas_hakkinda": {
+    "description": "Kişi profilinde tanıtım bilgilerinin ve doğum gününün gösterildiği kartın bölüm başlığı."
+  },
+  "profil_tamamla_adim": "{toplam} adımdan {adim}. adım",
+  "@profil_tamamla_adim": {
+    "description": "Profil tamamlama formundaki ilerleme çubuğunun ekran okuyucu etiketi.",
+    "placeholders": {
+      "adim": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "profil_tamamla_dil_sayac": "{sayi}/{enCok}",
+  "@profil_tamamla_dil_sayac": {
+    "description": "Diller adımında seçilen dil sayısı ve en çok sayı (ör. \"2/5\").",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "profil_tamamla_dil_kaldir": "{dil} kaldır",
+  "@profil_tamamla_dil_kaldir": {
+    "description": "Diller adımında seçilen dil çipinin silme düğmesinin ekran okuyucu etiketi (ör. \"Türkçe kaldır\").",
+    "placeholders": {
+      "dil": {
+        "type": "String",
+        "example": "Türkçe"
+      }
+    }
+  },
+  "arkadas_sosyal_kullanici_adi": "@{ad}",
+  "@arkadas_sosyal_kullanici_adi": {
+    "description": "Kişi profilindeki sosyal medya satırında kullanıcı adı (ör. \"@mertaydin\").",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "mertaydin"
+      }
+    }
+  },
+  "arkadas_dogum_gunu_yasli": "{tarih} · {yas} yaşında",
+  "@arkadas_dogum_gunu_yasli": {
+    "description": "Kişi profilinde doğum günü tam tarihle gösterilirken (kendi profilin ya da \"Doğum tarihim ve yaşım\" ayarı) tarih ve yaş.",
+    "placeholders": {
+      "tarih": {
+        "type": "String",
+        "example": "14 Mart 1990"
+      },
+      "yas": {
+        "type": "int",
+        "example": "36"
+      }
+    }
+  },
+  "dil_tr": "Türkçe",
+  "@dil_tr": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `tr`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_en": "İngilizce",
+  "@dil_en": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `en`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_de": "Almanca",
+  "@dil_de": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `de`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ar": "Arapça",
+  "@dil_ar": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ar`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ku": "Kürtçe",
+  "@dil_ku": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ku`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_fr": "Fransızca",
+  "@dil_fr": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `fr`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_es": "İspanyolca",
+  "@dil_es": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `es`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ru": "Rusça",
+  "@dil_ru": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ru`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_it": "İtalyanca",
+  "@dil_it": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `it`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_fa": "Farsça",
+  "@dil_fa": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `fa`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_az": "Azerbaycanca",
+  "@dil_az": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `az`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ab": "Abhazca",
+  "@dil_ab": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ab`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_af": "Afrikaanca",
+  "@dil_af": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `af`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_am": "Amharca",
+  "@dil_am": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `am`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_sq": "Arnavutça",
+  "@dil_sq": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `sq`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_av": "Avarca",
+  "@dil_av": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `av`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_eu": "Baskça",
+  "@dil_eu": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `eu`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ba": "Başkurtça",
+  "@dil_ba": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ba`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_be": "Belarusça",
+  "@dil_be": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `be`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_bn": "Bengalce",
+  "@dil_bn": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `bn`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_bs": "Boşnakça",
+  "@dil_bs": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `bs`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_bg": "Bulgarca",
+  "@dil_bg": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `bg`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ce": "Çeçence",
+  "@dil_ce": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ce`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_cs": "Çekçe",
+  "@dil_cs": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `cs`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_zh": "Çince",
+  "@dil_zh": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `zh`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_cv": "Çuvaşça",
+  "@dil_cv": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `cv`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_da": "Danca",
+  "@dil_da": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `da`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_id": "Endonezce",
+  "@dil_id": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `id`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_hy": "Ermenice",
+  "@dil_hy": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `hy`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_eo": "Esperanto",
+  "@dil_eo": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `eo`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_et": "Estonca",
+  "@dil_et": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `et`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_nl": "Felemenkçe",
+  "@dil_nl": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `nl`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_fi": "Fince",
+  "@dil_fi": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `fi`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_cy": "Galce",
+  "@dil_cy": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `cy`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_gl": "Galiçyaca",
+  "@dil_gl": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `gl`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ka": "Gürcüce",
+  "@dil_ka": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ka`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ha": "Hausaca",
+  "@dil_ha": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ha`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_hr": "Hırvatça",
+  "@dil_hr": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `hr`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_hi": "Hintçe",
+  "@dil_hi": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `hi`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_he": "İbranice",
+  "@dil_he": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `he`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ga": "İrlandaca",
+  "@dil_ga": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ga`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_sv": "İsveççe",
+  "@dil_sv": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `sv`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_is": "İzlandaca",
+  "@dil_is": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `is`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ja": "Japonca",
+  "@dil_ja": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ja`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ca": "Katalanca",
+  "@dil_ca": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ca`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_kk": "Kazakça",
+  "@dil_kk": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `kk`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ky": "Kırgızca",
+  "@dil_ky": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ky`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ko": "Korece",
+  "@dil_ko": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ko`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_la": "Latince",
+  "@dil_la": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `la`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_pl": "Lehçe",
+  "@dil_pl": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `pl`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_lv": "Letonca",
+  "@dil_lv": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `lv`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_lt": "Litvanca",
+  "@dil_lt": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `lt`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_lb": "Lüksemburgca",
+  "@dil_lb": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `lb`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_hu": "Macarca",
+  "@dil_hu": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `hu`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_mk": "Makedonca",
+  "@dil_mk": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `mk`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ms": "Malayca",
+  "@dil_ms": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ms`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_mt": "Maltaca",
+  "@dil_mt": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `mt`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_mn": "Moğolca",
+  "@dil_mn": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `mn`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_no": "Norveççe",
+  "@dil_no": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `no`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_os": "Osetçe",
+  "@dil_os": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `os`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_uz": "Özbekçe",
+  "@dil_uz": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `uz`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_pa": "Pencapça",
+  "@dil_pa": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `pa`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ps": "Peştuca",
+  "@dil_ps": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ps`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_pt": "Portekizce",
+  "@dil_pt": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `pt`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ro": "Romence",
+  "@dil_ro": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ro`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_sr": "Sırpça",
+  "@dil_sr": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `sr`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_sk": "Slovakça",
+  "@dil_sk": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `sk`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_sl": "Slovence",
+  "@dil_sl": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `sl`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_so": "Somalice",
+  "@dil_so": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `so`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_sw": "Svahili",
+  "@dil_sw": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `sw`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_tl": "Tagalogca",
+  "@dil_tl": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `tl`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ta": "Tamilce",
+  "@dil_ta": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ta`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_tt": "Tatarca",
+  "@dil_tt": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `tt`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_th": "Tayca",
+  "@dil_th": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `th`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_tk": "Türkmence",
+  "@dil_tk": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `tk`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_uk": "Ukraynaca",
+  "@dil_uk": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `uk`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ur": "Urduca",
+  "@dil_ur": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ur`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_ug": "Uygurca",
+  "@dil_ug": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `ug`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_vi": "Vietnamca",
+  "@dil_vi": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `vi`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_yi": "Yidiş",
+  "@dil_yi": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `yi`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
+  "dil_el": "Yunanca",
+  "@dil_el": {
+    "description": "Dilin Türkçe adı (ISO 639-1 `el`). Profil tamamlama formunun dil adımında ve kişi profilindeki \"Diller\" satırında görünür."
+  },
   "hata_genel": "Bir sorun oluştu. Tekrar dene.",
   "@hata_genel": {
     "description": "Sunucunun tanınmayan bir hata kodu döndürdüğü ya da beklenmeyen bir hata olduğu her yerde görünen genel hata."
@@ -5889,14 +6555,6 @@
   "arkadas_engelle_kisa": "Birbirinizin profilini göremezsiniz",
   "@arkadas_engelle_kisa": {
     "description": "Kişi profilinin ⋯ menüsünde \"Engelle\" satırının açıklaması."
-  },
-  "arkadas_sikayet_tayfa_baslik": "Hangi tayfada şikâyet edeceksin?",
-  "@arkadas_sikayet_tayfa_baslik": {
-    "description": "Kişiyle birden çok ortak tayfa varken şikâyetin gideceği tayfayı seçtiren alttan sayfanın başlığı."
-  },
-  "arkadas_sikayet_tayfa_aciklama": "Şikâyetin o tayfanın moderatörlerine ve yöneticilerine gider; kimliğin gösterilmez.",
-  "@arkadas_sikayet_tayfa_aciklama": {
-    "description": "Şikâyet tayfası seçiminin açıklaması (sözleşme: kullanıcı şikâyeti bir tayfada yapılır)."
   },
   "derin_link_davet_baslik": "Tayfa daveti",
   "@derin_link_davet_baslik": {

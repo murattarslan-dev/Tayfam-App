@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/kabuk_katmanlari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
@@ -92,7 +93,11 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
       return identical(konum, state.uri) ? null : konum.toString();
     },
     errorBuilder: (context, state) => const BulunamadiSayfasi(),
-    routes: rotalariOlustur(moduller, kutu: kutu),
+    routes: rotalariOlustur(
+      moduller,
+      kutu: kutu,
+      katmanlar: ref.watch(kabukKatmanlariProvider),
+    ),
   );
 
   var kapandi = false;
@@ -130,10 +135,12 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
 ///
 /// [moduller]'ün rotaları `/t/:tayfaId` altına eklenir. Derin link
 /// rotaları (`shell/derin_link/`) bu listenin üst düzeyine eklenir; kayıt
-/// formu [kutu]'daki referans koduyla dolar.
+/// formu [kutu]'daki referans koduyla dolar. [katmanlar] kabuğun çevresine
+/// sırayla eklenir (ör. girişten sonra profil tamamlama istemi).
 List<RouteBase> rotalariOlustur(
   List<TayfaModule> moduller, {
   DerinLinkKutusu? kutu,
+  List<KabukKatmani> katmanlar = const [],
 }) {
   return [
     StatefulShellRoute.indexedStack(
@@ -142,7 +149,10 @@ List<RouteBase> rotalariOlustur(
       builder: (context, state, navigationShell) => RealtimeBaglantisi(
         child: PushOlaylari(
           child: CanliOlaylar(
-            child: KabukIskeleti(navigationShell: navigationShell),
+            child: katmanlar.fold<Widget>(
+              KabukIskeleti(navigationShell: navigationShell),
+              (kabuk, katman) => katman(kabuk),
+            ),
           ),
         ),
       ),
@@ -250,5 +260,7 @@ List<RouteBase> rotalariOlustur(
     // Kişi profili her sekmeden açılır; sekmelerin üstündedir
     // (ADR-0018 §7).
     kisiProfiliRotasi,
+    // Girişten sonra açılan profil tamamlama formu (issue #186).
+    profilTamamlamaRotasi,
   ];
 }

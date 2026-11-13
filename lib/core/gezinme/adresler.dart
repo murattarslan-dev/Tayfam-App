@@ -203,6 +203,21 @@ abstract final class Adresler {
   /// "Verilerimi indir": talep, durum ve indirme.
   static const veriDisaAktarma = '$profil/$veriDisaAktarmaYolu';
 
+  /// Tanıtım bilgileri ekranının profil altındaki yolu (issue #186).
+  static const tanitimBilgileriYolu = 'tanitim';
+
+  /// "Tanıtım bilgilerin": profil tamamlama alanları, "Kim görür" ve doğum
+  /// günü görünürlüğü.
+  static const tanitimBilgileri = '$profil/$tanitimBilgileriYolu';
+
+  /// Profil tamamlama formunun tek bir adımı (`/profil/tanitim/<adım>`);
+  /// [adim] formdaki adımın sabit yol adıdır.
+  static String tanitimAdimi(String adim) => '$tanitimBilgileri/$adim';
+
+  /// Girişten sonra açılan profil tamamlama formu (issue #186); kabuğun
+  /// üstünde tam ekran.
+  static const profilTamamla = '/profil-tamamla';
+
   /// Tayfa yönetiminin `/t/<tayfaId>/` altındaki yolu (ADR-0018 §1). Alt
   /// ekranlar (istekler, üyeler, bilgiler, davetler) bunun altındadır.
   static const tayfaAyarlariYolu = 'ayarlar';

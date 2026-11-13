@@ -105,6 +105,19 @@ void main() {
       expect(_duyuruHedefi.yalnizcaPlatform, isFalse);
     });
 
+    test('kişi profilinden kullanıcı yalnızca platforma gider (#187)', () {
+      const kisi = SikayetHedefi.kullanici(uyeId);
+      expect(kisi.tur, ReportTargetType.user);
+      expect(kisi.tayfaId, isNull);
+      expect(kisi.yalnizcaPlatform, isTrue);
+      expect(kisi.gerekceler, isNot(contains(ReportReason.staffConduct)));
+      expect(kisi.istek(ReportReason.harassment, '').toJson(), {
+        'target_type': 'user',
+        'target_id': uyeId,
+        'reason': 'harassment',
+      });
+    });
+
     test('tayfa hedefinin kimliği tayfanın kimliği', () {
       const hedef = SikayetHedefi.tayfa(ornekTayfaId);
       expect(hedef.id, ornekTayfaId);
@@ -190,6 +203,31 @@ void main() {
         'target_id': mesajId,
         'reason': 'harassment',
         'evidence_text': 'kaba söz',
+      });
+    });
+
+    test('kişi profilinden kullanıcı şikâyeti platform ucuna gider', () async {
+      final tasima = SahteTayfaTasima({
+        'POST $benimSikayetlerimYolu': yanit(
+          benimSikayetimJson(tur: 'user', hedef: uyeId, tayfa: null),
+        ),
+      });
+      final kap = _kap(tasima);
+      const hedef = SikayetHedefi.kullanici(uyeId);
+      final saglayici = sikayetFormuProvider(hedef);
+      kap.listen(saglayici, (_, _) {});
+
+      final tamam = await kap
+          .read(saglayici.notifier)
+          .gonder(ReportReason.impersonation, ' sahte hesap ');
+
+      expect(tamam, isTrue);
+      expect(tasima.giden('POST', sikayetlerYolu), isEmpty);
+      expect(tasima.giden('POST', benimSikayetlerimYolu).single.govde, {
+        'target_type': 'user',
+        'target_id': uyeId,
+        'reason': 'impersonation',
+        'description': 'sahte hesap',
       });
     });
 

@@ -119,7 +119,7 @@ Future<ActivityVisibility?> gorunurlukSayfasiniAc(
             children: [
               for (final (sira, g) in gorunurlukSecenekleri.indexed) ...[
                 if (sira > 0) const SizedBox(height: TayfamSpacing.s8),
-                _SecimKarti(
+                SecimKarti(
                   secili: g == secili,
                   child: RadioListTile<ActivityVisibility>(
                     value: g,
@@ -142,9 +142,10 @@ Future<ActivityVisibility?> gorunurlukSayfasiniAc(
 }
 
 /// Seçenek kartı: seçiliyse tint-brand zemin ve 2 px brand kenar, değilse
-/// kart zemin ve çizgi kenar (tasarım: Profil-Gorunurluk).
-class _SecimKarti extends StatelessWidget {
-  const _SecimKarti({required this.secili, required this.child});
+/// kart zemin ve çizgi kenar (tasarım: Profil-Gorunurluk, Profil-Dogum-Gunu,
+/// Profil-Tamamla-Gorunurluk).
+class SecimKarti extends StatelessWidget {
+  const SecimKarti({super.key, required this.secili, required this.child});
 
   final bool secili;
   final Widget child;

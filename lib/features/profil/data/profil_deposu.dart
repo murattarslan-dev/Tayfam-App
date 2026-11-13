@@ -12,13 +12,23 @@ final class ProfilDeposu {
 
   final MeApi _me;
 
-  /// `GET /v1/me/account`: kimlik, görünen ad, referans kodu ve katılım
-  /// geçmişi görünürlüğü.
+  /// `GET /v1/me/account`: kimlik, görünen ad, referans kodu, görünürlük
+  /// ayarları ve tanıtım bilgileri.
   Future<Account> hesap() => _me.getAccount();
 
   /// `PATCH /v1/me/account`.
   Future<Account> gorunurlukDegistir(ActivityVisibility gorunurluk) =>
       _me.updateAccount(body: AccountUpdate(activityVisibility: gorunurluk));
+
+  /// `PATCH /v1/me/account`: görünen ad, doğum günü görünürlüğü ve profil
+  /// tamamlama alanları (issue #184–#186). Gövdedeki alanlar değişir;
+  /// sunucu güncel hesabı döndürür.
+  Future<Account> guncelle(AccountUpdate degisiklik) =>
+      _me.updateAccount(body: degisiklik);
+
+  /// `POST /v1/me/profile-prompt/snooze`: profil tamamlama formu 7 gün
+  /// istenmez ("Daha sonra doldur"; erteleme sunucuda tutulur).
+  Future<void> ertele() => _me.snoozeProfilePrompt();
 
   /// `POST /v1/me/referral-code`: yeni kod; eskisi hemen geçersiz olur.
   Future<String> yeniReferansKodu() async =>
