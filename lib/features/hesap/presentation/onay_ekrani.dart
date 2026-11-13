@@ -7,12 +7,18 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/hesap/application/onay_notifier.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
+import 'package:tayfam/features/hesap/presentation/hesap_durum_duzeni.dart';
 import 'package:tayfam/features/hesap/presentation/hesap_ortak.dart';
-import 'package:tayfam/features/hesap/presentation/hukuki_onay.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Yeniden onay ekranı (ADR-0012 §5): güncel metinlerin bağlantıları, tek
-/// onay kutusu ve gösterilen sürümlerle `POST /v1/me/consents`.
+/// Yeniden onay ekranı (ADR-0012 §5; tasarım Hesap-Onay): "Koşullar
+/// güncellendi", güncel metinlerin iki "oku" satırı (sürümlü sayfa sistem
+/// tarayıcısında açılır), tek onay kutusu ve gösterilen sürümlerle
+/// `POST /v1/me/consents`.
+///
+/// Kutu işaretlenmeden "Onayla ve devam et" pasiftir; ikincil eylem "Çıkış
+/// yap" (başka bir Google hesabıyla girmek için). Sürümler değişirse
+/// (`consent-outdated`) kutu yeniden boşalır.
 class OnayEkrani extends ConsumerStatefulWidget {
   const OnayEkrani({super.key});
 
@@ -22,26 +28,20 @@ class OnayEkrani extends ConsumerStatefulWidget {
 
 class _OnayEkraniState extends ConsumerState<OnayEkrani> {
   bool _onay = false;
-  bool _hataGoster = false;
 
-  void _onayDegisti(bool isaretli) {
-    setState(() {
-      _onay = isaretli;
-      if (isaretli) _hataGoster = false;
-    });
-  }
+  void _onayDegisti(bool isaretli) => setState(() => _onay = isaretli);
 
-  void _gonder() {
-    if (!_onay) {
-      setState(() => _hataGoster = true);
-      return;
-    }
-    unawaited(ref.read(onayProvider.notifier).onayla());
-  }
+  void _gonder() => unawaited(ref.read(onayProvider.notifier).onayla());
+
+  void _cikisYap() => unawaited(ref.read(onayProvider.notifier).cikisYap());
+
+  /// Metnin sürümlü sayfasını sistem tarayıcısında açar.
+  void _ac(Uri adres) => unawaited(disBaglantiyiAc(context, ref, adres));
 
   @override
   Widget build(BuildContext context) {
-    final metinler = AppLocalizations.of(context);
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
     // Sürümler değişince (consent-outdated) yeni metinler yeniden onaylanır.
     ref.listen(onayProvider, (onceki, sonraki) {
       final eski = onceki?.value?.surumler;
@@ -52,86 +52,84 @@ class _OnayEkraniState extends ConsumerState<OnayEkrani> {
     });
     final durum = ref.watch(onayProvider);
     final deger = durum.value;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(metinler.hesap_onay_baslik),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                unawaited(ref.read(onayProvider.notifier).cikisYap()),
-            child: Text(metinler.hesap_cikis_yap),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: TayfamSizes.okumaGenisligi,
-            ),
-            child: deger != null
-                ? _icerik(context, metinler, deger)
-                : YuklemeDurumu(
-                    yukleniyor: durum.isLoading,
-                    hata: durum.error,
-                    tekrarDene: () => ref.invalidate(onayProvider),
-                  ),
+    final cikis = BaglantiEylemi(
+      etiket: m.hesap_cikis_yap,
+      renk: r.metinGovde,
+      onPressed: _cikisYap,
+    );
+
+    if (deger == null) {
+      // Sürümler yüklenirken ya da yüklenemediyse de çıkış yapılabilir.
+      return Scaffold(
+        backgroundColor: r.zemin,
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: YuklemeDurumu(
+                  yukleniyor: durum.isLoading,
+                  hata: durum.error,
+                  tekrarDene: () => ref.invalidate(onayProvider),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  TayfamSpacing.s20,
+                  0,
+                  TayfamSpacing.s20,
+                  TayfamSpacing.s32,
+                ),
+                child: cikis,
+              ),
+            ],
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
-  Widget _icerik(
-    BuildContext context,
-    AppLocalizations metinler,
-    OnayDurumu deger,
-  ) {
     final kilitli = deger.gonderiliyor;
     final hata = deger.hata;
     final surumler = deger.surumler;
-    // Form kısa; ListView gibi tembel kurulmaz, bütün alanlar ağaçta
-    // (ekran okuyucu sırası ve testler).
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-      child: Column(
+    return HesapDurumDuzeni(
+      ustBosluk: TayfamSpacing.s64,
+      ikon: Icons.description_outlined,
+      ikonZemini: r.tintMarka,
+      ikonRengi: r.tintMarkaUstu,
+      baslik: m.hesap_onay_baslik,
+      aciklama: m.hesap_onay_aciklama,
+      icerik: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            metinler.hesap_onay_aciklama,
-            style: context.yazi.bodyLarge?.copyWith(
-              color: context.renkler.metinGovde,
-            ),
+          OkumaSatiri(
+            etiket: m.hesap_aydinlatma_ac,
+            onTap: () => _ac(surumler.adres(HukukiMetin.aydinlatma)),
           ),
-          const SizedBox(height: TayfamSpacing.s16),
-          HukukiOnay(
-            etiket: metinler.hesap_onay_kutusu,
+          const SizedBox(height: TayfamSpacing.s8),
+          OkumaSatiri(
+            etiket: m.hesap_kosullar_ac,
+            onTap: () => _ac(surumler.adres(HukukiMetin.kosullar)),
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
+          OnayKutusuSatiri(
+            etiket: m.hesap_onay_kutusu,
             isaretli: _onay,
             degisti: kilitli ? null : _onayDegisti,
-            baglantilar: [
-              (
-                metinler.hesap_aydinlatma_ac,
-                surumler.adres(HukukiMetin.aydinlatma),
-              ),
-              (
-                metinler.hesap_kosullar_ac,
-                surumler.adres(HukukiMetin.kosullar),
-              ),
-            ],
-            hata: _hataGoster ? metinler.hesap_onay_kutusu_hata : null,
           ),
           if (hata != null) ...[
-            const SizedBox(height: TayfamSpacing.s16),
-            HataSatiri(metin: hesapHatasiMetni(metinler, hata)),
+            const SizedBox(height: TayfamSpacing.s12),
+            HataSatiri(metin: hesapHatasiMetni(m, hata)),
           ],
-          const SizedBox(height: TayfamSpacing.s24),
-          BirincilEylem(
-            etiket: metinler.hesap_onay_gonder,
-            onPressed: kilitli ? null : _gonder,
-          ),
         ],
       ),
+      eylemler: [
+        BirincilEylem(
+          etiket: m.hesap_onay_gonder,
+          onPressed: _onay && !kilitli ? _gonder : null,
+        ),
+        const SizedBox(height: TayfamSpacing.s4),
+        cikis,
+      ],
     );
   }
 }
