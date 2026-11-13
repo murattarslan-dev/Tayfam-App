@@ -5,16 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/anket/application/anket_kurallari.dart';
 import 'package:tayfam/features/anket/application/oy_verenler_notifier.dart';
 import 'package:tayfam/features/anket/presentation/anket_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Açık (gizli olmayan) ankette [secenek]'e oy verenleri alttan açılan
-/// sayfada gösterir (ADR-0018 §5). Gizli ankette hiçbir şey yapmaz: sayfa
-/// açılmaz, istek gitmez (kesin kural 7).
+/// Açık (gizli olmayan) ankette [secenek]'e oy verenleri alttan sayfada
+/// gösterir (tasarım: Anket-Oy-Verenler; ADR-0018 §5). Gizli ankette
+/// hiçbir şey yapmaz: sayfa açılmaz, istek gitmez (kesin kural 7).
 Future<void> oyVerenleriGoster(
   BuildContext context, {
   required String tayfaId,
@@ -22,57 +23,60 @@ Future<void> oyVerenleriGoster(
   required PollOption secenek,
 }) async {
   if (!oyVerenlerGorunur(anket)) return;
-  await showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    showDragHandle: true,
-    useSafeArea: true,
+  await altSayfaAc<void>(
+    context,
     builder: (_) => OyVerenlerSayfasi(
       anahtar: (tayfaId: tayfaId, anket: anket, secenekId: secenek.id),
-      secenekMetni: secenek.text,
+      secenek: secenek,
     ),
   );
 }
 
-/// Bir seçeneğe oy verenlerin listesi: görünen adlar, en eski oy önce,
-/// sayfalı.
+/// Bir seçeneğe oy verenlerin listesi: başlıkta seçenek ve oy sayısı,
+/// satırlarda avatar ve görünen ad (kendi satırında "(sen)"), en eski oy
+/// önce, sayfalı.
 class OyVerenlerSayfasi extends ConsumerWidget {
   const OyVerenlerSayfasi({
     super.key,
     required this.anahtar,
-    required this.secenekMetni,
+    required this.secenek,
   });
 
   final OyVerenlerAnahtari anahtar;
-  final String secenekMetni;
+  final PollOption secenek;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
     final saglayici = oyVerenlerProvider(anahtar);
     final durum = ref.watch(saglayici);
     final liste = durum.value;
     final hata = durum.error;
-    return ListView(
-      shrinkWrap: true,
-      padding: const EdgeInsetsDirectional.only(
-        start: TayfamSpacing.kenarMobil,
-        end: TayfamSpacing.kenarMobil,
-        bottom: TayfamSpacing.kenarMobil,
+    return AltSayfaIcerigi(
+      ust: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          TayfamSpacing.s8,
+          0,
+          TayfamSpacing.s8,
+          TayfamSpacing.s8,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Semantics(
+              header: true,
+              child: Text(secenek.text, style: context.yazi.headlineSmall),
+            ),
+            const SizedBox(height: TayfamSpacing.s4),
+            Text(
+              m.anket_oy_veren_sayisi(secenek.voteCount),
+              style: context.yazi.bodySmall,
+            ),
+          ],
+        ),
       ),
       children: [
-        Semantics(
-          header: true,
-          child: Text(m.anket_oy_verenler, style: context.yazi.titleMedium),
-        ),
-        const SizedBox(height: TayfamSpacing.s4),
-        Text(
-          secenekMetni,
-          style: context.yazi.bodyMedium?.copyWith(
-            color: context.renkler.metinGovde,
-          ),
-        ),
-        const SizedBox(height: TayfamSpacing.s16),
         if (liste == null && hata != null) ...[
           HataSatiri.hatadan(hata),
           AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
@@ -85,21 +89,20 @@ class OyVerenlerSayfasi extends ConsumerWidget {
             ),
           )
         else if (liste.ogeler.isEmpty)
-          Text(m.anket_oy_verenler_bos, style: context.yazi.bodyLarge)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+            child: Text(m.anket_oy_verenler_bos, style: context.yazi.bodyLarge),
+          )
         else ...[
-          for (final oy in liste.ogeler)
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: TayfamSizes.dokunmaMin,
+          for (final (sira, oy) in liste.ogeler.indexed) ...[
+            if (sira > 0)
+              Divider(
+                height: TayfamSizes.kenar,
+                thickness: TayfamSizes.kenar,
+                color: r.cizgi,
               ),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: KullaniciAdiMetni(
-                  kullaniciId: oy.userId,
-                  style: context.yazi.bodyLarge,
-                ),
-              ),
-            ),
+            _OyVerenSatiri(kullaniciId: oy.userId),
+          ],
           if (liste.dahaHatasi case final dahaHatasi?) ...[
             HataSatiri.hatadan(dahaHatasi),
             AnketTekrarDene(
@@ -121,6 +124,49 @@ class OyVerenlerSayfasi extends ConsumerWidget {
             ),
         ],
       ],
+    );
+  }
+}
+
+/// Oy verenin satırı: avatar ve görünen ad; kullanıcının kendisiyse
+/// "(sen)". Ad önbellekten istenir.
+class _OyVerenSatiri extends ConsumerWidget {
+  const _OyVerenSatiri({required this.kullaniciId});
+
+  final String kullaniciId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    ref.read(kullaniciAdlariProvider.notifier).iste(kullaniciId);
+    final bilinen = ref.watch(
+      kullaniciAdlariProvider.select((adlar) => adlar[kullaniciId]),
+    );
+    final ad = switch (bilinen) {
+      null => m.kullanici_genel,
+      KullaniciAdi(:final ad?) => ad,
+      KullaniciAdi() => m.kullanici_silinmis,
+    };
+    final kendisi = ref.watch(kendisiMiProvider(kullaniciId));
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: TayfamSpacing.s56),
+      child: Padding(
+        padding: const EdgeInsets.all(TayfamSpacing.s8),
+        child: Row(
+          children: [
+            KimlikAvatari(kullaniciId: kullaniciId),
+            const SizedBox(width: TayfamSpacing.s12),
+            Expanded(
+              child: Text(
+                kendisi ? m.anket_oy_veren_sen(ad) : ad,
+                style: context.yazi.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

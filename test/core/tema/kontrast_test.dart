@@ -96,6 +96,21 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('vurguUstu / mango', r.vurguUstu, r.mango, _metin),
     _Cift('vurguUstu / nar', r.vurguUstu, r.nar, _metin),
     _Cift('pasifUstu / pasif', r.pasifUstu, r.pasif, _metin),
+    // Bildirimler (2026-11-13): arkadaşlık/davet ikonu, okunmamış satır.
+    _Cift('tintMaviUstu / tintMavi', r.tintMaviUstu, r.tintMavi, _metin),
+    _Cift('metin / okunmamisSatir', r.metin, r.okunmamisSatir, _metin),
+    _Cift(
+      'metinIkincil / okunmamisSatir',
+      r.metinIkincil,
+      r.okunmamisSatir,
+      _metin,
+    ),
+    _Cift(
+      'tintMarkaUstu / okunmamisSatir',
+      r.tintMarkaUstu,
+      r.okunmamisSatir,
+      _metin,
+    ),
     // Arayüz öğesi (3:1)
     _Cift('girisKenari / zemin', r.girisKenari, r.zemin, _arayuz),
     _Cift('girisKenari / kart', r.girisKenari, r.kart, _arayuz),
@@ -115,6 +130,8 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('odak / kart', r.odak, r.kart, _arayuz),
     _Cift('odak / tintMarka', r.odak, r.tintMarka, _arayuz),
     _Cift('odak / tintMango', r.odak, r.tintMango, _arayuz),
+    _Cift('odak / okunmamisSatir', r.odak, r.okunmamisSatir, _arayuz),
+    _Cift('marka nokta / okunmamisSatir', r.marka, r.okunmamisSatir, _arayuz),
     _Cift('odak / gelenBalon', r.odak, r.gelenBalon, _arayuz),
     _Cift(
       'markaYuzeyOdak / markaYuzey',
