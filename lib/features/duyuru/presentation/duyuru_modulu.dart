@@ -53,4 +53,3 @@ class DuyuruModulu implements TayfaModule {
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi]!;
-

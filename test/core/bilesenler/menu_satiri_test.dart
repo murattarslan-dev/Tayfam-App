@@ -68,10 +68,7 @@ void main() {
       await bileseniAc(tester, _satirlar(), mod: mod);
       final satirlar = find.byType(MenuSatiri);
       for (var i = 0; i < satirlar.evaluate().length; i++) {
-        expect(
-          tester.getSize(satirlar.at(i)).height,
-          greaterThanOrEqualTo(64),
-        );
+        expect(tester.getSize(satirlar.at(i)).height, greaterThanOrEqualTo(64));
       }
     });
 
@@ -89,10 +86,7 @@ void main() {
         ),
         mod: mod,
       );
-      expect(
-        cizilenStil(tester, find.text('Moderatör')).color,
-        r.tintTealUstu,
-      );
+      expect(cizilenStil(tester, find.text('Moderatör')).color, r.tintTealUstu);
       expect(cizilenStil(tester, find.text('Banlı')).color, r.narMetin);
     });
   }

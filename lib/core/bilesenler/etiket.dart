@@ -70,11 +70,7 @@ class Etiket extends StatelessWidget {
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: ExcludeSemantics(
-                    child: Icon(
-                      ikon,
-                      size: TayfamSizes.ikonKucuk,
-                      color: yazi,
-                    ),
+                    child: Icon(ikon, size: TayfamSizes.ikonKucuk, color: yazi),
                   ),
                 ),
                 const WidgetSpan(child: SizedBox(width: TayfamSpacing.s4)),

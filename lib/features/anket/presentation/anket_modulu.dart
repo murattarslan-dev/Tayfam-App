@@ -69,4 +69,3 @@ String? anketEtkinlikSuzgeci(Uri adres) {
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi] ?? '';
-

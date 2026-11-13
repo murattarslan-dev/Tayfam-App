@@ -117,10 +117,7 @@ class MenuSatiri extends StatelessWidget {
                 ],
               ),
             ),
-            if (sag != null) ...[
-              const SizedBox(width: TayfamSpacing.s8),
-              sag,
-            ],
+            if (sag != null) ...[const SizedBox(width: TayfamSpacing.s8), sag],
           ],
         ),
       ),

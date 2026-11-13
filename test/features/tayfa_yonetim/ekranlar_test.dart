@@ -173,9 +173,7 @@ void main() {
     });
 
     for (final mod in [ThemeMode.light, ThemeMode.dark]) {
-      testWidgets('${mod.name} temada 2× yazıda menü taşmıyor', (
-        tester,
-      ) async {
+      testWidgets('${mod.name} temada 2× yazıda menü taşmıyor', (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         final tasima = _uygulamaTasimasi('admin', {
@@ -211,10 +209,8 @@ void main() {
     ) async {
       ekranBoyutu(tester);
       final tasima = _uygulamaTasimasi('admin', {
-        'DELETE $uyelikYolu': (_) => const ApiProblem(
-          type: ProblemType.lastAdmin,
-          status: 409,
-        ),
+        'DELETE $uyelikYolu': (_) =>
+            const ApiProblem(type: ProblemType.lastAdmin, status: 409),
       });
       await _uygulamayiAc(tester, tasima);
 
