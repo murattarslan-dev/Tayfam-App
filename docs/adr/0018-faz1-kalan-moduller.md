@@ -256,6 +256,53 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi, sohbette; issue #138): profil sekmesi,
+  arkadaşlar ve kişi profili yeniden tasarımı.** Tasarım: Profil-*,
+  Kisi-Profili*.
+  - **Profil düzeni (§2):** en üstte fotoğraf (dokununca alttan sayfa:
+    Galeriden seç, Fotoğraf çek, fotoğraf varken Fotoğrafı kaldır), ad ve
+    mor referans kodu kartı (Paylaş birincil, Kopyala, onaylı "Yeni kod
+    al" simge düğmesi). Ardından Arkadaşlar bölümü (ilk sayfadaki ilk üç
+    arkadaşın avatarı, sayı yok; istek ve davetlerde yalnızca nokta, sayı
+    ilgili ekranda), katılım geçmişinin son 3 kaydı
+    (`GET /v1/users/{kendi id}/activity`, `page_size=3`) ve "Tümünü gör"
+    (`/profil/katilimlarim`), başlığın yanında görünürlük çipi (dokununca
+    üç seçenekli alttan sayfa, seçince hemen kaydedilir). Uygulama kartı
+    (Bildirimler, satır içi üç parçalı tema seçici, Oturumlar), Gizlilik
+    kartı (Verilerimi indir, Engellenenler, Aydınlatma metni, Kullanım
+    koşulları), çerçeveli "Çıkış yap" ve en altta nar-metin "Hesabı sil"
+    bağlantısı. Hesap silme ekranında "Önce verilerini indir" kısayolu
+    vardır; akış (onay → Google yeniden giriş → `DELETE /v1/me`)
+    değişmedi.
+  - **"Başkaları nasıl görüyor":** kendi kişi profilini (`/kisi/<kendi
+    id>`, `self: true`) açar; orada ⋯ menüsü ve eylem yoktur.
+  - **Arkadaşlar ekranı (§7):** üstte "Arkadaş ekle" (alttan sayfa;
+    mevcut kodla bulma mantığı) ve "Kodumu paylaş"; bekleyen gelen istek
+    varsa sayılı kart (sayı gelen istek listesinin ilk sayfasından,
+    devamı varsa "N+"), arkadaş listesi, altta "Engellenenler". Satırlarda
+    alt metin yoktur: arkadaş listesinde ortak tayfa bilgisi sözleşmede
+    dönmez, uydurulmaz.
+  - **Kişi profiline kullanıcı şikâyeti (§8):** ⋯ menüsü artık alttan
+    sayfadır: Arkadaşlıktan çıkar (arkadaşsa), **Şikâyet et** (yeni; hedef
+    `user`, gerekçe seçimi mevcut şikâyet sayfası) ve Engelle (yıkıcı).
+    Sözleşmede kullanıcı şikâyeti yalnızca bir tayfada yapılır (`POST
+    /v1/tayfas/{tayfa_id}/reports`); bu yüzden "Şikâyet et" yalnızca ortak
+    tayfa varken görünür, birden çok ortak tayfada tayfa seçtirilir.
+    Ortak tayfası olmayan kişiyi platforma şikâyet edecek uç yoktur
+    (Tayfam-Api'de karar gerekir).
+  - **Alttan sayfa kullanımı (ADR-0004 Notlar 2026-11-13, madde 5)**
+    profil fotoğrafı, görünürlük seçimi, arkadaş ekleme, kişi profili ⋯
+    menüsü ve şikâyet tayfası seçimi ile genişledi. Yeni ortak bileşenler:
+    `BolumEtiketi` (15 px ikincil bölüm başlığı), `CerceveliEylem`,
+    `BaglantiEylemi`, `MenuSatiri.kartta`, `SatirOku`, `BekleyenNoktasi`;
+    yeni ölçüler `TayfamSizes.profilAvatari` (104), `fotografRozeti` (36),
+    `avatarYigini` (28), `avatarOrta` (52).
+  - **Kişi profilindeki "Mesaj gönder"** birincil eylem oldu (önce nar
+    ikincil eylemdi).
+  - **Tasarlandı, kodlanmadı:** ad düzenleme, doğum günü görünürlüğü ve
+    profil tamamlama formu (Proje Planı §4.7) tasarlandı (Profil-Ad-Duzenle,
+    Profil-Dogum-Gunu, Profil-Tamamla) ama sözleşmede karşılıkları
+    olmadığı için kodlanmadı; sözleşme gelince eklenir (§2'deki kural).
 - **2026-11-13 (platform sahibi; PR #130):** Play hattı uçtan uca
   çalışıyor. İlk `.aab` Play Console'a elle yüklendi; CI Google'a JSON
   anahtarsız, Workload Identity Federation ile girer (havuz `github`,

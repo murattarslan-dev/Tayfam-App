@@ -10,14 +10,22 @@ import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart';
+import 'package:tayfam/features/arkadas/presentation/katilim_gecmisi.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Kişi profili (`/kisi/<kullaniciId>`; ADR-0018 §7): ad, arkadaşlık
-/// durumu ve işlemleri, tayfaya davet, ortak tayfalar ve katılım geçmişi
-/// (görünürlüğe göre). Başka paketler eylem satırına düğme ekleyebilir
+/// Kişi profili (`/kisi/<kullaniciId>`; ADR-0018 §7; 2026-11-13 tasarım:
+/// Kisi-Profili, Kisi-Profili-Yabanci): büyük avatar, ad, arkadaşlık
+/// durumu ve eylemleri, ortak tayfalar ve katılım geçmişi (görünürlüğe
+/// göre). Başka paketler eylem satırına düğme ekleyebilir
 /// ([kisiProfiliEylemleriProvider]; ör. "Mesaj gönder").
+///
+/// ⋯ menüsü alttan sayfadır: arkadaşlıktan çıkar (arkadaşsa), şikâyet et
+/// (ortak tayfa varsa; sözleşmede kullanıcı şikâyeti bir tayfada yapılır)
+/// ve engelle. Kendi profilinde (profil sekmesindeki "Başkaları nasıl
+/// görüyor") menü ve eylem yoktur.
 ///
 /// Adresteki kimlik girdi kabul edilir: UUID biçiminde değilse istek
 /// yapılmaz. Engel varsa sunucu kişiyi var olmayan gibi gösterir.
@@ -43,9 +51,13 @@ class KisiProfiliEkrani extends ConsumerWidget {
     final profil = durum.value;
     return Scaffold(
       appBar: AppBar(
-        title: Text(profil?.displayName ?? m.arkadas_profil_baslik),
         actions: [
-          if (profil != null && !profil.self) _ProfilMenusu(profil: profil),
+          if (profil != null && !profil.self)
+            IconButton(
+              tooltip: m.arkadas_profil_menu,
+              icon: const Icon(Icons.more_horiz),
+              onPressed: () => unawaited(_menuyuAc(context, ref, profil)),
+            ),
         ],
       ),
       body: RefreshIndicator(
@@ -55,7 +67,12 @@ class KisiProfiliEkrani extends ConsumerWidget {
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.kenarMobil,
+            0,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s40,
+          ),
           children: [
             ListeDurumu(
               deger: profil,
@@ -65,12 +82,15 @@ class KisiProfiliEkrani extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _Ust(profil: p),
-                  if (!p.self) ...[
-                    const SizedBox(height: TayfamSpacing.s24),
-                    _OrtakTayfalar(profil: p),
-                  ],
-                  const SizedBox(height: TayfamSpacing.s24),
-                  _KatilimGecmisi(profil: p),
+                  if (!p.self) _OrtakTayfalar(profil: p),
+                  BolumEtiketi(baslik: m.arkadas_gecmis_baslik),
+                  if (p.activityVisible)
+                    KatilimGecmisiListesi(
+                      kullaniciId: p.userId,
+                      bosMetin: m.arkadas_gecmis_bos,
+                    )
+                  else
+                    const GizliGecmisKutusu(),
                 ],
               ),
             ),
@@ -81,48 +101,154 @@ class KisiProfiliEkrani extends ConsumerWidget {
   }
 }
 
-/// Engelleme menüsü.
-class _ProfilMenusu extends ConsumerWidget {
-  const _ProfilMenusu({required this.profil});
+/// ⋯ menüsü (tasarım: Kisi-Profili, ⋯ açık).
+Future<void> _menuyuAc(
+  BuildContext context,
+  WidgetRef ref,
+  UserProfile profil,
+) {
+  final m = AppLocalizations.of(context);
+  final arkadas = profil.friendState == UserProfileFriendState.friends;
+  return altSayfaAc<void>(
+    context,
+    builder: (sayfa) {
+      // Sayfa kapanır, işlem ekranın bağlamıyla sürer (onay penceresi,
+      // bildirim).
+      void sec(Future<void> Function() islem) {
+        Navigator.of(sayfa).pop();
+        unawaited(islem());
+      }
 
-  final UserProfile profil;
+      return AltSayfaIcerigi(
+        baslik: profil.displayName,
+        children: [
+          if (arkadas)
+            MenuSatiri(
+              ikon: Icons.person_remove_outlined,
+              baslik: m.arkadas_cikar,
+              aciklama: m.arkadas_cikar_kisa,
+              onTap: () => sec(() => _arkadasliktanCikar(context, ref, profil)),
+            ),
+          if (profil.mutualTayfas.isNotEmpty)
+            MenuSatiri(
+              ikon: Icons.flag_outlined,
+              baslik: m.sikayet_et,
+              aciklama: m.arkadas_sikayet_kisa,
+              onTap: () => sec(() => _sikayetEt(context, profil)),
+            ),
+          MenuSatiri(
+            ikon: Icons.block,
+            tur: MenuSatiriTuru.yikici,
+            baslik: m.arkadas_engelle,
+            aciklama: m.arkadas_engelle_kisa,
+            onTap: () => sec(() => _engelle(context, ref, profil)),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  Future<void> _engelle(BuildContext context, WidgetRef ref) async {
+Future<void> _arkadasliktanCikar(
+  BuildContext context,
+  WidgetRef ref,
+  UserProfile profil,
+) async {
+  if (!context.mounted) return;
+  final m = AppLocalizations.of(context);
+  final bildirici = SonucBildirici.al(context);
+  final onay = await onayIste(
+    context,
+    baslik: m.arkadas_cikar_baslik(profil.displayName),
+    aciklama: m.arkadas_cikar_aciklama,
+    onay: m.arkadas_cikar,
+    yikici: true,
+  );
+  if (!onay) return;
+  final hata = await ref
+      .read(kisiProfiliProvider(profil.userId).notifier)
+      .kaldir();
+  bildirici.bildir(hata, m.arkadas_cikarildi);
+}
+
+/// Kullanıcıyı şikâyet eder (2026-11-13). Sözleşmede kullanıcı şikâyeti
+/// bir tayfada yapılır (`POST /v1/tayfas/{tayfa_id}/reports`, hedef
+/// `user`); şikâyet o tayfanın moderatörlerine gider. Tek ortak tayfa
+/// varsa o, birden çoksa seçtirilir. Gerekçe seçimi ortak şikâyet
+/// sayfasındadır.
+Future<void> _sikayetEt(BuildContext context, UserProfile profil) async {
+  if (!context.mounted) return;
+  final tayfalar = profil.mutualTayfas;
+  final String? tayfaId;
+  if (tayfalar.length == 1) {
+    tayfaId = tayfalar.single.id;
+  } else {
     final m = AppLocalizations.of(context);
-    final bildirici = SonucBildirici.al(context);
-    final onay = await onayIste(
+    tayfaId = await altSayfaAc<String>(
       context,
-      baslik: m.arkadas_engelle_baslik(profil.displayName),
-      aciklama: m.arkadas_engelle_aciklama,
-      onay: m.arkadas_engelle,
+      builder: (sayfa) => AltSayfaIcerigi(
+        baslik: m.arkadas_sikayet_tayfa_baslik,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              TayfamSpacing.s8,
+              0,
+              TayfamSpacing.s8,
+              TayfamSpacing.s8,
+            ),
+            child: Text(
+              m.arkadas_sikayet_tayfa_aciklama,
+              style: sayfa.yazi.bodySmall,
+            ),
+          ),
+          for (final t in tayfalar)
+            MenuSatiri(
+              ikon: Icons.groups_outlined,
+              baslik: t.name,
+              onTap: () => Navigator.of(sayfa).pop(t.id),
+            ),
+        ],
+      ),
     );
-    if (!onay) return;
-    final hata = await ref
-        .read(kisiProfiliProvider(profil.userId).notifier)
-        .engelle();
-    bildirici.bildir(hata, m.arkadas_engellendi);
-    if (hata == null && context.mounted) {
-      // Engellenen kişinin profili artık açılmaz; önceki ekrana dönülür.
-      unawaited(Navigator.maybePop(context));
-    }
   }
+  if (tayfaId == null || !context.mounted) return;
+  await sikayetSayfasiniAc(
+    context,
+    SikayetHedefi.tayfada(
+      tayfaId: tayfaId,
+      tur: ReportTargetType.user,
+      id: profil.userId,
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final m = AppLocalizations.of(context);
-    return PopupMenuButton<void>(
-      tooltip: m.arkadas_profil_menu,
-      itemBuilder: (menu) => [
-        PopupMenuItem<void>(
-          onTap: () => unawaited(_engelle(context, ref)),
-          child: Text(m.arkadas_engelle),
-        ),
-      ],
-    );
+Future<void> _engelle(
+  BuildContext context,
+  WidgetRef ref,
+  UserProfile profil,
+) async {
+  if (!context.mounted) return;
+  final m = AppLocalizations.of(context);
+  final bildirici = SonucBildirici.al(context);
+  final onay = await onayIste(
+    context,
+    baslik: m.arkadas_engelle_baslik(profil.displayName),
+    aciklama: m.arkadas_engelle_aciklama,
+    onay: m.arkadas_engelle,
+    yikici: true,
+  );
+  if (!onay) return;
+  final hata = await ref
+      .read(kisiProfiliProvider(profil.userId).notifier)
+      .engelle();
+  bildirici.bildir(hata, m.arkadas_engellendi);
+  if (hata == null && context.mounted) {
+    // Engellenen kişinin profili artık açılmaz; önceki ekrana dönülür.
+    unawaited(Navigator.maybePop(context));
   }
 }
 
-/// Ad, arkadaşlık durumu ve eylemler.
+/// Avatar, ad, durum etiketi ve eylemler (tasarım: ortalanmış üst bölüm).
 class _Ust extends ConsumerStatefulWidget {
   const _Ust({required this.profil});
 
@@ -149,18 +275,6 @@ class _UstState extends ConsumerState<_Ust> {
     bildirici.bildir(hata, basari);
   }
 
-  Future<void> _arkadasliktanCikar() async {
-    final m = AppLocalizations.of(context);
-    final onay = await onayIste(
-      context,
-      baslik: m.arkadas_cikar_baslik(widget.profil.displayName),
-      aciklama: m.arkadas_cikar_aciklama,
-      onay: m.arkadas_cikar,
-    );
-    if (!onay || !mounted) return;
-    await _calistir(_notifier.kaldir, m.arkadas_cikarildi);
-  }
-
   Future<void> _tayfayaDavet() async {
     final m = AppLocalizations.of(context);
     final tayfaId = await _tayfaSec(context, widget.profil);
@@ -175,14 +289,25 @@ class _UstState extends ConsumerState<_Ust> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final p = widget.profil;
-    final durumMetni = switch (p.friendState) {
-      _ when p.self => m.arkadas_profil_sen,
-      UserProfileFriendState.friends => m.arkadas_durum_arkadas,
-      UserProfileFriendState.outgoing => m.arkadas_durum_giden,
-      UserProfileFriendState.incoming => m.arkadas_durum_gelen,
+    final pasif = _gonderiliyor;
+    final etiket = switch (p.friendState) {
+      _ when p.self => Etiket(metin: m.arkadas_profil_sen),
+      UserProfileFriendState.friends => Etiket(
+        metin: m.arkadas_durum_arkadas,
+        ton: EtiketTonu.teal,
+        ikon: Icons.check,
+      ),
+      UserProfileFriendState.outgoing => Etiket(
+        metin: m.arkadas_durum_giden,
+        ton: EtiketTonu.mango,
+      ),
+      UserProfileFriendState.incoming => Etiket(
+        metin: m.arkadas_durum_gelen,
+        ton: EtiketTonu.mango,
+      ),
       UserProfileFriendState.unknown || null => null,
     };
-    final pasif = _gonderiliyor;
+    final ekEylemler = p.self ? const <Widget>[] : _ekEylemler(context, p);
     final eylemler = <Widget>[
       if (!p.self)
         ...switch (p.friendState) {
@@ -199,6 +324,7 @@ class _UstState extends ConsumerState<_Ust> {
                       ),
                     ),
             ),
+            ...ekEylemler,
           ],
           UserProfileFriendState.incoming => [
             BirincilEylem(
@@ -213,7 +339,7 @@ class _UstState extends ConsumerState<_Ust> {
                       ),
                     ),
             ),
-            IkincilEylem(
+            CerceveliEylem(
               etiket: m.arkadas_reddet,
               ikon: Icons.close,
               onPressed: pasif
@@ -222,9 +348,10 @@ class _UstState extends ConsumerState<_Ust> {
                       _calistir(_notifier.kaldir, m.arkadas_istek_reddedildi),
                     ),
             ),
+            ...ekEylemler,
           ],
           UserProfileFriendState.outgoing => [
-            IkincilEylem(
+            CerceveliEylem(
               etiket: m.arkadas_geri_cek,
               ikon: Icons.close,
               onPressed: pasif
@@ -233,55 +360,49 @@ class _UstState extends ConsumerState<_Ust> {
                       _calistir(_notifier.kaldir, m.arkadas_istek_geri_cekildi),
                     ),
             ),
+            ...ekEylemler,
           ],
+          // Arkadaşta önce "Mesaj gönder" (kanca), sonra "Tayfaya davet et".
           UserProfileFriendState.friends => [
-            BirincilEylem(
+            ...ekEylemler,
+            CerceveliEylem(
               etiket: m.arkadas_tayfaya_davet,
               ikon: Icons.group_add_outlined,
               onPressed: pasif ? null : () => unawaited(_tayfayaDavet()),
             ),
-            IkincilEylem(
-              etiket: m.arkadas_cikar,
-              ikon: Icons.person_remove_outlined,
-              onPressed: pasif ? null : () => unawaited(_arkadasliktanCikar()),
-            ),
           ],
-          UserProfileFriendState.unknown => const <Widget>[],
+          UserProfileFriendState.unknown => ekEylemler,
         },
-      if (!p.self) ..._ekEylemler(context, p),
     ];
-    return TayfamKart(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: KullaniciAvatari(
-              ad: p.displayName,
-              avatarUploadId: p.avatarUploadId,
-              cap: TayfamSizes.avatarBuyuk,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: TayfamSpacing.s8),
+        Center(
+          child: KullaniciAvatari(
+            ad: p.displayName,
+            avatarUploadId: p.avatarUploadId,
+            cap: TayfamSizes.profilAvatari,
           ),
+        ),
+        const SizedBox(height: TayfamSpacing.s12),
+        Semantics(
+          header: true,
+          child: Text(
+            p.displayName,
+            textAlign: TextAlign.center,
+            style: context.yazi.headlineMedium,
+          ),
+        ),
+        if (etiket != null) ...[
           const SizedBox(height: TayfamSpacing.s12),
-          Text(p.displayName, style: context.yazi.headlineSmall),
-          if (durumMetni != null) ...[
-            const SizedBox(height: TayfamSpacing.s4),
-            Text(
-              durumMetni,
-              style: context.yazi.bodyMedium?.copyWith(
-                color: context.renkler.metinGovde,
-              ),
-            ),
-          ],
-          if (eylemler.isNotEmpty) ...[
-            const SizedBox(height: TayfamSpacing.s16),
-            Wrap(
-              spacing: TayfamSpacing.s8,
-              runSpacing: TayfamSpacing.s8,
-              children: eylemler,
-            ),
-          ],
+          Center(child: etiket),
         ],
-      ),
+        if (eylemler.isNotEmpty) ...[
+          const SizedBox(height: TayfamSpacing.s16),
+          _EylemDizisi(eylemler: eylemler),
+        ],
+      ],
     );
   }
 
@@ -299,14 +420,45 @@ class _UstState extends ConsumerState<_Ust> {
   }
 }
 
+/// Eylem düğmeleri: iki düğme yan yana eşit genişlikte (tasarım), tek ya
+/// da üç düğme alt alta tam genişlikte.
+class _EylemDizisi extends StatelessWidget {
+  const _EylemDizisi({required this.eylemler});
+
+  final List<Widget> eylemler;
+
+  @override
+  Widget build(BuildContext context) {
+    if (eylemler.length == 2) {
+      return IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: eylemler.first),
+            const SizedBox(width: TayfamSpacing.s8),
+            Expanded(child: eylemler.last),
+          ],
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (sira, eylem) in eylemler.indexed) ...[
+          if (sira > 0) const SizedBox(height: TayfamSpacing.s8),
+          eylem,
+        ],
+      ],
+    );
+  }
+}
+
 /// Davet edilebilecek tayfayı seçtiren alt sayfa: etkin üyeliklerden kişinin
 /// zaten üyesi olduklarınız çıkarılır. Susturulmuşluk ve diğer kuralları
 /// sunucu denetler (kesin kural 5).
 Future<String?> _tayfaSec(BuildContext context, UserProfile profil) {
-  return showModalBottomSheet<String>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
+  return altSayfaAc<String>(
+    context,
     builder: (sayfa) => _TayfaSecimi(profil: profil),
   );
 }
@@ -324,38 +476,26 @@ class _TayfaSecimi extends ConsumerWidget {
       for (final t in ref.watch(tayfalarimProvider).value ?? const <MyTayfa>[])
         if (t.status == MyTayfaStatus.active && !ortak.contains(t.tayfaId)) t,
     ];
-    return SafeArea(
-      child: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-        children: [
-          Text(
-            m.arkadas_tayfa_sec_baslik(profil.displayName),
-            style: context.yazi.titleMedium,
+    return AltSayfaIcerigi(
+      baslik: m.arkadas_tayfa_sec_baslik(profil.displayName),
+      children: [
+        if (tayfalar.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+            child: BosMetin(m.arkadas_tayfa_sec_bos),
           ),
-          const SizedBox(height: TayfamSpacing.s12),
-          if (tayfalar.isEmpty) BosMetin(m.arkadas_tayfa_sec_bos),
-          for (final t in tayfalar)
-            InkWell(
-              onTap: () => Navigator.of(context).pop(t.tayfaId),
-              borderRadius: TayfamRadii.dugmeKoseleri,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: TayfamSizes.dokunmaMin,
-                ),
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Text(t.name, style: context.yazi.bodyLarge),
-                ),
-              ),
-            ),
-        ],
-      ),
+        for (final t in tayfalar)
+          MenuSatiri(
+            ikon: Icons.groups_outlined,
+            baslik: t.name,
+            onTap: () => Navigator.of(context).pop(t.tayfaId),
+          ),
+      ],
     );
   }
 }
 
-/// İkinizin de etkin üyesi olduğu tayfalar.
+/// İkinizin de etkin üyesi olduğu tayfalar: çerçeveli hap çipler.
 class _OrtakTayfalar extends StatelessWidget {
   const _OrtakTayfalar({required this.profil});
 
@@ -364,11 +504,11 @@ class _OrtakTayfalar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BolumBasligi(baslik: m.arkadas_ortak_tayfalar),
-        const SizedBox(height: TayfamSpacing.s8),
+        BolumEtiketi(baslik: m.arkadas_ortak_tayfalar),
         if (profil.mutualTayfas.isEmpty)
           BosMetin(m.arkadas_ortak_tayfa_yok)
         else
@@ -376,115 +516,27 @@ class _OrtakTayfalar extends StatelessWidget {
             spacing: TayfamSpacing.s8,
             runSpacing: TayfamSpacing.s8,
             children: [
-              for (final t in profil.mutualTayfas) Etiket(metin: t.name),
+              for (final t in profil.mutualTayfas)
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: r.kart,
+                    borderRadius: TayfamRadii.hapKoseleri,
+                    border: Border.all(
+                      color: r.cizgi,
+                      width: TayfamSizes.vurguKenari,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: TayfamSpacing.s12,
+                      vertical: TayfamSpacing.s8,
+                    ),
+                    child: Text(t.name, style: context.yazi.labelLarge),
+                  ),
+                ),
             ],
           ),
       ],
-    );
-  }
-}
-
-/// Katılım geçmişi: görünür değilse yalnızca açıklama; görünürse sayfalı
-/// liste.
-class _KatilimGecmisi extends ConsumerWidget {
-  const _KatilimGecmisi({required this.profil});
-
-  final UserProfile profil;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final m = AppLocalizations.of(context);
-    final baslik = BolumBasligi(baslik: m.arkadas_gecmis_baslik);
-    if (!profil.activityVisible) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          baslik,
-          const SizedBox(height: TayfamSpacing.s8),
-          BosMetin(m.arkadas_gecmis_gizli),
-        ],
-      );
-    }
-    final saglayici = katilimGecmisiProvider(profil.userId);
-    final durum = ref.watch(saglayici);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        baslik,
-        const SizedBox(height: TayfamSpacing.s8),
-        ListeDurumu(
-          deger: durum.value,
-          hata: durum.error,
-          onTekrar: () => ref.invalidate(saglayici),
-          icerik: (liste) => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (liste.ogeler.isEmpty) BosMetin(m.arkadas_gecmis_bos),
-              for (final (sira, kayit) in liste.ogeler.indexed) ...[
-                if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-                _KayitKarti(kayit: kayit),
-              ],
-              const SizedBox(height: TayfamSpacing.s16),
-              SayfaSonu(
-                dahaVar: liste.dahaVar,
-                yukleniyor: liste.dahaYukleniyor,
-                hata: liste.dahaHatasi,
-                onDaha: () =>
-                    unawaited(ref.read(saglayici.notifier).dahaFazla()),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Bir katılım kaydı: tür, başlık (yalnızca tayfanın üyesine), tarih,
-/// tayfa, yer ya da çevrimiçi, süre.
-class _KayitKarti extends StatelessWidget {
-  const _KayitKarti({required this.kayit});
-
-  final ActivityRecord kayit;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final ikincil = context.yazi.bodyMedium?.copyWith(
-      color: context.renkler.metinGovde,
-    );
-    final yer = switch (kayit.mode) {
-      ActivityRecordMode.online => m.arkadas_gecmis_cevrimici,
-      _ => [
-        kayit.district,
-        kayit.city,
-      ].whereType<String>().where((s) => s.isNotEmpty).join(', '),
-    };
-    final tayfa = kayit.tayfaName;
-    final sure = kayit.durationMinutes;
-    return TayfamKart(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: EtkinlikTuruCipi(tur: kayit.eventType),
-          ),
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(
-            kayit.eventTitle ?? m.arkadas_gecmis_etkinlik,
-            style: context.yazi.titleMedium,
-          ),
-          const SizedBox(height: TayfamSpacing.s4),
-          Text(
-            m.arkadas_gecmis_tarih(kayit.startedAt.toLocal()),
-            style: ikincil,
-          ),
-          if (tayfa != null) Text(tayfa, style: ikincil),
-          if (yer.isNotEmpty) Text(yer, style: ikincil),
-          if (sure != null) Text(m.arkadas_gecmis_sure(sure), style: ikincil),
-        ],
-      ),
     );
   }
 }

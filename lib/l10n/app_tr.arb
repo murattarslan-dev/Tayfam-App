@@ -5300,17 +5300,6 @@
   "@arkadas_gecmis_cevrimici": {
     "description": "Online etkinliğe katılım kaydında yer yerine gösterilen metin."
   },
-  "arkadas_gecmis_tarih": "{tarih}",
-  "@arkadas_gecmis_tarih": {
-    "description": "Katılım kaydındaki etkinlik günü (cihazın saatine göre).",
-    "placeholders": {
-      "tarih": {
-        "type": "DateTime",
-        "format": "yMMMMd",
-        "example": "2026-11-08"
-      }
-    }
-  },
   "arkadas_gecmis_sure": "{dakika} dakika",
   "@arkadas_gecmis_sure": {
     "description": "Katılım kaydındaki etkinlik süresi.",
@@ -5320,6 +5309,114 @@
         "example": "90"
       }
     }
+  },
+  "arkadas_gecmis_tumu": "Tümünü gör",
+  "@arkadas_gecmis_tumu": {
+    "description": "Profil sekmesindeki son katılımların altındaki bağlantı; kendi katılım geçmişinin tamamını açar."
+  },
+  "arkadas_gecmis_tumu_etiketi": "Tüm katılımların",
+  "@arkadas_gecmis_tumu_etiketi": {
+    "description": "\"Tümünü gör\" bağlantısının ekran okuyucu etiketi."
+  },
+  "arkadas_gecmis_kendi_bos": "Henüz bir etkinliğe katılmadın.",
+  "@arkadas_gecmis_kendi_bos": {
+    "description": "Kendi katılım geçmişin boşken profil sekmesinde ve Katılım geçmişin ekranında gösterilen metin."
+  },
+  "arkadas_katilimlarim_baslik": "Katılım geçmişin",
+  "@arkadas_katilimlarim_baslik": {
+    "description": "Kendi katılım geçmişinin tamamını gösteren ekranın başlığı."
+  },
+  "arkadas_kodumu_paylas": "Kodumu paylaş",
+  "@arkadas_kodumu_paylas": {
+    "description": "Arkadaşlar ekranında kendi referans kodunu linkiyle paylaşan düğme."
+  },
+  "arkadas_istek_karti_baslik": "{sayi, plural, other{{sayi} arkadaşlık isteği}}",
+  "@arkadas_istek_karti_baslik": {
+    "description": "Arkadaşlar ekranındaki bekleyen istek kartının başlığı; sayı gelen isteklerin ilk sayfasından.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "arkadas_istek_karti_baslik_fazla": "{sayi}+ arkadaşlık isteği",
+  "@arkadas_istek_karti_baslik_fazla": {
+    "description": "Bekleyen istek kartının başlığı; ilk sayfa dolu ve devamı varsa (toplam bilinmez).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "arkadas_istek_karti_bir": "{ad} cevabını bekliyor",
+  "@arkadas_istek_karti_bir": {
+    "description": "Bekleyen istek kartında tek istek varken isteği gönderenin adı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Selin"
+      }
+    }
+  },
+  "arkadas_istek_karti_iki": "{ad1} ve {ad2} cevabını bekliyor",
+  "@arkadas_istek_karti_iki": {
+    "description": "Bekleyen istek kartında iki istek varken gönderenlerin adları.",
+    "placeholders": {
+      "ad1": {
+        "type": "String",
+        "example": "Selin"
+      },
+      "ad2": {
+        "type": "String",
+        "example": "Ahmet"
+      }
+    }
+  },
+  "arkadas_istek_karti_cok": "{ad1}, {ad2} ve diğerleri cevabını bekliyor",
+  "@arkadas_istek_karti_cok": {
+    "description": "Bekleyen istek kartında ikiden çok istek varken ilk iki gönderenin adı.",
+    "placeholders": {
+      "ad1": {
+        "type": "String",
+        "example": "Selin"
+      },
+      "ad2": {
+        "type": "String",
+        "example": "Ahmet"
+      }
+    }
+  },
+  "arkadas_istek_yok_kisa": "Bekleyen isteğin yok",
+  "@arkadas_istek_yok_kisa": {
+    "description": "Profil sekmesindeki \"Arkadaşlık istekleri\" satırının açıklaması; cevap bekleyen gelen istek yokken."
+  },
+  "arkadas_davet_yok_kisa": "Bekleyen davetin yok",
+  "@arkadas_davet_yok_kisa": {
+    "description": "Profil sekmesindeki \"Tayfa davetleri\" satırının açıklaması; bekleyen davet yokken."
+  },
+  "arkadas_bul_kod_sahibi": "Bu kodun sahibi",
+  "@arkadas_bul_kod_sahibi": {
+    "description": "Arkadaş ekle sayfasında koda göre bulunan kişinin adının altındaki metin."
+  },
+  "arkadas_cikar_kisa": "Ona bildirilmez",
+  "@arkadas_cikar_kisa": {
+    "description": "Kişi profilinin ⋯ menüsünde \"Arkadaşlıktan çıkar\" satırının açıklaması."
+  },
+  "arkadas_sikayet_kisa": "Topluluk kurallarına aykırı davranış için",
+  "@arkadas_sikayet_kisa": {
+    "description": "Kişi profilinin ⋯ menüsünde \"Şikâyet et\" satırının açıklaması."
+  },
+  "arkadas_engelle_kisa": "Birbirinizin profilini göremezsiniz",
+  "@arkadas_engelle_kisa": {
+    "description": "Kişi profilinin ⋯ menüsünde \"Engelle\" satırının açıklaması."
+  },
+  "arkadas_sikayet_tayfa_baslik": "Hangi tayfada şikâyet edeceksin?",
+  "@arkadas_sikayet_tayfa_baslik": {
+    "description": "Kişiyle birden çok ortak tayfa varken şikâyetin gideceği tayfayı seçtiren alttan sayfanın başlığı."
+  },
+  "arkadas_sikayet_tayfa_aciklama": "Şikâyetin o tayfanın moderatörlerine ve yöneticilerine gider; kimliğin gösterilmez.",
+  "@arkadas_sikayet_tayfa_aciklama": {
+    "description": "Şikâyet tayfası seçiminin açıklaması (sözleşme: kullanıcı şikâyeti bir tayfada yapılır)."
   },
   "derin_link_davet_baslik": "Tayfa daveti",
   "@derin_link_davet_baslik": {

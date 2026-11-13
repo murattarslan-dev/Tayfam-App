@@ -165,3 +165,44 @@ final katilimGecmisiProvider = AsyncNotifierProvider.autoDispose
       name: 'katilimGecmisiProvider',
       retry: yenidenDenemeYok,
     );
+
+/// Profil sekmesinde gösterilen son katılım sayısı (tasarım: Profil-Ana).
+const int sonKatilimSayisi = 3;
+
+/// Bir kullanıcının son [sonKatilimSayisi] katılımı ve devamı olup
+/// olmadığı (`GET /v1/users/{user_id}/activity?page_size=3`; profil
+/// sekmesi, 2026-11-13). Görünürlüğe sunucu karar verir. Yalnızca
+/// bellektedir (ADR-0006).
+class SonKatilimlarNotifier
+    extends AsyncNotifier<({List<ActivityRecord> kayitlar, bool dahaVar})> {
+  SonKatilimlarNotifier(this.kullaniciId);
+
+  /// Kaydı istenen kullanıcının kimliği.
+  final String kullaniciId;
+
+  @override
+  Future<({List<ActivityRecord> kayitlar, bool dahaVar})> build() async {
+    ref.watch(oturumDurumuProvider);
+    final sayfa = await ref
+        .watch(arkadasDeposuProvider)
+        .katilimGecmisi(kullaniciId, sayfaBoyutu: sonKatilimSayisi);
+    return (
+      kayitlar: List<ActivityRecord>.unmodifiable(
+        sayfa.ogeler.take(sonKatilimSayisi),
+      ),
+      dahaVar: sayfa.sonraki != null,
+    );
+  }
+}
+
+/// Bir kullanıcının son katılımları.
+final sonKatilimlarProvider = AsyncNotifierProvider.autoDispose
+    .family<
+      SonKatilimlarNotifier,
+      ({List<ActivityRecord> kayitlar, bool dahaVar}),
+      String
+    >(
+      SonKatilimlarNotifier.new,
+      name: 'sonKatilimlarProvider',
+      retry: yenidenDenemeYok,
+    );

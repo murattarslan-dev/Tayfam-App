@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_silme_notifier.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -36,6 +37,25 @@ Future<void> referansiPaylas(BuildContext dugme, WidgetRef ref, String kod) {
       ? kutu.localToGlobal(Offset.zero) & kutu.size
       : null;
   return ref.read(paylasiciProvider).paylas(metin, konum: konum);
+}
+
+/// Kendi referans kodunu linkiyle paylaşır (Arkadaşlar ekranındaki "Kodumu
+/// paylaş"; arkadaşlık paketinin `referansPaylasimiProvider` kancası).
+/// Hesap henüz okunmadıysa okunur; okunamazsa hata bildirilir.
+Future<void> kendiKodunuPaylas(BuildContext dugme, WidgetRef ref) async {
+  final bildirim = ScaffoldMessenger.of(dugme);
+  final metinler = AppLocalizations.of(dugme);
+  // Sağlayıcı okunurken bırakılmasın diye beklerken dinlenir.
+  final abone = ref.listenManual(hesapAyarlariProvider, (_, _) {});
+  try {
+    final hesap = await ref.read(hesapAyarlariProvider.future);
+    if (!dugme.mounted) return;
+    await referansiPaylas(dugme, ref, hesap.referralCode);
+  } on Exception catch (hata) {
+    profilBildirimi(bildirim, profilHatasiMetni(metinler, hata));
+  } finally {
+    abone.close();
+  }
 }
 
 /// Referans kodunu panoya kopyalar ve kısa bir bildirim gösterir.

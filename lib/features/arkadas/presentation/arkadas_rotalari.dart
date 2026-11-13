@@ -5,12 +5,14 @@ import 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadas_istekleri_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadaslar_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/engellenenler_ekrani.dart';
+import 'package:tayfam/features/arkadas/presentation/katilim_gecmisi.dart';
 import 'package:tayfam/features/arkadas/presentation/kisi_profili_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/tayfa_davetleri_ekrani.dart';
 
 /// Profil sekmesinin kökü (`/profil`) altındaki arkadaşlık rotaları
 /// (ADR-0018 §7): `arkadaslar` (altında `bul`, `istekler`,
-/// `engellenenler`) ve `tayfa-davetleri`.
+/// `engellenenler`), `tayfa-davetleri` ve `katilimlarim` (kendi katılım
+/// geçmişinin tamamı).
 final List<RouteBase> arkadasRotalari = [
   GoRoute(
     path: Adresler.arkadaslarYolu,
@@ -33,6 +35,10 @@ final List<RouteBase> arkadasRotalari = [
   GoRoute(
     path: Adresler.tayfaDavetleriYolu,
     builder: (context, state) => const TayfaDavetleriEkrani(),
+  ),
+  GoRoute(
+    path: Adresler.katilimlarimYolu,
+    builder: (context, state) => const KatilimlarimEkrani(),
   ),
 ];
 

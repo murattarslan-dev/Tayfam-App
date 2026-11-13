@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 
 /// [kullaniciId]'nin profilini açar (sekmelerin üstünde; geri tuşu
@@ -12,71 +13,55 @@ void kisiyiAc(BuildContext context, String kullaniciId) {
   unawaited(context.push(Adresler.kisi(kullaniciId)));
 }
 
-/// Bir alt ekrana giden satır: ikon, etiket, isteğe bağlı rozet ve ok.
-class GirisSatiri extends StatelessWidget {
-  const GirisSatiri({
+/// Üst üste binen küçük avatarlar (tasarım: Profil-Ana "Arkadaşların",
+/// Profil-Arkadaslar istek kartı): her biri kart renginde ince halkalı,
+/// bir öncekinin üstüne 8 px biner. Süstür; ekran okuyucudan gizlenir
+/// (kişiler satırın metninde ya da bağlandığı ekranda yazar).
+class AvatarYigini extends StatelessWidget {
+  const AvatarYigini({
     super.key,
-    required this.ikon,
-    required this.etiket,
-    required this.onTap,
-    this.rozet = false,
-    this.rozetEtiketi,
-    this.onde,
+    required this.kisiler,
+    this.cap = TayfamSizes.avatarYigini,
   });
 
-  final IconData ikon;
+  /// Gösterilecek kişilerin adı ve avatar yüklemesi, soldan sağa.
+  final List<({String ad, String? avatarUploadId})> kisiler;
 
-  /// İkonun yerine gösterilecek öğe (ör. kullanıcı avatarı; ADR-0021).
-  final Widget? onde;
-  final String etiket;
-  final VoidCallback onTap;
-
-  /// Bekleyen bir şey var (ör. gelen istek).
-  final bool rozet;
-
-  /// Rozetin ekran okuyucu metni.
-  final String? rozetEtiketi;
+  final double cap;
 
   @override
   Widget build(BuildContext context) {
-    final etiketMetni = Text(etiket, style: context.yazi.bodyLarge);
-    return Semantics(
-      button: true,
-      value: rozet ? rozetEtiketi : null,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: TayfamRadii.dugmeKoseleri,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
-            child: Row(
-              children: [
-                ExcludeSemantics(
-                  child: Badge(
-                    isLabelVisible: rozet,
-                    smallSize: TayfamSizes.nokta,
-                    child:
-                        onde ??
-                        Icon(
-                          ikon,
-                          size: TayfamSizes.ikon,
-                          color: context.renkler.metinGovde,
-                        ),
+    if (kisiler.isEmpty) return const SizedBox.shrink();
+    final r = context.renkler;
+    const binme = TayfamSpacing.s8;
+    final adim = cap - binme;
+    return ExcludeSemantics(
+      child: SizedBox(
+        width: cap + adim * (kisiler.length - 1),
+        height: cap,
+        child: Stack(
+          children: [
+            for (final (sira, kisi) in kisiler.indexed)
+              PositionedDirectional(
+                start: adim * sira,
+                top: 0,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: r.kart,
+                      width: TayfamSizes.alanOdakKenari,
+                      strokeAlign: BorderSide.strokeAlignOutside,
+                    ),
+                  ),
+                  child: KullaniciAvatari(
+                    ad: kisi.ad,
+                    avatarUploadId: kisi.avatarUploadId,
+                    cap: cap,
                   ),
                 ),
-                const SizedBox(width: TayfamSpacing.s16),
-                Expanded(child: etiketMetni),
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.chevron_right,
-                    size: TayfamSizes.ikon,
-                    color: context.renkler.metinIkincil,
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+          ],
         ),
       ),
     );
