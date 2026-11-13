@@ -256,6 +256,63 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi, sohbette; issue #141, PR #142): Sohbet
+  sekmesi yeniden tasarımı (§9).** Tasarım: Sohbet-Kanallar,
+  Sohbet-Birebir, Kanal-Akis, Kanal-Koyu, Kanal-Islem, Kanal-Formu,
+  Birebir-Konusma, Birebir-Menu, Mesaj-Istekleri, Birebir-Istek.
+  - **İki parçalı seçici:** sekme TabBar yerine "Kanallar | Birebir"
+    seçicisiyle açılır; her parçada okunmamış toplamı (kanallarda
+    `unread_count` toplamı, birebirde konuşmaların `unread_count` toplamı;
+    "99+" kuralı). Açılışta okunmamışı olan parça seçili gelir, ikisinde de
+    varsa Kanallar. Seçim yalnızca bellektedir; sayılar ilk geldiğinde
+    sabitlenir (kanal sayısı bilinmeden Birebir seçilmez) ki parça
+    kendiliğinden değişmesin.
+  - **Kanallar:** aktif tayfanınkiler; üstteki "Kanalları gösterilen tayfa"
+    satırı ana sayfadaki tayfa değiştirme panelini açar, seçilen tayfa
+    Sohbet sekmesinde kalınarak aktif olur. Arşivdeki kanallar listenin
+    altında açılır bölümdedir. "Kanal aç" yalnızca yönetimde.
+  - **Önizlemesiz listeler:** kanal satırında son mesaj önizlemesi yoktur
+    (sözleşme döndürmez); birebir satırında da yoktur (mesajlar uçtan uca
+    şifreli, diske yazılmaz, sözleşme son mesajı döndürmez). Satırda
+    okunmamış sayısı, yavaş mod ya da yönetim bilgisi; birebirde göreli
+    zaman (bugün saat, dün, hafta içi gün adı, sonra tarih; tr_TR), sessiz
+    simgesi ve "Uçtan uca şifreli" ya da istek durumu.
+  - **Mesaj akışı:** aynı yazarın ardışık mesajları (aynı gün, aralık en
+    çok 5 dakika) gruplanır; kanalda ad grubun ilk balonunda (kişiye göre
+    renk yok), avatar ve saat grubun sonunda; birebirde ad ve avatar yok.
+    Gün ayırıcı "Bugün", "Dün", sonra tarih. "Görüldü" yalnızca son kendi
+    mesajın altında. E2E uyarıları ("Güvenlik kodu değişti", yeni cihaz)
+    akış içinde sarı sistem notudur.
+  - **Gönderilemeyen mesaj:** tint-nar zemin + nar-metin kenarlı balon;
+    altında "Gönderilemedi", "Tekrar dene" (aynı `client_request_id`,
+    çevrimdışı kuyruk; ADR-0006) ve "Sil".
+  - **Yavaş mod:** yazma alanının üstünde "Yavaş mod: N saniyede bir
+    mesaj"; gönderden sonra gönder düğmesi geri sayıma döner ("12 sn"),
+    ipucu "N sn sonra yazabilirsin". Yönetim muaftır (sunucu söyler).
+  - **Uzun basma sayfası:** "Mesaj işlemleri" alttan sayfası ve kısa
+    alıntı (birebirde yalnızca cihazda çözülmüş metin; loglanmaz). Kanalda
+    "Mesajı sil" (kendi ya da yönetim) ve silinmiş, geri alınabilir mesajda
+    yönetime "Geri al"; birebirde "Mesajı sil" (kendi) ve "Şikâyet et"
+    (gelen). Kanal mesajı şikâyeti sözleşmede yoktur, eklenmedi.
+  - **Diğer:** birebir ⋯ alttan sayfası (Profili gör, Sessize al / Sesi
+    aç); gelen istekte üstte kart ve altta Reddet / Kabul et (cevap yazmak
+    da kabul sayıldığı için yazma alanı korunur); kanal formu alttan
+    sayfada, yavaş mod çipleri.
+  - **Alttan sayfa kullanımı** (ADR-0004 Notlar 2026-11-13, madde 5) mesaj
+    işlemleri, birebir ⋯ menüsü, sessize alma süresi ve kanal formu ile
+    genişledi. Yeni ortak bileşenler: `GunAyirici`, `SistemNotu`,
+    `MesajAltSatiri`, `GonderilemediSatiri`, `MesajYazmaCubugu`,
+    `KimlikAvatari`; `SohbetBalonu` türleri (akış, silinmiş,
+    gönderilemedi). Yeni ölçüler: `TayfamSizes.mesajAvatari` (32),
+    `konusmaAvatari` (48), `konusmaSatiri` (72), `ustCubukKutusu` (36),
+    `parcaRozeti` (22).
+  - **Tasarlandı, kodlanmadı:** kanal kitlesi ve kişi seçimi, etkinlik
+    kanalı seçimi, kanal katılımcıları, özel kanallı liste, etkinlik bitince
+    kapanış bandı ve arşivlenen etkinlik kanalı (Kanal-Kitle,
+    Kanal-Kisi-Sec, Kanal-Etkinlik-Sec, Kanal-Katilimcilar,
+    Sohbet-Kanallar-Ozel, Kanal-Etkinlik-Bitti, Kanal-Etkinlik-Arsiv)
+    sözleşmede karşılıkları olmadığı için kodlanmadı; Tayfam-Api #183
+    bekleniyor (§2'deki kural).
 - **2026-11-13 (platform sahibi, sohbette; issue #138): profil sekmesi,
   arkadaşlar ve kişi profili yeniden tasarımı.** Tasarım: Profil-*,
   Kisi-Profili*.
