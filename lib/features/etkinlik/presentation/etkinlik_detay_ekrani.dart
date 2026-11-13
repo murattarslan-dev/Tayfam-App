@@ -50,6 +50,9 @@ const double ustBolumKatmanSaydamligi = .12;
 /// görselin her yerinde okunur kalsın diye.
 const double kapakPerdesiSaydamligi = .6;
 
+/// Özet kartının üst bölüme taşan yüksekliği (tasarım: 48 px).
+const double ozetKartiTasmasi = TayfamSpacing.s40 + TayfamSpacing.s8;
+
 /// Katılımcı özetinde gösterilen en çok avatar.
 const int ozetAvatarSayisi = 5;
 
@@ -185,7 +188,7 @@ class _Detay extends ConsumerWidget {
         // Özet kartı üst bölüme taşar (tasarım: −48 px). Kaydırma, boşluğu
         // sayfanın sonunda bırakır.
         Transform.translate(
-          offset: const Offset(0, -TayfamSpacing.s48),
+          offset: const Offset(0, -ozetKartiTasmasi),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: TayfamSpacing.kenarMobil,
@@ -426,7 +429,10 @@ class _UstBolum extends ConsumerWidget {
           : SystemUiOverlayStyle.dark,
       child: Theme(
         data: tema.copyWith(
-          extensions: [r.copyWith(odak: ust), context.turRenkleri],
+          extensions: [
+            r.copyWith(odak: ust),
+            context.turRenkleri,
+          ],
         ),
         child: kutu,
       ),
@@ -874,9 +880,7 @@ class _KatilimBolumu extends ConsumerWidget {
                 ),
                 if (etkinlik.maybeCount > 0) ...[
                   const TextSpan(text: ozetAyraci),
-                  TextSpan(
-                    text: m.etkinlik_ozet_belki(etkinlik.maybeCount),
-                  ),
+                  TextSpan(text: m.etkinlik_ozet_belki(etkinlik.maybeCount)),
                 ],
               ],
             ),
@@ -945,9 +949,7 @@ class _IptalKutusu extends StatelessWidget {
                     const SizedBox(height: TayfamSpacing.s4),
                     Text(
                       m.etkinlik_iptal_gerekcesi(gerekce),
-                      style: context.yazi.bodyMedium?.copyWith(
-                        color: r.metin,
-                      ),
+                      style: context.yazi.bodyMedium?.copyWith(color: r.metin),
                     ),
                   ],
                 ),

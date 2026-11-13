@@ -73,8 +73,7 @@ class _KatilimcilarEkraniState extends ConsumerState<KatilimcilarEkrani> {
     );
     final etkinlik = ref.watch(etkinlikDetayProvider(etkinlikAnahtari)).value;
     final simdi = ref.watch(etkinlikSaatiProvider)();
-    final duzeltme =
-        etkinlik != null && katilimDuzeltmeAcik(etkinlik, simdi);
+    final duzeltme = etkinlik != null && katilimDuzeltmeAcik(etkinlik, simdi);
     final anahtar = (
       tayfaId: widget.tayfaId,
       etkinlikId: widget.etkinlikId,
@@ -294,10 +293,7 @@ class _KatilimciSatiri extends ConsumerWidget {
                         ikon: Icons.check,
                       )
                     else if (duzeltme)
-                      Text(
-                        m.etkinlik_varis_yok,
-                        style: context.yazi.bodySmall,
-                      ),
+                      Text(m.etkinlik_varis_yok, style: context.yazi.bodySmall),
                   ],
                 ),
               ),

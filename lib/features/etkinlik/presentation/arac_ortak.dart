@@ -125,9 +125,7 @@ class _BilgiKutusu extends StatelessWidget {
             children: [
               Text(
                 etiket,
-                style: context.yazi.labelSmall?.copyWith(
-                  color: r.metinIkincil,
-                ),
+                style: context.yazi.labelSmall?.copyWith(color: r.metinIkincil),
               ),
               Text(deger, style: context.yazi.titleMedium),
             ],

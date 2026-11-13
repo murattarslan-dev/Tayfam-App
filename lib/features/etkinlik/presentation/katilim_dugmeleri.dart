@@ -57,9 +57,7 @@ class KatilimDugmeleri extends StatelessWidget {
                 child: _KatilimDugmesi(
                   etiket: etiket,
                   secili: secili == durum,
-                  onPressed: onSecildi == null
-                      ? null
-                      : () => onSecildi(durum),
+                  onPressed: onSecildi == null ? null : () => onSecildi(durum),
                 ),
               ),
             ],

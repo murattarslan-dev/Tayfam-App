@@ -578,12 +578,7 @@ void main() {
               katilimcilarJson([organizatorId, katilimciId]),
           'PUT $duzeltmeYolu': (_) => null,
         });
-        await _detayiAc(
-          tester,
-          tasima,
-          themeMode: tema,
-          katilimcilar: true,
-        );
+        await _detayiAc(tester, tasima, themeMode: tema, katilimcilar: true);
         final menu = find.byTooltip(arbMetni('etkinlik_duzeltme'));
         await _gorunurYap(
           tester,
