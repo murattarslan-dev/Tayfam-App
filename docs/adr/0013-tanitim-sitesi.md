@@ -121,3 +121,17 @@ Platform sahibi site için ayrı bir repo istemiyor.
   uygulamanın açılışıyla aynı blok kurulumu kullanılır (yalnızca CSS,
   `prefers-reduced-motion`'a uyar; JavaScript yok, CSP değişmedi). Bkz.
   ADR-0004 Notlar 2026-11-12.
+- **2026-11-13 (platform sahibi; PR #127, #128, #129):** Kullanım
+  koşulları (`/yasal/kullanim-kosullari/2026-11-13/`) ve gözden geçirilmiş
+  aydınlatma metni (`/yasal/aydinlatma-metni/2026-11-13/`; 2026-11-08
+  sürümü "eski sürüm" notuyla yerinde) yayında. Sabit kısa adresler
+  `/gizlilik`, `/kullanim-kosullari` (ve `/kosullar`) güncel sürüme 302
+  ile yönlenir; Google/Apple OAuth ekranlarına ve mağazaya bunlar verilir,
+  yeni sürümde yalnızca `_redirects` satırı değişir. Google Play'in Sosyal
+  kategori şartı için `/cocuk-guvenligi/` (çocuk güvenliği standartları,
+  indekslenebilir). Ana sayfa alt bilgisinde Gizlilik, Kullanım koşulları,
+  Hesap silme ve Çocuk güvenliği bağlantıları. E-posta içeren sayfalar
+  Cloudflare'in e-posta gizlemesini `<!--email_off-->` ile kapatır (CSP
+  betiği engellediği için adres görünmüyordu). İletişim adresi her yerde
+  `support@tayfam.app`; `kvkk@` yönlendirmesi yoktur. Ön inceleme ve
+  hukukçuya kalanlar: Notion "Yasal Metinler Ön İncelemesi (2026-11-13)".
