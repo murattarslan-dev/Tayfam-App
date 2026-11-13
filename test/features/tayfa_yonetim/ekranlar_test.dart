@@ -13,6 +13,7 @@ import 'package:tayfam/features/tayfa_yonetim/presentation/davetler_ekrani.dart'
 import 'package:tayfam/features/tayfa_yonetim/presentation/katilim_istekleri_ekrani.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/uyeler_ekrani.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_menusu.dart';
+import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -257,7 +258,56 @@ void main() {
       ]) {
         expect(find.text(arbMetni(anahtar)), findsWidgets, reason: anahtar);
       }
-      expect(find.text('Tayfa kodu: $sahteKod'), findsOneWidget);
+      expect(find.text(sahteKod), findsOneWidget);
+      expect(find.text(arbMetni('yonetim_bolum_topluluk')), findsOneWidget);
+      expect(find.text(arbMetni('yonetim_bolum_tayfa')), findsOneWidget);
+      // Her satır şu anki değeri gösterir; davet listesi okunarak.
+      expect(find.text('12 üye'), findsOneWidget);
+      expect(find.text('Bekleyen yok'), findsOneWidget);
+      expect(find.text('Geçerli link yok'), findsOneWidget);
+      // Bekleyen iş yoksa "Seni bekleyenler" kartı yok.
+      expect(find.text(arbMetni('yonetim_ayarlar_bekleyenler')), findsNothing);
+    });
+
+    testWidgets('Seni bekleyenler: istek ve ek girişin sayısı', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2000);
+      final tasima = yonetimTasimasi(
+        yanitlar: {
+          'GET $tayfaYolu': yanit(yonetimGorunumu(bekleyen: 3)),
+          'GET $davetlerYolu': yanit({
+            'invites': [davetJson(davetId1)],
+          }),
+        },
+      );
+      await widgetAc(
+        tester,
+        const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
+        tayfa: yonetimOverridelari(tasima),
+        overrides: [
+          yonetimEkGirisleriProvider.overrideWithValue([
+            YonetimEkGirisi(
+              ikon: Icons.flag_outlined,
+              etiket: (_) => 'Moderasyon',
+              adres: (id) => '/t/$id/ayarlar/moderasyon',
+              sayi: (_, _) => (sayi: 20, devami: true),
+              ozet: (_, s) => '${s.sayi}+ açık',
+              bekleyenMetni: (_) => 'şikâyet bekliyor',
+              bekleyenEtiketi: (_, s) => '${s.sayi}+ şikâyet bekliyor',
+            ),
+          ]),
+        ],
+      );
+
+      expect(find.text(arbMetni('yonetim_ayarlar_bekleyenler')), findsOneWidget);
+      expect(
+        find.text(arbMetni('yonetim_bekleyen_istek_satiri')),
+        findsOneWidget,
+      );
+      expect(find.bySemanticsLabel('3 katılım isteği onay bekliyor'), findsWidgets);
+      expect(find.text('şikâyet bekliyor'), findsOneWidget);
+      expect(find.text('3 bekliyor'), findsOneWidget);
+      expect(find.text('20+ açık'), findsOneWidget);
+      expect(find.text('1 geçerli link'), findsOneWidget);
     });
 
     testWidgets('moderatör yalnızca istek, üye ve davetleri görür', (
@@ -271,6 +321,7 @@ void main() {
       );
 
       expect(find.text(arbMetni('yonetim_istekler')), findsOneWidget);
+      expect(find.text(arbMetni('yonetim_bolum_tayfa')), findsNothing);
       expect(find.text(arbMetni('yonetim_bilgiler')), findsNothing);
       expect(find.text(arbMetni('yonetim_moduller')), findsNothing);
       expect(find.text(arbMetni('yonetim_silme_baslik')), findsNothing);
@@ -347,7 +398,7 @@ void main() {
 
       await _dokun(
         tester,
-        find.widgetWithText(IkincilEylem, arbMetni('yonetim_sil')),
+        find.widgetWithText(YikiciEylem, arbMetni('yonetim_sil')),
       );
       await _dokun(tester, find.text(arbMetni('yonetim_sil_onayla')));
 
@@ -433,9 +484,8 @@ void main() {
           },
         );
 
-    final Finder islemDugmesi = find.byTooltip(
-      arbMetni('yonetim_uye_islemleri'),
-    );
+    // İşlem sayfası yalnızca yapılabilecek işlemi olan üyede açılır.
+    final Finder islemSayfasi = find.byType(BottomSheet);
 
     testWidgets('kendine işlem yok; filtreler', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
@@ -445,8 +495,13 @@ void main() {
       expect(find.text('Ben'), findsOneWidget);
       expect(find.text('Kişi 2'), findsOneWidget);
       expect(find.text('Kişi 1'), findsOneWidget);
-      // Yönetici kendine değil, iki alt seviyeye dokunabilir.
-      expect(islemDugmesi, findsNWidgets(2));
+      // Yönetici kendine değil, alt seviyelere dokunabilir.
+      expect(find.text(arbMetni('yonetim_uye_sen')), findsOneWidget);
+      await _dokun(tester, find.text('Ben'));
+      expect(islemSayfasi, findsNothing);
+      // Rol çipleri.
+      expect(find.text(arbMetni('yonetim_rol_admin')), findsOneWidget);
+      expect(find.text(arbMetni('yonetim_rol_moderator')), findsOneWidget);
 
       await _dokun(tester, find.text(arbMetni('yonetim_filtre_moderator')));
       expect(find.text('Kişi 2'), findsOneWidget);
@@ -455,7 +510,8 @@ void main() {
       await _dokun(tester, find.text(arbMetni('yonetim_filtre_banli')));
       expect(find.text('Kişi 3'), findsOneWidget);
       expect(find.text(arbMetni('yonetim_banli')), findsOneWidget);
-      expect(islemDugmesi, findsNothing);
+      await _dokun(tester, find.text('Kişi 3'));
+      expect(islemSayfasi, findsNothing);
       expect(tasima.giden('GET', uyelerYolu).last.sorgu['status'], 'banned');
     });
 
@@ -468,9 +524,11 @@ void main() {
       });
       await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
 
-      await _dokun(tester, islemDugmesi.last);
+      await _dokun(tester, find.text('Kişi 1'));
+      expect(islemSayfasi, findsOneWidget);
       expect(find.text(arbMetni('yonetim_rol_yap_moderator')), findsOneWidget);
-      await _dokun(tester, find.text('1 gün sustur'));
+      expect(find.text(arbMetni('yonetim_sustur')), findsOneWidget);
+      await _dokun(tester, find.text('1 gün'));
 
       final istek = tasima.giden('PUT', susturmaYolu).single;
       expect(istek.yolParametreleri['user_id'], uyeId1);
@@ -479,13 +537,8 @@ void main() {
         find.text(arbMetni('yonetim_susturuldu_bildirim')),
         findsOneWidget,
       );
-      expect(
-        find.text(
-          '${arbMetni('yonetim_rol_member')} · '
-          '${arbMetni('yonetim_susturuldu')}',
-        ),
-        findsOneWidget,
-      );
+      // Susturulan üyenin satırında etiket.
+      expect(find.text(arbMetni('yonetim_susturuldu')), findsOneWidget);
     });
 
     testWidgets('banlama onaylıdır ve listeden çıkarır', (tester) async {
@@ -493,7 +546,7 @@ void main() {
       final tasima = uyeTasimasi({'PUT $banYolu': yanit(null)});
       await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
 
-      await _dokun(tester, islemDugmesi.last);
+      await _dokun(tester, find.text('Kişi 1'));
       await _dokun(tester, find.text(arbMetni('yonetim_banla')));
       expect(find.text(arbMetni('yonetim_banla_aciklama')), findsOneWidget);
       await _dokun(tester, find.text(arbMetni('yonetim_banla_onayla')));
@@ -513,7 +566,7 @@ void main() {
       final tasima = uyeTasimasi({'PUT $banYolu': yanit(null)});
       await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
 
-      await _dokun(tester, islemDugmesi.last);
+      await _dokun(tester, find.text('Kişi 1'));
       await _dokun(tester, find.text(arbMetni('yonetim_banla')));
       expect(find.text(arbMetni('yonetim_ban_gerekce_baslik')), findsOneWidget);
       expect(find.text(arbMetni('yonetim_ban_gerekce_yok')), findsOneWidget);
@@ -533,7 +586,7 @@ void main() {
       final tasima = uyeTasimasi({'PUT $banYolu': yanit(null)});
       await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
 
-      await _dokun(tester, islemDugmesi.last);
+      await _dokun(tester, find.text('Kişi 1'));
       await _dokun(tester, find.text(arbMetni('yonetim_banla')));
       await _dokun(tester, find.text(arbMetni('yonetim_vazgec')));
 
@@ -554,7 +607,7 @@ void main() {
           themeMode: mod,
         );
 
-        await _dokun(tester, islemDugmesi.last);
+        await _dokun(tester, find.text('Kişi 1'));
         await _dokun(tester, find.text(arbMetni('yonetim_banla')));
         expect(tester.takeException(), isNull);
         expect(find.text(arbMetni('yonetim_ban_gerekce_yok')), findsOneWidget);
@@ -578,8 +631,9 @@ void main() {
       );
       await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
 
-      expect(islemDugmesi, findsOneWidget);
-      await _dokun(tester, islemDugmesi);
+      await _dokun(tester, find.text('Kişi 2'));
+      expect(islemSayfasi, findsNothing);
+      await _dokun(tester, find.text('Kişi 1'));
       expect(find.text(arbMetni('yonetim_rol_yap_moderator')), findsNothing);
       expect(find.text(arbMetni('yonetim_cikar')), findsOneWidget);
     });
@@ -609,6 +663,40 @@ void main() {
         'name': 'Yeni ad',
       });
       expect(find.text(arbMetni('yonetim_kaydedildi')), findsOneWidget);
+    });
+
+    testWidgets('değişiklik yoksa Kaydet kapalı; sayaç ve çıkış onayı', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      await _ac(
+        tester,
+        const TayfaBilgileriEkrani(tayfaId: ornekTayfaId),
+        yonetimTasimasi(),
+      );
+
+      FilledButton kaydet() => tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text(arbMetni('yonetim_kaydet')),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      PopScope<Object?> cikis() => tester.widget<PopScope<Object?>>(
+        find.byWidgetPredicate((w) => w is PopScope<Object?>).last,
+      );
+      expect(kaydet().onPressed, isNull);
+      expect(find.text('Değişiklik yok'), findsOneWidget);
+      expect(cikis().canPop, isTrue);
+
+      await tester.enterText(
+        find.widgetWithText(TextField, arbMetni('yonetim_ad_etiketi')),
+        'Yeni ad',
+      );
+      await tester.pump();
+      expect(find.text('1 değişiklik'), findsOneWidget);
+      expect(kaydet().onPressed, isNotNull);
+      // Kaydedilmemiş değişiklikle geri çıkış onay ister.
+      expect(cikis().canPop, isFalse);
     });
 
     testWidgets('kısa ad gönderilmez', (tester) async {
@@ -652,9 +740,30 @@ void main() {
       expect(find.text(arbMetni('yonetim_davetler_bos')), findsOneWidget);
 
       await _dokun(tester, find.text(arbMetni('yonetim_davet_olustur')));
+      // Varsayılan seçim 7 gün, 10 kişi.
+      expect(
+        tester
+            .widget<Semantics>(
+              find
+                  .ancestor(
+                    of: find.text('7 gün'),
+                    matching: find.byWidgetPredicate(
+                      (w) => w is Semantics && w.properties.selected != null,
+                    ),
+                  )
+                  .first,
+            )
+            .properties
+            .selected,
+        isTrue,
+      );
+      expect(find.text(arbMetni('yonetim_davet_bir_kez')), findsOneWidget);
       await _dokun(tester, find.text('30 gün'));
       await _dokun(tester, find.text('1 kişi'));
-      await _dokun(tester, find.text(arbMetni('yonetim_davet_olustur_onayla')));
+      await _dokun(
+        tester,
+        find.text(arbMetni('yonetim_davet_olustur_paylas')),
+      );
 
       expect(tasima.giden('POST', davetlerYolu).single.govde, {
         'ttl_seconds': 2592000,
@@ -662,9 +771,12 @@ void main() {
       });
       const link = 'https://tayfam.app/davet#$sahteDavetTokeni';
       expect(find.text(link), findsOneWidget);
+      // "Oluştur ve paylaş": paylaşım menüsü hemen açıldı.
+      expect(paylasici.paylasilan.single, contains(link));
 
       await _dokun(tester, find.text(arbMetni('yonetim_davet_paylas')));
-      expect(paylasici.paylasilan.single, contains(link));
+      expect(paylasici.paylasilan, hasLength(2));
+      expect(paylasici.paylasilan.last, contains(link));
       await _dokun(tester, find.text(arbMetni('yonetim_davet_kopyala')));
       expect(paylasici.kopyalanan.single, link);
 
@@ -722,6 +834,7 @@ void main() {
                   yonetimGorunumu(
                     kod: sahteKod,
                     silinme: '2026-11-14T12:00:00Z',
+                    bekleyen: 120,
                   ),
                 ),
                 'GET $uyelerYolu': yanit(
@@ -748,6 +861,38 @@ void main() {
           expect(tester.takeException(), isNull);
         });
       }
+
+      testWidgets('üye işlem sayfası', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          const UyelerEkrani(tayfaId: ornekTayfaId),
+          yonetimTasimasi(
+            yanitlar: {
+              'GET $uyelerYolu': yanit(uyeListesiJson([uyeJson(uyeId1)])),
+            },
+          ),
+          themeMode: mod,
+        );
+        await _dokun(tester, find.text('Kişi 1'));
+        expect(find.byType(BottomSheet), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('davet oluşturma sayfası', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          const DavetlerEkrani(tayfaId: ornekTayfaId),
+          yonetimTasimasi(),
+          themeMode: mod,
+        );
+        await _dokun(tester, find.text(arbMetni('yonetim_davet_olustur')));
+        expect(find.text(arbMetni('yonetim_davet_bir_kez')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
 
       testWidgets('menü ve davet paneli', (tester) async {
         ekranBoyutu(tester, genislik: 320);
