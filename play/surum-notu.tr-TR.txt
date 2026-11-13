@@ -3,8 +3,9 @@
 # yeni sürümle birlikte gönderilir; kullanıcıya yönelik bir değişiklik olunca
 # güncelleyin. Kişisel veri, iç adres ya da teknik ayrıntı yazmayın.
 • Uygulamanın ilk test sürümü: tayfalar, etkinlikler, duyurular, soru-cevap, anketler ve sohbet.
-• Birebir mesajlar uçtan uca şifreli; QR ile cihaz bağlama yenilendi.
+• Birebir mesajlar uçtan uca şifreli.
 • Kullanım koşulları ve aydınlatma metni güncellendi.
 • Profil, arkadaşlar ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
-• Sohbet sekmesi yenilendi: okunmamış sayılı Kanallar/Birebir geçişi, mesaj gruplama, gün ayırıcılar ve yavaş mod sayacı.
+• Sohbet yenilendi: okunmamış sayılı Kanallar/Birebir geçişi, mesaj gruplama, gün ayırıcılar.
 • Etkinlik detayı ve etkinlik açma (önizlemeli) yenilendi.
+• Koşul onayı, güncelleme ve hesap kısıtlama ekranları yenilendi.

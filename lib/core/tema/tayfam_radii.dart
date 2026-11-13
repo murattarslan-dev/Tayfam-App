@@ -21,6 +21,10 @@ abstract final class TayfamRadii {
   /// Giriş ekranının mor üst alanının alt köşeleri (Design: Giriş).
   static const double ustPanel = 32;
 
+  /// Hesap durum ekranlarındaki büyük ikon kutusu (tasarım: Hesap-Onay;
+  /// 30 px).
+  static const double durumKutusu = 30;
+
   /// Sohbet balonu.
   static const double balon = 18;
 
@@ -57,6 +61,8 @@ abstract final class TayfamRadii {
   );
   static const BorderRadius sonucKutusuKoseleri = BorderRadius.all(
     Radius.circular(sonucKutusu),
+  static const BorderRadius durumKutusuKoseleri = BorderRadius.all(
+    Radius.circular(durumKutusu),
   );
 
   /// Yalnızca alt köşeleri [ustPanel] kadar yuvarlak (giriş ekranının mor
