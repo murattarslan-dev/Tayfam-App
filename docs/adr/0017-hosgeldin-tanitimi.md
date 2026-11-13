@@ -91,3 +91,18 @@ modüllerden biri pilota yetişmezse metni çıkarılır.
   kaldırıldı, PR #99). Mor yüzeydeki tür çipleri iki temada da koyu temanın
   tür renklerini kullanır (PR #106). Hoş geldin tanıtımı bir karşılama
   ekranı olduğu için büyük yazı ölçeği (48 / 24 px) burada da serbesttir.
+- **2026-11-13 (platform sahibi; tasarım `docs/tasarim/18-hosgeldin-tanitimi/`,
+  issue #160):** Tanıtım yeniden tasarlandı; §3'teki "üst bölüm mor marka
+  yüzeyi" kararının yerini şu alır: üstte küçük logo ve "Atla" (son sayfada
+  "Atla" yok; §1'deki "her sayfada Atla" buna göre okunur, son sayfada
+  "Başlayalım" zaten tamamlar). Her sayfanın zemininde sırayla marka, mango,
+  turkuaz, nar ve marka renginin %14 tonunda açık bir bant
+  (`TayfamSizes.tanitimBantSaydamligi`); üst çubuğun bandı kaydırırken iki
+  sayfanın rengi arasında geçer. Görseller uygulamanın kartlarından yapılmış,
+  hafif eğik örneklerdir (örnek tayfa, etkinlik kartı ve katılım, soru +
+  anket, şifreli sohbet, üç katılma yolu); süstür ve ekran okuyucuya
+  kapalıdır. Altta "Sayfa n / 5" (görünür; ekran okuyucuya noktalar okur),
+  başlık (`TayfamTypography.tanitimBasligi`, 30 px) ve metin; en altta
+  nokta ilerleme ve "İleri" / "Başlayalım" yan yana, büyük yazıda düğme
+  alta iner. Hareket azaltma açıksa sayfa geçişi ve noktalar animasyonsuz.
+  Akış (bir kez, girişten önce) değişmedi.

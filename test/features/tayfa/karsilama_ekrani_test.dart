@@ -141,12 +141,9 @@ void main() {
     await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
     await tester.pumpAndSettle();
 
-    // Sihirbaz kabuğun üstüne itilen tam ekran bir sayfadır.
+    // Sihirbaz kabuğun üstünde tam ekran bir sayfadır.
     expect(find.byType(OlusturmaEkrani), findsOneWidget);
-    expect(
-      find.widgetWithText(AppBar, arbMetni('tayfa_olustur')),
-      findsOneWidget,
-    );
+    expect(find.text(arbMetni('olusturma_baslik')), findsOneWidget);
   });
 
   testWidgets('bekleyen istek için bilgi kartı; yalnızca ad', (tester) async {

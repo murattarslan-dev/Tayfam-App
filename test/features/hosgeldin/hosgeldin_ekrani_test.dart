@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 
@@ -61,6 +62,19 @@ void main() {
     expect(tanitimSayfalari, hasLength(5));
   });
 
+  test('bantlar sırayla marka, mango, turkuaz, nar, marka', () {
+    for (final r in [TayfamColors.acik, TayfamColors.koyu]) {
+      expect(
+        [for (final sayfa in tanitimSayfalari) sayfa.bant(r)],
+        [r.marka, r.mango, r.teal, r.nar, r.marka],
+      );
+      expect(
+        tanitimBantTonu(r, 1),
+        r.mango.withValues(alpha: TayfamSizes.tanitimBantSaydamligi),
+      );
+    }
+  });
+
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {
     testWidgets('${mod.name} temada 320 px, 2× yazıda her sayfa taşmıyor', (
       tester,
@@ -72,8 +86,13 @@ void main() {
       for (var i = 0; i < _basliklar.length; i++) {
         expect(find.text(arbMetni(_basliklar[i])), findsOneWidget);
         expect(find.text(arbMetni(_metinler[i])), findsOneWidget);
-        expect(_atla, findsOneWidget, reason: 'Her sayfada "Atla" var.');
+        expect(find.text(_sayfaEtiketi(i + 1)), findsOneWidget);
         final son = i == _basliklar.length - 1;
+        expect(
+          _atla,
+          son ? findsNothing : findsOneWidget,
+          reason: 'Son sayfa dışında her sayfada "Atla" var.',
+        );
         expect(_ileri, son ? findsNothing : findsOneWidget);
         expect(_baslayalim, son ? findsOneWidget : findsNothing);
         expect(tester.takeException(), isNull);
@@ -120,11 +139,13 @@ void main() {
     final balon = arbMetni('hosgeldin_ornek_etkinlik_basligi');
     expect(find.text(balon), findsOneWidget);
     expect(find.bySemanticsLabel(balon), findsNothing);
-    // Görseldeki "Geldim" düğmesi ekran okuyucuya düğme olarak görünmüyor.
-    expect(
-      find.bySemanticsLabel(arbMetni('etkinlik_varis_geldim')),
-      findsNothing,
-    );
+    // Görseldeki "Geliyorum" ekran okuyucuya görünmüyor.
+    final cevap = arbMetni('etkinlik_cevap_going');
+    expect(find.text(cevap), findsOneWidget);
+    expect(find.bySemanticsLabel(cevap), findsNothing);
+    // Görünen "Sayfa 2 / 5" yazısı ekran okuyucuya ikinci kez okunmuyor.
+    expect(find.text(_sayfaEtiketi(2)), findsOneWidget);
+    expect(find.bySemanticsLabel(_sayfaEtiketi(2)), findsOneWidget);
     semantik.dispose();
   });
 
@@ -140,6 +161,18 @@ void main() {
     await tester.tap(_ileri);
     await tester.pump();
     expect(_sayfaKonumu(tester), 1);
+    expect(find.text(_sayfaEtiketi(2)), findsOneWidget);
+    // Nokta göstergesi de animasyonsuz.
+    final noktalar = tester.widgetList<AnimatedContainer>(
+      find.descendant(
+        of: find.byType(SayfaGostergesi),
+        matching: find.byType(AnimatedContainer),
+      ),
+    );
+    expect(noktalar, hasLength(5));
+    for (final nokta in noktalar) {
+      expect(nokta.duration, Duration.zero);
+    }
   });
 
   testWidgets('İleri animasyonla geçiyor', (tester) async {

@@ -828,6 +828,58 @@
   "@duyuru_form_kaydet": {
     "description": "Duyuru düzenleme formunda değişiklikleri kaydeden düğme."
   },
+  "duyuru_son_duyurular": "Son duyurular",
+  "@duyuru_son_duyurular": {
+    "description": "Duyurular listesinde sabitlenenlerden sonraki duyuruların bölüm başlığı."
+  },
+  "duyuru_bugun_saat": "Bugün {saat}",
+  "@duyuru_bugun_saat": {
+    "description": "Duyuru kartında bugün yayınlanan duyurunun zamanı, cihazın saatine göre (ör. 'Bugün 11:05').",
+    "placeholders": {
+      "saat": {
+        "type": "String",
+        "example": "11:05"
+      }
+    }
+  },
+  "duyuru_tarih_duzenlendi": "{tarih} · düzenlendi",
+  "@duyuru_tarih_duzenlendi": {
+    "description": "Duyuru ekranında, yayından sonra değişen duyurunun tarihi (ör. '2 Kasım 2026, 10:40 · düzenlendi').",
+    "placeholders": {
+      "tarih": {
+        "type": "String",
+        "example": "2 Kasım 2026, 10:40"
+      }
+    }
+  },
+  "duyuru_menu_sabitle_aciklama": "Ana sayfada ve listede en üstte durur",
+  "@duyuru_menu_sabitle_aciklama": {
+    "description": "Duyuru işlemleri sayfasında 'Sabitle' satırının açıklaması."
+  },
+  "duyuru_menu_sabitlemeyi_kaldir_aciklama": "Ana sayfada ve listede üstte durmaz",
+  "@duyuru_menu_sabitlemeyi_kaldir_aciklama": {
+    "description": "Duyuru işlemleri sayfasında 'Sabitlemeyi kaldır' satırının açıklaması."
+  },
+  "duyuru_menu_sil_aciklama": "Tayfadaki herkesten kaldırılır",
+  "@duyuru_menu_sil_aciklama": {
+    "description": "Duyuru işlemleri sayfasında 'Sil' satırının açıklaması."
+  },
+  "duyuru_form_sabitle": "Yayınlayınca sabitle",
+  "@duyuru_form_sabitle": {
+    "description": "Yeni duyuru formunda (yalnızca moderatör ve yöneticiye) yayından sonra duyuruyu sabitleyen anahtar."
+  },
+  "duyuru_form_sabitle_aciklama": "Ana sayfada ve listede en üstte durur. Yalnızca yönetim görür.",
+  "@duyuru_form_sabitle_aciklama": {
+    "description": "Yeni duyuru formundaki 'Yayınlayınca sabitle' anahtarının açıklaması."
+  },
+  "duyuru_form_duz_metin_notu": "Metin düz yazı olarak görünür; bağlantılar dokunulabilir olmaz.",
+  "@duyuru_form_duz_metin_notu": {
+    "description": "Duyuru formunun altındaki not: gövde biçimlendirilmez, bağlantılar dokunulabilir değildir."
+  },
+  "duyuru_yayinlandi_sabitlenemedi": "Duyuru yayınlandı ama sabitlenemedi. Duyurunun menüsünden yeniden deneyebilirsin.",
+  "@duyuru_yayinlandi_sabitlenemedi": {
+    "description": "Duyuru yayınlandıktan sonra sabitleme isteği başarısız olunca gösterilen kısa bildirim."
+  },
   "soru_liste_baslik": "Sorular",
   "@soru_liste_baslik": {
     "description": "Soru listesi ekranının üst çubuk başlığı ve Tayfa sekmesindeki soru-cevap modülü girişinin etiketi."
@@ -980,21 +1032,25 @@
   "@soru_form_govde_hatasi": {
     "description": "Soru ayrıntısı çok uzunken alanın altında görünen hata."
   },
-  "soru_form_etiket_etiketi": "Etiket",
+  "soru_form_etiketler": "Etiketler",
+  "@soru_form_etiketler": {
+    "description": "Soru formunda etiketler bölümünün başlığı (tasarım: Soru-Form)."
+  },
+  "soru_form_etiketler_siniri": "(en çok 5)",
+  "@soru_form_etiketler_siniri": {
+    "description": "Soru formunda Etiketler başlığının yanında, ikincil renkte gösterilen sınır notu."
+  },
+  "soru_form_etiket_etiketi": "Etiket yaz",
   "@soru_form_etiket_etiketi": {
     "description": "Soru formunda etiket yazılan alanın etiketi."
   },
-  "soru_form_etiket_yardim": "En çok 5 etiket ekleyebilirsin.",
-  "@soru_form_etiket_yardim": {
-    "description": "Soru formundaki etiket alanının altındaki yardım metni."
-  },
-  "soru_form_etiket_ekle": "Etiketi ekle",
+  "soru_form_etiket_ekle": "Ekle",
   "@soru_form_etiket_ekle": {
-    "description": "Etiket alanının yanındaki ekleme düğmesinin ekran okuyucu etiketi."
+    "description": "Soru formunda etiket alanının yanındaki, yazılan etiketi ekleyen çerçeveli düğme."
   },
   "soru_form_etiket_oneriler": "Tayfadaki etiketler",
   "@soru_form_etiket_oneriler": {
-    "description": "Soru formunda önerilen var olan etiketlerin bulunduğu satırın ekran okuyucu etiketi."
+    "description": "Soru formunda tayfanın var olan etiketlerinden önerilerin üstündeki küçük başlık."
   },
   "soru_form_etiket_cok_uzun": "Etiket en çok 30 karakter olabilir.",
   "@soru_form_etiket_cok_uzun": {
@@ -1039,6 +1095,28 @@
       "sayi": {
         "type": "int",
         "example": "3"
+      }
+    }
+  },
+  "soru_etiket_tumu": "Tümü",
+  "@soru_etiket_tumu": {
+    "description": "Soru listesindeki etiket süzgecinin ilk çipi; seçiliyken bütün sorular gösterilir."
+  },
+  "soru_cevap_siralama": "En faydalı bulunanlar üstte.",
+  "@soru_cevap_siralama": {
+    "description": "Soru ekranında cevap sayısı başlığının altındaki sıralama notu."
+  },
+  "soru_en_faydali": "En faydalı",
+  "@soru_en_faydali": {
+    "description": "Sunucunun sırasıyla ilk gelen ve en az bir faydalı oyu olan cevaptaki teal etiket."
+  },
+  "soru_faydali_dugme": "Faydalı · {sayi}",
+  "@soru_faydali_dugme": {
+    "description": "Cevaptaki faydalı oy düğmesinin görünen metni; sayi yerel biçimde biçimlenmiş oy sayısıdır. Ekran okuyucu bilesen_faydali_anlam metnini okur.",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "9"
       }
     }
   },
@@ -1291,7 +1369,7 @@
   "@olusturma_ilgi_baslik": {
     "description": "Tayfa oluşturma sihirbazının ikinci adımının (ilgi alanları) başlığı."
   },
-  "olusturma_ilgi_aciklama": "İstediğin kadarını seç ya da bu adımı geç.",
+  "olusturma_ilgi_aciklama": "İstediğin kadarını seç ya da bu adımı geç. Etkinlik açarken bu türler öne çıkar.",
   "@olusturma_ilgi_aciklama": {
     "description": "Tayfa oluşturma sihirbazının ilgi alanları adımında başlığın altındaki açıklama; seçim isteğe bağlıdır."
   },
@@ -1330,6 +1408,104 @@
   "olusturma_gonder": "Tayfayı oluştur",
   "@olusturma_gonder": {
     "description": "Tayfa oluşturma sihirbazının son adımında tayfayı oluşturan birincil düğme."
+  },
+  "olusturma_baslik": "Tayfa kur",
+  "@olusturma_baslik": {
+    "description": "Tayfa kurma sihirbazının üst çubuğundaki başlık (kapat düğmesinin yanında)."
+  },
+  "olusturma_ad_aciklama": "Üyeler tayfanı bu adla görür; sonra değiştirebilirsin.",
+  "@olusturma_ad_aciklama": {
+    "description": "Tayfa kurma sihirbazının ad adımında başlığın altındaki açıklama."
+  },
+  "olusturma_ornekler": "Örnekler",
+  "@olusturma_ornekler": {
+    "description": "Tayfa kurma sihirbazının ad adımında örnek ad çiplerinin üstündeki küçük başlık."
+  },
+  "olusturma_ornek_halisaha": "Cumartesi Halısaha",
+  "@olusturma_ornek_halisaha": {
+    "description": "Ad adımındaki örnek tayfa adı çipi; dokununca ad alanına yazılır."
+  },
+  "olusturma_ornek_kamp": "Kampçı Tayfa",
+  "@olusturma_ornek_kamp": {
+    "description": "Ad adımındaki örnek tayfa adı çipi; dokununca ad alanına yazılır."
+  },
+  "olusturma_ornek_yuruyus": "Pazar Yürüyüşçüleri",
+  "@olusturma_ornek_yuruyus": {
+    "description": "Ad adımındaki örnek tayfa adı çipi; dokununca ad alanına yazılır."
+  },
+  "olusturma_onizleme_ad": "Tayfa listesinde böyle görünecek",
+  "@olusturma_onizleme_ad": {
+    "description": "Ad adımının altındaki önizleme kartında, tayfa avatarı ve adının üstündeki açıklama."
+  },
+  "olusturma_onizleme_ilgi": "Avatarın rengi ilk seçtiğin türden gelir",
+  "@olusturma_onizleme_ilgi": {
+    "description": "İlgi alanları adımının altındaki önizleme kartında, tayfa avatarı ve adının üstündeki açıklama."
+  },
+  "olusturma_onerilen": "Önerilen",
+  "@olusturma_onerilen": {
+    "description": "Tayfa kurma sihirbazında varsayılan \"Onaylı katılım\" seçeneğinin yanındaki etiket."
+  },
+  "olusturma_kurallar": "İlk 7 günde en az 3 üyeye ulaşmayan tayfalar uyarılır. 24 saatte bir tayfa açabilirsin.",
+  "@olusturma_kurallar": {
+    "description": "Tayfa kurma sihirbazının son adımının altındaki bilgi: 7 günde 3 üye kuralı ve 24 saatte bir tayfa sınırı."
+  },
+  "olusturma_sinir_baslik": "Son 24 saatte yeni bir tayfa açtın.",
+  "@olusturma_sinir_baslik": {
+    "description": "Tayfa kurma sihirbazının son adımında, günlük tayfa sınırına (`tayfa-create-limit`) takılınca kırmızı kutudaki kalın ilk cümle."
+  },
+  "olusturma_sinir_metni": "Biraz sonra tekrar deneyebilirsin; girdiklerin bu ekranda duruyor.",
+  "@olusturma_sinir_metni": {
+    "description": "Günlük tayfa sınırı kutusunda kalın cümleden sonraki açıklama; girilenler silinmez."
+  },
+  "olusturma_girilenler_duruyor": "Girdiklerin bu ekranda duruyor.",
+  "@olusturma_girilenler_duruyor": {
+    "description": "Tayfa kurma sihirbazında hız sınırına (`rate-limited`) takılınca kırmızı kutuda hata metninden sonraki cümle; girilenler silinmez."
+  },
+  "olusturma_vazgec_baslik": "Tayfa kurmaktan vazgeçilsin mi?",
+  "@olusturma_vazgec_baslik": {
+    "description": "Tayfa kurma sihirbazında bir şey girilmişken kapat (X) ya da geriye basılınca açılan onay penceresinin başlığı."
+  },
+  "olusturma_vazgec_metni": "Girdiklerin silinir.",
+  "@olusturma_vazgec_metni": {
+    "description": "Tayfa kurmaktan vazgeçme onayının açıklaması."
+  },
+  "olusturma_vazgec_devam": "Devam et",
+  "@olusturma_vazgec_devam": {
+    "description": "Vazgeçme onayında pencereyi kapatıp sihirbaza dönen düğme."
+  },
+  "olusturma_vazgec": "Vazgeç",
+  "@olusturma_vazgec": {
+    "description": "Vazgeçme onayında sihirbazı kapatan, girilenleri silen kırmızı düğme."
+  },
+  "kuruldu_baslik": "{ad} kuruldu!",
+  "@kuruldu_baslik": {
+    "description": "Tayfa oluşturulduktan sonra açılan mor \"Tayfa kuruldu\" ekranının başlığı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Klasik Otomobil Kulübü"
+      }
+    }
+  },
+  "kuruldu_aciklama": "Şimdi arkadaşlarını çağır. İlk 7 günde en az 3 üyeye ulaşın.",
+  "@kuruldu_aciklama": {
+    "description": "\"Tayfa kuruldu\" ekranında başlığın altındaki açıklama; 7 günde 3 üye hedefi."
+  },
+  "kuruldu_kod_baslik": "Tayfa kodu",
+  "@kuruldu_kod_baslik": {
+    "description": "\"Tayfa kuruldu\" ekranında tayfa kodunun üstündeki küçük başlık."
+  },
+  "kuruldu_kopyala": "Kopyala",
+  "@kuruldu_kopyala": {
+    "description": "\"Tayfa kuruldu\" ekranında tayfa kodunu panoya kopyalayan düğme."
+  },
+  "kuruldu_davet": "Davet linkini paylaş",
+  "@kuruldu_davet": {
+    "description": "\"Tayfa kuruldu\" ekranının birincil düğmesi: davet linki oluşturup paylaşma akışını açar."
+  },
+  "kuruldu_tayfaya_git": "Tayfaya git",
+  "@kuruldu_tayfaya_git": {
+    "description": "\"Tayfa kuruldu\" ekranının ikincil düğmesi: tayfanın ana sayfasını kurulum adımlarıyla açar."
   },
   "karsilama_bekleyen_baslik": "Katılma isteğin onay bekliyor",
   "@karsilama_bekleyen_baslik": {
@@ -4513,7 +4689,7 @@
   },
   "hosgeldin_ornek_tayfa_adi": "Pazar Sürücüleri",
   "@hosgeldin_ornek_tayfa_adi": {
-    "description": "Hoş geldin tanıtımının 1. sayfasındaki görselde (mor tayfa üst bölümü) uydurma örnek tayfa adı. Süstür; ekran okuyucu okumaz."
+    "description": "Hoş geldin tanıtımının 1. sayfasındaki görselde (örnek tayfa kartı) uydurma örnek tayfa adı. Süstür; ekran okuyucu okumaz."
   },
   "hosgeldin_ornek_etkinlik_basligi": "Kaz Dağları yürüyüşü",
   "@hosgeldin_ornek_etkinlik_basligi": {
@@ -4576,6 +4752,22 @@
   "hosgeldin_ornek_mesaj_giden": "Süper, ben de ocağı alırım.",
   "@hosgeldin_ornek_mesaj_giden": {
     "description": "Hoş geldin tanıtımının 4. sayfasındaki örnek birebir sohbette giden mesaj (uydurma). Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_tayfa_moduller": "Etkinlik · Duyuru · Soru · Sohbet",
+  "@hosgeldin_ornek_tayfa_moduller": {
+    "description": "Hoş geldin tanıtımının 1. sayfasındaki örnek tayfa kartında, tayfa adının altında tayfanın modülleri. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_yol_davet": "Davet linkine dokun",
+  "@hosgeldin_ornek_yol_davet": {
+    "description": "Hoş geldin tanıtımının 5. sayfasındaki görselde tayfaya katılmanın ilk yolu (davet linki). Süstür; ekran okuyucu okumaz, anlam sayfanın metnindedir."
+  },
+  "hosgeldin_ornek_yol_kod": "Tayfa kodunu gir",
+  "@hosgeldin_ornek_yol_kod": {
+    "description": "Hoş geldin tanıtımının 5. sayfasındaki görselde tayfaya katılmanın ikinci yolu (tayfa kodu). Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_yol_kur": "Kendi tayfanı kur",
+  "@hosgeldin_ornek_yol_kur": {
+    "description": "Hoş geldin tanıtımının 5. sayfasındaki görselde üçüncü yol: kendi tayfanı kurmak. Süstür; ekran okuyucu okumaz."
   },
   "yonetim_menu_ipucu": "Tayfa menüsü",
   "@yonetim_menu_ipucu": {
