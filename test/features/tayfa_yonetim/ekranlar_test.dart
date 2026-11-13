@@ -298,12 +298,18 @@ void main() {
         ],
       );
 
-      expect(find.text(arbMetni('yonetim_ayarlar_bekleyenler')), findsOneWidget);
+      expect(
+        find.text(arbMetni('yonetim_ayarlar_bekleyenler')),
+        findsOneWidget,
+      );
       expect(
         find.text(arbMetni('yonetim_bekleyen_istek_satiri')),
         findsOneWidget,
       );
-      expect(find.bySemanticsLabel('3 katılım isteği onay bekliyor'), findsWidgets);
+      expect(
+        find.bySemanticsLabel('3 katılım isteği onay bekliyor'),
+        findsWidgets,
+      );
       expect(find.text('şikâyet bekliyor'), findsOneWidget);
       expect(find.text('3 bekliyor'), findsOneWidget);
       expect(find.text('20+ açık'), findsOneWidget);
@@ -760,10 +766,7 @@ void main() {
       expect(find.text(arbMetni('yonetim_davet_bir_kez')), findsOneWidget);
       await _dokun(tester, find.text('30 gün'));
       await _dokun(tester, find.text('1 kişi'));
-      await _dokun(
-        tester,
-        find.text(arbMetni('yonetim_davet_olustur_paylas')),
-      );
+      await _dokun(tester, find.text(arbMetni('yonetim_davet_olustur_paylas')));
 
       expect(tasima.giden('POST', davetlerYolu).single.govde, {
         'ttl_seconds': 2592000,

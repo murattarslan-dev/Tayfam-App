@@ -220,7 +220,10 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
                         ),
                         textStyle: yazi.labelLarge,
                       ),
-                      child: Text(m.yonetim_reddet, textAlign: TextAlign.center),
+                      child: Text(
+                        m.yonetim_reddet,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
@@ -240,7 +243,10 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
                         side: BorderSide.none,
                         textStyle: yazi.labelLarge,
                       ),
-                      child: Text(m.yonetim_onayla, textAlign: TextAlign.center),
+                      child: Text(
+                        m.yonetim_onayla,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),

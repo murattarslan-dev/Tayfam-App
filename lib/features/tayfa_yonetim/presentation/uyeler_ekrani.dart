@@ -386,7 +386,10 @@ class _UyeIslemleri extends StatelessWidget {
             child: Row(
               children: [
                 const ExcludeSemantics(
-                  child: Icon(Icons.volume_off_outlined, size: TayfamSizes.ikon),
+                  child: Icon(
+                    Icons.volume_off_outlined,
+                    size: TayfamSizes.ikon,
+                  ),
                 ),
                 const SizedBox(width: TayfamSpacing.s12),
                 Expanded(

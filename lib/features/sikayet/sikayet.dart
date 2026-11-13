@@ -67,7 +67,9 @@ String moderasyonGirisEtiketi(BuildContext context) =>
 /// Moderasyon girişinin özeti: "2 açık şikâyet" ya da "20+ açık şikâyet".
 String moderasyonOzeti(BuildContext context, ({int sayi, bool devami}) s) {
   final m = AppLocalizations.of(context);
-  return s.devami ? m.sikayet_ayar_ozet_fazla(s.sayi) : m.sikayet_ayar_ozet(s.sayi);
+  return s.devami
+      ? m.sikayet_ayar_ozet_fazla(s.sayi)
+      : m.sikayet_ayar_ozet(s.sayi);
 }
 
 /// "Seni bekleyenler" kartındaki şikâyet satırının metni.

@@ -297,6 +297,8 @@ class KisiAvatari extends ConsumerWidget {
     final ad = ref.watch(
       kullaniciAdlariProvider.select((adlar) => adlar[kullaniciId]?.ad),
     );
-    return ExcludeSemantics(child: KullaniciAvatari(ad: ad, cap: cap));
+    return ExcludeSemantics(
+      child: KullaniciAvatari(ad: ad, cap: cap),
+    );
   }
 }

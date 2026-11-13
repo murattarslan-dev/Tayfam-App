@@ -231,9 +231,9 @@ class _DavetSecenekleriState extends State<DavetSecenekleri> {
         BirincilEylem(
           etiket: m.yonetim_davet_olustur_paylas,
           ikon: Icons.share_outlined,
-          onPressed: () => Navigator.of(
-            context,
-          ).pop<DavetSecimi>((sure: _sure, kullanim: _kullanim)),
+          onPressed: () =>
+              Navigator.of(context)
+                  .pop<DavetSecimi>((sure: _sure, kullanim: _kullanim)),
         ),
       ],
     );

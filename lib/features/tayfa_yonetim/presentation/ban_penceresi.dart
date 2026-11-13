@@ -144,9 +144,9 @@ class _BanPenceresiState extends State<_BanPenceresi> {
               child: YikiciEylem(
                 etiket: m.yonetim_banla_onayla,
                 dolu: true,
-                onPressed: () => Navigator.of(
-                  context,
-                ).pop<BanKarari>((gerekce: _secim.gerekce)),
+                onPressed: () =>
+                    Navigator.of(context)
+                        .pop<BanKarari>((gerekce: _secim.gerekce)),
               ),
             ),
           ],

@@ -94,8 +94,7 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(m.yonetim_ayarlar_baslik),
-            if (ozet.ad case final ad?)
-              Text(ad, style: yazi.bodySmall),
+            if (ozet.ad case final ad?) Text(ad, style: yazi.bodySmall),
           ],
         ),
       ),
@@ -205,10 +204,7 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
                   start: TayfamSpacing.s4,
                   bottom: TayfamSpacing.s8,
                 ),
-                child: Text(
-                  m.yonetim_moduller_aciklama,
-                  style: yazi.bodySmall,
-                ),
+                child: Text(m.yonetim_moduller_aciklama, style: yazi.bodySmall),
               ),
               _ModullerKarti(tayfaId: tayfaId, tayfa: tayfa),
               const SizedBox(height: TayfamSpacing.s32),
@@ -260,9 +256,13 @@ class _BolumBasligi extends StatelessWidget {
               ),
             ),
           ),
-          if (not != null) Text(not, style: yazi.labelSmall?.copyWith(
-            color: context.renkler.metinIkincil,
-          )),
+          if (not != null)
+            Text(
+              not,
+              style: yazi.labelSmall?.copyWith(
+                color: context.renkler.metinIkincil,
+              ),
+            ),
         ],
       ),
     );
@@ -489,7 +489,9 @@ class _KodSatiri extends ConsumerWidget {
                       unawaited(koduKopyala(context, ref, kod: kod)),
                 ),
               TextButton(
-                onPressed: mesgul ? null : () => unawaited(_yenile(context, ref)),
+                onPressed: mesgul
+                    ? null
+                    : () => unawaited(_yenile(context, ref)),
                 style: TextButton.styleFrom(
                   minimumSize: const Size.square(TayfamSizes.dokunmaMin),
                 ),
@@ -658,7 +660,10 @@ class _SilmeKarti extends ConsumerWidget {
         children: [
           Semantics(
             header: true,
-            child: Text(m.yonetim_silme_baslik, style: context.yazi.titleMedium),
+            child: Text(
+              m.yonetim_silme_baslik,
+              style: context.yazi.titleMedium,
+            ),
           ),
           const SizedBox(height: TayfamSpacing.s8),
           if (silinme != null) ...[

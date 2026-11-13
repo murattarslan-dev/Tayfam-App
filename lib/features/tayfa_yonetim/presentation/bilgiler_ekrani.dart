@@ -150,7 +150,9 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
       },
       child: Column(
         children: [
-          Expanded(child: _alanlar(context, mesgul: mesgul, govde: govde)),
+          Expanded(
+            child: _alanlar(context, mesgul: mesgul, govde: govde),
+          ),
           _KaydetCubugu(
             degisiklik: degisiklik,
             onKaydet: mesgul || degisiklik == 0
