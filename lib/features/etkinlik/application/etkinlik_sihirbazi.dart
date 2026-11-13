@@ -21,9 +21,10 @@ final etkinlikIstekKimligiProvider = Provider<String Function()>(
 /// Sihirbazın anahtarı: tayfa ve (düzenlemede) düzenlenen etkinlik.
 typedef SihirbazAnahtari = ({String tayfaId, Event? duzenlenen});
 
-/// Etkinlik oluşturma ve düzenleme sihirbazı (ADR-0015 §3): tür → başlık,
-/// açıklama, başlangıç, bitiş → yer → türe özel alanlar, kontenjan ve
-/// tekrar.
+/// Etkinlik oluşturma ve düzenleme sihirbazı (ADR-0015 §3 ve Notlar
+/// 2026-11-13): tür → başlık, açıklama, başlangıç, bitiş → yer → türe
+/// özel alanlar, kontenjan ve tekrar → önizleme. Önizlemedeki "Değiştir"
+/// ilgili adıma götürür; o adımda "İleri" yeniden önizlemeye döner.
 ///
 /// Kurallar ADR-0014 §4'teki gibidir: girilenler adımlar arasında korunur,
 /// `client_request_id` sihirbaz açılınca bir kez üretilir ve tekrar
@@ -40,14 +41,22 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   /// Sihirbazın ilk adımı: oluşturmada tür, düzenlemede başlık ve zaman.
   int get ilkAdim => duzenleme ? 1 : 0;
 
+  /// Sihirbaz açıldığındaki taslak ("Vazgeçilsin mi?" sorusu için).
+  late EtkinlikTaslagi _ilk;
+
   @override
   EtkinlikTaslagi build() {
     final kimlik = ref.read(etkinlikIstekKimligiProvider)();
     final eski = anahtar.duzenlenen;
-    return eski == null
+    _ilk = eski == null
         ? EtkinlikTaslagi(istekKimligi: kimlik)
         : duzenlemeTaslagi(eski, kimlik);
+    return _ilk;
   }
+
+  /// Kullanıcı bir şey girdi ya da değiştirdi mi (kapatırken onay
+  /// sorulur).
+  bool get girdiVar => !ayniGirdi(state, _ilk);
 
   DateTime get _simdi => ref.read(etkinlikSaatiProvider)().toUtc();
 
@@ -153,7 +162,8 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   }
 
   /// Sonraki adıma geçer; adımda hata varsa geçmez ve hatalar gösterilir.
-  /// Son adımda bir şey yapmaz ([gonder] kullanılır).
+  /// Adıma önizlemeden gelindiyse önizlemeye döner. Son adımda (önizleme)
+  /// bir şey yapmaz ([gonder] kullanılır).
   void ileri() {
     if (_kilitli) return;
     final hatalar = _hatalar(state.adim, state);
@@ -161,15 +171,35 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
       state = state.kopya(hatalar: hatalar);
       return;
     }
-    if (state.adim >= etkinlikAdimSayisi - 1) return;
-    state = state.kopya(adim: state.adim + 1, hatalar: const {});
+    if (state.adim >= SihirbazAdimi.onizleme) return;
+    state = state.kopya(
+      adim: state.onizlemeyeDon ? SihirbazAdimi.onizleme : state.adim + 1,
+      onizlemeyeDon: false,
+      hatalar: const {},
+    );
   }
 
   /// Önceki adıma döner; ilk adımda `false` döner (sihirbaz kapanabilir).
   bool geri() {
     if (_kilitli || state.adim <= ilkAdim) return false;
-    state = state.kopya(adim: state.adim - 1, hatalar: const {});
+    state = state.kopya(
+      adim: state.adim - 1,
+      onizlemeyeDon: false,
+      hatalar: const {},
+    );
     return true;
+  }
+
+  /// Önizlemedeki "Değiştir": [adim]'a gider; o adımda "İleri" önizlemeye
+  /// döner. Yalnızca önizlemeden ve gösterilen adımlar için.
+  void adimaGit(int adim) {
+    if (_kilitli ||
+        state.adim != SihirbazAdimi.onizleme ||
+        adim < ilkAdim ||
+        adim >= SihirbazAdimi.onizleme) {
+      return;
+    }
+    state = state.kopya(adim: adim, onizlemeyeDon: true, hatalar: const {});
   }
 
   /// Etkinliği oluşturur ya da düzenler. Hatalı adım varsa o adıma dönülür.
@@ -181,7 +211,12 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
     for (var adim = ilkAdim; adim < etkinlikAdimSayisi; adim++) {
       final hatalar = _hatalar(adim, mevcut);
       if (hatalar.isNotEmpty) {
-        state = mevcut.kopya(adim: adim, hatalar: hatalar);
+        // Düzeltilince "İleri" önizlemeye döner.
+        state = mevcut.kopya(
+          adim: adim,
+          hatalar: hatalar,
+          onizlemeyeDon: mevcut.adim == SihirbazAdimi.onizleme,
+        );
         return;
       }
     }

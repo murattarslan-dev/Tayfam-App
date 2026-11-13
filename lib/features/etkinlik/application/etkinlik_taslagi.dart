@@ -4,9 +4,20 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 
-/// Sihirbazın adım sayısı (ADR-0015 §3): tür; başlık ve zaman; yer;
-/// türe özel alanlar, kontenjan ve tekrar.
-const int etkinlikAdimSayisi = 4;
+/// Sihirbazın adım sayısı (ADR-0015 §3 ve Notlar 2026-11-13): tür;
+/// başlık ve zaman; yer; türe özel alanlar, kontenjan ve tekrar; önizleme.
+const int etkinlikAdimSayisi = 5;
+
+/// Sihirbazın adımları, sırasıyla.
+abstract final class SihirbazAdimi {
+  static const int tur = 0;
+  static const int bilgi = 1;
+  static const int yer = 2;
+  static const int ayrinti = 3;
+
+  /// "Her şey doğru mu?": doğrulanacak alanı yoktur; gönderim buradadır.
+  static const int onizleme = 4;
+}
 
 /// Sözleşmedeki uzunluk ve sayı sınırları (`EventCreateRequest`,
 /// `*DetailsInput`).
@@ -288,6 +299,7 @@ final class EtkinlikTaslagi {
     this.ayrinti = const TurAyrintisi(),
     this.ayrintiDegisti = false,
     this.kapak,
+    this.onizlemeyeDon = false,
     this.hatalar = const {},
     this.gonderiliyor = false,
     this.hata,
@@ -298,7 +310,7 @@ final class EtkinlikTaslagi {
   /// oluşturma tekrar gönderilirken aynı id kullanılır (ADR-0005).
   final String istekKimligi;
 
-  /// Gösterilen adım (0–3).
+  /// Gösterilen adım (0–4; [SihirbazAdimi]).
   final int adim;
 
   final EventType? tur;
@@ -324,6 +336,9 @@ final class EtkinlikTaslagi {
   /// Düzenlemede etkinliğin kapağıyla başlar.
   final String? kapak;
 
+  /// Adıma önizlemedeki "Değiştir"le gelindi: "İleri" önizlemeye döner.
+  final bool onizlemeyeDon;
+
   /// Gösterilen adımın hataları ("İleri"ye ya da gönder'e basılınca).
   final Set<TaslakHatasi> hatalar;
 
@@ -348,6 +363,7 @@ final class EtkinlikTaslagi {
     TurAyrintisi? ayrinti,
     bool? ayrintiDegisti,
     Object? kapak = _ayni,
+    bool? onizlemeyeDon,
     Set<TaslakHatasi>? hatalar,
     bool gonderiliyor = false,
     Object? hata,
@@ -366,12 +382,28 @@ final class EtkinlikTaslagi {
     ayrinti: ayrinti ?? this.ayrinti,
     ayrintiDegisti: ayrintiDegisti ?? this.ayrintiDegisti,
     kapak: identical(kapak, _ayni) ? this.kapak : kapak as String?,
+    onizlemeyeDon: onizlemeyeDon ?? this.onizlemeyeDon,
     hatalar: hatalar ?? this.hatalar,
     gonderiliyor: gonderiliyor,
     hata: hata,
     sonuc: sonuc ?? this.sonuc,
   );
 }
+
+/// [a] ile [b]'de kullanıcının girdiği alanlar aynı mı (adım, hata ve
+/// gönderim durumu sayılmaz). Sihirbaz kapatılırken "Vazgeçilsin mi?"
+/// sorusu bununla verilir.
+bool ayniGirdi(EtkinlikTaslagi a, EtkinlikTaslagi b) =>
+    a.tur == b.tur &&
+    a.baslik == b.baslik &&
+    a.aciklama == b.aciklama &&
+    a.baslangic == b.baslangic &&
+    a.bitis == b.bitis &&
+    a.yer == b.yer &&
+    a.kontenjan == b.kontenjan &&
+    a.tekrar == b.tekrar &&
+    a.ayrinti == b.ayrinti &&
+    a.kapak == b.kapak;
 
 /// Düzenlenecek [etkinlik]'ten taslak: tür değişmez, ilk adım başlık ve
 /// zamandır; tekrar düzenlenmez.

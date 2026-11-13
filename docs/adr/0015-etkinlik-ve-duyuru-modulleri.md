@@ -262,3 +262,81 @@ Platform sahibinin kararı (2026-11-11):
     yöneticiye "Silmeyi iptal et" gösterilir (kayıtla bağlanan düğme,
     `tayfaSilmeIptaliProvider`). Tayfa sekmesindeki modül alt gezinmesi
     kaldırıldı (bkz. ADR-0003 Notlar 2026-11-13).
+- **2026-11-13 (platform sahibi, sohbette; issue #146, PR #147 ve
+  sihirbaz PR'ı): etkinlik detayı ve sihirbaz yeniden tasarımı.** Tasarım:
+  Etkinlik-Detay, -Koyu, -Gunu, -Dolu, -Iptal, -Menu, -Katilimcilar,
+  -Turler; Sihirbaz-Tur, -Koyu, -Bilgi, -Yer, -Harita, -Ayrinti, -Turler,
+  -Rota, -Tekrar, -Tekrar-Tarih, -Onizleme. Notifier, depo, katılım,
+  varış, konum, takvim, RRULE ve harita mantığı değişmedi; arayüz yeniden
+  giydirildi. Aşağıdaki maddeler §3'ün "Detay" listesinden ve "dört
+  adım"ından **sapar**; sapmalar onaylıdır.
+  1. **Detay düzeni (§3 "Detay"ın yerini alır).** Üst bölüm etkinlik
+     türünün renginde (tür kaydındaki renk; kapak görseli varsa kapak ve
+     koyu perde; iptalde nötr zemin ve "İptal edildi" çipi): geri ve ⋯,
+     ink zeminli tür çipi, geri sayım çipi ("2 gün sonra", "Yarın",
+     "Bugün · 25 dk sonra", "Şimdi", "Bitti"; takvim gününe göre, cihazın
+     saat diliminde), başlık ve tayfa adı. Üst bölüme taşan **özet
+     kartı**: tarih ve saat, buluşma noktası adı + "ilçe, il" (yer
+     gizliyse "Yer bilgisi yok"), organizatör ve katılım (Geliyorum /
+     Belki / Gelmiyorum, gelen/kontenjan çubuğu, bekleme listesinde
+     "Sırada"); iptal ya da bitmişte düğmeler yerine "artık cevap
+     verilemez", iptal gerekçesi tint-nar kutuda. Varış penceresinde
+     "Geldim" kartı özet kartının hemen altındadır (§5 kuralları aynen).
+     Sonra buluşma noktası haritası ya da çevrimiçi bağlantı, açıklama,
+     türe özel bölümler (bilgi ızgarası ve liste kartları), katılımcı
+     özeti ve seri notu.
+  2. **Takvime ekle** üst çubuktan özet kartının tarih satırına taşındı
+     (simge düğmesi; `.ics` akışı aynı).
+  3. **Katılımcılar ayrı ekranda** (§3'teki "katılımcılar listesi" ve §6'daki
+     "Organizatörün katılım düzeltmesi katılımcılar listesindedir"
+     detaydan çıktı): `/t/<tayfaId>/etkinlikler/<etkinlikId>/katilimcilar`;
+     durum çipleri (Geliyor / Belki / Bekleme listesi / Gelmiyor;
+     "Gelmiyor"un sayısı sözleşmede olmadığı için yazılmaz), "Katıldı"
+     etiketi, organizatöre bitişten sonraki 7 gün bilgi kutusu ve satırda ⋯
+     ile düzeltme. Detayda yalnızca özet: gelenlerin ilk 5 avatarı (ilk
+     sayfadan), "N kişi geliyor", "K belki · W bekleme listesinde".
+  4. **⋯ alttan sayfa** (ADR-0004 Notlar 2026-11-13, madde 5'teki
+     kullanım listesi genişledi): `caller_can_manage` ise Düzenle (seride
+     "Seride yalnızca bu etkinlik değişir") ve yıkıcı "Etkinliği iptal
+     et"; değilse ve etkinlik kendi değilse Şikâyet et. Yönetebilen
+     kullanıcıya şikâyet seçeneği artık gösterilmez.
+  5. **Sihirbaz beş adım** (§3'teki "dört adım"ın yerini alır): 1 tür,
+     2 başlık ve zaman, 3 yer, 4 ayrıntılar (türe özel alanlar, kontenjan,
+     tekrar), **5 önizleme** ("Her şey doğru mu?"). Önizlemedeki her
+     satırın "Değiştir"i ilgili adıma götürür, oradan "İleri" önizlemeye
+     döner; sunucu hatası önizlemede gösterilir. Üstte X (girilen bir şey
+     varsa "Vazgeçilsin mi?"), "Adım n / N" ve parçalı ilerleme çubuğu;
+     altta sabit Geri ve İleri. Düzenlemede tür adımı yoktur (tür
+     değişmez), bu yüzden dört adımdır; seri notu her adımın üstündedir.
+     `client_request_id` ve doğrulama kuralları aynen.
+  6. **Tür adımı:** tayfanın ilgi alanlarındaki türler "Tayfanın ilgi
+     alanları" başlığıyla önce, diğerleri "Diğer türler" altında; iki
+     sütunlu kutular, her türün kısa açıklaması. **Zaman** iki büyük kutu
+     (gün küçük, saat büyük; bitiş aynı günse "Aynı gün"). **Yer:**
+     Yüz yüze / Çevrimiçi iki parçalı seçici, buluşma noktası kartı, il ve
+     ilçe yan yana. **Kontenjan** sayaç ve "Sınırsız" anahtarı ("boş =
+     sınırsız" kuralı). Türe özel alanlar seçim çipleriyle (kamp su ve
+     tuvalet, yürüyüş zorluğu 1–5, balıkta nokta görünürlüğü, oyun
+     platformu, spor dalı).
+  7. **Tekrar ekranı** (4. adımdaki "Tekrar" satırı açar; §3'teki
+     "Tekrar, 'Her hafta / Her ay', aralık ve bitiş seçimleriyle verilir"
+     ayrı ekrana taşındı): sıklık, aralık sayacı, "Ne zaman bitsin?" ve
+     seçimi düz Türkçe özetleyen kutu ("Her cumartesi 08:30, 6 kez: son
+     etkinlik 19 Aralık."). Özet RRULE'un açacağı etkinliklerden istemcide
+     hesaplanır (`tekrarAnlari`; aylıkta o günü olmayan aylar atlanır ve
+     sayılmaz). Sayaç sınırları sözleşmeninkilerdir (aralık 1–52, sayı
+     1–500, son gün en çok beş yıl); tasarımdaki 1–12 ve 2–52 öneriydi.
+  8. **Rota çizme ekranı** tam ekran harita: noktalar numaralı daireler
+     (başlangıç ve bitiş büyük, bitiş koyu) ve mor çizgi; alt panelde
+     nokta sayısı, "En çok 500 nokta", "Son noktayı sil", onaylı
+     "Temizle" ve "Rotayı kaydet". **Harita seçici** tam ekran: geri ve
+     içinde "Ara" düğmesi olan arama alanı, ipucu, altta "Bu noktayı
+     seç"; §4'teki Nominatim ve OSM kuralları aynen.
+  9. **Etkinlik sohbeti girişi** (Etkinlik-Sohbet) tasarlandı ama
+     kodlanmadı: etkinlik kanalı sözleşmede yok, Tayfam-Api #183
+     bekleniyor (ADR-0018 §2'deki kural).
+  - Yeni ölçüler (`TayfamSizes`): `ilerlemeParcasi` (6), `sayacGenisligi`
+    (240), `rotaUcNoktasi` (28), `rotaAraNoktasi` (22), `turKutusu`
+    (112), `seciliIsareti` (24).
+  - Kapak fotoğrafı alanı mevcut `FotografAlani` bileşeniyle kaldı;
+    tasarımdaki kesik çizgili alan ayrı bir bileşen işidir.

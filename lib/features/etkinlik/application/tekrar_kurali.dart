@@ -146,3 +146,62 @@ String _utcBicimi(DateTime an) {
   return '${u.year.toString().padLeft(4, '0')}${_iki(u.month)}${_iki(u.day)}'
       'T${_iki(u.hour)}${_iki(u.minute)}${_iki(u.second)}Z';
 }
+
+/// [tekrarAnlari]'nın bir kural için en çok deneyeceği aday (aylık kuralda
+/// o günü olmayan aylar atlanır; sonsuz döngüye karşı sınır).
+const int _enCokAday = 10000;
+
+/// [secim]'in [baslangic]'tan (UTC) itibaren açacağı etkinliklerin
+/// başlangıçları, sırasıyla; tekrar ekranındaki özet için istemcide
+/// hesaplanır (2026-11-13 tasarım: Sihirbaz-Tekrar).
+///
+/// Kural sunucununkiyle aynıdır ([rruleUret]): haftalık kural başlangıcın
+/// haftanın gününde, aylık kural ayın gününde tekrarlar; o günü olmayan
+/// aylar atlanır ve sayılmaz. Hesap Türkiye saatinde yapılır
+/// (`Europe/Istanbul`, sabit UTC+3). Bitiş yoksa `null` döner: sunucu
+/// etkinlikleri ileriye doğru açar, toplam sayı yoktur.
+List<DateTime>? tekrarAnlari(TekrarSecimi secim, DateTime baslangic) {
+  final DateTime? son;
+  final int sinir;
+  switch (secim.bitis) {
+    case TekrarBitisi.yok:
+      return null;
+    case TekrarBitisi.sayi:
+      son = null;
+      sinir = secim.sayi.clamp(0, tekrarSayiEnCok).toInt();
+    case TekrarBitisi.tarih:
+      son = _sonAn(secim);
+      if (son == null) return const [];
+      sinir = tekrarSayiEnCok;
+  }
+  final aralik = secim.aralik < tekrarAralikEnAz ? 1 : secim.aralik;
+  // Türkiye'deki duvar saati, UTC alanlarında.
+  final d = baslangic.toUtc().add(istanbulFarki);
+  final anlar = <DateTime>[];
+  for (var i = 0; anlar.length < sinir && i < _enCokAday; i++) {
+    final aday = switch (secim.siklik) {
+      TekrarSikligi.haftalik => DateTime.utc(
+        d.year,
+        d.month,
+        d.day + 7 * aralik * i,
+        d.hour,
+        d.minute,
+        d.second,
+      ),
+      TekrarSikligi.aylik => DateTime.utc(
+        d.year,
+        d.month + aralik * i,
+        d.day,
+        d.hour,
+        d.minute,
+        d.second,
+      ),
+    };
+    // Aylıkta gün taştıysa (31 Nisan → 1 Mayıs) o ayda bu gün yoktur.
+    if (secim.siklik == TekrarSikligi.aylik && aday.day != d.day) continue;
+    final an = aday.subtract(istanbulFarki);
+    if (son != null && an.isAfter(son)) break;
+    anlar.add(an);
+  }
+  return anlar;
+}

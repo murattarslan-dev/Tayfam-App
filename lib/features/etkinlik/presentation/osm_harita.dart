@@ -50,9 +50,11 @@ class OsmHarita extends ConsumerStatefulWidget {
     required this.yakinlik,
     this.isaret,
     this.rota = const [],
+    this.numaraliRota = false,
     this.etkilesimli = true,
     this.onTap,
     this.denetleyici,
+    this.atifAltBoslugu = TayfamSpacing.s4,
   });
 
   /// Açılıştaki merkez.
@@ -66,6 +68,15 @@ class OsmHarita extends ConsumerStatefulWidget {
 
   /// Konvoy rotasının noktaları, sırasıyla; boşsa rota çizilmez.
   final List<LatLng> rota;
+
+  /// Rota noktaları numaralı daireler mi (rota çizme ekranı; tasarım:
+  /// Sihirbaz-Rota): başlangıç ve bitiş büyük, bitiş koyu. Değilse küçük
+  /// noktalar.
+  final bool numaraliRota;
+
+  /// OSM atfının haritanın altından uzaklığı (altta panel olan tam ekran
+  /// haritalarda atıf panelin üstünde kalır).
+  final double atifAltBoslugu;
 
   final bool etkilesimli;
 
@@ -125,7 +136,19 @@ class _OsmHaritaState extends ConsumerState<OsmHarita> {
                     ),
                   ],
                 ),
-              if (rota.isNotEmpty)
+              if (rota.isNotEmpty && widget.numaraliRota)
+                MarkerLayer(
+                  markers: [
+                    for (final (sira, nokta) in rota.indexed)
+                      _rotaIsareti(
+                        nokta,
+                        sira,
+                        uc: sira == 0 || sira == rota.length - 1,
+                        son: sira == rota.length - 1 && rota.length > 1,
+                      ),
+                  ],
+                )
+              else if (rota.isNotEmpty)
                 CircleLayer(
                   circles: [
                     for (final nokta in rota)
@@ -158,12 +181,51 @@ class _OsmHaritaState extends ConsumerState<OsmHarita> {
             ],
           ),
         ),
-        const PositionedDirectional(
+        PositionedDirectional(
           end: TayfamSpacing.s4,
-          bottom: TayfamSpacing.s4,
-          child: OsmAtfi(),
+          bottom: widget.atifAltBoslugu,
+          child: const OsmAtfi(),
         ),
       ],
+    );
+  }
+
+  /// Rota çizme ekranındaki numaralı nokta. Süstür: nokta sayısı ekranda
+  /// metin olarak yazar.
+  Marker _rotaIsareti(
+    ll.LatLng nokta,
+    int sira, {
+    required bool uc,
+    required bool son,
+  }) {
+    final r = context.renkler;
+    final cap = uc ? TayfamSizes.rotaUcNoktasi : TayfamSizes.rotaAraNoktasi;
+    final (zemin, yazi) = son
+        ? (r.markaYuzeyKutusu, r.markaYuzeyUstu)
+        : (r.markaYuzey, r.markaYuzeyUstu);
+    return Marker(
+      point: nokta,
+      width: cap,
+      height: cap,
+      child: ExcludeSemantics(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: zemin,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: r.kart,
+              width: TayfamSizes.alanOdakKenari,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              (sira + 1).toString(),
+              textScaler: TextScaler.noScaling,
+              style: context.yazi.labelSmall?.copyWith(color: yazi),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
