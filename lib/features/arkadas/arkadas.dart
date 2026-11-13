@@ -10,8 +10,9 @@
 ///   "Arkadaş ekle" alttan sayfasıdır.
 /// - [kisiProfiliEylemleriProvider] kişi profiline başka paketlerin düğme
 ///   eklediği kancadır (ör. birebir mesajın "Mesaj gönder"i);
-///   [referansPaylasimiProvider] Arkadaşlar ekranındaki "Kodumu paylaş"
-///   kancasıdır (profil paketi verir).
+///   [referansPaylasimiProvider] Arkadaşlar ekranındaki "Kodumu paylaş",
+///   [katilimGorunurlukSatiriProvider] Katılım geçmişin ekranındaki
+///   görünürlük satırı kancasıdır (ikisini de profil paketi verir).
 library;
 
 export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'
@@ -19,6 +20,7 @@ export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'
         KisiProfiliBilgisi,
         KisiProfiliEylemi,
         ReferansPaylasimi,
+        katilimGorunurlukSatiriProvider,
         kisiProfiliEylemleriProvider,
         referansPaylasimiProvider;
 export 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart'

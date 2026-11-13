@@ -256,6 +256,41 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi, tasarım kararları; issue #163): kalan
+  liste ekranlarının yeniden tasarımı (§7, §9; ADR-0015 §1).** Tasarım:
+  `docs/tasarim/21-listeler-ve-kucuk-ekranlar/`.
+  - **Arkadaşlık istekleri:** "Gelen · N" / "Gönderdiğin" iki parçalı
+    seçici (N gelen listesinin ilk sayfasından, devamı varsa "N+"; istek
+    yoksa yalnızca "Gelen"). Satırlar liste kartında; gelende çerçeveli
+    "Reddet" ve birincil "Kabul et", gönderdiğinde yıkıcı çerçeveli
+    "İsteği geri çek". Ada ve avatara dokununca kişi profili açılır.
+  - **Tayfa davetleri:** tayfa avatarı (davette kapak ve ilgi alanı
+    dönmediği için harf ve genel renk), ad, "Davet eden: … · gün", altında
+    "Reddet" / "Katıl". Ret davet edene bildirilmez.
+  - **Engellenenler ve Reddedilenler:** aynı iskelet; üstte mevcut
+    açıklama, satırda avatar, ad, gün ve sağda çerçeveli eylem ("Engeli
+    kaldır" onaylı, "Listeden çıkar"). Büyük yazıda eylem satırın altına
+    iner. Ortak bileşen: `EylemliSatir`.
+  - **Katılım geçmişin:** üstte "Kim görür: …" ve "Değiştir" satırı
+    (profildeki görünürlük alttan sayfası; seçince hemen kaydedilir).
+    Görünürlük profil paketinde olduğu için satır arkadaşlık paketine
+    `katilimGorunurlukSatiriProvider` kancasıyla verilir (döngü yok).
+    Kayıtlar aya göre gruplanır ("Kasım"; bu yıl değilse "Kasım 2025").
+  - **Yeni birebir konuşma:** ortada 80 px avatar
+    (`TayfamSizes.yeniKonusmaAvatari`), ad, mevcut "henüz konuşman yok"
+    açıklaması ve "Uçtan uca şifreli" notu; altta yazma alanı. İlk mesaj giderken ya da
+    gidemediyse akış eskisi gibi gösterilir.
+  - **Etkinlikler listesi:** yalnızca yaklaşanlar
+    (`listUpcomingEvents`); geçmiş etkinlik listesi sözleşmede olmadığı
+    için "Geçmiş" sekmesi yok. Gruplar "Bu hafta", "Gelecek hafta" ve
+    sonrası ay adı (bu yıl değilse yılıyla). Hafta pazartesi başlar; hafta
+    ve ay sınırları cihazın saat dilimine göredir, gün sınırı takvim
+    alanlarıyla hesaplanır. Bu haftadan önce başlamış, sürmekte olan
+    etkinlik "Bu hafta"dadır. Satır ana sayfadaki "Yaklaşan" satırıyla
+    aynıdır (tarih kutusu, başlık, "Tür · gün saat · yer", cevap ya da
+    "Cevap ver"); iptal edilenin başlığı üstü çizili ve "İptal edildi"
+    etiketli (ana sayfada da). "Etkinlik aç" kayan düğmeden başlığa taşındı;
+    yetkiye sunucu karar verir.
 - **2026-11-13 (platform sahibi, sohbette; issue #141, PR #142): Sohbet
   sekmesi yeniden tasarımı (§9).** Tasarım: Sohbet-Kanallar,
   Sohbet-Birebir, Kanal-Akis, Kanal-Koyu, Kanal-Islem, Kanal-Formu,

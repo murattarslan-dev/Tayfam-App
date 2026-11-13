@@ -9,6 +9,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kendi_kimligim.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
+import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -135,22 +136,57 @@ class KatilimOzeti extends ConsumerWidget {
   }
 }
 
+/// Kayıtları başlangıçlarının ayına göre (cihazın saatinde) ardışık
+/// gruplara ayırır; sıra korunur. Her grubun anahtarı ayın ilk günüdür
+/// (yerel).
+List<(DateTime, List<ActivityRecord>)> katilimAylari(
+  Iterable<ActivityRecord> kayitlar,
+) {
+  final gruplar = <(DateTime, List<ActivityRecord>)>[];
+  for (final kayit in kayitlar) {
+    final an = kayit.startedAt.toLocal();
+    final ay = DateTime(an.year, an.month);
+    final son = gruplar.lastOrNull;
+    if (son != null && son.$1 == ay) {
+      son.$2.add(kayit);
+    } else {
+      gruplar.add((ay, [kayit]));
+    }
+  }
+  return gruplar;
+}
+
+/// Ay grubunun başlığı: bu yılsa "Kasım", değilse "Kasım 2025" (tr_TR;
+/// ay adı büyük harfe çevrilmez).
+String katilimAyi(AppLocalizations m, DateTime ay, DateTime simdi) {
+  final bicim = ay.year == simdi.year
+      ? DateFormat.MMMM(m.localeName)
+      : DateFormat.yMMMM(m.localeName);
+  return bicim.format(ay);
+}
+
 /// Bir kullanıcının katılım geçmişinin tamamı (sayfalı): satırlar bir
 /// liste kartında, altında "Daha fazla göster". Boşsa [bosMetin].
+/// [aylaraGore] ise (Katılım geçmişin; tasarım: Katilimlarim) kayıtlar
+/// aya göre başlıklı kartlara ayrılır.
 class KatilimGecmisiListesi extends ConsumerWidget {
   const KatilimGecmisiListesi({
     super.key,
     required this.kullaniciId,
     required this.bosMetin,
+    this.aylaraGore = false,
   });
 
   final String kullaniciId;
   final String bosMetin;
+  final bool aylaraGore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
     final saglayici = katilimGecmisiProvider(kullaniciId);
     final durum = ref.watch(saglayici);
+    final simdi = ref.watch(simdiProvider)();
     return ListeDurumu(
       deger: durum.value,
       hata: durum.error,
@@ -160,12 +196,21 @@ class KatilimGecmisiListesi extends ConsumerWidget {
         children: [
           if (liste.ogeler.isEmpty)
             BosMetin(bosMetin)
-          else
+          else if (!aylaraGore)
             ListeKarti(
               children: [
                 for (final kayit in liste.ogeler) KatilimSatiri(kayit: kayit),
               ],
-            ),
+            )
+          else
+            for (final (ay, kayitlar) in katilimAylari(liste.ogeler)) ...[
+              BolumEtiketi(baslik: katilimAyi(m, ay, simdi)),
+              ListeKarti(
+                children: [
+                  for (final kayit in kayitlar) KatilimSatiri(kayit: kayit),
+                ],
+              ),
+            ],
           const SizedBox(height: TayfamSpacing.s16),
           SayfaSonu(
             dahaVar: liste.dahaVar,
@@ -250,7 +295,10 @@ class _KesikCerceve extends CustomPainter {
 }
 
 /// Kendi katılım geçmişinin tamamı (`/profil/katilimlarim`; profil
-/// sekmesindeki "Tümünü gör"). Kendi kimliğin oturumdan okunur.
+/// sekmesindeki "Tümünü gör"; 2026-11-13 tasarım: Katilimlarim): üstte
+/// görünürlük satırı ("Kim görür: …" ve "Değiştir"; profil paketinin
+/// kancası), altında aya göre gruplanmış kayıtlar. Kendi kimliğin
+/// oturumdan okunur.
 class KatilimlarimEkrani extends ConsumerWidget {
   const KatilimlarimEkrani({super.key});
 
@@ -258,6 +306,7 @@ class KatilimlarimEkrani extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final kimlik = ref.watch(kendiKimligimProvider);
+    final gorunurluk = ref.watch(katilimGorunurlukSatiriProvider);
     return Scaffold(
       appBar: AppBar(title: Text(m.arkadas_katilimlarim_baslik)),
       body: RefreshIndicator(
@@ -271,11 +320,12 @@ class KatilimlarimEkrani extends ConsumerWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsetsDirectional.fromSTEB(
             TayfamSpacing.kenarMobil,
-            TayfamSpacing.s8,
+            TayfamSpacing.s4,
             TayfamSpacing.kenarMobil,
             TayfamSpacing.s40,
           ),
           children: [
+            if (gorunurluk != null) Builder(builder: gorunurluk),
             ListeDurumu(
               deger: kimlik.value,
               hata: kimlik.error,
@@ -283,6 +333,7 @@ class KatilimlarimEkrani extends ConsumerWidget {
               icerik: (id) => KatilimGecmisiListesi(
                 kullaniciId: id,
                 bosMetin: m.arkadas_gecmis_kendi_bos,
+                aylaraGore: true,
               ),
             ),
           ],

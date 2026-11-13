@@ -5,16 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Size gelen doğrudan tayfa davetleri (`/profil/tayfa-davetleri`;
-/// ADR-0018 §7): tayfa adı, davet eden, kabul ya da ret. Ret davet edene
-/// bildirilmez. Tayfanın içeriği üyelik etkin olana kadar gösterilmez
-/// (kesin kural 7); yalnızca sunucunun verdiği ad yazılır.
+/// ADR-0018 §7; 2026-11-13 tasarım: Tayfa-Davetleri): satırlar bir liste
+/// kartında; tayfa avatarı (adın ilk harfi), tayfa adı, "Davet eden: … ·
+/// gün" ve altında "Reddet" / "Katıl". Ret davet edene bildirilmez.
+///
+/// Tayfanın içeriği üyelik etkin olana kadar gösterilmez (kesin kural 7);
+/// yalnızca sunucunun verdiği ad yazılır. Davette kapak görseli ve ilgi
+/// alanı dönmediği için avatar harf ve genel renktir.
 class TayfaDavetleriEkrani extends ConsumerWidget {
   const TayfaDavetleriEkrani({super.key});
 
@@ -30,7 +35,12 @@ class TayfaDavetleriEkrani extends ConsumerWidget {
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s8,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s40,
+          ),
           children: [
             ListeDurumu(
               deger: durum.value,
@@ -39,12 +49,19 @@ class TayfaDavetleriEkrani extends ConsumerWidget {
               icerik: (liste) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (liste.ogeler.isEmpty) BosMetin(m.arkadas_davetler_bos),
-                  for (final (sira, davet) in liste.ogeler.indexed) ...[
-                    if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-                    _DavetKarti(davet: davet),
-                  ],
-                  const SizedBox(height: TayfamSpacing.s16),
+                  if (liste.ogeler.isEmpty)
+                    BosMetin(m.arkadas_davetler_bos)
+                  else
+                    ListeKarti(
+                      children: [
+                        for (final davet in liste.ogeler)
+                          _DavetSatiri(
+                            key: ValueKey(davet.tayfaId),
+                            davet: davet,
+                          ),
+                      ],
+                    ),
+                  const SizedBox(height: TayfamSpacing.s8),
                   SayfaSonu(
                     dahaVar: liste.dahaVar,
                     yukleniyor: liste.dahaYukleniyor,
@@ -63,16 +80,16 @@ class TayfaDavetleriEkrani extends ConsumerWidget {
   }
 }
 
-class _DavetKarti extends ConsumerStatefulWidget {
-  const _DavetKarti({required this.davet});
+class _DavetSatiri extends ConsumerStatefulWidget {
+  const _DavetSatiri({super.key, required this.davet});
 
   final Invitation davet;
 
   @override
-  ConsumerState<_DavetKarti> createState() => _DavetKartiState();
+  ConsumerState<_DavetSatiri> createState() => _DavetSatiriState();
 }
 
-class _DavetKartiState extends ConsumerState<_DavetKarti> {
+class _DavetSatiriState extends ConsumerState<_DavetSatiri> {
   bool _gonderiliyor = false;
 
   Future<void> _kabul() async {
@@ -104,47 +121,88 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final davet = widget.davet;
-    final davetEden = davet.inviterUserId;
-    final ikincil = context.yazi.bodyMedium?.copyWith(
-      color: context.renkler.metinGovde,
-    );
-    return TayfamKart(
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: TayfamSpacing.s16,
+        vertical: TayfamSpacing.s12,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(davet.tayfaName, style: context.yazi.titleMedium),
-          const SizedBox(height: TayfamSpacing.s4),
-          if (davetEden != null)
-            Wrap(
-              spacing: TayfamSpacing.s4,
+          Semantics(
+            container: true,
+            child: Row(
               children: [
-                Text(m.arkadas_davet_eden, style: ikincil),
-                KullaniciAdiMetni(kullaniciId: davetEden, style: ikincil),
+                TayfaAvatari(ad: davet.tayfaName),
+                const SizedBox(width: TayfamSpacing.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(davet.tayfaName, style: context.yazi.titleMedium),
+                      _DavetAltMetni(davet: davet),
+                    ],
+                  ),
+                ),
               ],
             ),
-          Text(
-            m.arkadas_davet_zamani(davet.invitedAt.toLocal()),
-            style: ikincil,
           ),
-          const SizedBox(height: TayfamSpacing.s12),
-          Wrap(
-            spacing: TayfamSpacing.s8,
-            runSpacing: TayfamSpacing.s8,
-            children: [
-              BirincilEylem(
-                etiket: m.arkadas_davet_kabul,
-                ikon: Icons.check,
-                onPressed: _gonderiliyor ? null : () => unawaited(_kabul()),
-              ),
-              IkincilEylem(
-                etiket: m.arkadas_reddet,
-                ikon: Icons.close,
-                onPressed: _gonderiliyor ? null : () => unawaited(_reddet()),
-              ),
-            ],
+          const SizedBox(height: TayfamSpacing.s8),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: TayfamSizes.tayfaAvatari + TayfamSpacing.s12,
+            ),
+            child: Wrap(
+              spacing: TayfamSpacing.s8,
+              runSpacing: TayfamSpacing.s8,
+              children: [
+                CerceveliHapEylem(
+                  etiket: m.arkadas_reddet,
+                  notr: true,
+                  onPressed: _gonderiliyor ? null : () => unawaited(_reddet()),
+                ),
+                BirincilEylem(
+                  etiket: m.arkadas_davet_kabul,
+                  onPressed: _gonderiliyor ? null : () => unawaited(_kabul()),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+}
+
+/// "Davet eden: Deniz Aksoy · 12 Kas" (gün cihazın saatine göre). Davet
+/// edenin adı ad önbelleğinden istenir (yalnızca bellek); gelene kadar
+/// genel metin, hesabı silinmişse "Silinmiş kullanıcı". Davet eden
+/// bilinmiyorsa yalnızca gün yazılır.
+class _DavetAltMetni extends ConsumerWidget {
+  const _DavetAltMetni({required this.davet});
+
+  final Invitation davet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    final stil = context.yazi.bodySmall?.copyWith(
+      color: context.renkler.metinIkincil,
+    );
+    final gun = davet.invitedAt.toLocal();
+    final davetEden = davet.inviterUserId;
+    if (davetEden == null) {
+      return Text(m.arkadas_davet_zamani(gun), style: stil);
+    }
+    ref.read(kullaniciAdlariProvider.notifier).iste(davetEden);
+    final bilinen = ref.watch(
+      kullaniciAdlariProvider.select((adlar) => adlar[davetEden]),
+    );
+    final ad = switch (bilinen) {
+      null => m.kullanici_genel,
+      KullaniciAdi(:final ad?) => ad,
+      KullaniciAdi() => m.kullanici_silinmis,
+    };
+    return Text(m.arkadas_davet_alt(ad, gun), style: stil);
   }
 }

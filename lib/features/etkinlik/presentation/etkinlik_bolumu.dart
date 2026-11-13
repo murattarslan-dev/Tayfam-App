@@ -116,7 +116,9 @@ class EtkinlikBolumu extends ConsumerWidget {
   }
 }
 
-/// Yaklaşan bölümündeki kısa etkinlik satırı.
+/// Yaklaşan bölümündeki ve etkinlik listesindeki kısa etkinlik satırı
+/// (tasarım: Ana-Ilk-Ekran, Etkinlikler). İptal edilen etkinliğin başlığı
+/// ikincil renkte ve üstü çizilidir; sağda "İptal edildi" etiketi.
 class YaklasanSatiri extends StatelessWidget {
   const YaklasanSatiri({super.key, required this.etkinlik, this.onTap});
 
@@ -151,6 +153,7 @@ class YaklasanSatiri extends StatelessWidget {
                   etkinlik.title,
                   style: yazi.titleMedium?.copyWith(
                     color: iptal ? r.metinIkincil : null,
+                    decoration: iptal ? TextDecoration.lineThrough : null,
                   ),
                 ),
                 Text(ozet, style: yazi.bodySmall),
