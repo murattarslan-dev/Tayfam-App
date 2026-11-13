@@ -123,26 +123,26 @@ void main() {
         'GET $etkinliklerYolu': (_) => etkinlikListesiJson([
           etkinlikJson(
             baslik: 'Cumartesi turu',
-            baslangic: DateTime(2026, 11, 14, 10),
+            baslangic: DateTime(2026, 11, 14, 10).toUtc(),
             sure: const Duration(hours: 3),
             cevap: 'going',
           ),
           etkinlikJson(
             id: ikinciEtkinlikId,
             baslik: 'Pazar maçı',
-            baslangic: DateTime(2026, 11, 22, 10),
+            baslangic: DateTime(2026, 11, 22, 10).toUtc(),
             sure: const Duration(hours: 2),
             iptal: true,
           ),
           etkinlikJson(
             id: _ucuncuEtkinlikId,
             baslik: 'Kış kampı',
-            baslangic: DateTime(2026, 12, 5, 10),
+            baslangic: DateTime(2026, 12, 5, 10).toUtc(),
           ),
           etkinlikJson(
             id: _dorduncuEtkinlikId,
             baslik: 'Yılbaşı sonrası',
-            baslangic: DateTime(2027, 1, 9, 10),
+            baslangic: DateTime(2027, 1, 9, 10).toUtc(),
           ),
         ]),
       });
@@ -181,7 +181,7 @@ void main() {
             etkinlikJson(cevap: 'maybe'),
             etkinlikJson(
               id: ikinciEtkinlikId,
-              baslangic: DateTime(2026, 12, 5, 10),
+              baslangic: DateTime(2026, 12, 5, 10).toUtc(),
               iptal: true,
             ),
           ]),

@@ -72,6 +72,7 @@ class EylemliSatir extends StatelessWidget {
             ExcludeSemantics(child: oncu),
             const SizedBox(width: TayfamSpacing.s12),
             Expanded(
+              flex: 3,
               child: yanYana
                   ? metinler
                   : Column(
@@ -83,7 +84,11 @@ class EylemliSatir extends StatelessWidget {
                       ],
                     ),
             ),
-            if (yanYana) ...[const SizedBox(width: TayfamSpacing.s8), eylem],
+            if (yanYana) ...[
+              const SizedBox(width: TayfamSpacing.s8),
+              // Dar ekranda eylemin metni satıra sarılır.
+              Flexible(flex: 2, child: eylem),
+            ],
           ],
         ),
       ),

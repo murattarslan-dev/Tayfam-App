@@ -47,9 +47,7 @@ class ReddedilenlerEkrani extends ConsumerWidget {
           ),
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: TayfamSpacing.s4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
               child: BirebirAciklama(m.birebir_reddedilenler_aciklama),
             ),
             const SizedBox(height: TayfamSpacing.s16),

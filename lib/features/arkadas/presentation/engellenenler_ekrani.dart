@@ -38,9 +38,7 @@ class EngellenenlerEkrani extends ConsumerWidget {
           ),
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: TayfamSpacing.s4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
               child: Text(
                 m.arkadas_engellenenler_aciklama,
                 style: context.yazi.bodyMedium?.copyWith(
