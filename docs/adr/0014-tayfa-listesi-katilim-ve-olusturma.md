@@ -140,3 +140,43 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
   Kodla katılım ayrı bir rota değil, alttan açılan sayfadır. İlgi alanı
   çiplerinin tür başına rengi ve ikonu için ADR-0004 Notlar'a bakın.
 
+- **2026-11-13 (platform sahibi, sohbette; tayfa kurma sihirbazı yeniden
+  tasarımı; tasarım: Mobil Arayüz kanvası, Tayfa-Kur-*):** §4'teki üç adım
+  ve kuralları aynen kalır. §4'ün "başarıda ana sayfa açılır" kuralı
+  değişir.
+  1. **İskelet:** etkinlik sihirbazıyla aynıdır (ADR-0015 Notlar
+     2026-11-13).
+     - Üstte kapat (X), "Tayfa kur" başlığı, "Adım n / 3" ve üç parçalı
+       ilerleme çubuğu var. Altta sabit Geri + İleri durur; son adımda
+       "Tayfayı oluştur" yazar.
+     - Bir şey girilmişse X "Tayfa kurmaktan vazgeçilsin mi?" diye sorar.
+  2. **Ad:**
+     - Örnek ad çipleri bulunur; dokunulan çip alana yazılır.
+     - Altta tayfanın listede nasıl görüneceğinin önizlemesi durur
+       (`TayfaAvatari` + ad).
+  3. **İlgi alanları:**
+     - Türler iki sütunlu, onay kutulu kartlardır; ikonlar türün
+       rengindedir. Adım geçilebilir.
+     - Önizlemedeki avatar rengi ilk seçilen türden gelir.
+  4. **Katılım ve açıklama:**
+     - Onaylı (varsayılan, "Önerilen" etiketi) ve Açık radyo kartları,
+       altında sayaçlı açıklama alanı.
+     - En altta iki bilgi yazar: ilk 7 günde 3 üye kuralı (Proje Planı §7)
+       ve 24 saatte bir tayfa sınırı.
+     - `tayfa-create-limit` ve `rate-limited` hataları bu adımda tint-nar
+       kutuda gösterilir; girilenler kalır.
+  5. **Yeni: "Tayfa kuruldu" ekranı.** Başarıdan sonra ana sayfadan önce
+     açılır.
+     - Mor zeminde logo, tayfa avatarı, "<ad> kuruldu!" başlığı ve "ilk
+       7 günde en az 3 üye" hedefi bulunur.
+     - Tayfa kodu ve "Kopyala" düğmesi yer alır.
+     - Birincil eylem "Davet linkini paylaş"tır. Mevcut davet linki
+       oluşturma akışını kullanır: varsayılan 7 gün / 10 kişi, link yalnızca
+       bir kez gösterilir, token loglanmaz ve diske yazılmaz (kesin kural 9).
+     - İkincil eylem "Tayfaya git": ana sayfayı ve "Tayfanı birlikte
+       kuralım" adımlarını açar (ADR-0015 Notlar 2026-11-13).
+     - Sistem geri tuşu ana sayfaya gider; sihirbaza dönülmez.
+     - Ekran yalnızca oluşturma yanıtındaki veriyle çizilir, ek istek
+       yapmaz.
+  - **Gerekçe:** kurulan tayfanın yaşaması ilk günlerde üye gelmesine
+    bağlıdır. Kurucuyu ilk iş olarak arkadaşlarını çağırmaya yöneltir.
