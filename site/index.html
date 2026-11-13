@@ -212,6 +212,8 @@
   footer .kap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
   footer .marka { color: var(--krem); font-size: 1.2rem; }
   footer .marka svg { width: 28px; height: 28px; }
+  footer .yasal { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  footer .yasal a { color: var(--krem); text-underline-offset: 3px; padding: 6px 0; }
 
   @media (min-width: 820px) {
     .sorun { grid-template-columns: 1.1fr .9fr; }
@@ -392,6 +394,11 @@
       tayfam
     </span>
     <span>Birlikte yapınca güzel.</span>
+    <nav class="yasal" aria-label="Yasal">
+      <a href="/gizlilik">Gizlilik</a>
+      <a href="/kullanim-kosullari">Kullanım koşulları</a>
+      <a href="/hesap-silme/">Hesap silme</a>
+    </nav>
     <span>© 2026 Tayfam</span>
   </div>
 </footer>
