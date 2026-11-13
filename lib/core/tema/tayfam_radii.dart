@@ -61,6 +61,7 @@ abstract final class TayfamRadii {
   );
   static const BorderRadius sonucKutusuKoseleri = BorderRadius.all(
     Radius.circular(sonucKutusu),
+  );
   static const BorderRadius durumKutusuKoseleri = BorderRadius.all(
     Radius.circular(durumKutusu),
   );
