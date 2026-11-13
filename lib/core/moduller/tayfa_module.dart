@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/core/gezinme/adresler.dart';
 
 /// Tayfa başına açılıp kapanan bir modül (ADR-0002): `announcements`,
 /// `events`, `qa`, `polls`. Sohbet ve tayfa yönetimi modül değildir.
@@ -28,31 +27,6 @@ abstract interface class TayfaModule {
   /// `Future` yenileme bitince tamamlanır; hata fırlatmaz (hata bölümde
   /// gösterilir).
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId);
-
-  /// Tayfa sekmesinin alt gezinmesindeki giriş.
-  TayfaModuluGirisi get gezinmeGirisi;
-}
-
-/// Bir modülün Tayfa sekmesindeki gezinme girişi.
-@immutable
-class TayfaModuluGirisi {
-  const TayfaModuluGirisi({
-    required this.ikon,
-    required this.etiket,
-    required this.altYol,
-  });
-
-  /// Girişin ikonu; yanında her zaman [etiket] gösterilir.
-  final IconData ikon;
-
-  /// Girişin çeviri dosyasından gelen etiketi.
-  final String Function(BuildContext context) etiket;
-
-  /// Modülün `/t/<tayfaId>/` altındaki yolu (ör. `etkinlikler`).
-  final String altYol;
-
-  /// Girişin [tayfaId] tayfasındaki tam adresi.
-  String adres(String tayfaId) => '${Adresler.tayfa(tayfaId)}/$altYol';
 }
 
 /// [kayit]'taki modüllerden sunucunun açık dediği ([sunucuModulleri])

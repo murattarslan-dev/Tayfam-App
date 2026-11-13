@@ -10,7 +10,6 @@ import 'package:tayfam/features/anket/application/anket_listesi_notifier.dart';
 import 'package:tayfam/features/anket/presentation/anket_bolumu.dart';
 import 'package:tayfam/features/anket/presentation/anket_ekrani.dart';
 import 'package:tayfam/features/anket/presentation/anketler_ekrani.dart';
-import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Anket rotasındaki anket kimliği parametresinin adı.
 const String anketIdParametresi = 'anketId';
@@ -59,13 +58,6 @@ class AnketModulu implements TayfaModule {
         )
         .yenile();
   }
-
-  @override
-  TayfaModuluGirisi get gezinmeGirisi => const TayfaModuluGirisi(
-    ikon: Icons.poll_outlined,
-    etiket: _etiket,
-    altYol: Adresler.anketlerYolu,
-  );
 }
 
 /// Adresteki etkinlik süzgeci (`?etkinlik=<id>`). Adres girdi kabul edilir:
@@ -77,6 +69,3 @@ String? anketEtkinlikSuzgeci(Uri adres) {
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi] ?? '';
-
-String _etiket(BuildContext context) =>
-    AppLocalizations.of(context).anket_liste_baslik;

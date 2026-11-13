@@ -16,7 +16,6 @@ void main() {
     final rota = modul.rotalar.single as GoRoute;
     expect(rota.path, 'sorular');
     expect((rota.routes.single as GoRoute).path, ':soruId');
-    expect(modul.gezinmeGirisi.adres(ornekTayfaId), '/t/$ornekTayfaId/sorular');
   });
 
   test('adresler', () {

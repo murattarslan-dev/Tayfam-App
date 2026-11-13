@@ -10,7 +10,6 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sihirbazi_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
-import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Etkinlik modülü (`events`; ADR-0002, ADR-0015 §1, §3).
 ///
@@ -68,17 +67,7 @@ class EtkinlikModulu implements TayfaModule {
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId) async {
     await ref.read(etkinlikListesiProvider(tayfaId).notifier).yenile();
   }
-
-  @override
-  TayfaModuluGirisi get gezinmeGirisi => const TayfaModuluGirisi(
-    ikon: Icons.event_outlined,
-    etiket: _etiket,
-    altYol: Adresler.etkinliklerYolu,
-  );
 }
-
-String _etiket(BuildContext context) =>
-    AppLocalizations.of(context).tayfa_ana_etkinlikler_baslik;
 
 /// Etkinlik kimliği rota parametresi.
 const String _etkinlikIdParametresi = 'etkinlikId';

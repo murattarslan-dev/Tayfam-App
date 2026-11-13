@@ -196,13 +196,4 @@ class DenemeModulu implements TayfaModule {
 
   @override
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId) async {}
-
-  @override
-  TayfaModuluGirisi get gezinmeGirisi => const TayfaModuluGirisi(
-    ikon: Icons.event,
-    etiket: _denemeEtiketi,
-    altYol: 'deneme',
-  );
 }
-
-String _denemeEtiketi(BuildContext context) => 'Deneme';

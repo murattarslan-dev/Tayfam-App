@@ -9,7 +9,6 @@ import 'package:tayfam/features/soru_cevap/application/soru_listesi_notifier.dar
 import 'package:tayfam/features/soru_cevap/presentation/soru_bolumu.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_ekrani.dart';
 import 'package:tayfam/features/soru_cevap/presentation/sorular_ekrani.dart';
-import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Soru rotasındaki soru kimliği parametresinin adı.
 const String soruIdParametresi = 'soruId';
@@ -51,17 +50,7 @@ class SoruCevapModulu implements TayfaModule {
     final liste = soruListesiProvider(anaSoruListesi(tayfaId));
     await ref.read(liste.notifier).yenile();
   }
-
-  @override
-  TayfaModuluGirisi get gezinmeGirisi => const TayfaModuluGirisi(
-    ikon: Icons.forum_outlined,
-    etiket: _etiket,
-    altYol: Adresler.sorularYolu,
-  );
 }
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi]!;
-
-String _etiket(BuildContext context) =>
-    AppLocalizations.of(context).soru_liste_baslik;

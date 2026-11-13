@@ -789,6 +789,10 @@
   "@tayfa_geri_cek_onayla": {
     "description": "Katılma isteğini geri çekme penceresindeki onay düğmesi."
   },
+  "tayfa_geri_cek_dugmesi": "İsteği geri çek",
+  "@tayfa_geri_cek_dugmesi": {
+    "description": "Tayfa değiştirme panelinde, onay bekleyen katılma isteğinin satırındaki düğme; geri çekme onayını açar."
+  },
   "tayfa_vazgec": "Vazgeç",
   "@tayfa_vazgec": {
     "description": "Katılma isteğini geri çekme penceresindeki, pencereyi değişiklik yapmadan kapatan düğme."
@@ -804,6 +808,19 @@
       "sayi": {
         "type": "int",
         "example": "142"
+      }
+    }
+  },
+  "tayfa_panel_ozet": "{sayi, plural, other{{sayi} üye}} · {rol}",
+  "@tayfa_panel_ozet": {
+    "description": "Tayfa değiştirme panelinde tayfa adının altındaki özet: üye sayısı ve kullanıcının o tayfadaki rolü (ör. \"128 üye · Yönetici\"). rol: yonetim_rol_* metinlerinden biri.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "rol": {
+        "type": "String"
       }
     }
   },
@@ -3819,17 +3836,37 @@
   "@yonetim_menu_ayarlar": {
     "description": "Tayfa menüsünde, yalnızca moderatör ve yöneticiye görünen ayarlar girişi."
   },
+  "yonetim_menu_ayarlar_aciklama": "Üyeler, istekler, davetler, modüller",
+  "@yonetim_menu_ayarlar_aciklama": {
+    "description": "Tayfa menüsünde (alttan sayfa) \"Tayfa ayarları\" girişinin altındaki açıklama; yalnızca moderatör ve yöneticiye görünür."
+  },
   "yonetim_menu_sessize_al": "Bildirimleri sessize al",
   "@yonetim_menu_sessize_al": {
     "description": "Tayfa menüsünde, bu tayfanın bildirimlerini süresiz sessize alan giriş."
+  },
+  "yonetim_menu_sessize_al_aciklama": "Tayfada kalırsın, yalnızca bildirim gelmez",
+  "@yonetim_menu_sessize_al_aciklama": {
+    "description": "Tayfa menüsünde \"Bildirimleri sessize al\" satırının açıklaması."
   },
   "yonetim_menu_sessizden_cikar": "Bildirimleri aç",
   "@yonetim_menu_sessizden_cikar": {
     "description": "Tayfa menüsünde, sessize alınmış tayfanın bildirimlerini yeniden açan giriş."
   },
+  "yonetim_menu_sessizden_cikar_aciklama": "Bu tayfanın bildirimleri yeniden gelir",
+  "@yonetim_menu_sessizden_cikar_aciklama": {
+    "description": "Tayfa menüsünde, tayfa sessizdeyken görünen \"Bildirimleri aç\" satırının açıklaması."
+  },
   "yonetim_menu_ayril": "Tayfadan ayrıl",
   "@yonetim_menu_ayril": {
     "description": "Tayfa menüsünde tayfadan ayrılma girişi; onay penceresi açar."
+  },
+  "yonetim_menu_ayril_aciklama": "Yeniden katılmak için kod ya da davet gerekir",
+  "@yonetim_menu_ayril_aciklama": {
+    "description": "Tayfa menüsünde \"Tayfadan ayrıl\" satırının açıklaması (üye ve moderatör)."
+  },
+  "yonetim_menu_ayril_aciklama_yonetici": "Son yöneticiysen önce başka birini yönetici yap",
+  "@yonetim_menu_ayril_aciklama_yonetici": {
+    "description": "Tayfa menüsünde yöneticiye görünen \"Tayfadan ayrıl\" açıklaması. Son yöneticinin ayrılamaması kuralı sunucudadır (`last-admin`)."
   },
   "yonetim_sessize_alindi": "Bu tayfanın bildirimleri sessize alındı.",
   "@yonetim_sessize_alindi": {
@@ -5159,6 +5196,10 @@
   "sikayet_tayfa_menu": "Tayfayı şikâyet et",
   "@sikayet_tayfa_menu": {
     "description": "Tayfa ana sayfasının üst menüsünde tayfanın kendisini şikâyet etme seçeneği."
+  },
+  "sikayet_tayfa_menu_aciklama": "Yalnızca Tayfam ekibi görür, yöneticiler görmez",
+  "@sikayet_tayfa_menu_aciklama": {
+    "description": "Tayfa menüsünde \"Tayfayı şikâyet et\" satırının açıklaması; şikâyet yalnızca platforma gider (ADR-0018 §8)."
   },
   "sikayet_iletildi": "Şikâyetin iletildi. Aynı şeyi tekrar şikâyet etmen gerekmez.",
   "@sikayet_iletildi": {

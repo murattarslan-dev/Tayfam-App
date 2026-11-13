@@ -33,6 +33,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.tintMangoUstu,
     required this.tintTeal,
     required this.tintTealUstu,
+    required this.tintNar,
+    required this.narMetin,
+    required this.yikiciDolgu,
+    required this.yikiciDolguUstu,
     required this.gelenBalon,
     required this.gelenBalonUstu,
     required this.teal,
@@ -112,6 +116,24 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
   /// #7FE8D6, 8.04:1).
   final Color tintTealUstu;
 
+  /// Yıkıcı işlemin (tayfadan ayrıl, banla, çıkar, sil) ikon zemini
+  /// (açık: tint-nar #FFE1E8, koyu: tint-nar-dark #4A1A26; 2026-11-13).
+  final Color tintNar;
+
+  /// Yıkıcı işlemin metni, ikonu ve çerçeveli düğmesinin kenarı (açık:
+  /// nar-metin #B0123A; kart üzerinde 7.01:1, tint-nar üzerinde 5.74:1;
+  /// koyu: #FF9FB4; tint-nar-dark üzerinde 7.41:1, ink üzerinde 9.26:1).
+  /// Nar (#FF3D68) metin rengi olmadığı için ayrı token'dır.
+  final Color narMetin;
+
+  /// Dolu yıkıcı düğmenin zemini (açık: nar-metin #B0123A, koyu: #FF9FB4;
+  /// ADR-0004 Notlar 2026-11-13).
+  final Color yikiciDolgu;
+
+  /// [yikiciDolgu] üzerindeki metin (açık: beyaz 7.01:1, koyu: ink
+  /// 9.26:1).
+  final Color yikiciDolguUstu;
+
   /// Gelen sohbet balonu (açık: tint-brand, koyu: bubble-in-dark).
   final Color gelenBalon;
 
@@ -185,6 +207,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintMangoUstu: _Palet.honey,
     tintTeal: _Palet.tintTeal,
     tintTealUstu: _Palet.tintTealMetin,
+    tintNar: _Palet.tintNar,
+    narMetin: _Palet.narMetin,
+    yikiciDolgu: _Palet.narMetin,
+    yikiciDolguUstu: _Palet.beyaz,
     gelenBalon: _Palet.tintBrand,
     gelenBalonUstu: _Palet.ink,
     teal: _Palet.teal,
@@ -220,6 +246,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintMangoUstu: _Palet.tintMangoDarkMetin,
     tintTeal: _Palet.tintTealDark,
     tintTealUstu: _Palet.tintTealDarkMetin,
+    tintNar: _Palet.tintNarDark,
+    narMetin: _Palet.tintNarDarkMetin,
+    yikiciDolgu: _Palet.tintNarDarkMetin,
+    yikiciDolguUstu: _Palet.ink,
     gelenBalon: _Palet.bubbleInDark,
     gelenBalonUstu: _Palet.beyaz,
     teal: _Palet.teal,
@@ -255,6 +285,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? tintMangoUstu,
     Color? tintTeal,
     Color? tintTealUstu,
+    Color? tintNar,
+    Color? narMetin,
+    Color? yikiciDolgu,
+    Color? yikiciDolguUstu,
     Color? gelenBalon,
     Color? gelenBalonUstu,
     Color? teal,
@@ -288,6 +322,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintMangoUstu: tintMangoUstu ?? this.tintMangoUstu,
       tintTeal: tintTeal ?? this.tintTeal,
       tintTealUstu: tintTealUstu ?? this.tintTealUstu,
+      tintNar: tintNar ?? this.tintNar,
+      narMetin: narMetin ?? this.narMetin,
+      yikiciDolgu: yikiciDolgu ?? this.yikiciDolgu,
+      yikiciDolguUstu: yikiciDolguUstu ?? this.yikiciDolguUstu,
       gelenBalon: gelenBalon ?? this.gelenBalon,
       gelenBalonUstu: gelenBalonUstu ?? this.gelenBalonUstu,
       teal: teal ?? this.teal,
@@ -329,6 +367,10 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintMangoUstu: l(tintMangoUstu, other.tintMangoUstu),
       tintTeal: l(tintTeal, other.tintTeal),
       tintTealUstu: l(tintTealUstu, other.tintTealUstu),
+      tintNar: l(tintNar, other.tintNar),
+      narMetin: l(narMetin, other.narMetin),
+      yikiciDolgu: l(yikiciDolgu, other.yikiciDolgu),
+      yikiciDolguUstu: l(yikiciDolguUstu, other.yikiciDolguUstu),
       gelenBalon: l(gelenBalon, other.gelenBalon),
       gelenBalonUstu: l(gelenBalonUstu, other.gelenBalonUstu),
       teal: l(teal, other.teal),
@@ -362,6 +404,8 @@ abstract final class _Palet {
   static const Color tintMango = Color(0xFFFFF0CC);
   static const Color tintTeal = Color(0xFFDDF7F2);
   static const Color tintTealMetin = Color(0xFF0B6B5D);
+  static const Color tintNar = Color(0xFFFFE1E8);
+  static const Color narMetin = Color(0xFFB0123A);
   static const Color honey = Color(0xFF7A5A1E);
   static const Color beyaz = Color(0xFFFFFFFF);
 
@@ -377,6 +421,8 @@ abstract final class _Palet {
   static const Color tintMangoDarkMetin = Color(0xFFFFD27A);
   static const Color tintTealDark = Color(0xFF0F3F3A);
   static const Color tintTealDarkMetin = Color(0xFF7FE8D6);
+  static const Color tintNarDark = Color(0xFF4A1A26);
+  static const Color tintNarDarkMetin = Color(0xFFFF9FB4);
   static const Color bubbleInDark = Color(0xFF33255C);
 
   // Tek gölge: rgba(91, 43, 224, .35).

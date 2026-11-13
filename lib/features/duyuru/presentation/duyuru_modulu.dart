@@ -9,7 +9,6 @@ import 'package:tayfam/features/duyuru/application/duyuru_listesi_notifier.dart'
 import 'package:tayfam/features/duyuru/presentation/duyuru_bolumu.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_ekrani.dart';
 import 'package:tayfam/features/duyuru/presentation/duyurular_ekrani.dart';
-import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Duyuru rotasındaki duyuru kimliği parametresinin adı.
 const String duyuruIdParametresi = 'duyuruId';
@@ -50,17 +49,7 @@ class DuyuruModulu implements TayfaModule {
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId) async {
     await ref.read(duyuruListesiProvider(tayfaId).notifier).yenile();
   }
-
-  @override
-  TayfaModuluGirisi get gezinmeGirisi => const TayfaModuluGirisi(
-    ikon: Icons.campaign_outlined,
-    etiket: _etiket,
-    altYol: Adresler.duyurularYolu,
-  );
 }
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi]!;
-
-String _etiket(BuildContext context) =>
-    AppLocalizations.of(context).tayfa_ana_duyurular_baslik;
