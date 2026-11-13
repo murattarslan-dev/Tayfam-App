@@ -73,6 +73,19 @@ abstract final class TayfamTypography {
     ).copyWith(letterSpacing: boyut * -.01);
   }
 
+  /// Hoş geldin tanıtımının sayfa başlığı (tasarım: Hosgeldin-*): 30 / 800
+  /// (wght 750) / 1.15, harf aralığı −%2. Tanıtım bir karşılama ekranı
+  /// olduğu için uygulama içi ölçeğin dışındadır (ADR-0017 Notlar).
+  static TextStyle tanitimBasligi(Color renk) {
+    const boyut = 30.0;
+    return _stil(
+      boyut,
+      buyukBaslikAgirligi,
+      1.15,
+      renk,
+    ).copyWith(letterSpacing: boyut * -.02);
+  }
+
   static TextStyle _stil(
     double boyut,
     FontWeight agirlik,

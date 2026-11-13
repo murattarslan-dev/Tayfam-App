@@ -14,7 +14,7 @@ export 'package:tayfam/features/cihazlar/presentation/cihaz_uyarilari.dart'
         CihazBaglamaGirisi,
         EskiArsivBilgisi,
         EskiMesajlarOkunamiyor,
-        TekCihazBilgiKarti,
+        TekCihazBilgisi,
         tekCihazCikisOnayi,
         tekCihazCikisUyarisi;
 

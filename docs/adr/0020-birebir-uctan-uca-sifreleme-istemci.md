@@ -394,3 +394,53 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
   düşürtme imkânı verir; libsignal önerisine uygun olarak yapılmaz.
 - **Problem gövdesindeki cihaz listelerini okumak:** `ApiClient`'ı
   genişletmek gerekirdi; listeleri tazelemek aynı sonucu verir.
+
+## Notlar
+
+- **2026-11-13 (platform sahibi, tasarım kararları; issue #161): QR ile
+  cihaz bağlama ekranları yeniden tasarımı.** Tasarım:
+  `docs/tasarim/19-cihaz-baglama/` (Cihaz-QR, -Tara, -Basarili, -Hata,
+  -Kamera-Izni, -Tek-Bilgi, -Cikis). Yalnızca sunum katmanı değişti;
+  eşleştirme protokolü, QR yükü, anahtar akışı, notifier'lar ve
+  `lib/core/e2e/` aynen. §4 ve §6'nın arayüz ayrıntıları şöyle:
+  1. **Bu cihazı bağla:** QR beyaz kartta (tema ne olursa olsun açık
+     temanın token'larıyla; §4'teki açık zemin kuralı kartı da kapsar),
+     altında süre hapı (`cihaz_qr_kalan`) ve üç adımlı talimat
+     (`cihaz_qr_adim_1..3`; tek satırlık `cihaz_qr_talimat` kaldırıldı).
+     Süre dolunca son QR ekranda soluk (saydamlık %15, ekran okuyucudan
+     gizli) kalır, hap "Kodun süresi doldu." olur ve "Yeni kod al" çıkar;
+     son QR yalnızca ekran açıkken bellektedir.
+  2. **Cihaz bağla:** tema ne olursa olsun koyu tam ekran kamera
+     görünümü (koyu temanın token'ları): mango köşeli çerçeve, tarama
+     çizgisi ("hareketi azalt" açıkken çerçevenin ortasında durur;
+     `TayfamMotion.taramaCizgisi`), "Kodu çerçeveye getir", talimat ve
+     kamera gizlilik notu. QR işlenirken kamera kapalıdır, çerçevede
+     yükleniyor ve "Cihaz bağlanıyor" gösterilir. Kamera görüntüsü
+     kaydedilmez ve loglanmaz (§7 aynen).
+  3. **Sonuç ekranları:** başarılı (teal tik; yeni telefonda "Bu cihaz
+     bağlandı", eski telefonda "Mesaj geçmişi yeni telefona gönderildi";
+     önceki tek cümlelik metinler başlık ve açıklama olarak ikiye
+     bölündü) ve hata ("Cihaz bağlanamadı" + mevcut `cihaz_hata_*` ya da
+     kamera hatası metni; eski telefonda "Tekrar tara", yeni telefonda
+     "Yeni kod al", ikisinde de "Kapat").
+  4. **Kamera izni** ayrı ekranda; "Ayarları aç" yalnızca ayarların
+     açılabildiği iOS'ta, Android'de yol metinde anlatılır ve "Tekrar
+     tara" sunulur (§7 aynen; tasarımda yalnızca "Ayarları aç" vardı).
+  5. **Tek cihaz bilgisi** (§6 "bilgi kartı"nın yerini alır): birebir
+     sekmesinde ilk kez alttan sayfa; "Cihaz bağla" (Cihaz bağla ekranına
+     götürür) ve "Anladım". Sayfa nasıl kapatılırsa kapatılsın görülmüş
+     sayılır (`e2e.bilgi.tek_cihaz`); üstte konuşma açıksa açılmaz.
+  6. **Tek cihazda çıkış:** uyarı kutulu onay penceresi; "Önce cihaz
+     bağla" (Cihaz bağla ekranına götürür, çıkış yapılmaz), "Vazgeç" ve
+     dolu yıkıcı "Çıkış yap" (ADR-0004 Notlar 2026-11-13).
+  - Yeni metinler: `cihaz_tara_baslik`, `cihaz_kamera_gizlilik`,
+    `cihaz_hata_baslik`, `cihaz_kapat`, `cihaz_cikis_once_bagla`,
+    `cihaz_qr_tamamlandi_aciklama`, `cihaz_tara_basarili_aciklama`.
+    Tasarımdaki tek cihaz ve kamera izni metinleri mevcut çeviriden
+    kısaydı; mevcut çeviri kullanıldı.
+  - Yeni ölçüler: `TayfamSizes.qrKodu` (220), `sonucIkonu` (104),
+    `sonucIkonuIcerik` (52), `taramaCercevesi` (260), `taramaKosesi`
+    (44), `taramaKenari` (5), `taramaCizgisi` (3); `TayfamRadii.qrKarti`
+    (28), `sonucKutusu` (30), `taramaKosesi` (22).
+  - Kamera görünümünün zemini koyu temanın sayfa zeminidir (ink
+    #1B1036); tasarımdaki #0E0A1C token'da yok.

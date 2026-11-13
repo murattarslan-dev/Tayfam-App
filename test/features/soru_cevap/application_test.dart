@@ -6,6 +6,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/features/soru_cevap/application/cevap_formu_notifier.dart';
 import 'package:tayfam/features/soru_cevap/application/cevap_listesi_notifier.dart';
+import 'package:tayfam/features/soru_cevap/application/en_faydali.dart';
 import 'package:tayfam/features/soru_cevap/application/etiketler_notifier.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_formu_notifier.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_listesi_notifier.dart';
@@ -266,6 +267,41 @@ void main() {
         _cevap(cevapId3, oy: 1, zaman: '2026-11-09T10:00:00Z'),
       ]);
       expect(sirali.map((c) => c.id), [cevapId2, cevapId3, cevapId1]);
+    });
+
+    group('"En faydalı" kuralı', () {
+      test('ilk cevap en az bir oy almışsa o', () {
+        expect(
+          enFaydaliCevapKimligi([
+            _cevap(cevapId1, oy: 1),
+            _cevap(cevapId2, oy: 1),
+          ]),
+          cevapId1,
+        );
+      });
+
+      test('ilk cevabın oyu yoksa hiçbiri', () {
+        expect(
+          enFaydaliCevapKimligi([_cevap(cevapId1), _cevap(cevapId2, oy: 4)]),
+          isNull,
+        );
+      });
+
+      test('sırayı istemcide yeniden kurmuyor: sunucunun ilki', () {
+        // Oy sonrası liste yerinde güncellenir, yeniden sıralanmaz; etiket
+        // listedeki ilk cevaptadır, en çok oylu olanda değil.
+        expect(
+          enFaydaliCevapKimligi([
+            _cevap(cevapId1, oy: 2),
+            _cevap(cevapId2, oy: 5),
+          ]),
+          cevapId1,
+        );
+      });
+
+      test('boş listede hiçbiri', () {
+        expect(enFaydaliCevapKimligi(const []), isNull);
+      });
     });
 
     test('cevap yazılınca listeye ve cevap sayısına yansıyor', () async {

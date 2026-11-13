@@ -8,19 +8,31 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
+import 'package:tayfam/core/push/bildirim_izni.dart';
+import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
+import 'package:tayfam/features/bildirim/application/bildirim_gruplari.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_hedefi.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_listesi_notifier.dart';
 import 'package:tayfam/features/bildirim/application/okunmamis_bildirim_notifier.dart';
-import 'package:tayfam/features/bildirim/presentation/bildirim_karti.dart';
+import 'package:tayfam/features/bildirim/application/sekme_durumu.dart';
+import 'package:tayfam/features/bildirim/presentation/bildirim_satiri.dart';
+import 'package:tayfam/features/bildirim/presentation/sekme_kartlari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Bildirimler sekmesi (`/bildirimler`; ADR-0018 §3): bütün tayfaların
-/// bildirimleri tek listede, en yeni önce, sayfalı. Aşağı çekince
-/// yenilenir; okunmamış varken "Hepsini okundu say" gösterilir.
+/// Bildirimler sekmesi (`/bildirimler`; ADR-0018 §3, 2026-11-13 tasarım:
+/// Bildirimler, Bildirimler-Koyu, Bildirimler-Bos): bütün tayfaların
+/// bildirimleri tek listede, en yeni önce, sayfalı; zamana göre gruplu
+/// (Bugün / Dün / Bu hafta / Daha eski). Aşağı çekince yenilenir.
 ///
-/// Bildirime dokununca okundu işaretlenir ve hedefi açılır
-/// ([bildirimAdresi]); hedefin ekranı yoksa yalnızca okundu işaretlenir.
+/// - Başlıkta, okunmamış varken "Hepsini okundu say".
+/// - Bildirim izni verilmemişse listenin üstünde mor izin kartı.
+/// - Okunmamış güvenlik uyarıları (`hike_overdue`) okunana kadar en üstte
+///   sabit nar kartta.
+/// - Bildirime dokununca okundu işaretlenir ve hedefi açılır
+///   ([bildirimAdresi]); hedefin ekranı yoksa yalnızca okundu işaretlenir.
+/// - Okunmamış/tümü filtresi yoktur: sözleşmede süzme parametresi yok.
 class BildirimlerEkrani extends ConsumerStatefulWidget {
   const BildirimlerEkrani({super.key});
 
@@ -40,85 +52,138 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     final hata = durum.error;
     final okunmamisVar =
         sayi > 0 || (liste?.ogeler.any((b) => !b.read) ?? false);
+    final simdi = ref.watch(simdiProvider)();
+    final izinKarti = _izinKartiGosterilsin();
+    final uyarilar = [...?liste?.ogeler.where(sabitUyariMi)];
+    final gruplar = liste == null
+        ? const <(BildirimGrubu, List<Notification>)>[]
+        : bildirimleriGrupla(
+            liste.ogeler.where((b) => !sabitUyariMi(b)),
+            simdi,
+          );
+
     return Scaffold(
-      appBar: AppBar(title: Text(m.gezinme_sekme_bildirimler)),
-      body: RefreshIndicator(
-        onRefresh: _yenile,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: TayfamSizes.okumaGenisligi,
-            ),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-              children: [
-                if (liste == null && hata != null) ...[
-                  HataSatiri.hatadan(hata),
-                  _MetinDugmesi(
-                    etiket: m.tayfa_ana_tekrar_dene,
-                    onPressed: () => ref.invalidate(bildirimListesiProvider),
+      body: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          onRefresh: _yenile,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: TayfamSizes.okumaGenisligi,
+              ),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(
+                  TayfamSpacing.kenarMobil,
+                  TayfamSpacing.s8,
+                  TayfamSpacing.kenarMobil,
+                  TayfamSpacing.s24,
+                ),
+                children: [
+                  _Baslik(
+                    goster: liste != null && okunmamisVar,
+                    hepsiniOkunduSay: _hepsiIsleniyor
+                        ? null
+                        : _hepsiniOkunduSay,
                   ),
-                ] else if (liste == null)
-                  Center(
-                    child: TayfamYukleniyor(
-                      boyut: TayfamSizes.yukleniyorTamEkran,
-                      etiket: m.bildirim_yukleniyor,
-                      gecikmeli: true,
-                    ),
-                  )
-                else if (liste.ogeler.isEmpty)
-                  Text(
-                    m.bildirim_bos,
-                    style: context.yazi.bodyLarge?.copyWith(
-                      color: context.renkler.metinGovde,
-                    ),
-                  )
-                else ...[
-                  if (okunmamisVar) ...[
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: _MetinDugmesi(
-                        etiket: m.bildirim_hepsini_okundu_say,
-                        ikon: Icons.done_all,
-                        onPressed: _hepsiIsleniyor ? null : _hepsiniOkunduSay,
-                      ),
-                    ),
+                  if (izinKarti) ...[
                     const SizedBox(height: TayfamSpacing.s8),
+                    const IzinKarti(),
                   ],
-                  for (final (sira, bildirim) in liste.ogeler.indexed) ...[
-                    if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-                    BildirimKarti(
-                      bildirim: bildirim,
-                      onTap: () => _ac(bildirim),
+                  for (final uyari in uyarilar) ...[
+                    const SizedBox(height: TayfamSpacing.s8),
+                    GuvenlikUyarisiKarti(
+                      bildirim: uyari,
+                      simdi: simdi,
+                      onTap: () => _ac(uyari),
                     ),
                   ],
-                  const SizedBox(height: TayfamSpacing.s16),
-                  if (liste.dahaHatasi case final dahaHatasi?) ...[
-                    HataSatiri.hatadan(dahaHatasi),
+                  if (liste == null && hata != null) ...[
+                    const SizedBox(height: TayfamSpacing.s16),
+                    HataSatiri.hatadan(hata),
                     _MetinDugmesi(
                       etiket: m.tayfa_ana_tekrar_dene,
-                      onPressed: _dahaFazla,
+                      onPressed: () => ref.invalidate(bildirimListesiProvider),
                     ),
-                  ] else if (liste.dahaYukleniyor)
-                    Center(
-                      child: TayfamYukleniyor(etiket: m.bildirim_yukleniyor),
+                  ] else if (liste == null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: TayfamSpacing.s32),
+                      child: Center(
+                        child: TayfamYukleniyor(
+                          boyut: TayfamSizes.yukleniyorTamEkran,
+                          etiket: m.bildirim_yukleniyor,
+                          gecikmeli: true,
+                        ),
+                      ),
                     )
-                  else if (liste.dahaVar)
-                    Center(
-                      child: _MetinDugmesi(
-                        etiket: m.tayfa_ana_daha_fazla,
+                  else if (liste.ogeler.isEmpty)
+                    const BosBildirimler()
+                  else ...[
+                    for (final (grup, bildirimler) in gruplar) ...[
+                      BolumEtiketi(baslik: bildirimGrubuBasligi(m, grup)),
+                      ListeKarti(
+                        children: [
+                          for (final bildirim in bildirimler)
+                            BildirimSatiri(
+                              bildirim: bildirim,
+                              simdi: simdi,
+                              onTap: () => _ac(bildirim),
+                              onIncele: () => _incele(bildirim),
+                            ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: TayfamSpacing.s16),
+                    if (liste.dahaHatasi case final dahaHatasi?) ...[
+                      HataSatiri.hatadan(dahaHatasi),
+                      _MetinDugmesi(
+                        etiket: m.tayfa_ana_tekrar_dene,
                         onPressed: _dahaFazla,
                       ),
+                    ] else if (liste.dahaYukleniyor)
+                      Center(
+                        child: TayfamYukleniyor(etiket: m.bildirim_yukleniyor),
+                      )
+                    else if (liste.dahaVar)
+                      Center(
+                        child: _MetinDugmesi(
+                          etiket: m.tayfa_ana_daha_fazla,
+                          onPressed: _dahaFazla,
+                        ),
+                      ),
+                    const SizedBox(height: TayfamSpacing.s16),
+                    Text(
+                      m.bildirim_saklama,
+                      textAlign: TextAlign.center,
+                      style: context.yazi.labelSmall?.copyWith(
+                        color: context.renkler.metinIkincil,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  /// Mor izin kartı (karar 5): push'un olduğu derlemede izin verilmemişse
+  /// ve açıklama kartı daha önce kapatılmadıysa. Kabuğun alttaki açıklama
+  /// kartı o an açıksa ikinci kez gösterilmez.
+  bool _izinKartiGosterilsin() {
+    if (!ref.watch(pushPlatformuProvider).etkin) return false;
+    final izin = ref.watch(bildirimIzniProvider);
+    if (izin.izin == null ||
+        izin.izin == BildirimIzni.verildi ||
+        izin.aciklamaGoster) {
+      return false;
+    }
+    return ref.watch(izinKartiProvider).value ?? false;
   }
 
   /// Bildirimi okundu işaretler ve hedefini açar. Hedef yoksa yalnızca
@@ -127,7 +192,19 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     unawaited(
       ref.read(bildirimListesiProvider.notifier).okunduIsaretle(bildirim.id),
     );
-    final adres = bildirimAdresi(bildirim);
+    _git(bildirimAdresi(bildirim));
+  }
+
+  /// Katılım isteğinde "İncele": okundu işaretlenir ve tayfanın katılım
+  /// istekleri ekranı açılır (karar 2).
+  void _incele(Notification bildirim) {
+    unawaited(
+      ref.read(bildirimListesiProvider.notifier).okunduIsaretle(bildirim.id),
+    );
+    _git(katilimIstekleriAdresi(bildirim) ?? bildirimAdresi(bildirim));
+  }
+
+  void _git(String? adres) {
     if (adres == null) return;
     // Kişi profili sekmelerin üstünde açılır; geri tuşu bildirimlere döner.
     if (adres.startsWith('${Adresler.kisiOneki}/')) {
@@ -162,27 +239,57 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
   }
 }
 
+/// Sekme başlığı (tasarım: 26 px "Bildirimler") ve okunmamış varken
+/// sağında "Hepsini okundu say". Dar ekranda ve büyük yazıda düğme alt
+/// satıra iner.
+class _Baslik extends StatelessWidget {
+  const _Baslik({required this.goster, required this.hepsiniOkunduSay});
+
+  final bool goster;
+  final VoidCallback? hepsiniOkunduSay;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: TayfamSpacing.s8,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.only(start: TayfamSpacing.s4),
+          child: Semantics(
+            header: true,
+            child: Text(
+              m.gezinme_sekme_bildirimler,
+              style: context.yazi.headlineMedium,
+            ),
+          ),
+        ),
+        if (goster)
+          BaglantiEylemi(
+            etiket: m.bildirim_hepsini_okundu_say,
+            onPressed: hepsiniOkunduSay,
+          ),
+      ],
+    );
+  }
+}
+
 class _MetinDugmesi extends StatelessWidget {
-  const _MetinDugmesi({required this.etiket, this.ikon, this.onPressed});
+  const _MetinDugmesi({required this.etiket, this.onPressed});
 
   final String etiket;
-  final IconData? ikon;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final stil = TextButton.styleFrom(
-      minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-    );
-    final ikon = this.ikon;
-    if (ikon == null) {
-      return TextButton(onPressed: onPressed, style: stil, child: Text(etiket));
-    }
-    return TextButton.icon(
+    return TextButton(
       onPressed: onPressed,
-      style: stil,
-      icon: Icon(ikon),
-      label: Text(etiket),
+      style: TextButton.styleFrom(
+        minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+      ),
+      child: Text(etiket),
     );
   }
 }

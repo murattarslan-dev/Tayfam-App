@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/acilis_logosu.dart';
+import 'package:tayfam/core/bilesenler/birincil_eylem.dart';
 import 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
 import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 import 'package:tayfam/core/tema/google_marka.dart';
@@ -18,6 +19,8 @@ import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hesap/presentation/apple_girisi.dart';
 import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
+import 'package:tayfam/features/hesap/presentation/hesap_durum_duzeni.dart';
+import 'package:tayfam/features/hesap/presentation/hesap_engeli_ekrani.dart';
 
 import '../../yardimcilar.dart';
 import 'sahteler.dart';
@@ -319,7 +322,7 @@ void main() {
       ),
     ]) {
       for (final tema in _temalar) {
-        testWidgets('${engel.name}: düğme yok (${tema.name}, 2×)', (
+        testWidgets('${engel.name}: hesap durumu ekranı (${tema.name}, 2×)', (
           tester,
         ) async {
           ikiKatYazi(tester);
@@ -330,13 +333,54 @@ void main() {
             tema: tema,
           );
 
+          expect(find.byType(HesapEngeliEkrani), findsOneWidget);
+          expect(find.byType(TayfamLogo), findsOneWidget);
           expect(_metin(baslik), findsOneWidget);
           expect(_metin(aciklama), findsOneWidget);
+          // Nar ikon kutusu (tint-nar + nar-metin).
+          final r = _renkler(tema);
+          final ikon = tester.widget<HesapDurumIkonu>(
+            find.byType(HesapDurumIkonu),
+          );
+          expect(ikon.zemin, r.tintNar);
+          expect(ikon.renk, r.narMetin);
+          // Tek eylem "Çıkış yap"; Google düğmesi yok.
+          expect(_metin('hesap_cikis_yap'), findsOneWidget);
+          expect(find.byType(BirincilEylem), findsOneWidget);
           expect(find.byType(GoogleIleDevamDugmesi), findsNothing);
           expect(tester.takeException(), isNull);
         });
       }
     }
+
+    testWidgets('kısıtlı hesapta "Çıkış yap" giriş ekranına döndürüyor', (
+      tester,
+    ) async {
+      final k = _Kurulum(engel: HesapEngeli.kisitlandi);
+      await _ac(tester, const GirisEkrani(), k);
+
+      await _dokun(tester, _metin('hesap_cikis_yap'));
+
+      expect(find.byType(HesapEngeliEkrani), findsNothing);
+      expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
+      // Çıkış yalnızca yerel engeli bırakır; istek gitmez.
+      expect(k.tasima.istekler, isEmpty);
+      expect(k.google.cagri, 0);
+    });
+
+    testWidgets('hesap durumu ekranı erişilebilirlik', (tester) async {
+      await _ac(
+        tester,
+        const GirisEkrani(),
+        _Kurulum(engel: HesapEngeli.kisitlandi),
+      );
+      final kulp = tester.ensureSemantics();
+      await tester.pump();
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      kulp.dispose();
+    });
   });
 
   group('yeniden onay ekranı', () {
@@ -344,6 +388,15 @@ void main() {
       'GET /v1/me/consents': surumGovdesi,
       'POST /v1/me/consents': () => null,
     };
+
+    FilledButton gonderDugmesi(WidgetTester tester) {
+      return tester.widget<FilledButton>(
+        find.ancestor(
+          of: _metin('hesap_onay_gonder'),
+          matching: find.byType(FilledButton),
+        ),
+      );
+    }
 
     for (final tema in _temalar) {
       testWidgets('${tema.name} temada 2× yazıda taşmıyor', (tester) async {
@@ -355,30 +408,60 @@ void main() {
           tema: tema,
         );
 
+        expect(find.byType(TayfamLogo), findsOneWidget);
         expect(_metin('hesap_onay_baslik'), findsOneWidget);
-        await _dokun(tester, _metin('hesap_onay_gonder'));
-        expect(_metin('hesap_onay_kutusu_hata'), findsOneWidget);
+        expect(_metin('hesap_onay_aciklama'), findsOneWidget);
+        expect(find.byType(OkumaSatiri), findsNWidgets(2));
+        expect(_metin('hesap_aydinlatma_ac'), findsOneWidget);
+        expect(_metin('hesap_kosullar_ac'), findsOneWidget);
+        expect(_metin('hesap_onay_kutusu'), findsOneWidget);
+        expect(_metin('hesap_onay_gonder'), findsOneWidget);
+        expect(_metin('hesap_cikis_yap'), findsOneWidget);
+        // Brand belge ikonu (tint-brand + tint-brand üstü).
+        final r = _renkler(tema);
+        final ikon = tester.widget<HesapDurumIkonu>(
+          find.byType(HesapDurumIkonu),
+        );
+        expect(ikon.zemin, r.tintMarka);
+        expect(ikon.renk, r.tintMarkaUstu);
+        // Kutu işaretlenmeden gönderim pasif.
+        expect(gonderDugmesi(tester).onPressed, isNull);
+        await _dokun(tester, _metin('hesap_onay_kutusu'));
+        expect(gonderDugmesi(tester).onPressed, isNotNull);
         expect(tester.takeException(), isNull);
       });
     }
 
-    testWidgets('kutu işaretlenince gösterilen sürümler onaylanıyor', (
+    testWidgets('işaretsiz kutuda gönderim pasif, sonra onaylanıyor', (
       tester,
     ) async {
       final k = _Kurulum(yanitlar: yanitlar());
       await _ac(tester, const OnayEkrani(), k);
 
+      expect(gonderDugmesi(tester).onPressed, isNull);
       await _dokun(tester, _metin('hesap_onay_gonder'));
       expect(k.tasima.sayi('POST', '/v1/me/consents'), 0);
 
       await _dokun(tester, _metin('hesap_onay_kutusu'));
+      expect(gonderDugmesi(tester).onPressed, isNotNull);
       await _dokun(tester, _metin('hesap_onay_gonder'));
 
       expect(k.tasima.sayi('POST', '/v1/me/consents'), 1);
-      expect(_metin('hesap_onay_kutusu_hata'), findsNothing);
     });
 
-    testWidgets('iki metnin bağlantısı da var', (tester) async {
+    testWidgets('kutunun işareti yeniden dokununca kalkıyor', (tester) async {
+      final k = _Kurulum(yanitlar: yanitlar());
+      await _ac(tester, const OnayEkrani(), k);
+
+      await _dokun(tester, _metin('hesap_onay_kutusu'));
+      expect(gonderDugmesi(tester).onPressed, isNotNull);
+      await _dokun(tester, _metin('hesap_onay_kutusu'));
+      expect(gonderDugmesi(tester).onPressed, isNull);
+    });
+
+    testWidgets('iki "oku" satırı metinlerin sürümlü sayfasını açıyor', (
+      tester,
+    ) async {
       final k = _Kurulum(yanitlar: yanitlar());
       await _ac(tester, const OnayEkrani(), k);
 
@@ -386,6 +469,19 @@ void main() {
       await _dokun(tester, _metin('hesap_kosullar_ac'));
 
       expect(k.acici.acilan, hasLength(2));
+      expect(k.acici.acilan.every((a) => a.host == 'tayfam.app'), isTrue);
+    });
+
+    testWidgets('erişilebilirlik: dokunma alanı, etiket, kontrast', (
+      tester,
+    ) async {
+      await _ac(tester, const OnayEkrani(), _Kurulum(yanitlar: yanitlar()));
+      final kulp = tester.ensureSemantics();
+      await tester.pump();
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      kulp.dispose();
     });
   });
 
@@ -395,7 +491,17 @@ void main() {
         ikiKatYazi(tester);
         await _ac(tester, const GuncellemeEkrani(), _Kurulum(), tema: tema);
 
+        expect(find.byType(TayfamLogo), findsOneWidget);
         expect(_metin('hesap_guncelleme_baslik'), findsOneWidget);
+        expect(_metin('hesap_guncelleme_aciklama'), findsOneWidget);
+        expect(_metin('hesap_guncelleme_magaza'), findsOneWidget);
+        // Mango ikon kutusu (tint-mango + tint-mango üstü).
+        final r = _renkler(tema);
+        final ikon = tester.widget<HesapDurumIkonu>(
+          find.byType(HesapDurumIkonu),
+        );
+        expect(ikon.zemin, r.tintMango);
+        expect(ikon.renk, r.tintMangoUstu);
         expect(tester.takeException(), isNull);
       });
 

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
@@ -5,15 +7,34 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-// Hoş geldin tanıtımının sayfa görselleri (ADR-0017 §2–3).
+// Hoş geldin tanıtımının sayfa görselleri (ADR-0017 §2–3; tasarım:
+// docs/tasarim/18-hosgeldin-tanitimi/Hosgeldin-*.dc.html).
 //
-// Görseller uygulamanın kendi bileşenleriyle çizilir; görsel dosyası
-// yoktur. Örnek veriler (tayfa ve etkinlik adı, baş harfler, mesajlar)
-// uydurmadır ve çeviri dosyasındadır. Görseller süstür: tanıtım ekranı
-// onları ekran okuyucudan gizler ve dokunmaya kapatır; anlam sayfanın
-// başlığı ve metnindedir. Hepsi mor marka yüzeyinin üstünde durur.
+// Görseller uygulamanın kendi kartlarından yapılır ve hafif eğik durur;
+// görsel dosyası yoktur. Örnek veriler (tayfa ve etkinlik adı, baş harfler,
+// mesajlar) uydurmadır ve çeviri dosyasındadır. Görseller süstür: tanıtım
+// ekranı onları ekran okuyucudan gizler ve dokunmaya kapatır; anlam
+// sayfanın başlığı ve metnindedir.
 
-/// 1. sayfa: mor tayfa üst bölümü (logo, örnek tayfa adı, üye sayısı).
+/// Kartların eğimleri (derece), tasarımdaki sırayla.
+abstract final class _Egim {
+  static const double tayfa = -3;
+  static const double etkinlik = 2;
+  static const double soru = -2;
+  static const double anket = 2;
+  static const double sohbet = -2;
+  static const List<double> katilim = [-2, 1, -1];
+}
+
+/// Örnek anketteki seçeneklerin doluluk oranları (tasarım: %70 / %30).
+const double _anketOrani1 = .7;
+const double _anketOrani2 = .3;
+
+/// Örnek etkinlikte baş harfleri gösterilmeyen kişi sayısı.
+const int _digerKisiSayisi = 11;
+
+/// 1. sayfa: örnek tayfa kartı (harf kutusu, ad, modüller ve dört modül
+/// karesi).
 class TayfaGorseli extends StatelessWidget {
   const TayfaGorseli({super.key});
 
@@ -22,67 +43,51 @@ class TayfaGorseli extends StatelessWidget {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final yazi = context.yazi;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TayfamLogo(boyut: TayfamSizes.logoBuyuk, zemin: r.markaYuzey),
-        const SizedBox(height: TayfamSpacing.s16),
-        Text(
-          m.hosgeldin_ornek_tayfa_adi,
-          style: yazi.headlineMedium?.copyWith(color: r.markaYuzeyUstu),
-        ),
-        const SizedBox(height: TayfamSpacing.s4),
-        Text(
-          m.tayfa_uye_sayisi(24),
-          style: yazi.bodyMedium?.copyWith(color: r.markaYuzeyUstu),
-        ),
-      ],
-    );
-  }
-}
-
-/// 2. sayfa: örnek etkinlik kartı (tür çipi, başlık, zaman, katılım, baş
-/// harf avatarları ve "Geldim").
-class EtkinlikGorseli extends StatelessWidget {
-  const EtkinlikGorseli({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final yazi = context.yazi;
-    return TayfamKart(
-      oneCikan: true,
+    final ad = m.hosgeldin_ornek_tayfa_adi;
+    return _EgikKart(
+      egim: _Egim.tayfa,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const EtkinlikTuruCipi(tur: EventType.hike),
-          const SizedBox(height: TayfamSpacing.s12),
-          Text(m.hosgeldin_ornek_etkinlik_basligi, style: yazi.titleMedium),
-          const SizedBox(height: TayfamSpacing.s8),
-          _BilgiSatiri(
-            ikon: Icons.schedule,
-            metin: m.hosgeldin_ornek_etkinlik_zamani,
-          ),
-          _BilgiSatiri(
-            ikon: Icons.group_outlined,
-            metin: m.hosgeldin_ornek_etkinlik_katilim,
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          Wrap(
-            spacing: TayfamSpacing.s4,
-            runSpacing: TayfamSpacing.s4,
+          Row(
             children: [
-              _BasHarf(m.hosgeldin_ornek_kisi_1),
-              _BasHarf(m.hosgeldin_ornek_kisi_2),
-              _BasHarf(m.hosgeldin_ornek_kisi_3),
-              _BasHarf(m.hosgeldin_ornek_kisi_diger(11)),
+              _HarfKutusu(
+                harf: String.fromCharCode(ad.runes.first),
+                zemin: r.teal,
+                yazi: r.vurguUstu,
+              ),
+              const SizedBox(width: TayfamSpacing.s12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(ad, style: yazi.titleMedium),
+                    Text(
+                      m.hosgeldin_ornek_tayfa_moduller,
+                      style: yazi.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: TayfamSpacing.s16),
-          IkincilEylem(
-            etiket: m.etkinlik_varis_geldim,
-            ikon: Icons.where_to_vote_outlined,
-            onPressed: _dokunulmaz,
+          const SizedBox(height: TayfamSpacing.s12),
+          Row(
+            children: [
+              _ModulKaresi(
+                ikon: Icons.calendar_today_outlined,
+                zemin: r.tintMango,
+              ),
+              const SizedBox(width: TayfamSpacing.s8),
+              _ModulKaresi(ikon: Icons.campaign_outlined, zemin: r.tintMarka),
+              const SizedBox(width: TayfamSpacing.s8),
+              _ModulKaresi(
+                ikon: Icons.contact_support_outlined,
+                zemin: r.tintTeal,
+              ),
+              const SizedBox(width: TayfamSpacing.s8),
+              _ModulKaresi(ikon: Icons.chat_bubble_outline, zemin: r.tintNar),
+            ],
           ),
         ],
       ),
@@ -90,7 +95,64 @@ class EtkinlikGorseli extends StatelessWidget {
   }
 }
 
-/// 3. sayfa: örnek soru ("faydalı" sayacıyla) ve anket çubukları.
+/// 2. sayfa: örnek etkinlik kartı (tür çipi, başlık, zaman, baş harf
+/// avatarları, katılım ve üç cevap düğmesinin görünümü).
+class EtkinlikGorseli extends StatelessWidget {
+  const EtkinlikGorseli({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    final yazi = context.yazi;
+    return _EgikKart(
+      egim: _Egim.etkinlik,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const EtkinlikTuruCipi(tur: EventType.hike),
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(m.hosgeldin_ornek_etkinlik_basligi, style: yazi.titleMedium),
+          Text(m.hosgeldin_ornek_etkinlik_zamani, style: yazi.bodySmall),
+          const SizedBox(height: TayfamSpacing.s8),
+          _BasHarfYigini(
+            kisiler: [
+              (m.hosgeldin_ornek_kisi_1, r.mango, r.vurguUstu),
+              (m.hosgeldin_ornek_kisi_2, r.teal, r.vurguUstu),
+              (m.hosgeldin_ornek_kisi_3, r.nar, r.vurguUstu),
+              (
+                m.hosgeldin_ornek_kisi_diger(_digerKisiSayisi),
+                r.tintMarka,
+                r.tintMarkaUstu,
+              ),
+            ],
+          ),
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(m.hosgeldin_ornek_etkinlik_katilim, style: yazi.bodySmall),
+          const SizedBox(height: TayfamSpacing.s8),
+          Row(
+            children: [
+              Expanded(
+                child: _CevapGorunumu(
+                  etiket: m.etkinlik_cevap_going,
+                  secili: true,
+                ),
+              ),
+              const SizedBox(width: TayfamSpacing.s8),
+              Expanded(child: _CevapGorunumu(etiket: m.etkinlik_cevap_maybe)),
+              const SizedBox(width: TayfamSpacing.s8),
+              Expanded(
+                child: _CevapGorunumu(etiket: m.etkinlik_cevap_not_going),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 3. sayfa: örnek soru ve cevabı, altında örnek anket.
 class SoruGorseli extends StatelessWidget {
   const SoruGorseli({super.key});
 
@@ -102,39 +164,51 @@ class SoruGorseli extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TayfamKart(
+        _EgikKart(
+          egim: _Egim.soru,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(m.hosgeldin_ornek_soru, style: yazi.titleMedium),
+              Text(m.hosgeldin_ornek_soru, style: yazi.titleSmall),
               const SizedBox(height: TayfamSpacing.s8),
-              Text(
-                m.hosgeldin_ornek_cevap,
-                style: yazi.bodyMedium?.copyWith(color: r.metinGovde),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: BorderDirectional(
+                    start: BorderSide(
+                      color: r.teal,
+                      width: TayfamSizes.alintiCizgisi,
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                    start: TayfamSpacing.s8,
+                  ),
+                  child: Text(
+                    m.hosgeldin_ornek_cevap,
+                    style: yazi.bodySmall?.copyWith(color: r.metinGovde),
+                  ),
+                ),
               ),
-              const SizedBox(height: TayfamSpacing.s12),
-              const FaydaliSayaci(sayi: 12),
             ],
           ),
         ),
         const SizedBox(height: TayfamSpacing.s12),
-        TayfamKart(
+        _EgikKart(
+          egim: _Egim.anket,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(m.hosgeldin_ornek_anket, style: yazi.titleMedium),
-              const SizedBox(height: TayfamSpacing.s12),
-              AnketCubugu(
+              Text(m.hosgeldin_ornek_anket, style: yazi.titleSmall),
+              const SizedBox(height: TayfamSpacing.s8),
+              _AnketSatiri(
                 secenek: m.hosgeldin_ornek_anket_secenek_1,
-                oy: 9,
-                toplamOy: 14,
-                onde: true,
+                oran: _anketOrani1,
               ),
-              const SizedBox(height: TayfamSpacing.s12),
-              AnketCubugu(
+              const SizedBox(height: TayfamSpacing.s8),
+              _AnketSatiri(
                 secenek: m.hosgeldin_ornek_anket_secenek_2,
-                oy: 5,
-                toplamOy: 14,
+                oran: _anketOrani2,
               ),
             ],
           ),
@@ -144,132 +218,301 @@ class SoruGorseli extends StatelessWidget {
   }
 }
 
-/// 4. sayfa: "Uçtan uca şifreli" satırı ve iki sohbet balonu.
+/// 4. sayfa: iki sohbet balonu ve "Uçtan uca şifreli" satırı.
 class SohbetGorseli extends StatelessWidget {
   const SohbetGorseli({super.key});
 
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    return TayfamKart(
+    return _EgikKart(
+      egim: _Egim.sohbet,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: UctanUcaSifreliSatiri(),
+          SohbetBalonu(
+            metin: m.hosgeldin_ornek_mesaj_gelen,
+            giden: false,
+            tur: BalonTuru.akis,
           ),
-          const SizedBox(height: TayfamSpacing.s12),
-          SohbetBalonu(metin: m.hosgeldin_ornek_mesaj_gelen, giden: false),
           const SizedBox(height: TayfamSpacing.s8),
-          SohbetBalonu(metin: m.hosgeldin_ornek_mesaj_giden, giden: true),
+          SohbetBalonu(
+            metin: m.hosgeldin_ornek_mesaj_giden,
+            giden: true,
+            tur: BalonTuru.akis,
+          ),
+          const SizedBox(height: TayfamSpacing.s8),
+          const Center(child: UctanUcaSifreliSatiri()),
         ],
       ),
     );
   }
 }
 
-/// 5. sayfa: etkinlik türü çipleri ve karşılama ekranının "Tayfa kodum var"
-/// / "Tayfa oluştur" görünümü (dokunulmaz).
+/// 5. sayfa: tayfaya katılmanın üç yolu (davet linki, tayfa kodu, kendi
+/// tayfanı kurmak), üç eğik kart.
 class KatilimGorseli extends StatelessWidget {
   const KatilimGorseli({super.key});
-
-  static const List<EventType> _turler = [
-    EventType.convoy,
-    EventType.camp,
-    EventType.hike,
-    EventType.fishing,
-    EventType.gaming,
-    EventType.sports,
-  ];
 
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    final yollar = [
+      (Icons.link, r.tintMarka, m.hosgeldin_ornek_yol_davet),
+      (Icons.dialpad, r.tintMango, m.hosgeldin_ornek_yol_kod),
+      (Icons.flag_outlined, r.tintTeal, m.hosgeldin_ornek_yol_kur),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: TayfamSpacing.s8,
-          runSpacing: TayfamSpacing.s8,
-          children: [for (final tur in _turler) EtkinlikTuruCipi(tur: tur)],
-        ),
-        const SizedBox(height: TayfamSpacing.s24),
-        BirincilEylem(
-          etiket: m.karsilama_kodum_var,
-          ikon: Icons.vpn_key_outlined,
-          markaYuzeyinde: true,
-          onPressed: _dokunulmaz,
-        ),
-        const SizedBox(height: TayfamSpacing.s12),
-        IkincilEylem(
-          etiket: m.karsilama_tayfa_olustur,
-          ikon: Icons.add_circle_outline,
-          onPressed: _dokunulmaz,
-        ),
+        for (final (i, (ikon, zemin, etiket)) in yollar.indexed) ...[
+          if (i > 0) const SizedBox(height: TayfamSpacing.s8),
+          _EgikKart(
+            egim: _Egim.katilim[i],
+            child: Row(
+              children: [
+                _IkonKutusu(ikon: ikon, zemin: zemin),
+                const SizedBox(width: TayfamSpacing.s12),
+                Expanded(child: Text(etiket, style: context.yazi.titleSmall)),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
 }
 
-/// Görseldeki düğmeler gerçek bileşenin görünümünü korusun diye etkin
-/// çizilir (devre dışı düğme soluk görünürdü); tanıtım ekranı onları
-/// dokunmaya, odağa ve ekran okuyucuya kapatır.
-void _dokunulmaz() {}
+/// Hafif eğik, öne çıkan (gölgeli) örnek kart.
+class _EgikKart extends StatelessWidget {
+  const _EgikKart({required this.egim, required this.child});
 
-/// Örnek kartta ikonlu tek bilgi satırı.
-class _BilgiSatiri extends StatelessWidget {
-  const _BilgiSatiri({required this.ikon, required this.metin});
+  /// Eğim, derece.
+  final double egim;
 
-  final IconData ikon;
-  final String metin;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final renk = context.renkler.metinGovde;
-    return Padding(
-      padding: const EdgeInsets.only(top: TayfamSpacing.s4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(ikon, size: TayfamSizes.ikonKucuk, color: renk),
-          const SizedBox(width: TayfamSpacing.s8),
-          Expanded(
-            child: Text(
-              metin,
-              style: context.yazi.bodyMedium?.copyWith(color: renk),
+    return Transform.rotate(
+      angle: egim * math.pi / 180,
+      child: TayfamKart(oneCikan: true, child: child),
+    );
+  }
+}
+
+/// Örnek tayfanın harf kutusu.
+class _HarfKutusu extends StatelessWidget {
+  const _HarfKutusu({
+    required this.harf,
+    required this.zemin,
+    required this.yazi,
+  });
+
+  final String harf;
+  final Color zemin;
+  final Color yazi;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: TayfamSizes.menuIkonKutusu,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: zemin,
+          borderRadius: TayfamRadii.dugmeKoseleri,
+        ),
+        child: Center(
+          child: Text(
+            harf,
+            // Görseldir; sistem yazı ölçeğiyle büyümez (TayfaAvatari gibi).
+            textScaler: TextScaler.noScaling,
+            style: context.yazi.titleMedium?.copyWith(
+              color: yazi,
+              fontWeight: TayfamTypography.buyukBaslikAgirligi,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Örnek tayfa kartındaki modül karesi (etkinlik, duyuru, soru, sohbet).
+class _ModulKaresi extends StatelessWidget {
+  const _ModulKaresi({required this.ikon, required this.zemin});
+
+  final IconData ikon;
+  final Color zemin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: SizedBox(
+        height: TayfamSizes.tanitimModulKaresi,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: zemin,
+            borderRadius: TayfamRadii.dugmeKoseleri,
+          ),
+          child: Icon(
+            ikon,
+            size: TayfamSizes.ikon,
+            color: context.renkler.metin,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Katılım yolunun ikon kutusu.
+class _IkonKutusu extends StatelessWidget {
+  const _IkonKutusu({required this.ikon, required this.zemin});
+
+  final IconData ikon;
+  final Color zemin;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: TayfamSizes.menuIkonKutusu,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: zemin,
+          borderRadius: TayfamRadii.dugmeKoseleri,
+        ),
+        child: Icon(ikon, size: TayfamSizes.ikon, color: context.renkler.metin),
+      ),
+    );
+  }
+}
+
+/// Üst üste binen baş harf avatarları: her biri kart renginde ince halkalı,
+/// bir öncekinin üstüne biner.
+class _BasHarfYigini extends StatelessWidget {
+  const _BasHarfYigini({required this.kisiler});
+
+  /// Baş harfler, zemin ve yazı rengi; soldan sağa.
+  final List<(String, Color, Color)> kisiler;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    const cap = TayfamSizes.avatarYigini;
+    const adim = cap - TayfamSpacing.s8;
+    return SizedBox(
+      width: cap + adim * (kisiler.length - 1),
+      height: cap,
+      child: Stack(
+        children: [
+          for (final (sira, (harfler, zemin, yazi)) in kisiler.indexed)
+            PositionedDirectional(
+              start: adim * sira,
+              top: 0,
+              child: Container(
+                width: cap,
+                height: cap,
+                padding: const EdgeInsets.all(TayfamSpacing.s4),
+                decoration: BoxDecoration(
+                  color: zemin,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: r.kart,
+                    width: TayfamSizes.alanOdakKenari,
+                    strokeAlign: BorderSide.strokeAlignOutside,
+                  ),
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    harfler,
+                    style: context.yazi.labelMedium?.copyWith(color: yazi),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-/// Kişi adı yerine baş harf: tint-brand hap içinde (ADR-0017 §3).
-class _BasHarf extends StatelessWidget {
-  const _BasHarf(this.harfler);
+/// Örnek etkinlikteki cevap düğmesinin görünümü (dokunulmaz): seçili olan
+/// dolu marka, diğerleri çerçeveli.
+class _CevapGorunumu extends StatelessWidget {
+  const _CevapGorunumu({required this.etiket, this.secili = false});
 
-  final String harfler;
+  final String etiket;
+  final bool secili;
 
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
-    return DecoratedBox(
+    return Container(
+      constraints: const BoxConstraints(
+        minHeight: TayfamSizes.tanitimCevapDugmesi,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: r.tintMarka,
-        borderRadius: TayfamRadii.hapKoseleri,
+        color: secili ? r.marka : null,
+        borderRadius: TayfamRadii.dugmeKoseleri,
+        border: secili
+            ? null
+            : Border.all(color: r.cizgi, width: TayfamSizes.vurguKenari),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: TayfamSpacing.s12,
-          vertical: TayfamSpacing.s4,
-        ),
+      // Dar alanda etiket tek satırda kalır, küçülür.
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
         child: Text(
-          harfler,
-          style: context.yazi.labelLarge?.copyWith(color: r.tintMarkaUstu),
+          etiket,
+          maxLines: 1,
+          style: context.yazi.labelMedium?.copyWith(
+            color: secili ? r.markaUstu : r.metin,
+          ),
         ),
       ),
+    );
+  }
+}
+
+/// Örnek anketin bir seçeneği: metin ve altında doluluk çubuğu.
+class _AnketSatiri extends StatelessWidget {
+  const _AnketSatiri({required this.secenek, required this.oran});
+
+  final String secenek;
+
+  /// Çubuğun doluluğu, 0–1.
+  final double oran;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(secenek, style: context.yazi.labelSmall),
+        const SizedBox(height: TayfamSpacing.s4),
+        ClipRRect(
+          borderRadius: TayfamRadii.hapKoseleri,
+          child: SizedBox(
+            height: TayfamSizes.dolulukCubugu,
+            child: ColoredBox(
+              color: r.cizgi,
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FractionallySizedBox(
+                  widthFactor: oran,
+                  heightFactor: 1,
+                  child: ColoredBox(color: r.marka),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
