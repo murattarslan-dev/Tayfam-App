@@ -686,9 +686,15 @@ void main() {
           find.byType(TextField).first,
           'Çok uzun başlıklı bir duyuru',
         );
+        // Büyük yazıda "Yayınla" formun sonundadır; odaklı alan imleci
+        // görünür tutmak için kaydırmayı geri almasın diye klavye kapanır.
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
         await _dokun(tester, find.text(arbMetni('duyuru_form_yayinla')));
         await tester.pumpAndSettle();
         expect(find.byType(HataSatiri), findsOneWidget);
+        await tester.ensureVisible(find.byType(HataSatiri));
+        await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
       });
     });
