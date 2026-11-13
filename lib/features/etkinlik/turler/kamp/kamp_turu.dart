@@ -43,27 +43,31 @@ class KampBolumu extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AracBasligi(metin: m.etkinlik_kamp_malzemeler),
-        const SizedBox(height: TayfamSpacing.s4),
-        if (malzemeler.isEmpty) AracBilgisi(metin: m.etkinlik_kamp_malzeme_yok),
-        for (final malzeme in malzemeler)
-          _MalzemeSatiri(
-            malzeme: malzeme,
-            onCikar: !yonetebilir || mesgul
-                ? null
-                : () => unawaited(_cikar(context, ref, anahtar, malzeme)),
-            cikarilabilir: yonetebilir,
-          ),
-        if (yonetebilir) ...[
-          const SizedBox(height: TayfamSpacing.s8),
-          AracDugmesi(
-            etiket: m.etkinlik_kamp_malzeme_ekle,
-            ikon: Icons.add,
-            onPressed: mesgul
-                ? null
-                : () => unawaited(_ekle(context, ref, anahtar)),
-          ),
-        ],
+        AracBasligi(
+          metin: m.etkinlik_kamp_malzemeler,
+          sag: yonetebilir
+              ? CerceveliHapEylem(
+                  etiket: m.etkinlik_kamp_malzeme_ekle,
+                  ikon: Icons.add,
+                  onPressed: mesgul
+                      ? null
+                      : () => unawaited(_ekle(context, ref, anahtar)),
+                )
+              : null,
+        ),
+        AracListesi(
+          bos: m.etkinlik_kamp_malzeme_yok,
+          satirlar: [
+            for (final malzeme in malzemeler)
+              _MalzemeSatiri(
+                malzeme: malzeme,
+                onCikar: !yonetebilir || mesgul
+                    ? null
+                    : () => unawaited(_cikar(context, ref, anahtar, malzeme)),
+                cikarilabilir: yonetebilir,
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -120,31 +124,39 @@ class _MalzemeSatiri extends StatelessWidget {
     final getiren = malzeme.assignedUserId;
     // Sözleşme: 0 ya da yok, 1 adet.
     final adet = malzeme.quantity < 1 ? 1 : malzeme.quantity;
-    final ikincil = context.yazi.bodyMedium?.copyWith(
-      color: context.renkler.metinGovde,
-    );
+    final ikincil = context.yazi.bodySmall;
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
       child: Row(
         children: [
           Expanded(
             child: MergeSemantics(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(malzeme.name, style: context.yazi.bodyLarge),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(malzeme.name, style: context.yazi.titleSmall),
+                        if (getiren != null)
+                          Wrap(
+                            spacing: TayfamSpacing.s4,
+                            children: [
+                              Text(m.etkinlik_kamp_getirecek, style: ikincil),
+                              KullaniciAdiMetni(
+                                kullaniciId: getiren,
+                                style: ikincil,
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: TayfamSpacing.s8),
                   Text(
                     m.etkinlik_kamp_adet(etkinlikSayi(m, adet)),
                     style: ikincil,
                   ),
-                  if (getiren != null)
-                    Wrap(
-                      spacing: TayfamSpacing.s4,
-                      children: [
-                        Text(m.etkinlik_kamp_getirecek, style: ikincil),
-                        KullaniciAdiMetni(kullaniciId: getiren, style: ikincil),
-                      ],
-                    ),
                 ],
               ),
             ),

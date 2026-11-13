@@ -580,6 +580,38 @@
       }
     }
   },
+  "goreli_detay_simdi": "Şimdi",
+  "@goreli_detay_simdi": {
+    "description": "Etkinlik detayının geri sayım çipi: etkinlik başladı, henüz bitmedi."
+  },
+  "goreli_detay_bugun_dakika": "{sayi, plural, other{Bugün · {sayi} dk sonra}}",
+  "@goreli_detay_bugun_dakika": {
+    "description": "Etkinlik detayının geri sayım çipi: etkinlik bugün, bir saatten kısa süre sonra başlıyor (dakika yukarı yuvarlanır).",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  "goreli_detay_bugun_saat": "{sayi, plural, other{Bugün · {sayi} saat sonra}}",
+  "@goreli_detay_bugun_saat": {
+    "description": "Etkinlik detayının geri sayım çipi: etkinlik bugün, saatler sonra başlıyor.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "goreli_detay_yarin": "Yarın",
+  "@goreli_detay_yarin": {
+    "description": "Etkinlik detayının geri sayım çipi: etkinlik yarın başlıyor."
+  },
+  "goreli_detay_bitti": "Bitti",
+  "@goreli_detay_bitti": {
+    "description": "Etkinlik detayının geri sayım çipi: etkinlik bitti."
+  },
   "etkinlik_karti_cevrimici": "Çevrimiçi",
   "@etkinlik_karti_cevrimici": {
     "description": "Etkinlik kartında yer yerine görünür; etkinlik çevrimiçiyse."
@@ -1383,13 +1415,41 @@
   "@etkinlik_islemler": {
     "description": "Etkinliği yönetebilen kullanıcıya görünen menü düğmesinin ipucu (düzenle, iptal et)."
   },
+  "etkinlik_menu_seri_notu": "Seride yalnızca bu etkinlik değişir",
+  "@etkinlik_menu_seri_notu": {
+    "description": "Etkinlik detayının ⋯ sayfasında, seri etkinlikte \"Düzenle\"nin alt metni."
+  },
+  "etkinlik_menu_iptal_aciklama": "Gerekçe istenir; üyeler iptal edildiğini görür",
+  "@etkinlik_menu_iptal_aciklama": {
+    "description": "Etkinlik detayının ⋯ sayfasında \"Etkinliği iptal et\"in alt metni."
+  },
+  "etkinlik_iptal_edildi_baslik": "Etkinlik iptal edildi",
+  "@etkinlik_iptal_edildi_baslik": {
+    "description": "Etkinlik detayında iptal gerekçesi kutusunun başlığı."
+  },
+  "etkinlik_ozet_belki": "{sayi, plural, other{{sayi} belki}}",
+  "@etkinlik_ozet_belki": {
+    "description": "Etkinlik detayında katılım ve katılımcı özetinde \"Belki\" diyenlerin sayısı (\"24/40 kişi geliyor · 3 belki\").",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "etkinlik_ozet_bekleme": "{sayi, plural, other{{sayi} bekleme listesinde}}",
+  "@etkinlik_ozet_bekleme": {
+    "description": "Etkinlik detayının katılımcı özetinde bekleme listesindekilerin sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
   "etkinlik_duzenle": "Düzenle",
   "@etkinlik_duzenle": {
     "description": "Etkinlik detayındaki menüde düzenleme ekranını açan seçenek."
-  },
-  "etkinlik_iptal_et": "İptal et",
-  "@etkinlik_iptal_et": {
-    "description": "Etkinlik detayındaki menüde iptal diyaloğunu açan seçenek."
   },
   "etkinlik_iptal_gerekcesi": "İptal gerekçesi: {gerekce}",
   "@etkinlik_iptal_gerekcesi": {
@@ -1425,6 +1485,10 @@
   "@etkinlik_baglantiyi_ac": {
     "description": "Çevrimiçi etkinliğin bağlantısını tarayıcıda açan düğme."
   },
+  "etkinlik_baglanti_uyelere": "Bağlantı yalnızca üyelere görünür.",
+  "@etkinlik_baglanti_uyelere": {
+    "description": "Etkinlik detayında çevrimiçi bağlantı kartının bilgi satırı."
+  },
   "etkinlik_baglanti_acilamadi": "Bağlantı açılamadı.",
   "@etkinlik_baglanti_acilamadi": {
     "description": "Çevrimiçi etkinlik bağlantısı açılamadığında görünen bildirim."
@@ -1452,44 +1516,6 @@
   "etkinlik_tur_bilgileri": "Ayrıntılar",
   "@etkinlik_tur_bilgileri": {
     "description": "Etkinlik detayında türe özel bilgilerin (kamp yeri, zorluk, oyun…) bölüm başlığı."
-  },
-  "etkinlik_katilim_baslik": "Katılım",
-  "@etkinlik_katilim_baslik": {
-    "description": "Etkinlik detayında katılım cevabı bölümünün başlığı."
-  },
-  "etkinlik_katilim_sayilari": "Geliyor: {gelen} · Belki: {belki}",
-  "@etkinlik_katilim_sayilari": {
-    "description": "Etkinlik detayında \"Geliyorum\" ve \"Belki\" diyenlerin sayısı.",
-    "placeholders": {
-      "gelen": {
-        "type": "String",
-        "example": "8"
-      },
-      "belki": {
-        "type": "String",
-        "example": "3"
-      }
-    }
-  },
-  "etkinlik_kontenjan_bilgi": "Kontenjan: {kontenjan}",
-  "@etkinlik_kontenjan_bilgi": {
-    "description": "Kontenjanlı etkinliğin detayında kontenjan.",
-    "placeholders": {
-      "kontenjan": {
-        "type": "String",
-        "example": "20"
-      }
-    }
-  },
-  "etkinlik_bekleyen_sayisi": "Bekleme listesinde: {sayi}",
-  "@etkinlik_bekleyen_sayisi": {
-    "description": "Etkinlik detayında bekleme listesindeki kişi sayısı.",
-    "placeholders": {
-      "sayi": {
-        "type": "String",
-        "example": "2"
-      }
-    }
   },
   "etkinlik_kontenjan_dolu": "Kontenjan dolu. \"Geliyorum\" seçersen bekleme listesine alınırsın.",
   "@etkinlik_kontenjan_dolu": {
@@ -1531,9 +1557,23 @@
   "@etkinlik_katildi": {
     "description": "Katılımcılar listesinde katılımı doğrulanmış kişinin yanındaki etiket."
   },
-  "etkinlik_varis_baslik": "Varış bildirimi",
-  "@etkinlik_varis_baslik": {
-    "description": "Etkinlik detayındaki varış bildirimi bölümünün başlığı (ADR-0015 §5)."
+  "etkinlik_varis_yok": "Varış yok",
+  "@etkinlik_varis_yok": {
+    "description": "Katılımcılar ekranında, organizatör düzeltme dönemindeyken varışı doğrulanmamış kişinin satırında."
+  },
+  "etkinlik_katilimci_sekme_sayisi": "{durum} {sayi}",
+  "@etkinlik_katilimci_sekme_sayisi": {
+    "description": "Katılımcılar ekranında durum çipi: durumun adı ve sayısı (\"Geliyor 24\").",
+    "placeholders": {
+      "durum": {
+        "type": "String",
+        "example": "Geliyor"
+      },
+      "sayi": {
+        "type": "String",
+        "example": "24"
+      }
+    }
   },
   "etkinlik_varis_geldim": "Geldim",
   "@etkinlik_varis_geldim": {
@@ -1546,6 +1586,22 @@
   "etkinlik_varis_konum_notu": "Konumun yalnızca bu bildirim için bir kez okunur ve saklanmaz.",
   "@etkinlik_varis_konum_notu": {
     "description": "\"Geldim\" düğmesinin altındaki gizlilik notu."
+  },
+  "etkinlik_varis_soru": "Buluşma noktasına geldin mi?",
+  "@etkinlik_varis_soru": {
+    "description": "Etkinlik detayındaki varış kartının başlığı (yüz yüze)."
+  },
+  "etkinlik_varis_aciklama": "Varışını bildir, organizatör kimin geldiğini görsün.",
+  "@etkinlik_varis_aciklama": {
+    "description": "Etkinlik detayındaki varış kartının açıklaması (yüz yüze)."
+  },
+  "etkinlik_varis_cevrimici_soru": "Etkinliğe katıldın mı?",
+  "@etkinlik_varis_cevrimici_soru": {
+    "description": "Etkinlik detayındaki varış kartının başlığı (çevrimiçi)."
+  },
+  "etkinlik_varis_cevrimici_aciklama": "Katılımını bildir, organizatör kimin katıldığını görsün.",
+  "@etkinlik_varis_cevrimici_aciklama": {
+    "description": "Etkinlik detayındaki varış kartının açıklaması (çevrimiçi)."
   },
   "etkinlik_varis_konum_aliniyor": "Konumun alınıyor…",
   "@etkinlik_varis_konum_aliniyor": {
@@ -1599,10 +1655,6 @@
   "@etkinlik_ayarlar_acilamadi": {
     "description": "Sistem ayarları açılamadığında kısa bildirim."
   },
-  "etkinlik_konvoy_baslik": "Konvoy",
-  "@etkinlik_konvoy_baslik": {
-    "description": "Konvoy etkinliğinde araç bölümünün başlığı."
-  },
   "etkinlik_konvoy_rota": "Rota",
   "@etkinlik_konvoy_rota": {
     "description": "Konvoy bölümünde rota önizlemesinin başlığı."
@@ -1620,6 +1672,16 @@
   "etkinlik_konvoy_araclar": "Araçlar",
   "@etkinlik_konvoy_araclar": {
     "description": "Konvoy bölümünde araç listesinin başlığı."
+  },
+  "etkinlik_konvoy_arac_sayisi": "{sayi, plural, other{{sayi} araç}}",
+  "@etkinlik_konvoy_arac_sayisi": {
+    "description": "Etkinlik detayında \"Araçlar\" başlığının yanındaki araç sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      }
+    }
   },
   "etkinlik_konvoy_arac_yok": "Henüz araç eklenmedi.",
   "@etkinlik_konvoy_arac_yok": {

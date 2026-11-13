@@ -9,6 +9,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sihirbazi_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
+import 'package:tayfam/features/etkinlik/presentation/katilimcilar_ekrani.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -51,6 +52,12 @@ Future<void> _gorunurDokun(WidgetTester tester, Finder bulucu) async {
   await tester.tap(bulucu);
   await tester.pumpAndSettle();
 }
+
+/// Seçili (dolu, işaretli) katılım düğmesi: "Geliyorum".
+Finder _seciliKatilim() => find.ancestor(
+  of: find.text(arbMetni('etkinlik_cevap_going')),
+  matching: find.byType(FilledButton),
+);
 
 /// İlk metin alanına yazar.
 Future<void> _yaz(WidgetTester tester, String metin) async {
@@ -128,14 +135,16 @@ void main() {
 
         for (final metin in [
           'Göl kampı',
-          arbMetni('etkinlik_seri_notu'),
-          arbMetni('etkinlik_kontenjan_dolu'),
-          'Abant Gölü',
+          '3 gün sonra',
           'Merkez, Bolu',
-          arbMetni('etkinlik_harita_atif'),
+          arbMetni('etkinlik_organizator'),
           'Ayşe',
+          '3/3 kişi geliyor · 1 belki',
+          arbMetni('etkinlik_kontenjan_dolu'),
+          arbMetni('etkinlik_harita_atif'),
           'Göl kenarı',
-          'Mert',
+          '3 kişi geliyor',
+          arbMetni('etkinlik_seri_notu'),
         ]) {
           await tester.scrollUntilVisible(
             find.text(metin),
@@ -144,12 +153,81 @@ void main() {
           );
           expect(find.text(metin), findsOneWidget, reason: metin);
         }
+        // Yer adı özet kartında ve harita kartında.
+        expect(find.text('Abant Gölü'), findsNWidgets(2));
+        // Katılımcı listesi detayda değil; özet ilk sayfadan avatar alır.
+        expect(find.text('Mert'), findsNothing);
         expect(
           tasima.giden('GET', katilimcilarYolu).first.sorgu['status'],
           'going',
         );
+        expect(tester.takeException(), isNull);
       });
     }
+
+    for (final tema in _temalar) {
+      testWidgets('katılımcılar ekranı (${tema.name}, 2× yazı, 320 dp)', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = etkinlikTasimasi({
+          'GET $etkinlikYolu': (_) => etkinlikJson(belki: 2, bekleyen: 1),
+          'GET $katilimcilarYolu': (i) => i.sorgu['status'] == 'maybe'
+              ? katilimcilarJson([organizatorId], durum: 'maybe')
+              : katilimcilarJson([katilimciId]),
+        });
+        await _git(
+          tester,
+          tasima,
+          Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
+          themeMode: tema,
+        );
+        await _gorunurDokun(tester, find.text('3 kişi geliyor'));
+        expect(
+          _yol(tester),
+          Adresler.etkinlikKatilimcilari(ornekTayfaId, ornekEtkinlikId),
+        );
+        expect(find.byType(KatilimcilarEkrani), findsOneWidget);
+        expect(find.text('Geliyor 3'), findsOneWidget);
+        expect(find.text('Belki 2'), findsOneWidget);
+        expect(find.text('Mert'), findsOneWidget);
+
+        await tester.tap(find.text('Belki 2'));
+        await tester.pumpAndSettle();
+        expect(find.text('Ayşe'), findsOneWidget);
+        expect(
+          tasima.giden('GET', katilimcilarYolu).last.sorgu['status'],
+          'maybe',
+        );
+        // Bitmemiş etkinlikte düzeltme yok.
+        expect(find.text(arbMetni('etkinlik_duzeltme_bilgi')), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('iptal edilen etkinlik: üst bölüm, gerekçe, cevap yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => etkinlikJson(iptal: true),
+      });
+      await _git(
+        tester,
+        tasima,
+        Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
+      );
+      expect(find.text(arbMetni('etkinlik_karti_iptal')), findsOneWidget);
+      expect(find.text('3 gün sonra'), findsNothing);
+      expect(
+        find.text(arbMetni('etkinlik_iptal_edildi_baslik')),
+        findsOneWidget,
+      );
+      expect(find.text('İptal gerekçesi: Hava kötü'), findsOneWidget);
+      expect(find.text(arbMetni('etkinlik_katilim_kapali')), findsOneWidget);
+      expect(find.text(arbMetni('etkinlik_cevap_going')), findsNothing);
+    });
 
     testWidgets('katılım: Geliyorum seçilir, sayılar güncellenir', (
       tester,
@@ -167,21 +245,16 @@ void main() {
         tasima,
         Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
       );
-      expect(find.text('Geliyor: 3 · Belki: 1'), findsOneWidget);
+      expect(find.text('3 kişi geliyor · 1 belki'), findsOneWidget);
+      expect(_seciliKatilim(), findsNothing);
 
-      await tester.tap(
-        find.widgetWithText(ChoiceChip, arbMetni('etkinlik_cevap_going')),
-      );
-      await tester.pumpAndSettle();
+      await _gorunurDokun(tester, find.text(arbMetni('etkinlik_cevap_going')));
 
       expect(tasima.giden('PUT', katilimYolu).single.govde, {
         'status': 'going',
       });
-      final cip = tester.widget<ChoiceChip>(
-        find.widgetWithText(ChoiceChip, arbMetni('etkinlik_cevap_going')),
-      );
-      expect(cip.selected, isTrue);
-      expect(find.text('Geliyor: 4 · Belki: 1'), findsOneWidget);
+      expect(_seciliKatilim(), findsOneWidget);
+      expect(find.text('4 kişi geliyor · 1 belki'), findsOneWidget);
     });
 
     testWidgets('bekleme listesindeyken bilgi gösterilir', (tester) async {
@@ -199,10 +272,8 @@ void main() {
         find.text(arbMetni('etkinlik_bekleme_listesindesin')),
         findsOneWidget,
       );
-      final cip = tester.widget<ChoiceChip>(
-        find.widgetWithText(ChoiceChip, arbMetni('etkinlik_cevap_going')),
-      );
-      expect(cip.selected, isTrue);
+      expect(find.text(arbMetni('etkinlik_rozet_bekleme')), findsOneWidget);
+      expect(_seciliKatilim(), findsOneWidget);
     });
 
     testWidgets('takvime ekle ve harita uygulaması', (tester) async {
@@ -263,7 +334,9 @@ void main() {
 
       await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(arbMetni('etkinlik_iptal_et')));
+      expect(find.text(arbMetni('etkinlik_duzenle')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_et')), findsNothing);
+      await tester.tap(find.text(arbMetni('etkinlik_iptal_baslik')));
       await tester.pumpAndSettle();
       expect(find.byType(IptalDiyalogu), findsOneWidget);
 
@@ -291,7 +364,7 @@ void main() {
       // İptal edilen etkinlikte yönetim işlemi kalmaz; şikâyet kalır.
       await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
       await tester.pumpAndSettle();
-      expect(find.text(arbMetni('etkinlik_iptal_et')), findsNothing);
+      expect(find.text(arbMetni('etkinlik_iptal_baslik')), findsNothing);
       expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
     });
 
@@ -320,7 +393,7 @@ void main() {
 
       await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
       await tester.pumpAndSettle();
-      expect(find.text(arbMetni('etkinlik_iptal_et')), findsNothing);
+      expect(find.text(arbMetni('etkinlik_iptal_baslik')), findsNothing);
       await tester.tap(find.text(arbMetni('sikayet_et')));
       await tester.pumpAndSettle();
       const gerekce = 'sikayet_gerekce_sahte_etkinlik';

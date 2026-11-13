@@ -60,18 +60,32 @@ class AvGunluguBolumu extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AracBasligi(metin: m.etkinlik_av_gunlugu),
-        const SizedBox(height: TayfamSpacing.s4),
+        AracBasligi(
+          metin: m.etkinlik_av_gunlugu,
+          sag: eklenebilir
+              ? CerceveliHapEylem(
+                  etiket: m.etkinlik_av_ekle,
+                  ikon: Icons.add,
+                  onPressed: mesgul
+                      ? null
+                      : () => unawaited(_ekle(context, ref, anahtar)),
+                )
+              : null,
+        ),
         ...liste.when<List<Widget>>(
           data: (sayfali) => [
-            if (sayfali.ogeler.isEmpty) AracBilgisi(metin: m.etkinlik_av_yok),
-            for (final av in sayfali.ogeler)
-              _AvSatiri(
-                anahtar: anahtar,
-                av: av,
-                yonetimde: yonetimde,
-                mesgul: mesgul,
-              ),
+            AracListesi(
+              bos: m.etkinlik_av_yok,
+              satirlar: [
+                for (final av in sayfali.ogeler)
+                  _AvSatiri(
+                    anahtar: anahtar,
+                    av: av,
+                    yonetimde: yonetimde,
+                    mesgul: mesgul,
+                  ),
+              ],
+            ),
             if (sayfali.dahaHatasi case final hata?) HataSatiri.hatadan(hata),
             if (sayfali.dahaYukleniyor)
               const Center(child: TayfamYukleniyor())
@@ -104,17 +118,10 @@ class AvGunluguBolumu extends ConsumerWidget {
             const Center(child: TayfamYukleniyor(gecikmeli: true)),
           ],
         ),
-        const SizedBox(height: TayfamSpacing.s8),
-        if (eklenebilir)
-          AracDugmesi(
-            etiket: m.etkinlik_av_ekle,
-            ikon: Icons.add,
-            onPressed: mesgul
-                ? null
-                : () => unawaited(_ekle(context, ref, anahtar)),
-          )
-        else if (!katilimDogrulandi(etkinlik))
+        if (!eklenebilir && !katilimDogrulandi(etkinlik)) ...[
+          const SizedBox(height: TayfamSpacing.s8),
           AracBilgisi(metin: m.etkinlik_av_ekle_bilgi),
+        ],
       ],
     );
   }
@@ -154,7 +161,7 @@ class _AvSatiri extends ConsumerWidget {
     );
     final fotograf = av.photoUploadId;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s4),
+      padding: EdgeInsets.zero,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

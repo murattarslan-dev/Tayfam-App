@@ -55,57 +55,75 @@ class KonvoyBolumu extends ConsumerWidget {
       if (ref.watch(kendisiMiProvider(arac.userId))) benimki = arac;
     }
     final eklenebilir = aracEklenebilir(etkinlik, simdi);
+    final r = context.renkler;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AracBasligi(metin: m.etkinlik_konvoy_baslik),
         if (rota.length > 1) ...[
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(m.etkinlik_konvoy_rota, style: context.yazi.titleSmall),
-          AracBilgisi(
-            metin: m.etkinlik_konvoy_rota_noktalari(
-              etkinlikSayi(m, rota.length),
+          AracBasligi(
+            metin: m.etkinlik_konvoy_rota,
+            sag: AracBasligiNotu(
+              metin: m.etkinlik_konvoy_rota_noktalari(
+                etkinlikSayi(m, rota.length),
+              ),
             ),
           ),
-          const SizedBox(height: TayfamSpacing.s8),
-          ClipRRect(
-            borderRadius: TayfamRadii.onizlemeKoseleri,
-            child: SizedBox(
-              height: rotaOnizlemeYuksekligi,
-              child: OsmHarita(
-                merkez: rota.first,
-                yakinlik: rotaOnizlemeYakinligi,
-                rota: rota,
-                etkilesimli: false,
+          DecoratedBox(
+            position: DecorationPosition.foreground,
+            decoration: BoxDecoration(
+              borderRadius: TayfamRadii.kartKoseleri,
+              border: Border.all(color: r.cizgi, width: TayfamSizes.kenar),
+            ),
+            child: ClipRRect(
+              borderRadius: TayfamRadii.kartKoseleri,
+              child: SizedBox(
+                height: rotaOnizlemeYuksekligi,
+                child: OsmHarita(
+                  merkez: rota.first,
+                  yakinlik: rotaOnizlemeYakinligi,
+                  rota: rota,
+                  etkilesimli: false,
+                ),
               ),
             ),
           ),
         ],
-        const SizedBox(height: TayfamSpacing.s12),
-        Text(m.etkinlik_konvoy_araclar, style: context.yazi.titleSmall),
-        const SizedBox(height: TayfamSpacing.s4),
-        if (araclar.isEmpty) AracBilgisi(metin: m.etkinlik_konvoy_arac_yok),
-        for (final arac in araclar)
-          _AracSatiri(
-            anahtar: anahtar,
-            arac: arac,
-            benim: identical(arac, benimki),
-            degistirilebilir: eklenebilir && !mesgul,
-            cikarilabilir:
-                !mesgul &&
-                (identical(arac, benimki) || etkinlik.callerCanManage),
-          ),
-        const SizedBox(height: TayfamSpacing.s8),
-        if (eklenebilir && benimki == null)
+        AracBasligi(
+          metin: m.etkinlik_konvoy_araclar,
+          sag: araclar.isEmpty
+              ? null
+              : AracBasligiNotu(
+                  metin: m.etkinlik_konvoy_arac_sayisi(araclar.length),
+                ),
+        ),
+        AracListesi(
+          bos: m.etkinlik_konvoy_arac_yok,
+          satirlar: [
+            for (final arac in araclar)
+              _AracSatiri(
+                anahtar: anahtar,
+                arac: arac,
+                benim: identical(arac, benimki),
+                degistirilebilir: eklenebilir && !mesgul,
+                cikarilabilir:
+                    !mesgul &&
+                    (identical(arac, benimki) || etkinlik.callerCanManage),
+              ),
+          ],
+        ),
+        if (eklenebilir && benimki == null) ...[
+          const SizedBox(height: TayfamSpacing.s12),
           AracDugmesi(
             etiket: m.etkinlik_konvoy_arac_ekle,
             ikon: Icons.add,
             onPressed: mesgul
                 ? null
                 : () => unawaited(_aracKaydet(context, ref, anahtar, null)),
-          )
-        else if (benimki == null && katilimAcik(etkinlik, simdi))
+          ),
+        ] else if (benimki == null && katilimAcik(etkinlik, simdi)) ...[
+          const SizedBox(height: TayfamSpacing.s8),
           AracBilgisi(metin: m.etkinlik_konvoy_ekle_bilgi),
+        ],
       ],
     );
   }
@@ -159,14 +177,27 @@ class _AracSatiri extends ConsumerWidget {
     final ikincil = context.yazi.bodyMedium?.copyWith(
       color: context.renkler.metinGovde,
     );
+    final r = context.renkler;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: TayfamSpacing.s4),
-            child: Icon(Icons.directions_car_outlined, size: TayfamSizes.ikon),
+          ExcludeSemantics(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: r.tintMango,
+                borderRadius: TayfamRadii.dugmeKoseleri,
+              ),
+              child: SizedBox.square(
+                dimension: TayfamSizes.menuIkonKutusu,
+                child: Icon(
+                  Icons.directions_car_outlined,
+                  size: TayfamSizes.ikon,
+                  color: r.tintMangoUstu,
+                ),
+              ),
+            ),
           ),
           const SizedBox(width: TayfamSpacing.s12),
           Expanded(
@@ -174,7 +205,7 @@ class _AracSatiri extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(ad, style: context.yazi.bodyLarge),
+                  Text(ad, style: context.yazi.titleSmall),
                   if (ayrinti.isNotEmpty) Text(ayrinti, style: ikincil),
                   if (plaka != null && plaka.isNotEmpty)
                     Text(m.etkinlik_konvoy_plaka(plaka), style: ikincil),

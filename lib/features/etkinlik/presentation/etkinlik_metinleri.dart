@@ -24,6 +24,33 @@ String etkinlikZamanAraligi(
   return m.etkinlik_karti_zaman_dilimli(metin, b.timeZoneName);
 }
 
+/// Detaydaki özet kartının tarih satırı (2026-11-13 tasarım:
+/// Etkinlik-Detay): üstte gün ("15 Kasım Cumartesi"), altta saat aralığı
+/// ("08:30 – 13:00"; bitiş başka gündeyse günüyle). Cihazın saatine göre
+/// (ADR-0008); cihaz Türkiye saatinde değilse saat diliminin adı eklenir.
+(String, String) etkinlikOzetZamani(
+  AppLocalizations m,
+  DateTime baslangic,
+  DateTime bitis,
+) {
+  final b = baslangic.toLocal();
+  final s = bitis.toLocal();
+  final saat = DateFormat.Hm(m.localeName);
+  final ayniGun = b.year == s.year && b.month == s.month && b.day == s.day;
+  final aralik = m.etkinlik_zaman_araligi(
+    saat.format(b),
+    ayniGun
+        ? saat.format(s)
+        : DateFormat.MMMMEEEEd(m.localeName).add_Hm().format(s),
+  );
+  return (
+    DateFormat.MMMMEEEEd(m.localeName).format(b),
+    b.timeZoneOffset == turkiyeSaatFarki
+        ? aralik
+        : m.etkinlik_karti_zaman_dilimli(aralik, b.timeZoneName),
+  );
+}
+
 /// Sihirbazdaki tarih ve saat alanının metni (cihazın saati).
 String etkinlikTarihSaat(AppLocalizations m, DateTime an) =>
     DateFormat.yMMMd(m.localeName).add_Hm().format(an.toLocal());

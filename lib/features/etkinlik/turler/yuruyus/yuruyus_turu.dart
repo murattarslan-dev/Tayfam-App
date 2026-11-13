@@ -48,11 +48,9 @@ class YuruyusBolumu extends ConsumerWidget {
         varisPenceresiAcik(etkinlik, simdi);
     String saat(DateTime an) =>
         DateFormat.Hm(m.localeName).format(an.toLocal());
-    return Column(
+    final kart = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AracBasligi(metin: m.etkinlik_yuruyus_yoklama),
-        const SizedBox(height: TayfamSpacing.s4),
         AracBilgisi(metin: m.etkinlik_yuruyus_bilgi),
         if (kayit != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
@@ -83,6 +81,13 @@ class YuruyusBolumu extends ConsumerWidget {
                   ),
           ),
         ],
+      ],
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AracBasligi(metin: m.etkinlik_yuruyus_yoklama),
+        TayfamKart(child: kart),
       ],
     );
   }

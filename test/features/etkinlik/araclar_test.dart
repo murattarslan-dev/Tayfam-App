@@ -29,12 +29,14 @@ Map<String, Object?> _profil(TayfaIstegi i) {
   );
 }
 
-/// Detay ekranını [etkinlik] JSON'uyla açar.
+/// Detay ekranını [etkinlik] JSON'uyla açar; [katilimcilar] ise
+/// Katılımcılar ekranını.
 Future<void> _detayiAc(
   WidgetTester tester,
   SahteTayfaTasima tasima, {
   ThemeMode themeMode = ThemeMode.light,
   KonumServisi? konum,
+  bool katilimcilar = false,
 }) async {
   tasima.yanitlar['GET $profilYolu'] = _profil;
   tasima.yanitlar['GET $hesapYolu'] = (_) => hesapJson(katilimciId);
@@ -43,7 +45,11 @@ Future<void> _detayiAc(
     themeMode: themeMode,
     tayfa: etkinlikOverridelari(tasima: tasima, konum: konum),
   );
-  yonlendiriciyiAl(tester).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+  yonlendiriciyiAl(tester).go(
+    katilimcilar
+        ? Adresler.etkinlikKatilimcilari(ornekTayfaId, ornekEtkinlikId)
+        : Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -183,7 +189,7 @@ void main() {
         }),
       );
       expect(find.text(arbMetni('etkinlik_varis_geldim')), findsNothing);
-      expect(find.text(arbMetni('etkinlik_varis_baslik')), findsNothing);
+      expect(find.text(arbMetni('etkinlik_varis_soru')), findsNothing);
     });
   });
 
@@ -572,7 +578,12 @@ void main() {
               katilimcilarJson([organizatorId, katilimciId]),
           'PUT $duzeltmeYolu': (_) => null,
         });
-        await _detayiAc(tester, tasima, themeMode: tema);
+        await _detayiAc(
+          tester,
+          tasima,
+          themeMode: tema,
+          katilimcilar: true,
+        );
         final menu = find.byTooltip(arbMetni('etkinlik_duzeltme'));
         await _gorunurYap(
           tester,
@@ -618,7 +629,7 @@ void main() {
         },
         'DELETE $duzeltmeYolu': (_) => null,
       });
-      await _detayiAc(tester, tasima);
+      await _detayiAc(tester, tasima, katilimcilar: true);
       final menu = find.byTooltip(arbMetni('etkinlik_duzeltme'));
       await _gorunurYap(tester, find.text(arbMetni('etkinlik_duzeltme_bilgi')));
       await tester.ensureVisible(menu);
@@ -645,9 +656,11 @@ void main() {
         etkinlikTasimasi({
           'GET $etkinlikYolu': (_) => etkinlikJson(yonetebilir: true),
         }),
+        katilimcilar: true,
       );
       await _gorunurYap(tester, find.text('Mert'));
       expect(find.byTooltip(arbMetni('etkinlik_duzeltme')), findsNothing);
+      expect(find.text(arbMetni('etkinlik_duzeltme_bilgi')), findsNothing);
     });
   });
 

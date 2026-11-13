@@ -170,6 +170,14 @@ abstract final class Adresler {
   static String etkinlikDuzenle(String tayfaId, String etkinlikId) =>
       '${etkinlik(tayfaId, etkinlikId)}/$etkinlikDuzenleYolu';
 
+  /// Katılımcılar ekranının etkinlik detayı altındaki yolu (2026-11-13
+  /// yeniden tasarım; ADR-0015 Notlar).
+  static const etkinlikKatilimcilariYolu = 'katilimcilar';
+
+  /// Bir etkinliğin katılımcıları.
+  static String etkinlikKatilimcilari(String tayfaId, String etkinlikId) =>
+      '${etkinlik(tayfaId, etkinlikId)}/$etkinlikKatilimcilariYolu';
+
   /// Profil sekmesindeki oturumlar ekranının profil altındaki yolu
   /// (ADR-0018 §2).
   static const oturumlarYolu = 'oturumlar';
