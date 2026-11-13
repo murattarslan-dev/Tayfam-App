@@ -32,7 +32,11 @@ class KisiKonusmasiEkrani extends ConsumerWidget {
     if (konusmaId != null) return KonusmaEkrani(konusmaId: konusmaId);
     final hata = durum.error;
     return Scaffold(
-      appBar: AppBar(title: KarsiTarafAdi(kullaniciId: kullaniciId)),
+      appBar: AppBar(
+        titleSpacing: 0,
+        toolbarHeight: sohbetUstCubukYuksekligi(context),
+        title: KonusmaBasligi(kullaniciId: kullaniciId),
+      ),
       body: SafeArea(
         child: switch (durum) {
           AsyncData() => _YeniKonusma(kullaniciId: kullaniciId),
@@ -84,7 +88,6 @@ class _YeniKonusma extends ConsumerWidget {
             ],
           ),
         ),
-        const Divider(height: TayfamSizes.kenar),
         MesajYazmaAlani(onGonder: notifier.gonder, etkin: giden == null),
       ],
     );

@@ -53,4 +53,48 @@ void main() {
       );
     });
   });
+
+  // simdi: 13 Kasım 2026 Cuma, 15:00.
+  group('konusmaZamani', () {
+    test('bugün saat, dün "Dün"', () {
+      expect(konusmaZamani(m, DateTime(2026, 11, 13, 9, 5), simdi), '09:05');
+      expect(konusmaZamani(m, DateTime(2026, 11, 12, 23, 59), simdi), 'Dün');
+    });
+
+    test('son bir haftada gün adı; büyük harfe çevrilmez', () {
+      expect(konusmaZamani(m, DateTime(2026, 11, 10, 12), simdi), 'Salı');
+      expect(konusmaZamani(m, DateTime(2026, 11, 7, 12), simdi), 'Cumartesi');
+    });
+
+    test('daha eskisi gün ve ay; başka yılsa yılla', () {
+      expect(konusmaZamani(m, DateTime(2026, 11, 2, 10), simdi), '2 Kas');
+      expect(
+        konusmaZamani(m, DateTime(2025, 12, 30, 10), simdi),
+        contains('2025'),
+      );
+    });
+  });
+
+  group('gunAyiriciMetni', () {
+    test('Bugün, Dün, sonra tarih', () {
+      expect(gunAyiriciMetni(m, DateTime(2026, 11, 13, 1), simdi), 'Bugün');
+      expect(gunAyiriciMetni(m, DateTime(2026, 11, 12, 22), simdi), 'Dün');
+      final tarih = gunAyiriciMetni(m, DateTime(2026, 11, 10, 22), simdi);
+      expect(tarih, contains('10'));
+      expect(tarih, contains('Kasım'));
+      expect(tarih, contains('Salı'));
+      expect(tarih, isNot(contains('2026')));
+    });
+
+    test('başka yılın tarihi yılla', () {
+      expect(
+        gunAyiriciMetni(m, DateTime(2025, 12, 30, 10), simdi),
+        allOf(contains('2025'), contains('Aralık')),
+      );
+    });
+  });
+
+  test('saatMetni', () {
+    expect(saatMetni(m, DateTime(2026, 11, 13, 7, 3)), '07:03');
+  });
 }

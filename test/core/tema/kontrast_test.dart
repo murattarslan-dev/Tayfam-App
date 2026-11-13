@@ -76,6 +76,10 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('narMetin / tintNar', r.narMetin, r.tintNar, _metin),
     _Cift('narMetin / kart', r.narMetin, r.kart, _metin),
     _Cift('narMetin / zemin', r.narMetin, r.zemin, _metin),
+    // Sohbet akışı (2026-11-13): gönderilemeyen balonun metni, gelen
+    // balondaki gönderen adı.
+    _Cift('metin / tintNar', r.metin, r.tintNar, _metin),
+    _Cift('tintMarkaUstu / kart', r.tintMarkaUstu, r.kart, _metin),
     _Cift(
       'yikiciDolguUstu / yikiciDolgu',
       r.yikiciDolguUstu,

@@ -132,7 +132,8 @@ void main() {
     await tester.tap(_sekme('gezinme_sekme_sohbet'));
     await tester.pumpAndSettle();
     expect(find.text(DenemeModulu.sayfaMetni), findsNothing);
-    expect(find.text(arbMetni('sohbet_sekme_kanallar')), findsOneWidget);
+    // Parça seçicide ve kanal listesinin bölüm başlığında.
+    expect(find.text(arbMetni('sohbet_sekme_kanallar')), findsNWidgets(2));
 
     await tester.tap(_sekme('gezinme_sekme_tayfa'));
     await tester.pumpAndSettle();

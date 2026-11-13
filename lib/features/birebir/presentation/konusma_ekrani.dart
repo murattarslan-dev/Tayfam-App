@@ -10,11 +10,16 @@ import 'package:tayfam/core/e2e/gecmis/arsiv_okuyucu.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
+import 'package:tayfam/core/sohbet/akis_duzeni.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
 import 'package:tayfam/features/birebir/application/konusma_notifier.dart';
+import 'package:tayfam/features/birebir/application/konusma_sessizlik_notifier.dart';
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/e2e_ogeleri.dart';
 import 'package:tayfam/features/birebir/presentation/mesaj_ogeleri.dart';
@@ -96,14 +101,28 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
     final eskiOkunamiyor = e2e && ref.watch(arsiv.select(_eskiOkunamiyor));
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
+        toolbarHeight: sohbetUstCubukYuksekligi(context),
+        shape: Border(
+          bottom: BorderSide(
+            color: context.renkler.cizgi,
+            width: TayfamSizes.kenar,
+          ),
+        ),
         title: veri == null
             ? null
-            : KarsiTarafAdi(kullaniciId: veri.konusma.otherUserId),
+            : KonusmaBasligi(kullaniciId: veri.konusma.otherUserId),
         actions: [
-          if (veri != null) KonusmaSessizMenusu(konusmaId: widget.konusmaId),
+          if (veri != null)
+            KonusmaMenusu(
+              konusmaId: widget.konusmaId,
+              karsiId: veri.konusma.otherUserId,
+            ),
         ],
       ),
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: switch ((veri, hata)) {
           (final KonusmaDurumu veri, _) => _Akis(
             konusmaId: widget.konusmaId,
@@ -153,24 +172,58 @@ class _Akis extends ConsumerWidget {
     final icerik = ref.watch(birebirIcerikProvider);
     final giden = alici == null
         ? const <GidenMesaj>[]
-        : ref.watch(bekleyenBirebirProvider(alici)).reversed.toList();
+        : ref.watch(bekleyenBirebirProvider(alici));
     // E2E'nin olmadığı derlemede şifreli konuşmaya yazılamaz (ADR-0020).
     final yalnizcaMobil = !e2e && durum.sifreliVar;
-    // Mesajlar ve E2E sistem satırları, en yeni önce.
-    final akis = <(DateTime, Widget)>[
+    final simdi = ref.read(birebirSaatiProvider)();
+    // Mesajlar ve E2E sistem satırları, eskiden yeniye; liste ters
+    // çizildiği için sonra çevrilir.
+    final girdiler = <_AkisOgesi>[
       for (final mesaj in durum.mesajlar)
-        (
-          mesaj.createdAt,
-          _mesajOgesi(context, ref, mesaj, gorulen: gorulen, icerik: icerik),
-        ),
+        (zaman: mesaj.createdAt, mesaj: mesaj, satir: null),
       if (e2e)
         for (final satir in icerik.satirlar(konusmaId, alici))
-          (
-            satir.zaman,
-            E2eSatiriOgesi(key: ValueKey('e2e-${satir.kimlik}'), satir: satir),
+          (zaman: satir.zaman, mesaj: null, satir: satir),
+    ]..sort((a, b) => a.zaman.compareTo(b.zaman));
+    final duzen = akisDuzeni([
+      for (final g in girdiler)
+        switch (g.mesaj) {
+          final mesaj? => AkisGirdisi(
+            zaman: g.zaman,
+            yazar: durum.gidenMi(mesaj) ? _gidenYazar : _gelenYazar,
           ),
-    ]..sort((a, b) => b.$1.compareTo(a.$1));
-    final ogeler = <Widget>[
+          null => AkisGirdisi(zaman: g.zaman, sistem: true),
+        },
+    ]);
+    // "Görüldü" yalnızca son kendi mesajın altında (2026-11-13 kararı).
+    final sonGiden = durum.mesajlar.where(durum.gidenMi).firstOrNull?.id;
+    final eskidenYeniye = <Widget>[
+      ?_bant(konusma),
+      if (eskiOkunamiyor)
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
+          child: EskiMesajlarOkunamiyor(),
+        ),
+      _EskiMesajlar(durum: durum, onDahaEski: notifier.dahaEski),
+      for (final (sira, g) in girdiler.indexed) ...[
+        if (duzen[sira].gunBasi)
+          GunAyirici(metin: gunAyiriciMetni(m, g.zaman, simdi)),
+        switch (g) {
+          (mesaj: final mesaj?, satir: _, zaman: _) => _mesajOgesi(
+            context,
+            ref,
+            mesaj,
+            konum: duzen[sira],
+            goruldu: mesaj.id == gorulen && mesaj.id == sonGiden,
+            icerik: icerik,
+          ),
+          (satir: final satir?, mesaj: _, zaman: _) => E2eSatiriOgesi(
+            key: ValueKey('e2e-${satir.kimlik}'),
+            satir: satir,
+          ),
+          _ => const SizedBox.shrink(),
+        },
+      ],
       for (final g in giden)
         GidenOgesi(
           key: ValueKey('giden-${g.istekKimligi}'),
@@ -178,37 +231,49 @@ class _Akis extends ConsumerWidget {
           onTekrarDene: () => notifier.tekrarDene(g.istekKimligi),
           onSil: () => notifier.vazgec(g.istekKimligi),
         ),
-      for (final (_, oge) in akis) oge,
-      _EskiMesajlar(durum: durum, onDahaEski: notifier.dahaEski),
-      if (eskiOkunamiyor)
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
-          child: EskiMesajlarOkunamiyor(),
-        ),
-      ?_bant(konusma),
     ];
+    final ogeler = eskidenYeniye.reversed.toList();
+    final istekGeldi =
+        konusma.status == ConversationStatus.requestReceived &&
+        konusma.otherUserId != null;
     return Column(
       children: [
         Expanded(
-          child: ListView(
+          child: ListView.builder(
             reverse: true,
             padding: const EdgeInsets.symmetric(
               horizontal: TayfamSpacing.kenarMobil,
               vertical: TayfamSpacing.s8,
             ),
-            children: ogeler,
+            itemCount: ogeler.length,
+            itemBuilder: (_, i) => ogeler[i],
           ),
         ),
         if (konusma.otherUserId != null) ...[
-          const Divider(height: TayfamSizes.kenar),
+          // Kabul ve ret E2E gerektirmez; yalnızca mobil derlemede de var.
+          if (istekGeldi) _IstekCubugu(konusmaId: konusmaId),
           if (yalnizcaMobil)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: TayfamSpacing.kenarMobil,
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.renkler.kart,
+                border: Border(
+                  top: BorderSide(
+                    color: context.renkler.cizgi,
+                    width: TayfamSizes.kenar,
+                  ),
+                ),
               ),
-              child: E2eBilgiSatiri(
-                metin: m.e2e_yalnizca_mobil,
-                ikon: Icons.phone_android_outlined,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: TayfamSpacing.kenarMobil,
+                  ),
+                  child: E2eBilgiSatiri(
+                    metin: m.e2e_yalnizca_mobil,
+                    ikon: Icons.phone_android_outlined,
+                  ),
+                ),
               ),
             )
           else ...[
@@ -233,7 +298,9 @@ class _Akis extends ConsumerWidget {
       return const _BilgiBandi(tur: _BantTuru.silinmis);
     }
     return switch (konusma.status) {
-      ConversationStatus.requestReceived => _IstekBandi(konusmaId: konusmaId),
+      ConversationStatus.requestReceived => _IstekKarti(
+        karsiId: konusma.otherUserId!,
+      ),
       ConversationStatus.requestSent => const _BilgiBandi(
         tur: _BantTuru.istekGonderildi,
       ),
@@ -245,7 +312,8 @@ class _Akis extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     DirectMessage mesaj, {
-    required String? gorulen,
+    required AkisKonumu konum,
+    required bool goruldu,
     required BirebirIcerikDurumu icerik,
   }) {
     final m = AppLocalizations.of(context);
@@ -264,7 +332,10 @@ class _Akis extends ConsumerWidget {
       mesaj: mesaj,
       metin: metin,
       giden: giden,
-      goruldu: mesaj.id == gorulen,
+      goruldu: goruldu,
+      kuyruk: konum.grupSonu,
+      grupBasi: konum.grupBasi,
+      saat: konum.grupSonu ? saatMetni(m, mesaj.createdAt) : null,
       onIslemler: silinebilir || sikayetEdilebilir
           ? () => unawaited(
               _islemler(
@@ -280,6 +351,9 @@ class _Akis extends ConsumerWidget {
     );
   }
 
+  /// Mesaj işlemleri alttan sayfası (2026-11-13 tasarım: Kanal-Islem):
+  /// cihazda çözülmüş metinden kısa alıntı, kendi mesajında "Mesajı sil",
+  /// gelen mesajda "Şikâyet et". Alıntı yalnızca ekrandadır; loglanmaz.
   Future<void> _islemler(
     BuildContext context,
     WidgetRef ref,
@@ -289,29 +363,43 @@ class _Akis extends ConsumerWidget {
     required BirebirMesajSikayeti? sikayet,
   }) async {
     final m = AppLocalizations.of(context);
-    final secim = await showModalBottomSheet<_MesajIslemi>(
-      context: context,
-      showDragHandle: true,
-      builder: (sayfa) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (silinebilir)
-                ListTile(
-                  leading: const Icon(Icons.delete_outline),
-                  title: Text(m.birebir_mesaji_sil),
-                  onTap: () => Navigator.of(sayfa).pop(_MesajIslemi.sil),
+    final secim = await altSayfaAc<_MesajIslemi>(
+      context,
+      builder: (sayfa) => AltSayfaIcerigi(
+        baslik: m.birebir_mesaj_islemleri,
+        children: [
+          if (govde != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                TayfamSpacing.s8,
+                0,
+                TayfamSpacing.s8,
+                TayfamSpacing.s8,
+              ),
+              child: Text(
+                m.sohbet_mesaj_alinti(govde),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: sayfa.yazi.bodySmall?.copyWith(
+                  color: sayfa.renkler.metinIkincil,
                 ),
-              if (sikayet != null)
-                ListTile(
-                  leading: const Icon(Icons.flag_outlined),
-                  title: Text(m.birebir_sikayet_et),
-                  onTap: () => Navigator.of(sayfa).pop(_MesajIslemi.sikayet),
-                ),
-            ],
-          ),
-        ),
+              ),
+            ),
+          if (silinebilir)
+            MenuSatiri(
+              ikon: Icons.delete_outline,
+              tur: MenuSatiriTuru.yikici,
+              baslik: m.birebir_mesaji_sil,
+              aciklama: m.birebir_sil_onay_aciklama,
+              onTap: () => Navigator.of(sayfa).pop(_MesajIslemi.sil),
+            ),
+          if (sikayet != null)
+            MenuSatiri(
+              ikon: Icons.flag_outlined,
+              baslik: m.birebir_sikayet_et,
+              onTap: () => Navigator.of(sayfa).pop(_MesajIslemi.sikayet),
+            ),
+        ],
       ),
     );
     if (!context.mounted) return;
@@ -357,6 +445,18 @@ class _Akis extends ConsumerWidget {
 }
 
 enum _MesajIslemi { sil, sikayet }
+
+/// Akıştaki bir öğe: mesaj ya da E2E sistem satırı.
+typedef _AkisOgesi = ({
+  DateTime zaman,
+  DirectMessage? mesaj,
+  E2eSistemSatiri? satir,
+});
+
+/// Gruplamada iki tarafın yazar anahtarı (birebirde yalnızca iki taraf
+/// vardır; kimlik gerekmez).
+const String _gidenYazar = 'giden';
+const String _gelenYazar = 'gelen';
 
 /// Akışın başında daha eski mesajları okuma düğmesi, göstergesi ya da
 /// hatası.
@@ -430,18 +530,73 @@ class _BilgiBandi extends StatelessWidget {
   }
 }
 
-/// Gelen mesaj isteği bandı: açıklama, "Kabul et" ve "Reddet". Cevap
-/// yazmak da kabul sayılır (sözleşme). Reddedince gönderen bunu öğrenmez.
-class _IstekBandi extends ConsumerStatefulWidget {
-  const _IstekBandi({required this.konusmaId});
+/// Gelen mesaj isteği kartı (2026-11-13 tasarım: Birebir-Istek): akışın
+/// en üstünde tint-brand kart, "`<ad>` sana mesaj isteği gönderdi" ve
+/// açıklama. Kabul ve ret alt çubuktadır ([_IstekCubugu]).
+class _IstekKarti extends ConsumerWidget {
+  const _IstekKarti({required this.karsiId});
+
+  final String karsiId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    ref.read(kullaniciAdlariProvider.notifier).iste(karsiId);
+    final bilinen = ref.watch(
+      kullaniciAdlariProvider.select((adlar) => adlar[karsiId]),
+    );
+    final ad = switch (bilinen) {
+      null => m.kullanici_genel,
+      KullaniciAdi(:final ad?) => ad,
+      KullaniciAdi() => m.kullanici_silinmis,
+    };
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: r.tintMarka,
+          borderRadius: TayfamRadii.secimKoseleri,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(TayfamSpacing.s16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  m.birebir_istek_geldi_baslik(ad),
+                  style: context.yazi.titleSmall?.copyWith(color: r.metin),
+                ),
+              ),
+              const SizedBox(height: TayfamSpacing.s4),
+              Text(
+                m.birebir_istek_geldi_aciklama,
+                style: context.yazi.bodySmall?.copyWith(color: r.metinGovde),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Gelen mesaj isteğinin alt çubuğu (tasarım: Birebir-Istek): çerçeveli
+/// "Reddet" (nar-metin) ve birincil "Kabul et". Cevap yazmak da kabul
+/// sayılır (sözleşme); bu yüzden yazma alanı çubuğun altında kalır.
+/// Reddedince gönderen bunu öğrenmez.
+class _IstekCubugu extends ConsumerStatefulWidget {
+  const _IstekCubugu({required this.konusmaId});
 
   final String konusmaId;
 
   @override
-  ConsumerState<_IstekBandi> createState() => _IstekBandiState();
+  ConsumerState<_IstekCubugu> createState() => _IstekCubuguState();
 }
 
-class _IstekBandiState extends ConsumerState<_IstekBandi> {
+class _IstekCubuguState extends ConsumerState<_IstekCubugu> {
   bool _islemde = false;
 
   Future<void> _kabulEt() async {
@@ -490,42 +645,107 @@ class _IstekBandiState extends ConsumerState<_IstekBandi> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: r.tintMarka,
-          borderRadius: TayfamRadii.kartKoseleri,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: r.kart,
+        border: Border(
+          top: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(TayfamSpacing.s16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                m.birebir_istek_geldi_bilgi,
-                style: context.yazi.bodyMedium?.copyWith(
-                  color: r.tintMarkaUstu,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          TayfamSpacing.kenarMobil,
+          TayfamSpacing.s12,
+          TayfamSpacing.kenarMobil,
+          TayfamSpacing.s4,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: YikiciEylem(
+                etiket: m.birebir_reddet,
+                onPressed: _islemde ? null : () => unawaited(_reddet()),
+              ),
+            ),
+            const SizedBox(width: TayfamSpacing.s8),
+            Expanded(
+              child: BirincilEylem(
+                etiket: m.birebir_kabul_et,
+                onPressed: _islemde ? null : () => unawaited(_kabulEt()),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Konuşma ekranının üst çubuğundaki başlık (2026-11-13 tasarım:
+/// Birebir-Konusma): avatar, ad ve altında kilit + "Uçtan uca şifreli".
+/// Dokununca karşı tarafın profili açılır; hesap silinmişse dokunulmaz.
+class KonusmaBasligi extends StatelessWidget {
+  const KonusmaBasligi({super.key, required this.kullaniciId});
+
+  /// Karşı tarafın kimliği; hesabı silinmişse `null`.
+  final String? kullaniciId;
+
+  @override
+  Widget build(BuildContext context) {
+    final kimlik = kullaniciId;
+    final r = context.renkler;
+    final icerik = Padding(
+      padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s4),
+      child: Row(
+        children: [
+          KimlikAvatari(kullaniciId: kimlik, cap: TayfamSizes.ustCubukKutusu),
+          const SizedBox(width: TayfamSpacing.s12),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                KarsiTarafAdi(
+                  kullaniciId: kimlik,
+                  style: context.yazi.titleMedium,
+                  maxLines: 1,
                 ),
-              ),
-              const SizedBox(height: TayfamSpacing.s12),
-              Wrap(
-                spacing: TayfamSpacing.s8,
-                runSpacing: TayfamSpacing.s8,
-                children: [
-                  BirincilEylem(
-                    etiket: m.birebir_kabul_et,
-                    onPressed: _islemde ? null : () => unawaited(_kabulEt()),
-                  ),
-                  IkincilEylem(
-                    etiket: m.birebir_reddet,
-                    onPressed: _islemde ? null : () => unawaited(_reddet()),
-                  ),
-                ],
-              ),
-            ],
+                Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon(
+                        Icons.lock_outline_rounded,
+                        size: TayfamSizes.ikonKucuk,
+                        color: r.metinIkincil,
+                      ),
+                    ),
+                    const SizedBox(width: TayfamSpacing.s4),
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context).bilesen_uctan_uca_sifreli,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.yazi.bodySmall?.copyWith(
+                          color: r.metinIkincil,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
+      ),
+    );
+    if (kimlik == null) return icerik;
+    return Semantics(
+      button: true,
+      onTapHint: AppLocalizations.of(context).birebir_profili_gor,
+      child: InkWell(
+        borderRadius: TayfamRadii.dugmeKoseleri,
+        onTap: () => unawaited(context.push(Adresler.kisi(kimlik))),
+        child: icerik,
       ),
     );
   }

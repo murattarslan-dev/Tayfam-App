@@ -89,6 +89,69 @@ void main() {
         kulp.dispose();
       });
 
+      testWidgets('akışta gelen: kart + çizgi kenar, ad grubun başında', (
+        tester,
+      ) async {
+        final r = renklerOf(mod);
+        await bileseniAc(
+          tester,
+          const SohbetBalonu(
+            metin: _metin,
+            giden: false,
+            gonderen: 'Ayşe',
+            tur: BalonTuru.akis,
+            adGoster: true,
+            kuyruk: false,
+          ),
+          mod: mod,
+        );
+        final balon = _balon(tester);
+        expect(balon.color, r.kart);
+        expect((balon.border! as Border).top.color, r.cizgi);
+        // Grubun ortasındaki balonda kuyruk yok.
+        expect(
+          (balon.borderRadius! as BorderRadiusDirectional).bottomStart,
+          const Radius.circular(TayfamRadii.balon),
+        );
+        expect(find.text('Ayşe'), findsOneWidget);
+        expect(cizilenStil(tester, find.text(_metin)).color, r.metin);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('gönderilemedi: tint-nar + nar-metin kenar', (tester) async {
+        final r = renklerOf(mod);
+        await bileseniAc(
+          tester,
+          const SohbetBalonu(
+            metin: _metin,
+            giden: true,
+            tur: BalonTuru.gonderilemedi,
+          ),
+          mod: mod,
+        );
+        final balon = _balon(tester);
+        expect(balon.color, r.tintNar);
+        expect((balon.border! as Border).top.color, r.narMetin);
+        expect(cizilenStil(tester, find.text(_metin)).color, r.metin);
+      });
+
+      testWidgets('silinmiş: italik ikincil metin', (tester) async {
+        final r = renklerOf(mod);
+        await bileseniAc(
+          tester,
+          const SohbetBalonu(
+            metin: _metin,
+            giden: true,
+            tur: BalonTuru.silinmis,
+          ),
+          mod: mod,
+        );
+        final stil = cizilenStil(tester, find.text(_metin));
+        expect(stil.color, r.metinIkincil);
+        expect(stil.fontStyle, FontStyle.italic);
+        expect(find.text('Ayşe'), findsNothing);
+      });
+
       testWidgets('gönderen adı yoksa genel etiket', (tester) async {
         final kulp = tester.ensureSemantics();
         await bileseniAc(

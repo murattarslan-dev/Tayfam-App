@@ -202,6 +202,8 @@ void main() {
 
       await _menuyuAc(tester);
       expect(find.text(arbMetni('birebir_sessiz_ac')), findsNothing);
+      expect(find.text(arbMetni('birebir_profili_gor')), findsOneWidget);
+      expect(find.text(arbMetni('birebir_sessiz_al_aciklama')), findsOneWidget);
       await tester.tap(find.text(arbMetni('birebir_sessiz_al')));
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('birebir_sessiz_sure_8_saat')), findsOneWidget);
@@ -267,7 +269,9 @@ void main() {
       expect(find.text(arbMetni('birebir_sessiz_alindi')), findsNothing);
     });
 
-    testWidgets('tercihler okunamazsa menü görünmüyor', (tester) async {
+    testWidgets('tercihler okunamazsa menüde yalnızca "Profili gör"', (
+      tester,
+    ) async {
       ekranBoyutu(tester);
       final tasima = _konusmaTasimasi({
         'GET $tercihlerYolu': (_) =>
@@ -275,10 +279,10 @@ void main() {
       });
       await _ac(tester, const KonusmaEkrani(konusmaId: konusmaId1), tasima);
       expect(find.text('Merhaba'), findsOneWidget);
-      expect(
-        find.byTooltip(arbMetni('birebir_sessiz_menu_ipucu')),
-        findsNothing,
-      );
+      await _menuyuAc(tester);
+      expect(find.text(arbMetni('birebir_profili_gor')), findsOneWidget);
+      expect(find.text(arbMetni('birebir_sessiz_al')), findsNothing);
+      expect(find.text(arbMetni('birebir_sessiz_ac')), findsNothing);
     });
   });
 

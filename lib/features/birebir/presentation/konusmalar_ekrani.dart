@@ -17,10 +17,11 @@ import 'package:tayfam/features/birebir/presentation/konusma_satiri.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Sohbet sekmesinin Birebir bölümü (ADR-0018 §9): mesaj isteklerine
-/// giriş ve konuşmalar (son mesaja göre, sayfalı). Aşağı çekince ve
-/// uygulama ön plana dönünce yenilenir. Sohbet sekmesinin
-/// `birebirBolumuProvider` yuvasına konur (`shell/kayitlar.dart`).
+/// Sohbet sekmesinin Birebir bölümü (ADR-0018 §9; 2026-11-13 tasarım:
+/// Sohbet-Birebir): bekleyen mesaj isteği kartı, konuşmalar (son mesaja
+/// göre, sayfalı) ve altta kısa bilgi notu. Aşağı çekince ve uygulama ön
+/// plana dönünce yenilenir. Sohbet sekmesinin `birebirBolumuProvider`
+/// yuvasına konur (`shell/kayitlar.dart`).
 class BirebirSekmesi extends ConsumerWidget {
   const BirebirSekmesi({super.key});
 
@@ -33,7 +34,12 @@ class BirebirSekmesi extends ConsumerWidget {
         onRefresh: () => _yenile(context, ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s16,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s40,
+          ),
           children: const [BirebirKonusmalarListesi()],
         ),
       ),
@@ -52,8 +58,11 @@ class BirebirSekmesi extends ConsumerWidget {
   }
 }
 
-/// Birebir konuşmalar: mesaj istekleri girişi ve konuşmalar. Kaydırılan
-/// bir listenin içine konur.
+/// Birebir konuşmalar: E2E uyarıları, bekleyen mesaj isteği kartı,
+/// "Konuşmalar" kartı ve bilgi notu. Kaydırılan bir listenin içine konur.
+///
+/// Satırlarda mesaj önizlemesi yoktur: mesajlar uçtan uca şifrelidir ve
+/// diske yazılmaz; sözleşme son mesajı döndürmez.
 class BirebirKonusmalarListesi extends ConsumerWidget {
   const BirebirKonusmalarListesi({super.key});
 
@@ -78,8 +87,8 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
           TekCihazBilgiKarti(),
           EskiArsivBilgisi(),
         ],
-        _IstekleriAc(sayi: istekSayisi),
-        const Divider(),
+        if (istekSayisi > 0) _IstekKarti(sayi: istekSayisi),
+        BolumEtiketi(baslik: m.birebir_konusmalar_baslik),
         if (liste == null && hata != null) ...[
           HataSatiri.hatadan(hata),
           BirebirTekrarDene(
@@ -90,14 +99,22 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
         else ...[
           if (konusmalar.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s16),
+              padding: const EdgeInsets.symmetric(
+                horizontal: TayfamSpacing.s4,
+                vertical: TayfamSpacing.s8,
+              ),
               child: BirebirAciklama(m.birebir_bos),
-            ),
-          for (final k in konusmalar)
-            KonusmaSatiri(
-              konusma: k,
-              sessiz: konusmaSessizde(sessizlikler, k.id, simdi),
-              onTap: () => context.go(Adresler.birebirKonusma(k.id)),
+            )
+          else
+            ListeKarti(
+              children: [
+                for (final k in konusmalar)
+                  KonusmaSatiri(
+                    konusma: k,
+                    sessiz: konusmaSessizde(sessizlikler, k.id, simdi),
+                    onTap: () => context.go(Adresler.birebirKonusma(k.id)),
+                  ),
+              ],
             ),
           if (liste.dahaHatasi case final dahaHatasi?) ...[
             HataSatiri.hatadan(dahaHatasi),
@@ -106,12 +123,22 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
             BirebirYukleniyor(etiket: m.birebir_yukleniyor)
           else if (liste.dahaVar)
             Center(
-              child: TextButton(
+              child: BaglantiEylemi(
+                etiket: m.birebir_daha_fazla,
                 onPressed: () => _dahaFazla(ref),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                ),
-                child: Text(m.birebir_daha_fazla),
+              ),
+            ),
+          if (konusmalar.isNotEmpty) const _BilgiNotu(),
+          // Bekleyen istek yokken de mesaj istekleri (ve oradan
+          // reddedilenler) erişilebilir kalır.
+          if (istekSayisi == 0)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: BaglantiEylemi(
+                etiket: m.birebir_istekler_baslik,
+                ikon: Icons.mark_email_unread_outlined,
+                renk: context.renkler.metinIkincil,
+                onPressed: () => context.go(Adresler.mesajIstekleri),
               ),
             ),
         ],
@@ -123,50 +150,69 @@ class BirebirKonusmalarListesi extends ConsumerWidget {
       unawaited(ref.read(konusmaListesiProvider.notifier).dahaFazla());
 }
 
-/// "Mesaj istekleri" girişi; bekleyen istek varsa sayısı rozetle
-/// gösterilir.
-class _IstekleriAc extends StatelessWidget {
-  const _IstekleriAc({required this.sayi});
+/// Bekleyen mesaj isteği kartı (tasarım: Sohbet-Birebir): tint-brand
+/// zemin, marka ikon kutusu, "N bekleyen mesaj isteği"; dokununca mesaj
+/// istekleri ekranı açılır.
+class _IstekKarti extends StatelessWidget {
+  const _IstekKarti({required this.sayi});
 
   final int sayi;
 
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    return InkWell(
-      onTap: () => context.go(Adresler.mesajIstekleri),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s12),
-          child: Row(
-            children: [
-              ExcludeSemantics(
-                child: Icon(Icons.mark_email_unread_outlined, color: r.metin),
-              ),
-              const SizedBox(width: TayfamSpacing.s12),
-              Expanded(
-                child: Text(
-                  m.birebir_istekler_baslik,
-                  style: context.yazi.titleMedium?.copyWith(color: r.metin),
-                ),
-              ),
-              if (sayi > 0)
-                Semantics(
-                  label: m.birebir_istekler_sayisi(sayi),
-                  excludeSemantics: true,
-                  child: Badge(
-                    label: Text(
-                      sayi > rozetEnCok
-                          ? m.gezinme_rozet_cok
-                          : m.gezinme_rozet_sayi(sayi),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(top: TayfamSpacing.s4),
+      child: MenuSatiri(
+        ikon: Icons.mark_email_unread_outlined,
+        tur: MenuSatiriTuru.vurgulu,
+        baslik: m.birebir_istekler_sayisi(sayi),
+        sag: const SatirOku(),
+        icBosluk: const EdgeInsets.symmetric(
+          horizontal: TayfamSpacing.s12,
+          vertical: TayfamSpacing.s8,
         ),
+        onTap: () => context.go(Adresler.mesajIstekleri),
+      ),
+    );
+  }
+}
+
+/// Konuşma listesinin altındaki kısa bilgi notu (tasarım: Sohbet-Birebir).
+class _BilgiNotu extends StatelessWidget {
+  const _BilgiNotu();
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        TayfamSpacing.s8,
+        TayfamSpacing.s16,
+        TayfamSpacing.s8,
+        TayfamSpacing.s8,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ExcludeSemantics(
+            child: Icon(
+              Icons.lock_outline_rounded,
+              size: TayfamSizes.ikonKucuk,
+              color: r.metinIkincil,
+            ),
+          ),
+          const SizedBox(width: TayfamSpacing.s8),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).birebir_liste_bilgi,
+              style: context.yazi.labelSmall?.copyWith(
+                color: r.metinIkincil,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -123,6 +123,14 @@ final birebirOkunmamisSayisiProvider = Provider<int>((ref) {
   return liste.ogeler.fold(0, (toplam, k) => toplam + k.unreadCount);
 }, name: 'birebirOkunmamisSayisiProvider');
 
+/// Birebir okunmamış toplamı; liste henüz okunmadıysa `null`. Sohbet
+/// sekmesi açılışta hangi parçanın seçili geleceğine bununla karar verir
+/// (2026-11-13).
+final birebirOkunmamisBilinenProvider = Provider<int?>((ref) {
+  if (!ref.watch(konusmaListesiProvider).hasValue) return null;
+  return ref.watch(birebirOkunmamisSayisiProvider);
+}, name: 'birebirOkunmamisBilinenProvider');
+
 /// Yüklü konuşmalardan size gelen mesaj istekleri (`request_received`).
 final mesajIstekleriProvider = Provider<List<Conversation>>((ref) {
   final liste = ref.watch(konusmaListesiProvider).value;

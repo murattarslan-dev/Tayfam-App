@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/application/mesaj_kurallari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Birebir mesaj yazma alanı: çok satırlı metin ve "Gönder".
+/// Birebir mesaj yazma alanı (2026-11-13 tasarım: Birebir-Konusma):
+/// yuvarlak metin alanı ve dairesel "Gönder" ([MesajYazmaCubugu]).
 ///
 /// [onGonder] metni alır; kabul edilirse (`true`) alan temizlenir, edilmezse
 /// metin kalır ve kural hatası gösterilir. Metin yalnızca bu alanın
@@ -43,49 +43,14 @@ class _MesajYazmaAlaniState extends State<MesajYazmaAlani> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        TayfamSpacing.kenarMobil,
-        TayfamSpacing.s8,
-        TayfamSpacing.s8,
-        TayfamSpacing.s8,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (_gecersiz) ...[
-            HataSatiri(metin: m.birebir_metin_gecersiz),
-            const SizedBox(height: TayfamSpacing.s4),
-          ],
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _metin,
-                  enabled: widget.etkin,
-                  minLines: 1,
-                  maxLines: 4,
-                  maxLength: birebirMetniEnCok,
-                  keyboardType: TextInputType.multiline,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: m.birebir_yaz_ipucu,
-                    counterText: '',
-                  ),
-                ),
-              ),
-              const SizedBox(width: TayfamSpacing.s4),
-              IconButton(
-                tooltip: m.birebir_gonder,
-                onPressed: widget.etkin ? _gonder : null,
-                icon: const Icon(Icons.send),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return MesajYazmaCubugu(
+      denetleyici: _metin,
+      ipucu: m.birebir_yaz_ipucu,
+      gonderEtiketi: m.birebir_gonder,
+      enUzun: birebirMetniEnCok,
+      etkin: widget.etkin,
+      onGonder: _gonder,
+      ust: _gecersiz ? HataSatiri(metin: m.birebir_metin_gecersiz) : null,
     );
   }
 }
