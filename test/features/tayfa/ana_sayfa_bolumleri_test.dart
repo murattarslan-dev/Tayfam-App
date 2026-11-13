@@ -219,10 +219,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('tayfa_olustur_baslik')), findsOneWidget);
       expect(find.text(arbMetni('duyuru_yaz')), findsOneWidget);
-      expect(
-        find.text(arbMetni('duyuru_olustur_aciklama')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('duyuru_olustur_aciklama')), findsOneWidget);
       await tester.tap(find.text(arbMetni('tayfa_ana_etkinlik_ac')));
       await tester.pumpAndSettle();
       expect(acilan, [ornekTayfaId]);
@@ -426,7 +423,8 @@ void main() {
         ]),
       ),
       'PUT $katilimYolu':
-          rsvp ?? (i) => {'status': (i.govde! as Map<String, Object?>)['status']},
+          rsvp ??
+          (i) => {'status': (i.govde! as Map<String, Object?>)['status']},
     });
 
     testWidgets('"Belki" cevabı ana sayfadan gönderiliyor', (tester) async {
@@ -458,10 +456,7 @@ void main() {
       ekranBoyutu(tester, yukseklik: 1200);
       await _ac(tester, tasima(kontenjan: 4));
 
-      expect(
-        find.text(arbMetni('etkinlik_kontenjan_dolu')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('etkinlik_kontenjan_dolu')), findsOneWidget);
       expect(find.text('· 4 kişilik'), findsOneWidget);
     });
 

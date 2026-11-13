@@ -17,8 +17,10 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Etkinlik oluşturmayı başlatan geri çağırma ("Etkinlik aç").
-typedef EtkinlikOlusturucu =
-    void Function(BuildContext context, String tayfaId);
+typedef EtkinlikOlusturucu = void Function(
+  BuildContext context,
+  String tayfaId,
+);
 
 /// Yaklaşan bölümünde, "Sıradaki" kartından sonra gösterilen satır sayısı
 /// (Notion: Proje Planı §4 madde 5, 2026-11-13).

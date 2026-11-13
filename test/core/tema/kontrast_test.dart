@@ -45,7 +45,12 @@ List<_Cift> _ciftler(TayfamColors r) {
       _metin,
     ),
     _Cift('vurguUstu / mango (durum şeridi)', r.vurguUstu, r.mango, _metin),
-    _Cift('mango düğme / markaYuzeyKutusu', r.mango, r.markaYuzeyKutusu, _arayuz),
+    _Cift(
+      'mango düğme / markaYuzeyKutusu',
+      r.mango,
+      r.markaYuzeyKutusu,
+      _arayuz,
+    ),
     _Cift(
       'birincilEylemUstu / birincilEylem',
       r.birincilEylemUstu,

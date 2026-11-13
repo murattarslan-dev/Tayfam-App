@@ -219,26 +219,26 @@ class _KatilimDugmeleri extends ConsumerWidget {
       // Üç düğme aynı yükseklikte; büyük yazıda etiket iki satıra inebilir.
       child: IntrinsicHeight(
         child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final (sira, (durum, etiket)) in [
-            (RsvpRequestStatus.going, m.etkinlik_cevap_going),
-            (RsvpRequestStatus.maybe, m.etkinlik_cevap_maybe),
-            (RsvpRequestStatus.notGoing, m.etkinlik_cevap_not_going),
-          ].indexed) ...[
-            if (sira > 0) const SizedBox(width: TayfamSpacing.s8),
-            Expanded(
-              child: _KatilimDugmesi(
-                etiket: etiket,
-                secili: secili == durum,
-                onPressed: sureyor
-                    ? null
-                    : () => unawaited(_katil(context, ref, durum)),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final (sira, (durum, etiket)) in [
+              (RsvpRequestStatus.going, m.etkinlik_cevap_going),
+              (RsvpRequestStatus.maybe, m.etkinlik_cevap_maybe),
+              (RsvpRequestStatus.notGoing, m.etkinlik_cevap_not_going),
+            ].indexed) ...[
+              if (sira > 0) const SizedBox(width: TayfamSpacing.s8),
+              Expanded(
+                child: _KatilimDugmesi(
+                  etiket: etiket,
+                  secili: secili == durum,
+                  onPressed: sureyor
+                      ? null
+                      : () => unawaited(_katil(context, ref, durum)),
+                ),
               ),
-            ),
+            ],
           ],
-        ],
-      ),
+        ),
       ),
     );
   }

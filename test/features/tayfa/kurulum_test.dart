@@ -22,11 +22,7 @@ void main() {
   group('kurulum kartı (ADR-0015 Notlar 2026-11-13)', () {
     test('yöneticiye kurulum döneminde', () {
       expect(
-        kurulumGosterilsin(
-          _ozet(),
-          simdi: ucGunSonra,
-          yeniOlusturuldu: false,
-        ),
+        kurulumGosterilsin(_ozet(), simdi: ucGunSonra, yeniOlusturuldu: false),
         isTrue,
       );
     });
@@ -79,19 +75,13 @@ void main() {
   group('7 günde 3 üye kuralı', () {
     test('dönemde ve 3 üyenin altında', () {
       expect(kuralGosterilsin(_ozet(uyeSayisi: 2), simdi: ucGunSonra), isTrue);
-      expect(
-        kuralGosterilsin(_ozet(uyeSayisi: 3), simdi: ucGunSonra),
-        isFalse,
-      );
+      expect(kuralGosterilsin(_ozet(uyeSayisi: 3), simdi: ucGunSonra), isFalse);
       expect(
         kuralGosterilsin(_ozet(uyeSayisi: 1), simdi: sekizGunSonra),
         isFalse,
       );
       expect(
-        kuralGosterilsin(
-          _ozet(rol: 'member', uyeSayisi: 1),
-          simdi: ucGunSonra,
-        ),
+        kuralGosterilsin(_ozet(rol: 'member', uyeSayisi: 1), simdi: ucGunSonra),
         isFalse,
       );
     });

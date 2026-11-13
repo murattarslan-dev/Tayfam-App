@@ -78,8 +78,7 @@ class TayfaAnaSayfa extends ConsumerWidget {
     final olusturVar = secenekler.isNotEmpty || davet != null;
     final oneCikanlar = [
       if (kurulum) TayfaKurulumKarti(tayfaId: tayfaId),
-      for (final modul in moduller)
-        ?modul.anaSayfaOneCikan(context, tayfaId),
+      for (final modul in moduller) ?modul.anaSayfaOneCikan(context, tayfaId),
     ];
     final iptalDugmesi =
         durum?.tur == TayfaDurumTuru.silinecek &&
@@ -566,9 +565,7 @@ class TayfaKurulumKarti extends ConsumerWidget {
       ref.watch(tayfaModulleriProvider),
       ozet.acikModuller,
     );
-    final modulAdimlari = [
-      for (final modul in moduller) ?modul.kurulumAdimi,
-    ];
+    final modulAdimlari = [for (final modul in moduller) ?modul.kurulumAdimi];
     final tamamlar = [
       true,
       davetAdimiTamam(tayfa),
@@ -579,8 +576,13 @@ class TayfaKurulumKarti extends ConsumerWidget {
     final aktif = tamamlar.indexOf(false);
     final kod = ozet.katilimKodu;
 
-    Widget adim(int sira, {required String baslik, String? aciklama,
-        VoidCallback? onTap, List<Widget> eylemler = const []}) {
+    Widget adim(
+      int sira, {
+      required String baslik,
+      String? aciklama,
+      VoidCallback? onTap,
+      List<Widget> eylemler = const [],
+    }) {
       return _KurulumAdimi(
         numara: sira + 1,
         baslik: baslik,
@@ -759,7 +761,9 @@ class _KurulumAdimi extends StatelessWidget {
             children: [
               Text(
                 baslik,
-                semanticsLabel: tamam ? m.tayfa_kurulum_tamam_adim(baslik) : null,
+                semanticsLabel: tamam
+                    ? m.tayfa_kurulum_tamam_adim(baslik)
+                    : null,
                 style: tamam
                     ? yazi.bodyLarge?.copyWith(color: r.metinIkincil)
                     : yazi.titleMedium,
@@ -907,9 +911,7 @@ class OlusturmaSayfasi extends StatelessWidget {
             aciklama: kod == null
                 ? m.tayfa_davet_link_aciklama
                 : m.tayfa_davet_kod_satiri(kod),
-            sag: ExcludeSemantics(
-              child: Etiket(metin: m.tayfa_davet_paylas),
-            ),
+            sag: ExcludeSemantics(child: Etiket(metin: m.tayfa_davet_paylas)),
             onTap: onDavet,
           ),
         ],

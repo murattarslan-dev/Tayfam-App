@@ -25,8 +25,10 @@ final tayfaUstMenusuProvider = Provider<TayfaUstMenusu?>(
 ///
 /// Davet linki tayfa yönetimi özelliğindedir; [tayfaUstMenusuProvider]
 /// gibi kayıtla bağlanır. `null` iken davet girişleri gösterilmez.
-typedef TayfaDaveti =
-    Future<void> Function(BuildContext context, String tayfaId);
+typedef TayfaDaveti = Future<void> Function(
+  BuildContext context,
+  String tayfaId,
+);
 
 /// Uygulamaya kayıtlı davet akışı; varsayılanı `null`.
 final tayfaDavetiProvider = Provider<TayfaDaveti?>(
@@ -38,7 +40,10 @@ final tayfaDavetiProvider = Provider<TayfaDaveti?>(
 /// düğmesini kuran işlev (tasarım: Ayar-Silme). Yalnızca yöneticiye
 /// gösterilir; iptali sunucu yetkilendirir. Tayfa yönetimi kaydıyla
 /// bağlanır; `null` iken düğme gösterilmez.
-typedef TayfaSilmeIptali = Widget Function(BuildContext context, String tayfaId);
+typedef TayfaSilmeIptali = Widget Function(
+  BuildContext context,
+  String tayfaId,
+);
 
 /// Uygulamaya kayıtlı "Silmeyi iptal et" düğmesi; varsayılanı `null`.
 final tayfaSilmeIptaliProvider = Provider<TayfaSilmeIptali?>(

@@ -164,9 +164,7 @@ void main() {
         ),
         overrides: [
           // Tayfa 2026-11-01'de açıldı; 3 gün sonra.
-          tayfaSaatiProvider.overrideWithValue(
-            () => DateTime.utc(2026, 11, 4),
-          ),
+          tayfaSaatiProvider.overrideWithValue(() => DateTime.utc(2026, 11, 4)),
           tayfaDavetiProvider.overrideWithValue((_, tayfaId) async {
             davetler.add(tayfaId);
           }),
@@ -196,9 +194,7 @@ void main() {
           (_) => gorunumJson(ornekTayfaId, rol: 'admin', uyeSayisi: 1),
         ),
         overrides: [
-          tayfaSaatiProvider.overrideWithValue(
-            () => DateTime.utc(2026, 11, 9),
-          ),
+          tayfaSaatiProvider.overrideWithValue(() => DateTime.utc(2026, 11, 9)),
         ],
       );
       expect(find.byType(TayfaKurulumKarti), findsNothing);
