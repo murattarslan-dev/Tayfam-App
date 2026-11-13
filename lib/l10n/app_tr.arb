@@ -5450,6 +5450,10 @@
   "@arkadas_sikayet_kisa": {
     "description": "Kişi profilinin ⋯ menüsünde \"Şikâyet et\" satırının açıklaması."
   },
+  "arkadas_sikayet_baglanti": "Bu kişiyi şikâyet et",
+  "@arkadas_sikayet_baglanti": {
+    "description": "Kişi profilinin en altında her zaman görünen şikâyet bağlantısı."
+  },
   "arkadas_engelle_kisa": "Birbirinizin profilini göremezsiniz",
   "@arkadas_engelle_kisa": {
     "description": "Kişi profilinin ⋯ menüsünde \"Engelle\" satırının açıklaması."

@@ -472,10 +472,30 @@ void main() {
         const KisiProfiliEkrani(kullaniciId: kisiId1),
         arkadasTasimasi(),
       );
+      expect(find.text(arbMetni('arkadas_sikayet_baglanti')), findsNothing);
       await _dokun(tester, find.byIcon(Icons.more_horiz));
       expect(find.text(arbMetni('sikayet_et')), findsNothing);
       expect(find.text(arbMetni('arkadas_cikar')), findsNothing);
       expect(find.text(arbMetni('arkadas_engelle')), findsOneWidget);
+    });
+
+    testWidgets('profilin altındaki şikâyet bağlantısı şikâyeti açar', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KisiProfiliEkrani(kullaniciId: kisiId1),
+        _doluTasima(),
+      );
+      final baglanti = find.text(arbMetni('arkadas_sikayet_baglanti'));
+      await tester.ensureVisible(baglanti);
+      await _dokun(tester, baglanti);
+
+      final sayfa = tester.widget<SikayetSayfasi>(find.byType(SikayetSayfasi));
+      expect(sayfa.hedef.tur, ReportTargetType.user);
+      expect(sayfa.hedef.id, kisiId1);
+      expect(sayfa.hedef.tayfaId, ornekTayfaId);
     });
 
     testWidgets('tayfaya davet: ortak tayfa seçenekte yok', (tester) async {
