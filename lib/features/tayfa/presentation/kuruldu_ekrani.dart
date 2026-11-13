@@ -18,7 +18,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// "Tayfa kuruldu" ekranı (ADR-0014 Notlar 2026-11-13; tasarım:
 /// Tayfa-Kur-Hazir): oluşturma başarılı olunca sihirbazın yerine açılır.
 ///
-/// - Mor zeminde logo, tayfa avatarı, "<ad> kuruldu!" ve ilk 7 günde 3 üye
+/// - Mor zeminde logo, tayfa avatarı, "`<ad>` kuruldu!" ve ilk 7 günde 3 üye
 ///   hedefi; tayfa kodu ve "Kopyala".
 /// - Birincil "Davet linkini paylaş": mevcut davet linki akışı
 ///   (`tayfaDaveti`; varsayılan 7 gün / 10 kişi, link bir kez gösterilir,
