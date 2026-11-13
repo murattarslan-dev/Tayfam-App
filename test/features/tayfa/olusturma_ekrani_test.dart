@@ -28,9 +28,9 @@ Future<SahteTayfaTasima> _ac(
     themeMode: themeMode,
     tayfa: tayfaOverridelari(tasima: tasima),
   );
-  await tester.ensureVisible(find.text(arbMetni('karsilama_tayfa_olustur')));
+  await tester.ensureVisible(find.text(arbMetni('karsilama_tayfa_kur')));
   await tester.pumpAndSettle();
-  await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
+  await tester.tap(find.text(arbMetni('karsilama_tayfa_kur')));
   await tester.pumpAndSettle();
   expect(find.byType(OlusturmaEkrani), findsOneWidget);
   return tasima;

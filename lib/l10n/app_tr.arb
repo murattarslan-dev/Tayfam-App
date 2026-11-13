@@ -2883,15 +2883,31 @@
   },
   "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
   "@karsilama_turler_etiketi": {
-    "description": "Karşılama ekranındaki renkli etkinlik türü haplarının ekran okuyucu için grup etiketi."
+    "description": "Karşılama ekranındaki etkinlik türü şeridinin görünen başlığı ve ekran okuyucu grup etiketi."
   },
   "karsilama_kodum_var": "Tayfa kodum var",
   "@karsilama_kodum_var": {
-    "description": "Karşılama ekranındaki birincil düğme; tayfa koduyla katılma akışını açar."
+    "description": "Karşılama ekranındaki birincil seçim kartının başlığı; tayfa koduyla katılma sayfasını açar."
   },
   "karsilama_tayfa_olustur": "Tayfa oluştur",
   "@karsilama_tayfa_olustur": {
-    "description": "Karşılama ekranındaki ikincil düğme; yeni tayfa kurma akışını açar."
+    "description": "Hoş geldin tanıtımındaki karşılama görselinde ikincil düğme; yeni tayfa kurma akışını gösterir."
+  },
+  "karsilama_kodum_var_aciklama": "Yöneticinin paylaştığı kodu gir",
+  "@karsilama_kodum_var_aciklama": {
+    "description": "Karşılama ekranındaki \"Tayfa kodum var\" seçim kartının alt satırı."
+  },
+  "karsilama_tayfa_kur": "Tayfa kur",
+  "@karsilama_tayfa_kur": {
+    "description": "Karşılama ekranındaki ikinci seçim kartının başlığı; tayfa kurma sihirbazını açar."
+  },
+  "karsilama_tayfa_kur_aciklama": "Kendi grubunu birkaç adımda aç",
+  "@karsilama_tayfa_kur_aciklama": {
+    "description": "Karşılama ekranındaki \"Tayfa kur\" seçim kartının alt satırı."
+  },
+  "karsilama_davet_ipucu": "Davet linkin varsa linke dokunman yeterli; tayfa burada açılır.",
+  "@karsilama_davet_ipucu": {
+    "description": "Karşılama ekranında seçim kartlarının altındaki davet linki ipucu."
   },
   "bilesen_logo_yazisi": "tayfam",
   "@bilesen_logo_yazisi": {
@@ -5890,13 +5906,9 @@
   "@arkadas_sikayet_tayfa_aciklama": {
     "description": "Şikâyet tayfası seçiminin açıklaması (sözleşme: kullanıcı şikâyeti bir tayfada yapılır)."
   },
-  "derin_link_davet_baslik": "Tayfa daveti",
-  "@derin_link_davet_baslik": {
-    "description": "Davet linkiyle açılan ekranın başlığı."
-  },
   "derin_link_davet_kapat": "Kapat",
   "@derin_link_davet_kapat": {
-    "description": "Davet ekranını kapatan düğmenin ipucu ve ekran okuyucu etiketi; daveti bırakır."
+    "description": "Davet ekranını kapatan düğmenin (üstteki X ve açılamadı ekranındaki ikincil düğme) metni ve ekran okuyucu etiketi; daveti bırakır."
   },
   "derin_link_davet_yukleniyor": "Davet yükleniyor",
   "@derin_link_davet_yukleniyor": {
@@ -5904,7 +5916,7 @@
   },
   "derin_link_davet_ust_baslik": "Seni bu tayfaya davet ettiler",
   "@derin_link_davet_ust_baslik": {
-    "description": "Davet ekranında tayfa adının üstündeki kısa satır."
+    "description": "Davet ekranının mor üst bölümündeki kısa satır (önizleme ve zaten üye durumları)."
   },
   "derin_link_davet_aciklama": "Katılınca tayfanın etkinliklerini, duyurularını ve sohbetini görürsün. Tayfa onaylı katılımlıysa yönetici onayından sonra katılırsın.",
   "@derin_link_davet_aciklama": {
@@ -5924,19 +5936,27 @@
   },
   "derin_link_davet_tamam": "Tamam",
   "@derin_link_davet_tamam": {
-    "description": "Davet ekranını kapatan düğme (istek gönderildi, zaten üye ya da hata durumunda)."
+    "description": "Davetle katılma isteği gönderildikten sonra ekranı kapatan düğme."
   },
   "derin_link_davet_gonderildi_baslik": "İsteğin gönderildi",
   "@derin_link_davet_gonderildi_baslik": {
-    "description": "Onaylı katılımlı tayfaya davetle katılma isteği gönderilince görünen başlık."
+    "description": "Onaylı katılımlı tayfaya davetle katılma isteği gönderilince mor üst bölümde ve teal bilgi kutusunda görünen başlık."
   },
-  "derin_link_davet_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın.",
+  "derin_link_davet_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın. Tayfa panelinde \"Onay bekliyor\" olarak görünür.",
   "@derin_link_davet_gonderildi_aciklama": {
-    "description": "Davetle katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+    "description": "Davetle katılma isteği gönderildikten sonra teal bilgi kutusunda başlığın altındaki açıklama."
   },
-  "derin_link_davet_gecersiz": "Bu davet linki açılamadı. Linki gönderen kişiden yenisini iste.",
+  "derin_link_davet_gecersiz": "Bu davet linki açılamadı",
   "@derin_link_davet_gecersiz": {
-    "description": "Bekleyen davet yokken ya da link bozukken davet ekranında görünen metin."
+    "description": "Davet önizlemesi açılamayınca (link bozuk, süresi dolmuş, bağlantı yok…) mor ekranın başlığı."
+  },
+  "derin_link_davet_gecersiz_aciklama": "Linki gönderen kişiden yenisini iste. Tayfa kodun varsa onunla da katılabilirsin.",
+  "@derin_link_davet_gecersiz_aciklama": {
+    "description": "Bekleyen davet yokken ya da link bozukken açılamadı ekranında başlığın altındaki metin; \"Tayfa kodum var\" alternatifini anlatır."
+  },
+  "derin_link_davet_tayfaya_git": "Tayfaya git",
+  "@derin_link_davet_tayfaya_git": {
+    "description": "Davet edilen tayfaya zaten üye olan ya da isteği bekleyen kullanıcının birincil düğmesi; daveti bırakıp tayfaya gider."
   },
   "derin_link_tekrar_dene": "Tekrar dene",
   "@derin_link_tekrar_dene": {

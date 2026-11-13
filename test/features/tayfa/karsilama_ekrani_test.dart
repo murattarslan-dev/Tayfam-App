@@ -28,24 +28,64 @@ const _turAnahtarlari = [
 ];
 
 void main() {
-  testWidgets('karşılama iki eylemi ve altı türü gösteriyor', (tester) async {
+  testWidgets('karşılama iki seçim kartını, ipucunu ve altı türü gösteriyor', (
+    tester,
+  ) async {
     ekranBoyutu(tester);
     await widgetAc(tester, const KarsilamaEkrani());
 
+    expect(find.byType(TayfamLogo), findsOneWidget);
     expect(find.text(arbMetni('karsilama_baslik')), findsOneWidget);
-    // Eylemler ortak bileşenlerdir (ADR-0004 §3).
+    expect(find.text(arbMetni('karsilama_aciklama')), findsOneWidget);
     expect(
-      find.widgetWithText(BirincilEylem, arbMetni('karsilama_kodum_var')),
+      find.widgetWithText(SecimKarti, arbMetni('karsilama_kodum_var')),
       findsOneWidget,
     );
     expect(
-      find.widgetWithText(IkincilEylem, arbMetni('karsilama_tayfa_olustur')),
+      find.widgetWithText(SecimKarti, arbMetni('karsilama_kodum_var_aciklama')),
       findsOneWidget,
     );
+    expect(
+      find.widgetWithText(SecimKarti, arbMetni('karsilama_tayfa_kur')),
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(SecimKarti, arbMetni('karsilama_tayfa_kur_aciklama')),
+      findsOneWidget,
+    );
+    // "Tayfa kodum var" birincil (mor) karttır; ilk sırada gelir.
+    final kartlar = tester.widgetList<SecimKarti>(find.byType(SecimKarti));
+    expect([for (final k in kartlar) k.birincil], [true, false]);
+    expect(find.text(arbMetni('karsilama_davet_ipucu')), findsOneWidget);
+    expect(find.text(arbMetni('karsilama_turler_etiketi')), findsOneWidget);
     for (final anahtar in _turAnahtarlari) {
       expect(find.text(arbMetni(anahtar)), findsOneWidget, reason: anahtar);
     }
+    // Bekleyen istek yokken durum kartı yok.
+    expect(find.byType(BekleyenIstekKarti), findsNothing);
   });
+
+  for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+    testWidgets('${mod.name}: birincil kart mor yüzey, diğeri kart zemini', (
+      tester,
+    ) async {
+      final r = mod == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
+      ekranBoyutu(tester);
+      await widgetAc(tester, const KarsilamaEkrani(), themeMode: mod);
+
+      Color? zemin(String anahtar) {
+        final kart = find.widgetWithText(SecimKarti, arbMetni(anahtar));
+        final yuzey = find.descendant(
+          of: kart,
+          matching: find.byType(Material),
+        );
+        return tester.widget<Material>(yuzey.first).color;
+      }
+
+      expect(zemin('karsilama_kodum_var'), r.markaYuzey);
+      expect(zemin('karsilama_tayfa_kur'), r.kart);
+    });
+  }
 
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {
     testWidgets('${mod.name}: her tür hapı kendi renginde', (tester) async {
@@ -61,9 +101,17 @@ void main() {
           matching: find.byType(DecoratedBox),
         ),
       );
-      final zeminler = [
-        for (final kutu in kutular) (kutu.decoration as BoxDecoration).color,
-      ];
+      // Türün rengi haptaki dairededir; hap kart zeminli ve çizgi kenarlı.
+      final haplar = <BoxDecoration>[];
+      final zeminler = <Color?>[];
+      for (final kutu in kutular) {
+        final susleme = kutu.decoration as BoxDecoration;
+        if (susleme.shape == BoxShape.circle) {
+          zeminler.add(susleme.color);
+        } else {
+          haplar.add(susleme);
+        }
+      }
       expect(zeminler, [
         for (final tur in [
           EventType.convoy,
@@ -83,11 +131,11 @@ void main() {
         ),
         findsNWidgets(6),
       );
-      for (final kutu in kutular) {
-        expect(
-          (kutu.decoration as BoxDecoration).borderRadius,
-          TayfamRadii.hapKoseleri,
-        );
+      expect(haplar, hasLength(6));
+      final r = mod == ThemeMode.dark ? TayfamColors.koyu : TayfamColors.acik;
+      for (final hap in haplar) {
+        expect(hap.borderRadius, TayfamRadii.hapKoseleri);
+        expect(hap.color, r.kart);
       }
     });
   }
@@ -134,11 +182,13 @@ void main() {
     expect(find.byType(BottomSheet), findsOneWidget);
   });
 
-  testWidgets('"Tayfa oluştur" sihirbazı açıyor', (tester) async {
+  testWidgets('"Tayfa kur" sihirbazı açıyor', (tester) async {
     ekranBoyutu(tester);
     await uygulamayiAc(tester);
 
-    await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
+    await tester.ensureVisible(find.text(arbMetni('karsilama_tayfa_kur')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(arbMetni('karsilama_tayfa_kur')));
     await tester.pumpAndSettle();
 
     // Sihirbaz kabuğun üstüne itilen tam ekran bir sayfadır.
@@ -161,8 +211,44 @@ void main() {
     expect(find.byType(BekleyenIstekKarti), findsOneWidget);
     expect(find.text(arbMetni('karsilama_bekleyen_baslik')), findsOneWidget);
     expect(find.textContaining('Kampçılar'), findsOneWidget);
+    expect(find.text(arbMetni('tayfa_geri_cek_dugmesi')), findsOneWidget);
     // Bekleyen tayfanın içeriği istenmez.
     expect(tasima.giden('GET', '/v1/tayfas/{tayfa_id}'), isEmpty);
+  });
+
+  testWidgets('bekleyen istek karşılamadan onayla geri çekiliyor', (
+    tester,
+  ) async {
+    ekranBoyutu(tester);
+    var cagri = 0;
+    final tasima = SahteTayfaTasima({
+      'GET /v1/tayfas': (_) => cagri++ == 0
+          ? listeJson([bekleyenJson(_bekleyenId, ad: 'Kampçılar')])
+          : listeJson([]),
+      'DELETE /v1/tayfas/{tayfa_id}/membership': (_) => null,
+    });
+    await uygulamayiAc(tester, tayfa: tayfaOverridelari(tasima: tasima));
+    expect(find.byType(BekleyenIstekKarti), findsOneWidget);
+
+    // Önce vazgeç: istek gitmez.
+    await tester.tap(find.text(arbMetni('tayfa_geri_cek_dugmesi')));
+    await tester.pumpAndSettle();
+    expect(find.text(arbMetni('tayfa_geri_cek_baslik')), findsOneWidget);
+    await tester.tap(find.text(arbMetni('tayfa_vazgec')));
+    await tester.pumpAndSettle();
+    expect(tasima.giden('DELETE', '/v1/tayfas/{tayfa_id}/membership'), isEmpty);
+    expect(find.byType(BekleyenIstekKarti), findsOneWidget);
+
+    await tester.tap(find.text(arbMetni('tayfa_geri_cek_dugmesi')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(arbMetni('tayfa_geri_cek_onayla')));
+    await tester.pumpAndSettle();
+
+    final silme = tasima.giden('DELETE', '/v1/tayfas/{tayfa_id}/membership');
+    expect(silme.single.yolParametreleri['tayfa_id'], _bekleyenId);
+    expect(find.byType(BekleyenIstekKarti), findsNothing);
+    expect(find.byType(KarsilamaEkrani), findsOneWidget);
+    expect(find.text(arbMetni('tayfa_geri_cekildi')), findsOneWidget);
   });
 
   testWidgets('liste alınamazsa hata ve "Tekrar dene"', (tester) async {
