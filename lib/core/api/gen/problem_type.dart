@@ -110,6 +110,8 @@ enum ProblemType {
   messageNotFound('message-not-found'),
   channelArchived('channel-archived'),
   channelNameTaken('channel-name-taken'),
+  eventChannelExists('event-channel-exists'),
+  notTayfaMember('not-tayfa-member'),
   slowMode('slow-mode'),
   forbiddenOrigin('forbidden-origin'),
   conversationNotFound('conversation-not-found'),

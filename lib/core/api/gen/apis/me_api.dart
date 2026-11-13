@@ -503,22 +503,72 @@ final class MeApi {
     return Account.fromJson(jsonObject(response, 'getAccount'));
   }
 
-  /// Katılım geçmişinin kime görüneceğini değiştirir
+  /// Görünen adı ve hesap ayarlarını değiştirir
   ///
-  /// `private`: yalnızca siz. `tayfa` (varsayılan): arkadaşlar tümünü,
-  /// ortak tayfa üyeleri son 14 gün hariç. `public`: arkadaşlar tümünü,
-  /// diğer herkes son 14 gün hariç.
+  /// Gövdedeki alanlar değişir, olmayanlar olduğu gibi kalır; en az bir
+  /// alan gerekir (yoksa `invalid-request`). Alanların hepsi önce
+  /// doğrulanır: biri geçersizse hiçbiri yazılmaz. Bir alanı şu anki
+  /// değerine ayarlamak hiçbir şey değiştirmez.
+  ///
+  /// **Görünen ad** (issue #184): kayıttaki kuralla aynı; boşluklar
+  /// tekleştirilip kırpıldıktan sonra 1–40 karakter, kontrol karakteri
+  /// yok (`invalid-display-name`). 24 saatte en fazla 3 kez değişir
+  /// (`rate-limited`); aynı adı yeniden göndermek sayılmaz. Yeni ad
+  /// profil, arkadaş ve üye listeleri ile sohbete birkaç saniye içinde
+  /// yansır. Eski ad saklanmaz.
+  ///
+  /// **Katılım geçmişi görünürlüğü:** `private`: yalnızca siz. `tayfa`
+  /// (varsayılan): arkadaşlar tümünü, ortak tayfa üyeleri son 14 gün
+  /// hariç. `public`: arkadaşlar tümünü, diğer herkes son 14 gün hariç.
+  ///
+  /// **Doğum günü görünürlüğü** (`birthday_visibility`, issue #185):
+  /// yalnızca arkadaşlarınıza ne kadarının görüneceği; doğum tarihinin
+  /// kendisi değişmez.
+  ///
+  /// **Profil tamamlama formu** (issue #186): `interests`, `about`,
+  /// `occupation`, `team`, `languages`, `social_accounts` isteğe bağlıdır;
+  /// gönderilen alan değişir, boş değer (`""`, `[]`) alanı temizler.
+  /// Metinlerdeki boşluklar tekleştirilip kırpılır, sosyal medya
+  /// kullanıcı adındaki `@` atılır; kural dışı değer `invalid-request`
+  /// (400) alır ve hiçbir alan yazılmaz. `declined_profile_fields`
+  /// gönderilirse "Paylaşmak istemiyorum" denen alanların tamamını
+  /// değiştirir; reddedilen alanın değeri silinir, alan cevaplanmış
+  /// sayılır. Aynı istekte hem değer verip hem reddetmek
+  /// `invalid-request`'tir; daha önce reddedilmiş alana değer vermek onu
+  /// listeden çıkarır. `about_visibility` bu alanları kimin göreceğidir.
+  /// Bu alanlar başka servislere ve bildirimlere gitmez.
   ///
   /// `PATCH /v1/me/account`
   Future<Account> updateAccount({required AccountUpdate body}) async {
+    final json = body.toJson();
+    if (json.length < 1) {
+      throw ArgumentError('AccountUpdate: en az 1 alan verilmeli');
+    }
     final response = await _transport.send(
       method: 'PATCH',
       pathTemplate: '/v1/me/account',
-      body: body.toJson(),
+      body: json,
       expect: ResponseKind.json,
       authenticated: true,
     );
     return Account.fromJson(jsonObject(response, 'updateAccount'));
+  }
+
+  /// Profil tamamlama formunu 7 gün erteler ("Daha sonra doldur")
+  ///
+  /// `Account.profile_completion_pending` 7 gün `false` döner (issue
+  /// #186). Erteleme sunucuda tutulur, cihazlar arası tutarlıdır. Bu
+  /// sürede forma yeni bir alan eklenirse erteleme geçersiz olur ve form
+  /// yeniden istenir. Tekrar çağırmak süreyi şimdiden başlatır.
+  ///
+  /// `POST /v1/me/profile-prompt/snooze`
+  Future<void> snoozeProfilePrompt() async {
+    await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/me/profile-prompt/snooze',
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
   }
 
   /// Yeni referans kodu üretir; eski kod ve linki hemen geçersiz olur
@@ -895,10 +945,25 @@ final class MeApi {
     return MyReportList.fromJson(jsonObject(response, 'listMyReports'));
   }
 
-  /// Bir birebir mesajı şikâyet eder (yalnızca platforma gider)
+  /// Birebir mesajı ya da kişi profilinden kullanıcıyı şikâyet eder (yalnızca platforma gider)
   ///
-  /// Tayfaya ait olmayan şikâyetler için; şimdilik yalnızca
-  /// `target_type: dm_message`. `target_id` mesajın kimliğidir. Mesajın
+  /// Tayfaya ait olmayan şikâyetler için: `target_type: dm_message` ve
+  /// `target_type: user`.
+  ///
+  /// **Kullanıcı** (`user`, issue #187): kişi profilindeki "Şikâyet et".
+  /// `target_id` kullanıcının kimliğidir. Ortak tayfa gerekmez; hedef,
+  /// profilini görebildiğiniz bir kullanıcı olmalıdır. Kendiniz
+  /// `invalid-request`; engellediğiniz, sizi engelleyen, silinmiş ya da
+  /// bilinmeyen kullanıcı `report-target-not-found` (nedeni söylenmez).
+  /// Gerekçe kapalı listeden seçilir, `staff_conduct` geçerli değildir;
+  /// `description` isteğe bağlıdır, `evidence_text` gönderilmez
+  /// (`invalid-request`). Şikâyet hiçbir tayfanın moderasyon kuyruğuna
+  /// düşmez, oluşturulduğu anda platforma gider; şikâyet edenin kimliği
+  /// şikâyet edilene hiçbir zaman gösterilmez. Aynı kullanıcıyı ikinci kez
+  /// (bir tayfa ucundan yapılmış olsa da) şikâyet etmek ilk şikâyetinizi
+  /// `200` ile döndürür; günlük sınır aşağıdakiyle ortaktır.
+  ///
+  /// **Birebir mesaj** (`dm_message`): `target_id` mesajın kimliğidir. Mesajın
   /// konuşmasının tarafı olmalısınız (reddettiğiniz istek dahil; silinmiş
   /// mesaj da olur); kendi mesajınız, bilinmeyen mesaj ve göndereni
   /// hesabını silmiş mesaj `report-target-not-found`.
