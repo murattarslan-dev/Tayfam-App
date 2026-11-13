@@ -531,7 +531,7 @@ class _BilgiBandi extends StatelessWidget {
 }
 
 /// Gelen mesaj isteği kartı (2026-11-13 tasarım: Birebir-Istek): akışın
-/// en üstünde tint-brand kart, "<ad> sana mesaj isteği gönderdi" ve
+/// en üstünde tint-brand kart, "`<ad>` sana mesaj isteği gönderdi" ve
 /// açıklama. Kabul ve ret alt çubuktadır ([_IstekCubugu]).
 class _IstekKarti extends ConsumerWidget {
   const _IstekKarti({required this.karsiId});
