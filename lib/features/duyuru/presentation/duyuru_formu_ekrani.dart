@@ -14,6 +14,15 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// sabitlemenin başarısız olup olmadığı.
 typedef DuyuruFormuSonucu = ({Announcement duyuru, bool sabitlenemedi});
 
+/// Bu yazı ölçeğinden büyükte üst çubuktaki eylem ("Duyuru yaz",
+/// "Yayınla") çubuğa sığmaz; içeriğin içine (listenin başına, formun
+/// sonuna) iner.
+const double ustCubukEylemiEnBuyukOlcek = 1.5;
+
+/// Üst çubuktaki eylem içeriğe mi inmeli (büyük yazı).
+bool eylemIcerigeIner(BuildContext context) =>
+    MediaQuery.textScalerOf(context).scale(1) > ustCubukEylemiEnBuyukOlcek;
+
 /// Duyuru yazma ve düzenleme formu (ADR-0015 §2; tasarım: Duyuru-Form):
 /// üstte kapat (X), başlık ve sağda "Yayınla" / "Kaydet"; sayaçlı başlık
 /// (1–120 karakter, tek satır) ve metin (en çok 5000 karakter). Yeni
@@ -82,6 +91,15 @@ class _DuyuruFormuEkraniState extends ConsumerState<DuyuruFormuEkrani> {
     final sabitlemeGorunur =
         yeni && ref.watch(tayfaOzetiProvider(widget.tayfaId)).yonetimde;
     final ikincil = yazi.bodySmall?.copyWith(color: r.metinIkincil);
+    // Büyük yazıda "Yayınla" / "Kaydet" üst çubuğa sığmaz; formun sonuna
+    // iner.
+    final icerikte = eylemIcerigeIner(context);
+    final gonder = BirincilEylem(
+      etiket: yeni
+          ? metinler.duyuru_form_yayinla
+          : metinler.duyuru_form_kaydet,
+      onPressed: kilitli ? null : () => unawaited(_notifier.gonder()),
+    );
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -99,15 +117,13 @@ class _DuyuruFormuEkraniState extends ConsumerState<DuyuruFormuEkrani> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: TayfamSpacing.s12),
-            child: BirincilEylem(
-              etiket: yeni
-                  ? metinler.duyuru_form_yayinla
-                  : metinler.duyuru_form_kaydet,
-              onPressed: kilitli ? null : () => unawaited(_notifier.gonder()),
+          if (!icerikte)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                end: TayfamSpacing.s12,
+              ),
+              child: gonder,
             ),
-          ),
         ],
       ),
       body: SafeArea(
@@ -205,6 +221,10 @@ class _DuyuruFormuEkraniState extends ConsumerState<DuyuruFormuEkrani> {
                   if (durum.hata case final hata?) ...[
                     const SizedBox(height: TayfamSpacing.s16),
                     HataSatiri.hatadan(hata),
+                  ],
+                  if (icerikte) ...[
+                    const SizedBox(height: TayfamSpacing.s24),
+                    gonder,
                   ],
                 ],
               ),

@@ -11,6 +11,7 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/duyuru/application/duyuru_listesi_notifier.dart';
+import 'package:tayfam/features/duyuru/presentation/duyuru_formu_ekrani.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_karti.dart';
 import 'package:tayfam/features/duyuru/presentation/duyuru_ortak.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -41,6 +42,9 @@ class DuyurularEkrani extends ConsumerWidget {
     final r = context.renkler;
     final yazi = context.yazi;
     final ogeler = liste?.ogeler ?? const <Announcement>[];
+    // Büyük yazıda "Duyuru yaz" üst çubuğa sığmaz; listenin başına iner.
+    final icerikte = eylemIcerigeIner(context);
+    void yaz() => unawaited(duyuruFormunuAc(context, tayfaId: tayfaId));
     final sabitler = [
       for (final d in ogeler)
         if (d.pinned) d,
@@ -77,13 +81,10 @@ class DuyurularEkrani extends ConsumerWidget {
           ],
         ),
         actions: [
-          if (ozet.yonetimde)
+          if (ozet.yonetimde && !icerikte)
             Padding(
               padding: const EdgeInsetsDirectional.only(end: TayfamSpacing.s8),
-              child: _YazDugmesi(
-                onPressed: () =>
-                    unawaited(duyuruFormunuAc(context, tayfaId: tayfaId)),
-              ),
+              child: _YazDugmesi(onPressed: yaz),
             ),
         ],
       ),
@@ -98,6 +99,13 @@ class DuyurularEkrani extends ConsumerWidget {
             TayfamSpacing.s24,
           ),
           children: [
+            if (ozet.yonetimde && icerikte) ...[
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: _YazDugmesi(onPressed: yaz),
+              ),
+              const SizedBox(height: TayfamSpacing.s12),
+            ],
             if (liste == null && hata != null) ...[
               HataSatiri.hatadan(hata),
               _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
