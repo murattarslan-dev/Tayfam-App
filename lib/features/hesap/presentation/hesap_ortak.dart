@@ -19,31 +19,6 @@ String hesapHatasiMetni(AppLocalizations m, Object hata) => switch (hata) {
   _ => hataMetni(m, hata),
 };
 
-/// Hukuki metnin sürümlü sayfasını (ya da mağaza sayfasını) tarayıcıda
-/// açan bağlantı düğmesi.
-class DisBaglantiDugmesi extends ConsumerWidget {
-  const DisBaglantiDugmesi({
-    super.key,
-    required this.etiket,
-    required this.adres,
-  });
-
-  final String etiket;
-  final Uri adres;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: TextButton.icon(
-        onPressed: () => disBaglantiyiAc(context, ref, adres),
-        icon: const Icon(Icons.open_in_new, size: TayfamSizes.ikon),
-        label: Text(etiket),
-      ),
-    );
-  }
-}
-
 /// [adres]'i uygulamanın dışında açar; açılamazsa kısa bir bildirim
 /// gösterir. Adres log'a yazılmaz.
 Future<void> disBaglantiyiAc(

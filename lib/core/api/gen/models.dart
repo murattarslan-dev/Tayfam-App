@@ -8,6 +8,39 @@
 /// düşmesin (CLAUDE.md kesin kural 3).
 library;
 
+/// Profil tamamlama formundaki alanları kimin göreceği (issue #186).
+/// `friends_and_mutual` (varsayılan): arkadaşlar ve ortak tayfa
+/// üyeleri. `friends`: yalnızca arkadaşlar. `none`: kimse. Sosyal
+/// medya hesapları her durumda en fazla arkadaşlara görünür.
+enum AboutVisibility {
+  friendsAndMutual('friends_and_mutual'),
+  friends('friends'),
+  none('none'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const AboutVisibility(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('AboutVisibility.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static AboutVisibility fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class Account {
   const Account({
     required this.userId,
@@ -15,6 +48,16 @@ final class Account {
     this.avatarUploadId,
     required this.referralCode,
     required this.activityVisibility,
+    required this.birthdayVisibility,
+    required this.interests,
+    this.about,
+    this.occupation,
+    this.team,
+    required this.languages,
+    required this.socialAccounts,
+    required this.declinedProfileFields,
+    required this.aboutVisibility,
+    required this.profileCompletionPending,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -30,6 +73,56 @@ final class Account {
     referralCode: _readString(json['referral_code'], 'Account.referral_code'),
     activityVisibility: ActivityVisibility.fromWire(
       _readString(json['activity_visibility'], 'Account.activity_visibility'),
+    ),
+    birthdayVisibility: BirthdayVisibility.fromWire(
+      _readString(json['birthday_visibility'], 'Account.birthday_visibility'),
+    ),
+    interests: List<EventType>.unmodifiable(
+      _readList(json['interests'], 'Account.interests').map(
+        (Object? e0) =>
+            EventType.fromWire(_readString(e0, 'Account.interests')),
+      ),
+    ),
+    about: switch (json['about']) {
+      null => null,
+      final Object v => _readString(v, 'Account.about'),
+    },
+    occupation: switch (json['occupation']) {
+      null => null,
+      final Object v => _readString(v, 'Account.occupation'),
+    },
+    team: switch (json['team']) {
+      null => null,
+      final Object v => _readString(v, 'Account.team'),
+    },
+    languages: List<String>.unmodifiable(
+      _readList(
+        json['languages'],
+        'Account.languages',
+      ).map((Object? e0) => _readString(e0, 'Account.languages')),
+    ),
+    socialAccounts: List<SocialAccount>.unmodifiable(
+      _readList(json['social_accounts'], 'Account.social_accounts').map(
+        (Object? e0) =>
+            SocialAccount.fromJson(_readObject(e0, 'Account.social_accounts')),
+      ),
+    ),
+    declinedProfileFields: List<ProfileField>.unmodifiable(
+      _readList(
+        json['declined_profile_fields'],
+        'Account.declined_profile_fields',
+      ).map(
+        (Object? e0) => ProfileField.fromWire(
+          _readString(e0, 'Account.declined_profile_fields'),
+        ),
+      ),
+    ),
+    aboutVisibility: AboutVisibility.fromWire(
+      _readString(json['about_visibility'], 'Account.about_visibility'),
+    ),
+    profileCompletionPending: _readBool(
+      json['profile_completion_pending'],
+      'Account.profile_completion_pending',
     ),
   );
 
@@ -47,6 +140,32 @@ final class Account {
 
   final ActivityVisibility activityVisibility;
 
+  final BirthdayVisibility birthdayVisibility;
+
+  final List<EventType> interests;
+
+  /// Boşsa alan yoktur.
+  final String? about;
+
+  /// Boşsa alan yoktur.
+  final String? occupation;
+
+  /// Boşsa alan yoktur.
+  final String? team;
+
+  final List<String> languages;
+
+  final List<SocialAccount> socialAccounts;
+
+  /// "Paylaşmak istemiyorum" denen alanlar; cevaplanmış sayılır.
+  final List<ProfileField> declinedProfileFields;
+
+  final AboutVisibility aboutVisibility;
+
+  /// Profil tamamlama formu gösterilmeli: cevaplanmamış (boş ve
+  /// reddedilmemiş) bir alan var ve geçerli bir erteleme yok.
+  final bool profileCompletionPending;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'user_id': userId,
@@ -54,6 +173,18 @@ final class Account {
     if (avatarUploadId case final value?) 'avatar_upload_id': value,
     'referral_code': referralCode,
     'activity_visibility': activityVisibility.wire,
+    'birthday_visibility': birthdayVisibility.wire,
+    'interests': <Object?>[for (final e0 in interests) e0.wire],
+    if (about case final value?) 'about': value,
+    if (occupation case final value?) 'occupation': value,
+    if (team case final value?) 'team': value,
+    'languages': <Object?>[for (final e0 in languages) e0],
+    'social_accounts': <Object?>[for (final e0 in socialAccounts) e0.toJson()],
+    'declined_profile_fields': <Object?>[
+      for (final e0 in declinedProfileFields) e0.wire,
+    ],
+    'about_visibility': aboutVisibility.wire,
+    'profile_completion_pending': profileCompletionPending,
   };
 
   @override
@@ -64,7 +195,17 @@ final class Account {
           displayName == other.displayName &&
           avatarUploadId == other.avatarUploadId &&
           referralCode == other.referralCode &&
-          activityVisibility == other.activityVisibility;
+          activityVisibility == other.activityVisibility &&
+          birthdayVisibility == other.birthdayVisibility &&
+          _deepEquals(interests, other.interests) &&
+          about == other.about &&
+          occupation == other.occupation &&
+          team == other.team &&
+          _deepEquals(languages, other.languages) &&
+          _deepEquals(socialAccounts, other.socialAccounts) &&
+          _deepEquals(declinedProfileFields, other.declinedProfileFields) &&
+          aboutVisibility == other.aboutVisibility &&
+          profileCompletionPending == other.profileCompletionPending;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -73,38 +214,211 @@ final class Account {
     avatarUploadId,
     referralCode,
     activityVisibility,
+    birthdayVisibility,
+    _deepHash(interests),
+    about,
+    occupation,
+    team,
+    _deepHash(languages),
+    _deepHash(socialAccounts),
+    _deepHash(declinedProfileFields),
+    aboutVisibility,
+    profileCompletionPending,
   ]);
 }
 
+/// En az bir alan bulunur; olmayan alan değişmez.
+///
+/// Kısıtlar: minProperties: 1.
 final class AccountUpdate {
-  const AccountUpdate({required this.activityVisibility});
+  const AccountUpdate({
+    this.displayName,
+    this.activityVisibility,
+    this.birthdayVisibility,
+    this.interests,
+    this.about,
+    this.occupation,
+    this.team,
+    this.languages,
+    this.socialAccounts,
+    this.declinedProfileFields,
+    this.aboutVisibility,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory AccountUpdate.fromJson(Map<String, Object?> json) => AccountUpdate(
-    activityVisibility: ActivityVisibility.fromWire(
-      _readString(
-        json['activity_visibility'],
-        'AccountUpdate.activity_visibility',
+    displayName: switch (json['display_name']) {
+      null => null,
+      final Object v => _readString(v, 'AccountUpdate.display_name'),
+    },
+    activityVisibility: switch (json['activity_visibility']) {
+      null => null,
+      final Object v => ActivityVisibility.fromWire(
+        _readString(v, 'AccountUpdate.activity_visibility'),
       ),
-    ),
+    },
+    birthdayVisibility: switch (json['birthday_visibility']) {
+      null => null,
+      final Object v => BirthdayVisibility.fromWire(
+        _readString(v, 'AccountUpdate.birthday_visibility'),
+      ),
+    },
+    interests: switch (json['interests']) {
+      null => null,
+      final Object v => List<EventType>.unmodifiable(
+        _readList(v, 'AccountUpdate.interests').map(
+          (Object? e0) =>
+              EventType.fromWire(_readString(e0, 'AccountUpdate.interests')),
+        ),
+      ),
+    },
+    about: switch (json['about']) {
+      null => null,
+      final Object v => _readString(v, 'AccountUpdate.about'),
+    },
+    occupation: switch (json['occupation']) {
+      null => null,
+      final Object v => _readString(v, 'AccountUpdate.occupation'),
+    },
+    team: switch (json['team']) {
+      null => null,
+      final Object v => _readString(v, 'AccountUpdate.team'),
+    },
+    languages: switch (json['languages']) {
+      null => null,
+      final Object v => List<String>.unmodifiable(
+        _readList(
+          v,
+          'AccountUpdate.languages',
+        ).map((Object? e0) => _readString(e0, 'AccountUpdate.languages')),
+      ),
+    },
+    socialAccounts: switch (json['social_accounts']) {
+      null => null,
+      final Object v => List<SocialAccount>.unmodifiable(
+        _readList(v, 'AccountUpdate.social_accounts').map(
+          (Object? e0) => SocialAccount.fromJson(
+            _readObject(e0, 'AccountUpdate.social_accounts'),
+          ),
+        ),
+      ),
+    },
+    declinedProfileFields: switch (json['declined_profile_fields']) {
+      null => null,
+      final Object v => List<ProfileField>.unmodifiable(
+        _readList(v, 'AccountUpdate.declined_profile_fields').map(
+          (Object? e0) => ProfileField.fromWire(
+            _readString(e0, 'AccountUpdate.declined_profile_fields'),
+          ),
+        ),
+      ),
+    },
+    aboutVisibility: switch (json['about_visibility']) {
+      null => null,
+      final Object v => AboutVisibility.fromWire(
+        _readString(v, 'AccountUpdate.about_visibility'),
+      ),
+    },
   );
 
-  final ActivityVisibility activityVisibility;
+  /// Yeni görünen ad; boşluklar tekleştirilip kırpıldıktan sonra 1–40
+  /// karakter. 24 saatte en fazla 3 değişiklik.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 40.
+  final String? displayName;
+
+  final ActivityVisibility? activityVisibility;
+
+  final BirthdayVisibility? birthdayVisibility;
+
+  /// Etkinlik türlerinden tekrarsız çoklu seçim.
+  ///
+  /// Kısıtlar: maxItems: 7; uniqueItems: true.
+  final List<EventType>? interests;
+
+  /// Hakkımda; kırpıldıktan sonra en fazla 160 karakter, satır sonu olabilir. `""` temizler.
+  ///
+  /// Kısıtlar: maxLength: 160.
+  final String? about;
+
+  /// Meslek / uğraş; tek satır, en fazla 60 karakter. `""` temizler.
+  ///
+  /// Kısıtlar: maxLength: 60.
+  final String? occupation;
+
+  /// Tutulan takım; tek satır, en fazla 60 karakter. `""` temizler.
+  ///
+  /// Kısıtlar: maxLength: 60.
+  final String? team;
+
+  /// ISO 639-1 kodları (`tr`, `en`), en fazla 5, tekrarsız.
+  ///
+  /// Kısıtlar: maxItems: 5.
+  final List<String>? languages;
+
+  /// Tamamı değişir; platform başına bir hesap.
+  ///
+  /// Kısıtlar: maxItems: 4.
+  final List<SocialAccount>? socialAccounts;
+
+  /// Gönderilirse "Paylaşmak istemiyorum" listesinin tamamı olur.
+  ///
+  /// Kısıtlar: uniqueItems: true.
+  final List<ProfileField>? declinedProfileFields;
+
+  final AboutVisibility? aboutVisibility;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
-    'activity_visibility': activityVisibility.wire,
+    if (displayName case final value?) 'display_name': value,
+    if (activityVisibility case final value?) 'activity_visibility': value.wire,
+    if (birthdayVisibility case final value?) 'birthday_visibility': value.wire,
+    if (interests case final value?)
+      'interests': <Object?>[for (final e0 in value) e0.wire],
+    if (about case final value?) 'about': value,
+    if (occupation case final value?) 'occupation': value,
+    if (team case final value?) 'team': value,
+    if (languages case final value?)
+      'languages': <Object?>[for (final e0 in value) e0],
+    if (socialAccounts case final value?)
+      'social_accounts': <Object?>[for (final e0 in value) e0.toJson()],
+    if (declinedProfileFields case final value?)
+      'declined_profile_fields': <Object?>[for (final e0 in value) e0.wire],
+    if (aboutVisibility case final value?) 'about_visibility': value.wire,
   };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AccountUpdate && activityVisibility == other.activityVisibility;
+      other is AccountUpdate &&
+          displayName == other.displayName &&
+          activityVisibility == other.activityVisibility &&
+          birthdayVisibility == other.birthdayVisibility &&
+          _deepEquals(interests, other.interests) &&
+          about == other.about &&
+          occupation == other.occupation &&
+          team == other.team &&
+          _deepEquals(languages, other.languages) &&
+          _deepEquals(socialAccounts, other.socialAccounts) &&
+          _deepEquals(declinedProfileFields, other.declinedProfileFields) &&
+          aboutVisibility == other.aboutVisibility;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[activityVisibility]);
+  int get hashCode => Object.hashAll(<Object?>[
+    displayName,
+    activityVisibility,
+    birthdayVisibility,
+    _deepHash(interests),
+    about,
+    occupation,
+    team,
+    _deepHash(languages),
+    _deepHash(socialAccounts),
+    _deepHash(declinedProfileFields),
+    aboutVisibility,
+  ]);
 }
 
 final class ActivityList {
@@ -1023,6 +1337,93 @@ final class BanRequest {
   int get hashCode => Object.hashAll(<Object?>[reason]);
 }
 
+/// Doğum gününün gösterilen kısmı. Yalnızca arkadaşlara ve ayar izin
+/// verdiğinde (kendi profilinizde her zaman) döner; yoksa alan da
+/// yoktur.
+final class Birthday {
+  const Birthday({required this.month, required this.day, this.year, this.age});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory Birthday.fromJson(Map<String, Object?> json) => Birthday(
+    month: _readInt(json['month'], 'Birthday.month'),
+    day: _readInt(json['day'], 'Birthday.day'),
+    year: switch (json['year']) {
+      null => null,
+      final Object v => _readInt(v, 'Birthday.year'),
+    },
+    age: switch (json['age']) {
+      null => null,
+      final Object v => _readInt(v, 'Birthday.age'),
+    },
+  );
+
+  /// Kısıtlar: minimum: 1; maximum: 12.
+  final int month;
+
+  /// Kısıtlar: minimum: 1; maximum: 31.
+  final int day;
+
+  /// Yalnızca `full` ayarında ve kendi profilinizde.
+  final int? year;
+
+  /// Bugünkü yaş (Türkiye saatiyle); `year` ile birlikte.
+  final int? age;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'month': month,
+    'day': day,
+    if (year case final value?) 'year': value,
+    if (age case final value?) 'age': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Birthday &&
+          month == other.month &&
+          day == other.day &&
+          year == other.year &&
+          age == other.age;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[month, day, year, age]);
+}
+
+/// Doğum gününüzün arkadaşlarınıza ne kadarının görüneceği (issue #185).
+/// Arkadaşınız olmayan hiç kimse görmez. `hidden`: kimse. `birthday`
+/// (varsayılan): gün ve ay. `full`: tarih ve yaş.
+enum BirthdayVisibility {
+  hidden('hidden'),
+  birthday('birthday'),
+  full('full'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const BirthdayVisibility(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('BirthdayVisibility.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static BirthdayVisibility fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class BlockedUser {
   const BlockedUser({
     required this.userId,
@@ -1387,6 +1788,9 @@ final class Channel {
     required this.updatedAt,
     this.unreadCount,
     this.lastReadMessageId,
+    this.eventId,
+    this.memberCount,
+    this.archiveAt,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -1421,6 +1825,18 @@ final class Channel {
       null => null,
       final Object v => _readString(v, 'Channel.last_read_message_id'),
     },
+    eventId: switch (json['event_id']) {
+      null => null,
+      final Object v => _readString(v, 'Channel.event_id'),
+    },
+    memberCount: switch (json['member_count']) {
+      null => null,
+      final Object v => _readInt(v, 'Channel.member_count'),
+    },
+    archiveAt: switch (json['archive_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'Channel.archive_at'),
+    },
   );
 
   final String id;
@@ -1454,6 +1870,19 @@ final class Channel {
   /// Yalnızca listede; okundu işaretiniz yoksa yoktur.
   final String? lastReadMessageId;
 
+  /// Yalnızca `event` kanalında.
+  final String? eventId;
+
+  /// Yalnızca `event` ve `selected` kanalında; kitlenin büyüklüğü.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int? memberCount;
+
+  /// Yalnızca `event` kanalında: planlanan arşiv zamanı (etkinliğin
+  /// bitişi ya da iptal anı + 7 gün). İstemci kalan süreyi bundan
+  /// hesaplar. Bu zaman gelince `archived_at` dolar.
+  final DateTime? archiveAt;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -1468,6 +1897,10 @@ final class Channel {
     'updated_at': updatedAt.toUtc().toIso8601String(),
     if (unreadCount case final value?) 'unread_count': value,
     if (lastReadMessageId case final value?) 'last_read_message_id': value,
+    if (eventId case final value?) 'event_id': value,
+    if (memberCount case final value?) 'member_count': value,
+    if (archiveAt case final value?)
+      'archive_at': value.toUtc().toIso8601String(),
   };
 
   @override
@@ -1484,7 +1917,10 @@ final class Channel {
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
           unreadCount == other.unreadCount &&
-          lastReadMessageId == other.lastReadMessageId;
+          lastReadMessageId == other.lastReadMessageId &&
+          eventId == other.eventId &&
+          memberCount == other.memberCount &&
+          archiveAt == other.archiveAt;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -1499,6 +1935,9 @@ final class Channel {
     updatedAt,
     unreadCount,
     lastReadMessageId,
+    eventId,
+    memberCount,
+    archiveAt,
   ]);
 }
 
@@ -1507,6 +1946,8 @@ final class ChannelCreateRequest {
     required this.name,
     this.visibility,
     this.slowModeSeconds,
+    this.eventId,
+    this.memberUserIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -1528,6 +1969,19 @@ final class ChannelCreateRequest {
             'ChannelCreateRequest.slow_mode_seconds',
           ),
         },
+        eventId: switch (json['event_id']) {
+          null => null,
+          final Object v => _readString(v, 'ChannelCreateRequest.event_id'),
+        },
+        memberUserIds: switch (json['member_user_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'ChannelCreateRequest.member_user_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'ChannelCreateRequest.member_user_ids'),
+            ),
+          ),
+        },
       );
 
   /// Kısıtlar: minLength: 1; maxLength: 40.
@@ -1539,11 +1993,22 @@ final class ChannelCreateRequest {
   /// Kısıtlar: minimum: 0; maximum: 3600; varsayılan (sunucu): 0.
   final int? slowModeSeconds;
 
+  /// Yalnızca ve zorunlu olarak `event` kanalında.
+  final String? eventId;
+
+  /// Yalnızca `selected` kanalında; açan dışındaki ilk üyeler.
+  ///
+  /// Kısıtlar: maxItems: 100.
+  final List<String>? memberUserIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'name': name,
     if (visibility case final value?) 'visibility': value.wire,
     if (slowModeSeconds case final value?) 'slow_mode_seconds': value,
+    if (eventId case final value?) 'event_id': value,
+    if (memberUserIds case final value?)
+      'member_user_ids': <Object?>[for (final e0 in value) e0],
   };
 
   @override
@@ -1552,17 +2017,26 @@ final class ChannelCreateRequest {
       other is ChannelCreateRequest &&
           name == other.name &&
           visibility == other.visibility &&
-          slowModeSeconds == other.slowModeSeconds;
+          slowModeSeconds == other.slowModeSeconds &&
+          eventId == other.eventId &&
+          _deepEquals(memberUserIds, other.memberUserIds);
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[name, visibility, slowModeSeconds]);
+  int get hashCode => Object.hashAll(<Object?>[
+    name,
+    visibility,
+    slowModeSeconds,
+    eventId,
+    _deepHash(memberUserIds),
+  ]);
 }
 
 /// Kısıtlar: varsayılan (sunucu): `members`.
 enum ChannelCreateRequestVisibility {
   members('members'),
   staff('staff'),
+  event('event'),
+  selected('selected'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -1618,6 +2092,81 @@ final class ChannelList {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[_deepHash(channels)]);
+}
+
+final class ChannelMemberList {
+  const ChannelMemberList({required this.userIds, this.nextPageToken});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChannelMemberList.fromJson(Map<String, Object?> json) =>
+      ChannelMemberList(
+        userIds: List<String>.unmodifiable(
+          _readList(
+            json['user_ids'],
+            'ChannelMemberList.user_ids',
+          ).map((Object? e0) => _readString(e0, 'ChannelMemberList.user_ids')),
+        ),
+        nextPageToken: switch (json['next_page_token']) {
+          null => null,
+          final Object v => _readString(v, 'ChannelMemberList.next_page_token'),
+        },
+      );
+
+  final List<String> userIds;
+
+  final String? nextPageToken;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_ids': <Object?>[for (final e0 in userIds) e0],
+    if (nextPageToken case final value?) 'next_page_token': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChannelMemberList &&
+          _deepEquals(userIds, other.userIds) &&
+          nextPageToken == other.nextPageToken;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(userIds), nextPageToken]);
+}
+
+final class ChannelMembersAddRequest {
+  const ChannelMembersAddRequest({required this.userIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChannelMembersAddRequest.fromJson(Map<String, Object?> json) =>
+      ChannelMembersAddRequest(
+        userIds: List<String>.unmodifiable(
+          _readList(json['user_ids'], 'ChannelMembersAddRequest.user_ids').map(
+            (Object? e0) =>
+                _readString(e0, 'ChannelMembersAddRequest.user_ids'),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: minItems: 1; maxItems: 100.
+  final List<String> userIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_ids': <Object?>[for (final e0 in userIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChannelMembersAddRequest && _deepEquals(userIds, other.userIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(userIds)]);
 }
 
 final class ChannelMessage {
@@ -1855,6 +2404,7 @@ final class ChannelUpdateRequest {
   /// Kısıtlar: minLength: 1; maxLength: 40.
   final String? name;
 
+  /// `event` ve `selected` kanalının türü değişmez (`invalid-request`).
   final ChannelUpdateRequestVisibility? visibility;
 
   /// Kısıtlar: minimum: 0; maximum: 3600.
@@ -1880,6 +2430,7 @@ final class ChannelUpdateRequest {
       Object.hashAll(<Object?>[name, visibility, slowModeSeconds]);
 }
 
+/// `event` ve `selected` kanalının türü değişmez (`invalid-request`).
 enum ChannelUpdateRequestVisibility {
   members('members'),
   staff('staff'),
@@ -1909,10 +2460,16 @@ enum ChannelUpdateRequestVisibility {
   }
 }
 
-/// `members`: tüm etkin üyeler; `staff`: yalnızca yönetici ve moderatörler.
+/// `members`: tüm etkin üyeler; `staff`: yalnızca yönetici ve
+/// moderatörler; `event`: kanalı açan, etkinliğin organizatörü ve
+/// etkinliğe gelenler; `selected`: kanalı açan ve seçtikleri (issue
+/// #183). `event` ve `selected` sonradan başka türe, başka tür de
+/// bunlara çevrilemez.
 enum ChannelVisibility {
   members('members'),
   staff('staff'),
+  event('event'),
+  selected('selected'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -8952,7 +9509,7 @@ final class MyReport {
 
   final String id;
 
-  /// Birebir mesaj şikâyetinde yoktur.
+  /// Birebir mesaj şikâyetinde ve kişi profilinden yapılan kullanıcı şikâyetinde yoktur.
   final String? tayfaId;
 
   final ReportTargetType targetType;
@@ -10530,6 +11087,39 @@ final class Problem {
   ]);
 }
 
+/// Profil tamamlama formunun bir alanı.
+enum ProfileField {
+  interests('interests'),
+  about('about'),
+  occupation('occupation'),
+  team('team'),
+  languages('languages'),
+  socialAccounts('social_accounts'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const ProfileField(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('ProfileField.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static ProfileField fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class PushTokenRegistration {
   const PushTokenRegistration({required this.token, required this.platform});
 
@@ -11240,7 +11830,8 @@ final class ReportCreateRequest {
   /// Kısıtlar: maxLength: 1000.
   final String? description;
 
-  /// Yalnızca ve zorunlu olarak `dm_message` için: şikâyet ettiğiniz
+  /// Yalnızca ve zorunlu olarak `dm_message` için (kullanıcı şikâyetinde
+  /// yoktur): şikâyet ettiğiniz
   /// mesajın kendi cihazınızdan paylaştığınız metni. Yalnızca platform
   /// okur; log'a ve olaylara yazılmaz, size geri dönmez.
   ///
@@ -11837,6 +12428,76 @@ enum SignInRequestProvider {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static SignInRequestProvider fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Yalnızca kullanıcı adı; bağlantıyı istemci platformun bilinen
+/// adresinden kurar. URL kabul edilmez. Kurallar: `instagram`
+/// `^[A-Za-z0-9._]{1,30}$`, `x` `^[A-Za-z0-9_]{1,15}$`, `tiktok`
+/// `^[A-Za-z0-9._]{2,24}$`, `youtube` `^[A-Za-z0-9._-]{3,30}$` (baştaki
+/// `@` atılır). Platform başına bir hesap.
+final class SocialAccount {
+  const SocialAccount({required this.platform, required this.username});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SocialAccount.fromJson(Map<String, Object?> json) => SocialAccount(
+    platform: SocialAccountPlatform.fromWire(
+      _readString(json['platform'], 'SocialAccount.platform'),
+    ),
+    username: _readString(json['username'], 'SocialAccount.username'),
+  );
+
+  final SocialAccountPlatform platform;
+
+  /// Kısıtlar: maxLength: 31.
+  final String username;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'platform': platform.wire,
+    'username': username,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SocialAccount &&
+          platform == other.platform &&
+          username == other.username;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[platform, username]);
+}
+
+enum SocialAccountPlatform {
+  instagram('instagram'),
+  x('x'),
+  tiktok('tiktok'),
+  youtube('youtube'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const SocialAccountPlatform(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('SocialAccountPlatform.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static SocialAccountPlatform fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;
@@ -13247,6 +13908,13 @@ final class UserProfile {
     required this.mutualTayfas,
     required this.activityVisible,
     this.activityVisibility,
+    this.birthday,
+    this.interests,
+    this.about,
+    this.occupation,
+    this.team,
+    this.languages,
+    this.socialAccounts,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -13283,6 +13951,52 @@ final class UserProfile {
         _readString(v, 'UserProfile.activity_visibility'),
       ),
     },
+    birthday: switch (json['birthday']) {
+      null => null,
+      final Object v => Birthday.fromJson(
+        _readObject(v, 'UserProfile.birthday'),
+      ),
+    },
+    interests: switch (json['interests']) {
+      null => null,
+      final Object v => List<EventType>.unmodifiable(
+        _readList(v, 'UserProfile.interests').map(
+          (Object? e0) =>
+              EventType.fromWire(_readString(e0, 'UserProfile.interests')),
+        ),
+      ),
+    },
+    about: switch (json['about']) {
+      null => null,
+      final Object v => _readString(v, 'UserProfile.about'),
+    },
+    occupation: switch (json['occupation']) {
+      null => null,
+      final Object v => _readString(v, 'UserProfile.occupation'),
+    },
+    team: switch (json['team']) {
+      null => null,
+      final Object v => _readString(v, 'UserProfile.team'),
+    },
+    languages: switch (json['languages']) {
+      null => null,
+      final Object v => List<String>.unmodifiable(
+        _readList(
+          v,
+          'UserProfile.languages',
+        ).map((Object? e0) => _readString(e0, 'UserProfile.languages')),
+      ),
+    },
+    socialAccounts: switch (json['social_accounts']) {
+      null => null,
+      final Object v => List<SocialAccount>.unmodifiable(
+        _readList(v, 'UserProfile.social_accounts').map(
+          (Object? e0) => SocialAccount.fromJson(
+            _readObject(e0, 'UserProfile.social_accounts'),
+          ),
+        ),
+      ),
+    },
   );
 
   final String userId;
@@ -13304,6 +14018,21 @@ final class UserProfile {
 
   final ActivityVisibility? activityVisibility;
 
+  final Birthday? birthday;
+
+  final List<EventType>? interests;
+
+  final String? about;
+
+  final String? occupation;
+
+  final String? team;
+
+  final List<String>? languages;
+
+  /// Yalnızca arkadaşlara (ve kendinize) döner.
+  final List<SocialAccount>? socialAccounts;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'user_id': userId,
@@ -13314,6 +14043,16 @@ final class UserProfile {
     'mutual_tayfas': <Object?>[for (final e0 in mutualTayfas) e0.toJson()],
     'activity_visible': activityVisible,
     if (activityVisibility case final value?) 'activity_visibility': value.wire,
+    if (birthday case final value?) 'birthday': value.toJson(),
+    if (interests case final value?)
+      'interests': <Object?>[for (final e0 in value) e0.wire],
+    if (about case final value?) 'about': value,
+    if (occupation case final value?) 'occupation': value,
+    if (team case final value?) 'team': value,
+    if (languages case final value?)
+      'languages': <Object?>[for (final e0 in value) e0],
+    if (socialAccounts case final value?)
+      'social_accounts': <Object?>[for (final e0 in value) e0.toJson()],
   };
 
   @override
@@ -13327,7 +14066,14 @@ final class UserProfile {
           friendState == other.friendState &&
           _deepEquals(mutualTayfas, other.mutualTayfas) &&
           activityVisible == other.activityVisible &&
-          activityVisibility == other.activityVisibility;
+          activityVisibility == other.activityVisibility &&
+          birthday == other.birthday &&
+          _deepEquals(interests, other.interests) &&
+          about == other.about &&
+          occupation == other.occupation &&
+          team == other.team &&
+          _deepEquals(languages, other.languages) &&
+          _deepEquals(socialAccounts, other.socialAccounts);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -13339,6 +14085,13 @@ final class UserProfile {
     _deepHash(mutualTayfas),
     activityVisible,
     activityVisibility,
+    birthday,
+    _deepHash(interests),
+    about,
+    occupation,
+    team,
+    _deepHash(languages),
+    _deepHash(socialAccounts),
   ]);
 }
 

@@ -182,3 +182,16 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   durumu temizlenir ve kullanıcı giriş ekranına döner; Android ve iOS'ta
   aynı. Kodla katılım sayfasının görünümü yenilendi; mantık ADR-0014
   §3'teki gibi.
+- **2026-11-13 (#162, hesap durum ekranları; tasarım
+  `docs/tasarim/20-hesap-durumlari/`):** yeniden onay (§5), güncelleme
+  gerekli (§1) ve hesap kısıtlandı / kapatıldı (§2) ekranları ortak düzende
+  (`HesapDurumDuzeni`): küçük logo, büyük ikon kutusu (96 px, 30 köşe),
+  ortalanmış başlık ve açıklama, altta sabit eylemler. Yeniden onayda iki
+  "oku" satırı sürümlü sayfayı sistem tarayıcısında açar; kutu işaretlenmeden
+  "Onayla ve devam et" pasiftir (önceki hata metni kalktı), ikincil eylem
+  "Çıkış yap". Güncelleme ekranı mango ikonlu, eylem yalnızca Android'de
+  "Google Play'de güncelle" (iOS metni iOS işiyle). Kısıtlı / kapalı hesap
+  nar ikonlu; giriş ekranının yerine gösterilir ve tek eylemi "Çıkış yap"
+  yerel engeli bırakıp giriş ekranına döner (oturum zaten açılmamıştır;
+  hesabın durumuna yine sunucu karar verir). Yönlendirme, `consent_required`,
+  sürüm denetimi ve engel mantığı değişmedi.
