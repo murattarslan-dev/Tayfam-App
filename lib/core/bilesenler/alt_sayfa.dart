@@ -60,21 +60,21 @@ class AltSayfaIcerigi extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-        if (ust != null)
-          ust
-        else if (baslik != null)
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              TayfamSpacing.s8,
-              0,
-              TayfamSpacing.s8,
-              TayfamSpacing.s12,
+          if (ust != null)
+            ust
+          else if (baslik != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                TayfamSpacing.s8,
+                0,
+                TayfamSpacing.s8,
+                TayfamSpacing.s12,
+              ),
+              child: Semantics(
+                header: true,
+                child: Text(baslik, style: context.yazi.headlineSmall),
+              ),
             ),
-            child: Semantics(
-              header: true,
-              child: Text(baslik, style: context.yazi.headlineSmall),
-            ),
-          ),
           ...children,
         ],
       ),
