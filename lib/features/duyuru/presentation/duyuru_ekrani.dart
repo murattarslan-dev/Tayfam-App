@@ -326,10 +326,7 @@ class _YazarSatiri extends StatelessWidget {
     return MergeSemantics(
       child: Row(
         children: [
-          KimlikAvatari(
-            kullaniciId: yazar,
-            cap: TayfamSizes.ustCubukKutusu,
-          ),
+          KimlikAvatari(kullaniciId: yazar, cap: TayfamSizes.ustCubukKutusu),
           const SizedBox(width: TayfamSpacing.s12),
           Expanded(
             child: Column(

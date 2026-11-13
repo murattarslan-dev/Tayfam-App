@@ -238,7 +238,10 @@ void main() {
       ekranBoyutu(tester);
       final json = duyuruJson(duyuruId1, baslik: 'Pazar')
         ..['updated_at'] = '2026-11-10T12:00:00Z';
-      await _duyuruyuAc(tester, modulTasimasi({'GET $duyuruYolu': yanit(json)}));
+      await _duyuruyuAc(
+        tester,
+        modulTasimasi({'GET $duyuruYolu': yanit(json)}),
+      );
 
       expect(find.text('Kişi'), findsOneWidget);
       expect(find.textContaining('düzenlendi'), findsOneWidget);
@@ -258,7 +261,10 @@ void main() {
     ) async {
       ekranBoyutu(tester);
       final json = duyuruJson(duyuruId1)..remove('author_user_id');
-      await _duyuruyuAc(tester, modulTasimasi({'GET $duyuruYolu': yanit(json)}));
+      await _duyuruyuAc(
+        tester,
+        modulTasimasi({'GET $duyuruYolu': yanit(json)}),
+      );
       expect(find.text(arbMetni('kullanici_silinmis')), findsOneWidget);
     });
 
@@ -539,9 +545,7 @@ void main() {
     ) async {
       ekranBoyutu(tester);
       final tasima = _rolle('admin', {
-        'POST $duyurularYolu': yanit(
-          duyuruJson(duyuruId3, baslik: 'Kurallar'),
-        ),
+        'POST $duyurularYolu': yanit(duyuruJson(duyuruId3, baslik: 'Kurallar')),
         'PUT $sabitlemeYolu': yanit(
           duyuruJson(duyuruId3, baslik: 'Kurallar', sabit: true),
         ),

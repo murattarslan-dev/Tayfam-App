@@ -364,9 +364,7 @@ void main() {
 
     test('"Yayınlayınca sabitle": oluşturma, sonra PUT …/pin', () async {
       final k = _Kurulum({
-        'POST $duyurularYolu': yanit(
-          duyuruJson(duyuruId3, baslik: 'Kurallar'),
-        ),
+        'POST $duyurularYolu': yanit(duyuruJson(duyuruId3, baslik: 'Kurallar')),
         'PUT $sabitlemeYolu': yanit(
           duyuruJson(duyuruId3, baslik: 'Kurallar', sabit: true),
         ),
