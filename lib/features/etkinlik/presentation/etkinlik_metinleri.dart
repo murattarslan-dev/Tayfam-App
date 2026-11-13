@@ -135,8 +135,7 @@ String turAciklamasi(AppLocalizations m, EventType tur) => switch (tur) {
   EventType.fishing => m.etkinlik_tur_aciklama_fishing,
   EventType.gaming => m.etkinlik_tur_aciklama_gaming,
   EventType.sports => m.etkinlik_tur_aciklama_sports,
-  EventType.general ||
-  EventType.unknown => m.etkinlik_tur_aciklama_general,
+  EventType.general || EventType.unknown => m.etkinlik_tur_aciklama_general,
 };
 
 /// Tekrarın sıklığı: "Her hafta", "2 haftada bir", "Her ay", "3 ayda bir".

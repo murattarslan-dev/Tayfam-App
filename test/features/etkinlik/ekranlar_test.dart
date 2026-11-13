@@ -487,10 +487,7 @@ void main() {
         expect(find.textContaining('bitiş yok'), findsOneWidget);
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_tamam')));
         expect(find.byType(TekrarEkrani), findsNothing);
-        expect(
-          find.text(arbMetni('etkinlik_tekrar_haftalik')),
-          findsOneWidget,
-        );
+        expect(find.text(arbMetni('etkinlik_tekrar_haftalik')), findsOneWidget);
 
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 5 / 5'), findsOneWidget);

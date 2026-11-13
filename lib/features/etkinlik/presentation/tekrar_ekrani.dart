@@ -90,9 +90,7 @@ class _TekrarEkraniState extends ConsumerState<TekrarEkrani> {
       lastDate: DateTime(ilkGun.year + 5, ilkGun.month, ilkGun.day),
     );
     if (gun == null || !mounted) return;
-    _ayarla(
-      _ayar.degistir(sonGun: DateTime.utc(gun.year, gun.month, gun.day)),
-    );
+    _ayarla(_ayar.degistir(sonGun: DateTime.utc(gun.year, gun.month, gun.day)));
   }
 
   void _tamam() {

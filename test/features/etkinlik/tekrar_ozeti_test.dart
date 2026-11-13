@@ -21,7 +21,10 @@ void main() {
     test('tek seferlik, sıklık ve aralık', () {
       expect(tekrarKisaOzeti(m, null), 'Tek seferlik');
       expect(tekrarKisaOzeti(m, const TekrarSecimi()), 'Her hafta');
-      expect(tekrarKisaOzeti(m, const TekrarSecimi(aralik: 2)), '2 haftada bir');
+      expect(
+        tekrarKisaOzeti(m, const TekrarSecimi(aralik: 2)),
+        '2 haftada bir',
+      );
       expect(
         tekrarKisaOzeti(
           m,

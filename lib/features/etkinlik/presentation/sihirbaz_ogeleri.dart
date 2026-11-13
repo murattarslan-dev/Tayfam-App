@@ -63,17 +63,24 @@ class SihirbazUstCubugu extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: TayfamSpacing.s4),
+                // Büyük yazıda adım metni başlığın altına iner.
                 Expanded(
-                  child: Semantics(
-                    header: true,
-                    child: Text(baslik, style: context.yazi.titleMedium),
-                  ),
-                ),
-                const SizedBox(width: TayfamSpacing.s8),
-                Text(
-                  m.etkinlik_adim(adim, toplam),
-                  style: context.yazi.labelLarge?.copyWith(
-                    color: r.metinIkincil,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: TayfamSpacing.s8,
+                    children: [
+                      Semantics(
+                        header: true,
+                        child: Text(baslik, style: context.yazi.titleMedium),
+                      ),
+                      Text(
+                        m.etkinlik_adim(adim, toplam),
+                        style: context.yazi.labelLarge?.copyWith(
+                          color: r.metinIkincil,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -217,7 +224,11 @@ class YanYana extends StatelessWidget {
         if (altAltaMi(context, kisit.maxWidth)) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [sol, const SizedBox(height: TayfamSpacing.s12), sag],
+            children: [
+              sol,
+              const SizedBox(height: TayfamSpacing.s12),
+              sag,
+            ],
           );
         }
         return Row(

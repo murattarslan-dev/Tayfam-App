@@ -94,9 +94,10 @@ class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
               ikon: Icons.place,
               onPressed: nokta == null
                   ? null
-                  : () => Navigator.of(
-                      context,
-                    ).pop<HaritaSecimSonucu>((nokta: nokta, oneri: secim.oneri)),
+                  : () => Navigator.of(context).pop<HaritaSecimSonucu>((
+                      nokta: nokta,
+                      oneri: secim.oneri,
+                    )),
             ),
           ),
         ),
@@ -130,9 +131,8 @@ class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
                           OdakCercevesi(
                             koseler: TayfamRadii.hapKoseleri,
                             child: IconButton(
-                              tooltip: MaterialLocalizations.of(
-                                context,
-                              ).backButtonTooltip,
+                              tooltip: MaterialLocalizations.of(context)
+                                  .backButtonTooltip,
                               onPressed: () => Navigator.of(context).maybePop(),
                               icon: const Icon(Icons.arrow_back),
                               style: IconButton.styleFrom(

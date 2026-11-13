@@ -495,7 +495,9 @@ class _EtkinlikSihirbaziEkraniState
             etiket: m.etkinlik_bitis,
             an: bitis,
             ayniGun:
-                baslangic != null && bitis != null && _ayniGun(baslangic, bitis),
+                baslangic != null &&
+                bitis != null &&
+                _ayniGun(baslangic, bitis),
             hatali: bitisHatasi != null,
             onPressed: kapali
                 ? null
@@ -799,7 +801,8 @@ class _EtkinlikSihirbaziEkraniState
             // Seçili zorluğa yeniden dokunmak seçimi kaldırır.
             onSecildi: kapali
                 ? null
-                : (z) => _ayrinti((a) => a.kopya(zorluk: a.zorluk == z ? 0 : z)),
+                : (z) =>
+                      _ayrinti((a) => a.kopya(zorluk: a.zorluk == z ? 0 : z)),
           ),
           const SizedBox(height: TayfamSpacing.s20),
           YanYana(
@@ -1018,7 +1021,9 @@ class _TurKutusu extends StatelessWidget {
           borderRadius: TayfamRadii.secimKoseleri,
           side: BorderSide(
             color: secili ? r.marka : r.cizgi,
-            width: secili ? TayfamSizes.alanOdakKenari : TayfamSizes.vurguKenari,
+            width: secili
+                ? TayfamSizes.alanOdakKenari
+                : TayfamSizes.vurguKenari,
           ),
         ),
         clipBehavior: Clip.antiAlias,
@@ -1123,9 +1128,7 @@ class _ZamanKutusu extends StatelessWidget {
         : ayniGun
         ? m.etkinlik_ayni_gun
         : etkinlikKisaGun(m, an);
-    final saat = an == null
-        ? m.etkinlik_zaman_sec
-        : etkinlikSaat(m, an);
+    final saat = an == null ? m.etkinlik_zaman_sec : etkinlikSaat(m, an);
     return OdakCercevesi(
       koseler: TayfamRadii.secimKoseleri,
       child: Material(
@@ -1134,7 +1137,9 @@ class _ZamanKutusu extends StatelessWidget {
           borderRadius: TayfamRadii.secimKoseleri,
           side: BorderSide(
             color: hatali ? r.narMetin : r.girisKenari,
-            width: hatali ? TayfamSizes.alanOdakKenari : TayfamSizes.vurguKenari,
+            width: hatali
+                ? TayfamSizes.alanOdakKenari
+                : TayfamSizes.vurguKenari,
           ),
         ),
         clipBehavior: Clip.antiAlias,

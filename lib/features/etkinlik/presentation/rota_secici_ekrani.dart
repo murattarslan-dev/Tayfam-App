@@ -92,9 +92,9 @@ class _RotaSeciciEkraniState extends State<RotaSeciciEkrani> {
       onTemizle: _noktalar.isEmpty ? null : () => unawaited(_temizle()),
       onKaydet: hatali
           ? null
-          : () => Navigator.of(
-              context,
-            ).pop<List<LatLng>>(List.unmodifiable(_noktalar)),
+          : () =>
+                Navigator.of(context)
+                    .pop<List<LatLng>>(List.unmodifiable(_noktalar)),
     );
     return Scaffold(
       body: LayoutBuilder(
@@ -308,7 +308,10 @@ class _AltPanel extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: TayfamSpacing.s12),
-              BirincilEylem(etiket: m.etkinlik_rota_kaydet, onPressed: onKaydet),
+              BirincilEylem(
+                etiket: m.etkinlik_rota_kaydet,
+                onPressed: onKaydet,
+              ),
             ],
           ),
         ),

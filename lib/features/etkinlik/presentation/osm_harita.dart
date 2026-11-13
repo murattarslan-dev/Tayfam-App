@@ -212,7 +212,10 @@ class _OsmHaritaState extends ConsumerState<OsmHarita> {
           decoration: BoxDecoration(
             color: zemin,
             shape: BoxShape.circle,
-            border: Border.all(color: r.kart, width: TayfamSizes.alanOdakKenari),
+            border: Border.all(
+              color: r.kart,
+              width: TayfamSizes.alanOdakKenari,
+            ),
           ),
           child: Center(
             child: Text(
