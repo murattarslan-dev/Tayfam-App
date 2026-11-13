@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -92,7 +94,19 @@ void main() {
       // Sayı tayfa görünümünden gelir; istek listesi yoklanmaz.
       expect(tasima.giden('GET', isteklerYolu), isEmpty);
       await _dokun(tester, _menu);
-      expect(find.text('3 bekleyen katılım isteği'), findsOneWidget);
+      // Girişteki rozetin sayısı ekran okuyucuya açıklamayla okunur.
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.label == '3 bekleyen katılım isteği',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(arbMetni('yonetim_menu_ayarlar_aciklama')),
+        findsOneWidget,
+      );
       await _dokun(tester, find.text(arbMetni('yonetim_menu_ayarlar')));
 
       expect(find.byType(TayfaAyarlariEkrani), findsOneWidget);
@@ -156,6 +170,60 @@ void main() {
       expect(tasima.giden('DELETE', uyelikYolu), hasLength(1));
       expect(find.text(arbMetni('yonetim_ayrildin')), findsOneWidget);
       expect(find.byType(KarsilamaEkrani), findsOneWidget);
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${mod.name} temada 2× yazıda menü taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = _uygulamaTasimasi('admin', {
+          'GET $tayfaYolu': yanit(yonetimGorunumu(bekleyen: 120)),
+        });
+        await uygulamayiAc(
+          tester,
+          oturum: null,
+          themeMode: mod,
+          tayfa: yonetimOverridelari(tasima),
+        );
+        tester
+            .container()
+            .read(aktifTayfaIdProvider.notifier)
+            .sec(ornekTayfaId);
+        await tester.pumpAndSettle();
+
+        await _dokun(tester, _menu);
+        expect(find.text(arbMetni('yonetim_menu_ayarlar')), findsOneWidget);
+        expect(find.text(arbMetni('yonetim_menu_ayril')), findsOneWidget);
+        // Yönetici şikâyet etmez; ayrılırken son yönetici kuralı yazılır.
+        expect(find.text(arbMetni('sikayet_tayfa_menu')), findsNothing);
+        expect(
+          find.text(arbMetni('yonetim_menu_ayril_aciklama_yonetici')),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('ayrılırken son yönetici hatası açıklamayla gösterilir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = _uygulamaTasimasi('admin', {
+        'DELETE $uyelikYolu': (_) => const ApiProblem(
+          type: ProblemType.lastAdmin,
+          status: 409,
+        ),
+      });
+      await _uygulamayiAc(tester, tasima);
+
+      await _dokun(tester, _menu);
+      await _dokun(tester, find.text(arbMetni('yonetim_menu_ayril')));
+      await _dokun(tester, find.text(arbMetni('yonetim_ayril_onayla')));
+
+      expect(tasima.giden('DELETE', uyelikYolu), hasLength(1));
+      expect(find.text(arbMetni('hata_last_admin')), findsOneWidget);
     });
 
     testWidgets('ayrılmaktan vazgeçince istek yok', (tester) async {

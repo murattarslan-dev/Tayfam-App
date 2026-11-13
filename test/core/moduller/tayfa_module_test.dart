@@ -27,13 +27,6 @@ void main() {
     expect(gorunurModuller(kayit, const []), isEmpty);
   });
 
-  test('gezinme girişinin adresi tayfa kimliğini taşıyor', () {
-    expect(
-      etkinlikler.gezinmeGirisi.adres(ornekTayfaId),
-      '/t/$ornekTayfaId/deneme',
-    );
-  });
-
   test('modules alanında yalnızca true olan modül açık', () {
     expect(
       acikModulAnahtarlari(

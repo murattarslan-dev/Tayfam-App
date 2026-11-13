@@ -54,7 +54,17 @@ void main() {
       find.descendant(of: panel, matching: find.byType(Etiket)),
       findsOneWidget,
     );
-    expect(find.text(arbMetni('tayfa_onay_bekliyor')), findsOneWidget);
+    // Etiketin ikonu metnin içindedir (WidgetSpan).
+    expect(
+      find.textContaining(arbMetni('tayfa_onay_bekliyor')),
+      findsOneWidget,
+    );
+    expect(find.text(arbMetni('tayfa_geri_cek_dugmesi')), findsOneWidget);
+    // Satırın altında üye sayısı ve rol.
+    expect(
+      find.descendant(of: panel, matching: find.text('12 üye · Üye')),
+      findsNWidgets(2),
+    );
     // Aktif tayfa işaretli; ekran okuyucu "Seçili tayfa" der.
     expect(
       find.byWidgetPredicate(
@@ -167,7 +177,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(tasima.giden('DELETE', '/v1/tayfas/{tayfa_id}/membership'), isEmpty);
 
-    await tester.tap(find.text('Kampçılar'));
+    // "İsteği geri çek" düğmesi de aynı onayı açar.
+    await tester.tap(find.text(arbMetni('tayfa_geri_cek_dugmesi')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(arbMetni('tayfa_geri_cek_onayla')));
     await tester.pumpAndSettle();

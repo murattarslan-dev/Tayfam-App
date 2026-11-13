@@ -47,6 +47,16 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('tintMarkaUstu / tintMarka', r.tintMarkaUstu, r.tintMarka, _metin),
     _Cift('tintMangoUstu / tintMango', r.tintMangoUstu, r.tintMango, _metin),
     _Cift('tintTealUstu / tintTeal', r.tintTealUstu, r.tintTeal, _metin),
+    // Yıkıcı işlemler (ADR-0004 Notlar, 2026-11-13).
+    _Cift('narMetin / tintNar', r.narMetin, r.tintNar, _metin),
+    _Cift('narMetin / kart', r.narMetin, r.kart, _metin),
+    _Cift('narMetin / zemin', r.narMetin, r.zemin, _metin),
+    _Cift(
+      'yikiciDolguUstu / yikiciDolgu',
+      r.yikiciDolguUstu,
+      r.yikiciDolgu,
+      _metin,
+    ),
     _Cift(
       'gelenBalonUstu / gelenBalon',
       r.gelenBalonUstu,
@@ -67,6 +77,9 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('nar (ikincil eylem) / kart', r.nar, r.kart, _arayuz),
     _Cift('anket önde (marka) / kart', r.marka, r.kart, _arayuz),
     _Cift('anket diğer (nar) / kart', r.nar, r.kart, _arayuz),
+    _Cift('yıkıcı düğme kenarı / kart', r.narMetin, r.kart, _arayuz),
+    _Cift('dolu yıkıcı düğme / kart', r.yikiciDolgu, r.kart, _arayuz),
+    _Cift('dolu yıkıcı düğme / zemin', r.yikiciDolgu, r.zemin, _arayuz),
     // Odak çerçevesi (3:1; ADR-0004 Notlar, 2026-11-10). Çerçeve öğenin
     // dışında, 3 px boşlukla çizilir; komşu renk öğenin bulunduğu yüzeydir.
     _Cift('odak / zemin', r.odak, r.zemin, _arayuz),
@@ -109,6 +122,13 @@ void main() {
       // 2026-11-12: turkuaz tint (İsteğin gönderildi ikonu).
       ('#0B6B5D / tint-teal', a.tintTealUstu, a.tintTeal, 5.70),
       ('#7FE8D6 / tint-teal-dark', k.tintTealUstu, k.tintTeal, 8.04),
+      // 2026-11-13: yıkıcı işlemler (Tasarım Standartları).
+      ('nar-metin / beyaz', a.narMetin, a.kart, 7.015),
+      ('nar-metin / tint-nar', a.narMetin, a.tintNar, 5.74),
+      ('beyaz / nar-metin (dolu)', a.yikiciDolguUstu, a.yikiciDolgu, 7.015),
+      ('#FF9FB4 / tint-nar-dark', k.narMetin, k.tintNar, 7.41),
+      ('#FF9FB4 / ink', k.narMetin, k.zemin, 9.26),
+      ('ink / #FF9FB4 (dolu)', k.yikiciDolguUstu, k.yikiciDolgu, 9.26),
       ('beyaz / bubble-in-dark', k.gelenBalonUstu, k.gelenBalon, 13.46),
       ('ink / nar', k.vurguUstu, k.nar, 5.21),
       ('ink / mango', k.vurguUstu, k.mango, 9.76),

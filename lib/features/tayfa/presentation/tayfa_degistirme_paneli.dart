@@ -12,20 +12,18 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
+import 'package:tayfam/features/tayfa/presentation/tayfa_avatari.dart';
 import 'package:tayfam/features/tayfa/presentation/tayfa_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfa değiştirme panelini alttan açar (ADR-0003, ADR-0014 §2).
+/// Tayfa değiştirme panelini alttan açar (ADR-0003, ADR-0014 §2; tasarım:
+/// Ana-Tayfa-Degistir).
 ///
 /// Panel kök navigator'da açılır; gezinme çubuğunun da üstünü örter.
 /// Seçenekler paneli kapatıp akışı [context]'in yönlendiricisiyle açar.
 Future<void> tayfaDegistirmePaneliniAc(BuildContext context) {
-  return showModalBottomSheet<void>(
-    context: context,
-    useRootNavigator: true,
-    useSafeArea: true,
-    showDragHandle: true,
-    isScrollControlled: true,
+  return altSayfaAc<void>(
+    context,
     builder: (panelContext) {
       void kapat() => Navigator.of(panelContext).pop();
 
@@ -47,8 +45,10 @@ Future<void> tayfaDegistirmePaneliniAc(BuildContext context) {
   );
 }
 
-/// Tayfa değiştirme panelinin içeriği: etkin tayfalar, "Onay bekliyor"
-/// etiketli bekleyen istekler, "Tayfa kodum var" ve "Tayfa oluştur".
+/// Tayfa değiştirme panelinin içeriği: etkin tayfalar (avatar, üye sayısı
+/// ve rol; seçili olan tint zeminli ve işaretli), "Onay bekliyor"
+/// etiketli bekleyen istekler ("İsteği geri çek"), "Tayfa kodum var" ve
+/// "Tayfa oluştur".
 ///
 /// Bekleyen tayfanın yalnızca adı görünür; dokununca isteği geri çekme
 /// onayı açılır (ADR-0014 §2).
@@ -82,19 +82,9 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
         : bekleyenTayfalar(liste);
     final hata = durum.error;
 
-    return ListView(
-      shrinkWrap: true,
-      padding: const EdgeInsets.only(bottom: TayfamSpacing.s16),
+    return AltSayfaIcerigi(
+      baslik: metinler.tayfa_tayfalarim,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: TayfamSpacing.kenarMobil,
-          ),
-          child: Semantics(
-            header: true,
-            child: Text(metinler.tayfa_tayfalarim, style: yazi.titleMedium),
-          ),
-        ),
         if (liste == null && hata == null)
           Padding(
             padding: const EdgeInsets.all(TayfamSpacing.s16),
@@ -107,11 +97,9 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           )
         else if (liste == null && hata != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              TayfamSpacing.kenarMobil,
-              TayfamSpacing.s8,
-              TayfamSpacing.kenarMobil,
-              TayfamSpacing.s16,
+            padding: const EdgeInsets.symmetric(
+              horizontal: TayfamSpacing.s8,
+              vertical: TayfamSpacing.s8,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,11 +116,9 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           )
         else if (etkinler.isEmpty && bekleyenler.isEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              TayfamSpacing.kenarMobil,
-              TayfamSpacing.s8,
-              TayfamSpacing.kenarMobil,
-              TayfamSpacing.s16,
+            padding: const EdgeInsets.symmetric(
+              horizontal: TayfamSpacing.s8,
+              vertical: TayfamSpacing.s8,
             ),
             child: Text(
               metinler.tayfa_tayfalarim_bos,
@@ -143,22 +129,17 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           ),
         for (final tayfa in etkinler)
           _EtkinTayfaSatiri(
-            ad: _ad(metinler, tayfa),
+            tayfa: tayfa,
             secili: tayfa.tayfaId == aktif,
-            bekleyen: bekleyenIstekRozeti(tayfa.tayfa),
             onTap: () {
               ref.read(aktifTayfaIdProvider.notifier).sec(tayfa.tayfaId);
               onTayfaSec(tayfa.tayfaId);
             },
           ),
         for (final tayfa in bekleyenler)
-          ListTile(
-            title: Text(_ad(metinler, tayfa)),
-            subtitle: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Etiket(metin: metinler.tayfa_onay_bekliyor),
-            ),
-            onTap: () => unawaited(
+          _BekleyenTayfaSatiri(
+            ad: _ad(metinler, tayfa),
+            onGeriCek: () => unawaited(
               _geriCekmeyiSor(
                 context,
                 ref,
@@ -167,17 +148,18 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
               ),
             ),
           ),
+        const SizedBox(height: TayfamSpacing.s8),
         const Divider(),
-        ListTile(
-          leading: const ExcludeSemantics(child: Icon(Icons.vpn_key_outlined)),
-          title: Text(metinler.tayfa_kodla_katil),
+        MenuSatiri(
+          ikon: Icons.vpn_key_outlined,
+          tur: MenuSatiriTuru.sade,
+          baslik: metinler.tayfa_kodla_katil,
           onTap: onKodlaKatil,
         ),
-        ListTile(
-          leading: const ExcludeSemantics(
-            child: Icon(Icons.add_circle_outline),
-          ),
-          title: Text(metinler.tayfa_olustur),
+        MenuSatiri(
+          ikon: Icons.add_circle_outline,
+          tur: MenuSatiriTuru.sade,
+          baslik: metinler.tayfa_olustur,
           onTap: onTayfaOlustur,
         ),
       ],
@@ -188,31 +170,53 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
 String _ad(AppLocalizations metinler, MyTayfa tayfa) =>
     tayfa.name.isEmpty ? metinler.tayfa_adi_bilinmiyor : tayfa.name;
 
+/// Rolün kısa adı ("Yönetici", "Moderatör", "Üye"); bilinmiyorsa `null`.
+String? rolAdi(AppLocalizations m, Role? rol) => switch (rol) {
+  Role.admin => m.yonetim_rol_admin,
+  Role.moderator => m.yonetim_rol_moderator,
+  Role.member => m.yonetim_rol_member,
+  Role.unknown || null => null,
+};
+
 class _EtkinTayfaSatiri extends StatelessWidget {
   const _EtkinTayfaSatiri({
-    required this.ad,
+    required this.tayfa,
     required this.secili,
     required this.onTap,
-    this.bekleyen,
   });
 
-  final String ad;
+  final MyTayfa tayfa;
   final bool secili;
   final VoidCallback onTap;
-
-  /// Onay bekleyen katılım isteği sayısı; yalnızca moderatör ve yöneticiye
-  /// gelir (`pending_join_request_count`). `null` ise rozet yok.
-  final int? bekleyen;
 
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final bekleyen = this.bekleyen;
-    return ListTile(
-      selected: secili,
-      leading: const ExcludeSemantics(child: Icon(Icons.groups_outlined)),
-      title: Text(ad),
-      trailing: !secili && bekleyen == null
+    final ad = _ad(metinler, tayfa);
+    final rol = rolAdi(metinler, tayfa.role);
+    final uyeSayisi = tayfa.tayfa?.memberCount;
+    // Onay bekleyen katılım isteği sayısı; yalnızca moderatör ve yöneticiye
+    // gelir (`pending_join_request_count`). `null` ise rozet yok.
+    final bekleyen = bekleyenIstekRozeti(tayfa.tayfa);
+    final ozet = switch ((uyeSayisi, rol)) {
+      (final int sayi, final String rol) => metinler.tayfa_panel_ozet(
+        sayi,
+        rol,
+      ),
+      (final int sayi, null) => metinler.tayfa_uye_sayisi(sayi),
+      (null, final String rol) => rol,
+      (null, null) => null,
+    };
+    return MenuSatiri(
+      ikonKutusu: TayfaAvatari.tayfadan(tayfa.tayfa, ad: ad),
+      tur: secili ? MenuSatiriTuru.vurgulu : MenuSatiriTuru.olagan,
+      icBosluk: const EdgeInsets.symmetric(
+        horizontal: TayfamSpacing.s12,
+        vertical: TayfamSpacing.s8,
+      ),
+      baslik: ad,
+      aciklama: ozet,
+      sag: !secili && bekleyen == null
           ? null
           : Row(
               mainAxisSize: MainAxisSize.min,
@@ -229,10 +233,50 @@ class _EtkinTayfaSatiri extends StatelessWidget {
                 if (bekleyen != null && secili)
                   const SizedBox(width: TayfamSpacing.s8),
                 if (secili)
-                  Icon(Icons.check, semanticLabel: metinler.tayfa_secili),
+                  Icon(
+                    Icons.check,
+                    color: context.renkler.marka,
+                    semanticLabel: metinler.tayfa_secili,
+                  ),
               ],
             ),
       onTap: onTap,
+    );
+  }
+}
+
+/// Onay bekleyen katılım isteği: soluk avatar, ad, "Onay bekliyor"
+/// etiketi ve "İsteği geri çek". Satıra dokunmak da geri çekme onayını
+/// açar.
+class _BekleyenTayfaSatiri extends StatelessWidget {
+  const _BekleyenTayfaSatiri({required this.ad, required this.onGeriCek});
+
+  final String ad;
+  final VoidCallback onGeriCek;
+
+  @override
+  Widget build(BuildContext context) {
+    final metinler = AppLocalizations.of(context);
+    return MenuSatiri(
+      ikonKutusu: TayfaAvatari(ad: ad, pasif: true),
+      icBosluk: const EdgeInsets.symmetric(
+        horizontal: TayfamSpacing.s12,
+        vertical: TayfamSpacing.s8,
+      ),
+      baslik: ad,
+      altOge: Etiket(
+        metin: metinler.tayfa_onay_bekliyor,
+        ton: EtiketTonu.mango,
+        ikon: Icons.schedule,
+      ),
+      sag: TextButton(
+        onPressed: onGeriCek,
+        style: TextButton.styleFrom(
+          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+        ),
+        child: Text(metinler.tayfa_geri_cek_dugmesi),
+      ),
+      onTap: onGeriCek,
     );
   }
 }

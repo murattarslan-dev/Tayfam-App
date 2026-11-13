@@ -7,12 +7,14 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Onay penceresi: başlık, açıklama, "Vazgeç" ve [onay] düğmesi. Onaylanırsa
-/// `true`.
+/// `true`. [yikici] ise (ayrıl, çıkar, banla, sil) onay düğmesi dolu
+/// yıkıcı düğmedir (ADR-0004 Notlar 2026-11-13).
 Future<bool> onayIste(
   BuildContext context, {
   required String baslik,
   required String aciklama,
   required String onay,
+  bool yikici = false,
 }) async {
   final sonuc = await showDialog<bool>(
     context: context,
@@ -30,13 +32,20 @@ Future<bool> onayIste(
             ),
             child: Text(m.yonetim_vazgec),
           ),
-          TextButton(
-            onPressed: () => Navigator.of(pencere).pop(true),
-            style: TextButton.styleFrom(
-              minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+          if (yikici)
+            YikiciEylem(
+              etiket: onay,
+              dolu: true,
+              onPressed: () => Navigator.of(pencere).pop(true),
+            )
+          else
+            TextButton(
+              onPressed: () => Navigator.of(pencere).pop(true),
+              style: TextButton.styleFrom(
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+              ),
+              child: Text(onay),
             ),
-            child: Text(onay),
-          ),
         ],
       );
     },

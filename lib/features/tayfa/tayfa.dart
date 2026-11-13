@@ -28,6 +28,7 @@ export 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart'
 export 'package:tayfam/features/tayfa/presentation/olusturma_ekrani.dart'
     show IlgiCipi, OlusturmaEkrani;
 export 'package:tayfam/features/tayfa/presentation/tayfa_ana_sayfa.dart';
+export 'package:tayfam/features/tayfa/presentation/tayfa_avatari.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_degistirme_paneli.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_ortak.dart'
     show bekleyenRozetMetni;

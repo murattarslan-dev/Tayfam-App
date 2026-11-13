@@ -172,4 +172,19 @@ abstract final class TayfamSizes {
 
   /// Odaklı ya da hatalı giriş alanının kenar kalınlığı (tasarım: 2 px).
   static const double alanOdakKenari = 2;
+
+  // Tayfa ana sayfası, tayfa menüsü ve ayarlar (2026-11-13 yeniden
+  // tasarım; tasarım: Ana-*.dc.html, Ayar-*.dc.html).
+
+  /// Tayfanın harf ya da kapak avatarı (44 px).
+  static const double tayfaAvatari = 44;
+
+  /// Menü ve ayar satırlarının solundaki ikon kutusu (40 px).
+  static const double menuIkonKutusu = 40;
+
+  /// Menü ve ayar satırının en küçük yüksekliği (64 px).
+  static const double menuSatiri = 64;
+
+  /// Sayı rozetinin en küçük kenarı (28 px; "Tayfa ayarları" girişi).
+  static const double rozet = 28;
 }
