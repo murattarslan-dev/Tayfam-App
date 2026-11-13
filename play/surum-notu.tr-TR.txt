@@ -5,4 +5,4 @@
 • Uygulamanın ilk test sürümü: tayfalar, etkinlikler, duyurular, soru-cevap, anketler ve sohbet.
 • Birebir mesajlar uçtan uca şifreli.
 • Kullanım koşulları ve aydınlatma metni güncellendi.
-• Arkadaşlar ekranı ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
+• Profil, arkadaşlar ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.

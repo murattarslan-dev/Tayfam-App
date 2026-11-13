@@ -21,12 +21,17 @@ class YikiciEylem extends StatelessWidget {
     required this.onPressed,
     this.ikon,
     this.dolu = false,
+    this.semantikEtiketi,
   });
 
   final String etiket;
   final VoidCallback? onPressed;
   final IconData? ikon;
   final bool dolu;
+
+  /// Görünen kısa etiketten farklı ekran okuyucu etiketi (ör. oturum
+  /// satırındaki "Kapat" için "Oturumu kapat").
+  final String? semantikEtiketi;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +44,11 @@ class YikiciEylem extends StatelessWidget {
       horizontal: TayfamSpacing.s16,
       vertical: TayfamSpacing.s12,
     );
-    final icerik = EylemIcerigi(etiket: etiket, ikon: ikon);
+    final icerik = EylemIcerigi(
+      etiket: etiket,
+      ikon: ikon,
+      semantikEtiketi: semantikEtiketi,
+    );
     return OdakCercevesi(
       koseler: TayfamRadii.dugmeKoseleri,
       child: dolu

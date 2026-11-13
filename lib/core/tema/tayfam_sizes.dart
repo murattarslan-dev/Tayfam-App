@@ -222,4 +222,7 @@ abstract final class TayfamSizes {
 
   /// Arkadaş ekle sayfasında bulunan kişinin avatarı (52 px).
   static const double avatarOrta = 52;
+
+  /// Hesap silme açıklamasındaki madde ikon kutusu (36 px).
+  static const double maddeKutusu = 36;
 }

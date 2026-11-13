@@ -6,15 +6,17 @@ import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/bilesenler/eylem_icerigi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/profil/application/oturumlar_notifier.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Açık oturumlar (ADR-0018 §2): cihaz başına bir satır; bu cihaz
-/// işaretlidir. Başka bir cihazın oturumu tek tek kapatılabilir; "Diğer
-/// cihazlardan çık" bu cihaz dışındakilerin hepsini kapatır. IP adresi ve
-/// token sunucudan gelmez, gösterilmez.
+/// Açık oturumlar (ADR-0018 §2; 2026-11-13 tasarım: Profil-Oturumlar):
+/// açıklama ve kartta cihaz başına bir satır; bu cihaz "Bu cihaz"
+/// etiketiyle işaretlidir. Başka bir cihazın oturumu tek tek
+/// kapatılabilir; "Diğer cihazlardan çık" bu cihaz dışındakilerin hepsini
+/// kapatır. IP adresi ve token sunucudan gelmez, gösterilmez.
 class OturumlarEkrani extends ConsumerWidget {
   const OturumlarEkrani({super.key});
 
@@ -127,23 +129,66 @@ class _ListeState extends ConsumerState<_Liste> {
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
+    final r = context.renkler;
     final digerVar = widget.oturumlar.any((o) => !o.current);
     return ListView(
-      padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        TayfamSpacing.kenarMobil,
+        TayfamSpacing.s4,
+        TayfamSpacing.kenarMobil,
+        TayfamSpacing.s40,
+      ),
       children: [
-        for (final oturum in widget.oturumlar)
-          _OturumSatiri(
-            oturum: oturum,
-            onKapat: oturum.current || _suruyor
-                ? null
-                : () => unawaited(_kapat(oturum)),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.s4,
+            0,
+            TayfamSpacing.s4,
+            TayfamSpacing.s16,
           ),
+          child: Text(
+            metinler.profil_oturumlar_sayfa_aciklama,
+            style: context.yazi.bodyMedium?.copyWith(color: r.metinGovde),
+          ),
+        ),
+        ListeKarti(
+          children: [
+            for (final oturum in widget.oturumlar)
+              _OturumSatiri(
+                oturum: oturum,
+                onKapat: oturum.current || _suruyor
+                    ? null
+                    : () => unawaited(_kapat(oturum)),
+              ),
+          ],
+        ),
         if (digerVar) ...[
-          const SizedBox(height: TayfamSpacing.s24),
-          IkincilEylem(
-            etiket: metinler.profil_diger_cihazlardan_cik,
-            ikon: Icons.logout,
-            onPressed: _suruyor ? null : () => unawaited(_digerleri()),
+          const SizedBox(height: TayfamSpacing.s20),
+          // Tasarım: tint-nar zemin, nar-metin yazı (açıkta 5.7:1, koyuda
+          // 7.4:1; ADR-0004 Notlar 2026-11-13).
+          OdakCercevesi(
+            koseler: TayfamRadii.hapKoseleri,
+            child: FilledButton(
+              onPressed: _suruyor ? null : () => unawaited(_digerleri()),
+              style: FilledButton.styleFrom(
+                backgroundColor: r.tintNar,
+                foregroundColor: r.narMetin,
+                disabledBackgroundColor: r.pasif,
+                disabledForegroundColor: r.pasifUstu,
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: TayfamSpacing.s20,
+                  vertical: TayfamSpacing.s12,
+                ),
+                shape: const StadiumBorder(),
+                side: BorderSide.none,
+                textStyle: context.yazi.labelLarge,
+              ),
+              child: EylemIcerigi(
+                etiket: metinler.profil_diger_cihazlardan_cik,
+                ikon: Icons.logout,
+              ),
+            ),
           ),
         ],
       ],
@@ -151,6 +196,9 @@ class _ListeState extends ConsumerState<_Liste> {
   }
 }
 
+/// Bir oturum (tasarım: Profil-Oturumlar): ikon kutusu, platform, son
+/// kullanım; bu cihazda teal "Bu cihaz" etiketi, diğerlerinde çerçeveli
+/// yıkıcı "Kapat" (ekran okuyucu: "Oturumu kapat").
 class _OturumSatiri extends StatelessWidget {
   const _OturumSatiri({required this.oturum, required this.onKapat});
 
@@ -160,35 +208,77 @@ class _OturumSatiri extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
+    final r = context.renkler;
     final zaman = DateFormat.yMMMd(metinler.localeName)
         .add_Hm()
         .format(oturum.lastSeenAt.toLocal());
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(switch (oturum.platform) {
-        DeviceSessionPlatform.android => Icons.phone_android,
-        DeviceSessionPlatform.ios => Icons.phone_iphone,
-        DeviceSessionPlatform.web => Icons.language,
-        DeviceSessionPlatform.unknown => Icons.devices_other,
-      }),
-      title: Text(switch (oturum.platform) {
-        DeviceSessionPlatform.android => metinler.profil_oturum_android,
-        DeviceSessionPlatform.ios => metinler.profil_oturum_ios,
-        DeviceSessionPlatform.web => metinler.profil_oturum_web,
-        DeviceSessionPlatform.unknown => metinler.profil_oturum_bilinmeyen,
-      }),
-      subtitle: Text(
-        oturum.current
-            ? metinler.profil_oturum_bu_cihaz
-            : metinler.profil_oturum_son_kullanim(zaman),
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: TayfamSpacing.s16,
+        vertical: TayfamSpacing.s12,
       ),
-      trailing: oturum.current
-          ? null
-          : IconButton(
-              tooltip: metinler.profil_oturum_kapat,
-              icon: const Icon(Icons.close),
-              onPressed: onKapat,
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: r.tintMarka,
+                borderRadius: TayfamRadii.dugmeKoseleri,
+              ),
+              child: SizedBox.square(
+                dimension: TayfamSizes.menuIkonKutusu,
+                child: Icon(
+                  switch (oturum.platform) {
+                    DeviceSessionPlatform.android => Icons.phone_android,
+                    DeviceSessionPlatform.ios => Icons.phone_iphone,
+                    DeviceSessionPlatform.web => Icons.language,
+                    DeviceSessionPlatform.unknown => Icons.devices_other,
+                  },
+                  size: TayfamSizes.ikon,
+                  color: r.tintMarkaUstu,
+                ),
+              ),
             ),
+          ),
+          const SizedBox(width: TayfamSpacing.s12),
+          Expanded(
+            child: Semantics(
+              container: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(switch (oturum.platform) {
+                    DeviceSessionPlatform.android =>
+                      metinler.profil_oturum_android,
+                    DeviceSessionPlatform.ios => metinler.profil_oturum_ios,
+                    DeviceSessionPlatform.web => metinler.profil_oturum_web,
+                    DeviceSessionPlatform.unknown =>
+                      metinler.profil_oturum_bilinmeyen,
+                  }, style: context.yazi.titleMedium),
+                  Text(
+                    metinler.profil_oturum_son_kullanim(zaman),
+                    style: context.yazi.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: TayfamSpacing.s8),
+          // Büyük yazıda sağdaki öğe de sarar; satır taşmaz.
+          Flexible(
+            child: oturum.current
+                ? Etiket(
+                    metin: metinler.profil_oturum_bu_cihaz,
+                    ton: EtiketTonu.teal,
+                  )
+                : YikiciEylem(
+                    etiket: metinler.profil_oturum_kapat_kisa,
+                    semantikEtiketi: metinler.profil_oturum_kapat,
+                    onPressed: onKapat,
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

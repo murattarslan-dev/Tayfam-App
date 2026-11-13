@@ -8,10 +8,12 @@ import 'package:tayfam/core/e2e/cihaz/e2e_cihaz.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
+import 'package:tayfam/features/arkadas/data/arkadas_deposu.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
 
 import '../../yardimcilar.dart';
+import '../arkadas/sahteler.dart' show arkadasTasimasi;
 import '../hesap/sahteler.dart';
 
 export '../hesap/sahteler.dart';
@@ -115,6 +117,8 @@ List<Override> profilOverridelari({
   BellekTemaTercihiDeposu? tema,
 }) => [
   profilDeposuProvider.overrideWithValue(ProfilDeposu(tasima)),
+  // Profildeki arkadaşlar bölümü ve son katılımlar: boş listeler.
+  arkadasDeposuProvider.overrideWithValue(ArkadasDeposu(arkadasTasimasi())),
   hesapDeposuProvider.overrideWithValue(HesapDeposu(tasima)),
   hesapPlatformuProvider.overrideWithValue('android'),
   sessionStoreProvider.overrideWithValue(oturum.store),
