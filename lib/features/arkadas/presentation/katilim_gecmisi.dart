@@ -226,7 +226,7 @@ class _KesikCerceve extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final yari = TayfamSizes.vurguKenari / 2;
+    const yari = TayfamSizes.vurguKenari / 2;
     final kutu = TayfamRadii.kartKoseleri.toRRect(
       Rect.fromLTWH(yari, yari, size.width - yari * 2, size.height - yari * 2),
     );
