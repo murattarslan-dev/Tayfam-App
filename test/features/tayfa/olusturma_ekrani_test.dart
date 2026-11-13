@@ -38,9 +38,9 @@ Future<SahteTayfaTasima> _ac(
     tayfa: tayfaOverridelari(tasima: tasima, paylasici: paylasici),
     overrides: overrides,
   );
-  await tester.ensureVisible(find.text(arbMetni('karsilama_tayfa_olustur')));
+  await tester.ensureVisible(find.text(arbMetni('karsilama_tayfa_kur')));
   await tester.pumpAndSettle();
-  await tester.tap(find.text(arbMetni('karsilama_tayfa_olustur')));
+  await tester.tap(find.text(arbMetni('karsilama_tayfa_kur')));
   await tester.pumpAndSettle();
   expect(find.byType(OlusturmaEkrani), findsOneWidget);
   return tasima;
@@ -248,7 +248,7 @@ void main() {
     expect(find.byType(OlusturmaEkrani), findsNothing);
 
     // Yeniden açılan sihirbaz boştur; X onaysız kapanır.
-    await _dokun(tester, 'karsilama_tayfa_olustur');
+    await _dokun(tester, 'karsilama_tayfa_kur');
     expect(find.byType(OlusturmaEkrani), findsOneWidget);
     await tester.tap(find.byIcon(Icons.close));
     await tester.pumpAndSettle();

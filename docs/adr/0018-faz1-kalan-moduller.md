@@ -291,6 +291,29 @@ göre mimari oturumunca belirlenir.
     "Cevap ver"); iptal edilenin başlığı üstü çizili ve "İptal edildi"
     etiketli (ana sayfada da). "Etkinlik aç" kayan düğmeden başlığa taşındı;
     yetkiye sunucu karar verir.
+- **2026-11-13 (platform sahibi, tasarım kararı; issue #153): davet
+  linki ekranı yeniden tasarımı (§6; tasarım:
+  `docs/tasarim/16-karsilama-ve-davet/` Davet-Onizleme, Davet-Gonderildi,
+  Davet-Uye, Davet-Gecersiz).** Token akışı ve link doğrulaması
+  değişmedi: token yalnızca bellekteki kutuda ve istek gövdesindedir,
+  adrese, ekrana, diske ve log'a girmez (kesin kural 9).
+  - Uygulama çubuğu yerine mor üst bölüm (`MarkaYuzeyi`; sağda yuvarlak
+    X) ve ona taşan beyaz kart: tayfanın harf avatarı (önizlemede kapak
+    ve ilgi alanı olmadığı için genel tür rengi), adı ve üye sayısı.
+    Önizlemede yalnızca sözleşmedeki alanlar (ad, üye sayısı, zaten üye)
+    kullanılır.
+  - Önizleme: açıklama, altta sabit "Tayfaya katıl" / "Vazgeç".
+    Sonuçlar aynı iskelettedir: onay bekliyor (teal kutu + "Tamam"),
+    zaten üye (tint-brand kutu + "Tayfaya git").
+  - Açılamadı: mor bölümde link ikonu, "Bu davet linki açılamadı" ve
+    neden (bekleyen davet yoksa genel metin, sunucu hatasında ortak
+    eşlemeden gelen metin). Link kullanılamıyorsa birincil eylem "Tayfa
+    kodum var"dır: davet bırakılır, kod sayfası açılır, sayfa kapanınca
+    ana adrese dönülür. Bağlantı ve sunucu hatalarında birincil eylem
+    "Tekrar dene"dir. İkincil eylem "Kapat".
+  - Girişten önce gelen davet Giris-Davet tasarımındaki gibidir
+    (değişmedi).
+
 - **2026-11-13 (platform sahibi; issue #155): Anket ekranlarının yeniden
   tasarımı (§5).** Tasarım: `docs/tasarim/15-duyuru-anket-soru-cevap/`
   (Anketler, Anket-Oy, Anket-Sonuc, Anket-Oy-Verenler, Anket-Gizli,
