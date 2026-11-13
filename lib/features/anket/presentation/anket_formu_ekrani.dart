@@ -126,11 +126,11 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          BirincilEylem(
+          _GonderDugmesi(
             etiket: m.anket_form_gonder,
             onPressed: kilitli ? null : () => unawaited(_notifier.gonder()),
           ),
-          const SizedBox(width: TayfamSpacing.s12),
+          const SizedBox(width: TayfamSpacing.s8),
         ],
       ),
       body: SafeArea(
@@ -295,6 +295,48 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Üst çubuktaki "Anketi aç" (tasarım: Anket-Form): birincil eylem
+/// renklerinde hap. Ekranın en çok yarısını kaplar; büyük yazıda dar
+/// ekranda etiket taşmak yerine küçülür.
+class _GonderDugmesi extends StatelessWidget {
+  const _GonderDugmesi({required this.etiket, required this.onPressed});
+
+  final String etiket;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.sizeOf(context).width / 2,
+      ),
+      child: OdakCercevesi(
+        koseler: TayfamRadii.hapKoseleri,
+        child: FilledButton(
+          onPressed: onPressed,
+          style: FilledButton.styleFrom(
+            backgroundColor: r.birincilEylem,
+            foregroundColor: r.birincilEylemUstu,
+            disabledBackgroundColor: r.pasif,
+            disabledForegroundColor: r.pasifUstu,
+            minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s16),
+            shape: const StadiumBorder(),
+            // Odak çerçevesini OdakCercevesi çizer.
+            side: BorderSide.none,
+            textStyle: context.yazi.labelLarge,
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(etiket, maxLines: 1),
           ),
         ),
       ),
