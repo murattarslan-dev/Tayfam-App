@@ -260,9 +260,8 @@ class _UyeSatiri extends ConsumerWidget {
     uye: uye,
     eylemler: eylemler,
     simdi: simdi,
-    notifier: () => ref.read(
-      uyelerProvider((tayfaId: tayfaId, banlilar: false)).notifier,
-    ),
+    notifier: () =>
+        ref.read(uyelerProvider((tayfaId: tayfaId, banlilar: false)).notifier),
   );
 }
 

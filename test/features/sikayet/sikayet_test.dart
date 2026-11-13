@@ -526,7 +526,11 @@ void main() {
         // Başlığın altında tayfanın adı; seçicide açık sayısı.
         expect(find.text('Klasikçiler'), findsOneWidget);
         expect(find.text('Açık · 1'), findsOneWidget);
-        expect(find.text(arbMetni('sikayet_oncelikli')), findsOneWidget);
+        // Etiket ikonlu Text.rich'tir.
+        expect(
+          find.text(arbMetni('sikayet_oncelikli'), findRichText: true),
+          findsOneWidget,
+        );
         expect(find.text(arbMetni('sikayet_oncelikli_not')), findsOneWidget);
         expect(
           find.text(arbMetni('sikayet_gerekce_cocuk_guvenligi')),
