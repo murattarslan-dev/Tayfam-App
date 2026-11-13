@@ -223,10 +223,8 @@ class _UstCubuk extends StatelessWidget {
     );
     return AnimatedBuilder(
       animation: denetleyici,
-      builder: (context, child) => ColoredBox(
-        color: _bantRengi(r, _konum()),
-        child: child,
-      ),
+      builder: (context, child) =>
+          ColoredBox(color: _bantRengi(r, _konum()), child: child),
       child: icerik,
     );
   }
