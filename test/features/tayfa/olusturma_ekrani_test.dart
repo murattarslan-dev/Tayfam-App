@@ -141,6 +141,10 @@ void main() {
 
     await _dokun(tester, 'kuruldu_kopyala');
     expect(paylasici.kopyalanan, [sahteKod]);
+    // "Kopyalandı" bildirimi alttaki düğmenin üstünü kapatır; kapanmasını
+    // bekle.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
 
     await _dokun(tester, 'kuruldu_tayfaya_git');
     expect(find.byType(TayfaKurulduEkrani), findsNothing);
