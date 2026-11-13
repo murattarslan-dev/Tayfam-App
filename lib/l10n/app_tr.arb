@@ -3331,10 +3331,6 @@
   "@anket_oy_verdin": {
     "description": "Kullanıcının oy verdiği anketin kartındaki etiket."
   },
-  "anket_oy_ver": "Oy ver",
-  "@anket_oy_ver": {
-    "description": "Seçilen seçeneklerle oyu gönderen düğme."
-  },
   "anket_oyu_degistir": "Oyunu değiştir",
   "@anket_oyu_degistir": {
     "description": "Oy vermiş kullanıcının seçimini yeniden yapmasını sağlayan düğme."
@@ -3383,10 +3379,6 @@
   "@anket_kapatildi": {
     "description": "Anket kapatılınca kısa bildirim."
   },
-  "anket_oy_verenler": "Oy verenler",
-  "@anket_oy_verenler": {
-    "description": "Açık (gizli olmayan) ankette bir seçeneğe oy verenlerin listesinin başlığı."
-  },
   "anket_oy_verenler_bos": "Bu seçeneğe henüz oy veren yok.",
   "@anket_oy_verenler_bos": {
     "description": "Oy verenler listesi boşken görünen metin."
@@ -3394,10 +3386,6 @@
   "anket_oy_verenler_ipucu": "Oy verenleri görmek için seçeneğe dokun.",
   "@anket_oy_verenler_ipucu": {
     "description": "Açık (gizli olmayan) ankette sonuçların altında görünen ipucu. Gizli ankette gösterilmez."
-  },
-  "anket_acan": "Açan",
-  "@anket_acan": {
-    "description": "Anket ekranında anketi açan kişinin adının önündeki etiket."
   },
   "anket_etkinlige_git": "Bağlı etkinliği aç",
   "@anket_etkinlige_git": {
@@ -3453,10 +3441,6 @@
   "@anket_form_gizli_notu": {
     "description": "Anket formunda gizli anket anahtarının altındaki not."
   },
-  "anket_form_kapanis_yok": "Kapanış zamanı yok; elle kapatılana kadar açık kalır.",
-  "@anket_form_kapanis_yok": {
-    "description": "Anket formunda kapanış zamanı seçilmemişken görünen metin."
-  },
   "anket_form_kapanis_sec": "Kapanış zamanı seç",
   "@anket_form_kapanis_sec": {
     "description": "Anket formunda kapanış günü ve saatini seçtiren düğme."
@@ -3480,6 +3464,168 @@
   "anket_acildi": "Anket açıldı.",
   "@anket_acildi": {
     "description": "Anket açılınca kısa bildirim."
+  },
+  "anket_bolum_acik": "Açık",
+  "@anket_bolum_acik": {
+    "description": "Anket listesinde açık anketlerin bölüm başlığı."
+  },
+  "anket_bolum_kapanan": "Kapanan",
+  "@anket_bolum_kapanan": {
+    "description": "Anket listesinde kapanmış anketlerin bölüm başlığı."
+  },
+  "anket_karti_kapanir": "{tarih} kapanır",
+  "@anket_karti_kapanir": {
+    "description": "Anket kartında açık anketin planlanan kapanma günü, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-20"
+      }
+    }
+  },
+  "anket_karti_kapandi": "{tarih} kapandı",
+  "@anket_karti_kapandi": {
+    "description": "Anket kartında kapanmış anketin kapandığı gün, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-06"
+      }
+    }
+  },
+  "anket_karti_ozet": "{oy} · {ek}",
+  "@anket_karti_ozet": {
+    "description": "Anket kartındaki özet satırı: oy veren sayısı ve kapanış ya da 'Gizli anket'.",
+    "placeholders": {
+      "oy": {
+        "type": "String",
+        "example": "14 kişi oy verdi"
+      },
+      "ek": {
+        "type": "String",
+        "example": "20 Kas kapanır"
+      }
+    }
+  },
+  "anket_elle_kapanana_kadar": "Elle kapatılana kadar açık",
+  "@anket_elle_kapanana_kadar": {
+    "description": "Kapanış zamanı olmayan açık anketin durum satırında ve anket formunun kapanış kutusunda."
+  },
+  "anket_gizli_kutu_baslik": "Gizli anket.",
+  "@anket_gizli_kutu_baslik": {
+    "description": "Anket ekranındaki gizli anket bilgi kutusunun kalın ilk cümlesi; ardından gizlilik açıklaması gelir."
+  },
+  "anket_oy_veren_cumlesi": "{sayi, plural, =0{Henüz oy yok.} other{{sayi} kişi oy verdi.}}",
+  "@anket_oy_veren_cumlesi": {
+    "description": "Anket sonuçlarının üstündeki ve gizli anket eşik kutusundaki toplam oy veren cümlesi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
+  "anket_oyu_gonder": "{sayi, plural, =0{Oyu gönder} other{Oyu gönder ({sayi} seçenek)}}",
+  "@anket_oyu_gonder": {
+    "description": "Anket ekranının altındaki oy gönderme düğmesi; çok seçimli ankette seçilen seçenek sayısıyla.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "anket_alt_ozet": "{oy} · Açan: {ad}",
+  "@anket_alt_ozet": {
+    "description": "Oy verme ekranının altındaki özet: oy veren sayısı ve anketi açanın görünen adı.",
+    "placeholders": {
+      "oy": {
+        "type": "String",
+        "example": "14 kişi oy verdi"
+      },
+      "ad": {
+        "type": "String",
+        "example": "Mert Aydın"
+      }
+    }
+  },
+  "anket_acan_satiri": "Açan: {ad}",
+  "@anket_acan_satiri": {
+    "description": "Anket sonuçlarının altında anketi açanın görünen adı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Mert Aydın"
+      }
+    }
+  },
+  "anket_coklu_yuzde_notu": "Çoklu seçimde yüzdeler oy veren kişi sayısına göredir; toplam %100'ü geçebilir.",
+  "@anket_coklu_yuzde_notu": {
+    "description": "Çok seçimli anketin sonuçlarının altındaki not."
+  },
+  "anket_oy_veren_sen": "{ad} (sen)",
+  "@anket_oy_veren_sen": {
+    "description": "Oy verenler listesinde kullanıcının kendi satırı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Mert Aydın"
+      }
+    }
+  },
+  "anket_form_secenekler": "Seçenekler",
+  "@anket_form_secenekler": {
+    "description": "Anket formunda seçenek alanlarının başlığı."
+  },
+  "anket_form_secenek_araligi": "({enAz}–{enCok})",
+  "@anket_form_secenek_araligi": {
+    "description": "Anket formunda 'Seçenekler' başlığının yanında en az ve en çok seçenek sayısı.",
+    "placeholders": {
+      "enAz": {
+        "type": "int",
+        "example": "2"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "anket_form_coklu_aciklama": "Oy veren birden fazla seçeneği işaretleyebilir.",
+  "@anket_form_coklu_aciklama": {
+    "description": "Anket formunda 'Birden çok seçenek seçilebilsin' anahtarının açıklaması."
+  },
+  "anket_form_kapanis": "Kapanış",
+  "@anket_form_kapanis": {
+    "description": "Anket formunda kapanış zamanı kutusunun küçük etiketi."
+  },
+  "anket_secenek_oy": "{sayi, plural, =0{Oy yok} other{{sayi} oy}}",
+  "@anket_secenek_oy": {
+    "description": "Anket sonuçlarında bir seçeneğin oy sayısı (çubuğun altında).",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "anket_kapanis_degeri": "{tarih}, {saat}",
+  "@anket_kapanis_degeri": {
+    "description": "Anket formunun kapanış kutusunda seçilen gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMMd",
+        "example": "2026-11-20"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-20T18:00"
+      }
+    }
   },
   "hesap_slogan": "Birlikte yapınca güzel.",
   "@hesap_slogan": {

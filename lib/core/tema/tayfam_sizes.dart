@@ -84,6 +84,7 @@ abstract final class TayfamSizes {
   static const double yukleniyorEnAzSaydamlik = .45;
 
   /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
+
   /// dokunma alanı 48'in üstünde).
   static const double girisDugmesi = 52;
 

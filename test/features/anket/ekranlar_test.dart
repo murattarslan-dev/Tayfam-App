@@ -7,6 +7,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/anket/presentation/anket_ekrani.dart';
 import 'package:tayfam/features/anket/presentation/anket_karti.dart';
+import 'package:tayfam/features/anket/presentation/anket_sonuclari.dart';
 import 'package:tayfam/features/anket/presentation/anketler_ekrani.dart';
 import 'package:tayfam/shell/kayitlar.dart';
 
@@ -78,6 +79,10 @@ Future<void> _yalnizcaSikayet(WidgetTester tester) async {
 
 final Finder _seninOyun = find.text(arbMetni('anket_senin_oyun'));
 final Finder _esikNotu = find.textContaining('5 oydan sonra görünür');
+final Finder _ipucu = find.textContaining(arbMetni('anket_oy_verenler_ipucu'));
+final Finder _secenekKutusu = find.byType(OySecenegi);
+final Finder _sonucSecenegi = find.byType(AnketSonucSecenegi);
+final Finder _oyuGonder = find.text('Oyu gönder');
 
 void main() {
   group('gizli anket (kesin kural 7)', () {
@@ -97,21 +102,30 @@ void main() {
       );
       await _anketiAc(tester, tasima);
 
-      expect(find.byType(AnketCubugu), findsNothing);
+      expect(_sonucSecenegi, findsNothing);
       expect(_esikNotu, findsOneWidget);
-      expect(find.text('3 kişi oy verdi'), findsOneWidget);
+      expect(find.textContaining('3 kişi oy verdi.'), findsOneWidget);
+      expect(find.textContaining('%'), findsNothing);
+      expect(find.text('2 oy'), findsNothing);
+      expect(find.text('1 oy'), findsNothing);
       expect(find.text('2'), findsNothing);
       expect(find.text('1'), findsNothing);
-      expect(find.text(arbMetni('anket_gizli')), findsOneWidget);
-      expect(find.text(arbMetni('anket_gizli_aciklama')), findsOneWidget);
-      // Kendi oyu yalnızca kendisine, yalnızca kendi seçeneğinde.
+      expect(
+        find.textContaining(arbMetni('anket_gizli_kutu_baslik')),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(arbMetni('anket_gizli_aciklama')),
+        findsOneWidget,
+      );
+      // Kendi oyu yalnızca kendisine, yalnızca kendi seçeneğinin satırında.
       expect(_seninOyun, findsOneWidget);
       expect(
-        tester.getTopLeft(_seninOyun).dy,
+        tester.getCenter(_seninOyun).dy,
         greaterThan(tester.getTopLeft(find.text('Moda sahili')).dy),
       );
       expect(
-        tester.getTopLeft(_seninOyun).dy,
+        tester.getCenter(_seninOyun).dy,
         lessThan(tester.getTopLeft(find.text('Belgrad ormanı')).dy),
       );
       // Seçenekler dokunulmaz; oy verenler istenmez.
@@ -119,7 +133,30 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(BottomSheet), findsNothing);
       expect(tasima.giden('GET', oyVerenlerYolu), isEmpty);
-      expect(find.text(arbMetni('anket_oy_verenler_ipucu')), findsNothing);
+      expect(_ipucu, findsNothing);
+    });
+
+    testWidgets('eşiğin bir altında (4 oy) da sonuç yok', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _anketiAc(
+        tester,
+        _tekAnket(
+          anketJson(
+            anketId1,
+            gizli: true,
+            coklu: true,
+            oyVeren: 4,
+            oylar: [4, 3, 1],
+            kendi: [secenekA],
+          ),
+        ),
+      );
+      expect(_sonucSecenegi, findsNothing);
+      expect(_esikNotu, findsOneWidget);
+      expect(find.textContaining('4 kişi oy verdi.'), findsOneWidget);
+      expect(find.textContaining('%'), findsNothing);
+      // Çoklu seçim yüzde notu da yalnızca sayılar görünürken.
+      expect(find.text(arbMetni('anket_coklu_yuzde_notu')), findsNothing);
     });
 
     testWidgets('eşikte sayılar görünür, oy verenler yine istenmez', (
@@ -140,19 +177,25 @@ void main() {
       );
       await _anketiAc(tester, tasima);
 
-      expect(find.byType(AnketCubugu), findsNWidgets(3));
+      expect(_sonucSecenegi, findsNWidgets(3));
       expect(_esikNotu, findsNothing);
       expect(_seninOyun, findsOneWidget);
+      expect(find.text('%60'), findsOneWidget);
+      expect(find.text('%40'), findsOneWidget);
       final onde = tester
-          .widgetList<AnketCubugu>(find.byType(AnketCubugu))
+          .widgetList<AnketSonucSecenegi>(_sonucSecenegi)
           .where((c) => c.onde);
-      expect(onde.single.secenek, 'Moda sahili');
+      expect(onde.single.secenek.text, 'Moda sahili');
+      final kendi = tester
+          .widgetList<AnketSonucSecenegi>(_sonucSecenegi)
+          .where((c) => c.kendi);
+      expect(kendi.single.secenek.text, 'Belgrad ormanı');
 
       await tester.tap(find.text('Moda sahili'));
       await tester.pumpAndSettle();
       expect(find.byType(BottomSheet), findsNothing);
       expect(tasima.giden('GET', oyVerenlerYolu), isEmpty);
-      expect(find.text(arbMetni('anket_oy_verenler_ipucu')), findsNothing);
+      expect(_ipucu, findsNothing);
     });
 
     testWidgets('yöneticiye de oy verenler gösterilmiyor', (tester) async {
@@ -183,23 +226,46 @@ void main() {
           'GET $oyVerenlerYolu': yanit({
             'voters': [
               {'user_id': digerId, 'voted_at': '2026-11-10T11:00:00Z'},
+              {'user_id': benimId, 'voted_at': '2026-11-10T11:05:00Z'},
             ],
           }),
         },
       );
       await _anketiAc(tester, tasima);
 
-      expect(find.byType(AnketCubugu), findsNWidgets(3));
-      expect(find.text(arbMetni('anket_oy_verenler_ipucu')), findsOneWidget);
+      expect(_sonucSecenegi, findsNWidgets(3));
+      expect(_ipucu, findsOneWidget);
+      expect(find.textContaining('2 kişi oy verdi.'), findsOneWidget);
       expect(_seninOyun, findsOneWidget);
+      // Yüzde oy veren kişi sayısına göre; seçenek başına oy sayısı.
+      expect(find.text('%50'), findsNWidgets(2));
+      expect(find.text('%0'), findsOneWidget);
+      expect(find.text('1 oy'), findsNWidgets(2));
+      expect(find.text('Oy yok'), findsOneWidget);
+      expect(find.text('Açan: Ayşe Yılmaz'), findsOneWidget);
 
       await tester.tap(find.text('Belgrad ormanı'));
       await tester.pumpAndSettle();
 
       final istek = tasima.giden('GET', oyVerenlerYolu).single;
       expect(istek.yolParametreleri['option_id'], secenekB);
-      expect(find.text(arbMetni('anket_oy_verenler')), findsOneWidget);
-      expect(find.text('Ayşe Yılmaz'), findsWidgets);
+      final sayfa = find.byType(BottomSheet);
+      expect(
+        find.descendant(of: sayfa, matching: find.text('Belgrad ormanı')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: sayfa, matching: find.text('1 kişi oy verdi')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: sayfa, matching: find.text('Ayşe Yılmaz')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: sayfa, matching: find.text('Ben Üye (sen)')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('oyu olmayan seçenek dokunulmuyor', (tester) async {
@@ -232,12 +298,18 @@ void main() {
       );
       await _anketiAc(tester, tasima);
 
-      expect(find.byType(RadioListTile<String>), findsNWidgets(3));
-      final oyVer = find.text(arbMetni('anket_oy_ver'));
+      expect(_secenekKutusu, findsNWidgets(3));
+      expect(find.text(arbMetni('anket_tek_secim')), findsOneWidget);
+      expect(find.text(arbMetni('anket_elle_kapanana_kadar')), findsOneWidget);
+      expect(find.text('Henüz oy yok · Açan: Ayşe Yılmaz'), findsOneWidget);
+      // Tek seçimde düğmede sayı yok; seçim yokken düğme devre dışı.
       expect(
         tester
             .widget<FilledButton>(
-              find.ancestor(of: oyVer, matching: find.byType(FilledButton)),
+              find.ancestor(
+                of: _oyuGonder,
+                matching: find.byType(FilledButton),
+              ),
             )
             .onPressed,
         isNull,
@@ -245,14 +317,25 @@ void main() {
 
       await tester.tap(find.text('Belgrad ormanı'));
       await tester.pumpAndSettle();
-      await _dokun(tester, oyVer);
+      final secili = tester
+          .widgetList<OySecenegi>(_secenekKutusu)
+          .where((s) => s.secili);
+      expect(secili.single.metin, 'Belgrad ormanı');
+      expect(_oyuGonder, findsOneWidget);
+      // Tek seçimde başka seçenek öncekinin yerini alır.
+      await tester.tap(find.text('Moda sahili'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Belgrad ormanı'));
+      await tester.pumpAndSettle();
+      await _dokun(tester, _oyuGonder);
 
       expect(tasima.giden('PUT', oyYolu).single.govde, {
         'option_ids': [secenekB],
       });
       expect(find.text(arbMetni('anket_oy_kaydedildi')), findsOneWidget);
-      expect(find.byType(AnketCubugu), findsNWidgets(3));
+      expect(_sonucSecenegi, findsNWidgets(3));
       expect(_seninOyun, findsOneWidget);
+      expect(_oyuGonder, findsNothing);
     });
 
     testWidgets('çok seçimli ankette kutular', (tester) async {
@@ -273,16 +356,20 @@ void main() {
       );
       await _anketiAc(tester, tasima);
 
-      expect(find.byType(CheckboxListTile), findsNWidgets(3));
+      expect(_secenekKutusu, findsNWidgets(3));
+      expect(find.text(arbMetni('anket_coklu_secim')), findsOneWidget);
       await tester.tap(find.text('Şile feneri'));
       await tester.tap(find.text('Moda sahili'));
       await tester.pumpAndSettle();
-      await _dokun(tester, find.text(arbMetni('anket_oy_ver')));
+      // Düğmede seçilen sayısı yazar.
+      await _dokun(tester, find.text('Oyu gönder (2 seçenek)'));
 
       expect(tasima.giden('PUT', oyYolu).single.govde, {
         'option_ids': [secenekA, secenekC],
       });
       expect(_seninOyun, findsNWidgets(2));
+      expect(find.text('%100'), findsNWidgets(2));
+      expect(find.text(arbMetni('anket_coklu_yuzde_notu')), findsOneWidget);
     });
 
     testWidgets('oy reddedilirse hata bildiriliyor, seçim kalıyor', (
@@ -300,7 +387,7 @@ void main() {
       await _anketiAc(tester, tasima);
       await tester.tap(find.text('Moda sahili'));
       await tester.pumpAndSettle();
-      await _dokun(tester, find.text(arbMetni('anket_oy_ver')));
+      await _dokun(tester, _oyuGonder);
 
       expect(
         find.descendant(
@@ -309,7 +396,11 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.byType(RadioListTile<String>), findsNWidgets(3));
+      expect(_secenekKutusu, findsNWidgets(3));
+      final secili = tester
+          .widgetList<OySecenegi>(_secenekKutusu)
+          .where((s) => s.secili);
+      expect(secili.single.metin, 'Moda sahili');
     });
 
     testWidgets('oy değiştirme ve geri çekme', (tester) async {
@@ -321,15 +412,34 @@ void main() {
       await _anketiAc(tester, tasima);
 
       await _dokun(tester, find.text(arbMetni('anket_oyu_degistir')));
-      expect(find.byType(RadioListTile<String>), findsNWidgets(3));
+      expect(_secenekKutusu, findsNWidgets(3));
+      // Değiştirirken mevcut oy seçili gelir.
+      final secili = tester
+          .widgetList<OySecenegi>(_secenekKutusu)
+          .where((s) => s.secili);
+      expect(secili.single.metin, 'Moda sahili');
       await _dokun(tester, find.text(arbMetni('anket_vazgec')));
-      expect(find.byType(AnketCubugu), findsNWidgets(3));
+      expect(_sonucSecenegi, findsNWidgets(3));
 
       await _dokun(tester, find.text(arbMetni('anket_oyu_geri_cek')));
       expect(tasima.giden('DELETE', oyYolu), hasLength(1));
       expect(find.text(arbMetni('anket_oy_geri_cekildi')), findsOneWidget);
-      expect(find.byType(RadioListTile<String>), findsNWidgets(3));
+      expect(_secenekKutusu, findsNWidgets(3));
       expect(_seninOyun, findsNothing);
+    });
+
+    testWidgets('oy vermeden sonuçlara geçip geri dönülüyor', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _anketiAc(
+        tester,
+        _tekAnket(anketJson(anketId1, oyVeren: 3, oylar: [2, 1, 0])),
+      );
+      await _dokun(tester, find.text(arbMetni('anket_sonuclari_gor')));
+      expect(_sonucSecenegi, findsNWidgets(3));
+      expect(_oyuGonder, findsNothing);
+      expect(find.text(arbMetni('anket_oyu_degistir')), findsNothing);
+      await _dokun(tester, find.text(arbMetni('anket_oy_vermeye_don')));
+      expect(_secenekKutusu, findsNWidgets(3));
     });
 
     testWidgets('kapanmış ankette oy düğmesi yok', (tester) async {
@@ -341,9 +451,9 @@ void main() {
         ),
       );
       expect(find.text(arbMetni('anket_kapandi')), findsOneWidget);
-      expect(find.text(arbMetni('anket_oy_ver')), findsNothing);
+      expect(_oyuGonder, findsNothing);
       expect(find.text(arbMetni('anket_oyu_degistir')), findsNothing);
-      expect(find.byType(AnketCubugu), findsNWidgets(3));
+      expect(_sonucSecenegi, findsNWidgets(3));
       await _yalnizcaSikayet(tester);
     });
   });
@@ -441,17 +551,43 @@ void main() {
         anketTasimasi({
           'GET $anketlerYolu': yanit(
             anketListesiJson([
-              anketJson(anketId1, soru: 'Açık soru', kendi: [secenekA]),
+              anketJson(
+                anketId1,
+                soru: 'Açık soru',
+                kendi: [secenekA],
+                oyVeren: 4,
+                kapanis: '2026-11-20T12:00:00Z',
+              ),
               anketJson(anketId2, soru: 'Kapalı soru', kapali: true),
+              anketJson(anketId3, soru: 'Gizli soru', gizli: true, oyVeren: 3),
             ]),
           ),
         }),
       );
-      expect(find.byType(AnketKarti), findsNWidgets(2));
-      expect(find.text(arbMetni('anket_acik')), findsOneWidget);
+      expect(find.byType(AnketKarti), findsNWidgets(3));
+      // "Açık" bölüm başlığı ve iki açık anketin çipi.
+      expect(find.text(arbMetni('anket_bolum_acik')), findsNWidgets(3));
+      expect(find.text(arbMetni('anket_bolum_kapanan')), findsOneWidget);
       expect(find.text(arbMetni('anket_kapandi')), findsOneWidget);
       expect(find.text(arbMetni('anket_oy_verdin')), findsOneWidget);
       expect(find.text(arbMetni('anket_ac')), findsOneWidget);
+      // Kartta oy sayısı ve kapanış ya da "Gizli anket"; seçenek sayısı yok.
+      expect(find.textContaining('4 kişi oy verdi · '), findsOneWidget);
+      expect(find.textContaining('kapanır'), findsOneWidget);
+      expect(find.text('3 kişi oy verdi · Gizli anket'), findsOneWidget);
+      expect(find.textContaining('%'), findsNothing);
+      // Kapanan bölüm açık anketlerin altında.
+      final kapananBasligi = tester.getTopLeft(
+        find.text(arbMetni('anket_bolum_kapanan')),
+      );
+      expect(
+        kapananBasligi.dy,
+        greaterThan(tester.getTopLeft(find.text('Gizli soru')).dy),
+      );
+      expect(
+        kapananBasligi.dy,
+        lessThan(tester.getTopLeft(find.text('Kapalı soru')).dy),
+      );
     });
 
     testWidgets('boş liste ve etkinlik süzgeci', (tester) async {
@@ -659,6 +795,7 @@ void main() {
           themeMode: mod,
         );
         expect(tester.takeException(), isNull);
+        expect(_oyuGonder, findsOneWidget);
         await tester.dragUntilVisible(
           find.text(arbMetni('anket_sonuclari_gor')),
           find.byType(ListView),
@@ -718,7 +855,13 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         await _dokun(tester, find.text('Belgrad ormanı'));
-        expect(find.text(arbMetni('anket_oy_verenler')), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(BottomSheet),
+            matching: find.text('Belgrad ormanı'),
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       });
 
