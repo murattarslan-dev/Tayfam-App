@@ -55,7 +55,13 @@ Map<String, Object?> hesapJson({
   'user_id': kimlik,
   'display_name': ad,
   'referral_code': kod,
-  'activity_visibility': gorunurluk,
+  'activity_visibility': gorunurluk,  'birthday_visibility': 'birthday',
+  'interests': const <Object?>[],
+  'languages': const <Object?>[],
+  'social_accounts': const <Object?>[],
+  'declined_profile_fields': const <Object?>[],
+  'about_visibility': 'friends_and_mutual',
+  'profile_completion_pending': false,
 };
 
 /// `DeviceSession` JSON'u.
