@@ -180,3 +180,43 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
        yapmaz.
   - **Gerekçe:** kurulan tayfanın yaşaması ilk günlerde üye gelmesine
     bağlıdır. Kurucuyu ilk iş olarak arkadaşlarını çağırmaya yöneltir.
+
+- **2026-11-13 (platform sahibi, tasarım kararı; issue #153): karşılama
+  ekranı yeniden tasarımı (§2–3; tasarım: `docs/tasarim/16-karsilama-ve-davet/`
+  Karsilama, Karsilama-Bekleyen).** Akış ve uçlar değişmedi.
+  - Logo, "Tayfanı bul, birlikte yola çık." başlığı ve iki büyük seçim
+    kartı: "Tayfa kodum var" (birincil, tam yüzey mor; §3'teki alttan kod
+    sayfasını açar) ve "Tayfa kur" (kart zemini; §4'teki sihirbaz). Altında
+    davet linki ipucu ve etkinlik türleri şeridi (kart zeminli haplar,
+    türün renginde daire ve ikon).
+  - §2'deki bilgi kartı tint-brand durum kartıdır ve altında onaylı
+    "İsteği geri çek" bağlantısı vardır (paneldeki onay penceresinin
+    aynısı, `DELETE /v1/tayfas/{id}/membership`). Bekleyen tayfanın yine
+    yalnızca adı görünür.
+  - **Kodlanmadı (onay bekliyor):** arkadaştan gelen tayfa daveti için
+    karşılamanın üstündeki "Seni bekleyen davet" kartı
+    (Karsilama-Davetli, `GET /v1/me/invitations`) platform sahibinin onayı
+    olmadığı için bu değişikliğe girmedi.
+- **2026-11-13 (uygulama, #152):** Yukarıdaki kurallar kodlandı.
+  - Sihirbaz iskeleti (`SihirbazUstCubugu`, `SihirbazAltCubugu`,
+    `AdimBasligi`, `IkiSutunluIzgara`) etkinlik özelliğinden
+    `core/bilesenler/sihirbaz_iskeleti.dart`'a taşındı; iki sihirbaz aynı
+    bileşenleri kullanır. Adım metni ("Adım n / N") özelliğin
+    çevirisinden verilir.
+  - Örnek ad çipleri sabit üç çeviri metnidir; sunucudan gelmez.
+  - "Tayfa kuruldu" ekranı ayrı bir rota değildir: `/tayfa-olustur`
+    adresinde sihirbazın yerine çizilir. Oluşturma yanıtı yalnızca
+    sihirbaz durumunun belleğinde tutulur (`OlusturmaDurumu.kurulan`);
+    sihirbaz kapanınca bırakılır.
+  - Sihirbaz karşılamadan ve tayfa değiştirme panelinden artık `push`
+    ile değil `go` ile açılır. Yığına itilince, başarıda aktif tayfa
+    değişince yönlendirici alttaki adresi (karşılama) ana sayfaya
+    çeviriyor ve "Tayfa kuruldu" ekranı kayboluyordu. Kapat ve ilk
+    adımdaki geri tuşu kök adrese döner (aktif tayfanın ana sayfası ya
+    da karşılama).
+  - "Davet linkini paylaş" kayıtlı davet akışını (`tayfaDavetiProvider`,
+    ADR-0018 §1) açar; akış kayıtlı değilse düğme gösterilmez. Link ve
+    token ekranın durumuna girmez.
+  - Vazgeç onayı ad, ilgi alanı, açıklama ya da varsayılandan farklı
+    katılım girilmişse sorulur.
+  - Yeni ölçü (`TayfamSizes`): `kurulduLogosu` (56).

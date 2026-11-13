@@ -80,12 +80,15 @@ class SoruBolumu extends ConsumerWidget {
   }
 }
 
-/// Ana sayfadaki kısa soru satırı.
+/// Kısa soru satırı (tasarım: Ana-Tam-Sayfa, Sorular): başlık ve
+/// "3 cevap · dün"; soru listesinde ([etiketli]) özetin önünde sorunun
+/// etiketleri de vardır.
 class SoruSatiri extends StatelessWidget {
   const SoruSatiri({
     super.key,
     required this.soru,
     required this.simdi,
+    this.etiketli = false,
     this.onTap,
   });
 
@@ -94,28 +97,41 @@ class SoruSatiri extends StatelessWidget {
   /// Göreli zamanın hesaplandığı an.
   final DateTime simdi;
 
+  /// Etiketler gösterilir (soru listesi).
+  final bool etiketli;
+
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final yazi = context.yazi;
+    final ozet = Text(
+      m.soru_satir_ozet(
+        m.soru_cevap_sayisi(soru.answerCount),
+        goreliGecmis(m, soru.createdAt, simdi),
+      ),
+      style: yazi.labelSmall?.copyWith(color: context.renkler.metinIkincil),
+    );
     return ListeKartiSatiri(
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(soru.title, style: yazi.titleMedium),
-          const SizedBox(height: TayfamSpacing.s4),
-          Text(
-            m.soru_satir_ozet(
-              m.soru_cevap_sayisi(soru.answerCount),
-              goreliGecmis(m, soru.createdAt, simdi),
-            ),
-            style: yazi.labelSmall?.copyWith(
-              color: context.renkler.metinIkincil,
-            ),
-          ),
+          SizedBox(height: etiketli ? TayfamSpacing.s8 : TayfamSpacing.s4),
+          if (etiketli && soru.tags.isNotEmpty)
+            Wrap(
+              spacing: TayfamSpacing.s8,
+              runSpacing: TayfamSpacing.s4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                for (final etiket in soru.tags) Etiket(metin: etiket.name),
+                ozet,
+              ],
+            )
+          else
+            ozet,
         ],
       ),
     );

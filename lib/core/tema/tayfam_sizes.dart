@@ -84,6 +84,7 @@ abstract final class TayfamSizes {
   static const double yukleniyorEnAzSaydamlik = .45;
 
   /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
+
   /// dokunma alanı 48'in üstünde).
   static const double girisDugmesi = 52;
 
@@ -143,12 +144,30 @@ abstract final class TayfamSizes {
   /// tayfa kartı olduğu için daha küçük).
   static const double hosGeldinDavetLogosu = 112;
 
+  /// "Tayfa kuruldu" ekranındaki logo (tasarım: Tayfa-Kur-Hazir); altında
+  /// büyük tayfa avatarı vardır.
+  static const double kurulduLogosu = 56;
+
   /// Bilgi ekranı ve pencerelerdeki ikon kutusu (yaş engeli, tarih teyidi,
   /// gönderildi).
   static const double ikonKutusu = 56;
 
   /// [ikonKutusu] içindeki ikon.
   static const double ikonKutusuIkonu = 30;
+
+  /// Hesap durum ekranlarındaki büyük ikon kutusu (tasarım: Hesap-Onay,
+  /// Hesap-Guncelleme, Hesap-Kisitli; 96 px).
+  static const double durumIkonKutusu = 96;
+
+  /// [durumIkonKutusu] içindeki ikon (46 px).
+  static const double durumIkonu = 46;
+
+  /// Hesap durum ekranlarının üstündeki küçük logo (44 px).
+  static const double durumLogosu = 44;
+
+  /// Yeniden onay ekranındaki "… oku" satırının en küçük yüksekliği
+  /// (52 px).
+  static const double okumaSatiri = 52;
 
   /// Hoş geldin ekranındaki tayfa kartının harf kutusu.
   static const double tayfaHarfKutusu = 52;
@@ -264,4 +283,96 @@ abstract final class TayfamSizes {
 
   /// Tür kutusundaki seçili işaretinin dairesi (24 px).
   static const double seciliIsareti = 24;
+
+  // Karşılama ve davet linki (2026-11-13 yeniden tasarım; tasarım:
+  // 16-karsilama-ve-davet/*.dc.html).
+
+  /// Karşılamadaki büyük seçim kartının en küçük yüksekliği ("Tayfa kodum
+  /// var", "Tayfa kur"; 84 px).
+  static const double secimKarti = 84;
+
+  /// Seçim kartının solundaki ikon kutusu (48 px).
+  static const double secimKartiIkonKutusu = 48;
+
+  /// Seçim kartının ikon kutusundaki ikon (26 px).
+  static const double secimKartiIkonu = 26;
+
+  /// Tür şeridindeki hapın yüksekliği (32 px).
+  static const double turHapi = 32;
+
+  /// Tür hapının solundaki renkli daire (22 px).
+  static const double turHapiDairesi = 22;
+
+  /// Tür hapının dairesindeki ikon (13 px).
+  static const double turHapiIkonu = 13;
+
+  /// Davet önizlemesindeki tayfa avatarının harf kutusu (88 px). Beyaz
+  /// kenarıyla ([davetAvatarKenari]) dış ölçüsü [avatarBuyuk] (96 px).
+  static const double davetAvatari = 88;
+
+  /// Davet önizlemesindeki tayfa avatarının beyaz kenarı (4 px).
+  static const double davetAvatarKenari = 4;
+
+  /// Davet önizlemesinde avatarın kartın üstünden taşan yüksekliği (44 px).
+  static const double davetAvatarTasmasi = 44;
+
+  /// Davet kartında tayfa adının üstündeki boşluk: avatarın kart içinde
+  /// kalan kısmı (96 − 44 − 20 px iç boşluk) + 8 px (40 px).
+  static const double davetKartAvatarBoslugu = 40;
+
+  /// Davet önizlemesinde avatar harfinin punto boyu (38 px; avatar
+  /// görseldir, yazı ölçeğiyle büyümez).
+  static const double davetAvatarHarfi = 38;
+
+  /// "Bu davet linki açılamadı" ekranındaki link ikonu (44 px; kutusu
+  /// [avatarBuyuk]).
+  static const double davetAcilamadiIkonu = 44;
+
+  // --- 2026-11-13 cihaz bağlama (Cihaz-*) -------------------------------
+
+  /// "Bu cihazı bağla" kartındaki QR'ın kenarı (220 px).
+  static const double qrKodu = 220;
+
+  /// Sonuç ve izin ekranlarındaki büyük ikon dairesi ya da kutusu (104 px).
+  static const double sonucIkonu = 104;
+
+  /// [sonucIkonu] içindeki ikon (52 px).
+  static const double sonucIkonuIcerik = 52;
+
+  /// Tarayıcıdaki köşeli çerçevenin en fazla kenarı (260 px).
+  static const double taramaCercevesi = 260;
+
+  /// Tarayıcı çerçevesinin bir köşe parçasının kenarı (44 px).
+  static const double taramaKosesi = 44;
+
+  /// Tarayıcı çerçevesinin çizgi kalınlığı (5 px).
+  static const double taramaKenari = 5;
+
+  /// Tarayıcıdaki tarama çizgisinin kalınlığı (3 px).
+  static const double taramaCizgisi = 3;
+
+  // --- 2026-11-13 hoş geldin tanıtımı (Hosgeldin-*) ----------------------
+
+  /// Tanıtımın üstündeki logo (32 px).
+  static const double tanitimLogosu = 32;
+
+  /// Tanıtım görseli alanının en küçük yüksekliği (tasarım: 330 px alan,
+  /// içinde 24 px üst boşluk).
+  static const double tanitimGorselAlani = 306;
+
+  /// Tanıtım görselinin en fazla genişliği (tasarım: 390 px ekranda
+  /// 302 px).
+  static const double tanitimGorselGenisligi = 320;
+
+  /// Sayfanın zemin bandının saydamlığı (tasarım: vurgu rengi %14).
+  static const double tanitimBantSaydamligi = .14;
+
+  /// Örnek tayfa kartındaki modül karelerinin yüksekliği (44 px).
+  static const double tanitimModulKaresi = 44;
+
+  /// Örnek etkinlik kartındaki cevap düğmelerinin yüksekliği (34 px).
+  static const double tanitimCevapDugmesi = 34;
+
+  /// Örnek cevabın başındaki alıntı çizgisi (3 px).
+  static const double alintiCizgisi = 3;
 }
