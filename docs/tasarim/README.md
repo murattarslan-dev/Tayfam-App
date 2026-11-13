@@ -6,7 +6,7 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 - Renk, boşluk ve yarıçap değerlerini kodda `TayfamColors` / `TayfamSpacing` / `TayfamRadii` / `TayfamSizes` token'larıyla karşılayın (ADR-0004); HTML'deki hex değerleri yalnızca referanstır.
 - Metinler `app_tr.arb`'deki mevcut anahtarlarla eşleştirilir; HTML'deki metin örnek ise mevcut çeviri geçerlidir.
 - Her bölümün README'sindeki "Kararlar" platform sahibinin onayladığı kullanıcı deneyimi kararlarıdır; kod yazarken bağlayıcıdır. ADR ve Notion'la çelişki görürseniz durun ve sorun.
-- "Sözleşme bekliyor" yazan ekranlar Tayfam-Api'de karşılığı gelene kadar kodlanmaz.
+- 08 ve 10 numaralı bölümler ile `Etkinlik-Sohbet` Tayfam-Api PR #188'deki sözleşmeye dayanır; PR birleşip istemci modelleri yeniden üretilmeden kodlanmaz.
 
 | Bölüm | Klasör | Ekran sayısı |
 | --- | --- | --- |
@@ -17,9 +17,9 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 | Tayfa ana sayfası | [`05-tayfa-ana-sayfa/`](05-tayfa-ana-sayfa/README.md) | 6 |
 | Tayfa menüsü ve ayarları | [`06-tayfa-menu-ve-ayarlar/`](06-tayfa-menu-ve-ayarlar/README.md) | 9 |
 | Profil | [`07-profil/`](07-profil/README.md) | 11 |
-| Profil · sözleşme bekleyenler | [`08-profil-sozlesme-bekleyen/`](08-profil-sozlesme-bekleyen/README.md) | 3 |
+| Profil · ad, doğum günü, tanıtım | [`08-profil-ad-dogum-gunu-tanitim/`](08-profil-ad-dogum-gunu-tanitim/README.md) | 9 |
 | Sohbet | [`09-sohbet/`](09-sohbet/README.md) | 10 |
-| Kanal katılımcıları · sözleşme bekliyor | [`10-kanal-katilimcilari-sozlesme-bekleyen/`](10-kanal-katilimcilari-sozlesme-bekleyen/README.md) | 7 |
+| Kanal kitlesi | [`10-kanal-kitlesi/`](10-kanal-kitlesi/README.md) | 8 |
 | Etkinlik detayı | [`11-etkinlik-detayi/`](11-etkinlik-detayi/README.md) | 9 |
 | Etkinlik oluşturma sihirbazı | [`12-etkinlik-sihirbazi/`](12-etkinlik-sihirbazi/README.md) | 11 |
 | Tayfa kurma sihirbazı | [`13-tayfa-kurma-sihirbazi/`](13-tayfa-kurma-sihirbazi/README.md) | 7 |

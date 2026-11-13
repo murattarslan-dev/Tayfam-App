@@ -12,7 +12,7 @@
 | [`Etkinlik-Menu.dc.html`](Etkinlik-Menu.dc.html) | ⋯ · organizatör |
 | [`Etkinlik-Katilimcilar.dc.html`](Etkinlik-Katilimcilar.dc.html) | Katılımcılar · bitişten sonra organizatör |
 | [`Etkinlik-Turler.dc.html`](Etkinlik-Turler.dc.html) | Türe özel bölümler |
-| [`Etkinlik-Sohbet.dc.html`](Etkinlik-Sohbet.dc.html) | Etkinlik sohbeti girişi · sözleşme bekliyor |
+| [`Etkinlik-Sohbet.dc.html`](Etkinlik-Sohbet.dc.html) | Etkinlik sohbeti girişi (sözleşme: Tayfam-Api PR #188) |
 
 ## Kararlar ve notlar
 
