@@ -61,29 +61,78 @@ class VeriDisaAktarmaEkrani extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      metinler.disa_aktarma_giris,
-                      style: context.yazi.bodyLarge,
+                    TayfamKart(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            metinler.disa_aktarma_giris,
+                            style: context.yazi.bodyMedium,
+                          ),
+                          const SizedBox(height: TayfamSpacing.s12),
+                          const _BirebirNotu(),
+                          const SizedBox(height: TayfamSpacing.s12),
+                          Text(
+                            metinler.disa_aktarma_dosya_notu,
+                            style: ikincil,
+                          ),
+                          if (hata != null) ...[
+                            const SizedBox(height: TayfamSpacing.s16),
+                            HataSatiri(
+                              metin: disaAktarmaHatasiMetni(metinler, hata),
+                            ),
+                          ],
+                          const SizedBox(height: TayfamSpacing.s16),
+                          const _TalepBolumu(),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: TayfamSpacing.s12),
-                    Text(metinler.disa_aktarma_birebir_notu, style: ikincil),
-                    const SizedBox(height: TayfamSpacing.s8),
-                    Text(metinler.disa_aktarma_dosya_notu, style: ikincil),
-                    if (hata != null) ...[
-                      const SizedBox(height: TayfamSpacing.s16),
-                      HataSatiri(metin: disaAktarmaHatasiMetni(metinler, hata)),
-                    ],
-                    const SizedBox(height: TayfamSpacing.s24),
-                    const _TalepBolumu(),
-                    const SizedBox(height: TayfamSpacing.s24),
-                    BolumBasligi(baslik: metinler.disa_aktarma_talepler_baslik),
-                    const SizedBox(height: TayfamSpacing.s8),
+                    BolumEtiketi(baslik: metinler.disa_aktarma_talepler_baslik),
                     const _TalepListesi(),
                   ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Birebir mesajların dosyada olmadığı notu (tasarım: tint-brand kutu,
+/// kilit ikonu).
+class _BirebirNotu extends StatelessWidget {
+  const _BirebirNotu();
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: r.tintMarka,
+        borderRadius: TayfamRadii.onizlemeKoseleri,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(TayfamSpacing.s12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.lock_outline,
+                size: TayfamSizes.ikon,
+                color: r.tintMarkaUstu,
+              ),
+            ),
+            const SizedBox(width: TayfamSpacing.s8),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context).disa_aktarma_birebir_notu,
+                style: context.yazi.bodySmall?.copyWith(color: r.metinGovde),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -209,17 +258,25 @@ class _TalepKarti extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Etiket(metin: _durumAdi(metinler, talep.status)),
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: TayfamSpacing.s8,
+            runSpacing: TayfamSpacing.s4,
+            children: [
+              Text(
+                metinler.disa_aktarma_talep_zamani(
+                  _zaman(metinler, talep.requestedAt),
+                ),
+                style: context.yazi.titleMedium,
+              ),
+              Etiket(
+                metin: _durumAdi(metinler, talep.status),
+                ton: _durumTonu(talep.status),
+              ),
+            ],
           ),
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(
-            metinler.disa_aktarma_talep_zamani(
-              _zaman(metinler, talep.requestedAt),
-            ),
-            style: context.yazi.bodyMedium,
-          ),
+          const SizedBox(height: TayfamSpacing.s4),
           if (hazir && sonGun != null)
             Text(
               metinler.disa_aktarma_son_gun(_zaman(metinler, sonGun)),
@@ -292,6 +349,16 @@ String _boyut(AppLocalizations m, int bayt) {
   );
   return m.disa_aktarma_boyut_mb(sayi.format(bayt / mb));
 }
+
+/// Durum etiketinin tonu: hazır teal, bekleyen ve hazırlanan mango,
+/// süresi dolan ve başarısız nar; renk tek başına bilgi taşımaz (etiket
+/// metinlidir).
+EtiketTonu _durumTonu(DataExportStatus durum) => switch (durum) {
+  DataExportStatus.ready => EtiketTonu.teal,
+  DataExportStatus.pending || DataExportStatus.processing => EtiketTonu.mango,
+  DataExportStatus.expired || DataExportStatus.failed => EtiketTonu.nar,
+  DataExportStatus.unknown => EtiketTonu.marka,
+};
 
 String _durumAdi(AppLocalizations m, DataExportStatus durum) => switch (durum) {
   DataExportStatus.pending => m.disa_aktarma_durum_bekliyor,

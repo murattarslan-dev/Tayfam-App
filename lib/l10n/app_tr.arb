@@ -3245,9 +3245,9 @@
   "@profil_gorunurluk_baslik": {
     "description": "Profil sekmesinde katılım geçmişinin kime görüneceğini seçtiren bölümün başlığı."
   },
-  "profil_gorunurluk_aciklama": "Katıldığın etkinliklerin kime görüneceğini seç.",
+  "profil_gorunurluk_aciklama": "Katıldığın etkinlikler profilinde listelenir. Seçtiğin anda kaydedilir.",
   "@profil_gorunurluk_aciklama": {
-    "description": "Katılım geçmişi görünürlüğü bölümünün açıklaması."
+    "description": "Katılım geçmişi görünürlüğü alttan sayfasının açıklaması; seçim hemen kaydedilir."
   },
   "profil_gorunurluk_ozel": "Yalnızca ben",
   "@profil_gorunurluk_ozel": {
@@ -3288,10 +3288,6 @@
   "profil_tema_koyu": "Koyu",
   "@profil_tema_koyu": {
     "description": "Tema seçeneği: her zaman koyu tema."
-  },
-  "profil_hesap_baslik": "Hesap",
-  "@profil_hesap_baslik": {
-    "description": "Profil sekmesinde oturumlar, hukuki metinler, çıkış ve hesap silme satırlarının bölüm başlığı."
   },
   "profil_oturumlar": "Oturumlar",
   "@profil_oturumlar": {
@@ -3454,6 +3450,52 @@
         "example": "12 Kas 2026 14:30"
       }
     }
+  },
+  "profil_onizle": "Başkaları nasıl görüyor",
+  "@profil_onizle": {
+    "description": "Profil sekmesinin başlığının yanındaki bağlantı; kendi kişi profilini başkalarının gördüğü gibi açar."
+  },
+  "profil_avatar_degistir_etiketi": "Profil fotoğrafını değiştir",
+  "@profil_avatar_degistir_etiketi": {
+    "description": "Profil sekmesindeki fotoğraf düğmesinin ekran okuyucu etiketi; dokununca fotoğraf alttan sayfası açılır."
+  },
+  "profil_avatar_kaldir_aciklama": "Yerine adının ilk harfi görünür",
+  "@profil_avatar_kaldir_aciklama": {
+    "description": "Profil fotoğrafı alttan sayfasında \"Fotoğrafı kaldır\" satırının açıklaması."
+  },
+  "profil_gorunurluk_soru": "Katılım geçmişin kime görünsün?",
+  "@profil_gorunurluk_soru": {
+    "description": "Katılım geçmişi görünürlüğü alttan sayfasının başlığı."
+  },
+  "profil_gorunurluk_cip_etiketi": "Katılım geçmişin kime görünür: {secim}. Değiştir",
+  "@profil_gorunurluk_cip_etiketi": {
+    "description": "Profil sekmesinde \"Katılım geçmişin\" başlığının yanındaki görünürlük çipinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "secim": {
+        "type": "String",
+        "example": "Yalnızca ben"
+      }
+    }
+  },
+  "profil_uygulama_baslik": "Uygulama",
+  "@profil_uygulama_baslik": {
+    "description": "Profil sekmesinde bildirimler, tema ve oturumlar kartının bölüm başlığı."
+  },
+  "profil_oturumlar_sayfa_aciklama": "Hesabının açık olduğu cihazlar. Tanımadığın bir cihaz görürsen oturumunu kapat.",
+  "@profil_oturumlar_sayfa_aciklama": {
+    "description": "Oturumlar ekranının üstündeki açıklama."
+  },
+  "profil_oturum_kapat_kisa": "Kapat",
+  "@profil_oturum_kapat_kisa": {
+    "description": "Oturumlar ekranında başka bir cihazın satırındaki düğme; ekran okuyucu \"Oturumu kapat\" okur."
+  },
+  "profil_sil_verileri_indir": "Önce verilerini indir",
+  "@profil_sil_verileri_indir": {
+    "description": "Hesap silme ekranında veri dışa aktarma ekranını açan kısayolun başlığı."
+  },
+  "profil_sil_verileri_indir_aciklama": "Silmeden önce bir kopyasını alabilirsin",
+  "@profil_sil_verileri_indir_aciklama": {
+    "description": "Hesap silme ekranındaki \"Önce verilerini indir\" kısayolunun açıklaması."
   },
   "hata_genel": "Bir sorun oluştu. Tekrar dene.",
   "@hata_genel": {

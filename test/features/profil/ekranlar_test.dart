@@ -53,6 +53,10 @@ final class _Ortam {
 
 Finder _metin(String anahtar) => find.text(arbMetni(anahtar));
 
+final Finder _avatarDugmesi = find.byKey(
+  const ValueKey('profil-avatar-dugmesi'),
+);
+
 Future<void> _kaydirVeDokun(WidgetTester tester, Finder hedef) async {
   await tester.scrollUntilVisible(
     hedef,
@@ -73,7 +77,54 @@ void main() {
 
         expect(tester.takeException(), isNull);
         expect(find.text(ornekKod), findsOneWidget);
+        await tester.scrollUntilVisible(
+          _metin('profil_hesabi_sil'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(tester.takeException(), isNull);
         expect(_metin('profil_gorunurluk_baslik'), findsOneWidget);
+      });
+
+      testWidgets('fotoğraf ve görünürlük alttan sayfaları taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final o = _Ortam({
+          hesapYolu: () => {...hesapJson(), 'avatar_upload_id': ornekUploadId},
+        });
+        await o.ac(
+          tester,
+          const ProfilEkrani(),
+          themeMode: mod,
+          ek: medyaOverridelari(
+            tasima: o.tasima,
+            linkIsteyici: (idler) async => [],
+          ),
+        );
+
+        await tester.tap(_avatarDugmesi);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(_metin('medya_fotograf_kaldir'), findsOneWidget);
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
+
+        await _kaydirVeDokun(tester, _metin('profil_gorunurluk_tayfa'));
+        expect(tester.takeException(), isNull);
+        expect(_metin('profil_gorunurluk_soru'), findsOneWidget);
+      });
+
+      testWidgets('veri indirme kısayolu ve hesap silme düğmesi taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _Ortam().ac(tester, const HesabiSilEkrani(), themeMode: mod);
+        expect(tester.takeException(), isNull);
+        expect(_metin('profil_sil_verileri_indir'), findsOneWidget);
+        expect(_metin('profil_sil_dugme'), findsOneWidget);
       });
 
       testWidgets('uzun kendi adı taşmıyor', (tester) async {
@@ -135,15 +186,21 @@ void main() {
         ),
       );
 
-      await tester.tap(_metin('medya_fotograf_ekle'));
+      // Fotoğraf yokken sayfada "Fotoğrafı kaldır" yok.
+      await tester.tap(_avatarDugmesi);
       await tester.pumpAndSettle();
+      expect(_metin('medya_fotograf_kaldir'), findsNothing);
       await tester.tap(_metin('medya_kaynak_kamera'));
       await tester.pumpAndSettle();
 
       expect(o.tasima.sayi('POST', '/v1/uploads'), 1);
       expect(o.tasima.sayi('PUT', '/v1/me/avatar'), 1);
       expect(_metin('profil_avatar_kaydedildi'), findsOneWidget);
-      expect(_metin('medya_fotograf_degistir'), findsOneWidget);
+
+      // Artık fotoğraf var: sayfada "Fotoğrafı kaldır" görünür.
+      await tester.tap(_avatarDugmesi);
+      await tester.pumpAndSettle();
+      expect(_metin('medya_fotograf_kaldir'), findsOneWidget);
     });
 
     testWidgets('avatar kaldırılıyor', (tester) async {
@@ -161,11 +218,12 @@ void main() {
         ),
       );
 
+      await tester.tap(_avatarDugmesi);
+      await tester.pumpAndSettle();
       await tester.tap(_metin('medya_fotograf_kaldir'));
       await tester.pumpAndSettle();
       expect(o.tasima.sayi('DELETE', '/v1/me/avatar'), 1);
       expect(_metin('profil_avatar_kaldirildi'), findsOneWidget);
-      expect(_metin('medya_fotograf_ekle'), findsOneWidget);
     });
   });
 
@@ -202,13 +260,68 @@ void main() {
       expect(o.paylasici.paylasilan.single, contains('https://tayfam.app/r/'));
     });
 
-    testWidgets('görünürlük değiştiriliyor', (tester) async {
+    testWidgets('görünürlük çipten alttan sayfayla değiştiriliyor', (
+      tester,
+    ) async {
       ekranBoyutu(tester);
       final o = _Ortam();
       await o.ac(tester, const ProfilEkrani());
 
-      await _kaydirVeDokun(tester, _metin('profil_gorunurluk_ozel'));
+      // Çip şu anki seçimin adını gösterir.
+      await _kaydirVeDokun(tester, _metin('profil_gorunurluk_tayfa'));
+      expect(_metin('profil_gorunurluk_soru'), findsOneWidget);
+      await tester.tap(_metin('profil_gorunurluk_ozel'));
+      await tester.pumpAndSettle();
+
       expect(o.tasima.sayi('PATCH', '/v1/me/account'), 1);
+      expect(_metin('profil_gorunurluk_soru'), findsNothing);
+      expect(_metin('profil_gorunurluk_ozel'), findsOneWidget);
+    });
+
+    testWidgets('aynı seçenek seçilirse kaydedilmiyor', (tester) async {
+      ekranBoyutu(tester);
+      final o = _Ortam();
+      await o.ac(tester, const ProfilEkrani());
+
+      await _kaydirVeDokun(tester, _metin('profil_gorunurluk_tayfa'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(BottomSheet),
+          matching: _metin('profil_gorunurluk_tayfa'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(o.tasima.sayi('PATCH', '/v1/me/account'), 0);
+    });
+
+    testWidgets('katılım geçmişi boşsa kısa metin', (tester) async {
+      ekranBoyutu(tester);
+      await _Ortam().ac(tester, const ProfilEkrani());
+      await tester.scrollUntilVisible(
+        _metin('arkadas_gecmis_kendi_bos'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(_metin('arkadas_gecmis_kendi_bos'), findsOneWidget);
+    });
+
+    testWidgets('yeni kod onayla alınıyor', (tester) async {
+      ekranBoyutu(tester);
+      final o = _Ortam();
+      await o.ac(tester, const ProfilEkrani());
+
+      await tester.tap(find.byTooltip(arbMetni('profil_referans_yenile')));
+      await tester.pumpAndSettle();
+      expect(_metin('profil_referans_yenile_onay_baslik'), findsOneWidget);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: _metin('profil_referans_yenile'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(o.tasima.sayi('POST', '/v1/me/referral-code'), 1);
+      expect(find.text('TYF-YENI42'), findsOneWidget);
     });
 
     testWidgets('tema seçimi uygulanıyor ve kaydediliyor', (tester) async {
@@ -241,12 +354,26 @@ void main() {
   });
 
   group('oturumlar ekranı', () {
+    testWidgets('"Kapat" düğmesinin ekran okuyucu etiketi tam metin', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _Ortam().ac(tester, const OturumlarEkrani());
+      final kulp = tester.ensureSemantics();
+      await tester.pump();
+      expect(
+        find.bySemanticsLabel(arbMetni('profil_oturum_kapat')),
+        findsNWidgets(2),
+      );
+      kulp.dispose();
+    });
+
     testWidgets('başka cihazın oturumu onayla kapatılıyor', (tester) async {
       ekranBoyutu(tester);
       final o = _Ortam();
       await o.ac(tester, const OturumlarEkrani());
 
-      await tester.tap(find.byTooltip(arbMetni('profil_oturum_kapat')).first);
+      await tester.tap(_metin('profil_oturum_kapat_kisa').first);
       await tester.pumpAndSettle();
       expect(_metin('profil_oturum_kapat_onay_baslik'), findsOneWidget);
       await tester.tap(
@@ -259,7 +386,7 @@ void main() {
 
       expect(o.tasima.sayi('DELETE', '/v1/me/sessions/{session_id}'), 1);
       expect(_metin('profil_oturum_kapatildi'), findsOneWidget);
-      expect(find.byTooltip(arbMetni('profil_oturum_kapat')), findsOneWidget);
+      expect(_metin('profil_oturum_kapat_kisa'), findsOneWidget);
     });
 
     testWidgets('vazgeçilirse oturum kapatılmıyor', (tester) async {
@@ -267,7 +394,7 @@ void main() {
       final o = _Ortam();
       await o.ac(tester, const OturumlarEkrani());
 
-      await tester.tap(find.byTooltip(arbMetni('profil_oturum_kapat')).first);
+      await tester.tap(_metin('profil_oturum_kapat_kisa').first);
       await tester.pumpAndSettle();
       await tester.tap(_metin('profil_vazgec'));
       await tester.pumpAndSettle();
