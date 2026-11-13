@@ -180,3 +180,21 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
        yapmaz.
   - **Gerekçe:** kurulan tayfanın yaşaması ilk günlerde üye gelmesine
     bağlıdır. Kurucuyu ilk iş olarak arkadaşlarını çağırmaya yöneltir.
+
+- **2026-11-13 (uygulama, #152):** Yukarıdaki kurallar kodlandı.
+  - Sihirbaz iskeleti (`SihirbazUstCubugu`, `SihirbazAltCubugu`,
+    `AdimBasligi`, `IkiSutunluIzgara`) etkinlik özelliğinden
+    `core/bilesenler/sihirbaz_iskeleti.dart`'a taşındı; iki sihirbaz aynı
+    bileşenleri kullanır. Adım metni ("Adım n / N") özelliğin
+    çevirisinden verilir.
+  - Örnek ad çipleri sabit üç çeviri metnidir; sunucudan gelmez.
+  - "Tayfa kuruldu" ekranı ayrı bir rota değildir: `/tayfa-olustur`
+    adresinde sihirbazın yerine çizilir. Oluşturma yanıtı yalnızca
+    sihirbaz durumunun belleğinde tutulur (`OlusturmaDurumu.kurulan`);
+    sihirbaz kapanınca bırakılır.
+  - "Davet linkini paylaş" kayıtlı davet akışını (`tayfaDavetiProvider`,
+    ADR-0018 §1) açar; akış kayıtlı değilse düğme gösterilmez. Link ve
+    token ekranın durumuna girmez.
+  - Vazgeç onayı ad, ilgi alanı, açıklama ya da varsayılandan farklı
+    katılım girilmişse sorulur.
+  - Yeni ölçü (`TayfamSizes`): `kurulduLogosu` (56).

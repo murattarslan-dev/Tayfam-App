@@ -143,6 +143,10 @@ abstract final class TayfamSizes {
   /// tayfa kartı olduğu için daha küçük).
   static const double hosGeldinDavetLogosu = 112;
 
+  /// "Tayfa kuruldu" ekranındaki logo (tasarım: Tayfa-Kur-Hazir); altında
+  /// büyük tayfa avatarı vardır.
+  static const double kurulduLogosu = 56;
+
   /// Bilgi ekranı ve pencerelerdeki ikon kutusu (yaş engeli, tarih teyidi,
   /// gönderildi).
   static const double ikonKutusu = 56;
