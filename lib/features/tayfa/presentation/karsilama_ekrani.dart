@@ -112,8 +112,8 @@ class KarsilamaEkrani extends ConsumerWidget {
                     ikon: Icons.outlined_flag,
                     baslik: metinler.karsilama_tayfa_kur,
                     aciklama: metinler.karsilama_tayfa_kur_aciklama,
-                    onTap: () =>
-                        unawaited(context.push<void>(Adresler.tayfaOlustur)),
+                    // Yığına itilmez (bkz. tayfa değiştirme paneli).
+                    onTap: () => context.go(Adresler.tayfaOlustur),
                   ),
                   const SizedBox(height: TayfamSpacing.s16),
                   Padding(

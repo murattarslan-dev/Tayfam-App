@@ -23,6 +23,7 @@ class TayfaAvatari extends StatelessWidget {
     this.cap = TayfamSizes.tayfaAvatari,
     this.pasif = false,
     this.harfPuntosu,
+    this.harfStili,
   });
 
   /// [tayfa]'nın avatarı.
@@ -49,6 +50,10 @@ class TayfaAvatari extends StatelessWidget {
   /// gibi büyük avatarlarda [TayfamSizes.davetAvatarHarfi]).
   final double? harfPuntosu;
 
+  /// Harfin yazı stili (büyük avatarda büyük harf; "Tayfa kuruldu"
+  /// ekranı); verilmezse `titleMedium`. Renk ve kalınlık avatarındır.
+  final TextStyle? harfStili;
+
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
@@ -67,7 +72,7 @@ class TayfaAvatari extends StatelessWidget {
                 harf,
                 // Avatar görseldir; sistem yazı ölçeğiyle büyümez.
                 textScaler: TextScaler.noScaling,
-                style: context.yazi.titleMedium?.copyWith(
+                style: (harfStili ?? context.yazi.titleMedium)?.copyWith(
                   color: yazi,
                   fontWeight: TayfamTypography.buyukBaslikAgirligi,
                   fontSize: harfPuntosu,

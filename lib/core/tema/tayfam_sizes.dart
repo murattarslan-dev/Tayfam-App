@@ -143,6 +143,10 @@ abstract final class TayfamSizes {
   /// tayfa kartı olduğu için daha küçük).
   static const double hosGeldinDavetLogosu = 112;
 
+  /// "Tayfa kuruldu" ekranındaki logo (tasarım: Tayfa-Kur-Hazir); altında
+  /// büyük tayfa avatarı vardır.
+  static const double kurulduLogosu = 56;
+
   /// Bilgi ekranı ve pencerelerdeki ikon kutusu (yaş engeli, tarih teyidi,
   /// gönderildi).
   static const double ikonKutusu = 56;
@@ -322,4 +326,29 @@ abstract final class TayfamSizes {
   /// "Bu davet linki açılamadı" ekranındaki link ikonu (44 px; kutusu
   /// [avatarBuyuk]).
   static const double davetAcilamadiIkonu = 44;
+
+  // --- 2026-11-13 hoş geldin tanıtımı (Hosgeldin-*) ----------------------
+
+  /// Tanıtımın üstündeki logo (32 px).
+  static const double tanitimLogosu = 32;
+
+  /// Tanıtım görseli alanının en küçük yüksekliği (tasarım: 330 px alan,
+  /// içinde 24 px üst boşluk).
+  static const double tanitimGorselAlani = 306;
+
+  /// Tanıtım görselinin en fazla genişliği (tasarım: 390 px ekranda
+  /// 302 px).
+  static const double tanitimGorselGenisligi = 320;
+
+  /// Sayfanın zemin bandının saydamlığı (tasarım: vurgu rengi %14).
+  static const double tanitimBantSaydamligi = .14;
+
+  /// Örnek tayfa kartındaki modül karelerinin yüksekliği (44 px).
+  static const double tanitimModulKaresi = 44;
+
+  /// Örnek etkinlik kartındaki cevap düğmelerinin yüksekliği (34 px).
+  static const double tanitimCevapDugmesi = 34;
+
+  /// Örnek cevabın başındaki alıntı çizgisi (3 px).
+  static const double alintiCizgisi = 3;
 }

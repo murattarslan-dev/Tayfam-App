@@ -197,3 +197,26 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
     karşılamanın üstündeki "Seni bekleyen davet" kartı
     (Karsilama-Davetli, `GET /v1/me/invitations`) platform sahibinin onayı
     olmadığı için bu değişikliğe girmedi.
+- **2026-11-13 (uygulama, #152):** Yukarıdaki kurallar kodlandı.
+  - Sihirbaz iskeleti (`SihirbazUstCubugu`, `SihirbazAltCubugu`,
+    `AdimBasligi`, `IkiSutunluIzgara`) etkinlik özelliğinden
+    `core/bilesenler/sihirbaz_iskeleti.dart`'a taşındı; iki sihirbaz aynı
+    bileşenleri kullanır. Adım metni ("Adım n / N") özelliğin
+    çevirisinden verilir.
+  - Örnek ad çipleri sabit üç çeviri metnidir; sunucudan gelmez.
+  - "Tayfa kuruldu" ekranı ayrı bir rota değildir: `/tayfa-olustur`
+    adresinde sihirbazın yerine çizilir. Oluşturma yanıtı yalnızca
+    sihirbaz durumunun belleğinde tutulur (`OlusturmaDurumu.kurulan`);
+    sihirbaz kapanınca bırakılır.
+  - Sihirbaz karşılamadan ve tayfa değiştirme panelinden artık `push`
+    ile değil `go` ile açılır. Yığına itilince, başarıda aktif tayfa
+    değişince yönlendirici alttaki adresi (karşılama) ana sayfaya
+    çeviriyor ve "Tayfa kuruldu" ekranı kayboluyordu. Kapat ve ilk
+    adımdaki geri tuşu kök adrese döner (aktif tayfanın ana sayfası ya
+    da karşılama).
+  - "Davet linkini paylaş" kayıtlı davet akışını (`tayfaDavetiProvider`,
+    ADR-0018 §1) açar; akış kayıtlı değilse düğme gösterilmez. Link ve
+    token ekranın durumuna girmez.
+  - Vazgeç onayı ad, ilgi alanı, açıklama ya da varsayılandan farklı
+    katılım girilmişse sorulur.
+  - Yeni ölçü (`TayfamSizes`): `kurulduLogosu` (56).

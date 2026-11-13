@@ -45,7 +45,10 @@ Future<void> tayfaDegistirmePaneliniAc(
         },
         onTayfaOlustur: () {
           kapat();
-          unawaited(context.push<void>(Adresler.tayfaOlustur));
+          // Sihirbaz yığının üstüne itilmez: başarıda aktif tayfa değişince
+          // yönlendirici alttaki adresi ana sayfaya çevirir ve "Tayfa
+          // kuruldu" ekranı kaybolurdu (ADR-0014 Notlar 2026-11-13).
+          context.go(Adresler.tayfaOlustur);
         },
       );
     },
