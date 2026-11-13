@@ -1216,11 +1216,13 @@ class _NoktaKarti extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: TayfamSpacing.s8),
-                    Text(
-                      nokta == null
-                          ? m.etkinlik_nokta_secilmedi
-                          : m.etkinlik_nokta_secildi,
-                      style: context.yazi.titleSmall,
+                    Flexible(
+                      child: Text(
+                        nokta == null
+                            ? m.etkinlik_nokta_secilmedi
+                            : m.etkinlik_nokta_secildi,
+                        style: context.yazi.titleSmall,
+                      ),
                     ),
                   ],
                 ),
@@ -1294,13 +1296,15 @@ class _RotaKarti extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: TayfamSpacing.s8),
-                    Text(
-                      bos
-                          ? m.etkinlik_rota_yok
-                          : m.etkinlik_konvoy_rota_noktalari(
-                              etkinlikSayi(m, rota.length),
-                            ),
-                      style: context.yazi.titleSmall,
+                    Flexible(
+                      child: Text(
+                        bos
+                            ? m.etkinlik_rota_yok
+                            : m.etkinlik_konvoy_rota_noktalari(
+                                etkinlikSayi(m, rota.length),
+                              ),
+                        style: context.yazi.titleSmall,
+                      ),
                     ),
                   ],
                 ),
