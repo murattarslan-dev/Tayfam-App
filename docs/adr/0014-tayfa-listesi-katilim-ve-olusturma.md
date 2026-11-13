@@ -181,6 +181,22 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
   - **Gerekçe:** kurulan tayfanın yaşaması ilk günlerde üye gelmesine
     bağlıdır. Kurucuyu ilk iş olarak arkadaşlarını çağırmaya yöneltir.
 
+- **2026-11-13 (platform sahibi, tasarım kararı; issue #153): karşılama
+  ekranı yeniden tasarımı (§2–3; tasarım: `docs/tasarim/16-karsilama-ve-davet/`
+  Karsilama, Karsilama-Bekleyen).** Akış ve uçlar değişmedi.
+  - Logo, "Tayfanı bul, birlikte yola çık." başlığı ve iki büyük seçim
+    kartı: "Tayfa kodum var" (birincil, tam yüzey mor; §3'teki alttan kod
+    sayfasını açar) ve "Tayfa kur" (kart zemini; §4'teki sihirbaz). Altında
+    davet linki ipucu ve etkinlik türleri şeridi (kart zeminli haplar,
+    türün renginde daire ve ikon).
+  - §2'deki bilgi kartı tint-brand durum kartıdır ve altında onaylı
+    "İsteği geri çek" bağlantısı vardır (paneldeki onay penceresinin
+    aynısı, `DELETE /v1/tayfas/{id}/membership`). Bekleyen tayfanın yine
+    yalnızca adı görünür.
+  - **Kodlanmadı (onay bekliyor):** arkadaştan gelen tayfa daveti için
+    karşılamanın üstündeki "Seni bekleyen davet" kartı
+    (Karsilama-Davetli, `GET /v1/me/invitations`) platform sahibinin onayı
+    olmadığı için bu değişikliğe girmedi.
 - **2026-11-13 (uygulama, #152):** Yukarıdaki kurallar kodlandı.
   - Sihirbaz iskeleti (`SihirbazUstCubugu`, `SihirbazAltCubugu`,
     `AdimBasligi`, `IkiSutunluIzgara`) etkinlik özelliğinden

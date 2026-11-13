@@ -22,6 +22,7 @@ class TayfaAvatari extends StatelessWidget {
     this.kapakId,
     this.cap = TayfamSizes.tayfaAvatari,
     this.pasif = false,
+    this.harfPuntosu,
     this.harfStili,
   });
 
@@ -44,6 +45,10 @@ class TayfaAvatari extends StatelessWidget {
   final String? kapakId;
   final double cap;
   final bool pasif;
+
+  /// Harfin punto boyu; verilmezse temanın başlık boyu (davet önizlemesi
+  /// gibi büyük avatarlarda [TayfamSizes.davetAvatarHarfi]).
+  final double? harfPuntosu;
 
   /// Harfin yazı stili (büyük avatarda büyük harf; "Tayfa kuruldu"
   /// ekranı); verilmezse `titleMedium`. Renk ve kalınlık avatarındır.
@@ -70,6 +75,7 @@ class TayfaAvatari extends StatelessWidget {
                 style: (harfStili ?? context.yazi.titleMedium)?.copyWith(
                   color: yazi,
                   fontWeight: TayfamTypography.buyukBaslikAgirligi,
+                  fontSize: harfPuntosu,
                 ),
               ),
       ),
