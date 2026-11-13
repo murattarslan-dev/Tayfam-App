@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/problem_messages.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -207,6 +210,95 @@ class BosMetin extends StatelessWidget {
       style: context.yazi.bodyLarge?.copyWith(
         color: context.renkler.metinGovde,
       ),
+    );
+  }
+}
+
+/// Eşit genişlikte seçim düğmeleri; seçili olan brand kenarlı tint zemin.
+/// Büyük yazıda etiket satıra sarılır. [secili] `null` ise hiçbiri seçili
+/// değildir (ör. susturma süreleri).
+class SecimDugmeleri<T> extends StatelessWidget {
+  const SecimDugmeleri({
+    super.key,
+    required this.secenekler,
+    required this.etiket,
+    required this.onSec,
+    this.secili,
+  });
+
+  final List<T> secenekler;
+  final T? secili;
+  final String Function(T deger) etiket;
+  final ValueChanged<T>? onSec;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    final onSec = this.onSec;
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (sira, deger) in secenekler.indexed) ...[
+            if (sira > 0) const SizedBox(width: TayfamSpacing.s8),
+            Expanded(
+              child: OdakCercevesi(
+                koseler: TayfamRadii.dugmeKoseleri,
+                child: Semantics(
+                  selected: deger == secili,
+                  child: OutlinedButton(
+                    onPressed: onSec == null ? null : () => onSec(deger),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: deger == secili ? r.tintMarka : null,
+                      foregroundColor: r.metin,
+                      minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: TayfamSpacing.s4,
+                        vertical: TayfamSpacing.s8,
+                      ),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: TayfamRadii.dugmeKoseleri,
+                      ),
+                      side: BorderSide(
+                        color: deger == secili ? r.marka : r.girisKenari,
+                        width: deger == secili
+                            ? TayfamSizes.alanOdakKenari
+                            : TayfamSizes.vurguKenari,
+                      ),
+                      textStyle: context.yazi.labelLarge,
+                    ),
+                    child: Text(etiket(deger), textAlign: TextAlign.center),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Bir kişinin baş harfli avatarı; ad, ad önbelleğinden istenir (yalnızca
+/// bellek; ADR-0015 Notlar 2026-11-11). Ad bilinmiyorsa kişi ikonu.
+class KisiAvatari extends ConsumerWidget {
+  const KisiAvatari({
+    super.key,
+    required this.kullaniciId,
+    this.cap = TayfamSizes.avatarKucuk,
+  });
+
+  final String kullaniciId;
+  final double cap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(kullaniciAdlariProvider.notifier).iste(kullaniciId);
+    final ad = ref.watch(
+      kullaniciAdlariProvider.select((adlar) => adlar[kullaniciId]?.ad),
+    );
+    return ExcludeSemantics(
+      child: KullaniciAvatari(ad: ad, cap: cap),
     );
   }
 }

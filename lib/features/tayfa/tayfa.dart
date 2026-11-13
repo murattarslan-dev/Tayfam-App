@@ -33,5 +33,5 @@ export 'package:tayfam/features/tayfa/presentation/tayfa_ana_sayfa.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_avatari.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_degistirme_paneli.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_ortak.dart'
-    show bekleyenRozetMetni;
+    show bekleyenRozetMetni, koduKopyala;
 export 'package:tayfam/features/tayfa/presentation/tayfa_yenileyici.dart';

@@ -7,13 +7,16 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/katilim_istekleri_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Bekleyen katılım istekleri (`/t/<tayfaId>/ayarlar/istekler`; ADR-0018
-/// §1): eskiden yeniye, sayfalı. Her istekte nasıl gelindiği (davet
-/// linki, doğrudan davet, kod) ve varsa davet edenin adı; onay ve ret.
+/// §1; tasarım: Ayar-Istekler): eskiden yeniye, sayfalı. Her kartta kişi,
+/// istek zamanı, nasıl gelindiği (davet linki, doğrudan davet, kod,
+/// keşfet) ve varsa davet eden; Reddet / Onayla. Onaydan sonra "geri al"
+/// yoktur (sözleşmede karşılığı yok).
 class KatilimIstekleriEkrani extends ConsumerWidget {
   const KatilimIstekleriEkrani({super.key, required this.tayfaId});
 
@@ -25,7 +28,24 @@ class KatilimIstekleriEkrani extends ConsumerWidget {
     final saglayici = katilimIstekleriProvider(tayfaId);
     final durum = ref.watch(saglayici);
     return Scaffold(
-      appBar: AppBar(title: Text(m.yonetim_istekler)),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(m.yonetim_istekler),
+            Text(
+              m.yonetim_istekler_alt_baslik(
+                m.yonetim_istekler_ozet(
+                  ref.watch(tayfaOzetiProvider(tayfaId)).bekleyenIstekSayisi ??
+                      durum.value?.ogeler.length ??
+                      0,
+                ),
+              ),
+              style: context.yazi.bodySmall,
+            ),
+          ],
+        ),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           await ref.read(saglayici.notifier).yenile();
@@ -98,57 +118,154 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    final yazi = context.yazi;
     final istek = widget.istek;
     final davetEden = istek.inviterUserId;
-    final ikincil = context.yazi.bodyMedium?.copyWith(
-      color: context.renkler.metinGovde,
-    );
     final zaman = istek.requestedAt.toLocal();
+    final kapali = _gonderiliyor;
+    const sekil = RoundedRectangleBorder(
+      borderRadius: TayfamRadii.dugmeKoseleri,
+    );
     return TayfamKart(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          KullaniciAdiMetni(
-            kullaniciId: istek.userId,
-            style: context.yazi.titleMedium,
-          ),
-          const SizedBox(height: TayfamSpacing.s4),
-          Text(kaynakMetni(m, istek.source), style: ikincil),
-          if (davetEden != null)
-            Wrap(
-              spacing: TayfamSpacing.s4,
-              children: [
-                Text(m.yonetim_istek_davet_eden, style: ikincil),
-                KullaniciAdiMetni(kullaniciId: davetEden, style: ikincil),
-              ],
-            ),
-          Text(m.yonetim_istek_zamani(zaman), style: ikincil),
-          const SizedBox(height: TayfamSpacing.s12),
-          Wrap(
-            spacing: TayfamSpacing.s8,
-            runSpacing: TayfamSpacing.s8,
+          Row(
             children: [
-              BirincilEylem(
-                etiket: m.yonetim_onayla,
-                ikon: Icons.check,
-                onPressed: _gonderiliyor
-                    ? null
-                    : () => unawaited(_sonuclandir(onay: true)),
+              KisiAvatari(
+                kullaniciId: istek.userId,
+                cap: TayfamSizes.tayfaAvatari,
               ),
-              IkincilEylem(
-                etiket: m.yonetim_reddet,
-                ikon: Icons.close,
-                onPressed: _gonderiliyor
-                    ? null
-                    : () => unawaited(_sonuclandir(onay: false)),
+              const SizedBox(width: TayfamSpacing.s12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    KullaniciAdiMetni(
+                      kullaniciId: istek.userId,
+                      style: yazi.titleMedium,
+                    ),
+                    Text(m.yonetim_istek_zamani(zaman), style: yazi.bodySmall),
+                  ],
+                ),
               ),
             ],
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: r.zemin,
+              borderRadius: TayfamRadii.dugmeKoseleri,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(TayfamSpacing.s12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(
+                      _kaynakIkonu(istek.source),
+                      size: TayfamSizes.ikonOrta,
+                      color: r.marka,
+                    ),
+                  ),
+                  const SizedBox(width: TayfamSpacing.s8),
+                  Expanded(
+                    child: Wrap(
+                      spacing: TayfamSpacing.s4,
+                      children: [
+                        Text(
+                          kaynakMetni(m, istek.source),
+                          style: yazi.bodySmall?.copyWith(color: r.metinGovde),
+                        ),
+                        if (davetEden != null) ...[
+                          Text(
+                            m.yonetim_istek_davet_eden,
+                            style: yazi.bodySmall?.copyWith(
+                              color: r.metinGovde,
+                            ),
+                          ),
+                          KullaniciAdiMetni(
+                            kullaniciId: davetEden,
+                            style: yazi.titleSmall,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s12),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: OdakCercevesi(
+                    koseler: TayfamRadii.dugmeKoseleri,
+                    child: OutlinedButton(
+                      onPressed: kapali
+                          ? null
+                          : () => unawaited(_sonuclandir(onay: false)),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: r.metin,
+                        minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+                        shape: sekil,
+                        side: BorderSide(
+                          color: r.girisKenari,
+                          width: TayfamSizes.vurguKenari,
+                        ),
+                        textStyle: yazi.labelLarge,
+                      ),
+                      child: Text(
+                        m.yonetim_reddet,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: TayfamSpacing.s8),
+                Expanded(
+                  child: OdakCercevesi(
+                    koseler: TayfamRadii.dugmeKoseleri,
+                    child: FilledButton(
+                      onPressed: kapali
+                          ? null
+                          : () => unawaited(_sonuclandir(onay: true)),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: r.birincilEylem,
+                        foregroundColor: r.birincilEylemUstu,
+                        minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+                        shape: sekil,
+                        side: BorderSide.none,
+                        textStyle: yazi.labelLarge,
+                      ),
+                      child: Text(
+                        m.yonetim_onayla,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+IconData _kaynakIkonu(JoinRequestSource kaynak) => switch (kaynak) {
+  JoinRequestSource.inviteLink => Icons.link,
+  JoinRequestSource.directInvite => Icons.person_add_alt_outlined,
+  JoinRequestSource.code => Icons.vpn_key_outlined,
+  JoinRequestSource.discover => Icons.explore_outlined,
+  JoinRequestSource.unknown => Icons.how_to_reg_outlined,
+};
 
 /// İsteğin nasıl geldiğinin metni. Bilinmeyen kaynak genel metne düşer.
 String kaynakMetni(AppLocalizations m, JoinRequestSource kaynak) =>

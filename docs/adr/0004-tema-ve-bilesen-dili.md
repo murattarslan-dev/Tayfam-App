@@ -233,3 +233,37 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
      zemini: açık temada brand, koyu temada ink); mor marka yüzeyinin
      altında iki temada da koyu temanın tür renkleri kullanılır (oyun
      brand-dark; brand zeminde brand dolgu görünmez).
+- **2026-11-13 (platform sahibi, sohbette onaylandı): nar tonları, yıkıcı
+  düğme ve tayfa ekranlarının ölçüleri.** Tayfa ana sayfası, menüsü ve
+  ayarlarının yeniden tasarımıyla gelir (PR'lar: tayfa menüsü ve paneli,
+  ana sayfa, ayarlar).
+  1. **Yeni renk token'ları:** `tintNar` (açık #FFE1E8, koyu #4A1A26) ve
+     `narMetin` (açık #B0123A, koyu #FF9FB4). Nar (#FF3D68) beyaz ve tint
+     zeminde metin için yetersizdir; yıkıcı eylem metni, "Banlı" etiketi
+     ve nar rozet bu ikiliyle çizilir. Ölçülen kontrast: açık temada
+     nar-metin beyazda 7.0:1, tint-nar'da 5.7:1; koyu temada #FF9FB4
+     tint-nar-dark'ta 7.4:1, ink'te 9.3:1.
+  2. **Dolu yıkıcı düğme** (`YikiciEylem(dolu: true)`, `yikiciDolgu` /
+     `yikiciDolguUstu`): açık temada nar-metin zemin + beyaz yazı (7.0:1).
+     Koyu temada nar-metin (#B0123A) ink zeminde ayırt edilmez ve beyaz
+     yazıyla zemini arasındaki fark düşer; bu yüzden **koyu temada #FF9FB4
+     zemin + ink yazı (9.3:1)** seçildi. Çerçeveli yıkıcı düğme
+     (`dolu: false`) nar-metin kenar ve yazıyla çizilir. Değerler
+     `kontrast_test.dart`'ta korunur (≥4.5:1). Dolu yıkıcı düğme yalnızca
+     yıkıcı onay penceresinin son düğmesidir (çıkarma, ban, silme, link
+     iptali); ekrandaki ilk adım çerçeveli olandır.
+  3. **Mor yüzeyin katmanları:** `markaYuzeyKutusu` (iki temada ink; mor
+     üst bölümdeki "Sıradaki" kartı ve koyu kutular, beyaz yazı) ve
+     `markaYuzeyKatmani` (iki temada #6F44E4; mor yüzeyin üstündeki açık
+     katman, beyaz yazı 5.8:1; mango yalnızca rozet/ikon için, 3.2:1).
+  4. **Yeni ölçüler (`TayfamSizes`, `TayfamRadii`):** tayfa avatarı 44,
+     menü ikon kutusu 40, menü satırı 64, sayı rozeti 28, mor taşma 76,
+     tarih kutusu 52×56, doluluk çubuğu 8, kurulum adımı dairesi 28,
+     "Oluştur" düğmesinin altında bırakılan alan 96; seçim kartı yarıçapı
+     16 (`TayfamRadii.secim`).
+  5. **Yeni ortak bileşenler** (`core/bilesenler/`): `AltSayfaIcerigi` /
+     `altSayfaAc` (alttan sayfa; yalnızca Oluştur, tayfa menüsü, tayfa
+     geçişi, üye işlemleri ve yeni davet linki), `MenuSatiri` +
+     `SayiRozeti`, `YikiciEylem`, `Etiket` (marka, mango, teal, nar
+     tonları), `ListeKarti`. Renk yine tek başına bilgi taşımaz: etiketler
+     metinli, rozetlerin ekran okuyucu etiketi vardır.

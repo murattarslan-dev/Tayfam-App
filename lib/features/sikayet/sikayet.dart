@@ -16,9 +16,11 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/features/sikayet/application/moderasyon_kuyrugu.dart';
 import 'package:tayfam/features/sikayet/presentation/moderasyon_ekrani.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -48,3 +50,39 @@ const IconData moderasyonGirisIkonu = Icons.flag_outlined;
 /// Ayarlar ekranındaki moderasyon kuyruğu girişinin etiketi.
 String moderasyonGirisEtiketi(BuildContext context) =>
     AppLocalizations.of(context).sikayet_kuyruk_baslik;
+
+/// Tayfa ayarlarındaki moderasyon girişinin açık şikâyet sayısı
+/// (2026-11-13): ayarlar açılınca kuyruğun ilk sayfası okunur (yalnızca
+/// bellek). Sözleşmede toplam olmadığı için ilk sayfadaki adet ve devamı
+/// olup olmadığı döner; devamı varsa "N+" gösterilir. Henüz okunmadıysa
+/// ya da okunamadıysa `null` (sayı gösterilmez).
+({int sayi, bool devami})? moderasyonSayisi(WidgetRef ref, String tayfaId) {
+  final liste = ref
+      .watch(moderasyonKuyruguProvider((tayfaId: tayfaId, acik: true)))
+      .value;
+  if (liste == null) return null;
+  return (sayi: liste.ogeler.length, devami: liste.dahaVar);
+}
+
+/// Moderasyon girişinin özeti: "2 açık şikâyet" ya da "20+ açık şikâyet".
+String moderasyonOzeti(BuildContext context, ({int sayi, bool devami}) s) {
+  final m = AppLocalizations.of(context);
+  return s.devami
+      ? m.sikayet_ayar_ozet_fazla(s.sayi)
+      : m.sikayet_ayar_ozet(s.sayi);
+}
+
+/// "Seni bekleyenler" kartındaki şikâyet satırının metni.
+String moderasyonBekleyenMetni(BuildContext context) =>
+    AppLocalizations.of(context).sikayet_bekleyen_satiri;
+
+/// "Seni bekleyenler" kartındaki şikâyet satırının ekran okuyucu etiketi.
+String moderasyonBekleyenEtiketi(
+  BuildContext context,
+  ({int sayi, bool devami}) s,
+) {
+  final m = AppLocalizations.of(context);
+  return s.devami
+      ? m.sikayet_bekleyen_etiketi_fazla(s.sayi)
+      : m.sikayet_bekleyen_etiketi(s.sayi);
+}

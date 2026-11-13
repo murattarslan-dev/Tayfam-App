@@ -1155,16 +1155,6 @@
       }
     }
   },
-  "tayfa_davet_kod": "Tayfa kodu: {kod}",
-  "@tayfa_davet_kod": {
-    "description": "Davet kısayolu kartında paylaşılacak tayfa kodu.",
-    "placeholders": {
-      "kod": {
-        "type": "String",
-        "example": "K7M2Q9XA"
-      }
-    }
-  },
   "katilim_baslik": "Tayfa koduyla katıl",
   "@katilim_baslik": {
     "description": "Kodla katılma için alttan açılan sayfanın başlığı."
@@ -4187,6 +4177,95 @@
   "@yonetim_ayarlar_baslik": {
     "description": "Tayfa ayarları ekranının başlığı."
   },
+  "yonetim_ayarlar_bekleyenler": "Seni bekleyenler",
+  "@yonetim_ayarlar_bekleyenler": {
+    "description": "Tayfa ayarlarının en üstündeki mor kartın başlığı; yalnızca bekleyen katılım isteği ya da açık şikâyet varsa görünür."
+  },
+  "yonetim_bekleyen_istek_satiri": "katılım isteği onay bekliyor",
+  "@yonetim_bekleyen_istek_satiri": {
+    "description": "\"Seni bekleyenler\" kartında sayı rozetinin yanındaki metin; dokununca katılım istekleri açılır."
+  },
+  "yonetim_bekleyen_istek_etiketi": "{sayi, plural, other{{sayi} katılım isteği onay bekliyor}}",
+  "@yonetim_bekleyen_istek_etiketi": {
+    "description": "\"Seni bekleyenler\" kartındaki katılım isteği satırının ekran okuyucu etiketi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_bolum_topluluk": "Topluluk",
+  "@yonetim_bolum_topluluk": {
+    "description": "Tayfa ayarlarında üyeler, katılım istekleri, davet linkleri ve moderasyonun bölüm başlığı; moderatör yalnızca bu bölümü görür."
+  },
+  "yonetim_bolum_tayfa": "Tayfa",
+  "@yonetim_bolum_tayfa": {
+    "description": "Tayfa ayarlarında bilgiler, katılım ve tayfa kodunun bölüm başlığı (yalnızca yönetici)."
+  },
+  "yonetim_yalnizca_yoneticiler": "Yalnızca yöneticiler",
+  "@yonetim_yalnizca_yoneticiler": {
+    "description": "Tayfa ayarlarındaki \"Tayfa\" bölüm başlığının yanındaki not."
+  },
+  "yonetim_istekler_ozet": "{sayi, plural, =0{Bekleyen yok} other{{sayi} bekliyor}}",
+  "@yonetim_istekler_ozet": {
+    "description": "Tayfa ayarlarında \"Katılım istekleri\" satırının altındaki sayı (pending_join_request_count).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_istekler_alt_baslik": "{bekleyen} · eskiden yeniye",
+  "@yonetim_istekler_alt_baslik": {
+    "description": "Katılım istekleri ekranının başlığının altındaki metin; bekleyen yonetim_istekler_ozet metnidir.",
+    "placeholders": {
+      "bekleyen": {
+        "type": "String"
+      }
+    }
+  },
+  "yonetim_davetler_ozet": "{sayi, plural, =0{Geçerli link yok} other{{sayi} geçerli link}}",
+  "@yonetim_davetler_ozet": {
+    "description": "Tayfa ayarlarında \"Davet linkleri\" satırının altındaki sayı; ayarlar açılınca davet listesi okunarak.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_davetler_ozet_fazla": "{sayi}+ geçerli link",
+  "@yonetim_davetler_ozet_fazla": {
+    "description": "Davet linki sayısı sunucunun bir seferde döndürdüğü en çok sayıya (100) ulaştıysa; gerçek sayı daha fazla olabilir.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_bilgiler_ozet": "Ad, kapak, açıklama, ilgi alanları",
+  "@yonetim_bilgiler_ozet": {
+    "description": "Tayfa ayarlarında \"Tayfa bilgileri\" satırının açıklaması."
+  },
+  "yonetim_katilim_ozet": "{politika} · {etkinlik}",
+  "@yonetim_katilim_ozet": {
+    "description": "Tayfa ayarlarında \"Katılım\" satırının açıklaması: katılım politikası (olusturma_onayli / olusturma_acik) ve üyelerin etkinlik açıp açamayacağı.",
+    "placeholders": {
+      "politika": {
+        "type": "String"
+      },
+      "etkinlik": {
+        "type": "String"
+      }
+    }
+  },
+  "yonetim_katilim_uye_acar": "üyeler etkinlik açabilir",
+  "@yonetim_katilim_uye_acar": {
+    "description": "\"Katılım\" satırının açıklamasında, üyeler etkinlik açabiliyorsa."
+  },
+  "yonetim_katilim_yonetim_acar": "etkinliği yönetim açar",
+  "@yonetim_katilim_yonetim_acar": {
+    "description": "\"Katılım\" satırının açıklamasında, yalnızca moderatör ve yönetici etkinlik açabiliyorsa."
+  },
   "yonetim_istekler": "Katılım istekleri",
   "@yonetim_istekler": {
     "description": "Tayfa ayarlarındaki katılım istekleri girişi ve ekranının başlığı."
@@ -4215,17 +4294,33 @@
   "@yonetim_modul_duyurular": {
     "description": "Modüller bölümünde duyuru modülünün anahtarı."
   },
+  "yonetim_modul_duyurular_aciklama": "Yönetimden herkese, sabitlenebilir",
+  "@yonetim_modul_duyurular_aciklama": {
+    "description": "Tayfa ayarlarında Duyurular modülü anahtarının açıklaması."
+  },
   "yonetim_modul_etkinlikler": "Etkinlikler",
   "@yonetim_modul_etkinlikler": {
     "description": "Modüller bölümünde etkinlik modülünün anahtarı."
+  },
+  "yonetim_modul_etkinlikler_aciklama": "Konvoy, kamp, maç; katılım ve varış",
+  "@yonetim_modul_etkinlikler_aciklama": {
+    "description": "Tayfa ayarlarında Etkinlikler modülü anahtarının açıklaması."
   },
   "yonetim_modul_soru_cevap": "Soru-cevap",
   "@yonetim_modul_soru_cevap": {
     "description": "Modüller bölümünde soru-cevap modülünün anahtarı."
   },
+  "yonetim_modul_soru_cevap_aciklama": "Aranabilir bilgi birikimi",
+  "@yonetim_modul_soru_cevap_aciklama": {
+    "description": "Tayfa ayarlarında Soru-cevap modülü anahtarının açıklaması."
+  },
   "yonetim_modul_anketler": "Anketler",
   "@yonetim_modul_anketler": {
     "description": "Modüller bölümünde anket modülünün anahtarı."
+  },
+  "yonetim_modul_anketler_aciklama": "Açık ya da gizli oylama",
+  "@yonetim_modul_anketler_aciklama": {
+    "description": "Tayfa ayarlarında Anketler modülü anahtarının açıklaması."
   },
   "yonetim_modul_acildi": "Modül açıldı.",
   "@yonetim_modul_acildi": {
@@ -4380,6 +4475,31 @@
   "@yonetim_uyeler_bos": {
     "description": "Üyeler ekranında filtreye uyan kimse yokken görünen metin."
   },
+  "yonetim_uye_sen": "(sen)",
+  "@yonetim_uye_sen": {
+    "description": "Üyeler listesinde oturumdaki kullanıcının adının yanında."
+  },
+  "yonetim_sustur": "Sustur",
+  "@yonetim_sustur": {
+    "description": "Üye işlemleri sayfasında susturma süresi düğmelerinin başlığı."
+  },
+  "yonetim_sure_saat": "{sayi, plural, other{{sayi} saat}}",
+  "@yonetim_sure_saat": {
+    "description": "Üye işlemleri sayfasında susturma süresi düğmesi (ör. \"1 saat\").",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_cikar_aciklama_kisa": "Sonra kodla ya da davetle dönebilir",
+  "@yonetim_cikar_aciklama_kisa": {
+    "description": "Üye işlemleri sayfasında \"Tayfadan çıkar\" satırının açıklaması."
+  },
+  "yonetim_banla_aciklama_kisa": "Bir daha katılamaz",
+  "@yonetim_banla_aciklama_kisa": {
+    "description": "Üye işlemleri sayfasında \"Banla\" satırının açıklaması."
+  },
   "yonetim_rol_admin": "Yönetici",
   "@yonetim_rol_admin": {
     "description": "Üye satırındaki rol: yönetici."
@@ -4400,10 +4520,6 @@
   "@yonetim_susturuldu": {
     "description": "Üye satırında, üye susturulmuşken rolün yanında görünen metin."
   },
-  "yonetim_uye_islemleri": "Üye işlemleri",
-  "@yonetim_uye_islemleri": {
-    "description": "Üye satırındaki işlem düğmesinin ipucu ve ekran okuyucu etiketi."
-  },
   "yonetim_rol_yap_admin": "Yönetici yap",
   "@yonetim_rol_yap_admin": {
     "description": "Üye işlemleri panelinde rolü yönetici yapan giriş."
@@ -4415,26 +4531,6 @@
   "yonetim_rol_yap_member": "Üye yap",
   "@yonetim_rol_yap_member": {
     "description": "Üye işlemleri panelinde rolü üye yapan giriş."
-  },
-  "yonetim_sustur_saat": "{sayi, plural, other{{sayi} saat sustur}}",
-  "@yonetim_sustur_saat": {
-    "description": "Üye işlemleri panelinde saat cinsinden susturma süresi.",
-    "placeholders": {
-      "sayi": {
-        "type": "int",
-        "example": "1"
-      }
-    }
-  },
-  "yonetim_sustur_gun": "{sayi, plural, other{{sayi} gün sustur}}",
-  "@yonetim_sustur_gun": {
-    "description": "Üye işlemleri panelinde gün cinsinden susturma süresi.",
-    "placeholders": {
-      "sayi": {
-        "type": "int",
-        "example": "7"
-      }
-    }
   },
   "yonetim_susturmayi_kaldir": "Susturmayı kaldır",
   "@yonetim_susturmayi_kaldir": {
@@ -4532,13 +4628,42 @@
   "@yonetim_kaydedildi": {
     "description": "Tayfa bilgileri kaydedilince kısa süre görünen bildirim."
   },
+  "yonetim_degisiklik_sayisi": "{sayi, plural, =0{Değişiklik yok} other{{sayi} değişiklik}}",
+  "@yonetim_degisiklik_sayisi": {
+    "description": "Tayfa bilgileri ekranının altındaki çubukta kaydedilmemiş değişiklik sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "yonetim_cikis_baslik": "Değişiklikler kaydedilmedi",
+  "@yonetim_cikis_baslik": {
+    "description": "Tayfa bilgilerinde kaydedilmemiş değişiklikle geri çıkılırken açılan onay penceresinin başlığı."
+  },
+  "yonetim_cikis_aciklama": "Kaydetmeden çıkarsan yaptığın değişiklikler kaybolur.",
+  "@yonetim_cikis_aciklama": {
+    "description": "Kaydedilmemiş değişiklik penceresinin açıklaması."
+  },
+  "yonetim_cikis_onayla": "Kaydetmeden çık",
+  "@yonetim_cikis_onayla": {
+    "description": "Kaydedilmemiş değişiklik penceresinde değişiklikleri bırakıp çıkan düğme."
+  },
   "yonetim_davet_olustur": "Davet linki oluştur",
   "@yonetim_davet_olustur": {
     "description": "Davet linkleri ekranında yeni link seçeneklerini açan düğme."
   },
-  "yonetim_davet_olustur_onayla": "Oluştur",
-  "@yonetim_davet_olustur_onayla": {
-    "description": "Davet linki seçenekleri panelinde linki oluşturan düğme."
+  "yonetim_davet_olustur_aciklama": "Tayfaya getirmenin en kolay yolu: linki WhatsApp grubunuza at, gelenler tek dokunuşla katılsın.",
+  "@yonetim_davet_olustur_aciklama": {
+    "description": "\"Davet linki oluştur\" alttan sayfasının açıklaması."
+  },
+  "yonetim_davet_bir_kez": "Link yalnızca oluşturunca bir kez gösterilir. Hemen paylaş ya da kopyala.",
+  "@yonetim_davet_bir_kez": {
+    "description": "\"Davet linki oluştur\" sayfasındaki uyarı kutusu; token sunucuda bir daha gösterilemez."
+  },
+  "yonetim_davet_olustur_paylas": "Oluştur ve paylaş",
+  "@yonetim_davet_olustur_paylas": {
+    "description": "\"Davet linki oluştur\" sayfasının düğmesi; linki açar, sistem paylaşım menüsünü açar ve link bir kez gösterilir."
   },
   "yonetim_davet_sure": "Geçerlilik",
   "@yonetim_davet_sure": {
@@ -5469,6 +5594,46 @@
   "sikayet_tayfa_menu_aciklama": "Yalnızca Tayfam ekibi görür, yöneticiler görmez",
   "@sikayet_tayfa_menu_aciklama": {
     "description": "Tayfa menüsünde \"Tayfayı şikâyet et\" satırının açıklaması; şikâyet yalnızca platforma gider (ADR-0018 §8)."
+  },
+  "sikayet_ayar_ozet": "{sayi, plural, =0{Açık şikâyet yok} other{{sayi} açık şikâyet}}",
+  "@sikayet_ayar_ozet": {
+    "description": "Tayfa ayarlarında \"Moderasyon\" satırının altındaki sayı; ayarlar açılınca moderasyon kuyruğunun ilk sayfası okunarak.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sikayet_ayar_ozet_fazla": "{sayi}+ açık şikâyet",
+  "@sikayet_ayar_ozet_fazla": {
+    "description": "Moderasyon kuyruğunun ilk sayfası dolu ve devamı varsa; toplam bilinmediği için \"N+\".",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sikayet_bekleyen_satiri": "şikâyet incelemeni bekliyor",
+  "@sikayet_bekleyen_satiri": {
+    "description": "Tayfa ayarlarındaki \"Seni bekleyenler\" kartında sayı rozetinin yanındaki metin; dokununca moderasyon kuyruğu açılır."
+  },
+  "sikayet_bekleyen_etiketi": "{sayi, plural, other{{sayi} şikâyet incelemeni bekliyor}}",
+  "@sikayet_bekleyen_etiketi": {
+    "description": "\"Seni bekleyenler\" kartındaki şikâyet satırının ekran okuyucu etiketi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sikayet_bekleyen_etiketi_fazla": "{sayi} ya da daha fazla şikâyet incelemeni bekliyor",
+  "@sikayet_bekleyen_etiketi_fazla": {
+    "description": "Şikâyet satırının ekran okuyucu etiketi; kuyruğun ilk sayfası dolu ve devamı varsa.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
   },
   "sikayet_iletildi": "Şikâyetin iletildi. Aynı şeyi tekrar şikâyet etmen gerekmez.",
   "@sikayet_iletildi": {
@@ -6680,5 +6845,9 @@
   "yonetim_ban_gerekce_yok": "Gerekçe belirtme",
   "@yonetim_ban_gerekce_yok": {
     "description": "Banlama onay penceresinde gerekçe vermeden banlama seçeneği (varsayılan)."
+  },
+  "yonetim_ban_diger_gerekceler": "Diğer gerekçeleri göster",
+  "@yonetim_ban_diger_gerekceler": {
+    "description": "Ban penceresinde kısa gerekçe listesinin altındaki düğme; kapalı listenin geri kalanını açar."
   }
 }

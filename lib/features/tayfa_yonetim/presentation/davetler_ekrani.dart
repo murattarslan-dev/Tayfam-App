@@ -14,8 +14,11 @@ import 'package:tayfam/features/tayfa_yonetim/data/yonetim_deposu.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Davet linkleri (`/t/<tayfaId>/ayarlar/davetler`; ADR-0018 §1):
-/// oluşturma, paylaşma, listeleme ve iptal.
+/// Yeni davet linkinin seçimi: geçerlilik süresi ve kullanım sayısı.
+typedef DavetSecimi = ({Duration sure, int kullanim});
+
+/// Davet linkleri (`/t/<tayfaId>/ayarlar/davetler`; ADR-0018 §1; tasarım:
+/// Ayar-Davetler): oluşturma, paylaşma, listeleme ve iptal. Tam ekran.
 ///
 /// Link `https://tayfam.app/davet#<token>` biçimindedir; token yalnızca
 /// oluşturma cevabında bir kez döner. Link yalnızca paylaşım sayfası
@@ -44,7 +47,15 @@ class DavetlerEkrani extends ConsumerWidget {
               child: BirincilEylem(
                 etiket: m.yonetim_davet_olustur,
                 ikon: Icons.add_link,
-                onPressed: () => unawaited(_olustur(context, ref)),
+                onPressed: () => unawaited(
+                  _davetAkisi(
+                    context,
+                    tayfaId: tayfaId,
+                    olustur: (secim) => ref
+                        .read(saglayici.notifier)
+                        .olustur(sure: secim.sure, kullanim: secim.kullanim),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: TayfamSpacing.s16),
@@ -68,82 +79,83 @@ class DavetlerEkrani extends ConsumerWidget {
       ),
     );
   }
-
-  Future<void> _olustur(BuildContext context, WidgetRef ref) async {
-    final secim = await showModalBottomSheet<({Duration sure, int kullanim})>(
-      context: context,
-      useRootNavigator: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => const DavetSecenekleri(),
-    );
-    if (secim == null || !context.mounted) return;
-    final bildirici = SonucBildirici.al(context);
-    final sonuc = await ref
-        .read(davetlerProvider(tayfaId).notifier)
-        .olustur(sure: secim.sure, kullanim: secim.kullanim);
-    final link = sonuc.link;
-    final hata = sonuc.hata;
-    if (hata != null) {
-      bildirici.bildir(hata, '');
-      return;
-    }
-    if (link == null || !context.mounted) return;
-    final ad = ref.read(tayfaOzetiProvider(tayfaId)).ad;
-    await showModalBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => DavetLinkiPaylasimi(link: link, tayfaAdi: ad),
-    );
-  }
 }
 
 /// Tayfa ana sayfasından davet (kişi+ ikonu, "Oluştur" sayfasındaki
 /// "Tayfaya davet et", kurulum kartındaki "Davet linkini paylaş";
-/// `tayfaDavetiProvider`'a verilir): seçenekler, link oluşturma ve
-/// paylaşım. Her üye link açabilir; yetkiyi sunucu verir.
-///
-/// Link yalnızca oluşturma cevabında ve paylaşım sayfasının belleğinde
-/// yaşar; duruma, diske ve log'a yazılmaz (kesin kural 3, 9).
-Future<void> tayfayaDavetEt(BuildContext context, String tayfaId) async {
-  final secim = await altSayfaAc<({Duration sure, int kullanim})>(
+/// `tayfaDavetiProvider`'a verilir). Her üye link açabilir; yetkiyi sunucu
+/// verir. Link doğrudan depodan oluşturulur (ana sayfada davet listesi
+/// açık değildir).
+Future<void> tayfayaDavetEt(BuildContext context, String tayfaId) {
+  final kap = ProviderScope.containerOf(context, listen: false);
+  return _davetAkisi(
+    context,
+    tayfaId: tayfaId,
+    olustur: (secim) async {
+      try {
+        final olusan = await kap
+            .read(yonetimDeposuProvider)
+            .davetOlustur(
+              tayfaId,
+              InviteCreateRequest(
+                ttlSeconds: secim.sure.inSeconds,
+                maxUses: secim.kullanim,
+              ),
+            );
+        return (link: davetLinki(olusan.token), hata: null);
+      } on Exception catch (hata) {
+        return (link: null, hata: hata);
+      }
+    },
+  );
+}
+
+/// Ortak davet akışı (tasarım: Ayar-Davetler): seçenekler alttan sayfada
+/// (varsayılan 7 gün, 10 kişi) → "Oluştur ve paylaş" → link oluşturulur,
+/// sistem paylaşım menüsü açılır ve link bir kez, kopyalanabilir olarak
+/// gösterilir. Link yalnızca bu akışın ve paylaşım sayfasının belleğinde
+/// yaşar (kesin kural 3, 9).
+Future<void> _davetAkisi(
+  BuildContext context, {
+  required String tayfaId,
+  required Future<DavetSonucu> Function(DavetSecimi secim) olustur,
+}) async {
+  final secim = await altSayfaAc<DavetSecimi>(
     context,
     builder: (_) => const DavetSecenekleri(),
   );
   if (secim == null || !context.mounted) return;
+  final m = AppLocalizations.of(context);
   final kap = ProviderScope.containerOf(context, listen: false);
   final bildirici = SonucBildirici.al(context);
-  String? link;
-  try {
-    final olusan = await kap
-        .read(yonetimDeposuProvider)
-        .davetOlustur(
-          tayfaId,
-          InviteCreateRequest(
-            ttlSeconds: secim.sure.inSeconds,
-            maxUses: secim.kullanim,
-          ),
-        );
-    link = davetLinki(olusan.token);
-  } on Exception catch (hata) {
+  final sonuc = await olustur(secim);
+  final hata = sonuc.hata;
+  if (hata != null) {
     bildirici.bildir(hata, '');
     return;
   }
-  final paylasilacak = link;
+  final link = sonuc.link;
+  if (link == null || !context.mounted) return;
+  final ad = kap.read(tayfaOzetiProvider(tayfaId)).ad ?? m.tayfa_adi_bilinmiyor;
+  // "Oluştur ve paylaş": sistem paylaşım menüsü hemen açılır; ardından link
+  // kopyalanabilsin diye bir kez gösterilir.
+  try {
+    await kap
+        .read(paylasiciProvider)
+        .paylas(m.yonetim_davet_paylasim_metni(ad, link));
+  } on Exception {
+    // Paylaşım menüsü açılamazsa link aşağıdaki sayfada yine gösterilir.
+  }
   if (!context.mounted) return;
-  final ad = kap.read(tayfaOzetiProvider(tayfaId)).ad;
   await altSayfaAc<void>(
     context,
-    builder: (_) => DavetLinkiPaylasimi(link: paylasilacak, tayfaAdi: ad),
+    builder: (_) => DavetLinkiPaylasimi(link: link, tayfaAdi: ad),
   );
 }
 
-/// Yeni davet linkinin seçenekleri: geçerlilik süresi ve kullanım sayısı.
-/// "Oluştur"a basınca seçimle kapanır.
+/// Yeni davet linkinin seçenekleri (tasarım: Ayar-Davetler): geçerlilik
+/// (1 / 7 / 30 gün) ve kullanım sayısı (1 / 10 / 100 kişi); varsayılan 7
+/// gün, 10 kişi. "Oluştur ve paylaş"a basınca seçimle kapanır.
 class DavetSecenekleri extends StatefulWidget {
   const DavetSecenekleri({super.key});
 
@@ -158,58 +170,115 @@ class _DavetSecenekleriState extends State<DavetSecenekleri> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        TayfamSpacing.kenarMobil,
-        0,
-        TayfamSpacing.kenarMobil,
-        TayfamSpacing.s24,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BolumBasligi(baslik: m.yonetim_davet_sure),
-          const SizedBox(height: TayfamSpacing.s8),
-          Wrap(
-            spacing: TayfamSpacing.s8,
-            runSpacing: TayfamSpacing.s8,
-            children: [
-              for (final sure in davetSureleri)
-                ChoiceChip(
-                  label: Text(m.yonetim_davet_sure_gun(sure.inDays)),
-                  selected: sure == _sure,
-                  onSelected: (_) => setState(() => _sure = sure),
-                ),
-            ],
+    final r = context.renkler;
+    final yazi = context.yazi;
+    return AltSayfaIcerigi(
+      baslik: m.yonetim_davet_olustur,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+          child: Text(
+            m.yonetim_davet_olustur_aciklama,
+            style: yazi.bodyMedium?.copyWith(color: r.metinGovde),
           ),
-          const SizedBox(height: TayfamSpacing.s16),
-          BolumBasligi(baslik: m.yonetim_davet_kullanim),
-          const SizedBox(height: TayfamSpacing.s8),
-          Wrap(
-            spacing: TayfamSpacing.s8,
-            runSpacing: TayfamSpacing.s8,
-            children: [
-              for (final sayi in davetKullanimlari)
-                ChoiceChip(
-                  label: Text(m.yonetim_davet_kullanim_sayi(sayi)),
-                  selected: sayi == _kullanim,
-                  onSelected: (_) => setState(() => _kullanim = sayi),
-                ),
-            ],
+        ),
+        const SizedBox(height: TayfamSpacing.s16),
+        _SecimGrubu<Duration>(
+          baslik: m.yonetim_davet_sure,
+          secenekler: davetSureleri,
+          secili: _sure,
+          etiket: (sure) => m.yonetim_davet_sure_gun(sure.inDays),
+          onSec: (sure) => setState(() => _sure = sure),
+        ),
+        const SizedBox(height: TayfamSpacing.s16),
+        _SecimGrubu<int>(
+          baslik: m.yonetim_davet_kullanim,
+          secenekler: davetKullanimlari,
+          secili: _kullanim,
+          etiket: m.yonetim_davet_kullanim_sayi,
+          onSec: (sayi) => setState(() => _kullanim = sayi),
+        ),
+        const SizedBox(height: TayfamSpacing.s16),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: r.tintMango,
+            borderRadius: TayfamRadii.onizlemeKoseleri,
           ),
-          const SizedBox(height: TayfamSpacing.s24),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: BirincilEylem(
-              etiket: m.yonetim_davet_olustur_onayla,
-              ikon: Icons.add_link,
-              onPressed: () =>
-                  Navigator.of(context).pop((sure: _sure, kullanim: _kullanim)),
+          child: Padding(
+            padding: const EdgeInsets.all(TayfamSpacing.s12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.info_outline,
+                    size: TayfamSizes.ikon,
+                    color: r.tintMangoUstu,
+                  ),
+                ),
+                const SizedBox(width: TayfamSpacing.s8),
+                Expanded(
+                  child: Text(
+                    m.yonetim_davet_bir_kez,
+                    style: yazi.bodySmall?.copyWith(color: r.metin),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: TayfamSpacing.s16),
+        BirincilEylem(
+          etiket: m.yonetim_davet_olustur_paylas,
+          ikon: Icons.share_outlined,
+          onPressed: () =>
+              Navigator.of(context)
+                  .pop<DavetSecimi>((sure: _sure, kullanim: _kullanim)),
+        ),
+      ],
+    );
+  }
+}
+
+/// Üç eşit seçenek düğmesi (tasarım: Ayar-Davetler, Ayar-Uyeler):
+/// seçili olan brand kenarlı tint zemin, diğerleri çerçeveli.
+class _SecimGrubu<T> extends StatelessWidget {
+  const _SecimGrubu({
+    required this.baslik,
+    required this.secenekler,
+    required this.secili,
+    required this.etiket,
+    required this.onSec,
+  });
+
+  final String baslik;
+  final List<T> secenekler;
+  final T secili;
+  final String Function(T deger) etiket;
+  final ValueChanged<T> onSec;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.only(
+            start: TayfamSpacing.s8,
+            bottom: TayfamSpacing.s8,
+          ),
+          child: Semantics(
+            header: true,
+            child: Text(baslik, style: context.yazi.titleSmall),
+          ),
+        ),
+        SecimDugmeleri<T>(
+          secenekler: secenekler,
+          secili: secili,
+          etiket: etiket,
+          onSec: onSec,
+        ),
+      ],
     );
   }
 }
@@ -226,60 +295,51 @@ class DavetLinkiPaylasimi extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final ad = tayfaAdi ?? m.tayfa_adi_bilinmiyor;
-    return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        TayfamSpacing.kenarMobil,
-        0,
-        TayfamSpacing.kenarMobil,
-        TayfamSpacing.s24,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Semantics(
-            header: true,
-            child: Text(
-              m.yonetim_davet_hazir_baslik,
-              style: context.yazi.titleLarge,
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(
-            m.yonetim_davet_hazir_aciklama,
-            style: context.yazi.bodyMedium?.copyWith(
-              color: context.renkler.metinGovde,
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          SelectableText(link, style: context.yazi.bodyMedium),
-          const SizedBox(height: TayfamSpacing.s16),
-          Wrap(
-            spacing: TayfamSpacing.s8,
-            runSpacing: TayfamSpacing.s8,
+    return AltSayfaIcerigi(
+      baslik: m.yonetim_davet_hazir_baslik,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Builder(
-                builder: (dugme) => BirincilEylem(
-                  etiket: m.yonetim_davet_paylas,
-                  ikon: Icons.share_outlined,
-                  onPressed: () => unawaited(
-                    _paylas(
-                      dugme,
-                      ref,
-                      m.yonetim_davet_paylasim_metni(ad, link),
-                    ),
-                  ),
+              Text(
+                m.yonetim_davet_hazir_aciklama,
+                style: context.yazi.bodyMedium?.copyWith(
+                  color: context.renkler.metinGovde,
                 ),
               ),
-              IkincilEylem(
-                etiket: m.yonetim_davet_kopyala,
-                ikon: Icons.copy_outlined,
-                onPressed: () => unawaited(_kopyala(context, ref)),
+              const SizedBox(height: TayfamSpacing.s12),
+              SelectableText(link, style: context.yazi.bodyMedium),
+              const SizedBox(height: TayfamSpacing.s16),
+              Wrap(
+                spacing: TayfamSpacing.s8,
+                runSpacing: TayfamSpacing.s8,
+                children: [
+                  Builder(
+                    builder: (dugme) => BirincilEylem(
+                      etiket: m.yonetim_davet_paylas,
+                      ikon: Icons.share_outlined,
+                      onPressed: () => unawaited(
+                        _paylas(
+                          dugme,
+                          ref,
+                          m.yonetim_davet_paylasim_metni(ad, link),
+                        ),
+                      ),
+                    ),
+                  ),
+                  IkincilEylem(
+                    etiket: m.yonetim_davet_kopyala,
+                    ikon: Icons.copy_outlined,
+                    onPressed: () => unawaited(_kopyala(context, ref)),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -319,6 +379,7 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
       baslik: m.yonetim_davet_iptal_baslik,
       aciklama: m.yonetim_davet_iptal_aciklama,
       onay: m.yonetim_davet_iptal_onayla,
+      yikici: true,
     );
     if (!onay || !mounted) return;
     final bildirici = SonucBildirici.al(context);
@@ -335,9 +396,7 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
     final m = AppLocalizations.of(context);
     final davet = widget.davet;
     final bitis = davet.expiresAt.toLocal();
-    final ikincil = context.yazi.bodyMedium?.copyWith(
-      color: context.renkler.metinGovde,
-    );
+    final ikincil = context.yazi.bodySmall;
     return TayfamKart(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -361,7 +420,7 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
           const SizedBox(height: TayfamSpacing.s12),
           Align(
             alignment: AlignmentDirectional.centerStart,
-            child: IkincilEylem(
+            child: YikiciEylem(
               etiket: m.yonetim_davet_iptal,
               ikon: Icons.link_off,
               onPressed: _gonderiliyor ? null : () => unawaited(_iptal()),
