@@ -256,6 +256,38 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi; issue #156): Soru-cevap ekranları yeniden
+  tasarımı (§4).** Tasarım: Sorular, Soru-Detay, Soru-Form, Cevap-Form
+  (`docs/tasarim/15-duyuru-anket-soru-cevap/`).
+  - **Liste:** başlıkta tayfanın adı ve tint-brand "Soru sor"; hap biçimli
+    arama (sunucuda, Türkçe duyarsız; değişmedi) ve başta "Tümü" olan
+    etiket çipleri (en çok bir etiket). Satırlar tek kartta: soru,
+    etiketler, "N cevap · göreli zaman". Satırda yazar ve gövde özeti
+    yoktur.
+  - **Detay:** etiketler, büyük başlık, soran (avatar + ad) ve tarih, düz
+    metin ayrıntı; "N cevap" başlığı ve "En faydalı bulunanlar üstte"
+    notu; cevaplar tek kartta, **sunucunun sırasıyla**. Sunucunun
+    sırasıyla ilk gelen cevap en az bir faydalı oy almışsa teal **"En
+    faydalı"** etiketi taşır (platform sahibi kararı; yeni alan yok,
+    istemci sıralamayı yeniden kurmaz: oy sonrası liste yerinde güncellenir,
+    etiket yine ilk cevaptadır). Cevapta "Faydalı · N" düğmesi: oy verdiysen
+    tint-brand, değilse çerçeveli; kendi cevabında pasif (sunucu da
+    reddeder). Bu düğme cevap ekranına özeldir; `FaydaliSayaci` (honey)
+    tanıtım görselinde kalır. "Cevap yaz" altta sabit.
+  - **⋯ menüleri** (soru ve cevap) alttan sayfadır (ADR-0004 Notlar
+    2026-11-13, madde 5): yazar ve yönetimde Düzenle ve yıkıcı Sil (mevcut
+    iki ayrı onay metni, son adım dolu yıkıcı düğme); diğerlerinde
+    Şikâyet et. Önceden yönetim başkasının içeriğini hem silip hem
+    şikâyet edebiliyordu; artık yönetimde şikâyet yoktur (etkinlik detayıyla
+    aynı kural). Cevap ⋯ düğmesi tasarımda yoktur; cevap düzenleme, silme
+    ve şikâyeti korumak için faydalı düğmesinin sağında durur.
+  - **Formlar:** tam ekran; X, başlık ve sağ üstte "Sor" / "Gönder" /
+    "Kaydet". Soru formunda sayaçlı başlık, ayrıntı, "Etiketler (en çok 5)":
+    eklenen etiketler kaldırılabilir çipler, "Etiket yaz" + "Ekle" ve
+    altta "Tayfadaki etiketler" önerileri (yazılırken süzülür). Cevap
+    formunda üstte soru alıntısı (tint-brand kutu) ve sayaçlı metin.
+    Alan etiketleri, diğer yeniden tasarlanan formlarla aynı biçimde alanın
+    içindedir.
 - **2026-11-13 (platform sahibi, sohbette; issue #141, PR #142): Sohbet
   sekmesi yeniden tasarımı (§9).** Tasarım: Sohbet-Kanallar,
   Sohbet-Birebir, Kanal-Akis, Kanal-Koyu, Kanal-Islem, Kanal-Formu,
