@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Play dahili test kanalına .aab yükler (issue #95, ADR-0018 §10 Notlar).
+"""Play test kanalına .aab yükler (issue #95, ADR-0018 §10 Notlar).
 
 Play Developer API v3 ile tek bir "edit" içinde:
 
   1. edits.insert
   2. edits.bundles.upload   (uploadType=media, application/octet-stream)
-  3. edits.tracks.update    (track "internal", tek sürüm)
+  3. edits.tracks.update    (--kanal; varsayılan "internal", tek sürüm)
   4. edits.commit
 
 Herhangi bir adım başarısız olursa (iptal sinyali dahil) açılan edit
@@ -14,11 +14,12 @@ edits.delete ile silinir; yarım bir edit Play'de kalmaz.
 Yalnızca Python standart kütüphanesi kullanılır (yeni bağımlılık yok).
 
 Girdiler:
-  --paket, --aab, --surum-kodu, --durum   komut satırı
+  --paket, --aab, --surum-kodu, --durum, --kanal   komut satırı
+                       (--kanal: Play kanal adı; kapalı test varsayılanı "alpha")
   PLAY_ERISIM_TOKENI   ortam değişkeni; androidpublisher kapsamlı OAuth
                        erişim token'ı (Workload Identity Federation ile,
                        google-github-actions/auth). Komut satırına konmaz.
-  PLAY_SURUM_NOTU      ortam değişkeni; tr-TR sürüm notu (isteğe bağlı).
+  PLAY_SURUM_NOTU      ortam değişkeni; tr-TR sürüm notu (isteğe bağlı, çok satırlı).
   PLAY_API_KOK         yalnızca testler içindir; varsayılan Google'ın
                        adresi. Token başka bir yere gitmesin diye yalnızca
                        Google adresi ya da yerel (127.0.0.1/localhost)
@@ -42,6 +43,7 @@ import urllib.request
 
 VARSAYILAN_KOK = "https://androidpublisher.googleapis.com"
 DAHILI_KANAL = "internal"
+KANAL_DESENI = re.compile(r"^[a-z0-9][a-z0-9:_-]{0,63}$")
 SURUM_NOTU_DILI = "tr-TR"
 # Play bir dil için en fazla 500 karakter kabul eder.
 SURUM_NOTU_SINIRI = 500
@@ -95,9 +97,16 @@ def hata_nedeni(govde: bytes) -> str:
 
 
 def surum_notu(ham: str) -> str:
-    """Tek satıra indirir, kontrol karakterlerini atar, 500 karakterle sınırlar."""
-    temiz = re.sub(r"[\x00-\x1f\x7f]+", " ", ham)
-    temiz = re.sub(r"\s+", " ", temiz).strip()
+    """Satır yapısını korur (madde işaretli notlar için), her satırdaki
+    kontrol karakterlerini ve fazla boşlukları atar, boş satırları ve `#`
+    ile başlayan açıklama satırlarını çıkarır, 500 karakterle sınırlar."""
+    satirlar = []
+    for satir in ham.splitlines():
+        satir = re.sub(r"[\x00-\x1f\x7f]+", " ", satir)
+        satir = re.sub(r"\s+", " ", satir).strip()
+        if satir and not satir.startswith("#"):
+            satirlar.append(satir)
+    temiz = "\n".join(satirlar)
     if len(temiz) > SURUM_NOTU_SINIRI:
         temiz = temiz[: SURUM_NOTU_SINIRI - 1].rstrip() + "…"
     return temiz
@@ -186,17 +195,19 @@ class PlayIstemcisi:
         except (TypeError, ValueError):
             raise PlayHatasi("edits.bundles.upload: yanıtta versionCode yok") from None
 
-    def kanali_guncelle(self, edit: str, surum_kodu: int, durum: str, notu: str):
+    def kanali_guncelle(
+        self, edit: str, kanal: str, surum_kodu: int, durum: str, notu: str
+    ):
         surum: dict = {"versionCodes": [str(surum_kodu)], "status": durum}
         if notu:
             surum["releaseNotes"] = [{"language": SURUM_NOTU_DILI, "text": notu}]
         govde = json.dumps(
-            {"track": DAHILI_KANAL, "releases": [surum]}, ensure_ascii=False
+            {"track": kanal, "releases": [surum]}, ensure_ascii=False
         ).encode("utf-8")
         self._istek(
             "edits.tracks.update",
             "PUT",
-            self._edit_yolu(edit, f"/tracks/{DAHILI_KANAL}"),
+            self._edit_yolu(edit, f"/tracks/{urllib.parse.quote(kanal, safe='')}"),
             govde=govde,
             icerik_turu="application/json; charset=utf-8",
         )
@@ -209,7 +220,12 @@ class PlayIstemcisi:
 
 
 def yukle(
-    istemci: PlayIstemcisi, aab: str, surum_kodu: int, durum: str, notu: str
+    istemci: PlayIstemcisi,
+    aab: str,
+    surum_kodu: int,
+    durum: str,
+    notu: str,
+    kanal: str = DAHILI_KANAL,
 ) -> None:
     edit = istemci.edit_ac()
     onaylandi = False
@@ -219,7 +235,7 @@ def yukle(
             raise PlayHatasi(
                 f"Yüklenen paketin versionCode'u {yuklenen}, beklenen {surum_kodu}."
             )
-        istemci.kanali_guncelle(edit, surum_kodu, durum, notu)
+        istemci.kanali_guncelle(edit, kanal, surum_kodu, durum, notu)
         istemci.edit_onayla(edit)
         onaylandi = True
     finally:
@@ -237,6 +253,7 @@ def main(argv: list[str] | None = None) -> int:
     ayr.add_argument("--aab", required=True)
     ayr.add_argument("--surum-kodu", required=True, type=int)
     ayr.add_argument("--durum", default="completed")
+    ayr.add_argument("--kanal", default=DAHILI_KANAL)
     args = ayr.parse_args(argv)
 
     if not PAKET_DESENI.match(args.paket):
@@ -244,6 +261,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     if args.durum not in DURUMLAR:
         print(f"::error::Sürüm durumu {'/'.join(DURUMLAR)} olmalı.")
+        return 2
+    if not KANAL_DESENI.match(args.kanal):
+        print("::error::Kanal adı geçersiz.")
         return 2
     if args.surum_kodu <= 0:
         print("::error::versionCode pozitif olmalı.")
@@ -266,12 +286,13 @@ def main(argv: list[str] | None = None) -> int:
             args.surum_kodu,
             args.durum,
             surum_notu(os.environ.get("PLAY_SURUM_NOTU", "")),
+            args.kanal,
         )
     except (PlayHatasi, Iptal) as hata:
         print(f"::error title=Play yüklemesi::{hata}")
         return 1
     print(
-        f"versionCode {args.surum_kodu} dahili test kanalına yüklendi "
+        f"versionCode {args.surum_kodu} '{args.kanal}' kanalına yüklendi "
         f"(durum: {args.durum})."
     )
     return 0

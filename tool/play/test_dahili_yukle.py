@@ -39,7 +39,8 @@ class SahtePlay:
             return "insert"
         if yontem == "POST" and yol == f"/upload{KOK}/{EDIT}/bundles?uploadType=media":
             return "upload"
-        if yontem == "PUT" and yol == f"{KOK}/{EDIT}/tracks/internal":
+        if yontem == "PUT" and yol.startswith(f"{KOK}/{EDIT}/tracks/"):
+            self.kanal = yol.rsplit("/", 1)[1]
             return "track"
         if yontem == "POST" and yol == f"{KOK}/{EDIT}:commit":
             return "commit"
@@ -101,7 +102,9 @@ class SahtePlay:
 
 
 class DahiliYukleTesti(unittest.TestCase):
-    def calistir(self, sahte: SahtePlay, *, durum="completed", notu="feat: x"):
+    def calistir(
+        self, sahte: SahtePlay, *, durum="completed", notu="feat: x", kanal=None
+    ):
         sunucu = ThreadingHTTPServer(("127.0.0.1", 0), sahte.isleyici())
         is_parcacigi = threading.Thread(target=sunucu.serve_forever, daemon=True)
         is_parcacigi.start()
@@ -131,6 +134,7 @@ class DahiliYukleTesti(unittest.TestCase):
                         "--durum",
                         durum,
                     ]
+                    + ([] if kanal is None else ["--kanal", kanal])
                 )
         finally:
             for k, v in eski.items():
@@ -163,7 +167,7 @@ class DahiliYukleTesti(unittest.TestCase):
                         "versionCodes": ["105"],
                         "status": "completed",
                         "releaseNotes": [
-                            {"language": "tr-TR", "text": "feat: yeni özellik (#1)"}
+                            {"language": "tr-TR", "text": "feat: yeni\nözellik (#1)"}
                         ],
                     }
                 ],
@@ -171,6 +175,20 @@ class DahiliYukleTesti(unittest.TestCase):
         )
         self.assertNotIn(TOKEN, cikti)
         self.assertNotIn(EDIT, cikti)
+
+    def test_kapali_test_kanali(self):
+        sahte = SahtePlay()
+        kod, cikti = self.calistir(sahte, kanal="alpha")
+        self.assertEqual(kod, 0, cikti)
+        self.assertEqual(sahte.kanal, "alpha")
+        kanal = json.loads(sahte.istekler[2]["govde"].decode("utf-8"))
+        self.assertEqual(kanal["track"], "alpha")
+
+    def test_gecersiz_kanal(self):
+        sahte = SahtePlay()
+        kod, cikti = self.calistir(sahte, kanal="../internal")
+        self.assertEqual(kod, 2)
+        self.assertEqual(sahte.istekler, [])
 
     def test_taslak_durumu(self):
         sahte = SahtePlay()
@@ -220,6 +238,15 @@ class YardimciTesti(unittest.TestCase):
         notu = dahili_yukle.surum_notu("a" * 600)
         self.assertEqual(len(notu), 500)
         self.assertTrue(notu.endswith("…"))
+
+    def test_surum_notu_satirlari_korur(self):
+        ham = "# açıklama\n\n• Yeni:  demo tayfalar\n• Düzeltme\x07: bildirim\n"
+        self.assertEqual(
+            dahili_yukle.surum_notu(ham), "• Yeni: demo tayfalar\n• Düzeltme : bildirim"
+        )
+
+    def test_surum_notu_bos(self):
+        self.assertEqual(dahili_yukle.surum_notu("# yalnızca açıklama\n\n"), "")
 
     def test_kok_yalnizca_google_ya_da_yerel(self):
         for kok, gecerli in (

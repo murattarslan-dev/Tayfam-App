@@ -24,6 +24,8 @@ name: Play dahili test
 #                                      workloadIdentityPools/<havuz>/
 #                                      providers/<sağlayıcı>
 #   GCP_PLAY_SERVIS_HESABI             <ad>@<proje>.iam.gserviceaccount.com
+#   PLAY_KANALI                        isteğe bağlı: Play kanal adı; varsayılan
+#                                      alpha (kapalı test). internal = dahili test.
 #   PLAY_SURUM_DURUMU                  isteğe bağlı: completed (varsayılan)
 #                                      ya da draft (uygulama Play'de hâlâ
 #                                      "taslak" ise draft gerekir).
@@ -286,7 +288,9 @@ jobs:
         if: steps.kimlik.outputs.var == 'true'
         with:
           persist-credentials: false
-          sparse-checkout: tool/play
+          sparse-checkout: |
+            tool/play
+            play
       - name: .aab (artefakt)
         if: steps.kimlik.outputs.var == 'true'
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -309,17 +313,31 @@ jobs:
           export_environment_variables: false
       - name: Sürüm notu
         if: steps.kimlik.outputs.var == 'true'
-        # Son commit'in başlığı (Conventional Commits; kişisel veri
-        # içermez). Betik tek satıra indirir ve 500 karakterle sınırlar.
+        # Testçilerin Play'de gördüğü "Yenilikler" metni repodaki
+        # play/surum-notu.tr-TR.txt'den gelir (kullanıcıya yönelik Türkçe;
+        # commit başlığı kullanılmaz). Dosya yoksa ya da yalnızca açıklama
+        # satırı içeriyorsa genel bir not gider. Betik `#` satırlarını ve
+        # boş satırları atar, 500 karakterle sınırlar.
+        env:
+          VARSAYILAN_NOT: Hata düzeltmeleri ve iyileştirmeler.
         run: |
           set -euo pipefail
-          git log -1 --format=%s > "$RUNNER_TEMP/surum-notu.txt"
-      - name: Play dahili test kanalına yükle
+          dosya=play/surum-notu.tr-TR.txt
+          if [ -f "$dosya" ] && grep -qv -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$dosya"; then
+            cp "$dosya" "$RUNNER_TEMP/surum-notu.txt"
+          else
+            printf '%s\n' "$VARSAYILAN_NOT" > "$RUNNER_TEMP/surum-notu.txt"
+          fi
+      - name: Play test kanalına yükle
         if: steps.kimlik.outputs.var == 'true'
         env:
           PLAY_ERISIM_TOKENI: ${{ steps.google.outputs.access_token }}
           SURUM_KODU: ${{ needs.aab.outputs.surum_kodu }}
           DURUM: ${{ vars.PLAY_SURUM_DURUMU || 'completed' }}
+          # Kapalı test (platform sahibi, 2026-11-13). Play'in varsayılan kapalı
+          # test kanalı "alpha"; özel bir kapalı kanal kullanılıyorsa adı
+          # PLAY_KANALI değişkeniyle verilir.
+          KANAL: ${{ vars.PLAY_KANALI || 'alpha' }}
         run: |
           set -euo pipefail
           PLAY_SURUM_NOTU="$(cat "$RUNNER_TEMP/surum-notu.txt")" \
@@ -327,7 +345,8 @@ jobs:
               --paket "$PAKET" \
               --aab "$RUNNER_TEMP/aab/app-release.aab" \
               --surum-kodu "$SURUM_KODU" \
-              --durum "$DURUM"
+              --durum "$DURUM" \
+              --kanal "$KANAL"
           {
             echo "## Play dahili test"
             echo
