@@ -87,7 +87,11 @@ void main() {
       );
 
       expect(find.byType(DuyuruKarti), findsNWidgets(2));
-      expect(find.text(arbMetni('duyuru_sabit')), findsOneWidget);
+      // Etiketin ikonu metnin içinde (WidgetSpan); metin içerikle aranır.
+      expect(find.textContaining(arbMetni('duyuru_sabit')), findsOneWidget);
+      expect(find.text(arbMetni('duyuru_son_duyurular')), findsOneWidget);
+      // Yazar adı listede yok (yalnızca detayda).
+      expect(find.text('Kişi'), findsNothing);
       expect(
         tester.getTopLeft(find.text('Sabit duyuru')).dy,
         lessThan(tester.getTopLeft(find.text('Sıradan duyuru')).dy),
@@ -228,6 +232,64 @@ void main() {
       final govde = tester.widget<SelectableText>(find.byType(SelectableText));
       expect(govde.data, _uzunGovde);
       expect(govde.textSpan, isNull);
+    });
+
+    testWidgets('yazar adı ve "düzenlendi" detayda görünüyor', (tester) async {
+      ekranBoyutu(tester);
+      final json = duyuruJson(duyuruId1, baslik: 'Pazar')
+        ..['updated_at'] = '2026-11-10T12:00:00Z';
+      await _duyuruyuAc(
+        tester,
+        modulTasimasi({'GET $duyuruYolu': yanit(json)}),
+      );
+
+      expect(find.text('Kişi'), findsOneWidget);
+      expect(find.textContaining('düzenlendi'), findsOneWidget);
+    });
+
+    testWidgets('düzenlenmemiş duyuruda "düzenlendi" yok', (tester) async {
+      ekranBoyutu(tester);
+      await _duyuruyuAc(
+        tester,
+        modulTasimasi({'GET $duyuruYolu': yanit(duyuruJson(duyuruId1))}),
+      );
+      expect(find.textContaining('düzenlendi'), findsNothing);
+    });
+
+    testWidgets('yazarı silinmiş duyuruda "Silinmiş kullanıcı"', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final json = duyuruJson(duyuruId1)..remove('author_user_id');
+      await _duyuruyuAc(
+        tester,
+        modulTasimasi({'GET $duyuruYolu': yanit(json)}),
+      );
+      expect(find.text(arbMetni('kullanici_silinmis')), findsOneWidget);
+    });
+
+    testWidgets('yönetimde ⋯ alttan sayfa: Düzenle, Sabitle, Sil', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _duyuruyuAc(
+        tester,
+        _rolle('moderator', {
+          'GET $duyuruYolu': yanit(duyuruJson(duyuruId1, sabit: true)),
+        }),
+      );
+
+      await tester.tap(_islemMenusu);
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(find.text(arbMetni('duyuru_duzenle')), findsOneWidget);
+      expect(find.text(arbMetni('duyuru_sabitlemeyi_kaldir')), findsOneWidget);
+      expect(
+        find.text(arbMetni('duyuru_menu_sabitlemeyi_kaldir_aciklama')),
+        findsOneWidget,
+      );
+      expect(find.text(arbMetni('duyuru_sil')), findsOneWidget);
+      expect(find.text(arbMetni('duyuru_menu_sil_aciklama')), findsOneWidget);
     });
 
     testWidgets('biçimsiz kimlikte istek gitmiyor, bulunamadı', (tester) async {
@@ -389,7 +451,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text(arbMetni('duyuru_sabit')), findsNothing);
+      expect(find.textContaining(arbMetni('duyuru_sabit')), findsNothing);
     });
 
     testWidgets('sabitlenince etiket görünüyor', (tester) async {
@@ -405,7 +467,7 @@ void main() {
       await tester.tap(find.text(arbMetni('duyuru_sabitle')));
       await tester.pumpAndSettle();
 
-      expect(find.text(arbMetni('duyuru_sabit')), findsOneWidget);
+      expect(find.textContaining(arbMetni('duyuru_sabit')), findsOneWidget);
       expect(find.text(arbMetni('duyuru_sabitlendi')), findsOneWidget);
     });
 
@@ -476,6 +538,57 @@ void main() {
       expect(find.text(arbMetni('hata_baglanti_yok')), findsOneWidget);
       expect(find.text('Toplantı'), findsOneWidget);
       expect(find.text(arbMetni('duyuru_form_yeni')), findsOneWidget);
+    });
+
+    testWidgets('"Yayınlayınca sabitle" açıkken oluşturma sonrası PUT …/pin', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = _rolle('admin', {
+        'POST $duyurularYolu': yanit(duyuruJson(duyuruId3, baslik: 'Kurallar')),
+        'PUT $sabitlemeYolu': yanit(
+          duyuruJson(duyuruId3, baslik: 'Kurallar', sabit: true),
+        ),
+      });
+      await formuAc(tester, tasima);
+
+      expect(find.text(arbMetni('duyuru_form_sabitle')), findsOneWidget);
+      await tester.enterText(alan('duyuru_form_baslik_etiketi'), 'Kurallar');
+      await _dokun(tester, find.byType(Switch));
+      await tester.pumpAndSettle();
+      await _dokun(tester, find.text(arbMetni('duyuru_form_yayinla')));
+      await tester.pumpAndSettle();
+
+      expect(tasima.giden('POST', duyurularYolu), hasLength(1));
+      expect(tasima.giden('PUT', sabitlemeYolu), hasLength(1));
+      expect(find.text(arbMetni('duyuru_yayinlandi')), findsOneWidget);
+      expect(find.textContaining(arbMetni('duyuru_sabit')), findsOneWidget);
+    });
+
+    testWidgets('sabitleme reddedilirse duyuru yayınlanmış, uyarı var', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = _rolle('admin', {
+        'POST $duyurularYolu': yanit(duyuruJson(duyuruId3)),
+        'PUT $sabitlemeYolu': yanit(
+          const ApiProblem(type: ProblemType.permissionDenied, status: 403),
+        ),
+      });
+      await formuAc(tester, tasima);
+
+      await tester.enterText(alan('duyuru_form_baslik_etiketi'), 'Pazar');
+      await _dokun(tester, find.byType(Switch));
+      await tester.pumpAndSettle();
+      await _dokun(tester, find.text(arbMetni('duyuru_form_yayinla')));
+      await tester.pumpAndSettle();
+
+      expect(find.text(arbMetni('duyuru_form_yeni')), findsNothing);
+      expect(
+        find.text(arbMetni('duyuru_yayinlandi_sabitlenemedi')),
+        findsOneWidget,
+      );
+      expect(find.byType(DuyuruKarti), findsOneWidget);
     });
 
     testWidgets('yayınlanınca form kapanıyor, duyuru listede', (tester) async {
@@ -573,9 +686,15 @@ void main() {
           find.byType(TextField).first,
           'Çok uzun başlıklı bir duyuru',
         );
+        // Büyük yazıda "Yayınla" formun sonundadır; odaklı alan imleci
+        // görünür tutmak için kaydırmayı geri almasın diye klavye kapanır.
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
         await _dokun(tester, find.text(arbMetni('duyuru_form_yayinla')));
         await tester.pumpAndSettle();
         expect(find.byType(HataSatiri), findsOneWidget);
+        await tester.ensureVisible(find.byType(HataSatiri));
+        await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
       });
     });
