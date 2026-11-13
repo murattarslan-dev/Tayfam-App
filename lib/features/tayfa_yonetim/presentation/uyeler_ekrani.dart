@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
@@ -11,6 +12,7 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/uyeler_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/yetki.dart';
+import 'package:tayfam/features/tayfa_yonetim/presentation/ayarlar_ekrani.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/ban_penceresi.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -253,69 +255,163 @@ class _UyeSatiri extends ConsumerWidget {
     WidgetRef ref,
     UyeEylemleri eylemler,
     DateTime simdi,
-  ) async {
-    final secim = await altSayfaAc<_UyeIslemi>(
-      context,
-      builder: (sayfa) => _UyeIslemleri(
-        uye: uye,
-        eylemler: eylemler,
-        susturulmus: susturulmus(uye, simdi),
-        onSec: (islem) => Navigator.of(sayfa).pop(islem),
-      ),
-    );
-    if (secim == null || !context.mounted) return;
-    await _uygula(context, ref, secim);
-  }
-
-  Future<void> _uygula(
-    BuildContext context,
-    WidgetRef ref,
-    _UyeIslemi secim,
-  ) async {
-    final m = AppLocalizations.of(context);
-    if (secim.tur == _IslemTuru.cikar) {
-      final onay = await onayIste(
-        context,
-        baslik: m.yonetim_cikar_baslik,
-        aciklama: m.yonetim_cikar_aciklama,
-        onay: m.yonetim_cikar_onayla,
-        yikici: true,
-      );
-      if (!onay || !context.mounted) return;
-    }
-    // Banlarken isteğe bağlı gerekçe (kapalı liste; Tayfam-Api #150).
-    ReportReason? banGerekcesi;
-    if (secim.tur == _IslemTuru.banla) {
-      final karar = await banOnayiIste(context);
-      if (karar == null || !context.mounted) return;
-      banGerekcesi = karar.gerekce;
-    }
-    final bildirici = SonucBildirici.al(context);
-    final notifier = ref.read(
+  ) => _uyeIslemleri(
+    context,
+    uye: uye,
+    eylemler: eylemler,
+    simdi: simdi,
+    notifier: () => ref.read(
       uyelerProvider((tayfaId: tayfaId, banlilar: false)).notifier,
+    ),
+  );
+}
+
+/// Üye işlemleri alttan sayfasını açar ve seçilen işlemi [notifier] ile
+/// uygular. Üyeler ekranındaki satır ve moderasyon kuyruğundaki "Üye
+/// işlemleri" ([uyeIslemleriniAc]) aynı akışı kullanır.
+Future<void> _uyeIslemleri(
+  BuildContext context, {
+  required Membership uye,
+  required UyeEylemleri eylemler,
+  required DateTime simdi,
+  required UyelerNotifier Function() notifier,
+}) async {
+  final secim = await altSayfaAc<_UyeIslemi>(
+    context,
+    builder: (sayfa) => _UyeIslemleri(
+      uye: uye,
+      eylemler: eylemler,
+      susturulmus: susturulmus(uye, simdi),
+      onSec: (islem) => Navigator.of(sayfa).pop(islem),
+    ),
+  );
+  if (secim == null || !context.mounted) return;
+  await _uygula(context, uye: uye, secim: secim, notifier: notifier);
+}
+
+Future<void> _uygula(
+  BuildContext context, {
+  required Membership uye,
+  required _UyeIslemi secim,
+  required UyelerNotifier Function() notifier,
+}) async {
+  final m = AppLocalizations.of(context);
+  if (secim.tur == _IslemTuru.cikar) {
+    final onay = await onayIste(
+      context,
+      baslik: m.yonetim_cikar_baslik,
+      aciklama: m.yonetim_cikar_aciklama,
+      onay: m.yonetim_cikar_onayla,
+      yikici: true,
     );
-    final kim = uye.userId;
-    final (hata, basari) = switch (secim.tur) {
-      _IslemTuru.rol => (
-        await notifier.rolDegistir(kim, secim.rol!),
-        m.yonetim_rol_degisti,
-      ),
-      _IslemTuru.sustur => (
-        await notifier.sustur(kim, secim.sure!),
-        m.yonetim_susturuldu_bildirim,
-      ),
-      _IslemTuru.susturmayiKaldir => (
-        await notifier.susturmayiKaldir(kim),
-        m.yonetim_susturma_kalkti,
-      ),
-      _IslemTuru.cikar => (await notifier.cikar(kim), m.yonetim_cikarildi),
-      _IslemTuru.banla => (
-        await notifier.banla(kim, gerekce: banGerekcesi),
-        m.yonetim_banlandi,
-      ),
-    };
-    bildirici.bildir(hata, basari);
+    if (!onay || !context.mounted) return;
   }
+  // Banlarken isteğe bağlı gerekçe (kapalı liste; Tayfam-Api #150).
+  ReportReason? banGerekcesi;
+  if (secim.tur == _IslemTuru.banla) {
+    final karar = await banOnayiIste(context);
+    if (karar == null || !context.mounted) return;
+    banGerekcesi = karar.gerekce;
+  }
+  if (!context.mounted) return;
+  final bildirici = SonucBildirici.al(context);
+  final n = notifier();
+  final kim = uye.userId;
+  final (hata, basari) = switch (secim.tur) {
+    _IslemTuru.rol => (
+      await n.rolDegistir(kim, secim.rol!),
+      m.yonetim_rol_degisti,
+    ),
+    _IslemTuru.sustur => (
+      await n.sustur(kim, secim.sure!),
+      m.yonetim_susturuldu_bildirim,
+    ),
+    _IslemTuru.susturmayiKaldir => (
+      await n.susturmayiKaldir(kim),
+      m.yonetim_susturma_kalkti,
+    ),
+    _IslemTuru.cikar => (await n.cikar(kim), m.yonetim_cikarildi),
+    _IslemTuru.banla => (
+      await n.banla(kim, gerekce: banGerekcesi),
+      m.yonetim_banlandi,
+    ),
+  };
+  bildirici.bildir(hata, basari);
+}
+
+/// Moderasyon kuyruğundaki "Üye işlemleri" (`uyeIslemleriProvider`'a
+/// verilir; 2026-11-13, tasarım: Moderasyon-Kuyruk). Sözleşmede tek üyeyi
+/// okuyan uç olmadığı için kişi etkin üye listesinde aranır (sayfa sayfa,
+/// en çok [_aramaSayfaSiniri] ek sayfa; yalnızca bellek). Bulunursa
+/// Üyeler ekranındaki alttan sayfa açılır; bulunamazsa (tayfadan ayrılmış
+/// ya da banlanmış) ya da ona yapılabilecek işlem yoksa Üyeler ekranı
+/// açılır. Liste okunamazsa hata gösterilir. Yetkiyi sunucu verir (kesin
+/// kural 5).
+Future<void> uyeIslemleriniAc(
+  BuildContext context, {
+  required String tayfaId,
+  required String kullaniciId,
+}) async {
+  final kap = ProviderScope.containerOf(context, listen: false);
+  final saglayici = uyelerProvider((tayfaId: tayfaId, banlilar: false));
+  // İşlem bitene kadar liste bellekte kalsın (autoDispose).
+  final abonelik = kap.listen(saglayici, (_, _) {});
+  try {
+    final bildirici = SonucBildirici.al(context);
+    Membership? uye;
+    try {
+      var liste = await kap.read(saglayici.future);
+      for (var sayfa = 0; ; sayfa++) {
+        uye = _uyeyiBul(liste.ogeler, kullaniciId);
+        if (uye != null ||
+            !liste.dahaVar ||
+            liste.dahaHatasi != null ||
+            sayfa >= _aramaSayfaSiniri) {
+          break;
+        }
+        await kap.read(saglayici.notifier).dahaFazla();
+        final yeni = kap.read(saglayici).value;
+        if (yeni == null) break;
+        liste = yeni;
+      }
+    } on Exception catch (hata) {
+      bildirici.bildir(hata, '');
+      return;
+    }
+    if (!context.mounted) return;
+    final bulunan = uye;
+    final eylemler = bulunan == null
+        ? UyeEylemleri.yok
+        : uyeEylemleri(
+            ben: kap.read(tayfaOzetiProvider(tayfaId)).rol,
+            hedef: bulunan,
+            kendisi: kap.read(kendisiMiProvider(bulunan.userId)),
+          );
+    if (bulunan == null || !eylemler.herhangi) {
+      await context.push(AyarYollari.adres(tayfaId, AyarYollari.uyeler));
+      return;
+    }
+    await _uyeIslemleri(
+      context,
+      uye: bulunan,
+      eylemler: eylemler,
+      simdi: kap.read(saatProvider)(),
+      notifier: () => kap.read(saglayici.notifier),
+    );
+  } finally {
+    abonelik.close();
+  }
+}
+
+/// Üye aranırken okunacak en çok ek sayfa (sayfa başına
+/// `yonetimSayfaBoyutu` üye).
+const int _aramaSayfaSiniri = 10;
+
+Membership? _uyeyiBul(List<Membership> uyeler, String kullaniciId) {
+  for (final u in uyeler) {
+    if (u.userId == kullaniciId) return u;
+  }
+  return null;
 }
 
 String _susturmaEtiketi(AppLocalizations m, Duration sure) {

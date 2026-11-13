@@ -2,7 +2,8 @@
 /// tayfa üst menüsü ("Tayfa ayarları", "Bildirimleri sessize al",
 /// "Tayfadan ayrıl"), ayarlar ekranı ve alt ekranlarının rotaları, ve
 /// ayarlar ekranına başka paketlerin giriş ekleyebileceği kanca
-/// (moderasyon kuyruğu, dalga 2). Liste durumu, sayfa sonu, onay
+/// (moderasyon kuyruğu, dalga 2) ve kuyruktaki "Üye işlemleri"nin açtığı
+/// üye alttan sayfası ([uyeIslemleriniAc]). Liste durumu, sayfa sonu, onay
 /// penceresi ve sonuç bildirimi ortak liste ekranlarında da kullanılır
 /// (arkadaşlık, ADR-0018 §7).
 ///
@@ -15,6 +16,8 @@ export 'package:tayfam/features/tayfa_yonetim/presentation/ayarlar_ekrani.dart'
     show silmeIptalDugmesi;
 export 'package:tayfam/features/tayfa_yonetim/presentation/davetler_ekrani.dart'
     show tayfayaDavetEt;
+export 'package:tayfam/features/tayfa_yonetim/presentation/uyeler_ekrani.dart'
+    show uyeIslemleriniAc;
 export 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_menusu.dart'
     show tayfaUstMenusu;
 export 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart'
