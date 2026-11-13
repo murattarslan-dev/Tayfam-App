@@ -264,17 +264,25 @@ class _BekleyenTayfaSatiri extends StatelessWidget {
         vertical: TayfamSpacing.s8,
       ),
       baslik: ad,
-      altOge: Etiket(
-        metin: metinler.tayfa_onay_bekliyor,
-        ton: EtiketTonu.mango,
-        ikon: Icons.schedule,
-      ),
-      sag: TextButton(
-        onPressed: onGeriCek,
-        style: TextButton.styleFrom(
-          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-        ),
-        child: Text(metinler.tayfa_geri_cek_dugmesi),
+      // Dar ekranda ve büyük yazıda düğme etiketin altına iner.
+      altOge: Wrap(
+        spacing: TayfamSpacing.s8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Etiket(
+            metin: metinler.tayfa_onay_bekliyor,
+            ton: EtiketTonu.mango,
+            ikon: Icons.schedule,
+          ),
+          TextButton(
+            onPressed: onGeriCek,
+            style: TextButton.styleFrom(
+              minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+              padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+            ),
+            child: Text(metinler.tayfa_geri_cek_dugmesi),
+          ),
+        ],
       ),
       onTap: onGeriCek,
     );
