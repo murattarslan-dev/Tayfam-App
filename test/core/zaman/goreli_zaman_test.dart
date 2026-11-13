@@ -55,6 +55,39 @@ void main() {
   });
 
   // simdi: 13 Kasım 2026 Cuma, 15:00.
+  group('detayGeriSayimi', () {
+    String sayim(DateTime baslangic, {DateTime? bitis}) => detayGeriSayimi(
+      m,
+      baslangic,
+      simdi,
+      bitis: bitis ?? baslangic.add(const Duration(hours: 2)),
+    );
+
+    test('bugün: dakika ve saat', () {
+      expect(sayim(DateTime(2026, 11, 13, 15, 25)), 'Bugün · 25 dk sonra');
+      // Dakika yukarı yuvarlanır: 30 saniye "1 dk sonra".
+      expect(sayim(DateTime(2026, 11, 13, 15, 0, 30)), 'Bugün · 1 dk sonra');
+      expect(sayim(DateTime(2026, 11, 13, 15, 59, 30)), 'Bugün · 1 saat sonra');
+      expect(sayim(DateTime(2026, 11, 13, 18, 40)), 'Bugün · 3 saat sonra');
+    });
+
+    test('yarın ve gün sonra (takvim günü)', () {
+      expect(sayim(DateTime(2026, 11, 14, 0, 30)), 'Yarın');
+      expect(sayim(DateTime(2026, 11, 15, 8, 30)), '2 gün sonra');
+    });
+
+    test('başlamış ve bitmemişse şimdi, bitmişse bitti', () {
+      expect(
+        sayim(DateTime(2026, 11, 13, 14), bitis: DateTime(2026, 11, 13, 18)),
+        'Şimdi',
+      );
+      expect(
+        sayim(DateTime(2026, 11, 13, 10), bitis: DateTime(2026, 11, 13, 12)),
+        'Bitti',
+      );
+    });
+  });
+
   group('konusmaZamani', () {
     test('bugün saat, dün "Dün"', () {
       expect(konusmaZamani(m, DateTime(2026, 11, 13, 9, 5), simdi), '09:05');

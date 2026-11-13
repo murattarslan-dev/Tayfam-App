@@ -42,6 +42,35 @@ String geriSayim(
   return m.goreli_gun_sonra(gun);
 }
 
+/// Etkinlik detayının üst bölümündeki geri sayım çipi (2026-11-13 tasarım:
+/// Etkinlik-Detay, Etkinlik-Gunu): "2 gün sonra", "Yarın", bugünse kalan
+/// süreyle "Bugün · 25 dk sonra" ya da "Bugün · 3 saat sonra"; başlamış ve
+/// bitmemişse "Şimdi", bitmişse "Bitti". Gün farkı [geriSayim]'daki gibi
+/// takvim gününe göredir, cihazın saat diliminde; dakika yukarı yuvarlanır.
+String detayGeriSayimi(
+  AppLocalizations m,
+  DateTime baslangic,
+  DateTime simdi, {
+  required DateTime bitis,
+}) {
+  final yerel = baslangic.toLocal();
+  final suan = simdi.toLocal();
+  if (!yerel.isAfter(suan)) {
+    return bitis.toLocal().isAfter(suan)
+        ? m.goreli_detay_simdi
+        : m.goreli_detay_bitti;
+  }
+  final gun = _gunFarki(suan, yerel);
+  if (gun <= 0) {
+    final saniye = yerel.difference(suan).inSeconds;
+    final dakika = (saniye + 59) ~/ 60;
+    if (dakika < 60) return m.goreli_detay_bugun_dakika(dakika);
+    return m.goreli_detay_bugun_saat(dakika ~/ 60);
+  }
+  if (gun == 1) return m.goreli_detay_yarin;
+  return m.goreli_gun_sonra(gun);
+}
+
 /// Konuşma listesindeki son mesaj zamanı (2026-11-13 tasarım:
 /// Sohbet-Birebir): bugünse saat ("14:32"), dünse "Dün", son bir haftadaysa
 /// gün adı ("Salı"), daha eskiyse gün ve ay ("9 Kas"; başka yılsa yılla).

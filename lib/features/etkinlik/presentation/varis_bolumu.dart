@@ -13,9 +13,11 @@ import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Varış bildirimi (ADR-0015 §5): pencere açıkken ve cevap "Geliyorum"
-/// ise "Geldim" (yüz yüze) ya da "Katıldım" (çevrimiçi) düğmesi; katılım
-/// doğrulandıysa bilgisi. Gösterilecek bir şey yoksa boş.
+/// Varış bildirimi (ADR-0015 §5; 2026-11-13 tasarım: Etkinlik-Gunu):
+/// detayda özet kartının hemen altında turkuaz tint kart. Pencere açıkken
+/// ve cevap "Geliyorum" ise "Geldim" (yüz yüze) ya da "Katıldım"
+/// (çevrimiçi) düğmesi; katılım doğrulandıysa bilgisi. Yürüyüşte
+/// gösterilmez (katılım "Çıktım" ile). Gösterilecek bir şey yoksa boş.
 ///
 /// Konum izni yalnızca düğmeye basınca istenir. İzin reddedilirse kısa bir
 /// açıklama ve ayarlara gitme seçeneği gösterilir. Hata metinleri uzaklık
@@ -41,59 +43,116 @@ class VarisBolumu extends ConsumerWidget {
       VarisAsamasi.gonderim => m.etkinlik_varis_gonderiliyor,
       null => cevrimici ? m.etkinlik_varis_katildim : m.etkinlik_varis_geldim,
     };
+    // Turkuaz tint kart (tasarım: Etkinlik-Gunu). Düğme tint-teal'in
+    // tersidir: koyu teal zemin, açık teal metin (iki temada 5.7:1 ve üstü).
     return Padding(
-      padding: const EdgeInsets.only(top: TayfamSpacing.s24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AracBasligi(metin: m.etkinlik_varis_baslik),
-          const SizedBox(height: TayfamSpacing.s8),
-          if (dogrulandi)
-            MergeSemantics(
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.verified_outlined,
-                    size: TayfamSizes.ikon,
-                    color: r.metin,
+      padding: const EdgeInsets.only(top: TayfamSpacing.s16),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: r.tintTeal,
+          borderRadius: TayfamRadii.kartKoseleri,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(TayfamSpacing.s16),
+          child: dogrulandi
+              ? MergeSemantics(
+                  child: Row(
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.verified_outlined,
+                          size: TayfamSizes.ikon,
+                          color: r.tintTealUstu,
+                        ),
+                      ),
+                      const SizedBox(width: TayfamSpacing.s12),
+                      Expanded(
+                        child: Text(
+                          m.etkinlik_katilim_dogrulandi,
+                          style: context.yazi.titleMedium?.copyWith(
+                            color: r.metin,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: TayfamSpacing.s8),
-                  Expanded(
-                    child: Text(
-                      m.etkinlik_katilim_dogrulandi,
-                      style: context.yazi.bodyLarge,
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    MergeSemantics(
+                      child: Row(
+                        children: [
+                          ExcludeSemantics(
+                            child: Icon(
+                              cevrimici
+                                  ? Icons.videocam_outlined
+                                  : Icons.place_outlined,
+                              size: TayfamSizes.ikon,
+                              color: r.tintTealUstu,
+                            ),
+                          ),
+                          const SizedBox(width: TayfamSpacing.s12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  cevrimici
+                                      ? m.etkinlik_varis_cevrimici_soru
+                                      : m.etkinlik_varis_soru,
+                                  style: context.yazi.titleMedium?.copyWith(
+                                    color: r.metin,
+                                  ),
+                                ),
+                                Text(
+                                  cevrimici
+                                      ? m.etkinlik_varis_cevrimici_aciklama
+                                      : m.etkinlik_varis_aciklama,
+                                  style: context.yazi.bodySmall?.copyWith(
+                                    color: r.tintTealUstu,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          else ...[
-            // Tanıtım sayfasındaki "Buradayım": nar zemin + ink metin
-            // (ADR-0004 §2a).
-            OdakCercevesi(
-              koseler: TayfamRadii.hapKoseleri,
-              child: FilledButton.icon(
-                onPressed: asama != null
-                    ? null
-                    : () => unawaited(_bildir(context, ref)),
-                style: FilledButton.styleFrom(
-                  backgroundColor: r.nar,
-                  foregroundColor: r.vurguUstu,
-                  minimumSize: const Size.fromHeight(TayfamSizes.dokunmaMin),
-                  shape: const StadiumBorder(),
+                    const SizedBox(height: TayfamSpacing.s12),
+                    OdakCercevesi(
+                      koseler: TayfamRadii.hapKoseleri,
+                      child: FilledButton(
+                        onPressed: asama != null
+                            ? null
+                            : () => unawaited(_bildir(context, ref)),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: r.tintTealUstu,
+                          foregroundColor: r.tintTeal,
+                          disabledBackgroundColor: r.pasif,
+                          disabledForegroundColor: r.pasifUstu,
+                          minimumSize: const Size.fromHeight(
+                            TayfamSizes.girisDugmesi,
+                          ),
+                          shape: const StadiumBorder(),
+                          side: BorderSide.none,
+                          textStyle: context.yazi.titleMedium,
+                        ),
+                        child: Text(etiket),
+                      ),
+                    ),
+                    if (!cevrimici) ...[
+                      const SizedBox(height: TayfamSpacing.s8),
+                      Text(
+                        m.etkinlik_varis_konum_notu,
+                        style: context.yazi.labelSmall?.copyWith(
+                          color: r.metin,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                icon: Icon(
-                  cevrimici ? Icons.check_circle_outline : Icons.place,
-                ),
-                label: Text(etiket),
-              ),
-            ),
-            if (!cevrimici) ...[
-              const SizedBox(height: TayfamSpacing.s8),
-              AracBilgisi(metin: m.etkinlik_varis_konum_notu),
-            ],
-          ],
-        ],
+        ),
       ),
     );
   }

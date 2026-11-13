@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/bilesenler/eylem_icerigi.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
@@ -15,6 +14,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
+import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa ana sayfasında mor üst bölüme taşan büyük "Sıradaki" etkinlik
@@ -194,9 +194,8 @@ class _BilgiSatiri extends StatelessWidget {
   }
 }
 
-/// Geliyorum / Belki / Gelmiyorum: üç eşit düğme; seçili olan dolu brand
-/// (koyu temada brand-dark) ve işaretli, diğerleri çerçeveli. Bekleme
-/// listesindeki kullanıcıda "Geliyorum" seçili görünür (detaydaki gibi).
+/// Kartın katılım düğmeleri; ana sayfanın katılım akışıyla
+/// ([anaSayfaKatilimProvider]) gönderilir.
 class _KatilimDugmeleri extends ConsumerWidget {
   const _KatilimDugmeleri({required this.tayfaId, required this.etkinlik});
 
@@ -205,41 +204,12 @@ class _KatilimDugmeleri extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final m = AppLocalizations.of(context);
     final sureyor = ref.watch(anaSayfaKatilimProvider(tayfaId)) != null;
-    final secili = switch (etkinlik.callerRsvp) {
-      RsvpStatus.going || RsvpStatus.waitlist => RsvpRequestStatus.going,
-      RsvpStatus.maybe => RsvpRequestStatus.maybe,
-      RsvpStatus.notGoing => RsvpRequestStatus.notGoing,
-      RsvpStatus.unknown || null => null,
-    };
-    return Semantics(
-      container: true,
-      label: m.etkinlik_ana_katilim_grubu,
-      // Üç düğme aynı yükseklikte; büyük yazıda etiket iki satıra inebilir.
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final (sira, (durum, etiket)) in [
-              (RsvpRequestStatus.going, m.etkinlik_cevap_going),
-              (RsvpRequestStatus.maybe, m.etkinlik_cevap_maybe),
-              (RsvpRequestStatus.notGoing, m.etkinlik_cevap_not_going),
-            ].indexed) ...[
-              if (sira > 0) const SizedBox(width: TayfamSpacing.s8),
-              Expanded(
-                child: _KatilimDugmesi(
-                  etiket: etiket,
-                  secili: secili == durum,
-                  onPressed: sureyor
-                      ? null
-                      : () => unawaited(_katil(context, ref, durum)),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+    return KatilimDugmeleri(
+      cevap: etkinlik.callerRsvp,
+      onSecildi: sureyor
+          ? null
+          : (durum) => unawaited(_katil(context, ref, durum)),
     );
   }
 
@@ -252,68 +222,5 @@ class _KatilimDugmeleri extends ConsumerWidget {
         .read(anaSayfaKatilimProvider(tayfaId).notifier)
         .katil(etkinlik, durum);
     if (hata != null && context.mounted) hataBildir(context, hata);
-  }
-}
-
-class _KatilimDugmesi extends StatelessWidget {
-  const _KatilimDugmesi({
-    required this.etiket,
-    required this.secili,
-    required this.onPressed,
-  });
-
-  final String etiket;
-  final bool secili;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final r = context.renkler;
-    const sekil = RoundedRectangleBorder(
-      borderRadius: TayfamRadii.dugmeKoseleri,
-    );
-    const bosluk = EdgeInsets.symmetric(
-      horizontal: TayfamSpacing.s4,
-      vertical: TayfamSpacing.s8,
-    );
-    final metin = Text(etiket, textAlign: TextAlign.center);
-    return OdakCercevesi(
-      koseler: TayfamRadii.dugmeKoseleri,
-      child: Semantics(
-        selected: secili,
-        child: secili
-            ? FilledButton(
-                onPressed: onPressed,
-                style: FilledButton.styleFrom(
-                  backgroundColor: r.marka,
-                  foregroundColor: r.markaUstu,
-                  disabledBackgroundColor: r.marka,
-                  disabledForegroundColor: r.markaUstu,
-                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                  padding: bosluk,
-                  shape: sekil,
-                  side: BorderSide.none,
-                  textStyle: context.yazi.labelLarge,
-                ),
-                child: EylemIcerigi(etiket: etiket, ikon: Icons.check),
-              )
-            : OutlinedButton(
-                onPressed: onPressed,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: r.metin,
-                  disabledForegroundColor: r.pasifUstu,
-                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                  padding: bosluk,
-                  shape: sekil,
-                  side: BorderSide(
-                    color: r.girisKenari,
-                    width: TayfamSizes.vurguKenari,
-                  ),
-                  textStyle: context.yazi.labelLarge,
-                ),
-                child: metin,
-              ),
-      ),
-    );
   }
 }

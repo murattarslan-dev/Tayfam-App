@@ -1,19 +1,172 @@
 import 'package:flutter/material.dart';
 
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Türe özel araç bölümlerinin başlığı (ekran okuyucuda başlık).
+/// Etkinlik detayındaki bölüm başlığı (2026-11-13 tasarım: Etkinlik-Detay
+/// "Buluşma noktası", "Açıklama", "Araçlar"; Etkinlik-Turler): ekran
+/// başlığı ölçeğinde, ekran okuyucuda başlık. Sağında isteğe bağlı bir öğe
+/// (sayı metni, "Malzeme ekle" gibi kısa eylem); dar ekranda ve büyük
+/// yazıda alt satıra iner. Üstte 24, altta 8 px boşluk bırakır.
 class AracBasligi extends StatelessWidget {
-  const AracBasligi({super.key, required this.metin});
+  const AracBasligi({super.key, required this.metin, this.sag});
+
+  final String metin;
+
+  /// Başlığın sağındaki öğe.
+  final Widget? sag;
+
+  @override
+  Widget build(BuildContext context) {
+    final sag = this.sag;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        TayfamSpacing.s4,
+        TayfamSpacing.s24,
+        TayfamSpacing.s4,
+        TayfamSpacing.s8,
+      ),
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: TayfamSpacing.s8,
+        runSpacing: TayfamSpacing.s4,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(metin, style: context.yazi.titleLarge),
+          ),
+          ?sag,
+        ],
+      ),
+    );
+  }
+}
+
+/// Bölüm başlığının sağındaki ikincil metin ("8 noktalı rota", "12 araç").
+class AracBasligiNotu extends StatelessWidget {
+  const AracBasligiNotu({super.key, required this.metin});
 
   final String metin;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      header: true,
-      child: Text(metin, style: context.yazi.titleMedium),
+    return Text(metin, style: context.yazi.bodySmall);
+  }
+}
+
+/// Türe özel bilgilerin iki sütunlu ızgarası (tasarım: Etkinlik-Turler
+/// "Kamp yeri", "Ayrıntılar"): her bilgi kart zeminli küçük bir kutudur;
+/// üstte etiket (ikincil), altta değer. Dar ekranda ve büyük yazıda tek
+/// sütuna iner; ekran okuyucu etiket ve değeri birlikte okur.
+class BilgiIzgarasi extends StatelessWidget {
+  const BilgiIzgarasi({super.key, required this.bilgiler});
+
+  /// Etiket ve değer çiftleri, sırasıyla.
+  final List<(String, String)> bilgiler;
+
+  @override
+  Widget build(BuildContext context) {
+    final olcek = MediaQuery.textScalerOf(context).scale(1);
+    return LayoutBuilder(
+      builder: (context, kisit) {
+        final tekSutun =
+            olcek > bilgiIzgarasiTekSutunOlcegi ||
+            kisit.maxWidth < bilgiIzgarasiEnDarIkiSutun;
+        final genislik = tekSutun
+            ? kisit.maxWidth
+            : (kisit.maxWidth - TayfamSpacing.s8) / 2;
+        return Wrap(
+          spacing: TayfamSpacing.s8,
+          runSpacing: TayfamSpacing.s8,
+          children: [
+            for (final (etiket, deger) in bilgiler)
+              SizedBox(
+                width: genislik,
+                child: _BilgiKutusu(etiket: etiket, deger: deger),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Bu yazı ölçeğinden büyükte bilgi ızgarası tek sütundur.
+const double bilgiIzgarasiTekSutunOlcegi = 1.5;
+
+/// Bu genişlikten (dp) darda bilgi ızgarası tek sütundur.
+const double bilgiIzgarasiEnDarIkiSutun = 280;
+
+class _BilgiKutusu extends StatelessWidget {
+  const _BilgiKutusu({required this.etiket, required this.deger});
+
+  final String etiket;
+  final String deger;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: r.kart,
+        borderRadius: TayfamRadii.secimKoseleri,
+        border: Border.all(color: r.cizgi, width: TayfamSizes.kenar),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: TayfamSpacing.s12,
+          vertical: TayfamSpacing.s12,
+        ),
+        child: MergeSemantics(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                etiket,
+                style: context.yazi.labelSmall?.copyWith(color: r.metinIkincil),
+              ),
+              Text(deger, style: context.yazi.titleMedium),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Türe özel listelerin kartı (araçlar, malzemeler, av günlüğü): satırları
+/// ince çizgiyle ayrılmış [ListeKarti]; boşsa yerine [bos] metni.
+class AracListesi extends StatelessWidget {
+  const AracListesi({super.key, required this.satirlar, required this.bos});
+
+  final List<Widget> satirlar;
+
+  /// Liste boşken gösterilen metin.
+  final String bos;
+
+  @override
+  Widget build(BuildContext context) {
+    if (satirlar.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
+        child: AracBilgisi(metin: bos),
+      );
+    }
+    return ListeKarti(
+      children: [
+        for (final satir in satirlar)
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              TayfamSpacing.s16,
+              TayfamSpacing.s8,
+              TayfamSpacing.s4,
+              TayfamSpacing.s8,
+            ),
+            child: satir,
+          ),
+      ],
     );
   }
 }
@@ -62,7 +215,8 @@ class AracIkonDugmesi extends StatelessWidget {
   }
 }
 
-/// Araç bölümlerindeki metinli ikincil düğme.
+/// Araç bölümlerindeki metinli ikincil düğme: çerçeveli hap (tasarım:
+/// Etkinlik-Turler "Malzeme ekle", "Av ekle").
 class AracDugmesi extends StatelessWidget {
   const AracDugmesi({
     super.key,
@@ -79,13 +233,10 @@ class AracDugmesi extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: AlignmentDirectional.centerStart,
-      child: OutlinedButton.icon(
+      child: CerceveliHapEylem(
+        etiket: etiket,
+        ikon: ikon,
         onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-        ),
-        icon: Icon(ikon),
-        label: Text(etiket),
       ),
     );
   }

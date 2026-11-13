@@ -10,6 +10,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sihirbazi_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
+import 'package:tayfam/features/etkinlik/presentation/katilimcilar_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/siradaki_etkinlik_karti.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -17,7 +18,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///
 /// Rotaları `/t/<tayfaId>/` altındadır: `etkinlikler` (liste),
 /// `etkinlikler/yeni` (oluşturma sihirbazı), `etkinlikler/<etkinlikId>`
-/// (detay) ve `etkinlikler/<etkinlikId>/duzenle`. Tayfa ana sayfasındaki
+/// (detay), `etkinlikler/<etkinlikId>/duzenle` ve
+/// `etkinlikler/<etkinlikId>/katilimcilar`. Tayfa ana sayfasındaki
 /// bölümü "Yaklaşan etkinlikler"dir; mor üst bölüme taşan "Sıradaki"
 /// kartı da bu modülündür. Modül kapalıysa sunucunun `modules` alanına göre
 /// hiç görünmez. [olustur] verilince ana sayfanın "Oluştur" sayfasında
@@ -53,6 +55,13 @@ class EtkinlikModulu implements TayfaModule {
             GoRoute(
               path: Adresler.etkinlikDuzenleYolu,
               builder: (context, state) => EtkinlikDuzenlemeEkrani(
+                tayfaId: _tayfaId(state),
+                etkinlikId: _etkinlikId(state),
+              ),
+            ),
+            GoRoute(
+              path: Adresler.etkinlikKatilimcilariYolu,
+              builder: (context, state) => KatilimcilarEkrani(
                 tayfaId: _tayfaId(state),
                 etkinlikId: _etkinlikId(state),
               ),
