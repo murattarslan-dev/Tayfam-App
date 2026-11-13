@@ -61,8 +61,7 @@ class ArkadasEkleIcerigi extends ConsumerStatefulWidget {
   const ArkadasEkleIcerigi({super.key});
 
   @override
-  ConsumerState<ArkadasEkleIcerigi> createState() =>
-      _ArkadasEkleIcerigiState();
+  ConsumerState<ArkadasEkleIcerigi> createState() => _ArkadasEkleIcerigiState();
 }
 
 class _ArkadasEkleIcerigiState extends ConsumerState<ArkadasEkleIcerigi> {
@@ -116,7 +115,7 @@ class _ArkadasEkleIcerigiState extends ConsumerState<ArkadasEkleIcerigi> {
         const SizedBox(height: TayfamSpacing.s12),
         Align(
           alignment: AlignmentDirectional.centerStart,
-          child: CerceveliEylem(
+          child: CerceveliHapEylem(
             etiket: m.arkadas_bul_ara,
             ikon: Icons.search,
             onPressed: araniyor ? null : _ara,

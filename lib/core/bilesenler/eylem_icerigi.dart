@@ -6,14 +6,27 @@ import 'package:tayfam/core/tema/tayfam_spacing.dart';
 /// Birincil ve ikincil eylemin ortak içeriği: isteğe bağlı ikon ve
 /// büyük yazı ölçeğinde satıra sarılan etiket.
 class EylemIcerigi extends StatelessWidget {
-  const EylemIcerigi({super.key, required this.etiket, this.ikon});
+  const EylemIcerigi({
+    super.key,
+    required this.etiket,
+    this.ikon,
+    this.semantikEtiketi,
+  });
 
   final String etiket;
   final IconData? ikon;
 
+  /// Görünen kısa etiketten farklı ekran okuyucu etiketi (ör. "Kapat"
+  /// yerine "Oturumu kapat").
+  final String? semantikEtiketi;
+
   @override
   Widget build(BuildContext context) {
-    final metin = Text(etiket, textAlign: TextAlign.center);
+    final metin = Text(
+      etiket,
+      textAlign: TextAlign.center,
+      semanticsLabel: semantikEtiketi,
+    );
     final ikon = this.ikon;
     if (ikon == null) {
       return metin;

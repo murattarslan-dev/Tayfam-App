@@ -45,8 +45,10 @@ final kisiProfiliEylemleriProvider = Provider<List<KisiProfiliEylemi>>(
 /// Kendi referans kodunu (linkiyle) sistem paylaşım menüsünde paylaşır.
 /// [dugme] iPad'de menünün bağlanacağı düğmenin bağlamıdır. Kod profil
 /// paketindedir; arkadaşlık paketi onu import etmez (döngü olmaz).
-typedef ReferansPaylasimi =
-    Future<void> Function(BuildContext dugme, WidgetRef ref);
+typedef ReferansPaylasimi = Future<void> Function(
+  BuildContext dugme,
+  WidgetRef ref,
+);
 
 /// Arkadaşlar ekranındaki "Kodumu paylaş" (2026-11-13). Varsayılanı
 /// `null`dur (düğme görünmez); profil paketi `shell/kayitlar.dart`'ta

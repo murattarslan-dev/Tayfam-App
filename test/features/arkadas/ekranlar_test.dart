@@ -78,9 +78,8 @@ final Map<String, Widget Function()> _ekranlar = {
   'kişi profili': () => const KisiProfiliEkrani(kullaniciId: kisiId1),
   'kendi kişi profili': () => const KisiProfiliEkrani(kullaniciId: benimId),
   'katılımlarım': () => const KatilimlarimEkrani(),
-  'profil girişleri': () => const Scaffold(
-    body: SingleChildScrollView(child: ArkadaslikGirisleri()),
-  ),
+  'profil girişleri': () =>
+      const Scaffold(body: SingleChildScrollView(child: ArkadaslikGirisleri())),
   'katılım özeti': () => Scaffold(
     body: SingleChildScrollView(
       child: KatilimOzeti(
@@ -107,9 +106,7 @@ void main() {
   });
 
   group('arkadaşlar', () {
-    testWidgets('liste, bekleyen istek kartı ve engellenenler', (
-      tester,
-    ) async {
+    testWidgets('liste, bekleyen istek kartı ve engellenenler', (tester) async {
       ekranBoyutu(tester);
       await _ac(tester, const ArkadaslarEkrani(), _doluTasima());
       expect(find.text(kisiAdi(kisiId2)), findsOneWidget);

@@ -76,7 +76,7 @@ class ArkadaslarEkrani extends ConsumerWidget {
                     const SizedBox(width: TayfamSpacing.s8),
                     Expanded(
                       child: Builder(
-                        builder: (dugme) => CerceveliEylem(
+                        builder: (dugme) => CerceveliHapEylem(
                           etiket: m.arkadas_kodumu_paylas,
                           ikon: Icons.share_outlined,
                           onPressed: () => unawaited(paylas(dugme, ref)),
@@ -191,7 +191,10 @@ class _IstekKarti extends ConsumerWidget {
                       AvatarYigini(
                         kisiler: [
                           for (final i in istekler.take(_istekAvatarSayisi))
-                            (ad: i.displayName, avatarUploadId: i.avatarUploadId),
+                            (
+                              ad: i.displayName,
+                              avatarUploadId: i.avatarUploadId,
+                            ),
                         ],
                       ),
                       const SizedBox(width: TayfamSpacing.s12),

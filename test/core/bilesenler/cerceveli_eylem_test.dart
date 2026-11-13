@@ -15,12 +15,12 @@ void main() {
           baslik: 'Arkadaşlar',
           sag: BaglantiEylemi(etiket: 'Arkadaş ekle', onPressed: () {}),
         ),
-        CerceveliEylem(
+        CerceveliHapEylem(
           etiket: 'Kodumu paylaş',
           ikon: Icons.share_outlined,
           onPressed: () {},
         ),
-        CerceveliEylem(etiket: 'Çıkış yap', notr: true, onPressed: () {}),
+        CerceveliHapEylem(etiket: 'Çıkış yap', notr: true, onPressed: () {}),
       ],
     ),
   );
@@ -30,7 +30,7 @@ void main() {
       final r = renklerOf(mod);
       await bileseniAc(
         tester,
-        CerceveliEylem(etiket: 'Kodumu paylaş', onPressed: () {}),
+        CerceveliHapEylem(etiket: 'Kodumu paylaş', onPressed: () {}),
         mod: mod,
       );
       final stil = tester
@@ -47,7 +47,7 @@ void main() {
       final r = renklerOf(mod);
       await bileseniAc(
         tester,
-        CerceveliEylem(etiket: 'Çıkış yap', notr: true, onPressed: () {}),
+        CerceveliHapEylem(etiket: 'Çıkış yap', notr: true, onPressed: () {}),
         mod: mod,
       );
       final stil = tester
@@ -79,7 +79,7 @@ void main() {
     testWidgets('${mod.name}: odak çerçevesi', (tester) async {
       await odakCercevesiDenetle(
         tester,
-        CerceveliEylem(etiket: 'Kodumu paylaş', onPressed: () {}),
+        CerceveliHapEylem(etiket: 'Kodumu paylaş', onPressed: () {}),
         mod: mod,
       );
     });

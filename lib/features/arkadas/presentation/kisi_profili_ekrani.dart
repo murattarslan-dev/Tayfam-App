@@ -339,7 +339,7 @@ class _UstState extends ConsumerState<_Ust> {
                       ),
                     ),
             ),
-            CerceveliEylem(
+            CerceveliHapEylem(
               etiket: m.arkadas_reddet,
               ikon: Icons.close,
               onPressed: pasif
@@ -351,7 +351,7 @@ class _UstState extends ConsumerState<_Ust> {
             ...ekEylemler,
           ],
           UserProfileFriendState.outgoing => [
-            CerceveliEylem(
+            CerceveliHapEylem(
               etiket: m.arkadas_geri_cek,
               ikon: Icons.close,
               onPressed: pasif
@@ -365,7 +365,7 @@ class _UstState extends ConsumerState<_Ust> {
           // Arkadaşta önce "Mesaj gönder" (kanca), sonra "Tayfaya davet et".
           UserProfileFriendState.friends => [
             ...ekEylemler,
-            CerceveliEylem(
+            CerceveliHapEylem(
               etiket: m.arkadas_tayfaya_davet,
               ikon: Icons.group_add_outlined,
               onPressed: pasif ? null : () => unawaited(_tayfayaDavet()),

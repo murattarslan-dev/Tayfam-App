@@ -293,7 +293,7 @@ göre mimari oturumunca belirlenir.
   - **Alttan sayfa kullanımı (ADR-0004 Notlar 2026-11-13, madde 5)**
     profil fotoğrafı, görünürlük seçimi, arkadaş ekleme, kişi profili ⋯
     menüsü ve şikâyet tayfası seçimi ile genişledi. Yeni ortak bileşenler:
-    `BolumEtiketi` (15 px ikincil bölüm başlığı), `CerceveliEylem`,
+    `BolumEtiketi` (15 px ikincil bölüm başlığı), `CerceveliHapEylem`,
     `BaglantiEylemi`, `MenuSatiri.kartta`, `SatirOku`, `BekleyenNoktasi`;
     yeni ölçüler `TayfamSizes.profilAvatari` (104), `fotografRozeti` (36),
     `avatarYigini` (28), `avatarOrta` (52).

@@ -14,8 +14,8 @@ import 'package:tayfam/core/tema/tema_baglami.dart';
 /// Varsayılan görünüm marka tonudur: kenar ve metin tint-brand üstü
 /// (açıkta brand, koyuda #CDBBFF). [notr] ise kenar çizgi rengi, metin ana
 /// metin rengidir ("Çıkış yap"). [onPressed] `null` ise devre dışıdır.
-class CerceveliEylem extends StatelessWidget {
-  const CerceveliEylem({
+class CerceveliHapEylem extends StatelessWidget {
+  const CerceveliHapEylem({
     super.key,
     required this.etiket,
     required this.onPressed,
@@ -84,8 +84,6 @@ class BaglantiEylemi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final renk = this.renk ?? context.renkler.tintMarkaUstu;
-    final semantikEtiketi = this.semantikEtiketi;
-    final icerik = EylemIcerigi(etiket: etiket, ikon: ikon);
     return OdakCercevesi(
       koseler: TayfamRadii.hapKoseleri,
       child: TextButton(
@@ -99,13 +97,11 @@ class BaglantiEylemi extends StatelessWidget {
           side: BorderSide.none,
           textStyle: context.yazi.labelLarge,
         ),
-        child: semantikEtiketi == null
-            ? icerik
-            : Semantics(
-                label: semantikEtiketi,
-                excludeSemantics: true,
-                child: icerik,
-              ),
+        child: EylemIcerigi(
+          etiket: etiket,
+          ikon: ikon,
+          semantikEtiketi: semantikEtiketi,
+        ),
       ),
     );
   }
