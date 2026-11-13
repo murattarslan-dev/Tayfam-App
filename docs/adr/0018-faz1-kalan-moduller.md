@@ -256,6 +256,21 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi; PR #130):** Play hattı uçtan uca
+  çalışıyor. İlk `.aab` Play Console'a elle yüklendi; CI Google'a JSON
+  anahtarsız, Workload Identity Federation ile girer (havuz `github`,
+  sağlayıcı `tayfam-app`; koşul: repo ve sahip kimliği, `refs/heads/main`,
+  `play-dahili` ortamı; rolsüz servis hesabı, Play'de yalnızca Tayfam için
+  test kanalı yetkisi). Google'ın ilk incelemesi onaylandı.
+  - **Kanal:** her `main` birleşmesi artık **kapalı test** kanalına
+    (`alpha`) gider; `play-dahili` ortamındaki `PLAY_KANALI` değişkeniyle
+    değiştirilebilir (`internal` = dahili test). Kapalı test sürümleri
+    Google incelemesinden geçer.
+  - **Sürüm notu:** Play'deki "Yenilikler" metni commit başlığı değil,
+    `play/surum-notu.tr-TR.txt` (kullanıcıya yönelik Türkçe, en çok 500
+    karakter, `#` satırları açıklama). Kullanıcıya görünen bir değişiklik
+    birleşirken aynı PR'da güncellenir; dosya boşsa genel bir not gider.
+  - Bu bölümdeki "dahili test" ifadeleri tarihsel kayıttır.
 - **2026-11-12 (issue #113, Tayfam-Api #150):**
   - Bekleyen katılım isteği rozeti sayılıdır ve tayfanın
     `pending_join_request_count` alanından gelir (tayfa görünümü ve
