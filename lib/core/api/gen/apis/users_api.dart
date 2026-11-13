@@ -100,6 +100,21 @@ final class UsersApi {
   /// Engel varsa (iki yönden biri) ya da hesap silinmişse `user-not-found`,
   /// var olmayan kullanıcıyla aynı cevap.
   ///
+  /// **Tanıtım alanları** (`interests`, `about`, `occupation`, `team`,
+  /// `languages`, `social_accounts`; issue #186) kişinin
+  /// `about_visibility` ayarına göre döner: `friends_and_mutual`
+  /// arkadaşlara ve ortak tayfa üyelerine, `friends` yalnızca
+  /// arkadaşlara, `none` kimseye. `social_accounts` ayar ne olursa olsun
+  /// yalnızca arkadaşlara döner. Boş ya da reddedilmiş alan yoktur;
+  /// hangisinin reddedildiği gösterilmez. Kendi profilinizde hepsini
+  /// görürsünüz.
+  ///
+  /// **Doğum günü** (`birthday`, issue #185) yalnızca arkadaşlara ve
+  /// kişinin ayarına göre döner (`Account.birthday_visibility`): `birthday`
+  /// gün ve ay, `full` ayrıca yıl ve yaş, `hidden` hiçbir şey. Kendi
+  /// profilinizde her zaman tam tarihi ve yaşı görürsünüz. Alan o an
+  /// alınamazsa profil onsuz döner.
+  ///
   /// `GET /v1/users/{user_id}/profile`
   Future<UserProfile> getUserProfile({required String userId}) async {
     final response = await _transport.send(

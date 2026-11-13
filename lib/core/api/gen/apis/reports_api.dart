@@ -24,7 +24,12 @@ final class ReportsApi {
   ///
   /// Şikâyet edenin kimliği şikâyet edilen kişiye hiçbir zaman gösterilmez;
   /// tayfanın moderatörlerine ve yöneticilerine de gösterilmez. Tayfanın
-  /// kendisi ve `staff_conduct` şikâyetleri yalnızca platforma gider.
+  /// kendisi, bir kullanıcının kendisi (`target_type: user`, issue #187)
+  /// ve `staff_conduct` şikâyetleri yalnızca platforma gider; tayfanın
+  /// moderasyon kuyruğunda görünmez. Kişi profilinden kullanıcı şikâyeti
+  /// için `POST /v1/me/reports` kullanılır (ortak tayfa gerekmez); bu uç
+  /// geriye uyum için kullanıcı şikâyetini kabul etmeye devam eder ve
+  /// ikisi aynı şikâyettir.
   /// Birebir mesaj (`dm_message`) şikâyeti bir tayfaya ait olmadığı için
   /// bu uçta değil, `POST /v1/me/reports` ile yapılır (burada
   /// `invalid-request`). Kanal mesajları henüz şikâyet edilemez.

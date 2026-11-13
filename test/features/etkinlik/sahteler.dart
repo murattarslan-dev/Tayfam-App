@@ -181,6 +181,13 @@ Map<String, Object?> hesapJson(String id) => {
   'display_name': 'Ben',
   'referral_code': 'TYF-8K2M4Q',
   'activity_visibility': 'tayfa',
+  'birthday_visibility': 'birthday',
+  'interests': const <Object?>[],
+  'languages': const <Object?>[],
+  'social_accounts': const <Object?>[],
+  'declined_profile_fields': const <Object?>[],
+  'about_visibility': 'friends_and_mutual',
+  'profile_completion_pending': false,
 };
 
 /// Kullanıcı profili JSON'u; [ben] oturumdaki kullanıcının kendisi.
