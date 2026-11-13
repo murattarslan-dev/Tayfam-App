@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-12
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0005](0005-api-istemcisi.md) (ApiClient, SessionStore, tek uçuşta yenileme), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0010](0010-signal-kutuphanesi.md) (Kotlin köprüsü düzeni), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0012](0012-giris-ve-kayit-akisi.md) (Google girişi, nonce); Tayfam-Api ADR-0022 ve sözleşmedeki `integrity_token`, `integrity_check_after`, `integrity-required` (62feb2e); issue #80
 
 ## Bağlam

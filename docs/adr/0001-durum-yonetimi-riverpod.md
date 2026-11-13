@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-09
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** Tayfam-Api ADR-0011 (güvenlik ilkesi), ADR-0014 (WebSocket)
 
 ## Bağlam

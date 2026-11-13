@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0003](0003-gezinme-iskeleti.md), [ADR-0004](0004-tema-ve-bilesen-dili.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0008](0008-ceviri-ve-yerel-ayar.md), [ADR-0012](0012-giris-ve-kayit-akisi.md); Notion: Marka (ton), Tasarım Standartları, Mağaza Sayfası
 
 ## Bağlam

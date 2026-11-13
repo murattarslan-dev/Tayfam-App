@@ -44,7 +44,7 @@ olarak anar.
 
 - **Durum:** Önerildi
 - **Tarih:** YYYY-AA-GG
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** …
 
 ## Bağlam

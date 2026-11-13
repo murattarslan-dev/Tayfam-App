@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0002](0002-modul-yapisi.md), [ADR-0003](0003-gezinme-iskeleti.md), [ADR-0004](0004-tema-ve-bilesen-dili.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0014](0014-tayfa-listesi-katilim-ve-olusturma.md); Tayfam-Api ADR-0008 (konum); Notion: Proje Planı §3, §4; Özellik Haritası "Etkinlik", "Duyuru ve soru-cevap"; Tasarım Standartları "Etkinlik türü renkleri"
 
 ## Bağlam

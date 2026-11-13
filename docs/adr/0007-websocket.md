@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-09, güncelleme 2026-11-12 (birebir mesaj istisnası)
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0020](0020-birebir-uctan-uca-sifreleme-istemci.md); Tayfam-Api ADR-0005, ADR-0014, ADR-0018 §7; OpenAPI `GET /v1/realtime`
 
 ## Bağlam

@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-09
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0003](0003-gezinme-iskeleti.md); Notion: Tasarım Standartları, Marka
 
 ## Bağlam

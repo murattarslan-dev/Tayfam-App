@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi (platform sahibi, sohbette, 2026-11-11)
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan (kapsam, izin zamanı, google-services.json,
+- **Karar veren:** Murat Arslan (kapsam, izin zamanı, google-services.json,
   tek Firebase uygulaması); uygulama ayrıntıları mimari oturumu
 - **İlgili:** ADR-0001, ADR-0002, ADR-0005, ADR-0006, ADR-0007, ADR-0008,
   ADR-0011, ADR-0018 §3; Tayfam-Api [ADR-0019](https://github.com/murattarslan-dev/Tayfam-Api/blob/main/docs/adr/0019-push-bildirimleri.md)
