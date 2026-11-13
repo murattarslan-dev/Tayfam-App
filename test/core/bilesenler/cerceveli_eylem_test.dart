@@ -95,7 +95,7 @@ void main() {
     await tester.pump();
     expect(
       tester.getSemantics(find.text('Gizlilik')),
-      containsSemantics(label: 'Gizlilik', isHeader: true),
+      isSemantics(label: 'Gizlilik', isHeader: true),
     );
     kulp.dispose();
   });
