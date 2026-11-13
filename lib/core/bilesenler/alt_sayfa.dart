@@ -47,15 +47,19 @@ class AltSayfaIcerigi extends StatelessWidget {
   Widget build(BuildContext context) {
     final baslik = this.baslik;
     final ust = this.ust;
-    return ListView(
-      shrinkWrap: true,
+    // Sayfalar kısa olduğu için bütün satırlar bir kerede kurulur; uzun
+    // yazı ölçeğinde içerik kayar.
+    return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.fromSTEB(
         TayfamSpacing.kenarMobil,
         0,
         TayfamSpacing.kenarMobil,
         TayfamSpacing.s24,
       ),
-      children: [
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         if (ust != null)
           ust
         else if (baslik != null)
@@ -71,8 +75,9 @@ class AltSayfaIcerigi extends StatelessWidget {
               child: Text(baslik, style: context.yazi.headlineSmall),
             ),
           ),
-        ...children,
-      ],
+          ...children,
+        ],
+      ),
     );
   }
 }

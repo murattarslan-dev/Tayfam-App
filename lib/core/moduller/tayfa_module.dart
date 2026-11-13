@@ -19,14 +19,100 @@ abstract interface class TayfaModule {
   /// sekmesinin geçmişinde kalır.
   List<RouteBase> get rotalar;
 
-  /// Tayfa ana sayfasında, mor üst bölümün altında gösterilen bölüm
-  /// (ADR-0015 §1). Kayıt sırasıyla gösterilir.
+  /// Tayfa ana sayfasında gösterilen bölüm (ADR-0015 §1, Notlar
+  /// 2026-11-13): başlık, kısa içerik ve "Tümü" bağlantısı. Kayıt sırasıyla
+  /// gösterilir. Boş bölümde kısa bir boş durum metni vardır; oluşturma
+  /// kısayolları bölümde değil, "Oluştur" sayfasındadır
+  /// ([olusturmaSecenegi]).
   Widget anaSayfaKarti(BuildContext context, String tayfaId);
+
+  /// Mor üst bölüme taşan öne çıkan kart (etkinlik modülünde "Sıradaki"
+  /// etkinlik); modülün böyle bir kartı yoksa `null`. Gösterecek bir şey
+  /// yokken kart kendini boş (sıfır yükseklik) çizer.
+  Widget? anaSayfaOneCikan(BuildContext context, String tayfaId);
+
+  /// Ana sayfadaki "Oluştur" sayfasında modülün seçeneği ("Etkinlik aç",
+  /// "Duyuru yaz" …); modül bir şey oluşturmuyorsa `null`.
+  OlusturmaSecenegi? get olusturmaSecenegi;
+
+  /// Yeni kurulan tayfanın "Tayfanı birlikte kuralım" kartındaki adımı
+  /// ("İlk etkinliği aç", "Bir duyuru sabitle"); yoksa `null`.
+  KurulumAdimi? get kurulumAdimi;
 
   /// Ana sayfa aşağı çekilince bölümün verisini yeniden okur. Dönen
   /// `Future` yenileme bitince tamamlanır; hata fırlatmaz (hata bölümde
   /// gösterilir).
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId);
+}
+
+/// Kullanıcının bir tayfadaki rolü ve tayfanın izinleri: "Oluştur"
+/// sayfasındaki seçenekleri sadeleştirmek için. Yetki kararı değildir;
+/// işlemi sunucu yetkilendirir (CLAUDE.md, kesin kural 5).
+@immutable
+final class TayfaYetkisi {
+  const TayfaYetkisi({this.rol, this.uyelerEtkinlikAcabilir = false});
+
+  /// Kullanıcının rolü; bilinmiyorsa `null`.
+  final Role? rol;
+
+  /// Tayfanın `members_can_create_events` ayarı.
+  final bool uyelerEtkinlikAcabilir;
+
+  /// Moderatör ya da yönetici.
+  bool get yonetimde => rol == Role.moderator || rol == Role.admin;
+}
+
+/// "Oluştur" sayfasındaki bir modül seçeneği (tasarım: Ana-Yonetici).
+@immutable
+class OlusturmaSecenegi {
+  const OlusturmaSecenegi({
+    required this.ikon,
+    required this.baslik,
+    required this.aciklama,
+    required this.izinli,
+    required this.ac,
+  });
+
+  /// Seçeneğin ikonu; yanında her zaman [baslik] gösterilir.
+  final IconData ikon;
+
+  /// Çeviri dosyasından gelen başlık ("Etkinlik aç").
+  final String Function(BuildContext context) baslik;
+
+  /// Çeviri dosyasından gelen kısa açıklama ("Konvoy, kamp, maç…").
+  final String Function(BuildContext context) aciklama;
+
+  /// Seçenek bu kullanıcıya gösterilsin mi. Yalnızca sadeleştirir; sunucu
+  /// izin vermezse `permission-denied` gösterilir.
+  final bool Function(TayfaYetkisi yetki) izinli;
+
+  /// Oluşturma akışını açar.
+  final void Function(BuildContext context, String tayfaId) ac;
+}
+
+/// Yeni kurulan tayfanın kurulum adımı (tasarım: Ana-Yeni-Tayfa).
+@immutable
+class KurulumAdimi {
+  const KurulumAdimi({
+    required this.baslik,
+    required this.aciklama,
+    required this.tamamMi,
+    required this.ac,
+  });
+
+  /// Çeviri dosyasından gelen başlık ("İlk etkinliği aç").
+  final String Function(BuildContext context) baslik;
+
+  /// Çeviri dosyasından gelen açıklama.
+  final String Function(BuildContext context) aciklama;
+
+  /// Adım tamam mı; yalnızca sunucudan gelen veriden hesaplanır (ör. en az
+  /// bir yaklaşan etkinlik var), diske yazılmaz. Veri henüz yoksa `null`.
+  /// Ana sayfanın `build`'inde çağrılır; [ref] ile izleyebilir.
+  final bool? Function(WidgetRef ref, String tayfaId) tamamMi;
+
+  /// Adımın akışını açar.
+  final void Function(BuildContext context, String tayfaId) ac;
 }
 
 /// [kayit]'taki modüllerden sunucunun açık dediği ([sunucuModulleri])

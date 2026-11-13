@@ -16,7 +16,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa ayarlarının alt ekranlarının yolları (`/t/<id>/ayarlar/<yol>`).
 abstract final class AyarYollari {
-  static const istekler = 'istekler';
+  static const istekler = Adresler.katilimIstekleriYolu;
   static const uyeler = 'uyeler';
   static const bilgiler = 'bilgiler';
   static const davetler = 'davetler';
