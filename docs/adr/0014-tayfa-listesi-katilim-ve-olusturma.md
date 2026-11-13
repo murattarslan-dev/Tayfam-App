@@ -192,6 +192,12 @@ Düğmeler sunucunun hatalarına göre davranır; istemci durumdan yetki
     adresinde sihirbazın yerine çizilir. Oluşturma yanıtı yalnızca
     sihirbaz durumunun belleğinde tutulur (`OlusturmaDurumu.kurulan`);
     sihirbaz kapanınca bırakılır.
+  - Sihirbaz karşılamadan ve tayfa değiştirme panelinden artık `push`
+    ile değil `go` ile açılır. Yığına itilince, başarıda aktif tayfa
+    değişince yönlendirici alttaki adresi (karşılama) ana sayfaya
+    çeviriyor ve "Tayfa kuruldu" ekranı kayboluyordu. Kapat ve ilk
+    adımdaki geri tuşu kök adrese döner (aktif tayfanın ana sayfası ya
+    da karşılama).
   - "Davet linkini paylaş" kayıtlı davet akışını (`tayfaDavetiProvider`,
     ADR-0018 §1) açar; akış kayıtlı değilse düğme gösterilmez. Link ve
     token ekranın durumuna girmez.

@@ -56,19 +56,15 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
   OlusturmaNotifier get _notifier => ref.read(olusturmaProvider.notifier);
 
   /// Kapat (X) ya da ilk adımda geri: girilen bir şey varsa onay sorulur.
+  /// Sihirbaz `go` ile açılır (yığına itilmez); kapanınca kök adrese
+  /// dönülür, yönlendirici aktif tayfanın ana sayfasını ya da karşılamayı
+  /// açar.
   Future<void> _kapat() async {
     if (ref.read(olusturmaProvider).girdiVar) {
       final vazgec = await _vazgecOnayi(context);
       if (!vazgec || !mounted) return;
     }
     if (!mounted) return;
-    // Navigator.pop, PopScope'u (girilen varken kapanmayı engeller) atlar;
-    // onay yukarıda alındı.
-    final gezinme = Navigator.of(context);
-    if (gezinme.canPop()) {
-      gezinme.pop();
-      return;
-    }
     context.go(Adresler.kok);
   }
 
@@ -90,7 +86,8 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
     final sonAdim = durum.adim == olusturmaAdimSayisi - 1;
     final kilitli = durum.gonderiliyor;
     return PopScope(
-      canPop: durum.adim == 0 && !durum.girdiVar,
+      // Sihirbazın altında sayfa yok; geri tuşu uygulamayı kapatmasın.
+      canPop: false,
       onPopInvokedWithResult: (geriDonuldu, _) {
         if (geriDonuldu || kilitli) return;
         if (!_notifier.geri()) unawaited(_kapat());
