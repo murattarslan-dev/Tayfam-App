@@ -87,10 +87,7 @@ void main() {
         );
         expect(find.text(arbMetni('sohbet_kisi_ekle')), findsOneWidget);
         // Kanalı açan kendini çıkaramaz: iki kişi, iki "Çıkar".
-        expect(
-          find.text(arbMetni('sohbet_katilimci_cikar')),
-          findsNWidgets(2),
-        );
+        expect(find.text(arbMetni('sohbet_katilimci_cikar')), findsNWidgets(2));
         expect(find.text('Ben (sen)'), findsOneWidget);
         expect(find.text(arbMetni('sohbet_katilimci_acan')), findsOneWidget);
         expect(find.text(arbMetni('sohbet_katilimcilar_not')), findsOneWidget);
@@ -167,9 +164,8 @@ void main() {
       kanallar: [_seciliKanal()],
       katilimcilar: [benimId, digerId],
     );
-    ortam.tasima.yanitlar
-      ..['DELETE $kanalKisisiYolu'] = (_) => null
-      ..['GET $kanalYolu'] = (_) => _seciliKanal();
+    ortam.tasima.yanitlar['DELETE $kanalKisisiYolu'] = (_) => null;
+    ortam.tasima.yanitlar['GET $kanalYolu'] = (_) => _seciliKanal();
     await _ac(
       tester,
       const KatilimcilarEkrani(
@@ -332,10 +328,8 @@ void main() {
     testWidgets('kanal yoksa organizatör açar; görmediğin kanal varsa '
         'hata gösterilir ve liste yenilenir', (tester) async {
       final ortam = SohbetOrtami(kanallar: const [], simdi: _simdi);
-      ortam.tasima.yanitlar['POST $kanallarYolu'] = (_) => const ApiProblem(
-        type: ProblemType.eventChannelExists,
-        status: 409,
-      );
+      ortam.tasima.yanitlar['POST $kanallarYolu'] = (_) =>
+          const ApiProblem(type: ProblemType.eventChannelExists, status: 409);
       await _ac(tester, bolum(ornekEtkinlik(yonetebilir: true)), ortam);
       expect(find.text('başlık'), findsOneWidget);
       expect(

@@ -120,7 +120,8 @@ class _EtkinlikSeciciState extends ConsumerState<EtkinlikSecici> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         for (final (sira, e) in liste.ogeler.indexed) ...[
-                          if (sira > 0) const SizedBox(height: TayfamSpacing.s8),
+                          if (sira > 0)
+                            const SizedBox(height: TayfamSpacing.s8),
                           _EtkinlikSecenegi(
                             etkinlik: e,
                             simdi: simdi,
@@ -259,7 +260,10 @@ class _NasilCalisir extends StatelessWidget {
           children: [
             Semantics(
               header: true,
-              child: Text(m.sohbet_etkinlik_nasil, style: context.yazi.titleSmall),
+              child: Text(
+                m.sohbet_etkinlik_nasil,
+                style: context.yazi.titleSmall,
+              ),
             ),
             for (final madde in maddeler) ...[
               const SizedBox(height: TayfamSpacing.s8),

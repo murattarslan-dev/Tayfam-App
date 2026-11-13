@@ -374,47 +374,50 @@ void main() {
       expect(o.tasima.giden('PATCH', kanalYolu).single.govde, {'name': 'yeni'});
     });
 
-    test('kişi çıkarılınca kanal yeniden okunur, kişi listeden düşer', () async {
-      final o = SohbetOrtami(
-        kanallar: [
-          kanalJson(
-            kanalId1,
-            gorunurluk: 'selected',
-            kisiSayisi: 3,
-            acan: benimId,
-          ),
-        ],
-        katilimcilar: [benimId, digerId, ucuncuId],
-      );
-      o.tasima.yanitlar['DELETE $kanalKisisiYolu'] = (_) => null;
-      o.tasima.yanitlar['GET $kanalYolu'] = (_) => kanalJson(
-        kanalId1,
-        gorunurluk: 'selected',
-        kisiSayisi: 2,
-        acan: benimId,
-      );
-      final k = _Kurulum(o);
-      k.kap.listen(kanallarProvider(ornekTayfaId), (_, _) {});
-      await k.okunmamislar();
-      k.kap.listen(katilimcilarProvider(_kanal1), (_, _) {});
-      await k.kap.read(katilimcilarProvider(_kanal1).future);
-      await k.kap
-          .read(kanallarProvider(ornekTayfaId).notifier)
-          .katilimciCikar(kanalId1, digerId);
-      k.kap.read(katilimcilarProvider(_kanal1).notifier).dus(digerId);
-      expect(
-        o.tasima.giden('DELETE', kanalKisisiYolu).single.yolParametreleri,
-        containsPair('user_id', digerId),
-      );
-      final kanal = k.kap
-          .read(kanallarProvider(ornekTayfaId))
-          .requireValue
-          .single;
-      expect(kanal.memberCount, 2);
-      expect(k.kap.read(katilimcilarProvider(_kanal1)).requireValue.ogeler, [
-        benimId,
-        ucuncuId,
-      ]);
-    });
+    test(
+      'kişi çıkarılınca kanal yeniden okunur, kişi listeden düşer',
+      () async {
+        final o = SohbetOrtami(
+          kanallar: [
+            kanalJson(
+              kanalId1,
+              gorunurluk: 'selected',
+              kisiSayisi: 3,
+              acan: benimId,
+            ),
+          ],
+          katilimcilar: [benimId, digerId, ucuncuId],
+        );
+        o.tasima.yanitlar['DELETE $kanalKisisiYolu'] = (_) => null;
+        o.tasima.yanitlar['GET $kanalYolu'] = (_) => kanalJson(
+          kanalId1,
+          gorunurluk: 'selected',
+          kisiSayisi: 2,
+          acan: benimId,
+        );
+        final k = _Kurulum(o);
+        k.kap.listen(kanallarProvider(ornekTayfaId), (_, _) {});
+        await k.okunmamislar();
+        k.kap.listen(katilimcilarProvider(_kanal1), (_, _) {});
+        await k.kap.read(katilimcilarProvider(_kanal1).future);
+        await k.kap
+            .read(kanallarProvider(ornekTayfaId).notifier)
+            .katilimciCikar(kanalId1, digerId);
+        k.kap.read(katilimcilarProvider(_kanal1).notifier).dus(digerId);
+        expect(
+          o.tasima.giden('DELETE', kanalKisisiYolu).single.yolParametreleri,
+          containsPair('user_id', digerId),
+        );
+        final kanal = k.kap
+            .read(kanallarProvider(ornekTayfaId))
+            .requireValue
+            .single;
+        expect(kanal.memberCount, 2);
+        expect(k.kap.read(katilimcilarProvider(_kanal1)).requireValue.ogeler, [
+          benimId,
+          ucuncuId,
+        ]);
+      },
+    );
   });
 }

@@ -38,8 +38,7 @@ class KatilimcilarEkrani extends ConsumerStatefulWidget {
   final KanalRef kanal;
 
   @override
-  ConsumerState<KatilimcilarEkrani> createState() =>
-      _KatilimcilarEkraniState();
+  ConsumerState<KatilimcilarEkrani> createState() => _KatilimcilarEkraniState();
 }
 
 class _KatilimcilarEkraniState extends ConsumerState<KatilimcilarEkrani> {
@@ -131,9 +130,7 @@ class _KatilimcilarEkraniState extends ConsumerState<KatilimcilarEkrani> {
                     : m.sohbet_katilimcilar_alt_secili(kanal.name),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.yazi.bodySmall?.copyWith(
-                  color: r.metinIkincil,
-                ),
+                style: context.yazi.bodySmall?.copyWith(color: r.metinIkincil),
               ),
           ],
         ),

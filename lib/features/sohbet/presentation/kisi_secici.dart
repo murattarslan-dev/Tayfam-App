@@ -138,9 +138,7 @@ class _KisiSeciciState extends ConsumerState<KisiSecici> {
                 kanalAdi,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.yazi.bodySmall?.copyWith(
-                  color: r.metinIkincil,
-                ),
+                style: context.yazi.bodySmall?.copyWith(color: r.metinIkincil),
               ),
           ],
         ),

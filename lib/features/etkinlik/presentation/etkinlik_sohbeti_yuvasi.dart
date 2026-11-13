@@ -7,8 +7,11 @@ import 'package:tayfam/core/api/gen/models.dart';
 /// tasarım: Etkinlik-Sohbet; Tayfam-Api #183). Sohbet paketi kabuktaki
 /// kayıtla doldurur (`shell/kayitlar.dart`); bölüm görünürse [baslik]'ı
 /// üstüne koyar, görünmezse başlık da çizilmez.
-typedef EtkinlikSohbetiYuvasi =
-    Widget Function(BuildContext context, Event etkinlik, Widget baslik);
+typedef EtkinlikSohbetiYuvasi = Widget Function(
+  BuildContext context,
+  Event etkinlik,
+  Widget baslik,
+);
 
 /// Etkinlik detayının sohbet bölümü; verilmezse bölüm yoktur.
 final etkinlikSohbetiYuvasiProvider = Provider<EtkinlikSohbetiYuvasi?>(

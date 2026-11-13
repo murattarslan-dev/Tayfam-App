@@ -199,9 +199,7 @@ class _KanalFormuState extends ConsumerState<KanalFormu> {
     switch (kitle) {
       case KanalKitlesi.secili:
         return _SecimSatiri(
-          on: KisiYigini(
-            kimlikler: _kisiler.take(formAvatarSayisi).toList(),
-          ),
+          on: KisiYigini(kimlikler: _kisiler.take(formAvatarSayisi).toList()),
           metin: _kisiler.isEmpty
               ? m.sohbet_kitle_kisi_sec
               : m.sohbet_kitle_secilen_sayi(_kisiler.length),

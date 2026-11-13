@@ -43,11 +43,10 @@ void main() {
     });
 
     test('aynı gün saatiyle ve doğru ekle', () {
-      String baslik(int saat, int dakika) =>
-          kapanisBasligi(m, kapanisBandi(
-            DateTime(2026, 11, 15, saat, dakika),
-            simdi,
-          )!);
+      String baslik(int saat, int dakika) => kapanisBasligi(
+        m,
+        kapanisBandi(DateTime(2026, 11, 15, saat, dakika), simdi)!,
+      );
       expect(baslik(21, 5), "Kanal bugün 21:05'te kapanacak");
       expect(baslik(14, 30), "Kanal bugün 14:30'da kapanacak");
       expect(baslik(14, 0), "Kanal bugün 14:00'te kapanacak");

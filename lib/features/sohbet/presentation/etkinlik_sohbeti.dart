@@ -92,7 +92,9 @@ class _EtkinlikSohbetiState extends ConsumerState<EtkinlikSohbeti> {
     if (kanal != null) {
       icerik = _KanalKarti(kanal: kanal);
     } else {
-      final yonetimde = ref.watch(tayfaOzetiProvider(etkinlik.tayfaId)).yonetimde;
+      final yonetimde = ref
+          .watch(tayfaOzetiProvider(etkinlik.tayfaId))
+          .yonetimde;
       final simdi = ref.read(simdiProvider)();
       if (!(etkinlik.callerCanManage || yonetimde) ||
           !etkinlikKanaliAcilabilir(etkinlik, simdi)) {
@@ -175,7 +177,10 @@ class _AcmaKarti extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(m.sohbet_etkinlik_sohbeti_soru, style: context.yazi.titleMedium),
+            Text(
+              m.sohbet_etkinlik_sohbeti_soru,
+              style: context.yazi.titleMedium,
+            ),
             const SizedBox(height: TayfamSpacing.s8),
             Text(
               m.sohbet_etkinlik_sohbeti_aciklama,

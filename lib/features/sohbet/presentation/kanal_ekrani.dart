@@ -204,7 +204,8 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
     final kitle = kanal == null ? null : KanalKitlesi.kanaldan(kanal);
     final altBaslik = kanal == null ? null : _altBaslik(m, kanal, ozet.ad);
     final arsivZamani = kanal?.archiveAt;
-    final bant = kanal == null || kanal.archivedAt != null || arsivZamani == null
+    final bant =
+        kanal == null || kanal.archivedAt != null || arsivZamani == null
         ? null
         : kapanisBandi(arsivZamani, simdi);
 

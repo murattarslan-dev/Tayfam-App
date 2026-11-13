@@ -33,8 +33,12 @@ class KatilimcilarNotifier extends SayfaliListeNotifier<String> {
   String kimlik(String oge) => oge;
 
   /// Çıkarılan kişiyi listeden düşer (sunucu kabul ettikten sonra).
-  void dus(String kisi) =>
-      ogeleriDegistir((ogeler) => [for (final o in ogeler) if (o != kisi) o]);
+  void dus(String kisi) => ogeleriDegistir(
+    (ogeler) => [
+      for (final o in ogeler)
+        if (o != kisi) o,
+    ],
+  );
 }
 
 /// Bir kanalın katılımcıları.
