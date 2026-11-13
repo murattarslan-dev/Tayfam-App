@@ -25,6 +25,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.markaYuzey,
     required this.markaYuzeyUstu,
     required this.markaYuzeyKutusu,
+    required this.markaYuzeyKatmani,
     required this.acilisZemini,
     required this.birincilEylem,
     required this.birincilEylemUstu,
@@ -89,6 +90,12 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
   /// Ayar-Silme): iki temada da ink. Üzerinde [markaYuzeyUstu] (17.89:1)
   /// ve mango düğme (9.76:1).
   final Color markaYuzeyKutusu;
+
+  /// Mor yüzeyin üstündeki açık katman (tayfa ayarlarındaki "Seni
+  /// bekleyenler" satırları; tasarım: beyaz %12): iki temada da brand ile
+  /// beyazın %12 karışımı #6F44E4, opak. Üzerinde [markaYuzeyUstu] 5.80:1,
+  /// mango rozet 3.16:1.
+  final Color markaYuzeyKatmani;
 
   /// Açılış ekranının (splash) zemini: açık temada brand, koyu temada ink
   /// (Design: Splash açık / koyu). Üzerindeki yazı [markaYuzeyUstu]
@@ -205,6 +212,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     markaYuzey: _Palet.brand,
     markaYuzeyUstu: _Palet.beyaz,
     markaYuzeyKutusu: _Palet.ink,
+    markaYuzeyKatmani: _Palet.brandKatman,
     acilisZemini: _Palet.brand,
     birincilEylem: _Palet.brand,
     birincilEylemUstu: _Palet.beyaz,
@@ -245,6 +253,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     markaYuzey: _Palet.brand,
     markaYuzeyUstu: _Palet.beyaz,
     markaYuzeyKutusu: _Palet.ink,
+    markaYuzeyKatmani: _Palet.brandKatman,
     acilisZemini: _Palet.ink,
     birincilEylem: _Palet.mango,
     birincilEylemUstu: _Palet.ink,
@@ -285,6 +294,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? markaYuzey,
     Color? markaYuzeyUstu,
     Color? markaYuzeyKutusu,
+    Color? markaYuzeyKatmani,
     Color? acilisZemini,
     Color? birincilEylem,
     Color? birincilEylemUstu,
@@ -323,6 +333,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       markaYuzey: markaYuzey ?? this.markaYuzey,
       markaYuzeyUstu: markaYuzeyUstu ?? this.markaYuzeyUstu,
       markaYuzeyKutusu: markaYuzeyKutusu ?? this.markaYuzeyKutusu,
+      markaYuzeyKatmani: markaYuzeyKatmani ?? this.markaYuzeyKatmani,
       acilisZemini: acilisZemini ?? this.acilisZemini,
       birincilEylem: birincilEylem ?? this.birincilEylem,
       birincilEylemUstu: birincilEylemUstu ?? this.birincilEylemUstu,
@@ -369,6 +380,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       markaYuzey: l(markaYuzey, other.markaYuzey),
       markaYuzeyUstu: l(markaYuzeyUstu, other.markaYuzeyUstu),
       markaYuzeyKutusu: l(markaYuzeyKutusu, other.markaYuzeyKutusu),
+      markaYuzeyKatmani: l(markaYuzeyKatmani, other.markaYuzeyKatmani),
       acilisZemini: l(acilisZemini, other.acilisZemini),
       birincilEylem: l(birincilEylem, other.birincilEylem),
       birincilEylemUstu: l(birincilEylemUstu, other.birincilEylemUstu),
@@ -402,6 +414,8 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
 abstract final class _Palet {
   // Açık tema (Notion: Tasarım Standartları).
   static const Color brand = Color(0xFF5B2BE0);
+  // brand üzerinde beyaz %12 (opak karşılığı).
+  static const Color brandKatman = Color(0xFF6F44E4);
   static const Color teal = Color(0xFF00C2A8);
   static const Color mango = Color(0xFFFFB000);
   static const Color nar = Color(0xFFFF3D68);

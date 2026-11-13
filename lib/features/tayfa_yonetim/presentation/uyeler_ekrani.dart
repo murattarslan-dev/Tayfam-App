@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -14,12 +15,15 @@ import 'package:tayfam/features/tayfa_yonetim/presentation/ban_penceresi.dart';
 import 'package:tayfam/features/tayfa_yonetim/presentation/yonetim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfanın üyeleri (`/t/<tayfaId>/ayarlar/uyeler`; ADR-0018 §1): sayfalı,
-/// rol filtreli; banlananlar ayrı filtrede (sunucudan `status=banned`).
+/// Tayfanın üyeleri (`/t/<tayfaId>/ayarlar/uyeler`; ADR-0018 §1; tasarım:
+/// Ayar-Uyeler): sayfalı, filtre çipli (rol; banlananlar ayrı filtrede,
+/// sunucudan `status=banned`).
 ///
-/// Üye satırındaki işlemler (rol değiştirme, susturma, çıkarma, banlama)
-/// kimsenin kendi seviyesindeki ya da üstündeki birine dokunamaması
-/// kuralına göre sadeleşir ([uyeEylemleri]); kararı sunucu verir.
+/// Üyeye dokununca alttan sayfada yalnızca ona yapılabilecek işlemler
+/// açılır (rol değiştirme, susturma 1 saat / 1 gün / 7 gün, çıkarma,
+/// banlama); kimsenin kendi seviyesindeki ya da üstündeki birine
+/// dokunamaması kuralına göre sadeleşir ([uyeEylemleri]); kararı sunucu
+/// verir. Çıkarma ve banlama onaylıdır.
 class UyelerEkrani extends ConsumerStatefulWidget {
   const UyelerEkrani({super.key, required this.tayfaId});
 
@@ -60,10 +64,10 @@ class _UyelerEkraniState extends ConsumerState<UyelerEkrani> {
                 runSpacing: TayfamSpacing.s8,
                 children: [
                   for (final filtre in UyeFiltresi.values)
-                    ChoiceChip(
-                      label: Text(filtreEtiketi(m, filtre)),
-                      selected: filtre == _filtre,
-                      onSelected: (_) => setState(() => _filtre = filtre),
+                    _FiltreCipi(
+                      etiket: filtreEtiketi(m, filtre),
+                      secili: filtre == _filtre,
+                      onTap: () => setState(() => _filtre = filtre),
                     ),
                 ],
               ),
@@ -83,11 +87,16 @@ class _UyelerEkraniState extends ConsumerState<UyelerEkrani> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (uyeler.isEmpty) BosMetin(m.yonetim_uyeler_bos),
-                      for (final uye in uyeler)
-                        _UyeSatiri(
-                          tayfaId: widget.tayfaId,
-                          uye: uye,
-                          benimRolum: benimRolum,
+                      if (uyeler.isNotEmpty)
+                        ListeKarti(
+                          children: [
+                            for (final uye in uyeler)
+                              _UyeSatiri(
+                                tayfaId: widget.tayfaId,
+                                uye: uye,
+                                benimRolum: benimRolum,
+                              ),
+                          ],
                         ),
                       const SizedBox(height: TayfamSpacing.s16),
                       SayfaSonu(
@@ -132,6 +141,46 @@ String _rolYapEtiketi(AppLocalizations m, Role rol) => switch (rol) {
   Role.member || Role.unknown => m.yonetim_rol_yap_member,
 };
 
+/// Filtre çipi: seçili olan brand zemin, diğerleri çerçeveli hap.
+class _FiltreCipi extends StatelessWidget {
+  const _FiltreCipi({
+    required this.etiket,
+    required this.secili,
+    required this.onTap,
+  });
+
+  final String etiket;
+  final bool secili;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return OdakCercevesi(
+      koseler: TayfamRadii.hapKoseleri,
+      child: Semantics(
+        selected: secili,
+        child: OutlinedButton(
+          onPressed: onTap,
+          style: OutlinedButton.styleFrom(
+            backgroundColor: secili ? r.marka : null,
+            foregroundColor: secili ? r.markaUstu : r.metin,
+            minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s16),
+            shape: const StadiumBorder(),
+            side: BorderSide(
+              color: secili ? r.marka : r.girisKenari,
+              width: TayfamSizes.vurguKenari,
+            ),
+            textStyle: context.yazi.labelLarge,
+          ),
+          child: Text(etiket),
+        ),
+      ),
+    );
+  }
+}
+
 class _UyeSatiri extends ConsumerWidget {
   const _UyeSatiri({
     required this.tayfaId,
@@ -153,84 +202,66 @@ class _UyeSatiri extends ConsumerWidget {
       kendisi: kendisi,
     );
     final simdi = ref.watch(saatProvider)();
-    final altBilgi = [
-      if (uye.status == MembershipStatus.banned)
-        m.yonetim_banli
-      else
-        rolAdi(m, uye.role),
-      if (susturulmus(uye, simdi)) m.yonetim_susturuldu,
-    ].join(' · ');
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: KullaniciAdiMetni(kullaniciId: uye.userId),
-      subtitle: Text(altBilgi),
-      trailing: eylemler.herhangi
-          ? IconButton(
-              tooltip: m.yonetim_uye_islemleri,
-              icon: const Icon(Icons.more_vert),
-              onPressed: () =>
-                  unawaited(_islemPaneliniAc(context, ref, eylemler, simdi)),
-            )
+    final banli = uye.status == MembershipStatus.banned;
+    final yazi = context.yazi;
+    return ListeKartiSatiri(
+      onTap: eylemler.herhangi
+          ? () => unawaited(_islemSayfasiniAc(context, ref, eylemler, simdi))
           : null,
+      child: Row(
+        children: [
+          KisiAvatari(kullaniciId: uye.userId),
+          const SizedBox(width: TayfamSpacing.s12),
+          Expanded(
+            child: Wrap(
+              spacing: TayfamSpacing.s4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                KullaniciAdiMetni(
+                  kullaniciId: uye.userId,
+                  style: yazi.titleMedium,
+                ),
+                if (kendisi) Text(m.yonetim_uye_sen, style: yazi.bodySmall),
+              ],
+            ),
+          ),
+          const SizedBox(width: TayfamSpacing.s8),
+          Flexible(
+            child: Wrap(
+              spacing: TayfamSpacing.s4,
+              runSpacing: TayfamSpacing.s4,
+              alignment: WrapAlignment.end,
+              children: [
+                if (banli)
+                  Etiket(metin: m.yonetim_banli, ton: EtiketTonu.nar)
+                else if (uye.role == Role.admin)
+                  Etiket(metin: m.yonetim_rol_admin)
+                else if (uye.role == Role.moderator)
+                  Etiket(metin: m.yonetim_rol_moderator, ton: EtiketTonu.teal),
+                if (susturulmus(uye, simdi))
+                  Etiket(metin: m.yonetim_susturuldu, ton: EtiketTonu.mango),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Future<void> _islemPaneliniAc(
+  Future<void> _islemSayfasiniAc(
     BuildContext context,
     WidgetRef ref,
     UyeEylemleri eylemler,
     DateTime simdi,
   ) async {
-    final m = AppLocalizations.of(context);
-    final secim = await showModalBottomSheet<_UyeIslemi>(
-      context: context,
-      useRootNavigator: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (panel) {
-        void sec(_UyeIslemi islem) => Navigator.of(panel).pop(islem);
-        return SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: TayfamSpacing.s16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final rol in eylemler.atanabilirRoller)
-                ListTile(
-                  leading: const Icon(Icons.badge_outlined),
-                  title: Text(_rolYapEtiketi(m, rol)),
-                  onTap: () => sec(_UyeIslemi.rol(rol)),
-                ),
-              if (eylemler.susturabilir) ...[
-                for (final sure in susturmaSureleri)
-                  ListTile(
-                    leading: const Icon(Icons.volume_off_outlined),
-                    title: Text(_susturmaEtiketi(m, sure)),
-                    onTap: () => sec(_UyeIslemi.sustur(sure)),
-                  ),
-                if (susturulmus(uye, simdi))
-                  ListTile(
-                    leading: const Icon(Icons.volume_up_outlined),
-                    title: Text(m.yonetim_susturmayi_kaldir),
-                    onTap: () => sec(const _UyeIslemi.susturmayiKaldir()),
-                  ),
-              ],
-              if (eylemler.cikarabilir)
-                ListTile(
-                  leading: const Icon(Icons.person_remove_outlined),
-                  title: Text(m.yonetim_cikar),
-                  onTap: () => sec(const _UyeIslemi.cikar()),
-                ),
-              if (eylemler.banlayabilir)
-                ListTile(
-                  leading: const Icon(Icons.block),
-                  title: Text(m.yonetim_banla),
-                  onTap: () => sec(const _UyeIslemi.banla()),
-                ),
-            ],
-          ),
-        );
-      },
+    final secim = await altSayfaAc<_UyeIslemi>(
+      context,
+      builder: (sayfa) => _UyeIslemleri(
+        uye: uye,
+        eylemler: eylemler,
+        susturulmus: susturulmus(uye, simdi),
+        onSec: (islem) => Navigator.of(sayfa).pop(islem),
+      ),
     );
     if (secim == null || !context.mounted) return;
     await _uygula(context, ref, secim);
@@ -248,6 +279,7 @@ class _UyeSatiri extends ConsumerWidget {
         baslik: m.yonetim_cikar_baslik,
         aciklama: m.yonetim_cikar_aciklama,
         onay: m.yonetim_cikar_onayla,
+        yikici: true,
       );
       if (!onay || !context.mounted) return;
     }
@@ -287,8 +319,125 @@ class _UyeSatiri extends ConsumerWidget {
 }
 
 String _susturmaEtiketi(AppLocalizations m, Duration sure) {
-  if (sure.inDays >= 1) return m.yonetim_sustur_gun(sure.inDays);
-  return m.yonetim_sustur_saat(sure.inHours);
+  if (sure.inDays >= 1) return m.yonetim_davet_sure_gun(sure.inDays);
+  return m.yonetim_sure_saat(sure.inHours);
+}
+
+/// Üye işlemleri alttan sayfası (tasarım: Ayar-Uyeler): kişi başlığı ve
+/// yalnızca yapılabilecek işlemler. Seçim sayfayı kapatır.
+class _UyeIslemleri extends StatelessWidget {
+  const _UyeIslemleri({
+    required this.uye,
+    required this.eylemler,
+    required this.susturulmus,
+    required this.onSec,
+  });
+
+  final Membership uye;
+  final UyeEylemleri eylemler;
+  final bool susturulmus;
+  final ValueChanged<_UyeIslemi> onSec;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final yazi = context.yazi;
+    return AltSayfaIcerigi(
+      ust: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          TayfamSpacing.s8,
+          0,
+          TayfamSpacing.s8,
+          TayfamSpacing.s12,
+        ),
+        child: Row(
+          children: [
+            KisiAvatari(kullaniciId: uye.userId, cap: TayfamSizes.tayfaAvatari),
+            const SizedBox(width: TayfamSpacing.s12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: KullaniciAdiMetni(
+                      kullaniciId: uye.userId,
+                      style: yazi.titleLarge,
+                    ),
+                  ),
+                  Text(rolAdi(m, uye.role), style: yazi.bodySmall),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      children: [
+        for (final rol in eylemler.atanabilirRoller)
+          MenuSatiri(
+            ikon: Icons.badge_outlined,
+            tur: MenuSatiriTuru.sade,
+            baslik: _rolYapEtiketi(m, rol),
+            onTap: () => onSec(_UyeIslemi.rol(rol)),
+          ),
+        if (eylemler.susturabilir) ...[
+          Padding(
+            padding: const EdgeInsets.all(TayfamSpacing.s8),
+            child: Row(
+              children: [
+                const ExcludeSemantics(
+                  child: Icon(Icons.volume_off_outlined, size: TayfamSizes.ikon),
+                ),
+                const SizedBox(width: TayfamSpacing.s12),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    child: Text(m.yonetim_sustur, style: yazi.titleMedium),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: TayfamSpacing.s40,
+              end: TayfamSpacing.s8,
+              bottom: TayfamSpacing.s8,
+            ),
+            child: SecimDugmeleri<Duration>(
+              secenekler: susturmaSureleri,
+              etiket: (sure) => _susturmaEtiketi(m, sure),
+              onSec: (sure) => onSec(_UyeIslemi.sustur(sure)),
+            ),
+          ),
+          if (susturulmus)
+            MenuSatiri(
+              ikon: Icons.volume_up_outlined,
+              tur: MenuSatiriTuru.sade,
+              baslik: m.yonetim_susturmayi_kaldir,
+              onTap: () => onSec(const _UyeIslemi.susturmayiKaldir()),
+            ),
+        ],
+        if (eylemler.cikarabilir || eylemler.banlayabilir) const Divider(),
+        if (eylemler.cikarabilir)
+          MenuSatiri(
+            ikon: Icons.person_remove_outlined,
+            tur: MenuSatiriTuru.sade,
+            baslik: m.yonetim_cikar,
+            aciklama: m.yonetim_cikar_aciklama_kisa,
+            onTap: () => onSec(const _UyeIslemi.cikar()),
+          ),
+        if (eylemler.banlayabilir)
+          MenuSatiri(
+            ikon: Icons.block,
+            tur: MenuSatiriTuru.sadeYikici,
+            baslik: m.yonetim_banla,
+            aciklama: m.yonetim_banla_aciklama_kisa,
+            onTap: () => onSec(const _UyeIslemi.banla()),
+          ),
+      ],
+    );
+  }
 }
 
 enum _IslemTuru { rol, sustur, susturmayiKaldir, cikar, banla }

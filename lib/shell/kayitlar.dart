@@ -69,6 +69,11 @@ const List<YonetimEkGirisi> yonetimEkGirisleri = [
     ikon: moderasyonGirisIkonu,
     etiket: moderasyonGirisEtiketi,
     adres: moderasyonAdresi,
+    // Açık şikâyet sayısı ve "Seni bekleyenler" satırı (2026-11-13).
+    sayi: moderasyonSayisi,
+    ozet: moderasyonOzeti,
+    bekleyenMetni: moderasyonBekleyenMetni,
+    bekleyenEtiketi: moderasyonBekleyenEtiketi,
   ),
 ];
 
