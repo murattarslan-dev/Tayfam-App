@@ -163,7 +163,7 @@ class DahiliYukleTesti(unittest.TestCase):
                         "versionCodes": ["105"],
                         "status": "completed",
                         "releaseNotes": [
-                            {"language": "tr-TR", "text": "feat: yeni özellik (#1)"}
+                            {"language": "tr-TR", "text": "feat: yeni\nözellik (#1)"}
                         ],
                     }
                 ],
@@ -220,6 +220,15 @@ class YardimciTesti(unittest.TestCase):
         notu = dahili_yukle.surum_notu("a" * 600)
         self.assertEqual(len(notu), 500)
         self.assertTrue(notu.endswith("…"))
+
+    def test_surum_notu_satirlari_korur(self):
+        ham = "# açıklama\n\n• Yeni:  demo tayfalar\n• Düzeltme\x07: bildirim\n"
+        self.assertEqual(
+            dahili_yukle.surum_notu(ham), "• Yeni: demo tayfalar\n• Düzeltme : bildirim"
+        )
+
+    def test_surum_notu_bos(self):
+        self.assertEqual(dahili_yukle.surum_notu("# yalnızca açıklama\n\n"), "")
 
     def test_kok_yalnizca_google_ya_da_yerel(self):
         for kok, gecerli in (

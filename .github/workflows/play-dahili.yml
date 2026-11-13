@@ -286,7 +286,9 @@ jobs:
         if: steps.kimlik.outputs.var == 'true'
         with:
           persist-credentials: false
-          sparse-checkout: tool/play
+          sparse-checkout: |
+            tool/play
+            play
       - name: .aab (artefakt)
         if: steps.kimlik.outputs.var == 'true'
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -309,11 +311,21 @@ jobs:
           export_environment_variables: false
       - name: Sürüm notu
         if: steps.kimlik.outputs.var == 'true'
-        # Son commit'in başlığı (Conventional Commits; kişisel veri
-        # içermez). Betik tek satıra indirir ve 500 karakterle sınırlar.
+        # Testçilerin Play'de gördüğü "Yenilikler" metni repodaki
+        # play/surum-notu.tr-TR.txt'den gelir (kullanıcıya yönelik Türkçe;
+        # commit başlığı kullanılmaz). Dosya yoksa ya da yalnızca açıklama
+        # satırı içeriyorsa genel bir not gider. Betik `#` satırlarını ve
+        # boş satırları atar, 500 karakterle sınırlar.
+        env:
+          VARSAYILAN_NOT: Hata düzeltmeleri ve iyileştirmeler.
         run: |
           set -euo pipefail
-          git log -1 --format=%s > "$RUNNER_TEMP/surum-notu.txt"
+          dosya=play/surum-notu.tr-TR.txt
+          if [ -f "$dosya" ] && grep -qv -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$dosya"; then
+            cp "$dosya" "$RUNNER_TEMP/surum-notu.txt"
+          else
+            printf '%s\n' "$VARSAYILAN_NOT" > "$RUNNER_TEMP/surum-notu.txt"
+          fi
       - name: Play dahili test kanalına yükle
         if: steps.kimlik.outputs.var == 'true'
         env:

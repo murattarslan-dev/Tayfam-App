@@ -18,7 +18,7 @@ Girdiler:
   PLAY_ERISIM_TOKENI   ortam değişkeni; androidpublisher kapsamlı OAuth
                        erişim token'ı (Workload Identity Federation ile,
                        google-github-actions/auth). Komut satırına konmaz.
-  PLAY_SURUM_NOTU      ortam değişkeni; tr-TR sürüm notu (isteğe bağlı).
+  PLAY_SURUM_NOTU      ortam değişkeni; tr-TR sürüm notu (isteğe bağlı, çok satırlı).
   PLAY_API_KOK         yalnızca testler içindir; varsayılan Google'ın
                        adresi. Token başka bir yere gitmesin diye yalnızca
                        Google adresi ya da yerel (127.0.0.1/localhost)
@@ -95,9 +95,16 @@ def hata_nedeni(govde: bytes) -> str:
 
 
 def surum_notu(ham: str) -> str:
-    """Tek satıra indirir, kontrol karakterlerini atar, 500 karakterle sınırlar."""
-    temiz = re.sub(r"[\x00-\x1f\x7f]+", " ", ham)
-    temiz = re.sub(r"\s+", " ", temiz).strip()
+    """Satır yapısını korur (madde işaretli notlar için), her satırdaki
+    kontrol karakterlerini ve fazla boşlukları atar, boş satırları ve `#`
+    ile başlayan açıklama satırlarını çıkarır, 500 karakterle sınırlar."""
+    satirlar = []
+    for satir in ham.splitlines():
+        satir = re.sub(r"[\x00-\x1f\x7f]+", " ", satir)
+        satir = re.sub(r"\s+", " ", satir).strip()
+        if satir and not satir.startswith("#"):
+            satirlar.append(satir)
+    temiz = "\n".join(satirlar)
     if len(temiz) > SURUM_NOTU_SINIRI:
         temiz = temiz[: SURUM_NOTU_SINIRI - 1].rstrip() + "…"
     return temiz
