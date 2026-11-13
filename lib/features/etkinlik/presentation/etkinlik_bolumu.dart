@@ -143,6 +143,7 @@ class YaklasanSatiri extends StatelessWidget {
           _TarihKutusu(an: yerel),
           const SizedBox(width: TayfamSpacing.s12),
           Expanded(
+            flex: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -157,7 +158,8 @@ class YaklasanSatiri extends StatelessWidget {
             ),
           ),
           const SizedBox(width: TayfamSpacing.s8),
-          _CevapRozeti(etkinlik: etkinlik),
+          // Büyük yazıda etiket satıra sarılır; başlığa daha çok yer kalır.
+          Flexible(child: _CevapRozeti(etkinlik: etkinlik)),
         ],
       ),
     );

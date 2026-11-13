@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -8,6 +9,7 @@ void main() {
   late AppLocalizations m;
 
   setUpAll(() async {
+    await initializeDateFormatting('tr');
     m = await AppLocalizations.delegate.load(const Locale('tr', 'TR'));
   });
 

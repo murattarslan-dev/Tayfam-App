@@ -134,7 +134,7 @@ Future<void> tayfayaDavetEt(BuildContext context, String tayfaId) async {
     return;
   }
   final paylasilacak = link;
-  if (paylasilacak == null || !context.mounted) return;
+  if (!context.mounted) return;
   final ad = kap.read(tayfaOzetiProvider(tayfaId)).ad;
   await altSayfaAc<void>(
     context,
