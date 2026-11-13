@@ -8,7 +8,6 @@ import 'package:tayfam/features/soru_cevap/application/soru_listesi_notifier.dar
 import 'package:tayfam/features/soru_cevap/presentation/cevap_karti.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_bolumu.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_ekrani.dart';
-import 'package:tayfam/features/soru_cevap/presentation/soru_karti.dart';
 import 'package:tayfam/features/soru_cevap/presentation/sorular_ekrani.dart';
 
 import '../../yardimcilar.dart';
@@ -113,12 +112,14 @@ void main() {
         }),
       );
 
-      expect(find.byType(SoruKarti), findsNWidgets(2));
+      expect(find.byType(SoruSatiri), findsNWidgets(2));
       expect(find.text('Hangi çadırı alalım?'), findsOneWidget);
+      // Satırda etiketler, cevap sayısı ve zaman; yazar yok (tasarım:
+      // Sorular).
       expect(find.text('kamp'), findsOneWidget);
-      expect(find.text('3 cevap'), findsOneWidget);
-      expect(find.text('Henüz cevap yok'), findsOneWidget);
-      expect(find.text(digerAdi), findsNWidgets(2));
+      expect(find.textContaining('3 cevap · '), findsOneWidget);
+      expect(find.textContaining('Henüz cevap yok · '), findsOneWidget);
+      expect(find.text(digerAdi), findsNothing);
     });
 
     testWidgets('boş tayfada boş durum ve "Soru sor"', (tester) async {
@@ -168,17 +169,34 @@ void main() {
       });
       await _listeyiAc(tester, tasima);
 
-      await tester.tap(find.widgetWithText(FilterChip, 'balık'));
+      ChoiceChip cip(String metin) =>
+          tester.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, metin));
+      expect(cip(arbMetni('soru_etiket_tumu')).selected, isTrue);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'balık'));
       await tester.pumpAndSettle();
       expect(tasima.giden('GET', sorularYolu).last.sorgu['tag_id'], etiketId2);
+      expect(cip('balık').selected, isTrue);
+      expect(cip(arbMetni('soru_etiket_tumu')).selected, isFalse);
 
-      await tester.tap(find.widgetWithText(FilterChip, 'balık'));
+      await tester.tap(find.widgetWithText(ChoiceChip, 'balık'));
       await tester.pumpAndSettle();
       // Süzgeçsiz liste bellekte değilse yeniden okunur; tag_id gitmez.
       expect(
         tasima.giden('GET', sorularYolu).last.sorgu.containsKey('tag_id'),
         isFalse,
       );
+
+      // "Tümü" seçili etiketi kaldırır.
+      await tester.tap(find.widgetWithText(ChoiceChip, 'kamp'));
+      await tester.pumpAndSettle();
+      expect(tasima.giden('GET', sorularYolu).last.sorgu['tag_id'], etiketId1);
+      await tester.tap(
+        find.widgetWithText(ChoiceChip, arbMetni('soru_etiket_tumu')),
+      );
+      await tester.pumpAndSettle();
+      expect(cip(arbMetni('soru_etiket_tumu')).selected, isTrue);
+      expect(cip('kamp').selected, isFalse);
     });
 
     testWidgets('ilk sayfa okunamazsa HataSatiri ve tekrar dene', (
@@ -251,11 +269,51 @@ void main() {
       );
       expect(govde.data, _uzunGovde);
       expect(find.byType(CevapKarti), findsNWidgets(2));
-      expect(find.byType(FaydaliSayaci), findsNWidgets(2));
+      expect(find.byType(FaydaliDugmesi), findsNWidgets(2));
+      expect(find.text(arbMetni('soru_cevap_siralama')), findsOneWidget);
       expect(
         tester.getTopLeft(find.text('Kendi cevabım')).dy,
         lessThan(tester.getTopLeft(find.text('Başkasının cevabı')).dy),
       );
+      // "Cevap yaz" altta sabit.
+      expect(
+        find.descendant(
+          of: find.byType(ListView),
+          matching: find.text(arbMetni('soru_cevap_yaz')),
+        ),
+        findsNothing,
+      );
+      expect(find.text(arbMetni('soru_cevap_yaz')), findsOneWidget);
+    });
+
+    testWidgets('"En faydalı" yalnızca oy almış ilk cevapta', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      await _soruyuAc(tester, _detayTasimasi());
+      final etiket = find.text(arbMetni('soru_en_faydali'));
+      expect(etiket, findsOneWidget);
+      expect(
+        find.descendant(of: find.byType(CevapKarti).first, matching: etiket),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('ilk cevabın oyu yoksa "En faydalı" yok', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      await _soruyuAc(
+        tester,
+        _detayTasimasi(
+          ek: {
+            'GET $cevaplarYolu': yanit(
+              cevapListesiJson([
+                cevapJson(cevapId1, govde: 'Birinci'),
+                cevapJson(cevapId2, govde: 'İkinci'),
+              ]),
+            ),
+          },
+        ),
+      );
+      expect(find.byType(CevapKarti), findsNWidgets(2));
+      expect(find.text(arbMetni('soru_en_faydali')), findsNothing);
     });
 
     testWidgets('başkasının cevabına oy veriliyor, kendi cevabına değil', (
@@ -276,19 +334,21 @@ void main() {
       );
       await _soruyuAc(tester, tasima);
 
-      final kendi = tester.widget<FaydaliSayaci>(
-        find.byType(FaydaliSayaci).at(0),
+      final kendi = tester.widget<FaydaliDugmesi>(
+        find.byType(FaydaliDugmesi).at(0),
       );
       expect(kendi.onPressed, isNull);
+      expect(find.text('Faydalı · 2'), findsOneWidget);
 
-      await _dokun(tester, find.byType(FaydaliSayaci).at(1));
+      await _dokun(tester, find.byType(FaydaliDugmesi).at(1));
       final istek = tasima.giden('PUT', oyYolu).single;
       expect(istek.yolParametreleri['answer_id'], cevapId2);
-      final sonra = tester.widget<FaydaliSayaci>(
-        find.byType(FaydaliSayaci).at(1),
+      final sonra = tester.widget<FaydaliDugmesi>(
+        find.byType(FaydaliDugmesi).at(1),
       );
       expect(sonra.isaretli, isTrue);
       expect(sonra.sayi, 1);
+      expect(find.text('Faydalı · 1'), findsOneWidget);
     });
 
     testWidgets('oy reddedilirse hata bildiriliyor', (tester) async {
@@ -301,7 +361,7 @@ void main() {
         },
       );
       await _soruyuAc(tester, tasima);
-      await _dokun(tester, find.byType(FaydaliSayaci).at(1));
+      await _dokun(tester, find.byType(FaydaliDugmesi).at(1));
       expect(
         find.descendant(
           of: find.byType(SnackBar),
@@ -656,7 +716,7 @@ void main() {
           _alan('soru_form_etiket_etiketi'),
           'kamp ateşi ve ekipman',
         );
-        await _dokun(tester, find.byTooltip(arbMetni('soru_form_etiket_ekle')));
+        await _dokun(tester, find.text(arbMetni('soru_form_etiket_ekle')));
         await _dokun(tester, find.text(arbMetni('soru_form_gonder')));
         expect(find.byType(HataSatiri), findsOneWidget);
         expect(tester.takeException(), isNull);
@@ -666,13 +726,9 @@ void main() {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         await _soruyuAc(tester, _detayTasimasi(), themeMode: mod);
-        // Düğme uzun sorunun altında; tembel liste onu henüz kurmamış olabilir.
-        await tester.dragUntilVisible(
-          find.text(arbMetni('soru_cevap_yaz')),
-          find.byType(ListView),
-          const Offset(0, -300),
-        );
+        // "Cevap yaz" altta sabit; kaydırmadan görünür.
         await _dokun(tester, find.text(arbMetni('soru_cevap_yaz')));
+        expect(find.text(arbMetni('soru_baslik')), findsOneWidget);
         await _dokun(tester, find.text(arbMetni('soru_cevap_form_gonder')));
         expect(tester.takeException(), isNull);
       });

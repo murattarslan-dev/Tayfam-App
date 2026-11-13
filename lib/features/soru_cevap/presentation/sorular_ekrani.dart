@@ -6,16 +6,21 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/bilesenler/eylem_icerigi.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/soru_cevap/application/etiketler_notifier.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_listesi_notifier.dart';
+import 'package:tayfam/features/soru_cevap/presentation/soru_bolumu.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_cevap_ortak.dart';
-import 'package:tayfam/features/soru_cevap/presentation/soru_karti.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Tayfanın soruları (`/t/<tayfaId>/sorular`; ADR-0018 §4): arama, etiket
-/// süzgeci ve sayfalı liste. Aşağı çekince yenilenir.
+/// Tayfanın soruları (`/t/<tayfaId>/sorular`; ADR-0018 §4; tasarım:
+/// Sorular): başlıkta tayfanın adı ve "Soru sor", arama, etiket çipleriyle
+/// süzme ve satırları tek kartta sayfalı liste (soru, etiketler, cevap
+/// sayısı ve zaman). Aşağı çekince yenilenir.
 ///
 /// Arama sunucuda yapılır (Türkçe büyük-küçük harf duyarsız); yazmayı
 /// bırakınca ya da klavyede "Ara"ya basınca başlar. Arama metni yalnızca
@@ -64,6 +69,11 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
     _suzgec.aramaAyarla('');
   }
 
+  /// "Tümü" çipi: seçili etiket varsa kaldırır.
+  void _tumunuGoster(String? seciliId) {
+    if (seciliId != null) _suzgec.etiketSec(seciliId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
@@ -71,54 +81,82 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
     final saglayici = soruListesiProvider(suzgec.anahtar(_tayfaId));
     final durum = ref.watch(saglayici);
     final etiketler = ref.watch(etiketlerProvider(_tayfaId)).value;
+    final tayfaAdi = ref.watch(tayfaOzetiProvider(_tayfaId)).ad;
+    final simdi = ref.watch(simdiProvider)();
     final liste = durum.value;
     final hata = durum.error;
     return Scaffold(
-      appBar: AppBar(title: Text(metinler.soru_liste_baslik)),
+      appBar: AppBar(
+        title: MergeSemantics(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(metinler.soru_liste_baslik),
+              if (tayfaAdi != null)
+                Text(
+                  tayfaAdi,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.yazi.bodySmall,
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          Center(
+            child: _SoruSorDugmesi(
+              onPressed: () =>
+                  unawaited(soruFormunuAc(context, tayfaId: _tayfaId)),
+            ),
+          ),
+          const SizedBox(width: TayfamSpacing.s12),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () => _yenile(suzgec),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s4,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s40,
+          ),
           children: [
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: BirincilEylem(
-                etiket: metinler.soru_sor,
-                ikon: Icons.help_outline,
-                onPressed: () =>
-                    unawaited(soruFormunuAc(context, tayfaId: _tayfaId)),
-              ),
-            ),
-            const SizedBox(height: TayfamSpacing.s16),
             TextField(
               controller: _arama,
               maxLength: soruAramasiEnCok,
               textInputAction: TextInputAction.search,
               onChanged: _aramaDegisti,
               onSubmitted: _aramaGonder,
-              decoration: InputDecoration(
-                labelText: metinler.soru_arama_etiketi,
-                counterText: '',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _arama.text.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: metinler.soru_arama_temizle,
-                        icon: const Icon(Icons.close),
-                        onPressed: _aramayiTemizle,
-                      ),
-              ),
+              decoration:
+                  soruAlanGorunumu(
+                    context,
+                    koseler: TayfamRadii.hapKoseleri,
+                  ).copyWith(
+                    hintText: metinler.soru_arama_etiketi,
+                    counterText: '',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _arama.text.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: metinler.soru_arama_temizle,
+                            icon: const Icon(Icons.close),
+                            onPressed: _aramayiTemizle,
+                          ),
+                  ),
             ),
             if (etiketler != null && etiketler.isNotEmpty) ...[
-              const SizedBox(height: TayfamSpacing.s8),
+              const SizedBox(height: TayfamSpacing.s12),
               _EtiketSuzgeci(
                 etiketler: etiketler,
                 seciliId: suzgec.etiketId,
                 onSecildi: _suzgec.etiketSec,
+                onTumu: () => _tumunuGoster(suzgec.etiketId),
               ),
             ],
-            const SizedBox(height: TayfamSpacing.s16),
+            const SizedBox(height: TayfamSpacing.s12),
             if (liste == null && hata != null) ...[
               HataSatiri.hatadan(hata),
               _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
@@ -131,38 +169,47 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
                 ),
               )
             else if (liste.ogeler.isEmpty)
-              Text(
-                suzgec.etkin ? metinler.soru_arama_bos : metinler.soru_bos,
-                style: context.yazi.bodyLarge?.copyWith(
-                  color: context.renkler.metinGovde,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: TayfamSpacing.s4,
+                ),
+                child: Text(
+                  suzgec.etkin ? metinler.soru_arama_bos : metinler.soru_bos,
+                  style: context.yazi.bodyLarge?.copyWith(
+                    color: context.renkler.metinGovde,
+                  ),
                 ),
               )
             else ...[
-              for (final (sira, soru) in liste.ogeler.indexed) ...[
-                if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-                SoruKarti(
-                  soru: soru,
-                  onTap: () => context.go(Adresler.soru(_tayfaId, soru.id)),
-                ),
-              ],
-              const SizedBox(height: TayfamSpacing.s16),
+              ListeKarti(
+                children: [
+                  for (final soru in liste.ogeler)
+                    SoruSatiri(
+                      soru: soru,
+                      simdi: simdi,
+                      etiketli: true,
+                      onTap: () => context.go(Adresler.soru(_tayfaId, soru.id)),
+                    ),
+                ],
+              ),
               if (liste.dahaHatasi case final dahaHatasi?) ...[
+                const SizedBox(height: TayfamSpacing.s8),
                 HataSatiri.hatadan(dahaHatasi),
                 _TekrarDene(onPressed: () => _dahaFazla(suzgec)),
-              ] else if (liste.dahaYukleniyor)
+              ] else if (liste.dahaYukleniyor) ...[
+                const SizedBox(height: TayfamSpacing.s16),
                 Center(
                   child: TayfamYukleniyor(etiket: metinler.soru_yukleniyor),
-                )
-              else if (liste.dahaVar)
+                ),
+              ] else if (liste.dahaVar) ...[
+                const SizedBox(height: TayfamSpacing.s8),
                 Center(
-                  child: TextButton(
+                  child: BaglantiEylemi(
+                    etiket: metinler.tayfa_ana_daha_fazla,
                     onPressed: () => _dahaFazla(suzgec),
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                    ),
-                    child: Text(metinler.tayfa_ana_daha_fazla),
                   ),
                 ),
+              ],
             ],
           ],
         ),
@@ -187,37 +234,117 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
   }
 }
 
-/// Etiket süzgeci: yatay kaydırılan seçim çipleri; en çok bir etiket seçili.
+/// Başlıktaki "Soru sor" (tasarım: Sorular): tint-brand zeminli hap
+/// düğme, ikonlu; en az 48 px.
+class _SoruSorDugmesi extends StatelessWidget {
+  const _SoruSorDugmesi({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return OdakCercevesi(
+      koseler: TayfamRadii.hapKoseleri,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: r.tintMarka,
+          foregroundColor: r.tintMarkaUstu,
+          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+          padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s16),
+          shape: const StadiumBorder(),
+          // Odak çerçevesini OdakCercevesi çizer.
+          side: BorderSide.none,
+          textStyle: context.yazi.labelLarge,
+        ),
+        child: EylemIcerigi(
+          etiket: AppLocalizations.of(context).soru_sor,
+          ikon: Icons.add,
+        ),
+      ),
+    );
+  }
+}
+
+/// Etiket süzgeci (tasarım: Sorular): yatay kaydırılan çipler; başta
+/// "Tümü", en çok bir etiket seçili. Seçili çip marka zeminlidir; seçim
+/// ekran okuyucuya da bildirilir.
 class _EtiketSuzgeci extends StatelessWidget {
   const _EtiketSuzgeci({
     required this.etiketler,
     required this.seciliId,
     required this.onSecildi,
+    required this.onTumu,
   });
 
   final List<Tag> etiketler;
   final String? seciliId;
   final ValueChanged<String> onSecildi;
+  final VoidCallback onTumu;
 
   @override
   Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
     return Semantics(
       container: true,
-      label: AppLocalizations.of(context).soru_etiket_suzgeci,
+      label: m.soru_etiket_suzgeci,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            for (final (sira, etiket) in etiketler.indexed) ...[
-              if (sira > 0) const SizedBox(width: TayfamSpacing.s8),
-              FilterChip(
-                label: Text(etiket.name),
-                selected: etiket.id == seciliId,
-                onSelected: (_) => onSecildi(etiket.id),
+            SuzgecCipi(
+              metin: m.soru_etiket_tumu,
+              secili: seciliId == null,
+              onSecildi: onTumu,
+            ),
+            for (final etiket in etiketler) ...[
+              const SizedBox(width: TayfamSpacing.s8),
+              SuzgecCipi(
+                metin: etiket.name,
+                secili: etiket.id == seciliId,
+                onSecildi: () => onSecildi(etiket.id),
               ),
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Süzgeç çipi (tasarım: Sorular, Soru-Form "Tayfadaki etiketler"):
+/// seçiliyken marka zemin, değilken kart zemin ve çerçeve; 13 px 700.
+class SuzgecCipi extends StatelessWidget {
+  const SuzgecCipi({
+    super.key,
+    required this.metin,
+    required this.secili,
+    required this.onSecildi,
+  });
+
+  final String metin;
+  final bool secili;
+  final VoidCallback? onSecildi;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    final onSecildi = this.onSecildi;
+    return ChoiceChip(
+      label: Text(metin),
+      selected: secili,
+      showCheckmark: false,
+      onSelected: onSecildi == null ? null : (_) => onSecildi(),
+      selectedColor: r.marka,
+      backgroundColor: r.kart,
+      shape: const StadiumBorder(),
+      side: BorderSide(
+        color: secili ? r.marka : r.cizgi,
+        width: TayfamSizes.vurguKenari,
+      ),
+      labelStyle: context.yazi.labelMedium?.copyWith(
+        color: secili ? r.markaUstu : r.metin,
       ),
     );
   }
@@ -232,12 +359,9 @@ class _TekrarDene extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: AlignmentDirectional.centerStart,
-      child: TextButton(
+      child: BaglantiEylemi(
+        etiket: AppLocalizations.of(context).tayfa_ana_tekrar_dene,
         onPressed: onPressed,
-        style: TextButton.styleFrom(
-          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-        ),
-        child: Text(AppLocalizations.of(context).tayfa_ana_tekrar_dene),
       ),
     );
   }
