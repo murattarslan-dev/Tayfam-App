@@ -206,4 +206,20 @@ abstract final class TayfamSizes {
 
   /// Sayfanın altında "Oluştur" düğmesinin örtmediği boşluk (96 px).
   static const double olusturAlani = 96;
+
+  // Profil sekmesi, arkadaşlar ve kişi profili (2026-11-13 yeniden
+  // tasarım; tasarım: Profil-*.dc.html, Kisi-Profili*.dc.html).
+
+  /// Profil sekmesindeki ve kişi profilindeki büyük avatar (104 px).
+  static const double profilAvatari = 104;
+
+  /// Profil avatarının köşesindeki kamera rozeti (36 px).
+  static const double fotografRozeti = 36;
+
+  /// Üst üste binen küçük avatarlar (28 px; arkadaşlar satırı, istek
+  /// kartı).
+  static const double avatarYigini = 28;
+
+  /// Arkadaş ekle sayfasında bulunan kişinin avatarı (52 px).
+  static const double avatarOrta = 52;
 }

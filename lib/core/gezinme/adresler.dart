@@ -248,6 +248,13 @@ abstract final class Adresler {
   /// Engellenen kullanıcılar.
   static const engellenenler = '$arkadaslar/$engellenenlerYolu';
 
+  /// Kendi katılım geçmişinin tamamının profil altındaki yolu (profil
+  /// sekmesindeki "Tümünü gör"; 2026-11-13).
+  static const katilimlarimYolu = 'katilimlarim';
+
+  /// Kendi katılım geçmişinin tamamı.
+  static const katilimlarim = '$profil/$katilimlarimYolu';
+
   /// Gelen doğrudan tayfa davetlerinin profil altındaki yolu (ADR-0018 §7).
   static const tayfaDavetleriYolu = 'tayfa-davetleri';
 

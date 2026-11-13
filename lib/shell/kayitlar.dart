@@ -10,6 +10,7 @@ import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
@@ -52,6 +53,8 @@ final List<Override> kayitOverridelari = [
   yonetimEkGirisleriProvider.overrideWithValue(yonetimEkGirisleri),
   // Kişi profilinde "Mesaj gönder" (ADR-0018 §9).
   kisiProfiliEylemleriProvider.overrideWithValue(const [mesajGonderEylemi]),
+  // Arkadaşlar ekranında "Kodumu paylaş" (2026-11-13).
+  referansPaylasimiProvider.overrideWithValue(kendiKodunuPaylas),
   // Sohbet sekmesinin Birebir bölümü (ADR-0018 §9).
   birebirBolumuProvider.overrideWithValue(_birebirBolumu),
   // Birebir mesaj şikâyeti: mesajın açık metni cihazdan (ADR-0018 §8).

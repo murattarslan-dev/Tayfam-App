@@ -13,6 +13,8 @@ import 'package:tayfam/features/profil/presentation/veri_disa_aktarma_ekrani.dar
 
 export 'package:tayfam/features/profil/presentation/profil_ekrani.dart'
     show ProfilEkrani;
+export 'package:tayfam/features/profil/presentation/profil_ortak.dart'
+    show kendiKodunuPaylas;
 
 /// Profil sekmesinin kökü (`/profil`) altındaki rotalar.
 final List<RouteBase> profilRotalari = [

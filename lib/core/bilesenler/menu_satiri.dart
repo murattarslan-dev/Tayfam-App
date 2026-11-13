@@ -47,6 +47,24 @@ class MenuSatiri extends StatelessWidget {
     this.icBosluk = const EdgeInsets.all(TayfamSpacing.s8),
   });
 
+  /// [ListeKarti] içindeki satır (tasarım: Ayar-Ana, Profil-Ana): köşesiz,
+  /// yanlarda 16, üstte ve altta 8 px iç boşluk.
+  const MenuSatiri.kartta({
+    super.key,
+    required this.baslik,
+    required this.onTap,
+    this.ikon,
+    this.ikonKutusu,
+    this.aciklama,
+    this.altOge,
+    this.sag,
+    this.tur = MenuSatiriTuru.olagan,
+  }) : koseler = BorderRadius.zero,
+       icBosluk = const EdgeInsets.symmetric(
+         horizontal: TayfamSpacing.s16,
+         vertical: TayfamSpacing.s8,
+       );
+
   final String baslik;
   final String? aciklama;
 
@@ -164,6 +182,43 @@ extension on MenuSatiri {
       child: SizedBox.square(
         dimension: TayfamSizes.menuIkonKutusu,
         child: simge,
+      ),
+    );
+  }
+}
+
+/// Satırın sağındaki "ileri" oku: ikincil renkte, ekran okuyucudan gizli
+/// (satırın kendisi düğmedir).
+class SatirOku extends StatelessWidget {
+  const SatirOku({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: Icon(
+        Icons.chevron_right,
+        size: TayfamSizes.ikon,
+        color: context.renkler.metinIkincil,
+      ),
+    );
+  }
+}
+
+/// Bekleyen bir şey olduğunu gösteren küçük nar nokta (tasarım: Profil-Ana
+/// "Arkadaşlık istekleri"). Süstür: aynı bilgi satırın açıklamasında yazar,
+/// bu yüzden ekran okuyucudan gizlenir; renk tek başına bilgi taşımaz.
+class BekleyenNoktasi extends StatelessWidget {
+  const BekleyenNoktasi({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.renkler.nar,
+          shape: BoxShape.circle,
+        ),
+        child: const SizedBox.square(dimension: TayfamSizes.nokta),
       ),
     );
   }

@@ -127,10 +127,11 @@ final class ArkadasDeposu {
   Future<Sayfa<ActivityRecord>> katilimGecmisi(
     String kullaniciId, {
     String? sayfaToken,
+    int sayfaBoyutu = arkadasSayfaBoyutu,
   }) async {
     final liste = await _kullanicilar.listUserActivity(
       userId: kullaniciId,
-      pageSize: arkadasSayfaBoyutu,
+      pageSize: sayfaBoyutu,
       pageToken: sayfaToken,
     );
     return (ogeler: liste.records, sonraki: liste.nextPageToken);

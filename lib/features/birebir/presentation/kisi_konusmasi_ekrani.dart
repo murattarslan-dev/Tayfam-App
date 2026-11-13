@@ -93,7 +93,8 @@ class _YeniKonusma extends ConsumerWidget {
 
 /// Kişi profilindeki "Mesaj gönder" düğmesi (ADR-0018 §9). Sohbet
 /// sekmesinde o kişiyle konuşmayı açar; konuşma yoksa ilk mesaj yazılır.
-/// Kimin kime yazabileceğine sunucu karar verir (kesin kural 5).
+/// Kimin kime yazabileceğine sunucu karar verir (kesin kural 5). Birincil
+/// eylemdir (2026-11-13 tasarım: Kisi-Profili).
 class MesajGonderDugmesi extends StatelessWidget {
   const MesajGonderDugmesi({super.key, required this.kullaniciId});
 
@@ -102,7 +103,7 @@ class MesajGonderDugmesi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IkincilEylem(
+    return BirincilEylem(
       etiket: AppLocalizations.of(context).birebir_mesaj_gonder,
       ikon: Icons.chat_bubble_outline,
       onPressed: () => context.go(Adresler.birebirKisi(kullaniciId)),
