@@ -42,9 +42,11 @@ final class DuyuruFormuDurumu {
     this.govde = '',
     this.baslikHatali = false,
     this.govdeHatali = false,
+    this.sabitle = false,
     this.gonderiliyor = false,
     this.hata,
     this.tamamlanan,
+    this.sabitlenemedi = false,
   });
 
   /// Form açılınca bir kez üretilen `client_request_id`; aynı duyuru
@@ -61,6 +63,12 @@ final class DuyuruFormuDurumu {
   /// Gönderimde gövde geçersizdi.
   final bool govdeHatali;
 
+  /// Yeni duyuru yayınlanınca sabitlensin ("Yayınlayınca sabitle";
+  /// yalnızca moderatör ve yöneticiye gösterilir). Oluşturmanın ardından
+  /// ayrı bir sabitleme çağrısı yapılır (sözleşmede oluşturma isteğinde
+  /// `pinned` yok).
+  final bool sabitle;
+
   /// İstek sürüyor.
   final bool gonderiliyor;
 
@@ -70,23 +78,31 @@ final class DuyuruFormuDurumu {
   /// Başarıda yayınlanan ya da düzenlenen duyuru.
   final Announcement? tamamlanan;
 
+  /// Duyuru yayınlandı ama istenen sabitleme başarısız oldu; duyuru
+  /// sabitlenmemiş olarak [tamamlanan]'dadır.
+  final bool sabitlenemedi;
+
   DuyuruFormuDurumu _degistir({
     String? baslik,
     String? govde,
     bool? baslikHatali,
     bool? govdeHatali,
+    bool? sabitle,
     bool gonderiliyor = false,
     Object? hata,
     Announcement? tamamlanan,
+    bool sabitlenemedi = false,
   }) => DuyuruFormuDurumu(
     istekKimligi: istekKimligi,
     baslik: baslik ?? this.baslik,
     govde: govde ?? this.govde,
     baslikHatali: baslikHatali ?? this.baslikHatali,
     govdeHatali: govdeHatali ?? this.govdeHatali,
+    sabitle: sabitle ?? this.sabitle,
     gonderiliyor: gonderiliyor,
     hata: hata,
     tamamlanan: tamamlanan,
+    sabitlenemedi: sabitlenemedi,
   );
 }
 
@@ -128,6 +144,13 @@ class DuyuruFormuNotifier extends Notifier<DuyuruFormuDurumu> {
       govde: govde,
       govdeHatali: state.govdeHatali && !duyuruGovdesiGecerli(govde),
     );
+  }
+
+  /// "Yayınlayınca sabitle" anahtarı. Düzenlemede yok sayılır; sabitleme
+  /// orada duyurunun menüsündedir.
+  void sabitlemeyiAyarla({required bool sabitle}) {
+    if (state.gonderiliyor || anahtar.duzenlenen != null) return;
+    state = state._degistir(sabitle: sabitle);
   }
 
   /// Duyuruyu yayınlar ya da değişiklikleri kaydeder. Sürerken ikinci
@@ -185,7 +208,35 @@ class DuyuruFormuNotifier extends Notifier<DuyuruFormuDurumu> {
     }
     if (!ref.mounted) return;
     duyuruyuYansit(ref, anahtar.tayfaId, duyuru);
+    if (duzenlenen == null && mevcut.sabitle && !duyuru.pinned) {
+      await _sabitle(mevcut, duyuru);
+      return;
+    }
     state = mevcut._degistir(tamamlanan: duyuru);
+  }
+
+  /// Yeni yayınlanan [duyuru]'yu sabitler (`PUT …/pin`). Duyuru zaten
+  /// oluştu: sabitleme başarısız olsa da form tamamlanır ve
+  /// [DuyuruFormuDurumu.sabitlenemedi] işaretlenir; tekrar gönderimde ikinci
+  /// duyuru açılmaz. Yetkiyi sunucu verir (kesin kural 5).
+  Future<void> _sabitle(DuyuruFormuDurumu mevcut, Announcement duyuru) async {
+    final depo = ref.read(duyuruDeposuProvider);
+    final Announcement sabit;
+    try {
+      sabit = await depo.sabitle(anahtar.tayfaId, duyuru.id, sabit: true);
+    } on OturumYok {
+      if (!ref.mounted) return;
+      ref.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
+      return;
+    } on Exception {
+      if (ref.mounted) {
+        state = mevcut._degistir(tamamlanan: duyuru, sabitlenemedi: true);
+      }
+      return;
+    }
+    if (!ref.mounted) return;
+    duyuruyuYansit(ref, anahtar.tayfaId, sabit);
+    state = mevcut._degistir(tamamlanan: sabit);
   }
 }
 

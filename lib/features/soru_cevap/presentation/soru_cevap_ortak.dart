@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -38,11 +39,13 @@ Future<void> soruFormunuAc(
 }
 
 /// Cevap formunu kabuğun üstünde tam ekran açar. Yeni cevap için
-/// [duzenlenen] `null`'dır. Sonuç cevap listesine form içinde yansır.
+/// [duzenlenen] `null`'dır. [soruBasligi] formun üstünde alıntılanır
+/// (tasarım: Cevap-Form). Sonuç cevap listesine form içinde yansır.
 Future<void> cevapFormunuAc(
   BuildContext context, {
   required String tayfaId,
   required String soruId,
+  required String soruBasligi,
   Answer? duzenlenen,
 }) async {
   final metinler = AppLocalizations.of(context);
@@ -53,6 +56,7 @@ Future<void> cevapFormunuAc(
       builder: (_) => CevapFormuEkrani(
         tayfaId: tayfaId,
         soruId: soruId,
+        soruBasligi: soruBasligi,
         duzenlenen: duzenlenen,
       ),
     ),
@@ -80,7 +84,8 @@ void islemHatasiniBildir(BuildContext context, Object hata) {
   hataBildir(context, hata);
 }
 
-/// Silme onayı; onaylanırsa `true`.
+/// Silme onayı; onaylanırsa `true`. Son adım dolu yıkıcı düğmedir
+/// (ADR-0004 Notlar 2026-11-13).
 Future<bool> silmeyiOnayla(
   BuildContext context, {
   required String baslik,
@@ -91,15 +96,20 @@ Future<bool> silmeyiOnayla(
     context: context,
     builder: (pencere) => AlertDialog(
       title: Text(baslik),
+      scrollable: true,
       content: Text(aciklama),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(pencere).pop(false),
+          style: TextButton.styleFrom(
+            minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+          ),
           child: Text(metinler.soru_vazgec),
         ),
-        TextButton(
+        YikiciEylem(
+          etiket: metinler.soru_sil,
+          dolu: true,
           onPressed: () => Navigator.of(pencere).pop(true),
-          child: Text(metinler.soru_sil),
         ),
       ],
     ),
@@ -107,10 +117,109 @@ Future<bool> silmeyiOnayla(
   return onay ?? false;
 }
 
-/// İçeriğin yazarı ve yazıldığı gün ve saat (cihazın saatine göre).
-/// Yazarın hesabı silindiyse "Silinmiş kullanıcı" yazar.
+/// Soru ve cevap ⋯ menüsünün seçenekleri.
+enum IcerikIslemi { duzenle, sil, sikayet }
+
+/// Soru ya da cevap işlemleri için alttan sayfa (tasarım: Soru-Detay;
+/// ADR-0004 Notlar 2026-11-13 madde 5). [yonetebilir] (yazar ya da
+/// yönetim) ise Düzenle ve yıkıcı Sil, değilse Şikâyet et. Menü yalnızca
+/// arayüzü sadeleştirir; kararı sunucu verir (kesin kural 5).
+Future<IcerikIslemi?> icerikIslemiSec(
+  BuildContext context, {
+  required String baslik,
+  required bool yonetebilir,
+}) {
+  final m = AppLocalizations.of(context);
+  return altSayfaAc<IcerikIslemi>(
+    context,
+    builder: (sayfa) => AltSayfaIcerigi(
+      baslik: baslik,
+      children: [
+        if (yonetebilir) ...[
+          MenuSatiri(
+            baslik: m.soru_duzenle,
+            ikon: Icons.edit_outlined,
+            onTap: () => Navigator.of(sayfa).pop(IcerikIslemi.duzenle),
+          ),
+          MenuSatiri(
+            baslik: m.soru_sil,
+            ikon: Icons.delete_outline,
+            tur: MenuSatiriTuru.yikici,
+            onTap: () => Navigator.of(sayfa).pop(IcerikIslemi.sil),
+          ),
+        ] else
+          MenuSatiri(
+            baslik: m.sikayet_et,
+            ikon: Icons.flag_outlined,
+            onTap: () => Navigator.of(sayfa).pop(IcerikIslemi.sikayet),
+          ),
+      ],
+    ),
+  );
+}
+
+/// Soru-cevap formlarındaki ve arama kutusundaki alanların görünümü
+/// (tasarım: Soru-Form, Sorular): kart zemin, 1.5 px giriş kenarı,
+/// odakta 2 px marka kenar; köşe 14 px ya da [koseler].
+InputDecoration soruAlanGorunumu(
+  BuildContext context, {
+  BorderRadius koseler = TayfamRadii.onizlemeKoseleri,
+}) {
+  final r = context.renkler;
+  OutlineInputBorder kenar(Color renk, double kalinlik) => OutlineInputBorder(
+    borderRadius: koseler,
+    borderSide: BorderSide(color: renk, width: kalinlik),
+  );
+  return InputDecoration(
+    filled: true,
+    fillColor: r.kart,
+    border: kenar(r.girisKenari, TayfamSizes.vurguKenari),
+    enabledBorder: kenar(r.girisKenari, TayfamSizes.vurguKenari),
+    focusedBorder: kenar(r.marka, TayfamSizes.alanOdakKenari),
+    errorBorder: kenar(r.narMetin, TayfamSizes.vurguKenari),
+    focusedErrorBorder: kenar(r.narMetin, TayfamSizes.alanOdakKenari),
+    disabledBorder: kenar(r.pasif, TayfamSizes.vurguKenari),
+  );
+}
+
+/// Tam ekran formun sağ üstündeki gönder düğmesi (tasarım: Soru-Form
+/// "Sor", Cevap-Form "Gönder").
+class FormUstEylemi extends StatelessWidget {
+  const FormUstEylemi({
+    super.key,
+    required this.etiket,
+    required this.onPressed,
+  });
+
+  final String etiket;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: TayfamSpacing.s12),
+      child: Center(
+        child: BirincilEylem(etiket: etiket, onPressed: onPressed),
+      ),
+    );
+  }
+}
+
+/// İçeriğin yazarı (avatar ve ad) ve yazıldığı gün ve saat (cihazın
+/// saatine göre; tasarım: Soru-Detay). Yazarın hesabı silindiyse
+/// "Silinmiş kullanıcı" yazar.
+///
+/// Soruda ad ve zaman aynı satırdadır ("Ad · tarih"); cevapta ([cevapta])
+/// ad kalın, zaman altında küçük. [sag] verilirse (ör. "En faydalı"
+/// etiketi) satırın sonundadır; dar ekranda ve büyük yazıda alta iner.
 class YazarSatiri extends StatelessWidget {
-  const YazarSatiri({super.key, required this.yazarId, required this.zaman});
+  const YazarSatiri({
+    super.key,
+    required this.yazarId,
+    required this.zaman,
+    this.cevapta = false,
+    this.sag,
+  });
 
   /// Yazarın kimliği; hesap silindiyse `null`.
   final String? yazarId;
@@ -118,22 +227,61 @@ class YazarSatiri extends StatelessWidget {
   /// Sunucudan gelen zaman (UTC).
   final DateTime zaman;
 
+  final bool cevapta;
+  final Widget? sag;
+
   @override
   Widget build(BuildContext context) {
     final metinler = AppLocalizations.of(context);
-    final stil = context.yazi.bodySmall?.copyWith(
-      color: context.renkler.metinIkincil,
-    );
+    final r = context.renkler;
+    final yazi = context.yazi;
     final yazarId = this.yazarId;
+    final sag = this.sag;
     final yerel = zaman.toLocal();
-    return Wrap(
-      spacing: TayfamSpacing.s8,
+    final tarih = metinler.soru_tarih(yerel, yerel);
+    final adStili = cevapta
+        ? yazi.titleSmall
+        : yazi.bodySmall?.copyWith(color: r.metin, fontWeight: FontWeight.w700);
+    final zamanStili = (cevapta ? yazi.labelSmall : yazi.bodySmall)?.copyWith(
+      color: r.metinIkincil,
+    );
+    final ad = yazarId == null
+        ? Text(metinler.kullanici_silinmis, style: adStili)
+        : KullaniciAdiMetni(kullaniciId: yazarId, style: adStili);
+    final Widget kimlik = cevapta
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ad,
+              Text(tarih, style: zamanStili),
+            ],
+          )
+        : Wrap(
+            spacing: TayfamSpacing.s4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              ad,
+              // Ayraç süstür; ekran okuyucu ad ve tarihi okur.
+              ExcludeSemantics(child: Text('·', style: zamanStili)),
+              Text(tarih, style: zamanStili),
+            ],
+          );
+    return Row(
       children: [
-        if (yazarId == null)
-          Text(metinler.kullanici_silinmis, style: stil)
-        else
-          KullaniciAdiMetni(kullaniciId: yazarId, style: stil),
-        Text(metinler.soru_tarih(yerel, yerel), style: stil),
+        KimlikAvatari(kullaniciId: yazarId, cap: TayfamSizes.mesajAvatari),
+        const SizedBox(width: TayfamSpacing.s12),
+        Expanded(
+          child: sag == null
+              ? kimlik
+              : Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: TayfamSpacing.s8,
+                  runSpacing: TayfamSpacing.s4,
+                  children: [kimlik, sag],
+                ),
+        ),
       ],
     );
   }
