@@ -6,6 +6,6 @@
 • Birebir mesajlar uçtan uca şifreli.
 • Kullanım koşulları ve aydınlatma metni güncellendi.
 • Profil, arkadaşlar ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
-• Sohbet yenilendi: okunmamış sayılı geçiş, gruplanan mesajlar, gün ayırıcılar, yavaş modda geri sayım.
-• Etkinlik detayı ve etkinlik açma yenilendi.
-• Soru-cevap yenilendi: etiketle süzme ve "En faydalı" cevap.
+• Sohbet yenilendi: okunmamış sayılı Kanallar/Birebir geçişi, mesaj gruplama, gün ayırıcılar.
+• Etkinlik detayı ve etkinlik açma (önizlemeli) yenilendi.
+• Koşul onayı, güncelleme ve hesap kısıtlama ekranları yenilendi.

@@ -3443,10 +3443,6 @@
   "@hesap_onay_kutusu": {
     "description": "Yeniden onay ekranındaki tek onay kutusunun etiketi."
   },
-  "hesap_onay_kutusu_hata": "Devam etmek için güncel metinleri onayla.",
-  "@hesap_onay_kutusu_hata": {
-    "description": "Yeniden onay ekranında kutu işaretlenmeden gönderilmek istenince görünen hata."
-  },
   "hesap_onay_gonder": "Onayla ve devam et",
   "@hesap_onay_gonder": {
     "description": "Yeniden onay ekranındaki birincil düğme."
@@ -4326,6 +4322,14 @@
   "hata_channel_name_taken": "Bu adda bir kanal zaten var. Başka bir ad seç.",
   "@hata_channel_name_taken": {
     "description": "Hata kodu `channel-name-taken`. Tayfada arşivlenmemiş aynı adlı bir kanal varken kanal açıldığında ya da arşivden çıkarıldığında görünen hata."
+  },
+  "hata_event_channel_exists": "Bu etkinliğin zaten bir sohbet kanalı var.",
+  "@hata_event_channel_exists": {
+    "description": "Hata kodu `event-channel-exists`. Açık kanalı olan bir etkinliğe ikinci kanal açılmak istendiğinde görünen hata."
+  },
+  "hata_not_tayfa_member": "Seçtiğin kişilerden biri artık bu tayfada değil. Listeyi güncelleyip tekrar dene.",
+  "@hata_not_tayfa_member": {
+    "description": "Hata kodu `not-tayfa-member`. Seçili kişi kanalına tayfanın etkin üyesi olmayan biri eklenmek istendiğinde görünen hata; hiçbiri eklenmez."
   },
   "hata_slow_mode": "Bu kanalda yavaş mod açık. Biraz bekleyip tekrar gönder.",
   "@hata_slow_mode": {
