@@ -147,12 +147,7 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           _BekleyenTayfaSatiri(
             ad: _ad(metinler, tayfa),
             onGeriCek: () => unawaited(
-              geriCekmeyiSor(
-                context,
-                ref,
-                tayfa.tayfaId,
-                _ad(metinler, tayfa),
-              ),
+              geriCekmeyiSor(context, ref, tayfa.tayfaId, _ad(metinler, tayfa)),
             ),
           ),
         const SizedBox(height: TayfamSpacing.s8),

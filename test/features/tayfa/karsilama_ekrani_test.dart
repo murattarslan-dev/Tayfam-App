@@ -231,16 +231,14 @@ void main() {
     expect(find.byType(BekleyenIstekKarti), findsOneWidget);
 
     // Önce vazgeç: istek gitmez.
-    await tester.tap(find.text(arbMetni('tayfa_geri_cek_dugmesi')));
-    await tester.pumpAndSettle();
+    await _geriCekDugmesineDokun(tester);
     expect(find.text(arbMetni('tayfa_geri_cek_baslik')), findsOneWidget);
     await tester.tap(find.text(arbMetni('tayfa_vazgec')));
     await tester.pumpAndSettle();
     expect(tasima.giden('DELETE', '/v1/tayfas/{tayfa_id}/membership'), isEmpty);
     expect(find.byType(BekleyenIstekKarti), findsOneWidget);
 
-    await tester.tap(find.text(arbMetni('tayfa_geri_cek_dugmesi')));
-    await tester.pumpAndSettle();
+    await _geriCekDugmesineDokun(tester);
     await tester.tap(find.text(arbMetni('tayfa_geri_cek_onayla')));
     await tester.pumpAndSettle();
 
@@ -308,4 +306,12 @@ void main() {
       );
     }
   }
+}
+
+Future<void> _geriCekDugmesineDokun(WidgetTester tester) async {
+  final dugme = find.text(arbMetni('tayfa_geri_cek_dugmesi'));
+  await tester.ensureVisible(dugme);
+  await tester.pumpAndSettle();
+  await tester.tap(dugme);
+  await tester.pumpAndSettle();
 }
