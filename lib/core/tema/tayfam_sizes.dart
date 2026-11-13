@@ -278,4 +278,29 @@ abstract final class TayfamSizes {
 
   /// Tür kutusundaki seçili işaretinin dairesi (24 px).
   static const double seciliIsareti = 24;
+
+  // --- 2026-11-13 hoş geldin tanıtımı (Hosgeldin-*) ----------------------
+
+  /// Tanıtımın üstündeki logo (32 px).
+  static const double tanitimLogosu = 32;
+
+  /// Tanıtım görseli alanının en küçük yüksekliği (tasarım: 330 px alan,
+  /// içinde 24 px üst boşluk).
+  static const double tanitimGorselAlani = 306;
+
+  /// Tanıtım görselinin en fazla genişliği (tasarım: 390 px ekranda
+  /// 302 px).
+  static const double tanitimGorselGenisligi = 320;
+
+  /// Sayfanın zemin bandının saydamlığı (tasarım: vurgu rengi %14).
+  static const double tanitimBantSaydamligi = .14;
+
+  /// Örnek tayfa kartındaki modül karelerinin yüksekliği (44 px).
+  static const double tanitimModulKaresi = 44;
+
+  /// Örnek etkinlik kartındaki cevap düğmelerinin yüksekliği (34 px).
+  static const double tanitimCevapDugmesi = 34;
+
+  /// Örnek cevabın başındaki alıntı çizgisi (3 px).
+  static const double alintiCizgisi = 3;
 }

@@ -4541,7 +4541,7 @@
   },
   "hosgeldin_ornek_tayfa_adi": "Pazar Sürücüleri",
   "@hosgeldin_ornek_tayfa_adi": {
-    "description": "Hoş geldin tanıtımının 1. sayfasındaki görselde (mor tayfa üst bölümü) uydurma örnek tayfa adı. Süstür; ekran okuyucu okumaz."
+    "description": "Hoş geldin tanıtımının 1. sayfasındaki görselde (örnek tayfa kartı) uydurma örnek tayfa adı. Süstür; ekran okuyucu okumaz."
   },
   "hosgeldin_ornek_etkinlik_basligi": "Kaz Dağları yürüyüşü",
   "@hosgeldin_ornek_etkinlik_basligi": {
@@ -4604,6 +4604,22 @@
   "hosgeldin_ornek_mesaj_giden": "Süper, ben de ocağı alırım.",
   "@hosgeldin_ornek_mesaj_giden": {
     "description": "Hoş geldin tanıtımının 4. sayfasındaki örnek birebir sohbette giden mesaj (uydurma). Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_tayfa_moduller": "Etkinlik · Duyuru · Soru · Sohbet",
+  "@hosgeldin_ornek_tayfa_moduller": {
+    "description": "Hoş geldin tanıtımının 1. sayfasındaki örnek tayfa kartında, tayfa adının altında tayfanın modülleri. Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_yol_davet": "Davet linkine dokun",
+  "@hosgeldin_ornek_yol_davet": {
+    "description": "Hoş geldin tanıtımının 5. sayfasındaki görselde tayfaya katılmanın ilk yolu (davet linki). Süstür; ekran okuyucu okumaz, anlam sayfanın metnindedir."
+  },
+  "hosgeldin_ornek_yol_kod": "Tayfa kodunu gir",
+  "@hosgeldin_ornek_yol_kod": {
+    "description": "Hoş geldin tanıtımının 5. sayfasındaki görselde tayfaya katılmanın ikinci yolu (tayfa kodu). Süstür; ekran okuyucu okumaz."
+  },
+  "hosgeldin_ornek_yol_kur": "Kendi tayfanı kur",
+  "@hosgeldin_ornek_yol_kur": {
+    "description": "Hoş geldin tanıtımının 5. sayfasındaki görselde üçüncü yol: kendi tayfanı kurmak. Süstür; ekran okuyucu okumaz."
   },
   "yonetim_menu_ipucu": "Tayfa menüsü",
   "@yonetim_menu_ipucu": {
