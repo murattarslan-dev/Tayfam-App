@@ -7137,9 +7137,17 @@
   "@cihaz_bu_cihazi_bagla_aciklama": {
     "description": "Profildeki 'Bu cihazı bağla' girişinin açıklaması."
   },
-  "cihaz_qr_talimat": "Diğer telefonunda Profil → Cihaz bağla'yı aç ve bu kodu okut.",
-  "@cihaz_qr_talimat": {
-    "description": "QR gösterme ekranındaki talimat."
+  "cihaz_qr_adim_1": "Diğer telefonunda Tayfam'ı aç.",
+  "@cihaz_qr_adim_1": {
+    "description": "'Bu cihazı bağla' ekranındaki üç adımlı talimatın 1. adımı."
+  },
+  "cihaz_qr_adim_2": "Profil → Cihaz bağla'ya dokun.",
+  "@cihaz_qr_adim_2": {
+    "description": "'Bu cihazı bağla' ekranındaki üç adımlı talimatın 2. adımı."
+  },
+  "cihaz_qr_adim_3": "Bu kodu kameraya göster.",
+  "@cihaz_qr_adim_3": {
+    "description": "'Bu cihazı bağla' ekranındaki üç adımlı talimatın 3. adımı."
   },
   "cihaz_qr_etiketi": "Cihaz eşleştirme QR kodu",
   "@cihaz_qr_etiketi": {
@@ -7157,9 +7165,13 @@
   "@cihaz_qr_yenile": {
     "description": "Yeni eşleştirme isteği açıp QR'ı yenileyen düğme."
   },
-  "cihaz_qr_tamamlandi": "Bu cihaz bağlandı. Şifreli mesaj geçmişin artık burada da okunabilir.",
+  "cihaz_qr_tamamlandi": "Bu cihaz bağlandı",
   "@cihaz_qr_tamamlandi": {
-    "description": "Yeni cihazda eşleştirme tamamlanınca gösterilen metin."
+    "description": "Yeni cihazda eşleştirme tamamlanınca gösterilen sonuç ekranının başlığı."
+  },
+  "cihaz_qr_tamamlandi_aciklama": "Şifreli mesaj geçmişin artık burada da okunabilir.",
+  "@cihaz_qr_tamamlandi_aciklama": {
+    "description": "Yeni cihazda eşleştirme tamamlanınca başlığın altındaki açıklama."
   },
   "cihaz_tamam": "Tamam",
   "@cihaz_tamam": {
@@ -7169,13 +7181,25 @@
   "@cihaz_tara_talimat": {
     "description": "QR okutma ekranındaki talimat."
   },
+  "cihaz_tara_baslik": "Kodu çerçeveye getir",
+  "@cihaz_tara_baslik": {
+    "description": "QR okutma ekranında çerçevenin altındaki başlık."
+  },
+  "cihaz_kamera_gizlilik": "Kamera yalnızca bu ekranda kullanılır; görüntü kaydedilmez ve hiçbir yere gönderilmez.",
+  "@cihaz_kamera_gizlilik": {
+    "description": "QR okutma ekranının altındaki kamera gizlilik notu."
+  },
   "cihaz_tara_isleniyor": "Cihaz bağlanıyor",
   "@cihaz_tara_isleniyor": {
     "description": "QR işlenirken yükleniyor göstergesinin ekran okuyucu metni."
   },
-  "cihaz_tara_basarili": "Mesaj geçmişi yeni telefona gönderildi. Birkaç saniye içinde orada hazır olur.",
+  "cihaz_tara_basarili": "Mesaj geçmişi yeni telefona gönderildi",
   "@cihaz_tara_basarili": {
-    "description": "Eşleştirme cevabı gönderilince gösterilen metin."
+    "description": "Eşleştirme cevabı gönderilince gösterilen sonuç ekranının başlığı."
+  },
+  "cihaz_tara_basarili_aciklama": "Birkaç saniye içinde orada hazır olur.",
+  "@cihaz_tara_basarili_aciklama": {
+    "description": "Eşleştirme cevabı gönderilince başlığın altındaki açıklama."
   },
   "cihaz_tara_tekrar": "Tekrar tara",
   "@cihaz_tara_tekrar": {
@@ -7196,6 +7220,14 @@
   "cihaz_kamera_hatasi": "Kamera açılamadı. Tekrar dene.",
   "@cihaz_kamera_hatasi": {
     "description": "Kamera izin dışı bir nedenle açılamayınca gösterilen hata."
+  },
+  "cihaz_hata_baslik": "Cihaz bağlanamadı",
+  "@cihaz_hata_baslik": {
+    "description": "Eşleştirme hatası ya da kamera açılamadığında gösterilen sonuç ekranının başlığı."
+  },
+  "cihaz_kapat": "Kapat",
+  "@cihaz_kapat": {
+    "description": "Eşleştirme hata ekranını kapatan ikincil düğme."
   },
   "cihaz_hata_qr_gecersiz": "Bu bir Tayfam cihaz eşleştirme kodu değil.",
   "@cihaz_hata_qr_gecersiz": {
@@ -7244,6 +7276,10 @@
   "cihaz_vazgec": "Vazgeç",
   "@cihaz_vazgec": {
     "description": "Tek cihaz uyarılı çıkış onayındaki vazgeç düğmesi."
+  },
+  "cihaz_cikis_once_bagla": "Önce cihaz bağla",
+  "@cihaz_cikis_once_bagla": {
+    "description": "Tek cihaz çıkış uyarısında 'Cihaz bağla' ekranına götüren düğme."
   },
   "cihaz_tek_cihaz_bilgi_baslik": "Mesaj geçmişin bu telefonda",
   "@cihaz_tek_cihaz_bilgi_baslik": {
