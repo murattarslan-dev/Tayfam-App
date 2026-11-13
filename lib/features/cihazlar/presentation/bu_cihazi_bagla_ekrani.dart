@@ -10,81 +10,246 @@ import 'package:tayfam/features/cihazlar/presentation/cihaz_ortak.dart';
 import 'package:tayfam/features/cihazlar/presentation/qr_kodu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// "Bu cihazı bağla" (yeni cihaz): eşleştirme QR'ı, 10 dakikalık geri
-/// sayım ve süre dolunca "Yeni kod al". Diğer telefon kodu okutunca
-/// eşleştirme kendiliğinden tamamlanır.
-class BuCihaziBaglaEkrani extends ConsumerWidget {
+/// Süresi dolan QR'ın saydamlığı (tasarım: "QR soluklaşır").
+const double _solukQr = .15;
+
+/// "Bu cihazı bağla" (yeni cihaz; tasarım: Cihaz-QR): beyaz kartta
+/// eşleştirme QR'ı, altında süre hapı ve üç adımlı talimat. Süre dolunca QR
+/// soluklaşır ve "Yeni kod al" çıkar. Diğer telefon kodu okutunca
+/// eşleştirme kendiliğinden tamamlanır ve sonuç ekranı gösterilir.
+class BuCihaziBaglaEkrani extends ConsumerStatefulWidget {
   const BuCihaziBaglaEkrani({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final metinler = AppLocalizations.of(context);
-    final durum = ref.watch(qrGosterimProvider);
-    void yenile() => unawaited(ref.read(qrGosterimProvider.notifier).yenile());
+  ConsumerState<BuCihaziBaglaEkrani> createState() =>
+      _BuCihaziBaglaEkraniState();
+}
 
-    return CihazEkrani(
-      baslik: metinler.cihaz_bu_cihazi_bagla_baslik,
-      children: [
-        CihazAciklamasi(metinler.cihaz_qr_talimat),
-        const SizedBox(height: TayfamSpacing.s24),
-        ...switch (durum) {
-          QrHazirlaniyor() => [
-            Center(
-              child: TayfamYukleniyor(etiket: metinler.cihaz_qr_hazirlaniyor),
-            ),
+class _BuCihaziBaglaEkraniState extends ConsumerState<BuCihaziBaglaEkrani> {
+  /// Son gösterilen QR; süre dolunca soluk çizilir. Yalnızca bellekte,
+  /// ekran açıkken tutulur.
+  String? _sonQr;
+
+  @override
+  Widget build(BuildContext context) {
+    final durum = ref.watch(qrGosterimProvider);
+    switch (durum) {
+      case QrGosteriliyor(:final metin):
+        _sonQr = metin;
+      case QrHazirlaniyor():
+        _sonQr = null;
+      case QrSuresiDoldu() || QrTamamlandi() || QrGosterimHatasi():
+        break;
+    }
+    return BuCihaziBaglaGorunumu(
+      durum: durum,
+      sonQr: _sonQr,
+      yenile: () => unawaited(ref.read(qrGosterimProvider.notifier).yenile()),
+    );
+  }
+}
+
+/// "Bu cihazı bağla" ekranının [durum]'a göre görünümü.
+class BuCihaziBaglaGorunumu extends StatelessWidget {
+  const BuCihaziBaglaGorunumu({
+    super.key,
+    required this.durum,
+    required this.yenile,
+    this.sonQr,
+  });
+
+  final QrGosterimDurumu durum;
+
+  /// Süresi dolan QR'ın metni (soluk çizilir); yoksa kart boş kalır.
+  final String? sonQr;
+
+  /// Yeni eşleştirme isteği açar.
+  final VoidCallback yenile;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    void kapat() => unawaited(Navigator.of(context).maybePop());
+    switch (durum) {
+      case QrTamamlandi():
+        return CihazSonucEkrani(
+          ton: CihazSonucTonu.basarili,
+          baslik: m.cihaz_qr_tamamlandi,
+          aciklama: m.cihaz_qr_tamamlandi_aciklama,
+          eylemler: [BirincilEylem(etiket: m.cihaz_tamam, onPressed: kapat)],
+        );
+      case QrGosterimHatasi(:final hata):
+        return CihazSonucEkrani(
+          ton: CihazSonucTonu.hata,
+          baslik: m.cihaz_hata_baslik,
+          aciklama: cihazHataMetni(m, hata),
+          eylemler: [
+            BirincilEylem(etiket: m.cihaz_qr_yenile, onPressed: yenile),
+            CihazIkincilEylem(etiket: m.cihaz_kapat, onPressed: kapat),
           ],
-          QrGosteriliyor(:final metin, :final kalan) => [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: TayfamSizes.okumaGenisligi / 2,
+        );
+      case QrHazirlaniyor() || QrGosteriliyor() || QrSuresiDoldu():
+        break;
+    }
+    final suresiDoldu = durum is QrSuresiDoldu;
+    return CihazEkrani(
+      baslik: m.cihaz_bu_cihazi_bagla_baslik,
+      children: [
+        Text(
+          m.cihaz_bu_cihazi_bagla_aciklama,
+          style: context.yazi.bodyMedium?.copyWith(
+            color: context.renkler.metinGovde,
+          ),
+        ),
+        const SizedBox(height: TayfamSpacing.s24),
+        Center(
+          child: _QrKarti(durum: durum, sonQr: sonQr),
+        ),
+        if (suresiDoldu) ...[
+          const SizedBox(height: TayfamSpacing.s16),
+          BirincilEylem(
+            etiket: m.cihaz_qr_yenile,
+            ikon: Icons.refresh,
+            onPressed: yenile,
+          ),
+        ],
+        const SizedBox(height: TayfamSpacing.s24),
+        _Adimlar(
+          adimlar: [m.cihaz_qr_adim_1, m.cihaz_qr_adim_2, m.cihaz_qr_adim_3],
+        ),
+      ],
+    );
+  }
+}
+
+/// QR kartı: tema ne olursa olsun beyaz zeminde (QR'ın okunabilirliği
+/// için açık temanın token'larıyla), altında süre hapı.
+class _QrKarti extends StatelessWidget {
+  const _QrKarti({required this.durum, required this.sonQr});
+
+  final QrGosterimDurumu durum;
+  final String? sonQr;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final golge = context.renkler.oneCikanGolge;
+    return Theme(
+      data: TayfamTheme.acik(),
+      child: Builder(
+        builder: (context) {
+          final r = context.renkler;
+          final sonQr = this.sonQr;
+          final (Widget icerik, Widget hap) = switch (durum) {
+            QrGosteriliyor(:final metin, :final kalan) => (
+              QrKodu(metin: metin, etiket: m.cihaz_qr_etiketi),
+              Etiket(
+                metin: m.cihaz_qr_kalan(_sure(kalan)),
+                ikon: Icons.schedule,
+              ),
+            ),
+            QrSuresiDoldu() => (
+              ExcludeSemantics(
+                child: Opacity(
+                  opacity: _solukQr,
+                  child: sonQr == null
+                      ? const SizedBox.expand()
+                      : QrKodu(metin: sonQr, etiket: m.cihaz_qr_etiketi),
                 ),
-                child: ClipRRect(
-                  borderRadius: TayfamRadii.onizlemeKoseleri,
-                  child: QrKodu(
-                    metin: metin,
-                    etiket: metinler.cihaz_qr_etiketi,
-                  ),
+              ),
+              Semantics(
+                liveRegion: true,
+                child: Etiket(
+                  metin: m.cihaz_qr_suresi_doldu,
+                  ikon: Icons.timer_off_outlined,
+                  ton: EtiketTonu.nar,
                 ),
               ),
             ),
-            const SizedBox(height: TayfamSpacing.s16),
-            Text(
-              metinler.cihaz_qr_kalan(_sure(kalan)),
-              textAlign: TextAlign.center,
-              style: context.yazi.titleMedium,
+            _ => (
+              Center(
+                child: TayfamYukleniyor(
+                  boyut: TayfamSizes.ikonKutusu,
+                  zemin: r.kart,
+                  etiket: m.cihaz_qr_hazirlaniyor,
+                ),
+              ),
+              ExcludeSemantics(child: Etiket(metin: m.cihaz_qr_hazirlaniyor)),
             ),
-          ],
-          QrSuresiDoldu() => [
-            Text(
-              metinler.cihaz_qr_suresi_doldu,
-              style: context.yazi.titleMedium,
+          };
+          return Container(
+            padding: const EdgeInsets.all(TayfamSpacing.s24),
+            decoration: BoxDecoration(
+              color: r.kart,
+              borderRadius: TayfamRadii.qrKartiKoseleri,
+              border: Border.all(color: r.cizgi),
+              boxShadow: golge,
             ),
-            const SizedBox(height: TayfamSpacing.s16),
-            BirincilEylem(
-              etiket: metinler.cihaz_qr_yenile,
-              ikon: Icons.refresh,
-              onPressed: yenile,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox.square(dimension: TayfamSizes.qrKodu, child: icerik),
+                const SizedBox(height: TayfamSpacing.s12),
+                hap,
+              ],
             ),
-          ],
-          QrTamamlandi() => [
-            Text(metinler.cihaz_qr_tamamlandi, style: context.yazi.titleMedium),
-            const SizedBox(height: TayfamSpacing.s16),
-            BirincilEylem(
-              etiket: metinler.cihaz_tamam,
-              onPressed: () => Navigator.of(context).maybePop(),
-            ),
-          ],
-          QrGosterimHatasi(:final hata) => [
-            HataSatiri(metin: cihazHataMetni(metinler, hata)),
-            const SizedBox(height: TayfamSpacing.s16),
-            BirincilEylem(
-              etiket: metinler.cihaz_qr_yenile,
-              ikon: Icons.refresh,
-              onPressed: yenile,
-            ),
-          ],
+          );
         },
+      ),
+    );
+  }
+}
+
+/// Numaralı talimat adımları (tasarım: mor daire içinde numara).
+class _Adimlar extends StatelessWidget {
+  const _Adimlar({required this.adimlar});
+
+  final List<String> adimlar;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (i, adim) in adimlar.indexed) ...[
+          if (i > 0) const SizedBox(height: TayfamSpacing.s12),
+          MergeSemantics(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Büyük yazıda daire hapa dönüşür; numara kırpılmaz.
+                Container(
+                  constraints: const BoxConstraints(
+                    minWidth: TayfamSizes.adimDairesi,
+                    minHeight: TayfamSizes.adimDairesi,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: TayfamSpacing.s4,
+                  ),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: r.marka,
+                    borderRadius: TayfamRadii.hapKoseleri,
+                  ),
+                  child: Text(
+                    (i + 1).toString(),
+                    style: context.yazi.labelMedium?.copyWith(
+                      color: r.markaUstu,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: TayfamSpacing.s12),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: TayfamSpacing.s4),
+                    child: Text(adim, style: context.yazi.bodyMedium),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
