@@ -8,3 +8,4 @@
 • Profil, arkadaşlar ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
 • Sohbet sekmesi yenilendi: Kanallar ve Birebir arasında okunmamış sayılı geçiş, ardışık mesajların gruplanması, gün ayırıcılar ve yavaş modda geri sayım.
 • Etkinlik detayı ve etkinlik açma (önizlemeli) yenilendi.
+• İlk açılıştaki hoş geldin tanıtımı yenilendi.
