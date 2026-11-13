@@ -71,22 +71,6 @@
   "@bildirim_kisi_bilinmiyor": {
     "description": "Bildirim metninde adı geçen kişinin adı henüz bilinmiyorken ya da okunamadığında ad yerine geçen sözcük (ör. \"Biri sana arkadaşlık isteği gönderdi\")."
   },
-  "bildirim_zaman": "{tarih}, {saat}",
-  "@bildirim_zaman": {
-    "description": "Bildirim kartında bildirimin geldiği gün ve saat, cihazın saatine göre.",
-    "placeholders": {
-      "tarih": {
-        "type": "DateTime",
-        "format": "yMMMMd",
-        "example": "2026-11-11"
-      },
-      "saat": {
-        "type": "DateTime",
-        "format": "Hm",
-        "example": "2026-11-11T18:30"
-      }
-    }
-  },
   "bildirim_etkinlik_eklendi": "Yeni bir etkinlik eklendi",
   "@bildirim_etkinlik_eklendi": {
     "description": "Bildirim metni: tayfada yeni bir etkinlik oluşturuldu (`event_created`). Tayfanın adı altta ayrı satırdadır; etkinliğin adı gösterilmez."
@@ -212,6 +196,86 @@
   "bildirim_genel": "Yeni bir bildirimin var",
   "@bildirim_genel": {
     "description": "Bildirim metni: uygulamanın henüz tanımadığı bir bildirim türü."
+  },
+  "bildirim_bos_aciklama": "Tayfanda yeni bir etkinlik, duyuru ya da sana bir mesaj gelince burada görünür.",
+  "@bildirim_bos_aciklama": {
+    "description": "Bildirimler sekmesinde hiç bildirim yokken başlığın altındaki açıklama."
+  },
+  "bildirim_grup_bugun": "Bugün",
+  "@bildirim_grup_bugun": {
+    "description": "Bildirimler sekmesinde bugün gelen bildirimlerin bölüm başlığı."
+  },
+  "bildirim_grup_dun": "Dün",
+  "@bildirim_grup_dun": {
+    "description": "Bildirimler sekmesinde dün gelen bildirimlerin bölüm başlığı."
+  },
+  "bildirim_grup_bu_hafta": "Bu hafta",
+  "@bildirim_grup_bu_hafta": {
+    "description": "Bildirimler sekmesinde son 7 günde (bugün ve dün hariç) gelen bildirimlerin bölüm başlığı."
+  },
+  "bildirim_grup_daha_eski": "Daha eski",
+  "@bildirim_grup_daha_eski": {
+    "description": "Bildirimler sekmesinde 7 günden eski bildirimlerin bölüm başlığı."
+  },
+  "bildirim_saklama": "Bildirimler 90 gün saklanır.",
+  "@bildirim_saklama": {
+    "description": "Bildirimler sekmesinde listenin altındaki not (sözleşme: bildirimler 90 gün tutulur)."
+  },
+  "bildirim_incele": "İncele",
+  "@bildirim_incele": {
+    "description": "Katılım isteği bildiriminin satırındaki, tayfanın katılım istekleri ekranını açan düğme."
+  },
+  "bildirim_sonuc_arkadas": "Artık arkadaşsınız",
+  "@bildirim_sonuc_arkadas": {
+    "description": "Bildirim satırında arkadaşlık isteği kabul edilince düğmelerin yerinde görünen sonuç."
+  },
+  "bildirim_sonuc_katildin": "Katıldın",
+  "@bildirim_sonuc_katildin": {
+    "description": "Bildirim satırında tayfa daveti kabul edilip üyelik hemen etkin olunca düğmelerin yerinde görünen sonuç."
+  },
+  "bildirim_sonuc_istek_gonderildi": "İsteğin gönderildi",
+  "@bildirim_sonuc_istek_gonderildi": {
+    "description": "Bildirim satırında onaylı katılımlı tayfanın daveti kabul edilince (yönetimin onayı beklenir) düğmelerin yerinde görünen sonuç."
+  },
+  "bildirim_sonuc_reddedildi": "Reddedildi",
+  "@bildirim_sonuc_reddedildi": {
+    "description": "Bildirim satırında arkadaşlık isteği ya da tayfa daveti reddedilince düğmelerin yerinde görünen sonuç; karşı tarafa bildirilmez."
+  },
+  "bildirim_yoklamayi_ac": "Yoklamayı aç",
+  "@bildirim_yoklamayi_ac": {
+    "description": "Güvenlik uyarısı kartında (yürüyüşçü zamanında dönmedi) etkinliği açan bağlantı."
+  },
+  "bildirim_uyari_ayrinti": "{etkinlik} · {tayfa} · {zaman}",
+  "@bildirim_uyari_ayrinti": {
+    "description": "Güvenlik uyarısı kartında kişinin adının altındaki satır: etkinliğin adı, tayfa ve bildirimin zamanı.",
+    "placeholders": {
+      "etkinlik": {
+        "type": "String",
+        "example": "Belgrad Ormanı yürüyüşü"
+      },
+      "tayfa": {
+        "type": "String",
+        "example": "Doğa Tayfası"
+      },
+      "zaman": {
+        "type": "String",
+        "example": "16:45"
+      }
+    }
+  },
+  "bildirim_uyari_ayrinti_kisa": "{tayfa} · {zaman}",
+  "@bildirim_uyari_ayrinti_kisa": {
+    "description": "Güvenlik uyarısı kartında, etkinliğin adı okunamadığında kişinin adının altındaki satır: tayfa ve bildirimin zamanı.",
+    "placeholders": {
+      "tayfa": {
+        "type": "String",
+        "example": "Doğa Tayfası"
+      },
+      "zaman": {
+        "type": "String",
+        "example": "16:45"
+      }
+    }
   },
   "gezinme_yer_tutucu_aciklama": "Bu bölüm hazırlanıyor.",
   "@gezinme_yer_tutucu_aciklama": {
@@ -7267,6 +7331,69 @@
   "@bildirim_ayar_yukleniyor": {
     "description": "Profil → Bildirimler ekranında izin okunurken ilerleme göstergesinin ekran okuyucu etiketi."
   },
+  "bildirim_ayar_baslik": "Bildirim ayarları",
+  "@bildirim_ayar_baslik": {
+    "description": "Profil → Bildirim ayarları ekranının başlığı."
+  },
+  "bildirim_ayar_kanallar": "Mesajlar, güvenlik uyarıları ve tayfa bildirimleri",
+  "@bildirim_ayar_kanallar": {
+    "description": "Bildirim ayarlarında, izin açıkken durumun altındaki kısa açıklama."
+  },
+  "bildirim_ayar_sessiz_tayfalar": "Sessize aldığın tayfalar",
+  "@bildirim_ayar_sessiz_tayfalar": {
+    "description": "Bildirim ayarlarında sessize alınan tayfaların bölüm başlığı."
+  },
+  "bildirim_ayar_sessiz_tayfa_yok": "Sessize aldığın tayfa yok.",
+  "@bildirim_ayar_sessiz_tayfa_yok": {
+    "description": "Bildirim ayarlarında sessize alınmış tayfa yokken görünen metin."
+  },
+  "bildirim_ayar_sessiz_yukleniyor": "Sessize aldıkların yükleniyor",
+  "@bildirim_ayar_sessiz_yukleniyor": {
+    "description": "Bildirim ayarlarında sessize alınanlar okunurken ilerleme göstergesinin ekran okuyucu etiketi."
+  },
+  "bildirim_ayar_sessiz_bitis": "{tarih}, {saat} saatine kadar",
+  "@bildirim_ayar_sessiz_bitis": {
+    "description": "Bildirim ayarlarında sessizdeki tayfanın sessizliğinin bittiği gün ve saat (cihazın saatine göre).",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMMd",
+        "example": "2026-11-20"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-20T18:00"
+      }
+    }
+  },
+  "bildirim_ayar_sesi_acildi": "{tayfa} için bildirimler yeniden açık.",
+  "@bildirim_ayar_sesi_acildi": {
+    "description": "Bildirim ayarlarında bir tayfanın sesi açılınca kısa süre görünen bildirim.",
+    "placeholders": {
+      "tayfa": {
+        "type": "String",
+        "example": "Doğa Tayfası"
+      }
+    }
+  },
+  "bildirim_ayar_sessiz_not": "Sessizdeki tayfaların bildirimleri listede görünmeye devam eder; yalnızca telefonuna bildirim gelmez. Tayfayı tayfa menüsünden (⋯) sessize alırsın.",
+  "@bildirim_ayar_sessiz_not": {
+    "description": "Bildirim ayarlarında sessize alınan tayfaların altındaki açıklama."
+  },
+  "bildirim_ayar_birebir": "Birebir konuşmalar",
+  "@bildirim_ayar_birebir": {
+    "description": "Bildirim ayarlarında birebir konuşmaların bölüm başlığı."
+  },
+  "bildirim_ayar_birebir_sayi": "{sayi, plural, =0{Sessize aldığın birebir konuşma yok.} other{{sayi} konuşma sessizde. Konuşmanın ⋯ menüsünden sesini açabilirsin.}}",
+  "@bildirim_ayar_birebir_sayi": {
+    "description": "Bildirim ayarlarında sessizdeki birebir konuşmaların sayısı ve sesin nereden açılacağı; konuşmalar listelenmez.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
   "cihaz_bagla_baslik": "Cihaz bağla",
   "@cihaz_bagla_baslik": {
     "description": "Eşleştirilmiş cihazda QR okutarak başka bir cihaz bağlama girişi ve ekran başlığı."
@@ -7283,9 +7410,17 @@
   "@cihaz_bu_cihazi_bagla_aciklama": {
     "description": "Profildeki 'Bu cihazı bağla' girişinin açıklaması."
   },
-  "cihaz_qr_talimat": "Diğer telefonunda Profil → Cihaz bağla'yı aç ve bu kodu okut.",
-  "@cihaz_qr_talimat": {
-    "description": "QR gösterme ekranındaki talimat."
+  "cihaz_qr_adim_1": "Diğer telefonunda Tayfam'ı aç.",
+  "@cihaz_qr_adim_1": {
+    "description": "'Bu cihazı bağla' ekranındaki üç adımlı talimatın 1. adımı."
+  },
+  "cihaz_qr_adim_2": "Profil → Cihaz bağla'ya dokun.",
+  "@cihaz_qr_adim_2": {
+    "description": "'Bu cihazı bağla' ekranındaki üç adımlı talimatın 2. adımı."
+  },
+  "cihaz_qr_adim_3": "Bu kodu kameraya göster.",
+  "@cihaz_qr_adim_3": {
+    "description": "'Bu cihazı bağla' ekranındaki üç adımlı talimatın 3. adımı."
   },
   "cihaz_qr_etiketi": "Cihaz eşleştirme QR kodu",
   "@cihaz_qr_etiketi": {
@@ -7303,9 +7438,13 @@
   "@cihaz_qr_yenile": {
     "description": "Yeni eşleştirme isteği açıp QR'ı yenileyen düğme."
   },
-  "cihaz_qr_tamamlandi": "Bu cihaz bağlandı. Şifreli mesaj geçmişin artık burada da okunabilir.",
+  "cihaz_qr_tamamlandi": "Bu cihaz bağlandı",
   "@cihaz_qr_tamamlandi": {
-    "description": "Yeni cihazda eşleştirme tamamlanınca gösterilen metin."
+    "description": "Yeni cihazda eşleştirme tamamlanınca gösterilen sonuç ekranının başlığı."
+  },
+  "cihaz_qr_tamamlandi_aciklama": "Şifreli mesaj geçmişin artık burada da okunabilir.",
+  "@cihaz_qr_tamamlandi_aciklama": {
+    "description": "Yeni cihazda eşleştirme tamamlanınca başlığın altındaki açıklama."
   },
   "cihaz_tamam": "Tamam",
   "@cihaz_tamam": {
@@ -7315,13 +7454,25 @@
   "@cihaz_tara_talimat": {
     "description": "QR okutma ekranındaki talimat."
   },
+  "cihaz_tara_baslik": "Kodu çerçeveye getir",
+  "@cihaz_tara_baslik": {
+    "description": "QR okutma ekranında çerçevenin altındaki başlık."
+  },
+  "cihaz_kamera_gizlilik": "Kamera yalnızca bu ekranda kullanılır; görüntü kaydedilmez ve hiçbir yere gönderilmez.",
+  "@cihaz_kamera_gizlilik": {
+    "description": "QR okutma ekranının altındaki kamera gizlilik notu."
+  },
   "cihaz_tara_isleniyor": "Cihaz bağlanıyor",
   "@cihaz_tara_isleniyor": {
     "description": "QR işlenirken yükleniyor göstergesinin ekran okuyucu metni."
   },
-  "cihaz_tara_basarili": "Mesaj geçmişi yeni telefona gönderildi. Birkaç saniye içinde orada hazır olur.",
+  "cihaz_tara_basarili": "Mesaj geçmişi yeni telefona gönderildi",
   "@cihaz_tara_basarili": {
-    "description": "Eşleştirme cevabı gönderilince gösterilen metin."
+    "description": "Eşleştirme cevabı gönderilince gösterilen sonuç ekranının başlığı."
+  },
+  "cihaz_tara_basarili_aciklama": "Birkaç saniye içinde orada hazır olur.",
+  "@cihaz_tara_basarili_aciklama": {
+    "description": "Eşleştirme cevabı gönderilince başlığın altındaki açıklama."
   },
   "cihaz_tara_tekrar": "Tekrar tara",
   "@cihaz_tara_tekrar": {
@@ -7342,6 +7493,14 @@
   "cihaz_kamera_hatasi": "Kamera açılamadı. Tekrar dene.",
   "@cihaz_kamera_hatasi": {
     "description": "Kamera izin dışı bir nedenle açılamayınca gösterilen hata."
+  },
+  "cihaz_hata_baslik": "Cihaz bağlanamadı",
+  "@cihaz_hata_baslik": {
+    "description": "Eşleştirme hatası ya da kamera açılamadığında gösterilen sonuç ekranının başlığı."
+  },
+  "cihaz_kapat": "Kapat",
+  "@cihaz_kapat": {
+    "description": "Eşleştirme hata ekranını kapatan ikincil düğme."
   },
   "cihaz_hata_qr_gecersiz": "Bu bir Tayfam cihaz eşleştirme kodu değil.",
   "@cihaz_hata_qr_gecersiz": {
@@ -7390,6 +7549,10 @@
   "cihaz_vazgec": "Vazgeç",
   "@cihaz_vazgec": {
     "description": "Tek cihaz uyarılı çıkış onayındaki vazgeç düğmesi."
+  },
+  "cihaz_cikis_once_bagla": "Önce cihaz bağla",
+  "@cihaz_cikis_once_bagla": {
+    "description": "Tek cihaz çıkış uyarısında 'Cihaz bağla' ekranına götüren düğme."
   },
   "cihaz_tek_cihaz_bilgi_baslik": "Mesaj geçmişin bu telefonda",
   "@cihaz_tek_cihaz_bilgi_baslik": {

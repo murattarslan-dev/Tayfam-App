@@ -68,5 +68,72 @@ String? bildirimKisisi(Notification bildirim) {
   return _gecerli(kimlik);
 }
 
+/// Tayfa davetinin (`tayfa_invitation`) tayfası: bildirimin `tayfa_id`'si,
+/// yoksa hedefi `tayfa` olan `target_id`. Biçimsizse ya da başka türse
+/// `null`.
+String? davetTayfasi(Notification bildirim) {
+  if (bildirim.type != NotificationType.tayfaInvitation) return null;
+  final tayfa = _gecerli(bildirim.tayfaId);
+  if (tayfa != null) return tayfa;
+  return bildirim.targetType == NotificationTargetType.tayfa
+      ? _gecerli(bildirim.targetId)
+      : null;
+}
+
+/// Satırda doğrudan yapılabilen işlem (2026-11-13 tasarım: Bildirimler,
+/// karar 2).
+enum SatirIciIslem {
+  /// Arkadaşlık isteği: Reddet / Kabul et.
+  arkadaslik,
+
+  /// Tayfa daveti: Reddet / Katıl.
+  davet,
+
+  /// Katılım isteği: "İncele" katılım istekleri ekranını açar.
+  katilimIstegi,
+}
+
+/// [bildirim]'in satır içi işlemi; yoksa ya da gereken kimlik
+/// doğrulanamazsa `null`. Yetki kararı sunucudadır (kesin kural 5):
+/// işlem reddedilirse hata gösterilir.
+SatirIciIslem? satirIciIslem(Notification bildirim) {
+  final tayfa = _gecerli(bildirim.tayfaId);
+  return switch (bildirim.type) {
+    NotificationType.friendRequest when bildirimKisisi(bildirim) != null =>
+      SatirIciIslem.arkadaslik,
+    NotificationType.tayfaInvitation when davetTayfasi(bildirim) != null =>
+      SatirIciIslem.davet,
+    NotificationType.joinRequest when tayfa != null =>
+      SatirIciIslem.katilimIstegi,
+    _ => null,
+  };
+}
+
+/// Katılım isteği bildiriminde "İncele"nin açtığı katılım istekleri
+/// ekranı; tayfa doğrulanamazsa `null`.
+String? katilimIstekleriAdresi(Notification bildirim) {
+  if (bildirim.type != NotificationType.joinRequest) return null;
+  final tayfa = _gecerli(bildirim.tayfaId);
+  return tayfa == null ? null : Adresler.katilimIstekleri(tayfa);
+}
+
+/// Listenin üstünde sabit duran güvenlik uyarısı mı (karar 3): okunmamış
+/// `hike_overdue`. Okununca listedeki yerine döner.
+bool sabitUyariMi(Notification bildirim) =>
+    bildirim.type == NotificationType.hikeOverdue && !bildirim.read;
+
+/// Güvenlik uyarısının etkinliği (tayfa ve etkinlik kimliği); hedef
+/// etkinlik değilse ya da kimlik doğrulanamazsa `null`.
+({String tayfaId, String etkinlikId})? uyariEtkinligi(Notification bildirim) {
+  if (bildirim.type != NotificationType.hikeOverdue ||
+      bildirim.targetType != NotificationTargetType.event) {
+    return null;
+  }
+  final tayfa = _gecerli(bildirim.tayfaId);
+  final etkinlik = _gecerli(bildirim.targetId);
+  if (tayfa == null || etkinlik == null) return null;
+  return (tayfaId: tayfa, etkinlikId: etkinlik);
+}
+
 String? _gecerli(String? kimlik) =>
     kimlik != null && uuidBicimindeMi(kimlik) ? kimlik : null;
