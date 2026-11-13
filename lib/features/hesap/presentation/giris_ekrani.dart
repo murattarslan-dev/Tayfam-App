@@ -13,6 +13,7 @@ import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 import 'package:tayfam/features/hesap/presentation/apple_girisi.dart';
 import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
+import 'package:tayfam/features/hesap/presentation/hesap_engeli_ekrani.dart';
 import 'package:tayfam/features/hesap/presentation/hesap_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -35,10 +36,11 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   öncesi bilinmez; kart genel bir metin taşır. Davet token'ı bu ekrana
 ///   gelmez (kesin kural 3, 9).
 ///
-/// Hesap kalıcı kapandıysa (`age-blocked`) ya da kısıtlandıysa
-/// (`account-sanctioned`) düğme yerine sade bir bilgi gösterilir; yeniden
-/// deneme yolu yoktur. Kullanıcı Google penceresini kapatırsa hata
-/// gösterilmez.
+/// Hesap kısıtlandıysa (`account-sanctioned`) ya da kalıcı kapandıysa
+/// (`age-blocked`) ekranın yerine hesap durumu ekranı
+/// ([HesapEngeliEkrani]; tasarım Hesap-Kisitli) gösterilir; yeniden deneme
+/// yolu yoktur, tek eylem "Çıkış yap". Kullanıcı Google penceresini
+/// kapatırsa hata gösterilmez.
 class GirisEkrani extends ConsumerWidget {
   const GirisEkrani({super.key, this.davetBekliyor = false});
 
@@ -47,6 +49,8 @@ class GirisEkrani extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final engel = ref.watch(hesapEngeliProvider);
+    if (engel != null) return HesapEngeliEkrani(engel: engel);
     final r = context.renkler;
     final appleDugmesi = ref.watch(appleGirisDugmesiProvider);
     final apple = appleGirisiGorunur(
@@ -271,31 +275,10 @@ class _AltBolum extends ConsumerWidget {
     final metinler = AppLocalizations.of(context);
     final r = context.renkler;
     final yazi = context.yazi;
-    final engel = ref.watch(hesapEngeliProvider);
     final durum = ref.watch(girisProvider);
     final hata = durum.hata;
     final govde = yazi.bodyLarge?.copyWith(color: r.metinGovde);
     final appleDugmesi = this.appleDugmesi;
-
-    if (engel != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Semantics(
-            header: true,
-            child: Text(switch (engel) {
-              HesapEngeli.yasSiniri => metinler.hesap_engel_yas_baslik,
-              HesapEngeli.kisitlandi => metinler.hesap_engel_kisit_baslik,
-            }, style: TayfamTypography.girisBasligi(r.metin)),
-          ),
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(switch (engel) {
-            HesapEngeli.yasSiniri => metinler.hesap_engel_yas_aciklama,
-            HesapEngeli.kisitlandi => metinler.hesap_engel_kisit_aciklama,
-          }, style: govde),
-        ],
-      );
-    }
 
     final String aciklama;
     if (davet) {

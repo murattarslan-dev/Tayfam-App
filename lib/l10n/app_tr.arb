@@ -3417,10 +3417,6 @@
   "@hesap_onay_kutusu": {
     "description": "Yeniden onay ekranındaki tek onay kutusunun etiketi."
   },
-  "hesap_onay_kutusu_hata": "Devam etmek için güncel metinleri onayla.",
-  "@hesap_onay_kutusu_hata": {
-    "description": "Yeniden onay ekranında kutu işaretlenmeden gönderilmek istenince görünen hata."
-  },
   "hesap_onay_gonder": "Onayla ve devam et",
   "@hesap_onay_gonder": {
     "description": "Yeniden onay ekranındaki birincil düğme."
