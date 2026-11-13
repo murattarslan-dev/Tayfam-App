@@ -528,7 +528,7 @@ void main() {
         expect(find.text('Açık · 1'), findsOneWidget);
         // Etiket ikonlu Text.rich'tir (metinde ikonun yer tutucusu da var).
         expect(
-          find.textContaining(arbMetni('sikayet_oncelikli')),
+          find.textContaining(RegExp('${arbMetni('sikayet_oncelikli')}\$')),
           findsOneWidget,
         );
         expect(find.text(arbMetni('sikayet_oncelikli_not')), findsOneWidget);
