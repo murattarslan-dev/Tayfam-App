@@ -203,10 +203,7 @@ void main() {
       await _menuyuAc(tester);
       expect(find.text(arbMetni('birebir_sessiz_ac')), findsNothing);
       expect(find.text(arbMetni('birebir_profili_gor')), findsOneWidget);
-      expect(
-        find.text(arbMetni('birebir_sessiz_al_aciklama')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('birebir_sessiz_al_aciklama')), findsOneWidget);
       await tester.tap(find.text(arbMetni('birebir_sessiz_al')));
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('birebir_sessiz_sure_8_saat')), findsOneWidget);

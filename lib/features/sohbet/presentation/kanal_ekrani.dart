@@ -365,9 +365,7 @@ class _ArsivBilgisi extends StatelessWidget {
               Expanded(
                 child: Text(
                   metin,
-                  style: context.yazi.bodySmall?.copyWith(
-                    color: r.metinGovde,
-                  ),
+                  style: context.yazi.bodySmall?.copyWith(color: r.metinGovde),
                 ),
               ),
             ],

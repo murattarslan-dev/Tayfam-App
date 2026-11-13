@@ -54,9 +54,7 @@ class GunAyirici extends StatelessWidget {
             child: Text(
               metin,
               textAlign: TextAlign.center,
-              style: context.yazi.labelMedium?.copyWith(
-                color: r.tintMarkaUstu,
-              ),
+              style: context.yazi.labelMedium?.copyWith(color: r.tintMarkaUstu),
             ),
           ),
         ),

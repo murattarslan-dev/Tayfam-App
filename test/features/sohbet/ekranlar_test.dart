@@ -30,7 +30,7 @@ void main() {
       testWidgets('kanallar, etiketler ve okunmamış rozeti; 2× yazı, 320 dp', (
         tester,
       ) async {
-        ekranBoyutu(tester, genislik: 320);
+        ekranBoyutu(tester, genislik: 320, yukseklik: 1600);
         ikiKatYazi(tester);
         final ortam = SohbetOrtami(
           rol: 'admin',
@@ -139,6 +139,11 @@ void main() {
       ortam,
     );
     expect(find.byTooltip(arbMetni('sohbet_gonder')), findsOneWidget);
+    ortam
+        .tasima
+        .yanitlar['POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages'] = (
+      _,
+    ) => mesajJson(mesajId3, metin: 'merhaba', yazar: benimId);
     await tester.enterText(find.byType(TextField), 'merhaba');
     await tester.tap(find.byTooltip(arbMetni('sohbet_gonder')));
     await tester.pump();
@@ -226,7 +231,7 @@ void main() {
       tester,
     ) async {
       // 2× yazıda üç balon ve şeritler sığsın diye uzun ekran.
-      ekranBoyutu(tester, genislik: 320, yukseklik: 1200);
+      ekranBoyutu(tester, genislik: 320, yukseklik: 1800);
       ikiKatYazi(tester);
       final ortam = SohbetOrtami(
         kanallar: [kanalJson(kanalId1, ad: 'genel', yavas: 30)],
@@ -320,7 +325,10 @@ void main() {
       ikiKatYazi(tester);
       final ortam = SohbetOrtami(rol: 'admin');
       await _ac(tester, const SohbetEkrani(), ortam, tema: tema);
-      await tester.tap(find.text(arbMetni('sohbet_kanal_ac')));
+      final kanalAc = find.text(arbMetni('sohbet_kanal_ac'));
+      await tester.ensureVisible(kanalAc);
+      await tester.pumpAndSettle();
+      await tester.tap(kanalAc);
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('sohbet_form_yeni')), findsOneWidget);
       expect(find.text(arbMetni('sohbet_form_olustur')), findsOneWidget);

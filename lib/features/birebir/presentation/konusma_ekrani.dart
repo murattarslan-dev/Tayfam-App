@@ -250,6 +250,8 @@ class _Akis extends ConsumerWidget {
           ),
         ),
         if (konusma.otherUserId != null) ...[
+          // Kabul ve ret E2E gerektirmez; yalnızca mobil derlemede de var.
+          if (istekGeldi) _IstekCubugu(konusmaId: konusmaId),
           if (yalnizcaMobil)
             DecoratedBox(
               decoration: BoxDecoration(
@@ -282,7 +284,6 @@ class _Akis extends ConsumerWidget {
                 ),
                 child: E2eCihazUyarisi(),
               ),
-            if (istekGeldi) _IstekCubugu(konusmaId: konusmaId),
             MesajYazmaAlani(onGonder: notifier.gonder),
           ],
         ],
@@ -697,10 +698,7 @@ class KonusmaBasligi extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s4),
       child: Row(
         children: [
-          KimlikAvatari(
-            kullaniciId: kimlik,
-            cap: TayfamSizes.ustCubukKutusu,
-          ),
+          KimlikAvatari(kullaniciId: kimlik, cap: TayfamSizes.ustCubukKutusu),
           const SizedBox(width: TayfamSpacing.s12),
           Flexible(
             child: Column(

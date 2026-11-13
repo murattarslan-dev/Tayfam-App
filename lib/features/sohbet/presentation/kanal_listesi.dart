@@ -174,9 +174,8 @@ class _TayfaSatiri extends ConsumerWidget {
               color: context.renkler.metinIkincil,
             ),
           ),
-          onTap: () => unawaited(
-            tayfaDegistirmePaneliniAc(context, tayfayaGit: false),
-          ),
+          onTap: () =>
+              unawaited(tayfaDegistirmePaneliniAc(context, tayfayaGit: false)),
         ),
       ],
     );

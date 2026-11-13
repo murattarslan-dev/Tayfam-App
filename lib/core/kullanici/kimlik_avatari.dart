@@ -31,6 +31,8 @@ class KimlikAvatari extends ConsumerWidget {
         kullaniciAdlariProvider.select((adlar) => adlar[kimlik]?.ad),
       );
     }
-    return ExcludeSemantics(child: KullaniciAvatari(ad: ad, cap: cap));
+    return ExcludeSemantics(
+      child: KullaniciAvatari(ad: ad, cap: cap),
+    );
   }
 }

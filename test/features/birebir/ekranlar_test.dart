@@ -108,10 +108,7 @@ void main() {
       expect(find.textContaining('1 bekleyen mesaj isteği'), findsOneWidget);
       expect(find.text(arbMetni('birebir_konusmalar_baslik')), findsOneWidget);
       // Önizleme yok; satırda "Uçtan uca şifreli" ya da istek durumu.
-      expect(
-        find.text(arbMetni('bilesen_uctan_uca_sifreli')),
-        findsOneWidget,
-      );
+      expect(find.text(arbMetni('bilesen_uctan_uca_sifreli')), findsOneWidget);
       expect(find.text(arbMetni('birebir_liste_bilgi')), findsOneWidget);
       expect(find.text(arbMetni('gezinme_rozet_cok')), findsOneWidget);
       expect(find.text(arbMetni('kullanici_silinmis')), findsOneWidget);
@@ -307,16 +304,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tasima.giden('POST', kabulYolu), hasLength(1));
-      expect(
-        find.text(arbMetni('birebir_istek_geldi_aciklama')),
-        findsNothing,
-      );
+      expect(find.text(arbMetni('birebir_istek_geldi_aciklama')), findsNothing);
       expect(find.text(arbMetni('birebir_kabul_et')), findsNothing);
     });
 
-    testWidgets('"Görüldü" yalnızca son kendi mesajın altında', (
-      tester,
-    ) async {
+    testWidgets('"Görüldü" yalnızca son kendi mesajın altında', (tester) async {
       ekranBoyutu(tester, yukseklik: 1000);
       // Karşı taraf eski mesajı okudu; daha yeni bir kendi mesajın var.
       final tasima = birebirTasimasi({
