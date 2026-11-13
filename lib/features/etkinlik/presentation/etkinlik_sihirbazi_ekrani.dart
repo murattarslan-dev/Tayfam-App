@@ -561,22 +561,14 @@ class _EtkinlikSihirbaziEkraniState
       children: [
         AdimBasligi(baslik: m.etkinlik_yer_adim_baslik),
         const SizedBox(height: TayfamSpacing.s20),
-        SegmentedButton<EventMode>(
-          segments: [
-            ButtonSegment(
-              value: EventMode.inPerson,
-              label: Text(m.etkinlik_mod_yuz_yuze),
-            ),
-            ButtonSegment(
-              value: EventMode.online,
-              label: Text(m.etkinlik_mod_cevrimici),
-            ),
+        // İki parçalı seçim; büyük yazıda alt satıra iner.
+        SecimCipleri<EventMode>(
+          secenekler: [
+            (EventMode.inPerson, m.etkinlik_mod_yuz_yuze),
+            (EventMode.online, m.etkinlik_mod_cevrimici),
           ],
-          selected: {cevrimici ? EventMode.online : EventMode.inPerson},
-          showSelectedIcon: false,
-          onSelectionChanged: kapali
-              ? null
-              : (secim) => _yer((y) => y.kopya(mod: secim.single)),
+          secili: cevrimici ? EventMode.online : EventMode.inPerson,
+          onSecildi: kapali ? null : (mod) => _yer((y) => y.kopya(mod: mod)),
         ),
         if (cevrimici) ...[
           const SizedBox(height: TayfamSpacing.s20),
@@ -674,10 +666,8 @@ class _EtkinlikSihirbaziEkraniState
           aciklama: m.etkinlik_ayrinti_adim_aciklama,
         ),
         BolumEtiketi(baslik: m.etkinlik_kontenjan),
-        Wrap(
-          spacing: TayfamSpacing.s16,
-          runSpacing: TayfamSpacing.s8,
-          crossAxisAlignment: WrapCrossAlignment.center,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SayiSayaci(
               denetleyici: _kontenjan,
@@ -687,13 +677,15 @@ class _EtkinlikSihirbaziEkraniState
               etkin: !kapali && !sinirsiz,
               onDegisti: _n.kontenjanAyarla,
             ),
+            const SizedBox(height: TayfamSpacing.s8),
             MergeSemantics(
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    m.etkinlik_kontenjan_sinirsiz,
-                    style: context.yazi.titleSmall,
+                  Flexible(
+                    child: Text(
+                      m.etkinlik_kontenjan_sinirsiz,
+                      style: context.yazi.titleSmall,
+                    ),
                   ),
                   const SizedBox(width: TayfamSpacing.s8),
                   Switch(

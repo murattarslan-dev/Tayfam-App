@@ -484,6 +484,12 @@ void main() {
           find.text(arbMetni('etkinlik_tekrar_aralik_haftalik')),
           findsWidgets,
         );
+        // Özet kutusu listenin sonunda.
+        await tester.scrollUntilVisible(
+          find.textContaining('bitiş yok'),
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
         expect(find.textContaining('bitiş yok'), findsOneWidget);
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_tamam')));
         expect(find.byType(TekrarEkrani), findsNothing);
