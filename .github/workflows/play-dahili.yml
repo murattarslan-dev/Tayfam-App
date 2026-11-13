@@ -24,6 +24,8 @@ name: Play dahili test
 #                                      workloadIdentityPools/<havuz>/
 #                                      providers/<sağlayıcı>
 #   GCP_PLAY_SERVIS_HESABI             <ad>@<proje>.iam.gserviceaccount.com
+#   PLAY_KANALI                        isteğe bağlı: Play kanal adı; varsayılan
+#                                      alpha (kapalı test). internal = dahili test.
 #   PLAY_SURUM_DURUMU                  isteğe bağlı: completed (varsayılan)
 #                                      ya da draft (uygulama Play'de hâlâ
 #                                      "taslak" ise draft gerekir).
@@ -326,12 +328,16 @@ jobs:
           else
             printf '%s\n' "$VARSAYILAN_NOT" > "$RUNNER_TEMP/surum-notu.txt"
           fi
-      - name: Play dahili test kanalına yükle
+      - name: Play test kanalına yükle
         if: steps.kimlik.outputs.var == 'true'
         env:
           PLAY_ERISIM_TOKENI: ${{ steps.google.outputs.access_token }}
           SURUM_KODU: ${{ needs.aab.outputs.surum_kodu }}
           DURUM: ${{ vars.PLAY_SURUM_DURUMU || 'completed' }}
+          # Kapalı test (platform sahibi, 2026-11-13). Play'in varsayılan kapalı
+          # test kanalı "alpha"; özel bir kapalı kanal kullanılıyorsa adı
+          # PLAY_KANALI değişkeniyle verilir.
+          KANAL: ${{ vars.PLAY_KANALI || 'alpha' }}
         run: |
           set -euo pipefail
           PLAY_SURUM_NOTU="$(cat "$RUNNER_TEMP/surum-notu.txt")" \
@@ -339,7 +345,8 @@ jobs:
               --paket "$PAKET" \
               --aab "$RUNNER_TEMP/aab/app-release.aab" \
               --surum-kodu "$SURUM_KODU" \
-              --durum "$DURUM"
+              --durum "$DURUM" \
+              --kanal "$KANAL"
           {
             echo "## Play dahili test"
             echo
