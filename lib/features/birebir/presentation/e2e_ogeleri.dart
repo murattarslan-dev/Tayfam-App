@@ -13,7 +13,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Konuşmanın akışındaki E2E sistem satırı (ADR-0020 "Uyarılar"):
 /// "Güvenlik kodu değişti", "Bir mesaj çözülemedi", "Hesabına yeni bir
-/// cihaz eklendi". Ortalanmış, ikincil renkte, ikonlu.
+/// cihaz eklendi". Ortalanmış sarı sistem notu ([SistemNotu]; 2026-11-13
+/// tasarım: Birebir-Konusma), ikonlu.
 class E2eSatiriOgesi extends StatelessWidget {
   const E2eSatiriOgesi({super.key, required this.satir});
 
@@ -22,7 +23,6 @@ class E2eSatiriOgesi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    final r = context.renkler;
     final (ikon, metin) = switch (satir.tur) {
       E2eSatirTuru.guvenlikKoduDegisti => (
         Icons.shield_outlined,
@@ -37,30 +37,7 @@ class E2eSatiriOgesi extends StatelessWidget {
         m.e2e_yeni_kendi_cihazi,
       ),
     };
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExcludeSemantics(
-            child: Icon(
-              ikon,
-              size: TayfamSizes.ikonKucuk,
-              color: r.metinIkincil,
-            ),
-          ),
-          const SizedBox(width: TayfamSpacing.s8),
-          Flexible(
-            child: Text(
-              metin,
-              textAlign: TextAlign.center,
-              style: context.yazi.bodySmall?.copyWith(color: r.metinIkincil),
-            ),
-          ),
-        ],
-      ),
-    );
+    return SistemNotu(metin: metin, ikon: ikon);
   }
 }
 

@@ -4831,6 +4831,10 @@
   "@birebir_bos": {
     "description": "Birebir konuşma yokken Sohbet sekmesinde görünen boş durum metni."
   },
+  "birebir_liste_bilgi": "Birebir mesajlar uçtan uca şifreli. Yeni konuşmayı kişinin profilindeki “Mesaj gönder” ile başlatırsın.",
+  "@birebir_liste_bilgi": {
+    "description": "Birebir konuşma listesinin altındaki kısa bilgi notu."
+  },
   "birebir_yukleniyor": "Konuşmalar yükleniyor",
   "@birebir_yukleniyor": {
     "description": "Birebir konuşmalar, mesaj istekleri ya da reddedilenler okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
@@ -4854,6 +4858,10 @@
   "birebir_istekler_baslik": "Mesaj istekleri",
   "@birebir_istekler_baslik": {
     "description": "Sohbet sekmesindeki mesaj istekleri girişinin ve mesaj istekleri ekranının başlığı."
+  },
+  "birebir_konusmalar_baslik": "Konuşmalar",
+  "@birebir_konusmalar_baslik": {
+    "description": "Sohbet sekmesinin Birebir bölümünde konuşma listesinin başlığı."
   },
   "birebir_istekler_sayisi": "{sayi, plural, other{{sayi} bekleyen mesaj isteği}}",
   "@birebir_istekler_sayisi": {
@@ -4911,22 +4919,6 @@
   "@birebir_durum_istek_geldi": {
     "description": "Mesaj istekleri listesinde, kullanıcıya gelen isteğin alt satırı."
   },
-  "birebir_son_mesaj": "{tarih}, {saat}",
-  "@birebir_son_mesaj": {
-    "description": "Konuşma listesinde son mesajın günü ve saati, cihazın saatine göre.",
-    "placeholders": {
-      "tarih": {
-        "type": "DateTime",
-        "format": "MMMd",
-        "example": "2026-11-11"
-      },
-      "saat": {
-        "type": "DateTime",
-        "format": "Hm",
-        "example": "2026-11-11T18:30"
-      }
-    }
-  },
   "birebir_mesaj_silindi": "Bu mesaj silindi",
   "@birebir_mesaj_silindi": {
     "description": "Silinmiş birebir mesajın balonunda metin yerine görünen yazı."
@@ -4963,13 +4955,23 @@
   "@birebir_istek_bekliyor_bilgi": {
     "description": "Kullanıcının gönderdiği mesaj isteği cevap beklerken konuşmanın başında görünen bilgi."
   },
-  "birebir_istek_geldi_bilgi": "Sana bir mesaj isteği geldi. Cevap yazarsan ya da kabul edersen konuşma başlar. Reddedersen gönderen bunu öğrenmez.",
-  "@birebir_istek_geldi_bilgi": {
-    "description": "Kullanıcıya gelen mesaj isteğinin konuşmasında, kabul ve ret düğmelerinin üstündeki açıklama."
-  },
   "birebir_kabul_et": "Kabul et",
   "@birebir_kabul_et": {
     "description": "Gelen mesaj isteğini kabul eden düğme."
+  },
+  "birebir_istek_geldi_baslik": "{ad} sana mesaj isteği gönderdi",
+  "@birebir_istek_geldi_baslik": {
+    "description": "Kullanıcıya gelen mesaj isteğinin konuşmasında, en üstteki kartın başlığı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Selin"
+      }
+    }
+  },
+  "birebir_istek_geldi_aciklama": "Cevap yazarsan ya da kabul edersen konuşma başlar. Reddedersen gönderen bunu öğrenmez.",
+  "@birebir_istek_geldi_aciklama": {
+    "description": "Gelen mesaj isteği kartında başlığın altındaki açıklama."
   },
   "birebir_reddet": "Reddet",
   "@birebir_reddet": {
@@ -5529,6 +5531,18 @@
   "@sohbet_sekme_birebir": {
     "description": "Sohbet sekmesinin üstündeki bölüm: birebir konuşmalar."
   },
+  "sohbet_tayfa_satiri": "Kanalları gösterilen tayfa",
+  "@sohbet_tayfa_satiri": {
+    "description": "Sohbet sekmesinde, kanalları listelenen tayfanın adının altındaki açıklama; satıra dokununca tayfa değiştirme paneli açılır."
+  },
+  "sohbet_gun_bugun": "Bugün",
+  "@sohbet_gun_bugun": {
+    "description": "Mesaj akışındaki gün ayırıcı: bugünün mesajları."
+  },
+  "sohbet_gun_dun": "Dün",
+  "@sohbet_gun_dun": {
+    "description": "Mesaj akışındaki gün ayırıcı ve konuşma listesindeki zaman: dünün mesajları."
+  },
   "sohbet_birebir_yakinda": "Birebir konuşmaların burada görünecek.",
   "@sohbet_birebir_yakinda": {
     "description": "Birebir bölümü henüz dolmadan gösterilen metin."
@@ -5553,17 +5567,22 @@
   "@sohbet_kanal_ac": {
     "description": "Yönetime görünen yeni kanal düğmesi."
   },
-  "sohbet_kanal_yonetim": "Yönetim kanalı",
+  "sohbet_kanal_yonetim": "Yönetim",
   "@sohbet_kanal_yonetim": {
-    "description": "Yalnızca yönetici ve moderatörlerin gördüğü kanalın etiketi."
-  },
-  "sohbet_kanal_arsivde": "Arşivde",
-  "@sohbet_kanal_arsivde": {
-    "description": "Arşivlenmiş kanalın etiketi."
+    "description": "Kanal listesinde, yalnızca yönetici ve moderatörlerin gördüğü kanalın adının yanındaki etiket."
   },
   "sohbet_kanal_okunmamis": "{sayi, plural, other{{sayi} okunmamış mesaj}}",
   "@sohbet_kanal_okunmamis": {
     "description": "Kanal satırındaki okunmamış rozetinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_arsivdeki_kanallar": "{sayi, plural, other{Arşivdeki kanallar ({sayi})}}",
+  "@sohbet_arsivdeki_kanallar": {
+    "description": "Kanal listesinin altında arşivlenmiş kanalları açıp kapatan bağlantı.",
     "placeholders": {
       "sayi": {
         "type": "int"
@@ -5599,6 +5618,15 @@
       }
     }
   },
+  "sohbet_geri_sayim": "{saniye, plural, other{{saniye} sn}}",
+  "@sohbet_geri_sayim": {
+    "description": "Yavaş modda gönder düğmesinin yerindeki kısa geri sayım.",
+    "placeholders": {
+      "saniye": {
+        "type": "int"
+      }
+    }
+  },
   "sohbet_yavas_mod_bilgi": "{saniye, plural, other{Yavaş mod: {saniye} saniyede bir mesaj}}",
   "@sohbet_yavas_mod_bilgi": {
     "description": "Yavaş modu açık kanalın üstündeki bilgi şeridi.",
@@ -5627,6 +5655,23 @@
   "sohbet_mesaj_geri_al": "Geri al",
   "@sohbet_mesaj_geri_al": {
     "description": "Moderasyonla gizlenen mesajı geri alma eylemi (yönetici)."
+  },
+  "sohbet_mesaj_islemleri": "Mesaj işlemleri",
+  "@sohbet_mesaj_islemleri": {
+    "description": "Kanal mesajına uzun basınca açılan alttan sayfanın başlığı."
+  },
+  "sohbet_mesaji_sil": "Mesajı sil",
+  "@sohbet_mesaji_sil": {
+    "description": "Kanal mesajı işlemleri sayfasında mesajı silen satır."
+  },
+  "sohbet_mesaj_alinti": "“{metin}”",
+  "@sohbet_mesaj_alinti": {
+    "description": "Mesaj işlemleri sayfasında, işlem yapılan mesajın kısa alıntısı (tırnak içinde).",
+    "placeholders": {
+      "metin": {
+        "type": "String"
+      }
+    }
   },
   "sohbet_mesaj_sil_onay_baslik": "Mesaj silinsin mi?",
   "@sohbet_mesaj_sil_onay_baslik": {
@@ -5675,6 +5720,10 @@
   "sohbet_form_yavas_mod": "Yavaş mod",
   "@sohbet_form_yavas_mod": {
     "description": "Yavaş mod seçiminin etiketi."
+  },
+  "sohbet_form_yavas_aciklama": "Herkes bu sürede bir mesaj yazabilir; yönetim muaf.",
+  "@sohbet_form_yavas_aciklama": {
+    "description": "Kanal formunda yavaş mod seçeneklerinin üstündeki açıklama."
   },
   "sohbet_yavas_kapali": "Kapalı",
   "@sohbet_yavas_kapali": {
@@ -6903,6 +6952,14 @@
   "birebir_sessiz_menu_ipucu": "Konuşma seçenekleri",
   "@birebir_sessiz_menu_ipucu": {
     "description": "Birebir konuşma ekranının üst çubuğundaki menü düğmesinin ipucu ve ekran okuyucu etiketi."
+  },
+  "birebir_profili_gor": "Profili gör",
+  "@birebir_profili_gor": {
+    "description": "Birebir konuşmanın ⋯ menüsünde ve üst çubuktaki ada dokununca karşı tarafın profilini açan giriş."
+  },
+  "birebir_sessiz_al_aciklama": "8 saat, 1 hafta ya da süresiz",
+  "@birebir_sessiz_al_aciklama": {
+    "description": "Birebir konuşmanın ⋯ menüsünde \"Sessize al\" altındaki açıklama."
   },
   "birebir_sessiz_al": "Sessize al",
   "@birebir_sessiz_al": {

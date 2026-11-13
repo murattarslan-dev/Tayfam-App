@@ -228,12 +228,17 @@ class BekleyenNoktasi extends StatelessWidget {
 /// girişindeki ve "Seni bekleyenler" kartındaki bekleyen sayısı. Sayı
 /// ekran okuyucudan gizlenir; yerine [etiket] okunur ("3 bekleyen katılım
 /// isteği").
+///
+/// [marka] ise okunmamış mesaj rozetidir (tasarım: Sohbet-Kanallar,
+/// Sohbet-Birebir): marka zemin + marka üstü metin (açıkta brand + beyaz,
+/// koyuda brand-dark + ink).
 class SayiRozeti extends StatelessWidget {
   const SayiRozeti({
     super.key,
     required this.metin,
     required this.etiket,
     this.nar = false,
+    this.marka = false,
   });
 
   /// Rozette görünen kısa sayı ("3", "99+").
@@ -245,15 +250,21 @@ class SayiRozeti extends StatelessWidget {
   /// Mango yerine nar zemin (açık şikâyet).
   final bool nar;
 
+  /// Mango yerine marka zemin (okunmamış mesaj).
+  final bool marka;
+
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
+    final (zemin, yazi) = marka
+        ? (r.marka, r.markaUstu)
+        : (nar ? r.nar : r.mango, r.vurguUstu);
     return Semantics(
       label: etiket,
       excludeSemantics: true,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: nar ? r.nar : r.mango,
+          color: zemin,
           borderRadius: TayfamRadii.hapKoseleri,
         ),
         child: ConstrainedBox(
@@ -268,7 +279,7 @@ class SayiRozeti extends StatelessWidget {
               child: Text(
                 metin,
                 style: context.yazi.labelLarge?.copyWith(
-                  color: r.vurguUstu,
+                  color: yazi,
                   fontWeight: FontWeight.w800,
                 ),
               ),

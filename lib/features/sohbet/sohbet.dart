@@ -6,5 +6,9 @@ library;
 export 'package:tayfam/features/sohbet/application/kanallar_notifier.dart'
     show okunmamisKanalSayisiProvider;
 export 'package:tayfam/features/sohbet/presentation/sohbet_ekrani.dart'
-    show BirebirBolumu, SohbetEkrani, birebirBolumuProvider;
+    show
+        BirebirBolumu,
+        SohbetEkrani,
+        birebirBolumuProvider,
+        birebirOkunmamisYuvasiProvider;
 export 'package:tayfam/features/sohbet/presentation/sohbet_rotalari.dart';

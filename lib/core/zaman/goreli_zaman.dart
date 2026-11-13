@@ -42,6 +42,40 @@ String geriSayim(
   return m.goreli_gun_sonra(gun);
 }
 
+/// Konuşma listesindeki son mesaj zamanı (2026-11-13 tasarım:
+/// Sohbet-Birebir): bugünse saat ("14:32"), dünse "Dün", son bir haftadaysa
+/// gün adı ("Salı"), daha eskiyse gün ve ay ("9 Kas"; başka yılsa yılla).
+/// Cihazın saat diliminde, takvim gününe göredir; `tr_TR`.
+String konusmaZamani(AppLocalizations m, DateTime an, DateTime simdi) {
+  final yerel = an.toLocal();
+  final suan = simdi.toLocal();
+  final gun = _gunFarki(yerel, suan);
+  if (gun <= 0) return saatMetni(m, yerel);
+  if (gun == 1) return m.sohbet_gun_dun;
+  if (gun < 7) return DateFormat.EEEE(m.localeName).format(yerel);
+  if (yerel.year == suan.year) {
+    return DateFormat.MMMd(m.localeName).format(yerel);
+  }
+  return DateFormat.yMMMd(m.localeName).format(yerel);
+}
+
+/// Mesaj akışındaki gün ayırıcının metni: "Bugün", "Dün", sonra tarih
+/// ("11 Kasım Salı"; başka yılsa yılla). Cihazın saat diliminde; `tr_TR`.
+String gunAyiriciMetni(AppLocalizations m, DateTime gun, DateTime simdi) {
+  final yerel = gun.toLocal();
+  final fark = _gunFarki(yerel, simdi.toLocal());
+  if (fark <= 0) return m.sohbet_gun_bugun;
+  if (fark == 1) return m.sohbet_gun_dun;
+  if (yerel.year == simdi.toLocal().year) {
+    return DateFormat.MMMMEEEEd(m.localeName).format(yerel);
+  }
+  return DateFormat.yMMMMd(m.localeName).format(yerel);
+}
+
+/// Bir anın saat metni ("14:32"), cihazın saat diliminde.
+String saatMetni(AppLocalizations m, DateTime an) =>
+    DateFormat.Hm(m.localeName).format(an.toLocal());
+
 /// [once] ile [sonra] arasındaki takvim günü farkı (yaz saati geçişinden
 /// etkilenmesin diye UTC gün sayısıyla).
 int _gunFarki(DateTime once, DateTime sonra) {

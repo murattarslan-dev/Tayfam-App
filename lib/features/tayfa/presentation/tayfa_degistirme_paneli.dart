@@ -21,7 +21,14 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///
 /// Panel kök navigator'da açılır; gezinme çubuğunun da üstünü örter.
 /// Seçenekler paneli kapatıp akışı [context]'in yönlendiricisiyle açar.
-Future<void> tayfaDegistirmePaneliniAc(BuildContext context) {
+///
+/// [tayfayaGit] `false` ise (Sohbet sekmesindeki "Kanalları gösterilen
+/// tayfa" satırı) seçilen tayfa yalnızca aktif olur; bulunulan sekmede
+/// kalınır.
+Future<void> tayfaDegistirmePaneliniAc(
+  BuildContext context, {
+  bool tayfayaGit = true,
+}) {
   return altSayfaAc<void>(
     context,
     builder: (panelContext) {
@@ -30,7 +37,7 @@ Future<void> tayfaDegistirmePaneliniAc(BuildContext context) {
       return TayfaDegistirmePaneli(
         onTayfaSec: (tayfaId) {
           kapat();
-          context.go(Adresler.tayfa(tayfaId));
+          if (tayfayaGit) context.go(Adresler.tayfa(tayfaId));
         },
         onKodlaKatil: () {
           kapat();

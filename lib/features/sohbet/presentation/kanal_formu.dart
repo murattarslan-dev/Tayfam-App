@@ -10,21 +10,23 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Kanal adının en uzun hâli (sözleşme: 1–40).
 const int kanalAdiEnUzun = 40;
 
+/// Kanal adının önündeki işaret (tasarım: Kanal-Formu); adın parçası
+/// değildir, sunucuya gitmez.
+const String kanalOneki = '#';
+
 /// Yavaş mod seçenekleri (saniye; sözleşme: 0–3600).
 const List<int> yavasModSecenekleri = [0, 10, 30, 60, 300, 900, 3600];
 
 /// Kanal açma ya da (verilirse [kanal]) düzenleme formunu alttan açılan
-/// sayfada gösterir (yönetim; ADR-0018 §9). Düzenlemede arşivleme ve
-/// arşivden çıkarma da buradadır. Yetkiyi sunucu verir; hata satır içinde
-/// gösterilir.
+/// sayfada gösterir (yönetim; ADR-0018 §9; 2026-11-13 tasarım:
+/// Kanal-Formu). Düzenlemede arşivleme ve arşivden çıkarma da buradadır.
+/// Yetkiyi sunucu verir; hata satır içinde gösterilir.
 Future<void> kanalFormunuAc(
   BuildContext context, {
   required String tayfaId,
   Channel? kanal,
-}) => showModalBottomSheet<void>(
-  context: context,
-  isScrollControlled: true,
-  showDragHandle: true,
+}) => altSayfaAc<void>(
+  context,
   builder: (context) => KanalFormu(tayfaId: tayfaId, kanal: kanal),
 );
 
@@ -128,86 +130,101 @@ class _KanalFormuState extends ConsumerState<KanalFormu> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
     final kanal = widget.kanal;
     final secenekler = {...yavasModSecenekleri, _yavas}.toList()..sort();
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(
-            TayfamSpacing.kenarMobil,
-            0,
-            TayfamSpacing.kenarMobil,
-            TayfamSpacing.kenarMobil,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                kanal == null ? m.sohbet_form_yeni : m.sohbet_form_duzenle,
-                style: context.yazi.titleLarge,
-              ),
-              const SizedBox(height: TayfamSpacing.s16),
-              TextField(
-                controller: _ad,
-                maxLength: kanalAdiEnUzun,
-                enabled: !_gonderiliyor,
-                textInputAction: TextInputAction.done,
-                decoration: InputDecoration(
-                  labelText: m.sohbet_form_ad,
-                  errorText: _adHatali ? m.sohbet_form_ad_hata : null,
+      child: AltSayfaIcerigi(
+        baslik: kanal == null ? m.sohbet_form_yeni : m.sohbet_form_duzenle,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: _ad,
+                  maxLength: kanalAdiEnUzun,
+                  enabled: !_gonderiliyor,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    labelText: m.sohbet_form_ad,
+                    prefixText: kanalOneki,
+                    errorText: _adHatali ? m.sohbet_form_ad_hata : null,
+                  ),
                 ),
-              ),
-              const SizedBox(height: TayfamSpacing.s8),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                value: _yonetim,
-                onChanged: _gonderiliyor
-                    ? null
-                    : (deger) => setState(() => _yonetim = deger),
-                title: Text(m.sohbet_form_yonetim),
-                subtitle: Text(m.sohbet_form_yonetim_aciklama),
-              ),
-              const SizedBox(height: TayfamSpacing.s8),
-              DropdownButtonFormField<int>(
-                initialValue: _yavas,
-                isExpanded: true,
-                decoration: InputDecoration(labelText: m.sohbet_form_yavas_mod),
-                items: [
-                  for (final s in secenekler)
-                    DropdownMenuItem(
-                      value: s,
-                      child: Text(_yavasEtiketi(m, s)),
+                const SizedBox(height: TayfamSpacing.s8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _yonetim,
+                  onChanged: _gonderiliyor
+                      ? null
+                      : (deger) => setState(() => _yonetim = deger),
+                  title: Text(m.sohbet_form_yonetim),
+                  subtitle: Text(
+                    m.sohbet_form_yonetim_aciklama,
+                    style: context.yazi.bodySmall?.copyWith(
+                      color: r.metinIkincil,
                     ),
-                ],
-                onChanged: _gonderiliyor
-                    ? null
-                    : (deger) => setState(() => _yavas = deger ?? 0),
-              ),
-              if (_hata case final hata?) ...[
-                const SizedBox(height: TayfamSpacing.s16),
-                HataSatiri.hatadan(hata),
-              ],
-              const SizedBox(height: TayfamSpacing.s24),
-              BirincilEylem(
-                etiket: kanal == null
-                    ? m.sohbet_form_olustur
-                    : m.sohbet_form_kaydet,
-                onPressed: _gonderiliyor ? null : _kaydet,
-              ),
-              if (kanal != null) ...[
-                const SizedBox(height: TayfamSpacing.s12),
-                IkincilEylem(
-                  etiket: kanal.archivedAt == null
-                      ? m.sohbet_arsivle
-                      : m.sohbet_arsivden_cikar,
-                  onPressed: _gonderiliyor ? null : () => _arsivle(kanal),
+                  ),
                 ),
+                const SizedBox(height: TayfamSpacing.s12),
+                Semantics(
+                  header: true,
+                  child: Text(
+                    m.sohbet_form_yavas_mod,
+                    style: context.yazi.titleMedium,
+                  ),
+                ),
+                Text(
+                  m.sohbet_form_yavas_aciklama,
+                  style: context.yazi.bodySmall?.copyWith(
+                    color: r.metinIkincil,
+                  ),
+                ),
+                const SizedBox(height: TayfamSpacing.s8),
+                Wrap(
+                  spacing: TayfamSpacing.s8,
+                  runSpacing: TayfamSpacing.s8,
+                  children: [
+                    for (final s in secenekler)
+                      ChoiceChip(
+                        label: Text(_yavasEtiketi(m, s)),
+                        selected: s == _yavas,
+                        showCheckmark: false,
+                        onSelected: _gonderiliyor
+                            ? null
+                            : (_) => setState(() => _yavas = s),
+                      ),
+                  ],
+                ),
+                if (_hata case final hata?) ...[
+                  const SizedBox(height: TayfamSpacing.s16),
+                  HataSatiri.hatadan(hata),
+                ],
+                const SizedBox(height: TayfamSpacing.s24),
+                BirincilEylem(
+                  etiket: kanal == null
+                      ? m.sohbet_form_olustur
+                      : m.sohbet_form_kaydet,
+                  onPressed: _gonderiliyor ? null : _kaydet,
+                ),
+                if (kanal != null) ...[
+                  const SizedBox(height: TayfamSpacing.s12),
+                  CerceveliHapEylem(
+                    etiket: kanal.archivedAt == null
+                        ? m.sohbet_arsivle
+                        : m.sohbet_arsivden_cikar,
+                    ikon: Icons.inventory_2_outlined,
+                    notr: true,
+                    onPressed: _gonderiliyor ? null : () => _arsivle(kanal),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

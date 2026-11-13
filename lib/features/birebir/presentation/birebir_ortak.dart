@@ -39,12 +39,20 @@ void birebirSonucunuBildir(
 /// Konuşmanın karşı tarafının adı; hesabı silinmişse "Silinmiş
 /// kullanıcı".
 class KarsiTarafAdi extends StatelessWidget {
-  const KarsiTarafAdi({super.key, required this.kullaniciId, this.style});
+  const KarsiTarafAdi({
+    super.key,
+    required this.kullaniciId,
+    this.style,
+    this.maxLines,
+  });
 
   /// Karşı tarafın kimliği; hesabı silinmişse `null`.
   final String? kullaniciId;
 
   final TextStyle? style;
+
+  /// Verilirse ad bu kadar satırla sınırlanır (üst çubuk).
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +61,15 @@ class KarsiTarafAdi extends StatelessWidget {
       return Text(
         AppLocalizations.of(context).kullanici_silinmis,
         style: style,
+        maxLines: maxLines,
+        overflow: maxLines == null ? null : TextOverflow.ellipsis,
       );
     }
-    return KullaniciAdiMetni(kullaniciId: kimlik, style: style);
+    return KullaniciAdiMetni(
+      kullaniciId: kimlik,
+      style: style,
+      maxLines: maxLines,
+    );
   }
 }
 

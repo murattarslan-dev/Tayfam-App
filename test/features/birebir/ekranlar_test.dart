@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/app.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
@@ -102,9 +103,16 @@ void main() {
       );
 
       expect(find.text('Deniz'), findsOneWidget);
-      // İstek ana listede değil, istek girişinde sayılır.
+      // İstek ana listede değil, üstteki istek kartında sayılır.
       expect(find.text('Ece'), findsNothing);
-      expect(find.text(arbMetni('birebir_istekler_baslik')), findsOneWidget);
+      expect(find.textContaining('1 bekleyen mesaj isteği'), findsOneWidget);
+      expect(find.text(arbMetni('birebir_konusmalar_baslik')), findsOneWidget);
+      // Önizleme yok; satırda "Uçtan uca şifreli" ya da istek durumu.
+      expect(
+        find.text(arbMetni('bilesen_uctan_uca_sifreli')),
+        findsOneWidget,
+      );
+      expect(find.text(arbMetni('birebir_liste_bilgi')), findsOneWidget);
       expect(find.text(arbMetni('gezinme_rozet_cok')), findsOneWidget);
       expect(find.text(arbMetni('kullanici_silinmis')), findsOneWidget);
       expect(
@@ -121,6 +129,9 @@ void main() {
         birebirTasimasi(),
       );
       expect(find.text(arbMetni('birebir_bos')), findsOneWidget);
+      // Bekleyen istek yokken de mesaj isteklerine (ve reddedilenlere)
+      // girilebilir.
+      expect(find.text(arbMetni('birebir_istekler_baslik')), findsOneWidget);
     });
 
     testWidgets('okunamazsa hata satırı ve tekrar dene', (tester) async {
@@ -285,12 +296,56 @@ void main() {
       );
       await _ac(tester, const KonusmaEkrani(konusmaId: konusmaId1), tasima);
 
-      expect(find.text(arbMetni('birebir_istek_geldi_bilgi')), findsOneWidget);
+      expect(
+        find.text(arbMetni('birebir_istek_geldi_aciklama')),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Deniz'), findsWidgets);
+      // Cevap yazmak da kabul sayılır; yazma alanı kalır.
+      expect(find.byType(TextField), findsOneWidget);
       await tester.tap(find.text(arbMetni('birebir_kabul_et')));
       await tester.pumpAndSettle();
 
       expect(tasima.giden('POST', kabulYolu), hasLength(1));
-      expect(find.text(arbMetni('birebir_istek_geldi_bilgi')), findsNothing);
+      expect(
+        find.text(arbMetni('birebir_istek_geldi_aciklama')),
+        findsNothing,
+      );
+      expect(find.text(arbMetni('birebir_kabul_et')), findsNothing);
+    });
+
+    testWidgets('"Görüldü" yalnızca son kendi mesajın altında', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      // Karşı taraf eski mesajı okudu; daha yeni bir kendi mesajın var.
+      final tasima = birebirTasimasi({
+        'GET $konusmaYolu': (_) =>
+            konusmaJson(konusmaId1, karsiOkundu: mesajId1),
+        'GET $mesajlarYolu': (_) => mesajListesiJson([
+          mesajJson(mesajId3, gonderen: benId, zaman: '2026-11-10T10:03:00Z'),
+          mesajJson(mesajId1, gonderen: benId, zaman: '2026-11-10T10:00:00Z'),
+        ]),
+      });
+      await _ac(tester, const KonusmaEkrani(konusmaId: konusmaId1), tasima);
+      expect(find.text(arbMetni('birebir_goruldu')), findsNothing);
+      // Aynı yazarın ardışık iki mesajı tek grup: tek saat, tek gün ayırıcı.
+      expect(find.byType(GunAyirici), findsOneWidget);
+    });
+
+    testWidgets('mesaj işlemleri sayfasında çözülmüş metinden alıntı', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KonusmaEkrani(konusmaId: konusmaId1),
+        _konusmaTasimasi(),
+      );
+      await tester.longPress(find.text('Merhaba'));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('birebir_mesaj_islemleri')), findsOneWidget);
+      expect(find.text('“Merhaba”'), findsOneWidget);
     });
 
     testWidgets('gönderilen istekte bilgi bandı', (tester) async {

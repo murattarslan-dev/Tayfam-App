@@ -8,10 +8,18 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// ([KullaniciAdlariNotifier.iste]); gelene kadar ya da okunamazsa genel
 /// metin, kullanıcı silinmişse "Silinmiş kullanıcı" gösterilir.
 class KullaniciAdiMetni extends ConsumerWidget {
-  const KullaniciAdiMetni({super.key, required this.kullaniciId, this.style});
+  const KullaniciAdiMetni({
+    super.key,
+    required this.kullaniciId,
+    this.style,
+    this.maxLines,
+  });
 
   final String kullaniciId;
   final TextStyle? style;
+
+  /// Verilirse ad bu kadar satırla sınırlanır, taşan kısım "…" olur.
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,6 +33,11 @@ class KullaniciAdiMetni extends ConsumerWidget {
       KullaniciAdi(:final ad?) => ad,
       KullaniciAdi() => m.kullanici_silinmis,
     };
-    return Text(ad, style: style);
+    return Text(
+      ad,
+      style: style,
+      maxLines: maxLines,
+      overflow: maxLines == null ? null : TextOverflow.ellipsis,
+    );
   }
 }

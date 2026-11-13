@@ -57,6 +57,10 @@ final List<Override> kayitOverridelari = [
   referansPaylasimiProvider.overrideWithValue(kendiKodunuPaylas),
   // Sohbet sekmesinin Birebir bölümü (ADR-0018 §9).
   birebirBolumuProvider.overrideWithValue(_birebirBolumu),
+  // Sohbet sekmesindeki parça seçicinin Birebir sayısı (2026-11-13).
+  birebirOkunmamisYuvasiProvider.overrideWith(
+    (ref) => ref.watch(birebirOkunmamisBilinenProvider),
+  ),
   // Birebir mesaj şikâyeti: mesajın açık metni cihazdan (ADR-0018 §8).
   birebirMesajSikayetiProvider.overrideWithValue(_birebirMesajSikayeti),
   // Kayıttan sonra bekleyen davet mevcut davet akışıyla işlenir

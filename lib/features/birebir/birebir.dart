@@ -5,7 +5,7 @@
 library;
 
 export 'package:tayfam/features/birebir/application/konusma_listesi_notifier.dart'
-    show birebirOkunmamisSayisiProvider;
+    show birebirOkunmamisBilinenProvider, birebirOkunmamisSayisiProvider;
 export 'package:tayfam/features/birebir/presentation/birebir_rotalari.dart'
     show birebirRotalari;
 export 'package:tayfam/features/birebir/presentation/kisi_eylemi.dart'

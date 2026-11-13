@@ -9,27 +9,42 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
+import 'package:tayfam/core/sohbet/akis_duzeni.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/sohbet/application/kanal_akisi_notifier.dart';
 import 'package:tayfam/features/sohbet/application/kanallar_notifier.dart';
 import 'package:tayfam/features/sohbet/data/kanal_mesaj_isi.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_formu.dart';
+import 'package:tayfam/features/sohbet/presentation/kanal_listesi.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Bir kanalın mesaj akışı (`/sohbet/kanal/<tayfaId>/<kanalId>`;
-/// ADR-0018 §9): metin, silme, yavaş mod göstergesi, okundu işaretleme.
+/// ADR-0018 §9; 2026-11-13 tasarım: Kanal-Akis, Kanal-Islem).
 ///
-/// - Bekleyen (kuyruktaki) mesaj saat ikonuyla, gönderilemeyen uyarı
-///   ikonuyla gösterilir; gönderilemeyende "Tekrar dene" ve "Sil" vardır
-///   (ADR-0006).
-/// - Yavaş modda gönder düğmesi geri sayım gösterir (ADR-0007); yönetim
-///   muaftır (sunucu söyler; istemci yalnızca sadeleştirir).
-/// - Kanala erişim kalmazsa kanal listesine dönülür.
+/// - Üst çubukta kanal ikon kutusu, ad ve tayfa adı; yönetimde ⋯ (kanal
+///   ayarları).
+/// - Aynı yazarın ardışık mesajları gruplanır: ad grubun ilk balonunda,
+///   avatar ve saat grubun sonunda. Günün ilk mesajının üstünde gün
+///   ayırıcı ("Bugün", "Dün", tarih). Kendi mesajın sağda mor balon.
+/// - Bekleyen (kuyruktaki) mesaj saat ikonuyla, gönderilemeyen nar kenarlı
+///   balonla gösterilir; gönderilemeyende "Tekrar dene" (aynı
+///   `client_request_id`) ve "Sil" vardır (ADR-0006).
+/// - Yavaş modda yazma alanının üstünde bilgi satırı; gönderden sonra
+///   düğme geri sayıma döner (ADR-0007). Yönetim muaftır (sunucu söyler;
+///   istemci yalnızca sadeleştirir).
+/// - Uzun basınca "Mesaj işlemleri" alttan sayfası: kendi mesajın ya da
+///   yönetimse "Mesajı sil"; silinmiş ve geri alınabilir mesajda yönetime
+///   "Geri al". Kanal mesajı şikâyeti sözleşmede yoktur.
+/// - Kanala erişim kalmazsa Sohbet sekmesine dönülür.
+///
+/// Mesaj metni yalnızca bellekte ve ekrandadır; loglanmaz, diske yazılmaz.
 class KanalEkrani extends ConsumerStatefulWidget {
   const KanalEkrani({super.key, required this.tayfaId, required this.kanalId});
 
@@ -144,10 +159,12 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
     final saglayici = kanalAkisiProvider(_kanal);
     final kanallar = ref.watch(kanallarProvider(widget.tayfaId));
     final kanal = _bul(kanallar.value);
-    final yonetimde = ref.watch(tayfaOzetiProvider(widget.tayfaId)).yonetimde;
+    final ozet = ref.watch(tayfaOzetiProvider(widget.tayfaId));
+    final yonetimde = ozet.yonetimde;
     final durum = ref.watch(saglayici);
     final bekleyenler = [
       for (final o in ref.watch(cevrimdisiKuyrukProvider))
@@ -174,111 +191,187 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
     final simdi = ref.read(simdiProvider)();
     final kalan = bitis == null ? 0 : bitis.difference(simdi).inSeconds + 1;
     final bekle = bitis != null && bitis.isAfter(simdi) ? kalan : 0;
+    final yavas = kanal?.slowModeSeconds ?? 0;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(kanal?.name ?? ''),
+        titleSpacing: 0,
+        toolbarHeight: sohbetUstCubukYuksekligi(context),
+        shape: Border(
+          bottom: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
+        ),
+        title: kanal == null
+            ? null
+            : Row(
+                children: [
+                  KanalIkonKutusu(
+                    ikon: kanalIkonu(kanal),
+                    boyut: TayfamSizes.ustCubukKutusu,
+                  ),
+                  const SizedBox(width: TayfamSpacing.s12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          kanal.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.yazi.titleMedium,
+                        ),
+                        if (ozet.ad case final tayfaAdi?)
+                          Text(
+                            tayfaAdi,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.yazi.labelSmall?.copyWith(
+                              color: r.metinIkincil,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
         actions: [
           if (yonetimde && kanal != null)
             IconButton(
               tooltip: m.sohbet_kanal_ayarlari,
-              icon: const Icon(Icons.tune),
+              icon: const Icon(Icons.more_horiz),
               onPressed: () => unawaited(
                 kanalFormunuAc(context, tayfaId: widget.tayfaId, kanal: kanal),
               ),
             ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            if ((kanal?.slowModeSeconds ?? 0) > 0)
-              _BilgiSeridi(
-                ikon: Icons.timer_outlined,
-                metin: m.sohbet_yavas_mod_bilgi(kanal!.slowModeSeconds),
+      body: Column(
+        children: [
+          Expanded(
+            child: switch (durum) {
+              AsyncValue(value: final akis?) => _MesajListesi(
+                kanal: _kanal,
+                akis: akis,
+                bekleyenler: bekleyenler,
+                yonetimde: yonetimde,
               ),
-            Expanded(
-              child: switch (durum) {
-                AsyncValue(value: final akis?) => _MesajListesi(
-                  kanal: _kanal,
-                  akis: akis,
-                  bekleyenler: bekleyenler,
-                  yonetimde: yonetimde,
-                ),
-                AsyncValue(error: final hata?) => Padding(
-                  padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      HataSatiri.hatadan(hata),
-                      TextButton(
-                        onPressed: () => ref.invalidate(saglayici),
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size.square(
-                            TayfamSizes.dokunmaMin,
-                          ),
-                        ),
-                        child: Text(m.sohbet_tekrar_dene),
-                      ),
-                    ],
+              AsyncValue(error: final hata?) => ListView(
+                padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+                children: [
+                  HataSatiri.hatadan(hata),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: BaglantiEylemi(
+                      etiket: m.sohbet_tekrar_dene,
+                      onPressed: () => ref.invalidate(saglayici),
+                    ),
                   ),
+                ],
+              ),
+              _ => Center(
+                child: TayfamYukleniyor(
+                  boyut: TayfamSizes.yukleniyorTamEkran,
+                  etiket: m.sohbet_mesajlar_yukleniyor,
+                  gecikmeli: true,
                 ),
-                _ => Center(
-                  child: TayfamYukleniyor(
-                    boyut: TayfamSizes.yukleniyorTamEkran,
-                    etiket: m.sohbet_mesajlar_yukleniyor,
-                    gecikmeli: true,
-                  ),
-                ),
-              },
+              ),
+            },
+          ),
+          if (kanal?.archivedAt != null)
+            _ArsivBilgisi(metin: m.sohbet_arsiv_bilgi)
+          else
+            MesajYazmaCubugu(
+              denetleyici: _metin,
+              ipucu: bekle > 0
+                  ? m.sohbet_gonder_bekle(bekle)
+                  : m.sohbet_mesaj_ipucu,
+              gonderEtiketi: m.sohbet_gonder,
+              enUzun: mesajEnUzun,
+              onGonder: () => _gonder(kanal, yonetimde),
+              geriSayim: bekle > 0 ? m.sohbet_geri_sayim(bekle) : null,
+              geriSayimEtiketi: bekle > 0 ? m.sohbet_gonder_bekle(bekle) : null,
+              ust: yavas > 0 ? _YavasModSatiri(saniye: yavas) : null,
             ),
-            if (kanal?.archivedAt != null)
-              _BilgiSeridi(
-                ikon: Icons.inventory_2_outlined,
-                metin: m.sohbet_arsiv_bilgi,
-              )
-            else
-              _YazmaAlani(
-                denetleyici: _metin,
-                bekleSaniye: bekle,
-                onGonder: () => _gonder(kanal, yonetimde),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
 
-class _BilgiSeridi extends StatelessWidget {
-  const _BilgiSeridi({required this.ikon, required this.metin});
+/// Yazma alanının üstündeki yavaş mod bilgisi (tasarım: Kanal-Akis).
+class _YavasModSatiri extends StatelessWidget {
+  const _YavasModSatiri({required this.saniye});
 
-  final IconData ikon;
+  final int saniye;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: Icon(
+              Icons.timer_outlined,
+              size: TayfamSizes.ikonKucuk,
+              color: r.metinIkincil,
+            ),
+          ),
+          const SizedBox(width: TayfamSpacing.s8),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).sohbet_yavas_mod_bilgi(saniye),
+              style: context.yazi.labelSmall?.copyWith(color: r.metinIkincil),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Arşivlenmiş kanalda yazma alanının yerindeki bilgi.
+class _ArsivBilgisi extends StatelessWidget {
+  const _ArsivBilgisi({required this.metin});
+
   final String metin;
 
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
-    return ColoredBox(
-      color: r.tintMarka,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: TayfamSpacing.kenarMobil,
-          vertical: TayfamSpacing.s8,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: r.kart,
+        border: Border(
+          top: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
         ),
-        child: Row(
-          children: [
-            ExcludeSemantics(
-              child: Icon(ikon, size: TayfamSizes.ikon, color: r.tintMarkaUstu),
-            ),
-            const SizedBox(width: TayfamSpacing.s8),
-            Expanded(
-              child: Text(
-                metin,
-                style: context.yazi.bodySmall?.copyWith(color: r.tintMarkaUstu),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          child: Row(
+            children: [
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.inventory_2_outlined,
+                  size: TayfamSizes.ikon,
+                  color: r.metinIkincil,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: TayfamSpacing.s12),
+              Expanded(
+                child: Text(
+                  metin,
+                  style: context.yazi.bodySmall?.copyWith(
+                    color: r.metinGovde,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -315,16 +408,15 @@ class _MesajListesi extends ConsumerWidget {
         ),
       );
     }
-    final ogeler = <Widget>[
-      for (final o in bekleyenler.reversed)
-        _BekleyenMesaj(key: ValueKey(o.istekKimligi), oge: o),
-      for (final mesaj in akis.mesajlar)
-        _MesajSatiri(
-          key: ValueKey(mesaj.id),
-          kanal: kanal,
-          mesaj: mesaj,
-          yonetimde: yonetimde,
-        ),
+    final simdi = ref.read(simdiProvider)();
+    // Akış eskiden yeniye düzenlenir; liste ters çizildiği için sonra
+    // çevrilir.
+    final mesajlar = akis.mesajlar.reversed.toList();
+    final duzen = akisDuzeni([
+      for (final mesaj in mesajlar)
+        AkisGirdisi(zaman: mesaj.createdAt, yazar: mesaj.authorUserId),
+    ]);
+    final eskidenYeniye = <Widget>[
       if (akis.eskiHatasi case final hata?)
         Padding(
           padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
@@ -334,22 +426,35 @@ class _MesajListesi extends ConsumerWidget {
         Center(child: TayfamYukleniyor(etiket: m.sohbet_mesajlar_yukleniyor))
       else if (akis.eskiSayfa != null)
         Center(
-          child: TextButton(
+          child: BaglantiEylemi(
+            etiket: m.sohbet_daha_eski,
             onPressed: () => unawaited(
               ref.read(kanalAkisiProvider(kanal).notifier).eskileriYukle(),
             ),
-            style: TextButton.styleFrom(
-              minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-            ),
-            child: Text(m.sohbet_daha_eski),
           ),
         ),
+      for (final (sira, mesaj) in mesajlar.indexed) ...[
+        if (duzen[sira].gunBasi)
+          GunAyirici(metin: gunAyiriciMetni(m, mesaj.createdAt, simdi)),
+        _MesajSatiri(
+          key: ValueKey(mesaj.id),
+          kanal: kanal,
+          mesaj: mesaj,
+          konum: duzen[sira],
+          yonetimde: yonetimde,
+        ),
+      ],
+      for (final o in bekleyenler)
+        _BekleyenMesaj(key: ValueKey(o.istekKimligi), oge: o),
     ];
-    return ListView.separated(
+    final ogeler = eskidenYeniye.reversed.toList();
+    return ListView.builder(
       reverse: true,
-      padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+      padding: const EdgeInsets.symmetric(
+        horizontal: TayfamSpacing.kenarMobil,
+        vertical: TayfamSpacing.s8,
+      ),
       itemCount: ogeler.length,
-      separatorBuilder: (_, _) => const SizedBox(height: TayfamSpacing.s8),
       itemBuilder: (_, i) => ogeler[i],
     );
   }
@@ -360,11 +465,13 @@ class _MesajSatiri extends ConsumerWidget {
     super.key,
     required this.kanal,
     required this.mesaj,
+    required this.konum,
     required this.yonetimde,
   });
 
   final KanalRef kanal;
   final ChannelMessage mesaj;
+  final AkisKonumu konum;
   final bool yonetimde;
 
   @override
@@ -386,95 +493,153 @@ class _MesajSatiri extends ConsumerWidget {
       KullaniciAdi() => m.kullanici_silinmis,
     };
     final silinebilir = !mesaj.deleted && (ben || yonetimde);
-    final geriAlinabilir = mesaj.deleted && (mesaj.restorable ?? false);
-
-    final Widget icerik;
+    final geriAlinabilir =
+        yonetimde && mesaj.deleted && (mesaj.restorable ?? false);
     final body = mesaj.body;
-    if (mesaj.deleted || body == null) {
-      icerik = Align(
-        alignment: ben
-            ? AlignmentDirectional.centerEnd
-            : AlignmentDirectional.centerStart,
-        child: Text(
-          m.sohbet_mesaj_silindi,
-          style: context.yazi.bodyMedium?.copyWith(
-            color: context.renkler.metinIkincil,
-            fontStyle: FontStyle.italic,
+    final silinmis = mesaj.deleted || body == null;
+
+    Widget balon = SohbetBalonu(
+      metin: body == null || mesaj.deleted ? m.sohbet_mesaj_silindi : body,
+      giden: ben,
+      gonderen: ben ? null : gonderen,
+      tur: silinmis ? BalonTuru.silinmis : BalonTuru.akis,
+      kuyruk: konum.grupSonu,
+      adGoster: konum.grupBasi,
+    );
+    if (silinebilir || geriAlinabilir) {
+      balon = Semantics(
+        onLongPressHint: m.sohbet_mesaj_islemleri,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onLongPress: () => unawaited(
+            _eylemler(
+              context,
+              ref,
+              alinti: silinmis ? null : body,
+              sil: silinebilir,
+              geriAl: geriAlinabilir,
+            ),
           ),
+          child: balon,
         ),
       );
-    } else {
-      icerik = SohbetBalonu(
-        metin: body,
-        giden: ben,
-        gonderen: ben ? null : gonderen,
+    }
+    final saat = konum.grupSonu
+        ? MesajAltSatiri(children: [Text(saatMetni(m, mesaj.createdAt))])
+        : null;
+    final ust = konum.grupBasi ? TayfamSpacing.s12 : TayfamSpacing.s4;
+    if (ben) {
+      return Padding(
+        padding: EdgeInsets.only(top: ust),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [balon, ?saat],
+        ),
       );
     }
-    if (!silinebilir && !geriAlinabilir) return icerik;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onLongPress: () => unawaited(
-        _eylemler(context, ref, sil: silinebilir, geriAl: geriAlinabilir),
+    return Padding(
+      padding: EdgeInsets.only(top: ust),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (konum.grupSonu)
+            Padding(
+              // Avatar, saat satırının üstünde balonun hizasında durur.
+              padding: EdgeInsets.only(
+                bottom: saat == null ? 0 : TayfamSpacing.s24,
+              ),
+              child: KimlikAvatari(
+                kullaniciId: yazar,
+                cap: TayfamSizes.mesajAvatari,
+              ),
+            )
+          else
+            const SizedBox(width: TayfamSizes.mesajAvatari),
+          const SizedBox(width: TayfamSpacing.s8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [balon, ?saat],
+            ),
+          ),
+        ],
       ),
-      child: icerik,
     );
   }
 
   Future<void> _eylemler(
     BuildContext context,
     WidgetRef ref, {
+    required String? alinti,
     required bool sil,
     required bool geriAl,
   }) async {
     final m = AppLocalizations.of(context);
-    final secim = await showModalBottomSheet<String>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (sil)
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: Text(m.sohbet_mesaj_sil),
-                onTap: () => Navigator.of(context).pop('sil'),
+    final secim = await altSayfaAc<_KanalMesajIslemi>(
+      context,
+      builder: (sayfa) => AltSayfaIcerigi(
+        baslik: m.sohbet_mesaj_islemleri,
+        children: [
+          if (alinti != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                TayfamSpacing.s8,
+                0,
+                TayfamSpacing.s8,
+                TayfamSpacing.s8,
               ),
-            if (geriAl)
-              ListTile(
-                leading: const Icon(Icons.restore),
-                title: Text(m.sohbet_mesaj_geri_al),
-                onTap: () => Navigator.of(context).pop('geri'),
+              child: Text(
+                m.sohbet_mesaj_alinti(alinti),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: sayfa.yazi.bodySmall?.copyWith(
+                  color: sayfa.renkler.metinIkincil,
+                ),
               ),
-          ],
-        ),
+            ),
+          if (sil)
+            MenuSatiri(
+              ikon: Icons.delete_outline,
+              tur: MenuSatiriTuru.yikici,
+              baslik: m.sohbet_mesaji_sil,
+              aciklama: m.sohbet_mesaj_sil_onay_aciklama,
+              onTap: () => Navigator.of(sayfa).pop(_KanalMesajIslemi.sil),
+            ),
+          if (geriAl)
+            MenuSatiri(
+              ikon: Icons.restore,
+              baslik: m.sohbet_mesaj_geri_al,
+              onTap: () => Navigator.of(sayfa).pop(_KanalMesajIslemi.geriAl),
+            ),
+        ],
       ),
     );
     if (secim == null || !context.mounted) return;
     final notifier = ref.read(kanalAkisiProvider(kanal).notifier);
     try {
-      if (secim == 'sil') {
-        final onay = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(m.sohbet_mesaj_sil_onay_baslik),
-            content: Text(m.sohbet_mesaj_sil_onay_aciklama),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(m.sohbet_vazgec),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(m.sohbet_mesaj_sil),
-              ),
-            ],
-          ),
-        );
-        if (onay != true) return;
-        await notifier.sil(mesaj.id);
-      } else {
-        await notifier.geriAl(mesaj.id);
+      switch (secim) {
+        case _KanalMesajIslemi.sil:
+          final onay = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(m.sohbet_mesaj_sil_onay_baslik),
+              content: Text(m.sohbet_mesaj_sil_onay_aciklama),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(m.sohbet_vazgec),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(m.sohbet_mesaj_sil),
+                ),
+              ],
+            ),
+          );
+          if (onay != true) return;
+          await notifier.sil(mesaj.id);
+        case _KanalMesajIslemi.geriAl:
+          await notifier.geriAl(mesaj.id);
       }
     } on Exception catch (hata) {
       if (context.mounted) hataBildir(context, hata);
@@ -482,6 +647,10 @@ class _MesajSatiri extends ConsumerWidget {
   }
 }
 
+enum _KanalMesajIslemi { sil, geriAl }
+
+/// Kuyruktaki kendi mesajın: gönderiliyorsa saat ikonu, gönderilemediyse
+/// nar kenarlı balon ve "Tekrar dene" / "Sil".
 class _BekleyenMesaj extends ConsumerWidget {
   const _BekleyenMesaj({super.key, required this.oge});
 
@@ -495,122 +664,36 @@ class _BekleyenMesaj extends ConsumerWidget {
     final metin = isi is KanalMesajIsi ? isi.metin : '';
     final basarisiz = oge.durum == KuyrukDurumu.gonderilemedi;
     final kuyruk = ref.read(cevrimdisiKuyrukProvider.notifier);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        SohbetBalonu(metin: metin, giden: true),
-        const SizedBox(height: TayfamSpacing.s4),
-        if (basarisiz)
-          Wrap(
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: TayfamSpacing.s8,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: TayfamSizes.ikonKucuk,
-                color: r.metin,
-              ),
-              Text(
-                m.sohbet_mesaj_gonderilemedi,
-                style: context.yazi.bodySmall?.copyWith(color: r.metin),
-              ),
-              TextButton(
-                onPressed: () => kuyruk.tekrarDene(oge.istekKimligi),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                ),
-                child: Text(m.sohbet_tekrar_dene),
-              ),
-              TextButton(
-                onPressed: () => kuyruk.sil(oge.istekKimligi),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                ),
-                child: Text(m.sohbet_mesaj_sil),
-              ),
-            ],
-          )
-        else
-          Icon(
-            Icons.schedule,
-            size: TayfamSizes.ikonKucuk,
-            color: r.metinIkincil,
-            semanticLabel: m.sohbet_mesaj_gonderiliyor,
+    return Padding(
+      padding: const EdgeInsets.only(top: TayfamSpacing.s12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          SohbetBalonu(
+            metin: metin,
+            giden: true,
+            tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
           ),
-      ],
-    );
-  }
-}
-
-class _YazmaAlani extends StatelessWidget {
-  const _YazmaAlani({
-    required this.denetleyici,
-    required this.bekleSaniye,
-    required this.onGonder,
-  });
-
-  final TextEditingController denetleyici;
-  final int bekleSaniye;
-  final VoidCallback onGonder;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: r.kart,
-        border: Border(top: BorderSide(color: r.cizgi)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: TayfamSpacing.s8,
-          vertical: TayfamSpacing.s8,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: TextField(
-                controller: denetleyici,
-                minLines: 1,
-                maxLines: 5,
-                maxLength: mesajEnUzun,
-                buildCounter: (
-                  _, {
-                  required currentLength,
-                  required isFocused,
-                  required maxLength,
-                }) => null,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(hintText: m.sohbet_mesaj_ipucu),
-              ),
+          if (basarisiz)
+            GonderilemediSatiri(
+              durum: m.sohbet_mesaj_gonderilemedi,
+              tekrarDene: m.sohbet_tekrar_dene,
+              sil: m.sohbet_mesaj_sil,
+              onTekrarDene: () => kuyruk.tekrarDene(oge.istekKimligi),
+              onSil: () => kuyruk.sil(oge.istekKimligi),
+            )
+          else
+            MesajAltSatiri(
+              children: [
+                Icon(
+                  Icons.schedule,
+                  size: TayfamSizes.ikonKucuk,
+                  color: r.metinIkincil,
+                  semanticLabel: m.sohbet_mesaj_gonderiliyor,
+                ),
+              ],
             ),
-            const SizedBox(width: TayfamSpacing.s8),
-            if (bekleSaniye > 0)
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: TayfamSizes.dokunmaMin,
-                ),
-                child: Center(
-                  widthFactor: 1,
-                  child: Text(
-                    m.sohbet_gonder_bekle(bekleSaniye),
-                    style: context.yazi.bodySmall?.copyWith(
-                      color: r.metinIkincil,
-                    ),
-                  ),
-                ),
-              )
-            else
-              IconButton(
-                tooltip: m.sohbet_gonder,
-                onPressed: onGonder,
-                icon: const Icon(Icons.send),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -225,4 +225,22 @@ abstract final class TayfamSizes {
 
   /// Hesap silme açıklamasındaki madde ikon kutusu (36 px).
   static const double maddeKutusu = 36;
+
+  // Sohbet sekmesi (2026-11-13 yeniden tasarım; tasarım: Sohbet-*.dc.html,
+  // Kanal-*.dc.html, Birebir-*.dc.html, Mesaj-Istekleri.dc.html).
+
+  /// Kanal akışında grubun yanındaki yazar avatarı (32 px).
+  static const double mesajAvatari = 32;
+
+  /// Konuşma ve mesaj isteği satırındaki avatar (48 px).
+  static const double konusmaAvatari = 48;
+
+  /// Konuşma satırının en az yüksekliği (72 px).
+  static const double konusmaSatiri = 72;
+
+  /// Sohbet üst çubuğundaki kanal ikon kutusu ve kişi avatarı (36 px).
+  static const double ustCubukKutusu = 36;
+
+  /// Sohbet sekmesindeki parça seçicinin okunmamış rozeti (22 px).
+  static const double parcaRozeti = 22;
 }

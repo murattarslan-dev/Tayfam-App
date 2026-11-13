@@ -4,8 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_ekrani.dart';
+import 'package:tayfam/features/sohbet/presentation/kanal_formu.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 
 import '../../yardimcilar.dart';
@@ -37,26 +40,146 @@ void main() {
           ],
         );
         await _ac(tester, const SohbetEkrani(), ortam, tema: tema);
-        expect(find.text(arbMetni('sohbet_sekme_kanallar')), findsOneWidget);
+        // Parça seçicide ve bölüm başlığında.
+        expect(find.text(arbMetni('sohbet_sekme_kanallar')), findsNWidgets(2));
         expect(find.text(arbMetni('sohbet_sekme_birebir')), findsOneWidget);
+        expect(find.text(arbMetni('sohbet_tayfa_satiri')), findsOneWidget);
         expect(find.text('genel'), findsOneWidget);
         expect(find.text('yönetim'), findsOneWidget);
         expect(find.text(arbMetni('sohbet_kanal_yonetim')), findsOneWidget);
         expect(find.text('3'), findsOneWidget);
-        expect(find.text(arbMetni('gezinme_rozet_cok')), findsOneWidget);
+        // Yönetim kanalının rozeti ve Kanallar parçasının toplamı (103).
+        expect(find.text(arbMetni('gezinme_rozet_cok')), findsNWidgets(2));
         expect(find.text(arbMetni('sohbet_kanal_ac')), findsOneWidget);
+        // Son mesaj önizlemesi yok; yalnızca sayı.
+        expect(find.byType(SohbetBalonu), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('kanal ekranı: gruplama, gün ayırıcı ve işlemler sayfası '
+          '(${tema.name}, 2×)', (tester) async {
+        ekranBoyutu(tester, genislik: 320, yukseklik: 1200);
+        ikiKatYazi(tester);
+        final ortam = SohbetOrtami(
+          rol: 'admin',
+          kanallar: [kanalJson(kanalId1, ad: 'genel')],
+          mesajlar: [
+            mesajJson(mesajId3, metin: 'ikinci', zaman: '2026-11-11T10:01:00Z'),
+            mesajJson(
+              mesajId2,
+              metin: 'birinci',
+              zaman: '2026-11-11T10:00:00Z',
+            ),
+            mesajJson(mesajId1, metin: 'dünden', zaman: '2026-11-10T09:00:00Z'),
+          ],
+        );
+        await _ac(
+          tester,
+          const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+          ortam,
+          tema: tema,
+        );
+        // İki gün, iki ayırıcı; aynı yazarın aynı gündeki iki mesajı tek
+        // grup: ad grubun başında (iki grup, iki ad), avatar grubun sonunda.
+        expect(find.byType(GunAyirici), findsNWidgets(2));
+        expect(find.text('Ayşe'), findsNWidgets(2));
+        expect(find.byType(KimlikAvatari), findsNWidgets(2));
+        expect(tester.takeException(), isNull);
+
+        await tester.longPress(find.text('ikinci'));
+        await tester.pumpAndSettle();
+        expect(find.text(arbMetni('sohbet_mesaj_islemleri')), findsOneWidget);
+        expect(find.text(arbMetni('sohbet_mesaji_sil')), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
     });
   }
 
-  testWidgets('üye "Kanal aç" görmez; arşivli kanal etiketli', (tester) async {
+  testWidgets('üye "Kanal aç" görmez; arşivdekiler açılır bölümde', (
+    tester,
+  ) async {
+    ekranBoyutu(tester, yukseklik: 1000);
     final ortam = SohbetOrtami(
-      kanallar: [kanalJson(kanalId1), kanalJson(kanalId2, arsiv: true)],
+      kanallar: [
+        kanalJson(kanalId1),
+        kanalJson(kanalId2, ad: 'eski-konvoy', arsiv: true),
+      ],
     );
     await _ac(tester, const SohbetEkrani(), ortam);
     expect(find.text(arbMetni('sohbet_kanal_ac')), findsNothing);
-    expect(find.text(arbMetni('sohbet_kanal_arsivde')), findsOneWidget);
+    expect(find.text('eski-konvoy'), findsNothing);
+    final arsiv = find.textContaining('(1)');
+    expect(arsiv, findsOneWidget);
+    await tester.tap(arsiv);
+    await tester.pumpAndSettle();
+    expect(find.text('eski-konvoy'), findsOneWidget);
+  });
+
+  testWidgets('üye başkasının mesajına uzun basınca işlem sayfası açılmaz', (
+    tester,
+  ) async {
+    final ortam = SohbetOrtami(mesajlar: [mesajJson(mesajId2, metin: 'selam')]);
+    await _ac(
+      tester,
+      const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+      ortam,
+    );
+    await tester.longPress(find.text('selam'));
+    await tester.pumpAndSettle();
+    expect(find.text(arbMetni('sohbet_mesaj_islemleri')), findsNothing);
+  });
+
+  testWidgets('yavaş modda gönderdikten sonra düğme geri sayıma döner', (
+    tester,
+  ) async {
+    final ortam = SohbetOrtami(kanallar: [kanalJson(kanalId1, yavas: 30)]);
+    await _ac(
+      tester,
+      const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+      ortam,
+    );
+    expect(find.byTooltip(arbMetni('sohbet_gonder')), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'merhaba');
+    await tester.tap(find.byTooltip(arbMetni('sohbet_gonder')));
+    await tester.pump();
+    expect(find.byTooltip(arbMetni('sohbet_gonder')), findsNothing);
+    expect(find.textContaining(' sn'), findsWidgets);
+    // Ekran kapanınca sayaç durur (bekleyen zamanlayıcı kalmaz).
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('okunmamışı yalnızca Birebir parçasında olan sekme Birebir '
+      'açılır', (tester) async {
+    final ortam = SohbetOrtami();
+    await widgetAc(
+      tester,
+      const SohbetEkrani(),
+      tayfa: [
+        ...ortam.overridelar,
+        birebirOkunmamisYuvasiProvider.overrideWithValue(2),
+        birebirBolumuProvider.overrideWithValue(
+          (context) => const Text('birebir-yuvasi'),
+        ),
+      ],
+    );
+    expect(find.text('birebir-yuvasi'), findsOneWidget);
+  });
+
+  testWidgets('iki parçada da okunmamış varsa Kanallar açılır', (tester) async {
+    final ortam = SohbetOrtami(kanallar: [kanalJson(kanalId1, okunmamis: 2)]);
+    await widgetAc(
+      tester,
+      const SohbetEkrani(),
+      tayfa: [
+        ...ortam.overridelar,
+        birebirOkunmamisYuvasiProvider.overrideWithValue(2),
+        birebirBolumuProvider.overrideWithValue(
+          (context) => const Text('birebir-yuvasi'),
+        ),
+      ],
+    );
+    expect(find.text('birebir-yuvasi'), findsNothing);
+    expect(find.text('genel'), findsOneWidget);
   });
 
   testWidgets('aktif tayfa yoksa bilgi metni', (tester) async {
@@ -129,6 +252,7 @@ void main() {
       expect(find.text('benden'), findsOneWidget);
       expect(find.text(arbMetni('sohbet_mesaj_silindi')), findsOneWidget);
       expect(find.byIcon(Icons.timer_outlined), findsOneWidget);
+      expect(find.byType(GunAyirici), findsOneWidget);
       expect(find.byTooltip(arbMetni('sohbet_gonder')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -185,6 +309,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(arbMetni('sohbet_form_duzenle')), findsOneWidget);
     expect(find.text(arbMetni('sohbet_form_yonetim')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_form_yavas_aciklama')), findsOneWidget);
+    expect(find.byType(ChoiceChip), findsNWidgets(yavasModSecenekleri.length));
     expect(find.text(arbMetni('sohbet_arsivle')), findsOneWidget);
   });
+
+  for (final tema in [ThemeMode.light, ThemeMode.dark]) {
+    testWidgets('yeni kanal formu taşmıyor (${tema.name}, 2×)', (tester) async {
+      ekranBoyutu(tester, genislik: 320);
+      ikiKatYazi(tester);
+      final ortam = SohbetOrtami(rol: 'admin');
+      await _ac(tester, const SohbetEkrani(), ortam, tema: tema);
+      await tester.tap(find.text(arbMetni('sohbet_kanal_ac')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('sohbet_form_yeni')), findsOneWidget);
+      expect(find.text(arbMetni('sohbet_form_olustur')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

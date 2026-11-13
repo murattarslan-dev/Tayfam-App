@@ -12,10 +12,12 @@ import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
 import 'package:tayfam/features/birebir/presentation/konusma_satiri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Size gelen mesaj istekleri (`request_received`; ADR-0018 §9) ve
-/// reddedilenlere giriş. İsteğe dokununca konuşma açılır; orada kabul,
-/// ret ya da cevap yazılır. İstekler konuşma listesinden ayrılır;
-/// listenin henüz okunmamış sayfaları "Daha fazla göster" ile okunur.
+/// Size gelen mesaj istekleri (`request_received`; ADR-0018 §9;
+/// 2026-11-13 tasarım: Mesaj-Istekleri): açıklama, kart içinde istekler
+/// ("Mesaj isteği" ve zaman) ve altta "Reddedilenler". İsteğe dokununca
+/// konuşma açılır; orada kabul, ret ya da cevap yazılır. İstekler konuşma
+/// listesinden ayrılır; listenin henüz okunmamış sayfaları "Daha fazla
+/// göster" ile okunur.
 class MesajIstekleriEkrani extends ConsumerWidget {
   const MesajIstekleriEkrani({super.key});
 
@@ -37,19 +39,18 @@ class MesajIstekleriEkrani extends ConsumerWidget {
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s4,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s40,
+          ),
           children: [
-            BirebirAciklama(m.birebir_istekler_aciklama),
-            const SizedBox(height: TayfamSpacing.s8),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: IkincilEylem(
-                etiket: m.birebir_reddedilenler,
-                ikon: Icons.block_outlined,
-                onPressed: () => context.go(Adresler.reddedilenler),
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
+              child: BirebirAciklama(m.birebir_istekler_aciklama),
             ),
-            const Divider(),
+            const SizedBox(height: TayfamSpacing.s16),
             if (liste == null && hata != null) ...[
               HataSatiri.hatadan(hata),
               BirebirTekrarDene(
@@ -61,14 +62,20 @@ class MesajIstekleriEkrani extends ConsumerWidget {
               if (istekler.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    vertical: TayfamSpacing.s16,
+                    horizontal: TayfamSpacing.s4,
+                    vertical: TayfamSpacing.s8,
                   ),
                   child: BirebirAciklama(m.birebir_istekler_bos),
-                ),
-              for (final k in istekler)
-                KonusmaSatiri(
-                  konusma: k,
-                  onTap: () => context.go(Adresler.birebirKonusma(k.id)),
+                )
+              else
+                ListeKarti(
+                  children: [
+                    for (final k in istekler)
+                      KonusmaSatiri(
+                        konusma: k,
+                        onTap: () => context.go(Adresler.birebirKonusma(k.id)),
+                      ),
+                  ],
                 ),
               if (liste.dahaHatasi case final dahaHatasi?) ...[
                 HataSatiri.hatadan(dahaHatasi),
@@ -77,15 +84,22 @@ class MesajIstekleriEkrani extends ConsumerWidget {
                 BirebirYukleniyor(etiket: m.birebir_yukleniyor)
               else if (liste.dahaVar)
                 Center(
-                  child: TextButton(
+                  child: BaglantiEylemi(
+                    etiket: m.birebir_daha_fazla,
                     onPressed: () => _dahaFazla(ref),
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                    ),
-                    child: Text(m.birebir_daha_fazla),
                   ),
                 ),
             ],
+            const SizedBox(height: TayfamSpacing.s16),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: BaglantiEylemi(
+                etiket: m.birebir_reddedilenler,
+                ikon: Icons.block_outlined,
+                renk: context.renkler.metinIkincil,
+                onPressed: () => context.go(Adresler.reddedilenler),
+              ),
+            ),
           ],
         ),
       ),
