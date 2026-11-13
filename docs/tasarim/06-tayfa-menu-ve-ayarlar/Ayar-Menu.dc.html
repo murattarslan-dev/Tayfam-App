@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tayfa menüsü üye</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0;text-decoration:none}a:hover{color:#1B1036}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036">
+<div aria-hidden="true" style="background: #5B2BE0; padding: 52px 16px 96px; display: flex; align-items: center; gap: 12px">
+<span style="width: 44px; height: 44px; border-radius: 14px; background: #3D8BEA; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800">P</span>
+<span style="display: flex; flex-direction: column; gap: 2px; color: #FFFFFF"><span style="font-size: 21px; font-weight: 750; letter-spacing: -0.02em">Pazar Balıkçıları</span><span style="font-size: 14px; color: #ECE4FF">12 üye</span></span>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(27,16,54,.55)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="menu-baslik" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; background: #FFFFFF; border-radius: 28px 28px 0 0; padding: 12px 16px 28px; display: flex; flex-direction: column; gap: 4px">
+<div aria-hidden="true" style="width: 40px; height: 5px; border-radius: 999px; background: #E6E1F5; align-self: center; margin-bottom: 12px"></div>
+<h2 id="menu-baslik" style="margin: 0 8px 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Pazar Balıkçıları</h2>
+<button type="button" style="min-height: 64px; border: none; border-radius: 16px; background: transparent; padding: 8px; display: flex; align-items: center; gap: 14px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; flex: none; border-radius: 12px; background: #ECE4FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 V11 A6 6 0 0 1 15.2 6"></path><path d="M18 11 V16 L19.5 18 H4.5"></path><path d="M10 21 H14"></path><path d="M3 3 L21 21"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">Bildirimleri sessize al</span><span style="font-size: 14px; color: #5A5275">Tayfada kalırsın, yalnızca bildirim gelmez</span></span>
+</button>
+<button type="button" style="min-height: 64px; border: none; border-radius: 16px; background: transparent; padding: 8px; display: flex; align-items: center; gap: 14px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; flex: none; border-radius: 12px; background: #ECE4FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 V4"></path><path d="M5 4 H17 L15 8 L17 12 H5"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">Tayfayı şikâyet et</span><span style="font-size: 14px; color: #5A5275">Yalnızca Tayfam ekibi görür, yöneticiler görmez</span></span>
+</button>
+<div style="border-top: 1px solid #E6E1F5; margin: 8px 0 0; padding-top: 8px">
+<button type="button" style="width: 100%; min-height: 64px; border: none; border-radius: 16px; background: transparent; padding: 8px; display: flex; align-items: center; gap: 14px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; flex: none; border-radius: 12px; background: #FFE1E8; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B0123A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4 H18 A2 2 0 0 1 20 6 V18 A2 2 0 0 1 18 20 H14"></path><path d="M9 8 L4 12 L9 16"></path><path d="M4 12 H15"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 700">Tayfadan ayrıl</span><span style="font-size: 14px; color: #5A5275">Yeniden katılmak için kod ya da davet gerekir</span></span>
+</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

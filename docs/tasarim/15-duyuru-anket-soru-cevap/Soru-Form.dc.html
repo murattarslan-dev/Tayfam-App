@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Soru sor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0;text-decoration:none}a:hover{color:#1B1036}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036">
+<div style="padding-top: 48px"><div style="height: 56px; display: flex; align-items: center; gap: 4px; padding: 0 12px 0 8px">
+<button type="button" aria-label="Kapat" style="width: 48px; height: 48px; border-radius: 999px; border: none; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B1036" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6 L18 18"></path><path d="M18 6 L6 18"></path></svg></button>
+<span style="flex: 1; font-size: 19px; font-weight: 700">Soru sor</span>
+<button type="button" style="height: 44px; padding: 0 18px; border-radius: 999px; border: none; background: #5B2BE0; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700">Sor</button>
+</div></div>
+<div style="padding: 8px 20px 0; display: flex; flex-direction: column; gap: 16px">
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 15px; font-weight: 700">Sorun</span><span style="min-height: 54px; box-sizing: border-box; border-radius: 14px; border: 2px solid #5B2BE0; background: #FFFFFF; padding: 0 16px; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; color: #1B1036"><span style="flex: 1">Karbüratör ayarını kim yapıyor İstanbul'da?</span></span><span style="font-size: 13px; color: #5A5275; text-align: right">44/150</span></label>
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 15px; font-weight: 700">Ayrıntı (isteğe bağlı)</span><span style="min-height: 130px; box-sizing: border-box; border-radius: 14px; border: 1.5px solid #E6E1F5; background: #FFFFFF; padding: 14px 16px; font-size: 16px; line-height: 1.55">1972 Anadol, rölantide stop ediyor. Weber çift gövde. Usta önerisi olan?</span></label>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 15px; font-weight: 700">Etiketler <span style="font-weight: 500; color: #5A5275">(en çok 5)</span></span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="height: 36px; padding: 0 6px 0 12px; border-radius: 999px; background: #ECE4FF; color: #5B2BE0; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 2px">bakım<button type="button" aria-label="bakım etiketini kaldır" style="width: 28px; height: 28px; border: none; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6 L18 18"></path><path d="M18 6 L6 18"></path></svg></button></span><span style="height: 36px; padding: 0 6px 0 12px; border-radius: 999px; background: #ECE4FF; color: #5B2BE0; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 2px">parça<button type="button" aria-label="parça etiketini kaldır" style="width: 28px; height: 28px; border: none; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6 L18 18"></path><path d="M18 6 L6 18"></path></svg></button></span></div>
+<div style="display: flex; gap: 8px"><span style="flex: 1; height: 48px; border-radius: 14px; border: 1.5px solid #E6E1F5; background: #FFFFFF; padding: 0 14px; display: flex; align-items: center; font-size: 15px; color: #5A5275">Etiket yaz</span><button type="button" style="height: 40px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #E6E1F5; background: #FFFFFF; color: #5B2BE0; font-family: inherit; font-size: 14px; font-weight: 700; flex: none">Ekle</button></div>
+<span style="font-size: 13px; font-weight: 700; color: #5A5275">Tayfadaki etiketler</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="height: 32px; padding: 0 12px; border-radius: 999px; background: #FFFFFF; border: 1.5px solid #E6E1F5; color: #1B1036; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; flex: none">sigorta</span><span style="height: 32px; padding: 0 12px; border-radius: 999px; background: #FFFFFF; border: 1.5px solid #E6E1F5; color: #1B1036; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; flex: none">muayene</span><span style="height: 32px; padding: 0 12px; border-radius: 999px; background: #FFFFFF; border: 1.5px solid #E6E1F5; color: #1B1036; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; flex: none">boya</span><span style="height: 32px; padding: 0 12px; border-radius: 999px; background: #FFFFFF; border: 1.5px solid #E6E1F5; color: #1B1036; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; flex: none">lastik</span></div></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

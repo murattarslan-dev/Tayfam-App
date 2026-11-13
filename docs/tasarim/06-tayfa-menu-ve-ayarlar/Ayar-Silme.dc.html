@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Silme planlanmış tayfa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0;text-decoration:none}a:hover{color:#1B1036}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036">
+<div style="background: #5B2BE0; padding: 52px 16px 24px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px; color: #FFFFFF">
+<span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 14px; background: #FF3D68; color: #1B1036; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800">C</span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 21px; font-weight: 750; letter-spacing: -0.02em">Cumartesi Halısaha</span><span style="font-size: 14px; color: #ECE4FF">14 üye</span></span>
+</div>
+<div role="status" style="background: #1B1036; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.45; color: #FFFFFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none; margin-top: 1px" aria-hidden="true"><path d="M4 7 H20"></path><path d="M9 7 V4.5 H15 V7"></path><path d="M6 7 L7 20 H17 L18 7"></path></svg>Tayfa 16 Kasım, 15:52 sonrasında silinecek. O zamana kadar yalnızca okunabilir.</span>
+<button type="button" style="align-self: flex-start; height: 44px; padding: 0 18px; border-radius: 999px; border: none; background: #FFB000; color: #1B1036; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Silmeyi iptal et</button>
+</div>
+</div>
+<div style="padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; opacity: .6" aria-hidden="true">
+<span style="font-size: 20px; font-weight: 700">Yaklaşan</span>
+<div style="background: #FFFFFF; border: 1px solid #E6E1F5; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 17px; font-weight: 700">Cumartesi maçı</span>
+<span style="font-size: 14px; color: #5A5275">Spor · Cumartesi 20:00 · Kadıköy</span>
+</div>
+</div>
+<p style="margin: 0 20px; font-size: 14px; line-height: 1.5; color: #3F3758">Üyeler bu sürede içeriği görebilir ama yeni etkinlik, duyuru ya da mesaj ekleyemez. Silmeyi herhangi bir yönetici iptal edebilir.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
