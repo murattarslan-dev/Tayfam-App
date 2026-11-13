@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kayıt onaylar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0}a:hover{color:#1B1036}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036; display: flex; flex-direction: column; padding: 48px 24px 32px">
+<div style="height: 48px; display: flex; align-items: center; justify-content: space-between">
+<button type="button" aria-label="Geri" style="width: 44px; height: 44px; border-radius: 999px; border: none; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: -10px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B1036" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 L8 12 L15 19"></path></svg></button>
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true">
+<path d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+<path d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#5B2BE0"></path>
+</svg>
+<span style="font-size: 13px; font-weight: 700; color: #5A5275">Adım 4 / 4</span>
+</div>
+<div style="width: 44px"></div>
+</div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 20px; padding-top: 28px">
+<div style="display: flex; justify-content: flex-end">
+<div style="background: #5B2BE0; color: #FFFFFF; border-radius: 18px 18px 6px 18px; padding: 10px 16px; font-size: 17px; line-height: 1.45">Kodum yok</div>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-end">
+<svg width="36" height="36" viewBox="0 0 100 100" style="flex: none" aria-hidden="true"><defs><clipPath id="av"><circle cx="50" cy="50" r="48"></circle></clipPath></defs><g clip-path="url(#av)"><path d="M0 0 H40 V26 Q40 32 34 32 H0 Z" fill="#FFB000"></path><path d="M52 0 H100 V32 H58 Q52 32 52 26 Z" fill="#FF3D68"></path><path d="M60 44 H100 V64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path><path d="M0 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H100 V100 H0 Z" fill="#5B2BE0"></path></g></svg>
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 290px">
+<div style="background: #ECE4FF; border-radius: 18px 18px 18px 6px; padding: 12px 16px; font-size: 17px; line-height: 1.45">Sorun değil. Son bir adım kaldı.</div>
+<div style="background: #ECE4FF; border-radius: 18px 18px 18px 6px; padding: 12px 16px; font-size: 17px; line-height: 1.45">Herkes rahat etsin diye iki metnimiz var. Göz atıp onaylar mısın?</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px">
+<div style="background: #FFFFFF; border: 1.5px solid #5B2BE0; border-radius: 14px; padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start">
+<input id="aydinlatma" type="checkbox" checked="checked" style="width: 24px; height: 24px; margin: 2px 0 0; accent-color: #5B2BE0; flex: none">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="aydinlatma" style="font-size: 17px; font-weight: 600; line-height: 1.35">Aydınlatma Metni'ni okudum.</label>
+<a href="https://tayfam.app/yasal/aydinlatma-metni/" style="font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; min-height: 32px">Metni aç<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4 H20 V10"></path><path d="M20 4 L11 13"></path><path d="M18 14 V19 a1 1 0 0 1 -1 1 H5 a1 1 0 0 1 -1 -1 V7 a1 1 0 0 1 1 -1 H10"></path></svg></a>
+</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E6E1F5; border-radius: 14px; padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start">
+<input id="kosullar" type="checkbox" style="width: 24px; height: 24px; margin: 2px 0 0; accent-color: #5B2BE0; flex: none">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="kosullar" style="font-size: 17px; font-weight: 600; line-height: 1.35">Kullanım Koşulları'nı kabul ediyorum.</label>
+<a href="https://tayfam.app/yasal/kullanim-kosullari/" style="font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; min-height: 32px">Metni aç<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4 H20 V10"></path><path d="M20 4 L11 13"></path><path d="M18 14 V19 a1 1 0 0 1 -1 1 H5 a1 1 0 0 1 -1 -1 V7 a1 1 0 0 1 1 -1 H10"></path></svg></a>
+</div>
+</div>
+</div>
+</div>
+<button type="button" disabled="disabled" style="height: 52px; width: 100%; border-radius: 999px; border: none; background: #E6E1F5; color: #5A5275; font-family: inherit; font-size: 17px; font-weight: 700">Tanışmayı tamamla</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

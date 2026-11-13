@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Splash animasyonu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FFFFFF}a:hover{color:#FFB000}
+.tf-b{transform-box:fill-box;transform-origin:center;animation-duration:420ms;animation-timing-function:cubic-bezier(.2,.9,.3,1.25);animation-fill-mode:both}
+.tf-l{animation-name:tf-l;animation-delay:0ms}
+.tf-tl{animation-name:tf-tl;animation-delay:80ms}
+.tf-tr{animation-name:tf-tr;animation-delay:140ms}
+.tf-br{animation-name:tf-br;animation-delay:200ms}
+.tf-wm{animation:tf-up 300ms ease-out 520ms both}
+@keyframes tf-l{from{opacity:0;transform:translate(-6px,8px) scale(.7)}to{opacity:1;transform:none}}
+@keyframes tf-tl{from{opacity:0;transform:translate(-14px,-14px) scale(.5)}to{opacity:1;transform:none}}
+@keyframes tf-tr{from{opacity:0;transform:translate(14px,-14px) scale(.5)}to{opacity:1;transform:none}}
+@keyframes tf-br{from{opacity:0;transform:translate(16px,6px) scale(.5)}to{opacity:1;transform:none}}
+@keyframes tf-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.tf-b,.tf-wm{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #5B2BE0; font-family: 'Bricolage Grotesque', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 24px 0 56px">
+<button type="button" onClick="{{replay}}" style="height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4); background: transparent; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; align-self: flex-end; margin-right: 16px">Tekrar oynat</button>
+<sc-if value="{{even}}" hint-placeholder-val="{{ true }}">
+<svg width="120" height="120" viewBox="0 0 100 100" role="img" aria-label="Tayfam">
+<path class="tf-b tf-l" d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#FAF8FF"></path>
+<path class="tf-b tf-tl" d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path class="tf-b tf-tr" d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path class="tf-b tf-br" d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+</svg>
+</sc-if>
+<sc-if value="{{odd}}" hint-placeholder-val="{{ false }}">
+<svg width="120" height="120" viewBox="0 0 100 100" role="img" aria-label="Tayfam">
+<path class="tf-b tf-l" d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#FAF8FF"></path>
+<path class="tf-b tf-tl" d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path class="tf-b tf-tr" d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path class="tf-b tf-br" d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+</svg>
+</sc-if>
+<div style="height: 80px; display: flex; align-items: flex-end">
+<sc-if value="{{even}}" hint-placeholder-val="{{ true }}">
+<span class="tf-wm" style="display: block; font-size: 34px; font-weight: 800; letter-spacing: -0.045em; line-height: 1; color: #FFFFFF">tayfam</span>
+</sc-if>
+<sc-if value="{{odd}}" hint-placeholder-val="{{ false }}">
+<span class="tf-wm" style="display: block; font-size: 34px; font-weight: 800; letter-spacing: -0.045em; line-height: 1; color: #FFFFFF">tayfam</span>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { n: 0 };
+  }
+  renderVals() {
+    const n = this.state.n;
+    return {
+      even: n % 2 === 0,
+      odd: n % 2 === 1,
+      replay: () => this.setState({ n: n + 1 })
+    };
+  }
+}
+</script>
+</body>
+</html>

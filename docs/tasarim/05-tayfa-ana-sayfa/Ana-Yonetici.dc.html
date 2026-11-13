@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tayfa ana sayfası yönetici</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0;text-decoration:none}a:hover{color:#1B1036}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036">
+<div aria-hidden="true">
+<div style="background: #5B2BE0; padding: 52px 16px 96px; display: flex; align-items: center; gap: 12px">
+<span style="width: 44px; height: 44px; flex: none; border-radius: 14px; background: #FFB000; color: #1B1036; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800">K</span>
+<span style="display: flex; flex-direction: column; gap: 2px; color: #FFFFFF"><span style="font-size: 21px; font-weight: 750; letter-spacing: -0.02em">Klasik Otomobil Kulübü</span><span style="font-size: 14px; color: #ECE4FF">128 üye</span></span>
+</div>
+<div style="margin: -76px 16px 0; background: #FFFFFF; border: 1px solid #E6E1F5; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 24px; font-weight: 750; letter-spacing: -0.02em">Şile sahil konvoyu</span>
+<span style="font-size: 15px; color: #3F3758">Cumartesi, 22 Kasım · 09:30</span>
+<span style="font-size: 15px"><b>24 kişi geliyor</b> · 40 kişilik</span>
+</div>
+</div>
+<a href="#istekler" style="margin: 16px 16px 0; min-height: 64px; box-sizing: border-box; border-radius: 22px; background: #FFF0CC; padding: 12px 16px; display: flex; align-items: center; gap: 12px; color: #1B1036">
+<span aria-hidden="true" style="width: 40px; height: 40px; flex: none; border-radius: 999px; background: #FFB000; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20 C2.5 16.4 5.4 13.5 9 13.5 C11 13.5 12.8 14.4 14 15.8"></path><path d="M19 13 V21"></path><path d="M15 17 H23"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">3 kişi katılmak istiyor</span><span style="font-size: 14px; color: #7A5A1E">Kimin davetiyle geldiklerini görebilirsin</span></span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1036" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5 L16 12 L9 19"></path></svg>
+</a>
+<div style="position: absolute; inset: 0; background: rgba(27,16,54,.55)"></div>
+<div role="dialog" aria-modal="true" aria-labelledby="olustur-baslik" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; background: #FFFFFF; border-radius: 28px 28px 0 0; padding: 12px 16px 28px; display: flex; flex-direction: column; gap: 16px">
+<div aria-hidden="true" style="width: 40px; height: 5px; border-radius: 999px; background: #E6E1F5; align-self: center"></div>
+<h2 id="olustur-baslik" style="margin: 0 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Tayfaya ne ekleyelim?</h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button type="button" style="min-height: 104px; box-sizing: border-box; border-radius: 18px; border: 1px solid #E6E1F5; background: #FFFFFF; padding: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: #ECE4FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"></rect><path d="M3.5 10 H20.5"></path><path d="M8 3 V7"></path><path d="M16 3 V7"></path><path d="M12 13 V17"></path><path d="M10 15 H14"></path></svg></span>
+<span style="font-size: 16px; font-weight: 700">Etkinlik aç</span><span style="font-size: 13px; line-height: 1.35; color: #5A5275">Konvoy, kamp, maç…</span>
+</button>
+<button type="button" style="min-height: 104px; box-sizing: border-box; border-radius: 18px; border: 1px solid #E6E1F5; background: #FFFFFF; padding: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: #ECE4FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 V14 H7 L14 18.5 V5.5 L7 10 Z"></path><path d="M17.5 9 A4 4 0 0 1 17.5 15"></path></svg></span>
+<span style="font-size: 16px; font-weight: 700">Duyuru yaz</span><span style="font-size: 13px; line-height: 1.35; color: #5A5275">Herkes görsün, sabitle</span>
+</button>
+<button type="button" style="min-height: 104px; box-sizing: border-box; border-radius: 18px; border: 1px solid #E6E1F5; background: #FFFFFF; padding: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: #ECE4FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2.2" stroke-linecap="round"><path d="M5 20 V11"></path><path d="M12 20 V5"></path><path d="M19 20 V14"></path></svg></span>
+<span style="font-size: 16px; font-weight: 700">Anket aç</span><span style="font-size: 13px; line-height: 1.35; color: #5A5275">Gün, yer, karar sor</span>
+</button>
+<button type="button" style="min-height: 104px; box-sizing: border-box; border-radius: 18px; border: 1px solid #E6E1F5; background: #FFFFFF; padding: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; font-family: inherit; color: #1B1036; cursor: pointer">
+<span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 12px; background: #ECE4FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.5 9.5 A2.5 2.5 0 1 1 13 11.8 C12.3 12.1 12 12.7 12 13.4 V14"></path><path d="M12 17.3 V17.4"></path></svg></span>
+<span style="font-size: 16px; font-weight: 700">Soru sor</span><span style="font-size: 13px; line-height: 1.35; color: #5A5275">Tayfanın bilgisine danış</span>
+</button>
+</div>
+<div style="border-top: 1px solid #E6E1F5; padding-top: 12px; display: flex; align-items: center; gap: 12px; padding-left: 8px">
+<span aria-hidden="true" style="width: 40px; height: 40px; flex: none; border-radius: 12px; background: #DDF7F2; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B6B5D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20 C2.5 16.4 5.4 13.5 9 13.5 C11 13.5 12.8 14.4 14 15.8"></path><path d="M19 13 V21"></path><path d="M15 17 H23"></path></svg></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">Tayfaya davet et</span><span style="font-size: 14px; color: #5A5275">Kod: <b style="color: #1B1036; letter-spacing: 0.06em">KLASIK35</b></span></span>
+<button type="button" style="height: 44px; padding: 0 16px; border-radius: 999px; border: none; background: #5B2BE0; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">Paylaş</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

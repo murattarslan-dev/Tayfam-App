@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tayfa kur vazgeç</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0;text-decoration:none}a:hover{color:#1B1036}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036">
+<div aria-hidden="true">
+<div style="padding-top: 48px">
+<div style="height: 56px; display: flex; align-items: center; gap: 4px; padding: 0 8px">
+<button type="button" aria-label="Kapat" style="width: 48px; height: 48px; border-radius: 999px; border: none; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B1036" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6 L18 18"></path><path d="M18 6 L6 18"></path></svg></button>
+<span style="flex: 1; font-size: 18px; font-weight: 700">Tayfa kur</span>
+<span style="font-size: 14px; font-weight: 600; color: #5A5275; padding-right: 12px">Adım 1 / 3</span>
+</div>
+<div aria-hidden="true" style="margin: 4px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px"><span style="height: 6px; border-radius: 999px; background: #5B2BE0"></span><span style="height: 6px; border-radius: 999px; background: #E6E1F5"></span><span style="height: 6px; border-radius: 999px; background: #E6E1F5"></span></div>
+</div>
+<div style="padding: 20px 20px 8px"><h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15">Tayfanın adı ne?</h1><p style="margin: 6px 0 0; font-size: 15px; line-height: 1.5; color: #3F3758">Üyeler tayfanı bu adla görür; sonra değiştirebilirsin.</p></div>
+<div style="padding: 8px 20px 0; display: flex; flex-direction: column; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 15px; font-weight: 700">Tayfa adı</span><span style="min-height: 54px; box-sizing: border-box; border-radius: 14px; border: 2px solid #5B2BE0; background: #FFFFFF; padding: 0 16px; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; color: #1B1036"><span style="flex: 1">Klasik Otomobil Kulübü</span></span><span style="font-size: 13px; color: #5A5275; text-align: right">22/50</span></label>
+<span style="font-size: 13px; font-weight: 700; color: #5A5275; margin-top: 6px">Örnekler</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #E6E1F5; background: #FFFFFF; color: #1B1036; font-family: inherit; font-size: 14px; font-weight: 600">Cumartesi Halısaha</button><button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #E6E1F5; background: #FFFFFF; color: #1B1036; font-family: inherit; font-size: 14px; font-weight: 600">Kampçı Tayfa</button><button type="button" style="height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #E6E1F5; background: #FFFFFF; color: #1B1036; font-family: inherit; font-size: 14px; font-weight: 600">Pazar Yürüyüşçüleri</button></div>
+</div>
+<div style="height: 22px"></div>
+<div style="margin: 0 20px; border-radius: 18px; background: #ECE4FF; padding: 12px 14px; display: flex; align-items: center; gap: 12px"><span aria-hidden="true" style="width: 44px; height: 44px; border-radius: 14px; background: #E6E1F5; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800; color: #1B1036">K</span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #5A5275">Tayfa listesinde böyle görünecek</span><span style="font-size: 17px; font-weight: 750">Klasik Otomobil Kulübü</span></span></div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FAF8FF; border-top: 1px solid #E6E1F5; padding: 12px 16px 28px; display: flex; gap: 8px"><button type="button" style="flex: 1; height: 52px; border-radius: 999px; border: none; background: #5B2BE0; color: #FFFFFF; font-family: inherit; font-size: 17px; font-weight: 700">İleri</button></div>
+</div><div style="position: absolute; inset: 0; background: rgba(27,16,54,.55)"></div>
+<div role="alertdialog" aria-modal="true" aria-labelledby="vz" style="position: absolute; left: 24px; right: 24px; top: 260px; background: #FFFFFF; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="vz" style="margin: 0; font-size: 21px; font-weight: 750">Tayfa kurmaktan vazgeçilsin mi?</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #3F3758">Girdiklerin silinir.</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px"><button type="button" style="height: 48px; border-radius: 12px; border: 1.5px solid #E6E1F5; background: #FFFFFF; color: #1B1036; font-family: inherit; font-size: 16px; font-weight: 700">Devam et</button><button type="button" style="height: 48px; border-radius: 12px; border: none; background: #B0123A; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 700">Vazgeç</button></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

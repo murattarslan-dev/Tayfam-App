@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yükleniyor animasyonu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#5B2BE0}a:hover{color:#1B1036}
+.wv,.br{transform-box:fill-box;transform-origin:center;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+.wv{animation-name:ld-wave;animation-duration:1400ms}
+.wv-tl{animation-delay:0ms}.wv-tr{animation-delay:175ms}.wv-br{animation-delay:350ms}.wv-l{animation-delay:525ms}
+@keyframes ld-wave{0%,40%,100%{transform:none;opacity:1}20%{transform:scale(.7);opacity:.45}}
+.br{animation-duration:1600ms}
+.br-tl{animation-name:br-tl}.br-tr{animation-name:br-tr}.br-br{animation-name:br-br}.br-l{animation-name:br-l}
+@keyframes br-tl{0%,100%{transform:none}50%{transform:translate(-4px,-4px)}}
+@keyframes br-tr{0%,100%{transform:none}50%{transform:translate(4px,-4px)}}
+@keyframes br-br{0%,100%{transform:none}50%{transform:translate(4px,2px)}}
+@keyframes br-l{0%,100%{transform:none}50%{transform:translate(-3px,3px)}}
+@media (prefers-reduced-motion: reduce){.wv,.br{animation:none}}
+</style>
+</helmet>
+<div style="width: 1040px; height: 640px; box-sizing: border-box; padding: 40px; background: #FFFFFF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em">Yükleniyor animasyonu</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #5A5275; max-width: 70ch">Splash'teki bloklardan türetilmiş iki döngü. İkisi de logonun kendisi; ayrı bir spinner yok. Kullanım yerine göre dört bağlamda gösterildi.</p>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 16px">
+<div style="width: 200px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 17px; font-weight: 700">{{r.name}}</span>
+<span style="font-size: 13px; line-height: 1.4; color: #5A5275">{{r.note}}</span>
+</div>
+<div style="width: 170px; height: 200px; box-sizing: border-box; border-radius: 22px; background: #FAF8FF; border: 1px solid #E6E1F5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px">
+<svg width="72" height="72" viewBox="0 0 100 100" role="img" aria-label="Yükleniyor">
+<path class="{{r.p}} {{r.p}}-l" d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#5B2BE0"></path>
+<path class="{{r.p}} {{r.p}}-tl" d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path class="{{r.p}} {{r.p}}-tr" d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path class="{{r.p}} {{r.p}}-br" d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+</svg>
+<span style="font-size: 13px; font-weight: 600; color: #5A5275">Tam ekran · açık</span>
+</div>
+<div style="width: 170px; height: 200px; box-sizing: border-box; border-radius: 22px; background: #1B1036; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px">
+<svg width="72" height="72" viewBox="0 0 100 100" role="img" aria-label="Yükleniyor">
+<path class="{{r.p}} {{r.p}}-l" d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#A98BFF"></path>
+<path class="{{r.p}} {{r.p}}-tl" d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path class="{{r.p}} {{r.p}}-tr" d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path class="{{r.p}} {{r.p}}-br" d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+</svg>
+<span style="font-size: 13px; font-weight: 600; color: #B4ABD1">Tam ekran · koyu</span>
+</div>
+<div style="width: 170px; height: 200px; box-sizing: border-box; border-radius: 22px; background: #FAF8FF; border: 1px solid #E6E1F5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 12px">
+<button type="button" disabled="disabled" style="height: 48px; width: 100%; border-radius: 999px; border: none; background: #5B2BE0; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px">
+<svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true">
+<path class="{{r.p}} {{r.p}}-l" d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#FAF8FF"></path>
+<path class="{{r.p}} {{r.p}}-tl" d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path class="{{r.p}} {{r.p}}-tr" d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path class="{{r.p}} {{r.p}}-br" d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+</svg>
+Kaydediliyor
+</button>
+<span style="font-size: 13px; font-weight: 600; color: #5A5275">Düğme içi · 22 px</span>
+</div>
+<div style="width: 170px; height: 200px; box-sizing: border-box; border-radius: 22px; background: #FAF8FF; border: 1px solid #E6E1F5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 12px">
+<div style="width: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E6E1F5; border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 10px">
+<svg width="32" height="32" viewBox="0 0 100 100" aria-hidden="true">
+<path class="{{r.p}} {{r.p}}-l" d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#5B2BE0"></path>
+<path class="{{r.p}} {{r.p}}-tl" d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"></path>
+<path class="{{r.p}} {{r.p}}-tr" d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"></path>
+<path class="{{r.p}} {{r.p}}-br" d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"></path>
+</svg>
+<span style="font-size: 13px; font-weight: 600; color: #3F3758; line-height: 1.3">Yeni mesajlar yükleniyor</span>
+</div>
+<span style="font-size: 13px; font-weight: 600; color: #5A5275">Yenileme · 32 px</span>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1040,"height":640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      rows: [
+        { name: 'A · Dalga', note: 'Bloklar saat yönünde sırayla küçülüp geri gelir. Hareketli, ne olduğu net okunur; küçük boyutta da çalışır.', p: 'wv' },
+        { name: 'B · Nefes', note: 'Bloklar merkezden açılıp toplanır, t nefes alır gibi belirginleşir. Daha sakin; uzun beklemelerde yormaz.', p: 'br' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
