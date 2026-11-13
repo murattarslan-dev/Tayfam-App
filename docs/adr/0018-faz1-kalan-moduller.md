@@ -256,6 +256,45 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi; issue #151): Bildirimler sekmesi ve
+  bildirim ayarları yeniden tasarımı (§3).** Tasarım: Bildirimler,
+  Bildirimler-Koyu, Bildirimler-Bos, Bildirim-Ayarlari.
+  - **Gruplama ve satır:** liste zamana göre gruplanır (Bugün / Dün / Bu
+    hafta / Daha eski; cihaz saat diliminde takvim günü, "Bu hafta" son 7
+    gün). Satırda kategori renginde tür ikonu (ADR-0004 Notlar
+    2026-11-13, bildirim kategorisi renkleri), türden kurulan metin, tayfa
+    adı etiketi ve göreli zaman (bugün ve dün saat, bu hafta gün adı,
+    sonra "3 Kas"). Okunmamışta tint zemin, kalın metin ve "Okunmadı"
+    etiketli nokta. Dokununca okundu + `bildirimAdresi`. Altta "Bildirimler
+    90 gün saklanır." (sözleşme).
+  - **Satır içi işlem:** arkadaşlık isteğinde Reddet / Kabul et, tayfa
+    davetinde Reddet / Katıl (mevcut `/v1/me/friend-requests…` ve
+    `/v1/me/invitations…` uçları; istekler ve davetler ekranlarıyla aynı
+    sonrası). Sonuç düğmelerin yerinde teal tikle görünür ("Artık
+    arkadaşsınız", "Katıldın", onaylı tayfada "İsteğin gönderildi",
+    "Reddedildi") ve bildirim okundu olur. Katılım isteğinde "İncele"
+    tayfanın katılım istekleri ekranını açar. Sonuç yalnızca bellektedir:
+    sözleşmede bildirimin işlem durumu yoktur, liste yeniden açılınca
+    düğmeler yine görünür ve sunucu güncel durumu hata olarak bildirir.
+  - **Güvenlik uyarısı:** okunmamış `hike_overdue` listenin en üstünde
+    sabit nar karttadır (birden çoksa alt alta): kişinin adı, etkinliğin
+    adı (`GET …/events/{event_id}`; yalnızca ad, bellekte), tayfa ve
+    zaman. "Yoklamayı aç" okundu işaretler ve etkinliğin detayını açar;
+    detayda yoklama bölümüne kaydırma yoktur (detay ekranında bölüm
+    bağlantısı yok).
+  - **Başlık ve kartlar:** "Hepsini okundu say" yalnızca okunmamış varken
+    başlıkta. İzin verilmemişse ve açıklama kartı daha önce kapatılmadıysa
+    (ADR-0019 §3 bayrağı) listenin üstünde mor izin kartı; "Şimdi değil"
+    mevcut erteleme kuralıdır. Boş durumda logo, "Henüz bildirimin yok."
+    ve açıklama. Okunmamış/tümü filtresi yok (sözleşmede süzme yok).
+  - **Bildirim ayarları (Profil):** cihaz izni durumu ve sistem ayarları
+    bağlantısı; sessize alınan tayfalar (`GET /v1/notification-preferences`,
+    seviye `none` ya da `mentions`, süresi dolmamış; adlar tayfalarım
+    listesinden) ve "Sesi aç" (`DELETE …/tayfas/{tayfa_id}`); birebir
+    konuşmalar için yalnızca sessizdeki sayı ve "⋯ menüsünden" yönlendirmesi;
+    gizlilik notu. Sessize alma yine tayfa ve konuşma menüsündedir.
+  - **Kesin kural 7:** DM bildiriminde (`dm_request`, `dm_message`)
+    gönderen yoktur; metin türden kurulur, kişi adı istenmez.
 - **2026-11-13 (platform sahibi; issue #156): Soru-cevap ekranları yeniden
   tasarımı (§4).** Tasarım: Sorular, Soru-Detay, Soru-Form, Cevap-Form
   (`docs/tasarim/15-duyuru-anket-soru-cevap/`).

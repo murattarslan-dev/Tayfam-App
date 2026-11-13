@@ -14,6 +14,8 @@
 ///   kancasıdır (profil paketi verir).
 library;
 
+export 'package:tayfam/features/arkadas/application/bildirim_yanitlari.dart'
+    show BildirimYanitlari, DavetYaniti, bildirimYanitlariProvider;
 export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'
     show
         KisiProfiliBilgisi,

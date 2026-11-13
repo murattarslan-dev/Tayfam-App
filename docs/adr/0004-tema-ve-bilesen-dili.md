@@ -267,3 +267,13 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
      `SayiRozeti`, `YikiciEylem`, `Etiket` (marka, mango, teal, nar
      tonları), `ListeKarti`. Renk yine tek başına bilgi taşımaz: etiketler
      metinli, rozetlerin ekran okuyucu etiketi vardır.
+- **2026-11-13 (platform sahibi, issue #151; tasarım: Bildirimler):
+  bildirim kategorisi renkleri.** Bildirim satırındaki tür ikonu kategori
+  renginde bir tint kutudadır (etkinlik mango, duyuru/soru/hesap marka,
+  mesaj turkuaz, iptal/uyarı nar, arkadaşlık ve davet mavi). Mavi için
+  yeni token: `tintMavi` (açık #DCEBFB, koyu #1B3350) ve `tintMaviUstu`
+  (açık #1F5FB0, 5.2:1; koyu #8FC1FF, 6.9:1). Okunmamış satırın zemini
+  `okunmamisSatir` (açık tint-brand #ECE4FF, koyu #2E2156; beyaz 14.3:1,
+  text-muted-dark 6.6:1). Okunmamışlık renkle birlikte kalın metin ve
+  "Okunmadı" etiketli noktayla gösterilir. Değerler `kontrast_test.dart`
+  ve `tayfam_colors_test.dart`'ta korunur.
