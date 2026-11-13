@@ -324,6 +324,9 @@ class _SessizTayfaSatiri extends ConsumerStatefulWidget {
   ConsumerState<_SessizTayfaSatiri> createState() => _SessizTayfaSatiriState();
 }
 
+/// Bu yazı ölçeğinin üstünde "Sesi aç" satırın altına iner.
+const double _buyukYaziOrani = 1.3;
+
 class _SessizTayfaSatiriState extends ConsumerState<_SessizTayfaSatiri> {
   bool _isleniyor = false;
 
@@ -338,36 +341,50 @@ class _SessizTayfaSatiriState extends ConsumerState<_SessizTayfaSatiri> {
     final sure = bitis == null
         ? m.birebir_sessiz_sure_suresiz
         : m.bildirim_ayar_sessiz_bitis(bitis, bitis);
+    final sureMetni = Text.rich(
+      TextSpan(
+        children: [
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: ExcludeSemantics(
+              child: Icon(
+                Icons.notifications_off_outlined,
+                size: TayfamSizes.ikonKucuk,
+                color: r.metinIkincil,
+              ),
+            ),
+          ),
+          const WidgetSpan(child: SizedBox(width: TayfamSpacing.s4)),
+          TextSpan(text: sure),
+        ],
+      ),
+      style: context.yazi.labelSmall?.copyWith(
+        color: r.metinIkincil,
+        fontWeight: FontWeight.w400,
+      ),
+    );
+    final dugme = CerceveliHapEylem(
+      etiket: m.birebir_sessiz_ac,
+      onPressed: _isleniyor ? null : () => unawaited(_sesiAc(ad)),
+    );
+    // Büyük yazıda düğme sağa sığmaz; adın altına iner.
+    final buyukYazi =
+        MediaQuery.textScalerOf(context).scale(1) > _buyukYaziOrani;
     return MenuSatiri.kartta(
       baslik: ad,
       onTap: null,
       ikonKutusu: TayfaAvatari(ad: ad, cap: TayfamSizes.menuIkonKutusu),
-      altOge: Text.rich(
-        TextSpan(
-          children: [
-            WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: ExcludeSemantics(
-                child: Icon(
-                  Icons.notifications_off_outlined,
-                  size: TayfamSizes.ikonKucuk,
-                  color: r.metinIkincil,
-                ),
-              ),
-            ),
-            const WidgetSpan(child: SizedBox(width: TayfamSpacing.s4)),
-            TextSpan(text: sure),
-          ],
-        ),
-        style: context.yazi.labelSmall?.copyWith(
-          color: r.metinIkincil,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      sag: CerceveliHapEylem(
-        etiket: m.birebir_sessiz_ac,
-        onPressed: _isleniyor ? null : () => unawaited(_sesiAc(ad)),
-      ),
+      altOge: buyukYazi
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                sureMetni,
+                const SizedBox(height: TayfamSpacing.s8),
+                dugme,
+              ],
+            )
+          : sureMetni,
+      sag: buyukYazi ? null : dugme,
     );
   }
 

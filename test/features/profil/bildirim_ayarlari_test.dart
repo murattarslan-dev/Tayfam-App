@@ -183,10 +183,7 @@ void main() {
             bitis: DateTime(2026, 11, 20, 18),
           ),
           // Süresi dolmuş: listelenmez.
-          _tercih(
-            _bilinmeyenTayfaId,
-            bitis: DateTime(2026, 11, 12, 18),
-          ),
+          _tercih(_bilinmeyenTayfaId, bitis: DateTime(2026, 11, 12, 18)),
           _tercih(_konusmaId, kapsam: 'dm_conversation'),
         ]),
       );
@@ -230,10 +227,7 @@ void main() {
       ekranBoyutu(tester, yukseklik: 1400);
       await _ac(tester, const BildirimAyarlariEkrani(), SahtePushPlatformu());
       expect(_metin('bildirim_ayar_sessiz_tayfa_yok'), findsOneWidget);
-      expect(
-        find.text('Sessize aldığın birebir konuşma yok.'),
-        findsOneWidget,
-      );
+      expect(find.text('Sessize aldığın birebir konuşma yok.'), findsOneWidget);
     });
 
     for (final tema in [ThemeMode.light, ThemeMode.dark]) {

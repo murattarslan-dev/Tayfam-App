@@ -59,11 +59,10 @@ final class BildirimYanitlari {
 
   /// `DELETE /v1/me/invitations/{tayfa_id}`: davet edene bildirilmez.
   /// Başarıda `null`.
-  Future<Object?> davetiReddet(String tayfaId) =>
-      arkadasIslemi(_ref, () async {
-        await _depo.davetiReddet(tayfaId);
-        _davetlerDegisti();
-      });
+  Future<Object?> davetiReddet(String tayfaId) => arkadasIslemi(_ref, () async {
+    await _depo.davetiReddet(tayfaId);
+    _davetlerDegisti();
+  });
 
   /// Açık davet listesi ve profil rozeti yeniden okunur.
   void _davetlerDegisti() {

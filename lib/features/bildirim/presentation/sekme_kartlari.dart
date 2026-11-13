@@ -98,26 +98,26 @@ class GuvenlikUyarisiKarti extends ConsumerWidget {
                           style: yazi.bodySmall?.copyWith(color: r.metin),
                         ),
                         const SizedBox(height: TayfamSpacing.s8),
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(text: m.bildirim_yoklamayi_ac),
-                              const WidgetSpan(
-                                child: SizedBox(width: TayfamSpacing.s4),
-                              ),
-                              WidgetSpan(
-                                alignment: PlaceholderAlignment.middle,
-                                child: ExcludeSemantics(
-                                  child: Icon(
-                                    Icons.chevron_right,
-                                    size: TayfamSizes.ikonKucuk,
-                                    color: r.narMetin,
-                                  ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                m.bildirim_yoklamayi_ac,
+                                style: yazi.labelLarge?.copyWith(
+                                  color: r.narMetin,
                                 ),
                               ),
-                            ],
-                          ),
-                          style: yazi.labelLarge?.copyWith(color: r.narMetin),
+                            ),
+                            const SizedBox(width: TayfamSpacing.s4),
+                            ExcludeSemantics(
+                              child: Icon(
+                                Icons.chevron_right,
+                                size: TayfamSizes.ikonKucuk,
+                                color: r.narMetin,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

@@ -218,24 +218,26 @@ class _SatirIciCevap extends ConsumerWidget {
       };
       return Semantics(
         liveRegion: true,
-        child: Text.rich(
-          TextSpan(
-            children: [
-              WidgetSpan(
-                alignment: PlaceholderAlignment.middle,
-                child: ExcludeSemantics(
-                  child: Icon(
-                    Icons.check,
-                    size: TayfamSizes.ikonKucuk,
-                    color: r.tintTealUstu,
-                  ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.check,
+                size: TayfamSizes.ikonKucuk,
+                color: r.tintTealUstu,
+              ),
+            ),
+            const SizedBox(width: TayfamSpacing.s4),
+            Flexible(
+              child: Text(
+                metin,
+                style: context.yazi.labelLarge?.copyWith(
+                  color: r.tintTealUstu,
                 ),
               ),
-              const WidgetSpan(child: SizedBox(width: TayfamSpacing.s4)),
-              TextSpan(text: metin),
-            ],
-          ),
-          style: context.yazi.labelLarge?.copyWith(color: r.tintTealUstu),
+            ),
+          ],
         ),
       );
     }

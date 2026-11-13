@@ -103,14 +103,14 @@ void main() {
         _bildirim(bildirimId3, zaman: DateTime(2026, 11, 1, 9)),
       ];
       final gruplar = bildirimleriGrupla(bildirimler, simdi);
-      expect([for (final (grup, _) in gruplar) grup], [
-        BildirimGrubu.bugun,
-        BildirimGrubu.dahaEski,
-      ]);
-      expect([for (final b in gruplar.first.$2) b.id], [
-        bildirimId1,
-        bildirimId2,
-      ]);
+      expect(
+        [for (final (grup, _) in gruplar) grup],
+        [BildirimGrubu.bugun, BildirimGrubu.dahaEski],
+      );
+      expect(
+        [for (final b in gruplar.first.$2) b.id],
+        [bildirimId1, bildirimId2],
+      );
       expect(gruplar.last.$2.single.id, bildirimId3);
     });
 
@@ -119,10 +119,10 @@ void main() {
         _bildirim(bildirimId1, zaman: DateTime(2026, 11, 1, 9)),
         _bildirim(bildirimId2, zaman: DateTime(2026, 11, 12, 9)),
       ], simdi);
-      expect([for (final (grup, _) in gruplar) grup], [
-        BildirimGrubu.dun,
-        BildirimGrubu.dahaEski,
-      ]);
+      expect(
+        [for (final (grup, _) in gruplar) grup],
+        [BildirimGrubu.dun, BildirimGrubu.dahaEski],
+      );
     });
 
     test('boş liste boş grup', () {

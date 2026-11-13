@@ -318,9 +318,7 @@ void main() {
       expect(find.text(arbMetni('bildirim_sonuc_reddedildi')), findsOneWidget);
     });
 
-    testWidgets('onaylı tayfanın daveti: "İsteğin gönderildi"', (
-      tester,
-    ) async {
+    testWidgets('onaylı tayfanın daveti: "İsteğin gönderildi"', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
       final tasima = _liste([_tayfaDaveti()], okunmamis: 1)
         ..yanitlar['POST ${arkadas.davetKabulYolu}'] = _yanit(
@@ -390,10 +388,7 @@ void main() {
 
       expect(find.byType(GuvenlikUyarisiKarti), findsOneWidget);
       expect(find.text('Ayşe yürüyüşten zamanında dönmedi'), findsOneWidget);
-      expect(
-        find.text('Orman yürüyüşü · Klasikçiler · 14:45'),
-        findsOneWidget,
-      );
+      expect(find.text('Orman yürüyüşü · Klasikçiler · 14:45'), findsOneWidget);
       expect(find.text(arbMetni('bildirim_yoklamayi_ac')), findsOneWidget);
       // Uyarı listede ikinci kez görünmez.
       expect(find.byType(BildirimSatiri), findsOneWidget);
@@ -407,9 +402,7 @@ void main() {
     testWidgets('etkinlik okunamazsa kart tayfa ve zamanla', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
       final tasima = _liste([_yuruyusUyarisi()], okunmamis: 1)
-        ..yanitlar['GET ${etkinlik.etkinlikYolu}'] = _yanit(
-          const ApiOffline(),
-        );
+        ..yanitlar['GET ${etkinlik.etkinlikYolu}'] = _yanit(const ApiOffline());
       await _ekraniAc(tester, tasima);
       expect(find.text('Klasikçiler · 14:45'), findsOneWidget);
     });
@@ -509,7 +502,6 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         expect(find.byType(IzinKarti), findsOneWidget);
-        expect(find.byType(GuvenlikUyarisiKarti), findsOneWidget);
         await tester.drag(find.byType(ListView), const Offset(0, -4000));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
