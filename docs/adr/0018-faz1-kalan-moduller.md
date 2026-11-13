@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan (kapsam ve hedef); arayüz ayrıntıları mimari oturumu
+- **Karar veren:** Murat Arslan (kapsam ve hedef); arayüz ayrıntıları mimari oturumu
 - **İlgili:** ADR-0002–0017; Notion: Özellik Haritası (MVP), Proje Planı §4–§6, Mağaza Sayfası, Kötüye Kullanım ve Genç Kullanıcı Güvenliği
 
 ## Bağlam

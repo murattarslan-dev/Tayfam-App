@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md),
   [ADR-0005](0005-api-istemcisi.md),
   [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md),

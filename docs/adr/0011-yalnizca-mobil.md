@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-10
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0003](0003-gezinme-iskeleti.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0007](0007-websocket.md), [ADR-0010](0010-signal-kutuphanesi.md); Notion: Proje Planı §8, Özellik Haritası (Platform)
 
 ## Bağlam

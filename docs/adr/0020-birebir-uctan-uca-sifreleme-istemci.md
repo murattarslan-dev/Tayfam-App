@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-12, sohbette)
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0001](0001-durum-yonetimi-riverpod.md), [ADR-0002](0002-modul-yapisi.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0007](0007-websocket.md), [ADR-0010](0010-signal-kutuphanesi.md), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0018](0018-faz1-kalan-moduller.md); Tayfam-Api ADR-0005, ADR-0018; sözleşme 8ef8245, güncelleme 62feb2e (Tayfam-Api #151)
 
 ## Bağlam

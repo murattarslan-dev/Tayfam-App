@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-10
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0003](0003-gezinme-iskeleti.md), [ADR-0004](0004-tema-ve-bilesen-dili.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0008](0008-ceviri-ve-yerel-ayar.md), [ADR-0009](0009-test-ci-ve-ios.md); Tayfam-Api ADR-0004, ADR-0012, ADR-0016, ADR-0017; Notion: Proje Planı §4 Kullanıcı Akışı, Özellik Haritası "Hesap ve kimlik", KVKK Aydınlatma Metni
 
 ## Bağlam

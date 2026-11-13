@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-10
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0009](0009-test-ci-ve-ios.md), [ADR-0011](0011-yalnizca-mobil.md), [ADR-0012](0012-giris-ve-kayit-akisi.md); Notion: Tasarım Standartları "Web güvenliği (tanıtım sayfası)", Mağaza Sayfası, Proje Planı §8 "Web"
 
 ## Bağlam

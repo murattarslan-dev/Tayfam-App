@@ -2,7 +2,7 @@
 
 - **Durum:** Kabul edildi
 - **Tarih:** 2026-11-11
-- **Karar veren:** Murat Tarslan
+- **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0006](0006-onbellek-ve-cevrimdisi-kuyruk.md), [ADR-0015](0015-etkinlik-ve-duyuru-modulleri.md); issue #43; Notion: Mağaza Sayfası
 
 ## Bağlam
