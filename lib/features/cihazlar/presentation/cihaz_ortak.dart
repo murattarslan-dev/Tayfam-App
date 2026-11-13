@@ -146,9 +146,7 @@ class CihazSonucEkrani extends StatelessWidget {
                   child: SingleChildScrollView(
                     padding: EdgeInsets.fromLTRB(
                       TayfamSpacing.s24,
-                      ustBaslik == null
-                          ? TayfamSpacing.s64
-                          : TayfamSpacing.s40,
+                      ustBaslik == null ? TayfamSpacing.s64 : TayfamSpacing.s40,
                       TayfamSpacing.s24,
                       TayfamSpacing.s24,
                     ),

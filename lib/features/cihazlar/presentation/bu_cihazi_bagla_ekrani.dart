@@ -102,7 +102,9 @@ class BuCihaziBaglaGorunumu extends StatelessWidget {
           ),
         ),
         const SizedBox(height: TayfamSpacing.s24),
-        Center(child: _QrKarti(durum: durum, sonQr: sonQr)),
+        Center(
+          child: _QrKarti(durum: durum, sonQr: sonQr),
+        ),
         if (suresiDoldu) ...[
           const SizedBox(height: TayfamSpacing.s16),
           BirincilEylem(
@@ -172,9 +174,7 @@ class _QrKarti extends StatelessWidget {
                   etiket: m.cihaz_qr_hazirlaniyor,
                 ),
               ),
-              ExcludeSemantics(
-                child: Etiket(metin: m.cihaz_qr_hazirlaniyor),
-              ),
+              ExcludeSemantics(child: Etiket(metin: m.cihaz_qr_hazirlaniyor)),
             ),
           };
           return Container(
@@ -188,10 +188,7 @@ class _QrKarti extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox.square(
-                  dimension: TayfamSizes.qrKodu,
-                  child: icerik,
-                ),
+                SizedBox.square(dimension: TayfamSizes.qrKodu, child: icerik),
                 const SizedBox(height: TayfamSpacing.s12),
                 hap,
               ],
