@@ -62,7 +62,7 @@ Finder _enFaydaliEtiketi() => find.byWidgetPredicate(
   (w) => w is Etiket && w.metin == arbMetni('soru_en_faydali'),
 );
 
-final Finder _soruMenusu =find.byTooltip(arbMetni('soru_islemler'));
+final Finder _soruMenusu = find.byTooltip(arbMetni('soru_islemler'));
 final Finder _cevapMenusu = find.byTooltip(arbMetni('soru_cevap_islemler'));
 
 const String _uzunGovde =
