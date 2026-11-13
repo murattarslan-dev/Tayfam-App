@@ -57,7 +57,12 @@ Future<void> _dokun(WidgetTester tester, Finder hedef) async {
 Finder _alan(String anahtar) =>
     find.widgetWithText(TextField, arbMetni(anahtar));
 
-final Finder _soruMenusu = find.byTooltip(arbMetni('soru_islemler'));
+/// Cevaptaki teal "En faydalı" etiketi (metni sıralama notunda da geçer).
+Finder _enFaydaliEtiketi() => find.byWidgetPredicate(
+  (w) => w is Etiket && w.metin == arbMetni('soru_en_faydali'),
+);
+
+final Finder _soruMenusu =find.byTooltip(arbMetni('soru_islemler'));
 final Finder _cevapMenusu = find.byTooltip(arbMetni('soru_cevap_islemler'));
 
 const String _uzunGovde =
@@ -289,7 +294,7 @@ void main() {
     testWidgets('"En faydalı" yalnızca oy almış ilk cevapta', (tester) async {
       ekranBoyutu(tester, yukseklik: 1600);
       await _soruyuAc(tester, _detayTasimasi());
-      final etiket = find.text(arbMetni('soru_en_faydali'), findRichText: true);
+      final etiket = _enFaydaliEtiketi();
       expect(etiket, findsOneWidget);
       expect(
         find.descendant(of: find.byType(CevapKarti).first, matching: etiket),
@@ -313,10 +318,7 @@ void main() {
         ),
       );
       expect(find.byType(CevapKarti), findsNWidgets(2));
-      expect(
-        find.text(arbMetni('soru_en_faydali'), findRichText: true),
-        findsNothing,
-      );
+      expect(_enFaydaliEtiketi(), findsNothing);
     });
 
     testWidgets('başkasının cevabına oy veriliyor, kendi cevabına değil', (
