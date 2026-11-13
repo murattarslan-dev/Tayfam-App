@@ -340,3 +340,32 @@ Platform sahibinin kararı (2026-11-11):
     (112), `seciliIsareti` (24).
   - Kapak fotoğrafı alanı mevcut `FotografAlani` bileşeniyle kaldı;
     tasarımdaki kesik çizgili alan ayrı bir bileşen işidir.
+- **2026-11-13 (platform sahibi, sohbette; issue #154): duyuru ekranları
+  yeniden tasarımı.** Tasarım: Duyurular, Duyuru-Detay, Duyuru-Menu,
+  Duyuru-Form (`docs/tasarim/15-duyuru-anket-soru-cevap/`). Liste,
+  detay, sabitleme, silme ve form mantığı değişmedi; arayüz yeniden
+  giydirildi. §2'ye şu maddeler eklenir:
+  1. **Liste:** başlıkta tayfa adı ve yönetimde "Duyuru yaz" (tint hap).
+     Sabitlenenler mango kenarlı kartla üstte, ardından "Son duyurular"
+     kartları: "Sabitlendi" etiketi, kısa tarih ("Bugün 11:05", "8 Kas"),
+     başlık ve metnin ilk iki satırı.
+  2. **Yazar yalnızca detayda** (platform sahibi kararı): avatar + ad, ad
+     önbelleğinden (Notlar 2026-11-11 madde 2); yazar yoksa "Silinmiş
+     kullanıcı". Listede ve ana sayfada yazar adı yoktur. Tarihin yanında
+     `updated_at` > `created_at` ise "düzenlendi" yazar.
+  3. **⋯ alttan sayfa** (ADR-0004 Notlar 2026-11-13 madde 5'teki kullanım
+     listesine eklenir): yönetimde Düzenle, Sabitle / Sabitlemeyi kaldır
+     ve yıkıcı Sil (onay penceresinde dolu yıkıcı düğme); üyede, duyuru
+     kendi değilse Şikâyet et.
+  4. **Form** tam ekran: X, başlık, sağ üstte "Yayınla" / "Kaydet";
+     başlık ve metin sayaçlı; altta düz metin notu. Yeni duyuruda
+     yönetime "Yayınlayınca sabitle" anahtarı: sözleşmede oluşturma
+     isteğinde `pinned` olmadığı için önce `POST …/announcements`, sonra
+     `PUT …/pin` yapılır. Sabitleme başarısız olursa duyuru yayınlanmış
+     sayılır (form kapanır, ikinci duyuru açılmaz) ve "yayınlandı ama
+     sabitlenemedi" bildirimi gösterilir.
+  - **Sözleşme boşluğu:** `Announcement.updated_at` sözleşmeye göre
+    sabitleme ve sabitlemeyi kaldırmada da değişir. Bu yüzden "düzenlendi"
+    metni hiç düzenlenmemiş ama sabitlenmiş (ya da "Yayınlayınca sabitle"
+    ile yayınlanmış) duyuruda da görünür. Ayrı bir `edited_at` alanı Tayfam-Api'de
+    değerlendirilmelidir; o zamana kadar README'deki kural uygulanır.

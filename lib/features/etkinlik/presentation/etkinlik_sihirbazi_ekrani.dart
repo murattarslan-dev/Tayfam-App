@@ -329,6 +329,10 @@ class _EtkinlikSihirbaziEkraniState
               baslik: _duzenleme
                   ? m.etkinlik_duzenle_baslik
                   : m.etkinlik_olustur_baslik,
+              adimMetni: m.etkinlik_adim(
+                t.adim - ilkAdim + 1,
+                etkinlikAdimSayisi - ilkAdim,
+              ),
               adim: t.adim - ilkAdim + 1,
               toplam: etkinlikAdimSayisi - ilkAdim,
               onKapat: kilitli ? null : () => unawaited(_kapat()),

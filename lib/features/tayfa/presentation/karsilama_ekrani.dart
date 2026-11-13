@@ -88,8 +88,8 @@ class KarsilamaEkrani extends ConsumerWidget {
                   IkincilEylem(
                     etiket: metinler.karsilama_tayfa_olustur,
                     ikon: Icons.add_circle_outline,
-                    onPressed: () =>
-                        unawaited(context.push<void>(Adresler.tayfaOlustur)),
+                    // Yığına itilmez (bkz. tayfa değiştirme paneli).
+                    onPressed: () => context.go(Adresler.tayfaOlustur),
                   ),
                 ],
               ),

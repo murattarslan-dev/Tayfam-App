@@ -362,6 +362,77 @@ void main() {
       expect(k.kap.read(saglayici).tamamlanan?.title, 'Yeni başlık');
     });
 
+    test('"Yayınlayınca sabitle": oluşturma, sonra PUT …/pin', () async {
+      final k = _Kurulum({
+        'POST $duyurularYolu': yanit(duyuruJson(duyuruId3, baslik: 'Kurallar')),
+        'PUT $sabitlemeYolu': yanit(
+          duyuruJson(duyuruId3, baslik: 'Kurallar', sabit: true),
+        ),
+      });
+      await k.liste();
+      final saglayici = duyuruFormuProvider(_form(null));
+      k.kap.listen(saglayici, (_, _) {});
+      final n = k.kap.read(saglayici.notifier);
+      n.baslikAyarla('Kurallar');
+      n.sabitlemeyiAyarla(sabitle: true);
+      expect(k.kap.read(saglayici).sabitle, isTrue);
+
+      await n.gonder();
+
+      expect(k.tasima.giden('POST', duyurularYolu), hasLength(1));
+      final sabitleme = k.tasima.giden('PUT', sabitlemeYolu).single;
+      expect(sabitleme.yolParametreleri['announcement_id'], duyuruId3);
+      final durum = k.kap.read(saglayici);
+      expect(durum.tamamlanan?.pinned, isTrue);
+      expect(durum.sabitlenemedi, isFalse);
+      expect(k.duyurular.single.pinned, isTrue);
+    });
+
+    test('sabitleme başarısızsa duyuru yine yayınlanmış sayılıyor', () async {
+      final k = _Kurulum({
+        'POST $duyurularYolu': yanit(duyuruJson(duyuruId3)),
+        'PUT $sabitlemeYolu': yanit(
+          _problem(ProblemType.permissionDenied, 403),
+        ),
+      });
+      final saglayici = duyuruFormuProvider(_form(null));
+      k.kap.listen(saglayici, (_, _) {});
+      final n = k.kap.read(saglayici.notifier)
+        ..baslikAyarla('Pazar buluşması')
+        ..sabitlemeyiAyarla(sabitle: true);
+
+      await n.gonder();
+
+      final durum = k.kap.read(saglayici);
+      expect(durum.tamamlanan?.id, duyuruId3);
+      expect(durum.tamamlanan?.pinned, isFalse);
+      expect(durum.sabitlenemedi, isTrue);
+      expect(durum.hata, isNull);
+      // Form tamamlandı; ikinci gönderim yeni duyuru açmaz.
+      await n.gonder();
+      expect(k.tasima.giden('POST', duyurularYolu), hasLength(1));
+    });
+
+    test('anahtar kapalıyken sabitleme isteği gitmiyor', () async {
+      final k = _Kurulum({'POST $duyurularYolu': yanit(duyuruJson(duyuruId3))});
+      final saglayici = duyuruFormuProvider(_form(null));
+      k.kap.listen(saglayici, (_, _) {});
+      final n = k.kap.read(saglayici.notifier)..baslikAyarla('Pazar');
+
+      await n.gonder();
+
+      expect(k.tasima.giden('PUT', sabitlemeYolu), isEmpty);
+      expect(k.kap.read(saglayici).tamamlanan?.id, duyuruId3);
+    });
+
+    test('düzenlemede sabitleme anahtarı yok sayılıyor', () {
+      final k = _Kurulum();
+      final saglayici = duyuruFormuProvider(_form(_duyuru(duyuruId1)));
+      k.kap.listen(saglayici, (_, _) {});
+      k.kap.read(saglayici.notifier).sabitlemeyiAyarla(sabitle: true);
+      expect(k.kap.read(saglayici).sabitle, isFalse);
+    });
+
     test('değişiklik yoksa istek gitmeden kapanıyor', () async {
       final eski = _duyuru(duyuruId1);
       final k = _Kurulum();
