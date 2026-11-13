@@ -5,6 +5,5 @@
 • Uygulamanın ilk test sürümü: tayfalar, etkinlikler, duyurular, soru-cevap, anketler ve sohbet.
 • Birebir mesajlar uçtan uca şifreli.
 • Kullanım koşulları ve aydınlatma metni güncellendi.
-• Profil, arkadaşlar ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
-• Sohbet sekmesi yenilendi: Kanallar ve Birebir arasında okunmamış sayılı geçiş, ardışık mesajların gruplanması, gün ayırıcılar ve yavaş modda geri sayım.
-• Etkinlik detayı ve etkinlik açma (önizlemeli) yenilendi.
+• Profil, arkadaşlar, sohbet sekmesi ve etkinlik ekranları yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
+• Bildirimler güne göre gruplandı; arkadaşlık isteğine ve tayfa davetine listeden cevap verebilirsin. Sessize aldığın tayfalar Bildirim ayarları'nda.

@@ -37,6 +37,9 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.tintTealUstu,
     required this.tintNar,
     required this.narMetin,
+    required this.tintMavi,
+    required this.tintMaviUstu,
+    required this.okunmamisSatir,
     required this.yikiciDolgu,
     required this.yikiciDolguUstu,
     required this.gelenBalon,
@@ -139,6 +142,19 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
   /// Nar (#FF3D68) metin rengi olmadığı için ayrı token'dır.
   final Color narMetin;
 
+  /// Arkadaşlık ve tayfa davetinin bildirim ikon kutusu (açık: #DCEBFB,
+  /// koyu: #1B3350; 2026-11-13, tasarım: Bildirimler).
+  final Color tintMavi;
+
+  /// [tintMavi] üzerindeki ikon (açık: #1F5FB0, 5.21:1; koyu: #8FC1FF,
+  /// 6.87:1).
+  final Color tintMaviUstu;
+
+  /// Okunmamış bildirim satırının zemini (açık: tint-brand #ECE4FF, koyu:
+  /// #2E2156; 2026-11-13, tasarım: Bildirimler). Okunmamışlık renkle
+  /// birlikte kalın metin ve noktayla da gösterilir.
+  final Color okunmamisSatir;
+
   /// Dolu yıkıcı düğmenin zemini (açık: nar-metin #B0123A, koyu: #FF9FB4;
   /// ADR-0004 Notlar 2026-11-13).
   final Color yikiciDolgu;
@@ -224,6 +240,9 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintTealUstu: _Palet.tintTealMetin,
     tintNar: _Palet.tintNar,
     narMetin: _Palet.narMetin,
+    tintMavi: _Palet.tintBlue,
+    tintMaviUstu: _Palet.tintBlueMetin,
+    okunmamisSatir: _Palet.tintBrand,
     yikiciDolgu: _Palet.narMetin,
     yikiciDolguUstu: _Palet.beyaz,
     gelenBalon: _Palet.tintBrand,
@@ -265,6 +284,9 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintTealUstu: _Palet.tintTealDarkMetin,
     tintNar: _Palet.tintNarDark,
     narMetin: _Palet.tintNarDarkMetin,
+    tintMavi: _Palet.tintBlueDark,
+    tintMaviUstu: _Palet.tintBlueDarkMetin,
+    okunmamisSatir: _Palet.unreadRowDark,
     yikiciDolgu: _Palet.tintNarDarkMetin,
     yikiciDolguUstu: _Palet.ink,
     gelenBalon: _Palet.bubbleInDark,
@@ -306,6 +328,9 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? tintTealUstu,
     Color? tintNar,
     Color? narMetin,
+    Color? tintMavi,
+    Color? tintMaviUstu,
+    Color? okunmamisSatir,
     Color? yikiciDolgu,
     Color? yikiciDolguUstu,
     Color? gelenBalon,
@@ -345,6 +370,9 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintTealUstu: tintTealUstu ?? this.tintTealUstu,
       tintNar: tintNar ?? this.tintNar,
       narMetin: narMetin ?? this.narMetin,
+      tintMavi: tintMavi ?? this.tintMavi,
+      tintMaviUstu: tintMaviUstu ?? this.tintMaviUstu,
+      okunmamisSatir: okunmamisSatir ?? this.okunmamisSatir,
       yikiciDolgu: yikiciDolgu ?? this.yikiciDolgu,
       yikiciDolguUstu: yikiciDolguUstu ?? this.yikiciDolguUstu,
       gelenBalon: gelenBalon ?? this.gelenBalon,
@@ -392,6 +420,9 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintTealUstu: l(tintTealUstu, other.tintTealUstu),
       tintNar: l(tintNar, other.tintNar),
       narMetin: l(narMetin, other.narMetin),
+      tintMavi: l(tintMavi, other.tintMavi),
+      tintMaviUstu: l(tintMaviUstu, other.tintMaviUstu),
+      okunmamisSatir: l(okunmamisSatir, other.okunmamisSatir),
       yikiciDolgu: l(yikiciDolgu, other.yikiciDolgu),
       yikiciDolguUstu: l(yikiciDolguUstu, other.yikiciDolguUstu),
       gelenBalon: l(gelenBalon, other.gelenBalon),
@@ -431,6 +462,9 @@ abstract final class _Palet {
   static const Color tintTealMetin = Color(0xFF0B6B5D);
   static const Color tintNar = Color(0xFFFFE1E8);
   static const Color narMetin = Color(0xFFB0123A);
+  // 2026-11-13: bildirimlerde arkadaşlık ve davet (tasarım: Bildirimler).
+  static const Color tintBlue = Color(0xFFDCEBFB);
+  static const Color tintBlueMetin = Color(0xFF1F5FB0);
   static const Color honey = Color(0xFF7A5A1E);
   static const Color beyaz = Color(0xFFFFFFFF);
 
@@ -449,6 +483,10 @@ abstract final class _Palet {
   static const Color tintNarDark = Color(0xFF4A1A26);
   static const Color tintNarDarkMetin = Color(0xFFFF9FB4);
   static const Color bubbleInDark = Color(0xFF33255C);
+  static const Color tintBlueDark = Color(0xFF1B3350);
+  static const Color tintBlueDarkMetin = Color(0xFF8FC1FF);
+  // Okunmamış bildirim satırı (tasarım: Bildirimler-Koyu).
+  static const Color unreadRowDark = Color(0xFF2E2156);
 
   // Tek gölge: rgba(91, 43, 224, .35).
   static const Color golge = Color.fromRGBO(91, 43, 224, .35);
