@@ -101,10 +101,7 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
           children: [
             SihirbazUstCubugu(
               baslik: m.olusturma_baslik,
-              adimMetni: m.olusturma_adim(
-                durum.adim + 1,
-                olusturmaAdimSayisi,
-              ),
+              adimMetni: m.olusturma_adim(durum.adim + 1, olusturmaAdimSayisi),
               adim: durum.adim + 1,
               toplam: olusturmaAdimSayisi,
               onKapat: kilitli ? null : () => unawaited(_kapat()),
@@ -226,10 +223,7 @@ class _AdAdimi extends StatelessWidget {
           runSpacing: TayfamSpacing.s8,
           children: [
             for (final ornek in ornekler)
-              ActionChip(
-                label: Text(ornek),
-                onPressed: () => onOrnek(ornek),
-              ),
+              ActionChip(label: Text(ornek), onPressed: () => onOrnek(ornek)),
           ],
         ),
         const SizedBox(height: TayfamSpacing.s24),
