@@ -67,56 +67,37 @@ class AnketTekrarDene extends StatelessWidget {
   }
 }
 
-/// Anketin durum etiketleri: "Açık" ya da "Kapandı" ve gizliyse "Gizli
-/// anket". Renk tek başına bilgi taşımaz; etiket metni her zaman görünür.
-class AnketEtiketleri extends StatelessWidget {
-  const AnketEtiketleri({super.key, required this.anket, required this.kapali});
+/// Anketin durum çipi (tasarım: Anketler, Anket-Oy): açıkta teal "Açık",
+/// kapanınca nötr "Kapandı". Renk tek başına bilgi taşımaz; çipin metni
+/// her zaman görünür.
+class AnketDurumCipi extends StatelessWidget {
+  const AnketDurumCipi({super.key, required this.kapali});
 
-  final Poll anket;
   final bool kapali;
 
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    return Wrap(
-      spacing: TayfamSpacing.s8,
-      runSpacing: TayfamSpacing.s8,
-      children: [
-        Etiket(metin: kapali ? m.anket_kapandi : m.anket_acik),
-        if (anket.anonymous) Etiket(metin: m.anket_gizli),
-      ],
-    );
+    return kapali
+        ? Etiket(metin: m.anket_kapandi, ton: EtiketTonu.notr)
+        : Etiket(metin: m.anket_acik, ton: EtiketTonu.teal);
   }
 }
 
-/// Kullanıcının kendi oyunu işaretleyen "Senin oyun" etiketi. Yalnızca
+/// Kullanıcının kendi oyunu işaretleyen "Senin oyun" çipi. Yalnızca
 /// `own_option_ids`'ten gelir; başkalarının oyu hiçbir yerde işaretlenmez.
 class SeninOyunEtiketi extends StatelessWidget {
   const SeninOyunEtiketi({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ExcludeSemantics(
-          child: Icon(
-            Icons.check_circle_outline,
-            size: TayfamSizes.ikonKucuk,
-            color: context.renkler.metinIkincil,
-          ),
-        ),
-        const SizedBox(width: TayfamSpacing.s4),
-        Flexible(
-          child: Etiket(metin: AppLocalizations.of(context).anket_senin_oyun),
-        ),
-      ],
-    );
+    return Etiket(metin: AppLocalizations.of(context).anket_senin_oyun);
   }
 }
 
-/// Anketin kapanış satırı: açıksa planlanan kapanma, kapandıysa kapanma
-/// zamanı (biliniyorsa), cihazın saatine göre.
+/// Anket ekranındaki kapanış satırı (tasarım: Anket-Oy, Anket-Gizli):
+/// açıksa planlanan kapanma ya da "Elle kapatılana kadar açık", kapandıysa
+/// kapanma zamanı (biliniyorsa), cihazın saatine göre.
 class AnketKapanisMetni extends StatelessWidget {
   const AnketKapanisMetni({
     super.key,
@@ -131,14 +112,21 @@ class AnketKapanisMetni extends StatelessWidget {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final zaman = kapali ? (anket.closedAt ?? anket.closesAt) : anket.closesAt;
-    if (zaman == null) return const SizedBox.shrink();
-    final yerel = zaman.toLocal();
-    return Text(
-      kapali
+    final String metin;
+    if (zaman == null) {
+      if (kapali) return const SizedBox.shrink();
+      metin = m.anket_elle_kapanana_kadar;
+    } else {
+      final yerel = zaman.toLocal();
+      metin = kapali
           ? m.anket_kapandi_zaman(yerel, yerel)
-          : m.anket_kapanis(yerel, yerel),
-      style: context.yazi.bodySmall?.copyWith(
+          : m.anket_kapanis(yerel, yerel);
+    }
+    return Text(
+      metin,
+      style: context.yazi.labelSmall?.copyWith(
         color: context.renkler.metinIkincil,
+        fontWeight: FontWeight.w400,
       ),
     );
   }

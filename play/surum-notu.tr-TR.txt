@@ -2,9 +2,10 @@
 # `#` ile başlayan satırlar gitmez. Her main birleşmesinde bu dosyadaki metin
 # yeni sürümle birlikte gönderilir; kullanıcıya yönelik bir değişiklik olunca
 # güncelleyin. Kişisel veri, iç adres ya da teknik ayrıntı yazmayın.
-• Uygulamanın ilk test sürümü: tayfalar, etkinlikler, duyurular, soru-cevap, anketler ve sohbet.
+• İlk test sürümü: tayfalar, etkinlikler, duyurular, soru-cevap, anketler ve sohbet.
 • Birebir mesajlar uçtan uca şifreli.
 • Kullanım koşulları ve aydınlatma metni güncellendi.
 • Profil, arkadaşlar ve kişi profili yenilendi; bir kişiyi profilinden şikâyet edebilirsin.
-• Sohbet sekmesi yenilendi: Kanallar ve Birebir arasında okunmamış sayılı geçiş, ardışık mesajların gruplanması, gün ayırıcılar ve yavaş modda geri sayım.
-• Etkinlik detayı ve etkinlik açma (önizlemeli) yenilendi.
+• Sohbet yenilendi: okunmamış sayılı geçiş, mesaj gruplama, yavaş modda geri sayım.
+• Etkinlik detayı ve etkinlik açma yenilendi.
+• Anketler yenilendi: Açık/Kapanan bölümleri, "Oyu gönder" düğmesi, yüzdeli sonuçlar.

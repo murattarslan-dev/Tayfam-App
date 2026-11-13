@@ -9,8 +9,10 @@ import 'package:tayfam/features/anket/application/anket_formu_notifier.dart';
 import 'package:tayfam/features/anket/application/anket_kurallari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Anket oluşturma formu (ADR-0018 §5): soru, 2–10 seçenek, tek ya da
-/// çoklu seçim, açık ya da gizli, isteğe bağlı kapanma zamanı.
+/// Anket oluşturma formu (tasarım: Anket-Form; ADR-0018 §5): üstte kapat
+/// (X), "Yeni anket" ve "Anketi aç"; soru, 2–10 seçenek (ekle/kaldır),
+/// "Birden çok seçenek seçilebilsin" ve "Gizli anket" anahtarları ve
+/// isteğe bağlı kapanış zamanı kutusu.
 ///
 /// Kabuğun üstünde tam ekran açılır. Bağlantı yoksa form açık kalır ve
 /// girilenler korunur (ADR-0006). Başarıda form kapanır ve anketi
@@ -92,6 +94,7 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
+    final r = context.renkler;
     final saglayici = anketFormuProvider(_anahtar);
     ref.listen(saglayici, (_, sonraki) {
       final anket = sonraki.tamamlanan;
@@ -110,11 +113,26 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
       m.anket_gizli_aciklama,
       m.anket_form_gizli_notu,
     ].join(' ');
-    final ikincil = context.yazi.bodyMedium?.copyWith(
-      color: context.renkler.metinGovde,
+    final aciklama = context.yazi.labelSmall?.copyWith(
+      color: r.metinIkincil,
+      fontWeight: FontWeight.w400,
     );
     return Scaffold(
-      appBar: AppBar(title: Text(m.anket_form_baslik)),
+      appBar: AppBar(
+        toolbarHeight: sohbetUstCubukYuksekligi(context),
+        title: Text(
+          m.anket_form_baslik,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        actions: [
+          BirincilEylem(
+            etiket: m.anket_form_gonder,
+            onPressed: kilitli ? null : () => unawaited(_notifier.gonder()),
+          ),
+          const SizedBox(width: TayfamSpacing.s12),
+        ],
+      ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
@@ -123,12 +141,24 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
               maxWidth: TayfamSizes.okumaGenisligi,
             ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                TayfamSpacing.s20,
+                TayfamSpacing.s8,
+                TayfamSpacing.s20,
+                TayfamSpacing.s40,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (d.hata case final hata?) ...[
+                    HataSatiri.hatadan(hata),
+                    const SizedBox(height: TayfamSpacing.s16),
+                  ],
                   if (widget.etkinlikId != null) ...[
-                    Text(m.anket_form_etkinlik_notu, style: ikincil),
+                    Text(
+                      m.anket_form_etkinlik_notu,
+                      style: context.yazi.bodySmall,
+                    ),
                     const SizedBox(height: TayfamSpacing.s16),
                   ],
                   TextField(
@@ -146,7 +176,30 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
                           : null,
                     ),
                   ),
-                  const SizedBox(height: TayfamSpacing.s16),
+                  const SizedBox(height: TayfamSpacing.s8),
+                  Semantics(
+                    header: true,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(text: m.anket_form_secenekler),
+                          const TextSpan(text: ' '),
+                          TextSpan(
+                            text: m.anket_form_secenek_araligi(
+                              anketSecenekEnAz,
+                              anketSecenekEnCok,
+                            ),
+                            style: TextStyle(
+                              color: r.metinIkincil,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      style: context.yazi.titleSmall,
+                    ),
+                  ),
+                  const SizedBox(height: TayfamSpacing.s8),
                   for (final (sira, kontrol) in _secenekler.indexed) ...[
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,33 +230,37 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
                             onPressed: kilitli
                                 ? null
                                 : () => _secenekKaldir(sira),
-                            icon: const Icon(Icons.close),
+                            icon: Icon(Icons.close, color: r.metinIkincil),
                           ),
                       ],
                     ),
-                    const SizedBox(height: TayfamSpacing.s8),
+                    const SizedBox(height: TayfamSpacing.s4),
                   ],
                   if (d.secenekEklenebilir)
                     Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: TextButton.icon(
+                      child: BaglantiEylemi(
+                        etiket: m.anket_form_secenek_ekle,
+                        ikon: Icons.add,
                         onPressed: kilitli ? null : _secenekEkle,
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size.square(
-                            TayfamSizes.dokunmaMin,
-                          ),
-                        ),
-                        icon: const Icon(Icons.add),
-                        label: Text(m.anket_form_secenek_ekle),
                       ),
                     ),
-                  const SizedBox(height: TayfamSpacing.s16),
+                  const SizedBox(height: TayfamSpacing.s8),
+                  Divider(
+                    height: TayfamSizes.kenar,
+                    thickness: TayfamSizes.kenar,
+                    color: r.cizgi,
+                  ),
                   SwitchListTile(
                     value: d.coklu,
                     onChanged: kilitli
                         ? null
                         : (v) => _notifier.cokluAyarla(coklu: v),
                     title: Text(m.anket_form_coklu),
+                    subtitle: Text(
+                      m.anket_form_coklu_aciklama,
+                      style: aciklama,
+                    ),
                     contentPadding: EdgeInsets.zero,
                   ),
                   SwitchListTile(
@@ -212,60 +269,29 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
                         ? null
                         : (v) => _notifier.gizliAyarla(gizli: v),
                     title: Text(m.anket_form_gizli),
-                    subtitle: Text(gizliNotu),
+                    subtitle: Text(gizliNotu, style: aciklama),
                     contentPadding: EdgeInsets.zero,
                   ),
-                  const SizedBox(height: TayfamSpacing.s16),
-                  if (kapanis == null)
-                    Text(m.anket_form_kapanis_yok, style: ikincil)
-                  else
-                    _KapanisSatiri(kapanis: kapanis),
+                  const SizedBox(height: TayfamSpacing.s12),
+                  _KapanisKutusu(
+                    kapanis: kapanis,
+                    hatali: kapanisHatali,
+                    onPressed: kilitli ? null : () => unawaited(_kapanisSec()),
+                  ),
                   if (kapanisHatali) ...[
                     const SizedBox(height: TayfamSpacing.s8),
                     HataSatiri(metin: m.anket_form_kapanis_hatasi),
                   ],
-                  Wrap(
-                    spacing: TayfamSpacing.s8,
-                    children: [
-                      TextButton(
+                  if (kapanis != null)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: BaglantiEylemi(
+                        etiket: m.anket_form_kapanis_kaldir,
                         onPressed: kilitli
                             ? null
-                            : () => unawaited(_kapanisSec()),
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size.square(
-                            TayfamSizes.dokunmaMin,
-                          ),
-                        ),
-                        child: Text(m.anket_form_kapanis_sec),
+                            : () => _notifier.kapanisAyarla(null),
                       ),
-                      if (kapanis != null)
-                        TextButton(
-                          onPressed: kilitli
-                              ? null
-                              : () => _notifier.kapanisAyarla(null),
-                          style: TextButton.styleFrom(
-                            minimumSize: const Size.square(
-                              TayfamSizes.dokunmaMin,
-                            ),
-                          ),
-                          child: Text(m.anket_form_kapanis_kaldir),
-                        ),
-                    ],
-                  ),
-                  if (d.hata case final hata?) ...[
-                    const SizedBox(height: TayfamSpacing.s16),
-                    HataSatiri.hatadan(hata),
-                  ],
-                  const SizedBox(height: TayfamSpacing.s24),
-                  Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: BirincilEylem(
-                      etiket: m.anket_form_gonder,
-                      onPressed: kilitli
-                          ? null
-                          : () => unawaited(_notifier.gonder()),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -276,17 +302,86 @@ class _AnketFormuEkraniState extends ConsumerState<AnketFormuEkrani> {
   }
 }
 
-class _KapanisSatiri extends StatelessWidget {
-  const _KapanisSatiri({required this.kapanis});
+/// Kapanış zamanı kutusu (tasarım: Anket-Form): saat ikonu, "Kapanış" ve
+/// seçilen gün ve saat ya da "Elle kapatılana kadar açık", sağda ok.
+/// Dokununca tarih ve saat seçicisi açılır.
+class _KapanisKutusu extends StatelessWidget {
+  const _KapanisKutusu({
+    required this.kapanis,
+    required this.hatali,
+    required this.onPressed,
+  });
 
-  final DateTime kapanis;
+  final DateTime? kapanis;
+  final bool hatali;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final yerel = kapanis.toLocal();
-    return Text(
-      AppLocalizations.of(context).anket_kapanis(yerel, yerel),
-      style: context.yazi.bodyLarge,
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    final yerel = kapanis?.toLocal();
+    return OdakCercevesi(
+      koseler: TayfamRadii.onizlemeKoseleri,
+      child: Material(
+        color: r.kart,
+        shape: RoundedRectangleBorder(
+          borderRadius: TayfamRadii.onizlemeKoseleri,
+          side: hatali
+              ? BorderSide(color: r.narMetin, width: TayfamSizes.alanOdakKenari)
+              : BorderSide(color: r.cizgi, width: TayfamSizes.vurguKenari),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Semantics(
+          button: true,
+          hint: m.anket_form_kapanis_sec,
+          child: InkWell(
+            onTap: onPressed,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: TayfamSpacing.s56),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: TayfamSpacing.s12,
+                  vertical: TayfamSpacing.s8,
+                ),
+                child: Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon(
+                        Icons.schedule,
+                        size: TayfamSizes.ikon,
+                        color: r.tintMarkaUstu,
+                      ),
+                    ),
+                    const SizedBox(width: TayfamSpacing.s12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            m.anket_form_kapanis,
+                            style: context.yazi.labelSmall?.copyWith(
+                              color: r.metinIkincil,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          Text(
+                            yerel == null
+                                ? m.anket_elle_kapanana_kadar
+                                : m.anket_kapanis_degeri(yerel, yerel),
+                            style: context.yazi.titleMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SatirOku(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -256,6 +256,49 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-13 (platform sahibi; issue #155): Anket ekranlarının yeniden
+  tasarımı (§5).** Tasarım: `docs/tasarim/15-duyuru-anket-soru-cevap/`
+  (Anketler, Anket-Oy, Anket-Sonuc, Anket-Oy-Verenler, Anket-Gizli,
+  Anket-Form). Notifier, depo ve sözleşme mantığı değişmedi.
+  - **Liste:** başlıkta ekran adı, altında tayfanın adı ve tint-brand
+    "Anket aç". Eldeki sayfalar "Açık" ve "Kapanan" bölümlerine ayrılır
+    (sunucu sırası korunur). Kartta anket ikonu, soru, durum çipi (açıkta
+    teal "Açık", kapanınca nötr "Kapandı"), "N kişi oy verdi · <kapanış
+    günü>" ya da gizli ankette "· Gizli anket", oy verdiysen "Oy verdin".
+    Kartta seçenek sayısı yoktur.
+  - **Oy verme:** oy her zaman alttaki sabit "Oyu gönder" düğmesiyle
+    gönderilir (platform sahibi kararı); çoklu seçimde düğmede seçilen
+    sayısı yazar ("Oyu gönder (2 seçenek)"). Tek seçimde radyo, çoklu
+    seçimde onay kutusu işaretli seçenek kutuları; üstte kural metni,
+    altta "Sonuçları gör" (değiştirirken "Vazgeç"). Alt çubukta oy veren
+    sayısı ve açanın adı.
+  - **Sonuçlar:** "N kişi oy verdi." ve açık ankette "Oy verenleri görmek
+    için seçeneğe dokun."; seçenek kutusunda metin (en çok oy alan kalın),
+    kendi oyunda 2 px marka kenar, marka çubuk ve "Senin oyun"; diğer
+    çubuklar saydam marka. Yüzde oy veren kişi sayısına göredir; çoklu
+    seçimde "toplam %100'ü geçebilir" notu. "Oyunu değiştir" (çerçeveli)
+    ve "Oyunu geri çek" (bağlantı). Açık ankette seçeneğe dokununca oy
+    verenler alttan sayfada (`altSayfaAc`): başlıkta seçenek ve oy sayısı,
+    satırlarda avatar ve ad, kendi satırında "(sen)".
+  - **Gizli anket (kesin kural 7):** tint-brand bilgi kutusu ("Gizli anket.
+    Kimin neye oy verdiği kimseye gösterilmez, yöneticilere de."). Oy
+    veren 5'ten azsa yalnızca "N kişi oy verdi. Sonuçlar 5 oydan sonra
+    görünür." kutusu ve sayısız seçenekler (kendi oyunda "Senin oyun");
+    yüzde, çubuk, oy sayısı, kalın önde olan ve çoklu seçim notu yok.
+    Seçenekler hiçbir zaman dokunulmaz, oy verenler ucu çağrılmaz.
+    Eşik widget testleriyle (3, 4 ve 5 oy) korunur.
+  - **⋯ menüsü** artık alttan sayfadır (ADR-0004 Notlar 2026-11-13, madde
+    5): "Anketi kapat" (açan ya da yönetim; onaylı) ve "Şikâyet et".
+  - **Form:** üstte kapat (X), "Yeni anket" ve "Anketi aç"; soru, sayaçlı;
+    "Seçenekler (2–10)", ekle/kaldır; anahtarlar açıklamalı; kapanış
+    kutusu (seçilmemişse "Elle kapatılana kadar açık", dokununca tarih ve
+    saat seçici) ve "Kapanış zamanını kaldır".
+  - **Sapmalar:** tasarımdaki kesik çizgili eşik kutusu düz 1.5 px çizgiyle
+    çizilir (Flutter'da kesik kenar için paket gerekir; yeni paket
+    eklenmedi). Kapanan kartlardaki %75 saydamlık uygulanmadı: ikincil
+    metnin kontrastını 4.5:1'in altına düşürüyordu; ayrımı bölüm başlığı
+    ve nötr "Kapandı" çipi taşır. `Etiket`'e nötr ton (`EtiketTonu.notr`:
+    line zemin + gövde metni) eklendi.
 - **2026-11-13 (platform sahibi, sohbette; issue #141, PR #142): Sohbet
   sekmesi yeniden tasarımı (§9).** Tasarım: Sohbet-Kanallar,
   Sohbet-Birebir, Kanal-Akis, Kanal-Koyu, Kanal-Islem, Kanal-Formu,
