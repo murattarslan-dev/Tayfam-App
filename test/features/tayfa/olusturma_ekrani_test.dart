@@ -88,7 +88,8 @@ void main() {
     expect(find.byType(OlusturmaEkrani), findsNothing);
     expect(_yol(tester), '/t/$_yeniId');
     expect(tester.container().read(aktifTayfaIdProvider), _yeniId);
-    expect(find.byType(DavetKisayolu), findsOneWidget);
+    // Davet kısayolunun yerine kurulum kartı (ADR-0015 Notlar 2026-11-13).
+    expect(find.byType(TayfaKurulumKarti), findsOneWidget);
   });
 
   testWidgets('geçersiz adda hata; geri gelince girilenler yerinde', (

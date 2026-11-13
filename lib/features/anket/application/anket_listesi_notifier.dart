@@ -7,7 +7,7 @@ import 'package:tayfam/features/anket/application/anket_kurallari.dart';
 import 'package:tayfam/features/anket/data/anket_deposu.dart';
 
 /// Tayfa ana sayfasında gösterilen en çok açık anket sayısı.
-const int anaSayfaAnketSayisi = 3;
+const int anaSayfaAnketSayisi = 1;
 
 /// Anket listesinin anahtarı: tayfa ve isteğe bağlı etkinlik süzgeci
 /// (`event_id`; `null` ise tayfanın bütün anketleri).

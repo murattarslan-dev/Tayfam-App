@@ -7,7 +7,7 @@ import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
 import 'package:tayfam/features/soru_cevap/data/soru_cevap_deposu.dart';
 
 /// Tayfa ana sayfasındaki "Son sorular" bölümünde gösterilen soru sayısı.
-const int anaSayfaSoruSayisi = 3;
+const int anaSayfaSoruSayisi = 2;
 
 /// Arama metninin en çok uzunluğu (sözleşme: `q`, en çok 100 karakter).
 const int soruAramasiEnCok = 100;

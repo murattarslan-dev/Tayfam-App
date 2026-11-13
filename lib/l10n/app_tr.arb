@@ -277,6 +277,91 @@
   "@tayfa_ana_etkinlik_ac": {
     "description": "Yaklaşan etkinlik yokken, etkinlik açabilen kullanıcıya (moderatör, yönetici ya da tayfa izin veriyorsa üye) gösterilen kısayol düğmesi."
   },
+  "etkinlik_siradaki": "Sıradaki · {neZaman}",
+  "@etkinlik_siradaki": {
+    "description": "Tayfa ana sayfasındaki büyük \"Sıradaki\" etkinlik kartının etiketi; neZaman geri sayımdır (goreli_* metinleri, ör. \"3 gün sonra\").",
+    "placeholders": {
+      "neZaman": {
+        "type": "String"
+      }
+    }
+  },
+  "etkinlik_ana_kontenjan": "· {sayi, plural, other{{sayi} kişilik}}",
+  "@etkinlik_ana_kontenjan": {
+    "description": "Sıradaki etkinlik kartında gelen sayısının yanındaki kontenjan (ör. \"24 kişi geliyor · 40 kişilik\").",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "etkinlik_ana_katilim_grubu": "Katılımın",
+  "@etkinlik_ana_katilim_grubu": {
+    "description": "Sıradaki etkinlik kartındaki Geliyorum / Belki / Gelmiyorum düğme grubunun ekran okuyucu etiketi."
+  },
+  "etkinlik_satir_zaman": "{gun} {saat}",
+  "@etkinlik_satir_zaman": {
+    "description": "Ana sayfadaki Yaklaşan satırında haftanın günü ve saat (ör. \"Çarşamba 20:00\"), cihazın saatine göre.",
+    "placeholders": {
+      "gun": {
+        "type": "DateTime",
+        "format": "EEEE",
+        "example": "2026-11-26"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-26T20:00"
+      }
+    }
+  },
+  "etkinlik_satir_ozet": "{tur} · {zaman} · {yer}",
+  "@etkinlik_satir_ozet": {
+    "description": "Ana sayfadaki Yaklaşan satırının alt metni: tür adı, gün ve saat, yer (ör. \"Kamp · Çarşamba 20:00 · Çevrimiçi\").",
+    "placeholders": {
+      "tur": {
+        "type": "String"
+      },
+      "zaman": {
+        "type": "String"
+      },
+      "yer": {
+        "type": "String"
+      }
+    }
+  },
+  "etkinlik_satir_ozet_yersiz": "{tur} · {zaman}",
+  "@etkinlik_satir_ozet_yersiz": {
+    "description": "Ana sayfadaki Yaklaşan satırının alt metni; yer bilinmiyorsa.",
+    "placeholders": {
+      "tur": {
+        "type": "String"
+      },
+      "zaman": {
+        "type": "String"
+      }
+    }
+  },
+  "etkinlik_cevap_ver": "Cevap ver",
+  "@etkinlik_cevap_ver": {
+    "description": "Ana sayfadaki Yaklaşan satırında, kullanıcı henüz katılım cevabı vermediyse sağdaki çerçeveli etiket; satıra dokununca etkinlik açılır."
+  },
+  "etkinlik_rozet_bekleme": "Sırada",
+  "@etkinlik_rozet_bekleme": {
+    "description": "Ana sayfadaki Yaklaşan satırında, kullanıcı bekleme listesindeyse sağdaki kısa etiket."
+  },
+  "etkinlik_olustur_aciklama": "Konvoy, kamp, maç…",
+  "@etkinlik_olustur_aciklama": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında \"Etkinlik aç\" seçeneğinin kısa açıklaması."
+  },
+  "etkinlik_kurulum_baslik": "İlk etkinliği aç",
+  "@etkinlik_kurulum_baslik": {
+    "description": "Yeni tayfanın \"Tayfanı birlikte kuralım\" kartındaki etkinlik adımı."
+  },
+  "etkinlik_kurulum_aciklama": "Saatini ve yerini yaz, kim geliyor gör.",
+  "@etkinlik_kurulum_aciklama": {
+    "description": "Kurulum kartındaki \"İlk etkinliği aç\" adımının açıklaması."
+  },
   "tayfa_ana_etkinlikler_yukleniyor": "Etkinlikler yükleniyor",
   "@tayfa_ana_etkinlikler_yukleniyor": {
     "description": "Etkinlikler okunurken dönen ilerleme göstergesinin ekran okuyucu etiketi."
@@ -300,6 +385,114 @@
   "tayfa_ana_daha_fazla": "Daha fazla göster",
   "@tayfa_ana_daha_fazla": {
     "description": "Etkinlik ve duyuru listelerinin sonunda, sonraki sayfayı okuyan düğme."
+  },
+  "tayfa_olustur_dugmesi": "Oluştur",
+  "@tayfa_olustur_dugmesi": {
+    "description": "Tayfa ana sayfasının sağ altındaki düğme; \"Tayfaya ne ekleyelim?\" sayfasını açar."
+  },
+  "tayfa_olustur_baslik": "Tayfaya ne ekleyelim?",
+  "@tayfa_olustur_baslik": {
+    "description": "\"Oluştur\" alttan sayfasının başlığı; seçenekleri sunucunun izinleri belirler."
+  },
+  "tayfa_davet_et": "Tayfaya davet et",
+  "@tayfa_davet_et": {
+    "description": "\"Oluştur\" sayfasındaki davet satırı ve ana sayfanın mor üst bölümündeki kişi+ ikonunun ekran okuyucu etiketi; davet linki oluşturma sayfasını açar."
+  },
+  "tayfa_davet_kod_satiri": "Kod: {kod}",
+  "@tayfa_davet_kod_satiri": {
+    "description": "\"Oluştur\" sayfasındaki davet satırında tayfa kodu; kod yalnızca yöneticiye döner.",
+    "placeholders": {
+      "kod": {
+        "type": "String"
+      }
+    }
+  },
+  "tayfa_davet_link_aciklama": "Linki WhatsApp grubunuza at",
+  "@tayfa_davet_link_aciklama": {
+    "description": "\"Oluştur\" sayfasındaki davet satırının açıklaması; tayfa kodu dönmediyse (yönetici değilse)."
+  },
+  "tayfa_davet_paylas": "Paylaş",
+  "@tayfa_davet_paylas": {
+    "description": "\"Oluştur\" sayfasındaki davet satırının düğmesi; davet linki oluşturma sayfasını açar."
+  },
+  "tayfa_ana_bekleyen_baslik": "{sayi, plural, other{{sayi} kişi katılmak istiyor}}",
+  "@tayfa_ana_bekleyen_baslik": {
+    "description": "Tayfa ana sayfasında yalnızca moderatör ve yöneticiye görünen bekleyen katılım isteği satırının başlığı; dokununca katılım istekleri açılır.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "tayfa_ana_bekleyen_aciklama": "Kimin davetiyle geldiklerini görebilirsin",
+  "@tayfa_ana_bekleyen_aciklama": {
+    "description": "Bekleyen katılım isteği satırının açıklaması."
+  },
+  "tayfa_kurulum_baslik": "Tayfanı birlikte kuralım",
+  "@tayfa_kurulum_baslik": {
+    "description": "Yeni kurulan tayfada yöneticiye görünen kurulum kartının başlığı."
+  },
+  "tayfa_kurulum_ilerleme": "{tamam} / {toplam}",
+  "@tayfa_kurulum_ilerleme": {
+    "description": "Kurulum kartındaki ilerleme (ör. \"1 / 4\"); ekran okuyucu tayfa_kurulum_ilerleme_etiketi'ni okur.",
+    "placeholders": {
+      "tamam": {
+        "type": "int"
+      },
+      "toplam": {
+        "type": "int"
+      }
+    }
+  },
+  "tayfa_kurulum_ilerleme_etiketi": "{toplam} adımdan {tamam} tanesi tamam",
+  "@tayfa_kurulum_ilerleme_etiketi": {
+    "description": "Kurulum kartındaki ilerlemenin ekran okuyucu etiketi.",
+    "placeholders": {
+      "tamam": {
+        "type": "int"
+      },
+      "toplam": {
+        "type": "int"
+      }
+    }
+  },
+  "tayfa_kurulum_kuruldu": "Tayfayı kurdun",
+  "@tayfa_kurulum_kuruldu": {
+    "description": "Kurulum kartının ilk (her zaman tamamlanmış) adımı."
+  },
+  "tayfa_kurulum_tamam_adim": "{adim}, tamamlandı",
+  "@tayfa_kurulum_tamam_adim": {
+    "description": "Kurulum kartında tamamlanmış adımın ekran okuyucu etiketi (ör. \"Tayfayı kurdun, tamamlandı\").",
+    "placeholders": {
+      "adim": {
+        "type": "String"
+      }
+    }
+  },
+  "tayfa_kurulum_davet_baslik": "Arkadaşlarını çağır",
+  "@tayfa_kurulum_davet_baslik": {
+    "description": "Kurulum kartının davet adımı; tayfada sen dışında biri olunca tamamlanır."
+  },
+  "tayfa_kurulum_davet_aciklama": "Linki WhatsApp grubunuza at; gelenler tek dokunuşla katılır.",
+  "@tayfa_kurulum_davet_aciklama": {
+    "description": "Kurulum kartındaki davet adımının açıklaması."
+  },
+  "tayfa_kurulum_davet_dugmesi": "Davet linkini paylaş",
+  "@tayfa_kurulum_davet_dugmesi": {
+    "description": "Kurulum kartındaki davet adımının düğmesi; davet linki oluşturma sayfasını açar."
+  },
+  "tayfa_kurulum_kod_kopyala": "Tayfa kodu {kod}, kopyala",
+  "@tayfa_kurulum_kod_kopyala": {
+    "description": "Kurulum kartında kodu gösteren düğmenin ekran okuyucu etiketi; dokununca kod panoya kopyalanır.",
+    "placeholders": {
+      "kod": {
+        "type": "String"
+      }
+    }
+  },
+  "tayfa_kurulum_kural": "Tayfanın ilk 7 gün içinde en az 3 üyesi olmalı; olmazsa sana bir uyarı gelir ve tayfa sonra arşivlenebilir.",
+  "@tayfa_kurulum_kural": {
+    "description": "Yeni tayfanın ana sayfasında kurulum kartının altındaki bilgi (Notion: Proje Planı §7, temizlik kuralı); üye sayısı 3'ün altındayken yöneticiye görünür."
   },
   "etkinlik_karti_zaman": "{gun}, {saat}",
   "@etkinlik_karti_zaman": {
@@ -328,6 +521,62 @@
       "dilim": {
         "type": "String",
         "example": "CET"
+      }
+    }
+  },
+  "goreli_az_once": "az önce",
+  "@goreli_az_once": {
+    "description": "Göreli zaman: bir dakikadan kısa süre önce (ör. duyurunun yayın zamanı)."
+  },
+  "goreli_dakika_once": "{sayi, plural, other{{sayi} dk önce}}",
+  "@goreli_dakika_once": {
+    "description": "Göreli zaman: bugün, bir saatten kısa süre önce.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "goreli_saat_once": "{sayi, plural, other{{sayi} saat önce}}",
+  "@goreli_saat_once": {
+    "description": "Göreli zaman: bugün, saatler önce.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "goreli_dun": "dün",
+  "@goreli_dun": {
+    "description": "Göreli zaman: dünün herhangi bir saati."
+  },
+  "goreli_gun_once": "{sayi, plural, other{{sayi} gün önce}}",
+  "@goreli_gun_once": {
+    "description": "Göreli zaman: 2–6 takvim günü önce; daha eskisi tarihle gösterilir.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "goreli_simdi": "şimdi",
+  "@goreli_simdi": {
+    "description": "Geri sayım: etkinlik başladı, henüz bitmedi (\"Sıradaki · şimdi\")."
+  },
+  "goreli_bugun": "bugün",
+  "@goreli_bugun": {
+    "description": "Geri sayım: etkinlik bugün başlıyor."
+  },
+  "goreli_yarin": "yarın",
+  "@goreli_yarin": {
+    "description": "Geri sayım: etkinlik yarın başlıyor."
+  },
+  "goreli_gun_sonra": "{sayi, plural, other{{sayi} gün sonra}}",
+  "@goreli_gun_sonra": {
+    "description": "Geri sayım: etkinliğin başlamasına kalan takvim günü.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
       }
     }
   },
@@ -434,6 +683,18 @@
   "duyuru_yaz": "Duyuru yaz",
   "@duyuru_yaz": {
     "description": "Moderatör ve yöneticiye duyuru listesinde ve tayfa ana sayfasında (henüz duyuru yokken) gösterilen düğme; duyuru formunu açar."
+  },
+  "duyuru_olustur_aciklama": "Herkes görsün, sabitle",
+  "@duyuru_olustur_aciklama": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında \"Duyuru yaz\" seçeneğinin kısa açıklaması."
+  },
+  "duyuru_kurulum_baslik": "Bir duyuru sabitle",
+  "@duyuru_kurulum_baslik": {
+    "description": "Yeni tayfanın kurulum kartındaki duyuru adımı; sabitlenmiş bir duyuru olunca tamamlanır."
+  },
+  "duyuru_kurulum_aciklama": "Kurallar ya da ücretler herkesin gözünün önünde dursun.",
+  "@duyuru_kurulum_aciklama": {
+    "description": "Kurulum kartındaki \"Bir duyuru sabitle\" adımının açıklaması."
   },
   "duyuru_islemler": "Duyuru işlemleri",
   "@duyuru_islemler": {
@@ -546,6 +807,10 @@
   "soru_sor": "Soru sor",
   "@soru_sor": {
     "description": "Soru sorma formunu açan düğme (ana sayfa bölümü ve soru listesi)."
+  },
+  "soru_olustur_aciklama": "Tayfanın bilgisine danış",
+  "@soru_olustur_aciklama": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında \"Soru sor\" seçeneğinin kısa açıklaması."
   },
   "soru_arama_etiketi": "Sorularda ara",
   "@soru_arama_etiketi": {
@@ -729,6 +994,18 @@
       }
     }
   },
+  "soru_satir_ozet": "{cevap} · {zaman}",
+  "@soru_satir_ozet": {
+    "description": "Ana sayfadaki Son sorular satırının alt metni: cevap sayısı (soru_cevap_sayisi) ve göreli zaman (ör. \"3 cevap · dün\").",
+    "placeholders": {
+      "cevap": {
+        "type": "String"
+      },
+      "zaman": {
+        "type": "String"
+      }
+    }
+  },
   "soru_tarih": "{tarih}, {saat}",
   "@soru_tarih": {
     "description": "Soru ve cevapta yazıldığı gün ve saat, cihazın saatine göre.",
@@ -878,14 +1155,6 @@
       }
     }
   },
-  "tayfa_davet_baslik": "Tayfan hazır",
-  "@tayfa_davet_baslik": {
-    "description": "Yeni oluşturulan tayfanın ana sayfasında görünen davet kısayolu kartının başlığı."
-  },
-  "tayfa_davet_aciklama": "Tayfa kodunu paylaş, arkadaşların katılsın.",
-  "@tayfa_davet_aciklama": {
-    "description": "Davet kısayolu kartında başlığın altındaki açıklama."
-  },
   "tayfa_davet_kod": "Tayfa kodu: {kod}",
   "@tayfa_davet_kod": {
     "description": "Davet kısayolu kartında paylaşılacak tayfa kodu.",
@@ -895,10 +1164,6 @@
         "example": "K7M2Q9XA"
       }
     }
-  },
-  "tayfa_davet_kapat": "Davet kısayolunu kapat",
-  "@tayfa_davet_kapat": {
-    "description": "Davet kısayolu kartını kapatan ikon düğmesinin ekran okuyucu etiketi ve ipucu."
   },
   "katilim_baslik": "Tayfa koduyla katıl",
   "@katilim_baslik": {
@@ -2323,6 +2588,10 @@
   "anket_ac": "Anket aç",
   "@anket_ac": {
     "description": "Anket oluşturma formunu açan düğme; her üyeye gösterilir, yetkiyi sunucu verir."
+  },
+  "anket_olustur_aciklama": "Gün, yer, karar sor",
+  "@anket_olustur_aciklama": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında \"Anket aç\" seçeneğinin kısa açıklaması."
   },
   "anket_acik": "Açık",
   "@anket_acik": {

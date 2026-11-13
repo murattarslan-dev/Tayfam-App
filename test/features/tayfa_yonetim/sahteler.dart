@@ -178,5 +178,7 @@ List<Override> yonetimOverridelari(
   kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
   saatProvider.overrideWithValue(() => sabitSimdi),
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
+  tayfaDavetiProvider.overrideWithValue(tayfayaDavetEt),
+  tayfaSilmeIptaliProvider.overrideWithValue(silmeIptalDugmesi),
   oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
 ];

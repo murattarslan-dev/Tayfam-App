@@ -196,4 +196,13 @@ class DenemeModulu implements TayfaModule {
 
   @override
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId) async {}
+
+  @override
+  Widget? anaSayfaOneCikan(BuildContext context, String tayfaId) => null;
+
+  @override
+  OlusturmaSecenegi? get olusturmaSecenegi => null;
+
+  @override
+  KurulumAdimi? get kurulumAdimi => null;
 }

@@ -16,7 +16,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa ayarlarının alt ekranlarının yolları (`/t/<id>/ayarlar/<yol>`).
 abstract final class AyarYollari {
-  static const istekler = 'istekler';
+  static const istekler = Adresler.katilimIstekleriYolu;
   static const uyeler = 'uyeler';
   static const bilgiler = 'bilgiler';
   static const davetler = 'davetler';
@@ -294,6 +294,40 @@ class _KodBolumu extends ConsumerWidget {
         .read(tayfaAyarlariProvider(tayfaId).notifier)
         .koduYenile();
     if (context.mounted) sonucuBildir(context, hata, m.yonetim_kod_yenilendi);
+  }
+}
+
+/// Tayfa ana sayfasının durum şeridindeki "Silmeyi iptal et" (tasarım:
+/// Ayar-Silme; `tayfaSilmeIptaliProvider`'a verilir). Mor yüzeyde mango
+/// zemin + ink. İptali sunucu yetkilendirir; sonuç kısa bildirimle
+/// gösterilir ve tayfa görünümü yenilenir.
+Widget silmeIptalDugmesi(BuildContext context, String tayfaId) =>
+    SilmeIptalDugmesi(tayfaId: tayfaId);
+
+/// "Silmeyi iptal et" düğmesi; işlem sürerken kapalıdır.
+class SilmeIptalDugmesi extends ConsumerWidget {
+  const SilmeIptalDugmesi({super.key, required this.tayfaId});
+
+  final String tayfaId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    final mesgul = ref.watch(tayfaAyarlariProvider(tayfaId));
+    return BirincilEylem(
+      etiket: m.yonetim_silme_iptal,
+      markaYuzeyinde: true,
+      onPressed: mesgul ? null : () => unawaited(_iptal(context, ref)),
+    );
+  }
+
+  Future<void> _iptal(BuildContext context, WidgetRef ref) async {
+    final m = AppLocalizations.of(context);
+    final bildirici = SonucBildirici.al(context);
+    final hata = await ref
+        .read(tayfaAyarlariProvider(tayfaId).notifier)
+        .silmeyiIptalEt();
+    bildirici.bildir(hata, m.yonetim_silme_iptal_edildi);
   }
 }
 

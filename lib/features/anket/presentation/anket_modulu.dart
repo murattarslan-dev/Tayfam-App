@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +11,9 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/anket/application/anket_listesi_notifier.dart';
 import 'package:tayfam/features/anket/presentation/anket_bolumu.dart';
 import 'package:tayfam/features/anket/presentation/anket_ekrani.dart';
+import 'package:tayfam/features/anket/presentation/anket_ortak.dart';
 import 'package:tayfam/features/anket/presentation/anketler_ekrani.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Anket rotasındaki anket kimliği parametresinin adı.
 const String anketIdParametresi = 'anketId';
@@ -51,6 +55,21 @@ class AnketModulu implements TayfaModule {
       AnketBolumu(tayfaId: tayfaId);
 
   @override
+  Widget? anaSayfaOneCikan(BuildContext context, String tayfaId) => null;
+
+  @override
+  OlusturmaSecenegi? get olusturmaSecenegi => const OlusturmaSecenegi(
+    ikon: Icons.poll_outlined,
+    baslik: _olusturBaslik,
+    aciklama: _olusturAciklama,
+    izinli: _herUye,
+    ac: _anketAc,
+  );
+
+  @override
+  KurulumAdimi? get kurulumAdimi => null;
+
+  @override
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId) async {
     await ref
         .read(
@@ -66,6 +85,18 @@ String? anketEtkinlikSuzgeci(Uri adres) {
   final deger = adres.queryParameters[Adresler.anketEtkinlikParametresi];
   return deger != null && uuidBicimindeMi(deger) ? deger : null;
 }
+
+String _olusturBaslik(BuildContext context) =>
+    AppLocalizations.of(context).anket_ac;
+
+String _olusturAciklama(BuildContext context) =>
+    AppLocalizations.of(context).anket_olustur_aciklama;
+
+/// Her üye anket açabilir (ADR-0018 §5); yetkiyi sunucu verir.
+bool _herUye(TayfaYetkisi yetki) => true;
+
+void _anketAc(BuildContext context, String tayfaId) =>
+    unawaited(anketFormunuAc(context, tayfaId: tayfaId));
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi] ?? '';

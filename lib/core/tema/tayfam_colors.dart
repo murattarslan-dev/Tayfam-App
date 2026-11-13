@@ -24,6 +24,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.markaUstu,
     required this.markaYuzey,
     required this.markaYuzeyUstu,
+    required this.markaYuzeyKutusu,
     required this.acilisZemini,
     required this.birincilEylem,
     required this.birincilEylemUstu,
@@ -83,6 +84,11 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
 
   /// [markaYuzey] üzerindeki metin; iki temada da beyaz.
   final Color markaYuzeyUstu;
+
+  /// Mor yüzeyin üstündeki koyu bilgi kutusu (tayfa durum şeridi; tasarım:
+  /// Ayar-Silme): iki temada da ink. Üzerinde [markaYuzeyUstu] (17.89:1)
+  /// ve mango düğme (9.76:1).
+  final Color markaYuzeyKutusu;
 
   /// Açılış ekranının (splash) zemini: açık temada brand, koyu temada ink
   /// (Design: Splash açık / koyu). Üzerindeki yazı [markaYuzeyUstu]
@@ -198,6 +204,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     markaUstu: _Palet.beyaz,
     markaYuzey: _Palet.brand,
     markaYuzeyUstu: _Palet.beyaz,
+    markaYuzeyKutusu: _Palet.ink,
     acilisZemini: _Palet.brand,
     birincilEylem: _Palet.brand,
     birincilEylemUstu: _Palet.beyaz,
@@ -237,6 +244,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     markaUstu: _Palet.ink,
     markaYuzey: _Palet.brand,
     markaYuzeyUstu: _Palet.beyaz,
+    markaYuzeyKutusu: _Palet.ink,
     acilisZemini: _Palet.ink,
     birincilEylem: _Palet.mango,
     birincilEylemUstu: _Palet.ink,
@@ -276,6 +284,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? markaUstu,
     Color? markaYuzey,
     Color? markaYuzeyUstu,
+    Color? markaYuzeyKutusu,
     Color? acilisZemini,
     Color? birincilEylem,
     Color? birincilEylemUstu,
@@ -313,6 +322,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       markaUstu: markaUstu ?? this.markaUstu,
       markaYuzey: markaYuzey ?? this.markaYuzey,
       markaYuzeyUstu: markaYuzeyUstu ?? this.markaYuzeyUstu,
+      markaYuzeyKutusu: markaYuzeyKutusu ?? this.markaYuzeyKutusu,
       acilisZemini: acilisZemini ?? this.acilisZemini,
       birincilEylem: birincilEylem ?? this.birincilEylem,
       birincilEylemUstu: birincilEylemUstu ?? this.birincilEylemUstu,
@@ -358,6 +368,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       markaUstu: l(markaUstu, other.markaUstu),
       markaYuzey: l(markaYuzey, other.markaYuzey),
       markaYuzeyUstu: l(markaYuzeyUstu, other.markaYuzeyUstu),
+      markaYuzeyKutusu: l(markaYuzeyKutusu, other.markaYuzeyKutusu),
       acilisZemini: l(acilisZemini, other.acilisZemini),
       birincilEylem: l(birincilEylem, other.birincilEylem),
       birincilEylemUstu: l(birincilEylemUstu, other.birincilEylemUstu),

@@ -203,6 +203,13 @@ abstract final class Adresler {
   static String tayfaAyarlari(String tayfaId) =>
       '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
 
+  /// Katılım isteklerinin ayarlar altındaki yolu.
+  static const katilimIstekleriYolu = 'istekler';
+
+  /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).
+  static String katilimIstekleri(String tayfaId) =>
+      '${tayfaAyarlari(tayfaId)}/$katilimIstekleriYolu';
+
   /// QR ile cihaz bağlamanın (eşleştirilmiş cihaz QR okutur) profil
   /// altındaki yolu (ADR-0020).
   static const cihazBaglaYolu = 'cihaz-bagla';

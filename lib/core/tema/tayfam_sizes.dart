@@ -187,4 +187,23 @@ abstract final class TayfamSizes {
 
   /// Sayı rozetinin en küçük kenarı (28 px; "Tayfa ayarları" girişi).
   static const double rozet = 28;
+
+  /// Öne çıkan kartın (Sıradaki etkinlik, kurulum kartı) mor üst bölüme
+  /// taşan yüksekliği (76 px).
+  static const double morTasma = 76;
+
+  /// Yaklaşan satırındaki tarih kutusunun en küçük genişliği (52 px).
+  static const double tarihKutusuGenislik = 52;
+
+  /// Yaklaşan satırındaki tarih kutusunun en küçük yüksekliği (56 px).
+  static const double tarihKutusuYukseklik = 56;
+
+  /// Sıradaki etkinlik kartındaki doluluk çubuğunun yüksekliği (8 px).
+  static const double dolulukCubugu = 8;
+
+  /// Kurulum kartındaki adım numarası dairesi (28 px).
+  static const double adimDairesi = 28;
+
+  /// Sayfanın altında "Oluştur" düğmesinin örtmediği boşluk (96 px).
+  static const double olusturAlani = 96;
 }

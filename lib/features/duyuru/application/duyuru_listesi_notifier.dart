@@ -7,7 +7,7 @@ import 'package:tayfam/features/duyuru/data/duyuru_deposu.dart';
 
 /// Tayfa ana sayfasında sabitlenenlerin ardından gösterilen en son duyuru
 /// sayısı (ADR-0015 §1).
-const int anaSayfaDuyuruSayisi = 3;
+const int anaSayfaDuyuruSayisi = 2;
 
 /// Duyuruların sırası (ADR-0015 §2, sunucuyla aynı): sabitlenenler önce,
 /// sonra yeniden eskiye.

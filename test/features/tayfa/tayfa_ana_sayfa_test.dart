@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tema_baglami.dart';
@@ -118,67 +119,165 @@ void main() {
     });
   });
 
-  group('kod paylaşımı (ADR-0014 §5)', () {
-    testWidgets('kod dönünce paylaş ve kopyala görünüyor', (tester) async {
+  group('davet ve kurulum (ADR-0015 Notlar 2026-11-13)', () {
+    testWidgets('kişi+ ikonu kayıtlı davet akışını açıyor', (tester) async {
       ekranBoyutu(tester);
+      final acilan = <String>[];
+      await _ac(
+        tester,
+        overrides: [
+          tayfaDavetiProvider.overrideWithValue((_, tayfaId) async {
+            acilan.add(tayfaId);
+          }),
+        ],
+      );
+
+      await tester.tap(find.byTooltip(arbMetni('tayfa_davet_et')));
+      await tester.pump();
+      expect(acilan, [ornekTayfaId]);
+      // Kod artık üst bölümde değil (kurulum kartında ve ayarlarda).
+      expect(find.text(arbMetni('tayfa_kodu_paylas')), findsNothing);
+    });
+
+    testWidgets('davet akışı yoksa kişi+ ikonu yok', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester);
+      expect(find.byTooltip(arbMetni('tayfa_davet_et')), findsNothing);
+    });
+
+    testWidgets('yeni tayfada yöneticiye kurulum kartı ve 3 üye kuralı', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
       final paylasici = SahtePaylasici();
+      final davetler = <String>[];
       await _ac(
         tester,
         tayfa: _gorunum(
-          (_) => gorunumJson(ornekTayfaId, rol: 'admin', kod: sahteKod),
+          (_) => gorunumJson(
+            ornekTayfaId,
+            rol: 'admin',
+            kod: sahteKod,
+            uyeSayisi: 1,
+          ),
           paylasici: paylasici,
         ),
+        overrides: [
+          // Tayfa 2026-11-01'de açıldı; 3 gün sonra.
+          tayfaSaatiProvider.overrideWithValue(() => DateTime.utc(2026, 11, 4)),
+          tayfaDavetiProvider.overrideWithValue((_, tayfaId) async {
+            davetler.add(tayfaId);
+          }),
+        ],
       );
 
-      final ust = find.byType(TayfaUstBolumu);
-      await tester.tap(
-        find.descendant(
-          of: ust,
-          matching: find.text(arbMetni('tayfa_kodu_paylas')),
-        ),
-      );
+      expect(find.byType(TayfaKurulumKarti), findsOneWidget);
+      expect(find.text(arbMetni('tayfa_kurulum_baslik')), findsOneWidget);
+      // Modül yok: iki adım, biri (kuruldu) tamam.
+      expect(find.text('1 / 2'), findsOneWidget);
+      expect(find.text(arbMetni('tayfa_kurulum_kural')), findsOneWidget);
+
+      await tester.tap(find.text(arbMetni('tayfa_kurulum_davet_dugmesi')));
       await tester.pump();
-      expect(paylasici.paylasilan, hasLength(1));
-      expect(paylasici.paylasilan.single, contains('Klasikçiler'));
-      expect(paylasici.paylasilan.single, contains(sahteKod));
-      expect(paylasici.paylasilan.single, contains('https://tayfam.app'));
+      expect(davetler, [ornekTayfaId]);
 
-      await tester.tap(
-        find.descendant(
-          of: ust,
-          matching: find.text(arbMetni('tayfa_kodu_kopyala')),
-        ),
-      );
+      await tester.tap(find.text(sahteKod));
       await tester.pump();
       expect(paylasici.kopyalanan, [sahteKod]);
-      expect(find.text(arbMetni('tayfa_kod_kopyalandi')), findsOneWidget);
     });
 
-    testWidgets('davet kısayolu yeni tayfada görünüyor ve kapanıyor', (
+    testWidgets('kurulum dönemi bitince ve üyeye kart yok', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        tayfa: _gorunum(
+          (_) => gorunumJson(ornekTayfaId, rol: 'admin', uyeSayisi: 1),
+        ),
+        overrides: [
+          tayfaSaatiProvider.overrideWithValue(() => DateTime.utc(2026, 11, 9)),
+        ],
+      );
+      expect(find.byType(TayfaKurulumKarti), findsNothing);
+      expect(find.text(arbMetni('tayfa_kurulum_kural')), findsNothing);
+    });
+
+    testWidgets('yeni oluşturulan tayfada kart; davet adımı üyeyle tamam', (
       tester,
     ) async {
       ekranBoyutu(tester);
       await _ac(
         tester,
         tayfa: _gorunum(
-          (_) => gorunumJson(ornekTayfaId, rol: 'admin', kod: sahteKod),
+          (_) => gorunumJson(ornekTayfaId, rol: 'admin', uyeSayisi: 2),
         ),
       );
-      expect(find.byType(DavetKisayolu), findsNothing);
+      expect(find.byType(TayfaKurulumKarti), findsNothing);
 
       tester
           .container()
           .read(davetKisayoluProvider.notifier)
           .goster(ornekTayfaId);
       await tester.pumpAndSettle();
+      // Modül yoksa iki adımın ikisi de tamam: kart gizli.
+      expect(find.byType(TayfaKurulumKarti), findsOneWidget);
+      expect(find.text(arbMetni('tayfa_kurulum_baslik')), findsNothing);
+    });
 
-      expect(find.byType(DavetKisayolu), findsOneWidget);
-      expect(find.text(arbMetni('tayfa_davet_baslik')), findsOneWidget);
-      expect(find.text('Tayfa kodu: $sahteKod'), findsOneWidget);
+    testWidgets('bekleyen katılım isteği satırı yöneticiye', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        tayfa: _gorunum(
+          (_) => gorunumJson(ornekTayfaId, rol: 'moderator', bekleyen: 3),
+        ),
+      );
+      expect(find.byType(BekleyenIstekSatiri), findsOneWidget);
+      expect(find.text('3 kişi katılmak istiyor'), findsOneWidget);
+    });
 
-      await tester.tap(find.byTooltip(arbMetni('tayfa_davet_kapat')));
-      await tester.pumpAndSettle();
-      expect(find.byType(DavetKisayolu), findsNothing);
+    testWidgets('silme planlanınca yöneticiye "Silmeyi iptal et"', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        tayfa: _gorunum(
+          (_) => gorunumJson(
+            ornekTayfaId,
+            rol: 'admin',
+            silinme: '2026-12-01T09:00:00Z',
+          ),
+        ),
+        overrides: [
+          tayfaSilmeIptaliProvider.overrideWithValue(
+            (_, _) => const Text('iptal-dugmesi'),
+          ),
+        ],
+      );
+      expect(
+        find.descendant(
+          of: find.byType(TayfaDurumSeridi),
+          matching: find.text('iptal-dugmesi'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('üyeye "Silmeyi iptal et" yok', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        tayfa: _gorunum(
+          (_) => gorunumJson(ornekTayfaId, silinme: '2026-12-01T09:00:00Z'),
+        ),
+        overrides: [
+          tayfaSilmeIptaliProvider.overrideWithValue(
+            (_, _) => const Text('iptal-dugmesi'),
+          ),
+        ],
+      );
+      expect(find.byType(TayfaDurumSeridi), findsOneWidget);
+      expect(find.text('iptal-dugmesi'), findsNothing);
     });
   });
 
@@ -329,7 +428,7 @@ void main() {
             rol: 'admin',
             kod: sahteKod,
             silinme: '2026-12-01T09:00:00Z',
-            uyeSayisi: 1250,
+            uyeSayisi: 1,
           ),
         ),
       );
@@ -341,13 +440,14 @@ void main() {
       expect(find.byType(TayfaDurumSeridi), findsOneWidget);
       expect(tester.takeException(), isNull);
 
-      // Üst bölüm içerikle birlikte kayar; kısayola kaydırılarak ulaşılır.
+      // Üst bölüm içerikle birlikte kayar; kurulum kartına kaydırılarak
+      // ulaşılır.
       await tester.dragUntilVisible(
-        find.byType(DavetKisayolu),
+        find.text(arbMetni('tayfa_kurulum_davet_aciklama')),
         find.byType(ListView),
         const Offset(0, -200),
       );
-      expect(find.byType(DavetKisayolu), findsOneWidget);
+      expect(find.byType(TayfaKurulumKarti), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.dragUntilVisible(
         find.byType(TayfaUstBolumu),

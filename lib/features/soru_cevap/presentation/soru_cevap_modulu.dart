@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,8 +9,10 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_listesi_notifier.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_bolumu.dart';
+import 'package:tayfam/features/soru_cevap/presentation/soru_cevap_ortak.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_ekrani.dart';
 import 'package:tayfam/features/soru_cevap/presentation/sorular_ekrani.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Soru rotasındaki soru kimliği parametresinin adı.
 const String soruIdParametresi = 'soruId';
@@ -46,11 +50,38 @@ class SoruCevapModulu implements TayfaModule {
       SoruBolumu(tayfaId: tayfaId);
 
   @override
+  Widget? anaSayfaOneCikan(BuildContext context, String tayfaId) => null;
+
+  @override
+  OlusturmaSecenegi? get olusturmaSecenegi => const OlusturmaSecenegi(
+    ikon: Icons.help_outline,
+    baslik: _olusturBaslik,
+    aciklama: _olusturAciklama,
+    izinli: _herUye,
+    ac: _soruSor,
+  );
+
+  @override
+  KurulumAdimi? get kurulumAdimi => null;
+
+  @override
   Future<void> anaSayfayiYenile(WidgetRef ref, String tayfaId) async {
     final liste = soruListesiProvider(anaSoruListesi(tayfaId));
     await ref.read(liste.notifier).yenile();
   }
 }
+
+String _olusturBaslik(BuildContext context) =>
+    AppLocalizations.of(context).soru_sor;
+
+String _olusturAciklama(BuildContext context) =>
+    AppLocalizations.of(context).soru_olustur_aciklama;
+
+/// Her üye soru sorabilir (ADR-0018 §4); yetkiyi sunucu verir.
+bool _herUye(TayfaYetkisi yetki) => true;
+
+void _soruSor(BuildContext context, String tayfaId) =>
+    unawaited(soruFormunuAc(context, tayfaId: tayfaId));
 
 String _tayfaId(GoRouterState state) =>
     state.pathParameters[Adresler.tayfaIdParametresi]!;
