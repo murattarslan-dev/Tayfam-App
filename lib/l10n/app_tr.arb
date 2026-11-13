@@ -2015,6 +2015,20 @@
   "@etkinlik_rota_temizle": {
     "description": "Rota seçicide bütün noktaları silen düğme."
   },
+  "etkinlik_rota_temizle_onay": "Rotadaki bütün noktalar silinsin mi?",
+  "@etkinlik_rota_temizle_onay": {
+    "description": "Rota çizme ekranında \"Temizle\" onayının başlığı."
+  },
+  "etkinlik_rota_en_cok": "En çok {sayi} nokta",
+  "@etkinlik_rota_en_cok": {
+    "description": "Rota çizme ekranının alt panelinde nokta sınırı.",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "500"
+      }
+    }
+  },
   "etkinlik_rota_kaydet": "Rotayı kaydet",
   "@etkinlik_rota_kaydet": {
     "description": "Rota seçicide rotayı sihirbaza aktaran düğme."
@@ -2060,10 +2074,6 @@
         "example": "3"
       }
     }
-  },
-  "etkinlik_zorluk_yok": "Belirtilmedi",
-  "@etkinlik_zorluk_yok": {
-    "description": "Sihirbazda yürüyüş zorluğu seçilmediğinde görünen seçenek."
   },
   "etkinlik_yuruyus_mesafe": "Mesafe",
   "@etkinlik_yuruyus_mesafe": {
@@ -2245,6 +2255,44 @@
   "@etkinlik_geri": {
     "description": "Etkinlik sihirbazında önceki adıma dönen düğme."
   },
+  "etkinlik_tamam": "Tamam",
+  "@etkinlik_tamam": {
+    "description": "Sihirbazın tekrar ekranındaki onay düğmesi; seçimi 4. adıma taşır."
+  },
+  "etkinlik_vazgec_baslik": "Vazgeçilsin mi?",
+  "@etkinlik_vazgec_baslik": {
+    "description": "Etkinlik sihirbazı kapatılırken (X) girilen bir şey varsa sorulan onayın başlığı."
+  },
+  "etkinlik_vazgec_metni": "Girdiğin bilgiler kaydedilmez.",
+  "@etkinlik_vazgec_metni": {
+    "description": "Etkinlik sihirbazını kapatma onayının açıklaması."
+  },
+  "etkinlik_vazgec_devam": "Düzenlemeye devam et",
+  "@etkinlik_vazgec_devam": {
+    "description": "Etkinlik sihirbazını kapatma onayında sihirbazda kalma düğmesi."
+  },
+  "etkinlik_sayac_azalt": "Azalt",
+  "@etkinlik_sayac_azalt": {
+    "description": "Sayı sayacındaki eksi düğmesinin ekran okuyucu etiketi (kontenjan, tekrar aralığı)."
+  },
+  "etkinlik_sayac_artir": "Artır",
+  "@etkinlik_sayac_artir": {
+    "description": "Sayı sayacındaki artı düğmesinin ekran okuyucu etiketi."
+  },
+  "etkinlik_degistir": "Değiştir",
+  "@etkinlik_degistir": {
+    "description": "Sihirbazın önizleme adımında her satırdaki, ilgili adıma götüren bağlantı."
+  },
+  "etkinlik_degistir_etiketi": "{alan}: değiştir",
+  "@etkinlik_degistir_etiketi": {
+    "description": "Önizlemedeki \"Değiştir\" bağlantısının ekran okuyucu etiketi; alan satırın adıdır (\"Ne zaman\").",
+    "placeholders": {
+      "alan": {
+        "type": "String",
+        "example": "Ne zaman"
+      }
+    }
+  },
   "etkinlik_olustur_gonder": "Etkinliği aç",
   "@etkinlik_olustur_gonder": {
     "description": "Etkinlik oluşturma sihirbazının son adımında etkinliği oluşturan düğme."
@@ -2265,7 +2313,47 @@
   "@etkinlik_tur_hata": {
     "description": "Tür seçilmeden \"İleri\"ye basıldığında görünen hata."
   },
-  "etkinlik_bilgi_baslik": "Başlık ve zaman",
+  "etkinlik_tur_adim_aciklama": "Türe göre sonraki adımlar değişir.",
+  "@etkinlik_tur_adim_aciklama": {
+    "description": "Sihirbazın tür adımında başlığın altındaki açıklama."
+  },
+  "etkinlik_tur_ilgi_alanlari": "Tayfanın ilgi alanları",
+  "@etkinlik_tur_ilgi_alanlari": {
+    "description": "Sihirbazın tür adımında tayfanın ilgi alanlarındaki türlerin başlığı."
+  },
+  "etkinlik_tur_digerleri": "Diğer türler",
+  "@etkinlik_tur_digerleri": {
+    "description": "Sihirbazın tür adımında ilgi alanı dışındaki türlerin başlığı."
+  },
+  "etkinlik_tur_aciklama_convoy": "Rota ve araç listesi",
+  "@etkinlik_tur_aciklama_convoy": {
+    "description": "Sihirbazın tür kutusunda konvoyun kısa açıklaması."
+  },
+  "etkinlik_tur_aciklama_camp": "Malzeme listesi, kamp yeri",
+  "@etkinlik_tur_aciklama_camp": {
+    "description": "Sihirbazın tür kutusunda kampın kısa açıklaması."
+  },
+  "etkinlik_tur_aciklama_hike": "Zorluk, mesafe, yoklama",
+  "@etkinlik_tur_aciklama_hike": {
+    "description": "Sihirbazın tür kutusunda yürüyüşün kısa açıklaması."
+  },
+  "etkinlik_tur_aciklama_fishing": "Av günlüğü, mera gizliliği",
+  "@etkinlik_tur_aciklama_fishing": {
+    "description": "Sihirbazın tür kutusunda balığın kısa açıklaması."
+  },
+  "etkinlik_tur_aciklama_gaming": "Genelde çevrimiçi",
+  "@etkinlik_tur_aciklama_gaming": {
+    "description": "Sihirbazın tür kutusunda oyunun kısa açıklaması."
+  },
+  "etkinlik_tur_aciklama_sports": "Halısaha, basket, tenis…",
+  "@etkinlik_tur_aciklama_sports": {
+    "description": "Sihirbazın tür kutusunda sporun kısa açıklaması."
+  },
+  "etkinlik_tur_aciklama_general": "Sade etkinlik",
+  "@etkinlik_tur_aciklama_general": {
+    "description": "Sihirbazın tür kutusunda genel etkinliğin kısa açıklaması."
+  },
+  "etkinlik_bilgi_baslik": "Ne zaman, ne yapıyoruz?",
   "@etkinlik_bilgi_baslik": {
     "description": "Sihirbazın başlık, açıklama, başlangıç ve bitiş adımının başlığı."
   },
@@ -2284,6 +2372,18 @@
   "etkinlik_aciklama_hata": "Açıklama en çok 5000 karakter olabilir.",
   "@etkinlik_aciklama_hata": {
     "description": "Açıklama çok uzunken görünen hata."
+  },
+  "etkinlik_aciklama_ipucu": "Nerede buluşuyoruz, ne getirilecek…",
+  "@etkinlik_aciklama_ipucu": {
+    "description": "Sihirbazdaki açıklama alanının ipucu."
+  },
+  "etkinlik_kapak_baslik": "Kapak fotoğrafı (isteğe bağlı)",
+  "@etkinlik_kapak_baslik": {
+    "description": "Sihirbazın başlık ve zaman adımında kapak fotoğrafı alanının başlığı."
+  },
+  "etkinlik_ayni_gun": "Aynı gün",
+  "@etkinlik_ayni_gun": {
+    "description": "Sihirbazdaki bitiş kutusunda, bitiş başlangıçla aynı gündeyse gün yerine yazar."
   },
   "etkinlik_baslangic": "Başlangıç",
   "@etkinlik_baslangic": {
@@ -2337,6 +2437,14 @@
   "@etkinlik_nokta_hata": {
     "description": "Yüz yüze etkinlikte nokta seçilmeden \"İleri\"ye basıldığında görünen hata."
   },
+  "etkinlik_nokta_secilmedi": "Nokta seçilmedi",
+  "@etkinlik_nokta_secilmedi": {
+    "description": "Sihirbazın yer adımında buluşma noktası seçilmemişken kartta yazar."
+  },
+  "etkinlik_nokta_secildi": "Nokta seçildi",
+  "@etkinlik_nokta_secildi": {
+    "description": "Sihirbazın yer adımında buluşma noktası seçilince kartta yazar."
+  },
   "etkinlik_nokta_adi_etiketi": "Yer adı (isteğe bağlı)",
   "@etkinlik_nokta_adi_etiketi": {
     "description": "Buluşma noktasının adı alanının etiketi."
@@ -2365,13 +2473,67 @@
   "@etkinlik_baglanti_hata": {
     "description": "Çevrimiçi etkinlik bağlantısı geçersizken görünen hata."
   },
-  "etkinlik_ayrinti_adim_baslik": "Ayrıntılar",
+  "etkinlik_ayrinti_adim_baslik": "Son ayrıntılar",
   "@etkinlik_ayrinti_adim_baslik": {
     "description": "Sihirbazın türe özel alanlar, kontenjan ve tekrar adımının başlığı."
   },
-  "etkinlik_kontenjan_etiketi": "Kontenjan (boş bırakırsan sınırsız)",
-  "@etkinlik_kontenjan_etiketi": {
-    "description": "Kontenjan alanının etiketi."
+  "etkinlik_ayrinti_adim_aciklama": "Sonra da değiştirebilirsin.",
+  "@etkinlik_ayrinti_adim_aciklama": {
+    "description": "Sihirbazın ayrıntılar adımında başlığın altındaki açıklama."
+  },
+  "etkinlik_kontenjan": "Kontenjan",
+  "@etkinlik_kontenjan": {
+    "description": "Sihirbazdaki kontenjan sayacının ve önizleme satırının adı."
+  },
+  "etkinlik_kontenjan_sinirsiz": "Sınırsız",
+  "@etkinlik_kontenjan_sinirsiz": {
+    "description": "Sihirbazda kontenjanı kaldıran anahtar; önizlemede kontenjansız etkinliğin değeri."
+  },
+  "etkinlik_kamp_yeri_etiketi": "Kamp yeri (isteğe bağlı)",
+  "@etkinlik_kamp_yeri_etiketi": {
+    "description": "Sihirbazdaki kamp yeri alanının etiketi."
+  },
+  "etkinlik_kamp_notu_etiketi": "Not (isteğe bağlı)",
+  "@etkinlik_kamp_notu_etiketi": {
+    "description": "Sihirbazdaki kamp notu alanının etiketi."
+  },
+  "etkinlik_spor_saha_etiketi": "Saha (isteğe bağlı)",
+  "@etkinlik_spor_saha_etiketi": {
+    "description": "Sihirbazdaki saha alanının etiketi."
+  },
+  "etkinlik_yuruyus_donus_notu": "Beklenen dönüş ve tolerans, “Döndüm” demeyenler için verilen uyarıda kullanılır.",
+  "@etkinlik_yuruyus_donus_notu": {
+    "description": "Sihirbazda yürüyüşün dönüş alanlarının altındaki açıklama."
+  },
+  "etkinlik_onizleme_baslik": "Her şey doğru mu?",
+  "@etkinlik_onizleme_baslik": {
+    "description": "Sihirbazın son (önizleme) adımının başlığı."
+  },
+  "etkinlik_onizleme_aciklama": "Açınca etkinlik tayfanın ana sayfasında görünür. Sonra da düzenleyebilirsin.",
+  "@etkinlik_onizleme_aciklama": {
+    "description": "Sihirbazın önizleme adımında, oluşturmada başlığın altındaki açıklama."
+  },
+  "etkinlik_onizleme_duzenleme_aciklama": "Kaydedince değişiklikler herkese görünür.",
+  "@etkinlik_onizleme_duzenleme_aciklama": {
+    "description": "Sihirbazın önizleme adımında, düzenlemede başlığın altındaki açıklama."
+  },
+  "etkinlik_onizleme_ne_zaman": "Ne zaman",
+  "@etkinlik_onizleme_ne_zaman": {
+    "description": "Sihirbazın önizleme kartında zaman satırının adı."
+  },
+  "etkinlik_onizleme_nerede": "Nerede",
+  "@etkinlik_onizleme_nerede": {
+    "description": "Sihirbazın önizleme kartında yer satırının adı."
+  },
+  "etkinlik_onizleme_kisi": "{sayi, plural, other{{sayi} kişi}}",
+  "@etkinlik_onizleme_kisi": {
+    "description": "Sihirbazın önizleme kartında kontenjanın değeri.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "40"
+      }
+    }
   },
   "etkinlik_uzunluk_hata": "En çok {enCok} karakter olabilir.",
   "@etkinlik_uzunluk_hata": {
@@ -2435,6 +2597,18 @@
   "@etkinlik_tekrar_baslik": {
     "description": "Sihirbazdaki tekrar bölümünün başlığı."
   },
+  "etkinlik_tekrar_aciklama": "Etkinlik ne sıklıkla ve kaç kez tekrarlanacak?",
+  "@etkinlik_tekrar_aciklama": {
+    "description": "Tekrar ekranında başlığın altındaki açıklama."
+  },
+  "etkinlik_tekrar_siklik": "Sıklık",
+  "@etkinlik_tekrar_siklik": {
+    "description": "Tekrar ekranında sıklık çiplerinin başlığı."
+  },
+  "etkinlik_tekrar_bitis_soru": "Ne zaman bitsin?",
+  "@etkinlik_tekrar_bitis_soru": {
+    "description": "Tekrar ekranında bitiş çiplerinin başlığı."
+  },
   "etkinlik_tekrar_yok": "Tek seferlik",
   "@etkinlik_tekrar_yok": {
     "description": "Tekrar seçeneği: etkinlik tekrarlanmaz."
@@ -2446,6 +2620,198 @@
   "etkinlik_tekrar_aylik": "Her ay",
   "@etkinlik_tekrar_aylik": {
     "description": "Tekrar seçeneği: aylık."
+  },
+  "etkinlik_tekrar_n_haftada_bir": "{aralik, plural, other{{aralik} haftada bir}}",
+  "@etkinlik_tekrar_n_haftada_bir": {
+    "description": "Tekrarın kısa özetinde birden çok haftada bir tekrar.",
+    "placeholders": {
+      "aralik": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "etkinlik_tekrar_n_ayda_bir": "{aralik, plural, other{{aralik} ayda bir}}",
+  "@etkinlik_tekrar_n_ayda_bir": {
+    "description": "Tekrarın kısa özetinde birden çok ayda bir tekrar.",
+    "placeholders": {
+      "aralik": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "etkinlik_tekrar_kisa_sayi": "{siklik}, {sayi} kez",
+  "@etkinlik_tekrar_kisa_sayi": {
+    "description": "Sihirbazdaki Tekrar satırının ve önizlemenin kısa özeti, belirli sayıda tekrarda (\"Her hafta, 6 kez\").",
+    "placeholders": {
+      "siklik": {
+        "type": "String",
+        "example": "Her hafta"
+      },
+      "sayi": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "etkinlik_tekrar_kisa_tarih": "{siklik}, son gün {tarih}",
+  "@etkinlik_tekrar_kisa_tarih": {
+    "description": "Sihirbazdaki Tekrar satırının kısa özeti, belirli bir günde biten tekrarda.",
+    "placeholders": {
+      "siklik": {
+        "type": "String",
+        "example": "Her hafta"
+      },
+      "tarih": {
+        "type": "String",
+        "example": "20 Ara 2026"
+      }
+    }
+  },
+  "etkinlik_haftanin_gunu": "{gun, select, g1{pazartesi} g2{salı} g3{çarşamba} g4{perşembe} g5{cuma} g6{cumartesi} other{pazar}}",
+  "@etkinlik_haftanin_gunu": {
+    "description": "Tekrar özetinde haftanın günü, cümle içinde küçük harfle (\"Her cumartesi\"); gun g1 (pazartesi) … g7 (pazar).",
+    "placeholders": {
+      "gun": {
+        "type": "String",
+        "example": "g6"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_tek": "Tek seferlik: {gun} {saat}.",
+  "@etkinlik_tekrar_ozet_tek": {
+    "description": "Tekrar ekranının özet kutusu, tek seferlik etkinlikte.",
+    "placeholders": {
+      "gun": {
+        "type": "String",
+        "example": "15 Kasım Cumartesi"
+      },
+      "saat": {
+        "type": "String",
+        "example": "08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_haftalik": "Her {gun} {saat}",
+  "@etkinlik_tekrar_ozet_haftalik": {
+    "description": "Tekrar özetinin baş kısmı, her hafta (\"Her cumartesi 08:30\").",
+    "placeholders": {
+      "gun": {
+        "type": "String",
+        "example": "cumartesi"
+      },
+      "saat": {
+        "type": "String",
+        "example": "08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_haftalik_aralik": "{aralik} haftada bir {gun} {saat}",
+  "@etkinlik_tekrar_ozet_haftalik_aralik": {
+    "description": "Tekrar özetinin baş kısmı, birden çok haftada bir (\"2 haftada bir cumartesi 08:30\").",
+    "placeholders": {
+      "aralik": {
+        "type": "int",
+        "example": "2"
+      },
+      "gun": {
+        "type": "String",
+        "example": "cumartesi"
+      },
+      "saat": {
+        "type": "String",
+        "example": "08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_aylik": "Her ayın {gun}. günü {saat}",
+  "@etkinlik_tekrar_ozet_aylik": {
+    "description": "Tekrar özetinin baş kısmı, her ay (\"Her ayın 15. günü 08:30\").",
+    "placeholders": {
+      "gun": {
+        "type": "int",
+        "example": "15"
+      },
+      "saat": {
+        "type": "String",
+        "example": "08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_aylik_aralik": "{aralik} ayda bir, ayın {gun}. günü {saat}",
+  "@etkinlik_tekrar_ozet_aylik_aralik": {
+    "description": "Tekrar özetinin baş kısmı, birden çok ayda bir.",
+    "placeholders": {
+      "aralik": {
+        "type": "int",
+        "example": "3"
+      },
+      "gun": {
+        "type": "int",
+        "example": "15"
+      },
+      "saat": {
+        "type": "String",
+        "example": "08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_bitissiz": "{ne}, bitiş yok.",
+  "@etkinlik_tekrar_ozet_bitissiz": {
+    "description": "Tekrar ekranının özet kutusu, bitişi olmayan tekrarda.",
+    "placeholders": {
+      "ne": {
+        "type": "String",
+        "example": "Her cumartesi 08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_nokta": "{ne}.",
+  "@etkinlik_tekrar_ozet_nokta": {
+    "description": "Tekrar ekranının özet kutusu, henüz hesaplanamayan (son günü seçilmemiş) tekrarda.",
+    "placeholders": {
+      "ne": {
+        "type": "String",
+        "example": "Her cumartesi 08:30"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_sayi": "{ne}, {sayi} kez: son etkinlik {tarih}.",
+  "@etkinlik_tekrar_ozet_sayi": {
+    "description": "Tekrar ekranının özet kutusu, belirli sayıda tekrarda; tarih son etkinliğin günüdür.",
+    "placeholders": {
+      "ne": {
+        "type": "String",
+        "example": "Her cumartesi 08:30"
+      },
+      "sayi": {
+        "type": "int",
+        "example": "6"
+      },
+      "tarih": {
+        "type": "String",
+        "example": "20 Aralık"
+      }
+    }
+  },
+  "etkinlik_tekrar_ozet_son_gun": "{ne}, son gün {tarih}: {sayi} kez.",
+  "@etkinlik_tekrar_ozet_son_gun": {
+    "description": "Tekrar ekranının özet kutusu, belirli bir günde biten tekrarda; sayı o güne kadar açılacak etkinliklerdir.",
+    "placeholders": {
+      "ne": {
+        "type": "String",
+        "example": "Her ayın 15. günü 08:30"
+      },
+      "tarih": {
+        "type": "String",
+        "example": "31 Mart 2027"
+      },
+      "sayi": {
+        "type": "int",
+        "example": "5"
+      }
+    }
   },
   "etkinlik_tekrar_aralik_haftalik": "Kaç haftada bir",
   "@etkinlik_tekrar_aralik_haftalik": {
@@ -2482,10 +2848,6 @@
   "etkinlik_tekrar_tarih_hata": "Son gün başlangıçtan sonra ve en çok beş yıl içinde olmalı.",
   "@etkinlik_tekrar_tarih_hata": {
     "description": "Tekrarın son günü geçersizken görünen hata."
-  },
-  "etkinlik_harita_baslik": "Buluşma noktası seç",
-  "@etkinlik_harita_baslik": {
-    "description": "Harita seçicinin üst çubuk başlığı."
   },
   "etkinlik_harita_ara_etiketi": "Yer adı",
   "@etkinlik_harita_ara_etiketi": {

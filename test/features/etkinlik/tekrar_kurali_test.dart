@@ -162,4 +162,69 @@ void main() {
     expect(istanbulSaatinden(2026, 1, 15, 9), DateTime.utc(2026, 1, 15, 6));
     expect(istanbulSaatinden(2026, 7, 2), DateTime.utc(2026, 7, 1, 21));
   });
+
+  group('tekrarAnlari', () {
+    test('bitiş yoksa sayı belirsiz', () {
+      expect(tekrarAnlari(const TekrarSecimi(), baslangic), isNull);
+    });
+
+    test('haftalık, 6 kez: aynı gün ve saat', () {
+      final anlar = tekrarAnlari(
+        const TekrarSecimi(bitis: TekrarBitisi.sayi, sayi: 6),
+        baslangic,
+      )!;
+      expect(anlar, hasLength(6));
+      expect(anlar.first, baslangic);
+      expect(anlar.last, DateTime.utc(2026, 12, 19, 6));
+    });
+
+    test('iki haftada bir', () {
+      final anlar = tekrarAnlari(
+        const TekrarSecimi(aralik: 2, bitis: TekrarBitisi.sayi, sayi: 3),
+        baslangic,
+      )!;
+      expect(anlar, [
+        baslangic,
+        DateTime.utc(2026, 11, 28, 6),
+        DateTime.utc(2026, 12, 12, 6),
+      ]);
+    });
+
+    test('son günde biter; son gün Türkiye saatiyle günün sonu', () {
+      final anlar = tekrarAnlari(
+        TekrarSecimi(
+          bitis: TekrarBitisi.tarih,
+          sonGun: DateTime.utc(2026, 12, 5),
+        ),
+        baslangic,
+      )!;
+      expect(anlar, hasLength(4));
+      expect(anlar.last, DateTime.utc(2026, 12, 5, 6));
+    });
+
+    test('aylık: o günü olmayan aylar atlanır ve sayılmaz', () {
+      // 31 Ocak 2027 10:00, Türkiye saati.
+      final ayinSonu = DateTime.utc(2027, 1, 31, 7);
+      final anlar = tekrarAnlari(
+        const TekrarSecimi(
+          siklik: TekrarSikligi.aylik,
+          bitis: TekrarBitisi.sayi,
+          sayi: 3,
+        ),
+        ayinSonu,
+      )!;
+      expect(anlar, [
+        ayinSonu,
+        DateTime.utc(2027, 3, 31, 7),
+        DateTime.utc(2027, 5, 31, 7),
+      ]);
+    });
+
+    test('son gün seçilmemişse boş', () {
+      expect(
+        tekrarAnlari(const TekrarSecimi(bitis: TekrarBitisi.tarih), baslangic),
+        isEmpty,
+      );
+    });
+  });
 }

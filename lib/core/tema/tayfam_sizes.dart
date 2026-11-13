@@ -243,4 +243,25 @@ abstract final class TayfamSizes {
 
   /// Sohbet sekmesindeki parça seçicinin okunmamış rozeti (22 px).
   static const double parcaRozeti = 22;
+
+  // --- 2026-11-13 etkinlik sihirbazı (Sihirbaz-*) ------------------------
+
+  /// Sihirbazın üstündeki ilerleme çubuğunun bir parçasının yüksekliği
+  /// (6 px).
+  static const double ilerlemeParcasi = 6;
+
+  /// Sayı sayacının (azalt, sayı, artır) en fazla genişliği (240 px).
+  static const double sayacGenisligi = 240;
+
+  /// Rota çizerken başlangıç ve bitiş noktasının numaralı dairesi (28 px).
+  static const double rotaUcNoktasi = 28;
+
+  /// Rota çizerken ara noktaların numaralı dairesi (22 px).
+  static const double rotaAraNoktasi = 22;
+
+  /// Tür seçim kutusunun en küçük yüksekliği (112 px).
+  static const double turKutusu = 112;
+
+  /// Tür kutusundaki seçili işaretinin dairesi (24 px).
+  static const double seciliIsareti = 24;
 }

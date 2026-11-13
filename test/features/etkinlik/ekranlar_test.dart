@@ -10,6 +10,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_sihirbazi_ekrani.
 import 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilimcilar_ekrani.dart';
+import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -423,7 +424,7 @@ void main() {
 
   group('sihirbaz', () {
     for (final tema in _temalar) {
-      testWidgets('dört adım (${tema.name}, 2× yazı, 320 dp)', (tester) async {
+      testWidgets('beş adım (${tema.name}, 2× yazı, 320 dp)', (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         final tasima = etkinlikTasimasi();
@@ -434,11 +435,15 @@ void main() {
           themeMode: tema,
         );
         expect(find.byType(EtkinlikSihirbaziEkrani), findsOneWidget);
-        expect(find.text('Adım 1 / 4'), findsOneWidget);
+        expect(find.text('Adım 1 / 5'), findsOneWidget);
+        expect(
+          find.text(arbMetni('etkinlik_tur_aciklama_hike')),
+          findsOneWidget,
+        );
 
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_turu_hike')));
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
-        expect(find.text('Adım 2 / 4'), findsOneWidget);
+        expect(find.text('Adım 2 / 5'), findsOneWidget);
 
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text(arbMetni('etkinlik_baslik_hata')), findsOneWidget);
@@ -456,7 +461,7 @@ void main() {
             .baslangicAyarla(ornekBaslangic);
         await tester.pumpAndSettle();
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
-        expect(find.text('Adım 3 / 4'), findsOneWidget);
+        expect(find.text('Adım 3 / 5'), findsOneWidget);
         expect(find.text(arbMetni('etkinlik_nokta_sec')), findsOneWidget);
 
         await _gorunurDokun(
@@ -465,19 +470,69 @@ void main() {
         );
         await _yaz(tester, 'https://ornek.tayfam.app/oda');
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
-        expect(find.text('Adım 4 / 4'), findsOneWidget);
+        expect(find.text('Adım 4 / 5'), findsOneWidget);
         expect(find.text(arbMetni('etkinlik_mesafe_etiketi')), findsOneWidget);
 
+        // Tekrar ayrı ekranda; "Tamam" 4. adıma döner.
+        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_tekrar_yok')));
+        expect(find.byType(TekrarEkrani), findsOneWidget);
         await _gorunurDokun(
           tester,
           find.text(arbMetni('etkinlik_tekrar_haftalik')),
         );
         expect(
           find.text(arbMetni('etkinlik_tekrar_aralik_haftalik')),
+          findsWidgets,
+        );
+        expect(find.textContaining('bitiş yok'), findsOneWidget);
+        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_tamam')));
+        expect(find.byType(TekrarEkrani), findsNothing);
+        expect(
+          find.text(arbMetni('etkinlik_tekrar_haftalik')),
           findsOneWidget,
         );
+
+        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
+        expect(find.text('Adım 5 / 5'), findsOneWidget);
+        expect(find.text(arbMetni('etkinlik_onizleme_baslik')), findsOneWidget);
+        expect(find.text('Kaçkar'), findsOneWidget);
+
+        // "Değiştir" ilgili adıma götürür, "İleri" önizlemeye döner.
+        await _gorunurDokun(
+          tester,
+          find.text(arbMetni('etkinlik_degistir')).at(1),
+        );
+        expect(find.text('Adım 3 / 5'), findsOneWidget);
+        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
+        expect(find.text('Adım 5 / 5'), findsOneWidget);
+        expect(tasima.giden('POST', etkinliklerYolu), isEmpty);
+        expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('kapatırken girilen varsa onay sorulur', (tester) async {
+      ekranBoyutu(tester);
+      await _git(
+        tester,
+        etkinlikTasimasi(),
+        Adresler.etkinlikOlustur(ornekTayfaId),
+      );
+      final kapat = find.byIcon(Icons.close);
+      await _gorunurDokun(tester, find.text(arbMetni('etkinlik_turu_camp')));
+      await tester.tap(kapat);
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('etkinlik_vazgec_baslik')), findsOneWidget);
+
+      await tester.tap(find.text(arbMetni('etkinlik_vazgec_devam')));
+      await tester.pumpAndSettle();
+      expect(find.byType(EtkinlikSihirbaziEkrani), findsOneWidget);
+
+      await tester.tap(kapat);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(arbMetni('etkinlik_vazgec')));
+      await tester.pumpAndSettle();
+      expect(find.byType(EtkinlikSihirbaziEkrani), findsNothing);
+    });
 
     testWidgets('gönderince etkinliğin detayı açılır', (tester) async {
       ekranBoyutu(tester);
@@ -500,8 +555,10 @@ void main() {
           il: 'Bolu',
           ilce: 'Merkez',
         )
+        ..ileri()
         ..ileri();
       await tester.pumpAndSettle();
+      expect(find.text(arbMetni('etkinlik_onizleme_baslik')), findsOneWidget);
       await _gorunurDokun(
         tester,
         find.text(arbMetni('etkinlik_olustur_gonder')),
@@ -529,7 +586,7 @@ void main() {
         Adresler.etkinlikDuzenle(ornekTayfaId, ornekEtkinlikId),
       );
       expect(find.text(arbMetni('etkinlik_duzenle_baslik')), findsOneWidget);
-      expect(find.text('Adım 1 / 3'), findsOneWidget);
+      expect(find.text('Adım 1 / 4'), findsOneWidget);
       expect(
         find.text(arbMetni('etkinlik_seri_duzenleme_notu')),
         findsOneWidget,

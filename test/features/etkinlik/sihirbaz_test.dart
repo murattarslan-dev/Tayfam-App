@@ -105,6 +105,68 @@ void main() {
     expect(t().hatalar, isEmpty);
   });
 
+  test('önizleme: "Değiştir" adıma götürür, "İleri" önizlemeye döner', () {
+    final c = _kapsayici(etkinlikTasimasi());
+    final n = _doldur(c);
+    EtkinlikTaslagi t() => c.read(etkinlikSihirbaziProvider(_olusturma));
+    expect(t().adim, SihirbazAdimi.ayrinti);
+    n.ileri();
+    expect(t().adim, SihirbazAdimi.onizleme);
+    n.ileri();
+    expect(t().adim, SihirbazAdimi.onizleme, reason: 'son adım; gönder ayrı');
+
+    n.adimaGit(SihirbazAdimi.bilgi);
+    expect(t().adim, SihirbazAdimi.bilgi);
+    expect(t().onizlemeyeDon, isTrue);
+    n.baslikAyarla('Yeni ad');
+    n.ileri();
+    expect(t().adim, SihirbazAdimi.onizleme);
+    expect(t().onizlemeyeDon, isFalse);
+    expect(t().baslik, 'Yeni ad');
+
+    // Önizlemeden gelinen adımda hata varsa geçilmez.
+    n
+      ..adimaGit(SihirbazAdimi.bilgi)
+      ..baslikAyarla('')
+      ..ileri();
+    expect(t().adim, SihirbazAdimi.bilgi);
+    expect(t().hatalar, {TaslakHatasi.baslik});
+
+    // "Geri" önizlemeye dönüşü bırakır.
+    n
+      ..baslikAyarla('Göl kampı')
+      ..geri();
+    expect(t().adim, SihirbazAdimi.tur);
+    expect(t().onizlemeyeDon, isFalse);
+  });
+
+  test('"Değiştir" yalnızca önizlemeden', () {
+    final c = _kapsayici(etkinlikTasimasi());
+    final n = _doldur(c)..adimaGit(SihirbazAdimi.tur);
+    expect(
+      c.read(etkinlikSihirbaziProvider(_olusturma)).adim,
+      SihirbazAdimi.ayrinti,
+    );
+    n
+      ..ileri()
+      ..adimaGit(SihirbazAdimi.onizleme);
+    expect(
+      c.read(etkinlikSihirbaziProvider(_olusturma)).adim,
+      SihirbazAdimi.onizleme,
+    );
+  });
+
+  test('girdi var mı: kapatma onayı için', () {
+    final c = _kapsayici(etkinlikTasimasi());
+    c.listen(etkinlikSihirbaziProvider(_olusturma), (_, _) {});
+    final n = c.read(etkinlikSihirbaziProvider(_olusturma).notifier);
+    expect(n.girdiVar, isFalse);
+    n.ileri();
+    expect(n.girdiVar, isFalse, reason: 'hata gösterilmesi girdi değildir');
+    n.turSec(EventType.camp);
+    expect(n.girdiVar, isTrue);
+  });
+
   test('harita seçicinin önerisi yalnızca boş alanları doldurur', () {
     final c = _kapsayici(etkinlikTasimasi());
     c.listen(etkinlikSihirbaziProvider(_olusturma), (_, _) {});
