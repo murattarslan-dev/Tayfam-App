@@ -313,7 +313,11 @@ void main() {
     await tester.tap(find.byTooltip(arbMetni('sohbet_kanal_ayarlari')));
     await tester.pumpAndSettle();
     expect(find.text(arbMetni('sohbet_form_duzenle')), findsOneWidget);
-    expect(find.text(arbMetni('sohbet_form_yonetim')), findsOneWidget);
+    // Düzenlemede yalnızca bütün tayfa ile yönetim arasında geçilir.
+    expect(find.text(arbMetni('sohbet_kitle_herkes')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_kitle_yonetim')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_kitle_etkinlik')), findsNothing);
+    expect(find.text(arbMetni('sohbet_kitle_secili')), findsNothing);
     expect(find.text(arbMetni('sohbet_form_yavas_aciklama')), findsOneWidget);
     expect(find.byType(ChoiceChip), findsNWidgets(yavasModSecenekleri.length));
     expect(find.text(arbMetni('sohbet_arsivle')), findsOneWidget);

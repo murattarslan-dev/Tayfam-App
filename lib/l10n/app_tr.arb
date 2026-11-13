@@ -6145,10 +6145,6 @@
   "@sohbet_form_ad_hata": {
     "description": "Kanal adı boş ya da çok uzunken."
   },
-  "sohbet_form_yonetim": "Yalnızca yönetim görsün",
-  "@sohbet_form_yonetim": {
-    "description": "Kanalı yönetim kanalı yapan anahtar."
-  },
   "sohbet_form_yonetim_aciklama": "Yalnızca yönetici ve moderatörler görür ve yazar.",
   "@sohbet_form_yonetim_aciklama": {
     "description": "Yönetim kanalı anahtarının açıklaması."
@@ -6206,6 +6202,361 @@
   "sohbet_erisim_kalmadi": "Bu kanala artık erişimin yok.",
   "@sohbet_erisim_kalmadi": {
     "description": "Açık kanala erişim kalmayınca listeye dönülürken gösterilen bildirim."
+  },
+  "sohbet_kitle_baslik": "Kimler görsün?",
+  "@sohbet_kitle_baslik": {
+    "description": "Kanal formunda kitle seçiminin başlığı (tasarım: Kanal-Kitle)."
+  },
+  "sohbet_kitle_herkes": "Bütün tayfa",
+  "@sohbet_kitle_herkes": {
+    "description": "Kanal kitlesi: tayfanın bütün üyeleri (`members`)."
+  },
+  "sohbet_kitle_herkes_aciklama": "Tayfanın bütün üyeleri",
+  "@sohbet_kitle_herkes_aciklama": {
+    "description": "Bütün tayfa seçeneğinin açıklaması."
+  },
+  "sohbet_kitle_yonetim": "Yalnızca yönetim",
+  "@sohbet_kitle_yonetim": {
+    "description": "Kanal kitlesi: yöneticiler ve moderatörler (`staff`)."
+  },
+  "sohbet_kitle_yonetim_aciklama": "Yöneticiler ve moderatörler",
+  "@sohbet_kitle_yonetim_aciklama": {
+    "description": "Yalnızca yönetim seçeneğinin açıklaması."
+  },
+  "sohbet_kitle_etkinlik": "Bir etkinliğe gelenler",
+  "@sohbet_kitle_etkinlik": {
+    "description": "Kanal kitlesi: bir etkinliğe gelenler (`event`); etkinlik seçicinin alt başlığı da."
+  },
+  "sohbet_kitle_etkinlik_aciklama": "“Geliyorum” diyenler kendiliğinden girer ve çıkar",
+  "@sohbet_kitle_etkinlik_aciklama": {
+    "description": "Etkinlik kanalı seçeneğinin açıklaması."
+  },
+  "sohbet_kitle_secili": "Seçtiğim kişiler",
+  "@sohbet_kitle_secili": {
+    "description": "Kanal kitlesi: seçili kişiler (`selected`)."
+  },
+  "sohbet_kitle_secili_aciklama": "Yalnızca eklediğin üyeler",
+  "@sohbet_kitle_secili_aciklama": {
+    "description": "Seçili kişiler seçeneğinin açıklaması."
+  },
+  "sohbet_kitle_secilen_sayi": "{sayi, plural, other{{sayi} kişi seçildi}}",
+  "@sohbet_kitle_secilen_sayi": {
+    "description": "Kanal formunda seçili kişi sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kitle_kisi_sec": "Kişileri seç",
+  "@sohbet_kitle_kisi_sec": {
+    "description": "Kişi seçicinin başlığı ve formdaki seçim bağlantısı (tasarım: Kanal-Kisi-Sec)."
+  },
+  "sohbet_kitle_duzenle": "Düzenle",
+  "@sohbet_kitle_duzenle": {
+    "description": "Kanal formunda seçili kişileri düzenleme bağlantısı."
+  },
+  "sohbet_kitle_etkinlik_sec": "Etkinliği seç",
+  "@sohbet_kitle_etkinlik_sec": {
+    "description": "Etkinlik seçicinin başlığı ve formdaki seçim bağlantısı (tasarım: Kanal-Etkinlik-Sec)."
+  },
+  "sohbet_kitle_degistir": "Değiştir",
+  "@sohbet_kitle_degistir": {
+    "description": "Kanal formunda seçili etkinliği değiştirme bağlantısı."
+  },
+  "sohbet_kitle_etkinlik_gerekli": "Kanal için bir etkinlik seç.",
+  "@sohbet_kitle_etkinlik_gerekli": {
+    "description": "Etkinlik kanalında etkinlik seçilmeden gönderilince."
+  },
+  "sohbet_kisi_ara": "Üye ara",
+  "@sohbet_kisi_ara": {
+    "description": "Kişi seçicideki arama alanının ipucu."
+  },
+  "sohbet_kisi_bilgi": "Kanalı açan sen her zaman içeridesin. Yönetim kendiliğinden girmez; istersen onları da seç.",
+  "@sohbet_kisi_bilgi": {
+    "description": "Kişi seçicideki bilgi notu."
+  },
+  "sohbet_kisi_sen": "{ad} (sen)",
+  "@sohbet_kisi_sen": {
+    "description": "Kişi listelerinde kendi adın.",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_kisi_acan_icerde": "Kanalı açan · her zaman içeride",
+  "@sohbet_kisi_acan_icerde": {
+    "description": "Kişi seçicide kendi satırının alt metni."
+  },
+  "sohbet_kisi_kanalda": "Kanalda",
+  "@sohbet_kisi_kanalda": {
+    "description": "Kişi eklerken zaten kanalda olan kişinin alt metni."
+  },
+  "sohbet_kisi_fazlasi": "{sayi, plural, other{+{sayi}}}",
+  "@sohbet_kisi_fazlasi": {
+    "description": "Kişi seçicide gösterilmeyen seçili kişi sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kisi_devam": "{sayi, plural, other{{sayi} kişiyle devam et}}",
+  "@sohbet_kisi_devam": {
+    "description": "Kişi seçicinin onay düğmesi (yeni kanal).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kisi_ekle_onay": "{sayi, plural, other{{sayi} kişiyi ekle}}",
+  "@sohbet_kisi_ekle_onay": {
+    "description": "Kişi seçicinin onay düğmesi (var olan kanala ekleme).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kisi_sinir": "{sayi, plural, other{Bir seferde en çok {sayi} kişi seçebilirsin.}}",
+  "@sohbet_kisi_sinir": {
+    "description": "Seçim sınırına gelince.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kisi_bos": "Aramana uyan üye yok.",
+  "@sohbet_kisi_bos": {
+    "description": "Kişi seçicide arama sonucu boşken."
+  },
+  "sohbet_daha_fazla": "Daha fazla göster",
+  "@sohbet_daha_fazla": {
+    "description": "Sayfalı kişi ve etkinlik listelerinin sonraki sayfası."
+  },
+  "sohbet_etkinlik_yaklasan": "Yaklaşan etkinlikler",
+  "@sohbet_etkinlik_yaklasan": {
+    "description": "Etkinlik seçicideki liste başlığı."
+  },
+  "sohbet_etkinlik_satiri": "{sayi, plural, other{{zaman} · {sayi} kişi geliyor}}",
+  "@sohbet_etkinlik_satiri": {
+    "description": "Etkinlik seçicide etkinliğin zamanı ve gelen sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      },
+      "zaman": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_etkinlik_kanali_var": "Bu etkinliğin sohbeti zaten var",
+  "@sohbet_etkinlik_kanali_var": {
+    "description": "Etkinlik seçicide açık kanalı olan (pasif) etkinliğin alt metni."
+  },
+  "sohbet_etkinlik_bos": "Yaklaşan etkinlik yok.",
+  "@sohbet_etkinlik_bos": {
+    "description": "Etkinlik seçicide liste boşken."
+  },
+  "sohbet_etkinlik_nasil": "Etkinlik kanalı nasıl çalışır?",
+  "@sohbet_etkinlik_nasil": {
+    "description": "Etkinlik seçicideki bilgi kartının başlığı."
+  },
+  "sohbet_etkinlik_nasil_1": "“Geliyorum” diyenler kendiliğinden girer; cevabını değiştiren çıkar.",
+  "@sohbet_etkinlik_nasil_1": {
+    "description": "Etkinlik kanalı bilgi kartı, madde 1."
+  },
+  "sohbet_etkinlik_nasil_2": "Organizatör ve kanalı açan her zaman içeridedir; yönetim kendiliğinden girmez.",
+  "@sohbet_etkinlik_nasil_2": {
+    "description": "Etkinlik kanalı bilgi kartı, madde 2."
+  },
+  "sohbet_etkinlik_nasil_3": "Sonradan giren eski mesajları da görür.",
+  "@sohbet_etkinlik_nasil_3": {
+    "description": "Etkinlik kanalı bilgi kartı, madde 3."
+  },
+  "sohbet_etkinlik_nasil_4": "Etkinlikten 7 gün sonra arşivlenir; okunur ama yazılamaz.",
+  "@sohbet_etkinlik_nasil_4": {
+    "description": "Etkinlik kanalı bilgi kartı, madde 4."
+  },
+  "sohbet_etkinlik_devam": "Bu etkinlikle devam et",
+  "@sohbet_etkinlik_devam": {
+    "description": "Etkinlik seçicinin onay düğmesi."
+  },
+  "sohbet_kanal_etkinlik": "Etkinlik",
+  "@sohbet_kanal_etkinlik": {
+    "description": "Kanal listesinde etkinlik kanalı etiketi."
+  },
+  "sohbet_kanal_secili": "Seçili kişiler",
+  "@sohbet_kanal_secili": {
+    "description": "Kanal listesinde seçili kişi kanalı etiketi."
+  },
+  "sohbet_kanal_kisi_sayisi": "{sayi, plural, other{{sayi} kişi}}",
+  "@sohbet_kanal_kisi_sayisi": {
+    "description": "Etkinlik ve seçili kişi kanalının kişi sayısı (`member_count`).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kanal_alt_etkinlik": "{sayi, plural, other{Etkinlik kanalı · {sayi} kişi}}",
+  "@sohbet_kanal_alt_etkinlik": {
+    "description": "Etkinlik kanalı ekranının üst çubuğundaki alt metin.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kanal_alt_etkinlik_sayisiz": "Etkinlik kanalı",
+  "@sohbet_kanal_alt_etkinlik_sayisiz": {
+    "description": "Etkinlik kanalı ekranının alt metni; kişi sayısı bilinmiyorsa."
+  },
+  "sohbet_kanal_alt_arsiv": "Etkinlik kanalı · arşivde",
+  "@sohbet_kanal_alt_arsiv": {
+    "description": "Arşivlenmiş etkinlik kanalının üst çubuktaki alt metni."
+  },
+  "sohbet_kanal_alt_secili": "{sayi, plural, other{Seçili kişiler · {sayi} kişi}}",
+  "@sohbet_kanal_alt_secili": {
+    "description": "Seçili kişi kanalı ekranının üst çubuğundaki alt metin.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_katilimcilari_gor": "Katılımcıları gör",
+  "@sohbet_katilimcilari_gor": {
+    "description": "Kanal ekranının üst çubuğundan katılımcıları açan eylemin etiketi."
+  },
+  "sohbet_kapanis_gun": "{gun, plural, other{Kanal {gun} gün sonra kapanacak}}",
+  "@sohbet_kapanis_gun": {
+    "description": "Etkinlik kanalı kapanış bandı (tasarım: Kanal-Etkinlik-Bitti).",
+    "placeholders": {
+      "gun": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_kapanis_yarin": "Kanal yarın kapanacak",
+  "@sohbet_kapanis_yarin": {
+    "description": "Kapanış bandı: arşiv yarın."
+  },
+  "sohbet_kapanis_bugun": "{ek, select, da{Kanal bugün {saat}'da kapanacak} de{Kanal bugün {saat}'de kapanacak} ta{Kanal bugün {saat}'ta kapanacak} other{Kanal bugün {saat}'te kapanacak}}",
+  "@sohbet_kapanis_bugun": {
+    "description": "Kapanış bandı: arşiv bugün; saat cihazın saat diliminde, ek saatin okunuşuna göre.",
+    "placeholders": {
+      "ek": {
+        "type": "String"
+      },
+      "saat": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_kapanis_aciklama": "Etkinlik bitti. {tarih} tarihinde arşivlenir; sonra mesajlar okunur ama yazılamaz.",
+  "@sohbet_kapanis_aciklama": {
+    "description": "Kapanış bandının açıklaması; tarih gün ve ay adıyla.",
+    "placeholders": {
+      "tarih": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_katilimcilar_baslik": "Katılımcılar",
+  "@sohbet_katilimcilar_baslik": {
+    "description": "Kanal katılımcıları ekranının başlığı ve kanal formundaki girişi (tasarım: Kanal-Katilimcilar)."
+  },
+  "sohbet_katilimcilar_alt_secili": "# {ad} · seçili kişiler",
+  "@sohbet_katilimcilar_alt_secili": {
+    "description": "Seçili kişi kanalının katılımcılar ekranındaki alt başlık.",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_katilimcilar_alt_etkinlik": "# {ad} · etkinliğe gelenler",
+  "@sohbet_katilimcilar_alt_etkinlik": {
+    "description": "Etkinlik kanalının katılımcılar ekranındaki alt başlık.",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_katilimcilar_etkinlik_bilgi": "Etkinliğe “Geliyorum” diyenler kendiliğinden girer, cevabını değiştiren çıkar. Belki diyenler ve bekleme listesindekiler kanalda değildir.",
+  "@sohbet_katilimcilar_etkinlik_bilgi": {
+    "description": "Etkinlik kanalının katılımcılar ekranındaki bilgi (tasarım: Kanal-Katilimcilar-Etkinlik)."
+  },
+  "sohbet_katilimcilar_yukleniyor": "Katılımcılar yükleniyor",
+  "@sohbet_katilimcilar_yukleniyor": {
+    "description": "Katılımcı listesi okunurken."
+  },
+  "sohbet_kisi_ekle": "Kişi ekle",
+  "@sohbet_kisi_ekle": {
+    "description": "Seçili kişi kanalına kişi ekleme düğmesi (yalnızca kanalı açana)."
+  },
+  "sohbet_katilimci_acan": "Kanalı açan",
+  "@sohbet_katilimci_acan": {
+    "description": "Katılımcı listesinde kanalı açanın alt metni."
+  },
+  "sohbet_katilimcilar_acan_icerde": "Kanalı açan her zaman içeride",
+  "@sohbet_katilimcilar_acan_icerde": {
+    "description": "Katılımcı listesinin başlığındaki not."
+  },
+  "sohbet_katilimci_cikar": "Çıkar",
+  "@sohbet_katilimci_cikar": {
+    "description": "Seçili kişi kanalından kişiyi çıkaran düğme (yalnızca kanalı açana)."
+  },
+  "sohbet_katilimci_cikar_etiket": "{ad} kanaldan çıkar",
+  "@sohbet_katilimci_cikar_etiket": {
+    "description": "Çıkar düğmesinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      }
+    }
+  },
+  "sohbet_katilimcilar_not": "Eklediğin kişi eski mesajları da görür. Çıkardığın kişi kanalı ve mesajlarını artık göremez; ona bildirim gitmez.",
+  "@sohbet_katilimcilar_not": {
+    "description": "Seçili kişi kanalının katılımcılar ekranının altındaki not (kanalı açana)."
+  },
+  "sohbet_etkinlik_sohbeti": "Etkinlik sohbeti",
+  "@sohbet_etkinlik_sohbeti": {
+    "description": "Etkinlik detayındaki sohbet kartının başlığı (tasarım: Etkinlik-Sohbet)."
+  },
+  "sohbet_etkinlik_sohbeti_alt": "{sayi, plural, other{{sayi} kişi · gelenler kendiliğinden girer}}",
+  "@sohbet_etkinlik_sohbeti_alt": {
+    "description": "Etkinlik sohbeti kartının alt metni.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "sohbet_etkinlik_sohbeti_alt_sayisiz": "Gelenler kendiliğinden girer",
+  "@sohbet_etkinlik_sohbeti_alt_sayisiz": {
+    "description": "Etkinlik sohbeti kartının alt metni; kişi sayısı bilinmiyorsa."
+  },
+  "sohbet_etkinlik_sohbeti_soru": "Gelenlerle konuşmak ister misin?",
+  "@sohbet_etkinlik_sohbeti_soru": {
+    "description": "Etkinliğin kanalı yokken organizatöre ve yönetime gösterilen kartın başlığı."
+  },
+  "sohbet_etkinlik_sohbeti_aciklama": "“Geliyorum” diyenler kendiliğinden katılır, cevabını değiştiren çıkar. Etkinlikten 7 gün sonra kapanır.",
+  "@sohbet_etkinlik_sohbeti_aciklama": {
+    "description": "Etkinlik sohbetini açma kartının açıklaması."
+  },
+  "sohbet_etkinlik_sohbeti_ac": "Etkinlik sohbetini aç",
+  "@sohbet_etkinlik_sohbeti_ac": {
+    "description": "Etkinlik kanalını açan düğme (organizatör ve yönetim)."
+  },
+  "etkinlik_sohbet_baslik": "Sohbet",
+  "@etkinlik_sohbet_baslik": {
+    "description": "Etkinlik detayındaki sohbet bölümünün başlığı."
   },
   "sikayet_et": "Şikâyet et",
   "@sikayet_et": {

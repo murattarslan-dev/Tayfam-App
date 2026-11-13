@@ -27,6 +27,7 @@ import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
+import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
@@ -74,6 +75,8 @@ const String ozetAyraci = ' · ';
 ///   haritası ya da çevrimiçi bağlantı, açıklama, türe özel bilgiler ve
 ///   araçlar (§6), etkinliğin anketleri ve katılımcı özeti (dokununca
 ///   ayrı Katılımcılar ekranı). Seri ise en altta seri notu.
+/// - Varış kartının altında "Sohbet" bölümü (etkinlik kanalı; tasarım:
+///   Etkinlik-Sohbet); sohbet paketi kabuktaki yuvayla yerleştirir.
 /// - ⋯ alttan sayfa açar: yönetebilen kullanıcıya Düzenle ve Etkinliği
 ///   iptal et, başkasına Şikâyet et (ADR-0018 §8).
 ///
@@ -180,6 +183,7 @@ class _Detay extends ConsumerWidget {
           )?.aracBolumu(context, etkinlik);
     final ayrintilar = _ayrintiSatirlari(m, etkinlik);
     final cevrimici = etkinlik.mode == EventMode.online;
+    final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
@@ -202,6 +206,12 @@ class _Detay extends ConsumerWidget {
                   _IptalKutusu(gerekce: gerekce),
                 ],
                 VarisBolumu(anahtar: anahtar, etkinlik: etkinlik),
+                if (sohbet != null)
+                  sohbet(
+                    context,
+                    etkinlik,
+                    AracBasligi(metin: m.etkinlik_sohbet_baslik),
+                  ),
                 if (cevrimici)
                   _CevrimiciBolumu(etkinlik: etkinlik)
                 else if (etkinlik.meetingPoint != null)
