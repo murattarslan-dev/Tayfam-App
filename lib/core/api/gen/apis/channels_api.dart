@@ -20,6 +20,20 @@ final class ChannelsApi {
   /// başkalarının silinmemiş mesajlarından okunmamış olanlardır; en
   /// fazla 100 döner, istemci "99+" gösterir.
   ///
+  /// **Kanal kitlesi (issue #183, ADR-0024):** `event` ve `selected`
+  /// kanallarını yalnızca kitlesindekiler görür; yönetici ve moderatörler
+  /// rolleriyle bu kanallara girmez, kitlesinde değillerse görmezler
+  /// (`channel-not-found`).
+  /// - `event`: kanalı açan, etkinliğin organizatörü ve etkinliğe
+  ///   `going` diyenler. Cevabını değiştiren çıkar; bekleme listesi,
+  ///   `maybe` ve `not_going` kanalda değildir. Etkinliğin bitişinden ya
+  ///   da iptal anından 7 gün sonra arşivlenir; `archive_at` bu zamanı
+  ///   baştan söyler ("Kanal N gün sonra kapanacak" bandı).
+  /// - `selected`: kanalı açan ve seçtiği üyeler.
+  /// Sonradan giren eski mesajları da görür; çıkan ya da çıkarılan
+  /// kanalı ve mesajlarını artık göremez, WebSocket aboneliği hemen
+  /// kesilir; çıkarılana bildirim gitmez.
+  ///
   /// `GET /v1/tayfas/{tayfa_id}/channels`
   Future<ChannelList> listChannels({required String tayfaId}) async {
     final response = await _transport.send(
@@ -32,11 +46,24 @@ final class ChannelsApi {
     return ChannelList.fromJson(jsonObject(response, 'listChannels'));
   }
 
-  /// Kanal açar (yönetici ve moderatör)
+  /// Kanal açar (yönetici ve moderatör; etkinlik kanalını etkinliği yöneten de)
   ///
   /// İsim 1–40 karakterdir; arşivlenmemiş kanallar arasında Türkçe büyük/
   /// küçük harf duyarsız tekildir (`channel-name-taken`). Susturulmuş
   /// yönetim kanal açamaz (`muted`).
+  ///
+  /// **Etkinlik kanalı** (`visibility: event`, issue #183): `event_id`
+  /// zorunludur (başka türde gönderilmez, `invalid-request`). Yönetici,
+  /// moderatör ya da etkinliği yönetebilen kişi (`caller_can_manage`)
+  /// açar; diğerleri `permission-denied`. Görmediğiniz etkinlik
+  /// `event-not-found`. Bir etkinliğin aynı anda tek açık kanalı olur
+  /// (`event-channel-exists`, 409). Bitişinin ya da iptalinin üzerinden 7
+  /// gün geçmiş etkinliğe kanal açılmaz (`event-ended`, 409).
+  ///
+  /// **Seçili üye kanalı** (`visibility: selected`): yönetici ve
+  /// moderatör açar. `member_user_ids` (en fazla 100) ilk üyelerdir;
+  /// hepsi tayfanın etkin üyesi olmalıdır (`not-tayfa-member`, 400; hiçbiri
+  /// eklenmez). Açan kişi her zaman içeridedir.
   ///
   /// `POST /v1/tayfas/{tayfa_id}/channels`
   Future<Channel> createChannel({
@@ -284,6 +311,97 @@ final class ChannelsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/channels/{channel_id}/read',
       pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
       body: body.toJson(),
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Etkinlik ya da seçili üye kanalının kitlesi
+  ///
+  /// Kullanıcı kimliğine göre sıralı (issue #183). Yalnızca kitlesindeki
+  /// kişi görür. `event` kanalında kanalı açan, organizatör ve `going`
+  /// diyenler; `selected` kanalında açan ve eklenenler. `members` ve
+  /// `staff` kanallarında `invalid-request` (tayfanın üye listesi
+  /// geçerlidir). Adlar `GET /v1/users/{user_id}/profile` ile alınır.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/channels/{channel_id}/members`
+  ///
+  /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.
+  ///
+  /// [pageToken]: Önceki yanıtın `next_page_token` değeri; opak.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  Future<ChannelMemberList> listChannelMembers({
+    required String tayfaId,
+    required String channelId,
+    int? pageSize,
+    String? pageToken,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/channels/{channel_id}/members',
+      pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
+      query: {
+        if (pageSize != null) 'page_size': '$pageSize',
+        if (pageToken != null) 'page_token': pageToken,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return ChannelMemberList.fromJson(
+      jsonObject(response, 'listChannelMembers'),
+    );
+  }
+
+  /// Seçili üye kanalına üye ekler (yalnızca kanalı açan)
+  ///
+  /// Yalnızca `selected` kanalında ve yalnızca kanalı açan kişi
+  /// (`permission-denied`); yönetim de değiştiremez. 1–100 kullanıcı;
+  /// hepsi tayfanın etkin üyesi olmalıdır (`not-tayfa-member`, hiçbiri
+  /// eklenmez). Zaten içeride olan bir şey değiştirmez. Etkinlik
+  /// kanalının kitlesi yalnızca katılım cevabından gelir
+  /// (`invalid-request`). Arşivli kanal `channel-archived`; susturulmuş
+  /// kişi `muted`.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/channels/{channel_id}/members`
+  Future<Channel> addChannelMembers({
+    required String tayfaId,
+    required String channelId,
+    required ChannelMembersAddRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/channels/{channel_id}/members',
+      pathParams: {'tayfa_id': tayfaId, 'channel_id': channelId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Channel.fromJson(jsonObject(response, 'addChannelMembers'));
+  }
+
+  /// Seçili üye kanalından üye çıkarır (yalnızca kanalı açan)
+  ///
+  /// Çıkarılan kişi kanalı ve mesajlarını artık göremez, WebSocket
+  /// aboneliği hemen kesilir; kendisine bildirim gitmez. Kanalı açan
+  /// kendini çıkaramaz (`invalid-request`). İçeride olmayan kişiyi
+  /// çıkarmak bir şey değiştirmez.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/channels/{channel_id}/members/{user_id}`
+  Future<void> removeChannelMember({
+    required String tayfaId,
+    required String channelId,
+    required String userId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate:
+          '/v1/tayfas/{tayfa_id}/channels/{channel_id}/members/{user_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'channel_id': channelId,
+        'user_id': userId,
+      },
       expect: ResponseKind.none,
       authenticated: true,
     );

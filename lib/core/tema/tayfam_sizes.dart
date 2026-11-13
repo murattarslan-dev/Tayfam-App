@@ -150,6 +150,20 @@ abstract final class TayfamSizes {
   /// [ikonKutusu] içindeki ikon.
   static const double ikonKutusuIkonu = 30;
 
+  /// Hesap durum ekranlarındaki büyük ikon kutusu (tasarım: Hesap-Onay,
+  /// Hesap-Guncelleme, Hesap-Kisitli; 96 px).
+  static const double durumIkonKutusu = 96;
+
+  /// [durumIkonKutusu] içindeki ikon (46 px).
+  static const double durumIkonu = 46;
+
+  /// Hesap durum ekranlarının üstündeki küçük logo (44 px).
+  static const double durumLogosu = 44;
+
+  /// Yeniden onay ekranındaki "… oku" satırının en küçük yüksekliği
+  /// (52 px).
+  static const double okumaSatiri = 52;
+
   /// Hoş geldin ekranındaki tayfa kartının harf kutusu.
   static const double tayfaHarfKutusu = 52;
 
