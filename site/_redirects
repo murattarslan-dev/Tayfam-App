@@ -1,4 +1,6 @@
 /gizlilik  /yasal/aydinlatma-metni/2026-11-08/  302
+/kullanim-kosullari  /yasal/kullanim-kosullari/2026-11-13/  302
+/kosullar  /yasal/kullanim-kosullari/2026-11-13/  302
 # Davet ve referans linkleri (ADR-0013 Notlar, ADR-0018 §6): uygulama
 # kuruluysa Android App Links bağlantıyı tarayıcıyı açmadan uygulamada açar.
 # Bu satırlara yalnızca uygulama kurulu değilken (ya da iOS ve bilgisayarda)

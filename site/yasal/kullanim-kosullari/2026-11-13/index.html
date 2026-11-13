@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kullanım Koşulları (2026-11-13) – Tayfam</title>
+<meta name="description" content="Tayfam Kullanım Koşulları ve Topluluk Kuralları, sürüm 2026-11-13.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#5B2BE0">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --turkuaz: #00C2A8;
+    --mercan: #FF3D68;
+    --mor: #5B2BE0;
+    --gece: #1B1036;
+    --safak: #FFB000;
+    --krem: #FAF8FF;
+    --lavanta: #5A5275;
+    --govde: #3F3758;
+    --cizgi: #E6E1F5;
+    --kart: #FFFFFF;
+    --mango-ton: #FFF0CC;
+    --bal: #7A5A1E;
+    --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --genislik: 1120px;
+    --metin: 44rem;
+    --kenar: clamp(16px, 5vw, 48px);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--krem);
+    color: var(--gece);
+    font-family: var(--font);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-optical-sizing: auto;
+  }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  /* Odak: açık zeminde brand, mor/koyu zeminde mango (Tasarım Standartları). */
+  :focus-visible { outline: 3px solid var(--mor); outline-offset: 3px; border-radius: 6px; }
+  .ust :focus-visible, footer :focus-visible { outline-color: var(--safak); }
+
+  .kap { max-width: var(--genislik); margin: 0 auto; padding: 0 var(--kenar); }
+
+  h1, h2, h3 { line-height: 1.08; margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); font-weight: 750; }
+  h2 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 48px; margin-bottom: 14px; }
+  h3 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 28px; margin-bottom: 10px; }
+  p { margin: 0 0 14px; }
+
+  .ust { background: var(--mor); color: var(--krem); }
+  .ust .kap { display: flex; align-items: center; justify-content: space-between; padding-top: 22px; padding-bottom: 22px; }
+  .marka { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 1.45rem; letter-spacing: -0.03em; }
+  .marka svg { width: 36px; height: 36px; }
+
+  main { padding: clamp(40px, 7vw, 72px) 0 clamp(64px, 10vw, 120px); }
+  .yazi { max-width: var(--metin); color: var(--govde); }
+  .yazi h1, .yazi h2, .yazi h3, .yazi strong { color: var(--gece); }
+  .surum { color: var(--lavanta); font-size: .98rem; margin-top: 12px; margin-bottom: 28px; }
+  .yazi ul { margin: 0 0 14px; padding-left: 1.2em; }
+  .yazi li { margin: 6px 0; }
+
+  .taslak {
+    background: var(--mango-ton); border: 1px solid #FFD98A; border-radius: 22px;
+    padding: 20px; margin-bottom: 32px; color: var(--gece);
+  }
+  .taslak strong { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+  .taslak p { margin: 0; }
+
+  .tablo { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--cizgi); border-radius: 14px; background: var(--kart); }
+  table { width: 100%; border-collapse: collapse; font-size: .97rem; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-top: 1px solid var(--cizgi); }
+  thead th { border-top: 0; color: var(--gece); font-weight: 700; background: #ECE4FF; }
+  tbody th { color: var(--gece); font-weight: 600; min-width: 9rem; }
+
+  footer { background: var(--gece); color: rgba(250,248,255,.75); padding: 32px 0; font-size: .95rem; }
+  footer .kap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+  footer .marka { color: var(--krem); font-size: 1.2rem; }
+  footer .marka svg { width: 28px; height: 28px; }
+</style>
+</head>
+<body>
+
+<header class="ust">
+  <div class="kap">
+    <a class="marka" href="/" aria-label="Tayfam ana sayfa">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"/><path d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"/><path d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"/><path d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#FAF8FF"/></svg>
+      tayfam
+    </a>
+  </div>
+</header>
+
+<main>
+  <article class="kap">
+    <div class="yazi">
+
+
+      <div class="taslak" role="note">
+        <strong>Taslak — hukuki inceleme bekliyor</strong>
+        <p>Bu metin henüz hukuki incelemeden geçmedi. İnceleme sonrasında değişirse yeni sürümü uygulamada onayına sunulur.</p>
+      </div>
+
+      <h1>Tayfam Kullanım Koşulları</h1>
+      <p class="surum">Sürüm: 2026-11-13</p>
+
+      <p>Bu koşullar, Tayfam mobil uygulamasını (Android ve iOS; "Tayfam") kullanmanın kurallarını anlatır. Tayfam'a kayıt olurken bu koşulları ve içindeki <a href="#topluluk-kurallari">Topluluk Kuralları</a>'nı kabul etmiş olursun. Kişisel verilerinin nasıl işlendiği ayrı bir metinde, <a href="/gizlilik">aydınlatma metninde</a> anlatılır.</p>
+
+      <h2 id="taraflar">1. Taraflar ve hizmet</h2>
+      <p>Tayfam'ı Murat Tarslan ("biz") geliştirir ve işletir. Tayfam; kulüplerin ve arkadaş gruplarının ("tayfa") etkinlik, duyuru, soru-cevap, anket ve sohbet ihtiyaçlarını tek uygulamada karşılar.</p>
+      <ul>
+        <li>Tayfam şu an <strong>ücretsizdir</strong>; reklam göstermez ve verilerini satmaz.</li>
+        <li>İleride ücretli özellikler gelirse, ücretli olan her şey kullanmadan önce açıkça gösterilir ve ayrıca onayın alınır. Bugün ücretsiz kullandığın özellikler bu koşullar kapsamında geriye dönük olarak ücretli hale getirilmez.</li>
+        <li>Tayfam'ın kaynak kodu açıktır (MIT lisansı). Uygulama, kendi lisanslarıyla gelen açık kaynak bileşenler (örneğin uçtan uca şifreleme için Signal'in kütüphanesi) içerir.</li>
+      </ul>
+
+      <h2 id="hesap">2. Hesap</h2>
+      <ul>
+        <li><strong>Yaş sınırı:</strong> Tayfam 16 yaşından büyükler içindir. Kayıtta doğum tarihin sorulur; doğru tarihi girmen gerekir. Kayıttan sonra doğum tarihini kendin değiştiremezsin; yanlışsa düzeltilmesini <a href="mailto:support@tayfam.app">support@tayfam.app</a> adresinden isteyebilirsin.</li>
+        <li><strong>Giriş:</strong> Hesabına Google hesabınla girersin (Apple ile giriş ileride). Tayfam şifre tutmaz; giriş yaptığın hesabın güvenliğinden sen sorumlusun.</li>
+        <li><strong>Tek kişi, tek hesap:</strong> Hesabın yalnızca senindir; başkasına devredemez ya da başkası adına açamazsın.</li>
+        <li><strong>Oturumlar:</strong> Hangi cihazlarda oturum açık olduğunu Profil'den görüp kapatabilirsin. Hesabının izinsiz kullanıldığını düşünürsen bütün oturumları kapat ve bize yaz.</li>
+      </ul>
+
+      <h2 id="tayfalar">3. Tayfalar ve roller</h2>
+      <ul>
+        <li>Herkes tayfa açabilir. Tayfayı açan kişi tayfanın yöneticisi olur. Tayfada yönetici, moderatör ve üye rolleri vardır.</li>
+        <li>Yöneticiler ve moderatörler tayfalarındaki içeriği ve üyeleri <a href="#topluluk-kurallari">Topluluk Kuralları</a>'na ve tayfanın kendi kurallarına göre yönetir. Tayfalar kendi içlerinde daha sıkı kurallar koyabilir, bu koşulları gevşetemez.</li>
+        <li>Tayfa silme isteği 72 saat bekler; bu sürede geri alınabilir. Uzun süre etkinlik olmayan ya da ilk haftada yeterli üyeye ulaşmayan tayfalar önce uyarılır, ardından arşivlenir.</li>
+        <li>Bir tayfaya katılmak, tayfanın yönetiminin onayına bağlı olabilir. Tayfa yönetimi seni tayfadan çıkarabilir; bu Tayfam hesabını etkilemez.</li>
+      </ul>
+
+      <h2 id="icerik">4. Paylaştığın içerik</h2>
+      <ul>
+        <li><strong>İçerik senindir.</strong> Duyuru, etkinlik, soru, cevap, mesaj ve fotoğraf gibi paylaştığın içeriklerin hakları sende kalır.</li>
+        <li><strong>Bize verdiğin izin:</strong> Tayfam'ın çalışabilmesi için içeriğini saklamamıza, işlememize (örneğin fotoğrafların küçültülmüş kopyasını göstermek) ve paylaştığın kişilere göstermemize izin verirsin. Bu izin yalnızca hizmeti sunmak içindir; içeriğini reklamda, tanıtımda ya da başka bir amaçla kullanmayız.</li>
+        <li><strong>Sorumluluk:</strong> Paylaştığın içerikten sen sorumlusun. Hakkın olmayan içerikleri (başkasının fotoğrafı, yazısı) paylaşma.</li>
+        <li><strong>Hesabını silersen:</strong> Tayfalarda paylaştığın içerikler tayfanın geçmişi bozulmasın diye kalır, yazar olarak "Silinmiş kullanıcı" görünür. Kalmasını istemediklerini silmeden önce kendin kaldırabilirsin. Ayrıntılar <a href="/hesap-silme/">hesap silme sayfasında</a>.</li>
+        <li><strong>Birebir mesajlar</strong> uçtan uca şifrelidir; içeriklerini biz dahil kimse okuyamaz. Bir birebir mesajı şikâyet ettiğinde, mesajın içeriği senin cihazından şikâyete eklenir.</li>
+      </ul>
+
+      <h2 id="etkinlikler">5. Etkinlikler ve buluşmalar</h2>
+      <ul>
+        <li>Tayfam etkinlikleri düzenlemez; yalnızca tayfaların kendi etkinliklerini düzenlemesine aracılık eder. Etkinliğin içeriği, güvenliği ve gerçekleşmesi düzenleyenin ve katılanların sorumluluğundadır.</li>
+        <li>Bir etkinliğe katılmadan önce düzenleyeni, yeri ve koşulları kendin değerlendir. Konvoy, yürüyüş, kamp, balıkçılık ve spor gibi etkinliklerin kendine özgü riskleri vardır; trafik, av, orman ve diğer kurallara uymak katılanların sorumluluğundadır.</li>
+        <li><strong>Yürüyüş dönüş uyarısı bir acil durum hizmeti değildir.</strong> Tayfam'ın gönderdiği "dönmedi" bildirimi gecikebilir ya da hiç ulaşmayabilir. Acil bir durumda <strong>112</strong>'yi ara.</li>
+        <li>Varış bildirimi ("Geldim") için konumun yalnızca o an kullanılır ve kaydedilmez.</li>
+      </ul>
+
+      <h2 id="topluluk-kurallari">6. Topluluk Kuralları</h2>
+      <p>Tayfam, insanların birlikte bir şeyler yapması için var. Bu kurallar her tayfada ve uygulamanın her yerinde geçerlidir.</p>
+
+      <h3>Saygılı ol</h3>
+      <ul>
+        <li><strong>Taciz ve zorbalık yok.</strong> Birini aşağılamak, tehdit etmek, istenmediği halde sürekli mesaj atmak ya da başkalarını birine karşı kışkırtmak yasaktır.</li>
+        <li><strong>Nefret söylemi yok.</strong> Irk, etnik köken, din, cinsiyet, cinsel yönelim, engellilik, yaş ya da benzeri özellikler nedeniyle insanları hedef alan içerik yasaktır.</li>
+        <li><strong>Şiddet ve tehdit yok.</strong> Şiddet tehdidi, şiddeti övme ya da teşvik etme yasaktır.</li>
+      </ul>
+
+      <h3>Gizliliğe saygı göster</h3>
+      <ul>
+        <li><strong>Başkasının kişisel bilgisini paylaşma.</strong> Bir kişinin adresini, telefon numarasını, plakasını, konumunu ya da fotoğrafını izni olmadan paylaşmak yasaktır.</li>
+        <li><strong>Tayfa içeriğini dışarı taşıma.</strong> Bir tayfanın buluşma noktalarını, üye listesini ya da yazışmalarını o tayfanın izni olmadan başka yerlerde yayımlama.</li>
+        <li><strong>Başkası gibi davranma.</strong> Gerçek bir kişiyi, kulübü ya da kurumu taklit eden hesap veya tayfa açmak yasaktır.</li>
+      </ul>
+
+      <h3>Güvenli ve yasal kal</h3>
+      <ul>
+        <li><strong>Yasa dışı alım satım yok.</strong> Silah, uyuşturucu, çalıntı mal, sahte ürün, korunan hayvan türleri ve satışı yasak olan diğer ürünler için ilan ya da aracılık yasaktır.</li>
+        <li><strong>Uyuşturucu buluşması yok.</strong> Uyuşturucu ya da uyarıcı madde kullanmak, temin etmek veya dağıtmak amacıyla etkinlik ya da buluşma organize edilemez, bunlara yönlendirme yapılamaz.</li>
+        <li><strong>Kumar ve yasa dışı bahis yok.</strong> Tayfam üzerinden kumar, yasa dışı bahis ya da paralı şans oyunu organize edilemez, bunlara yönlendirme yapılamaz.</li>
+        <li><strong>Tehlikeli etkinlik yok.</strong> Trafikte yarış, yasak bölgede ya da yasak dönemde av, izinsiz alanda kamp ateşi, 18 yaşından küçüklere alkol veya tütün sunulan buluşmalar gibi yasaları çiğneyen ya da başkalarını tehlikeye atan etkinlikler düzenlenemez ve teşvik edilemez.</li>
+        <li><strong>Sahte etkinlik yok.</strong> Gerçekte olmayacak etkinlik açarak insanları bir yere çağırmak, katılımcıları yanıltmak yasaktır.</li>
+        <li><strong>Cinsel içerik ve cinsel amaçlı buluşma yok.</strong> Tayfam'da cinsel içerikli paylaşım yapılamaz; cinsel amaçlı buluşma, parti ya da etkinlik organize edilemez; fuhşa aracılık edilemez.</li>
+        <li><strong>Çocukların güvenliği.</strong> Çocukları istismar eden, cinselleştiren ya da tehlikeye atan her türlü içerik yasaktır ve yetkili makamlara bildirilir.</li>
+      </ul>
+
+      <h3>Genç kullanıcıları koru</h3>
+      <ul>
+        <li>16 ve 17 yaşındaki kullanıcılar Tayfam'ı herkes gibi kullanır: tayfa açar, buluşma organize eder, yetişkinlerle aynı etkinliklere katılır.</li>
+        <li>Yetişkin kullanıcıların 18 yaşından küçüklerle ilişkisi tayfa ve etkinlik amacıyla sınırlıdır. Bir gence romantik ya da cinsel yaklaşımda bulunmak, ondan yazışmayı gizli tutmasını istemek, onu ailesinden veya tayfasından uzaklaştırmaya çalışmak, hediye ya da para teklif etmek yasaktır.</li>
+        <li>Bu ihlaller uyarı verilmeden platformdan kalıcı çıkarma ile sonuçlanır ve yetkili makamlara bildirilir.</li>
+      </ul>
+
+      <h3>Dürüst ol</h3>
+      <ul>
+        <li><strong>Spam ve dolandırıcılık yok.</strong> Toplu istenmeyen mesaj, sahte kampanya, kimlik avcılığı bağlantıları ve para isteyen sahte talepler yasaktır.</li>
+        <li><strong>Sistemi kötüye kullanma.</strong> Sahte hesaplar açmak, sınırları aşmak için otomasyon kullanmak, sahte konumla check-in yapmak, uygulamanın değiştirilmiş sürümlerini kullanmak ya da başkalarının hesabına erişmeye çalışmak yasaktır.</li>
+        <li><strong>Başkasının eserini kendi eserin gibi sunma.</strong> Hakkın olmayan fotoğraf, yazı ve diğer içerikleri paylaşma.</li>
+      </ul>
+
+      <h3>Tayfa yöneticilerinin sorumluluğu</h3>
+      <ul>
+        <li>Yöneticiler ve moderatörler kendi tayfalarındaki şikâyetleri makul sürede ele alır.</li>
+        <li>Yetkilerini kişisel anlaşmazlıklar için kullanmaz; üyeleri haksız yere susturmaz ya da çıkarmaz.</li>
+        <li>Tayfanın bu kuralları çiğneyen bir amaçla kullanılmasına izin vermez.</li>
+      </ul>
+
+      <h2 id="yaptirimlar">7. Kurallar çiğnenirse</h2>
+      <div class="tablo">
+        <table>
+          <thead><tr><th scope="col">Kim</th><th scope="col">Ne yapabilir</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Her kullanıcı</th><td>Şikâyet eder, kişiyi engeller</td></tr>
+            <tr><th scope="row">Tayfa moderatörü ve yöneticisi</th><td>İçeriği kaldırır, üyeyi susturur, tayfadan çıkarır ya da banlar</td></tr>
+            <tr><th scope="row">Tayfam</th><td>İçeriği kaldırır, hesabı ya da tayfayı askıya alır, platformdan kalıcı olarak çıkarır; gerektiğinde yetkili makamlara bildirir</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Yaptırımın ağırlığı ihlalin ciddiyetine ve tekrarına göre belirlenir. Ciddi ihlallerde (çocukların güvenliği, gerçek şiddet tehdidi) uyarı verilmeden doğrudan işlem yapılır.</p>
+
+      <h3 id="sikayet">Şikâyet ve itiraz</h3>
+      <ul>
+        <li>Her mesajı, içeriği, kullanıcıyı ve tayfayı uygulama içinden şikâyet edebilirsin. Kimin şikâyet ettiği, şikâyet edilen kişiye söylenmez.</li>
+        <li>Tayfa içi şikâyetleri önce tayfa yönetimi ele alır; 7 gün içinde çözülmeyen şikâyetler, birebir mesaj şikâyetleri ve tayfa yönetimiyle ilgili şikâyetler doğrudan Tayfam'a gelir.</li>
+        <li>Hesabına ya da tayfana uygulanan bir yaptırıma itiraz etmek için <a href="mailto:support@tayfam.app">support@tayfam.app</a> adresine, Tayfam'a giriş yaptığın Google hesabının e-posta adresinden yaz. İtirazlar Tayfam tarafından incelenir ve yanıtlanır.</li>
+      </ul>
+
+      <h2 id="sona-erme">8. Hesabın kapanması</h2>
+      <ul>
+        <li>Hesabını istediğin zaman <strong>Profil → Hesabı sil</strong> bölümünden silebilirsin.</li>
+        <li>Bu koşulları ya da Topluluk Kuralları'nı ciddi biçimde veya tekrar tekrar çiğnersen hesabını askıya alabilir ya da kapatabiliriz.</li>
+        <li>Tayfam'ı kapatmaya karar verirsek bunu en az 30 gün önceden uygulamada duyururuz; bu sürede verilerini <strong>Profil → Gizlilik → Verilerimi indir</strong> ile alabilirsin.</li>
+      </ul>
+
+      <h2 id="sorumluluk">9. Hizmetin durumu ve sorumluluk</h2>
+      <ul>
+        <li>Tayfam'ı özenle çalıştırmaya çalışırız, ama kesintisiz ve hatasız olacağını garanti edemeyiz. Bakım, güvenlik güncellemeleri ya da arızalar nedeniyle hizmet zaman zaman durabilir.</li>
+        <li>Özellikleri değiştirebilir, ekleyebilir ya da kaldırabiliriz. Kullanımını önemli ölçüde etkileyecek değişiklikleri önceden duyururuz.</li>
+        <li>Kullanıcıların paylaştığı içeriklerden, tayfaların düzenlediği etkinliklerden ve kullanıcılar arasındaki ilişkilerden, yürürlükteki mevzuatın izin verdiği ölçüde sorumlu değiliz. Bu sınırlama, kastımızdan ya da ağır ihmalimizden doğan zararları ve tüketici olarak sahip olduğun yasal hakları kapsamaz.</li>
+      </ul>
+
+      <h2 id="marka">10. Fikri mülkiyet</h2>
+      <p>"Tayfam" adı, logosu ve tanıtım görselleri bize aittir; izin almadan Tayfam'la ilişkili olduğun izlenimini verecek biçimde kullanamazsın. Uygulamanın kaynak kodu MIT lisansıyla açıktır; kodu o lisansın koşullarıyla kullanabilirsin.</p>
+
+      <h2 id="degisiklikler">11. Değişiklikler</h2>
+      <p>Bu koşullar güncellenebilir. Her sürüm bu adreste kendi tarihiyle yayımlanır, eski sürümler yerinde kalır. Önemli bir değişiklikte yeni sürüm uygulamada gösterilir ve kullanmaya devam etmeden önce onayın istenir.</p>
+
+      <h2 id="hukuk">12. Uygulanacak hukuk</h2>
+      <p>Bu koşullara Türkiye Cumhuriyeti hukuku uygulanır. Uyuşmazlıklarda, tüketici olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun kapsamındaki tüketici hakem heyetlerine ve tüketici mahkemelerine başvurma hakkın saklıdır.</p>
+
+      <h2 id="iletisim">13. İletişim</h2>
+      <p>Soruların, itirazların ve bildirimlerin için: <a href="mailto:support@tayfam.app">support@tayfam.app</a></p>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="kap">
+    <a class="marka" href="/" aria-label="Tayfam ana sayfa">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M16 14 H32 Q40 14 40 22 V26 Q40 32 34 32 H14 Q8 32 8 26 V22 Q8 14 16 14 Z" fill="#FFB000"/><path d="M60 14 H84 Q92 14 92 22 V26 Q92 32 86 32 H58 Q52 32 52 26 V22 Q52 14 60 14 Z" fill="#FF3D68"/><path d="M60 44 H84 Q92 44 92 52 V56 Q92 64 84 64 H64 Q52 64 52 52 Q52 44 60 44 Z" fill="#00C2A8"/><path d="M18 44 H30 Q40 44 40 54 V64 Q40 76 52 76 H84 Q92 76 92 84 Q92 92 84 92 H18 Q8 92 8 82 V54 Q8 44 18 44 Z" fill="#A98BFF"/></svg>
+      tayfam
+    </a>
+    <span>Kullanım koşulları · sürüm 2026-11-13</span>
+    <span>© 2026 Tayfam</span>
+  </div>
+</footer>
+
+</body>
+</html>
