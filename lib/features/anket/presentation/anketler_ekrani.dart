@@ -78,11 +78,7 @@ class AnketlerEkrani extends ConsumerWidget {
         actions: [
           _AnketAcDugmesi(
             onPressed: () => unawaited(
-              anketFormunuAc(
-                context,
-                tayfaId: tayfaId,
-                etkinlikId: etkinlikId,
-              ),
+              anketFormunuAc(context, tayfaId: tayfaId, etkinlikId: etkinlikId),
             ),
           ),
           const SizedBox(width: TayfamSpacing.s8),
