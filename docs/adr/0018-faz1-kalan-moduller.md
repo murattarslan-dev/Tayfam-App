@@ -256,6 +256,51 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-14 (issue #165; Tayfam-Api #184–#187, PR #188): ad
+  düzenleme, doğum günü görünürlüğü, profil tamamlama ve tanıtım
+  bilgileri (§2, §7, §8).** Tasarım ve kararlar:
+  `docs/tasarim/08-profil-ad-dogum-gunu-tanitim/`. 2026-11-13 notundaki
+  "Tasarlandı, kodlanmadı" maddesi kapandı.
+  - **Ad (§2):** profildeki adın yanında kalem; "Adın" alttan sayfası
+    `PATCH /v1/me/account` `display_name` gönderir. Boşluklar
+    tekleştirilip kırpılır, değişmeyen ya da boş adda Kaydet kapalıdır.
+    `invalid-display-name` ortak metniyle, `rate-limited` (24 saatte 3
+    değişiklik) kendi metniyle alanın altında gösterilir.
+  - **Doğum günü (§2):** Profil → Gizlilik ve Tanıtım bilgilerin altında
+    "Doğum günün" satırı; seçenekler sırasıyla `birthday` (varsayılan),
+    `full`, `hidden`, seçildiği anda kaydedilir. `Account` doğum tarihini
+    taşımadığı için seçenek açıklamalarında tasarımdaki örnek tarih yerine
+    genel metin vardır.
+  - **Profil tamamlama formu (§2):** `Account.profile_completion_pending`
+    `true` ise kabuk açılınca form (`/profil-tamamla`, kabuğun üstünde) bir
+    kez açılır. Tetikleyici kabuk katmanıdır: `core/moduller`'deki
+    `kabukKatmanlariProvider`'ı `shell/kayitlar.dart` override eder
+    (birebir şikâyet kancasıyla aynı desen); testlerde katman yoktur.
+    Adımlar form açılırken bir kez hesaplanır: yalnızca boş ve
+    reddedilmemiş alanlar, sonda her zaman "Kim görsün". Her adım kendi
+    alanını İleri'de gönderir (değişiklik yoksa istek yok), "Paylaşmak
+    istemiyorum" `declined_profile_fields`'ın tamamını gönderir, "Daha
+    sonra doldur" `POST /v1/me/profile-prompt/snooze`. Değerler yalnızca
+    bellektedir ve log'a yazılmaz (ADR-0006, kesin kural 3).
+  - **Dil listesi:** ISO 639-1 kodlarının seçilmiş bir alt kümesi (81 dil)
+    istemcide, adları `dil_<kod>` ARB anahtarlarında; önce sık
+    kullanılanlar, sonra Türkçe alfabetik. Listede olmayan kod kişi
+    profilinde gösterilmez.
+  - **Sosyal medya:** sözleşmedeki kullanıcı adı kuralları istemcide de
+    denetlenir (`core/kullanici/sosyal_medya.dart`); kural dışı değerde
+    istek gitmez. Bağlantı platformun bilinen adresinden kurulur ve dış
+    tarayıcıda açılır; sunucudan gelen ad kurala uymuyorsa satır çizilmez.
+  - **Tanıtım bilgilerin:** Profil → Gizlilik altında; her satır formun
+    adımını tek başına açar (`/profil/tanitim/<adım>`, adım yolları
+    sabit), "Kim görür" formun son adımıdır.
+  - **Kişi profili (§7):** "Hakkında" kartı `UserProfile`'daki tanıtım
+    alanları ve `birthday` ile; boş alanın satırı çizilmez, hiçbiri yoksa
+    kart yoktur. Kendi profilinde tam tarih ve yaş görünür.
+  - **Kullanıcı şikâyeti (§8):** kişi profilinden şikâyet artık `POST
+    /v1/me/reports` `target_type: user` ile yalnızca platforma gider
+    (`SikayetHedefi.kullanici`); ortak tayfa koşulu ve tayfa seçimi
+    kalktı (2026-11-13 notundaki kısıt). `evidence_text` gönderilmez,
+    `staff_conduct` bu hedefte listelenmez.
 - **2026-11-14 (issue #166; Tayfam-Api #183, PR #188, ADR-0024): kanal
   kitlesi (§9).** Tasarım: Kanal-Kitle, Kanal-Kisi-Sec,
   Kanal-Etkinlik-Sec, Kanal-Katilimcilar, Kanal-Katilimcilar-Etkinlik,

@@ -12,10 +12,11 @@ const int sikayetNotuEnCok = 1000;
 
 /// Şikâyet edilen şey (ADR-0018 §8).
 ///
-/// Tayfadaki hedefler (`user`, `tayfa`, duyuru, etkinlik, soru, cevap,
-/// anket, av kaydı) `POST /v1/tayfas/{tayfa_id}/reports` ile; birebir mesaj
-/// yalnızca platforma, `POST /v1/me/reports` ile gider. Kanal mesajları
-/// sözleşmede henüz şikâyet edilemez.
+/// Tayfadaki hedefler (`tayfa`, duyuru, etkinlik, soru, cevap, anket, av
+/// kaydı) `POST /v1/tayfas/{tayfa_id}/reports` ile; kişi profilinden
+/// kullanıcı (issue #187) ve birebir mesaj yalnızca platforma, `POST
+/// /v1/me/reports` ile gider. Kanal mesajları sözleşmede henüz şikâyet
+/// edilemez.
 @immutable
 final class SikayetHedefi {
   /// Tayfadaki bir içerik ya da üye. [tur] `tayfa` ya da `dm_message`
@@ -33,6 +34,14 @@ final class SikayetHedefi {
        ),
        mesajMetni = null;
 
+  /// Kişi profilinden kullanıcının kendisi (issue #187): ortak tayfa
+  /// gerekmez, tayfa seçilmez; yalnızca platforma gider (`POST
+  /// /v1/me/reports`, `target_type: user`). `evidence_text` gönderilmez.
+  const SikayetHedefi.kullanici(this.id)
+    : tur = ReportTargetType.user,
+      tayfaId = null,
+      mesajMetni = null;
+
   /// Tayfanın kendisi (`target_id` = `tayfa_id`); yalnızca platforma gider.
   const SikayetHedefi.tayfa(String this.tayfaId)
     : tur = ReportTargetType.tayfa,
@@ -48,7 +57,8 @@ final class SikayetHedefi {
   }) : tur = ReportTargetType.dmMessage,
        tayfaId = null;
 
-  /// Hedefin tayfası; birebir mesajda `null`.
+  /// Hedefin tayfası; kişi profilinden kullanıcı ve birebir mesajda
+  /// `null` (istek platform ucuna gider).
   final String? tayfaId;
 
   /// Hedefin türü.
@@ -60,16 +70,15 @@ final class SikayetHedefi {
   /// Birebir mesajın metni; başka hedeflerde `null`.
   final String? mesajMetni;
 
-  /// Şikâyet yalnızca platforma mı gidiyor (tayfa ve birebir mesaj; ayrıca
-  /// `staff_conduct` gerekçesi).
-  bool get yalnizcaPlatform =>
-      tur == ReportTargetType.tayfa || tur == ReportTargetType.dmMessage;
+  /// Şikâyet yalnızca platforma mı gidiyor (tayfa, kişi profilinden
+  /// kullanıcı ve birebir mesaj; ayrıca `staff_conduct` gerekçesi).
+  bool get yalnizcaPlatform => tur == ReportTargetType.tayfa || tayfaId == null;
 
   /// Bu hedef için seçilebilecek gerekçeler, gösterim sırasıyla.
   /// "Çocuk/genç güvenliği" en başta durur (Notion: Kötüye Kullanım ve
   /// Genç Kullanıcı Güvenliği §3). `fake_event` yalnızca etkinlikte,
-  /// `staff_conduct` yalnızca üye ve tayfada; birebir mesajda
-  /// `staff_conduct` geçerli değildir (sözleşme).
+  /// `staff_conduct` yalnızca tayfadaki üye ve tayfada; birebir mesajda ve
+  /// platforma giden kullanıcı şikâyetinde geçerli değildir (sözleşme).
   List<ReportReason> get gerekceler => [
     ReportReason.childSafety,
     ReportReason.harassment,
@@ -85,7 +94,8 @@ final class SikayetHedefi {
     ReportReason.dangerousActivity,
     ReportReason.spam,
     ReportReason.copyright,
-    if (tur == ReportTargetType.user || tur == ReportTargetType.tayfa)
+    if (tur == ReportTargetType.tayfa ||
+        (tur == ReportTargetType.user && tayfaId != null))
       ReportReason.staffConduct,
     ReportReason.other,
   ];

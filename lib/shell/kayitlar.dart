@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
+import 'package:tayfam/core/moduller/kabuk_katmanlari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/moduller/uye_islemleri.dart';
@@ -74,6 +75,8 @@ final List<Override> kayitOverridelari = [
   // Kayıttan sonra bekleyen davet mevcut davet akışıyla işlenir
   // (ADR-0012 §3, ADR-0018 §6).
   kayitDavetProvider.overrideWith(KabukKayitDavetNotifier.new),
+  // Girişten sonra profil tamamlama formu (issue #186).
+  kabukKatmanlariProvider.overrideWithValue(const [profilTamamlamaKatmani]),
 ];
 
 /// Tayfa ayarları ekranına başka paketlerin eklediği girişler; rotaları

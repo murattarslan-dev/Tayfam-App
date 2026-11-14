@@ -5,8 +5,9 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
 
-/// Kendi hesap ayarların (ADR-0018 §2): referans kodu, katılım geçmişi
-/// görünürlüğü ve avatar (ADR-0021) (`GET /v1/me/account`).
+/// Kendi hesap ayarların (ADR-0018 §2): görünen ad, referans kodu, katılım
+/// geçmişi ve doğum günü görünürlüğü, avatar (ADR-0021) ve profil
+/// tamamlama alanları (issue #184–#186) (`GET /v1/me/account`).
 ///
 /// Yalnızca bellektedir (ADR-0006); oturum değişince sıfırlanır.
 class HesapAyarlariNotifier extends AsyncNotifier<Account> {
@@ -23,6 +24,42 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
   Future<Object?> gorunurlukDegistir(ActivityVisibility gorunurluk) => _islem(
     () => ref.read(profilDeposuProvider).gorunurlukDegistir(gorunurluk),
   );
+
+  /// Görünen adı [ad] yapar (issue #184). Boşluklar tekleştirilip kırpılır;
+  /// kuralı sunucu denetler (`invalid-display-name`, 24 saatte 3 değişiklik:
+  /// `rate-limited`). Başarıda `null`, aksi halde gösterilecek hata.
+  Future<Object?> adDegistir(String ad) =>
+      guncelle(AccountUpdate(displayName: gorunenAdiDuzenle(ad)));
+
+  /// Hesabın [degisiklik]'teki alanlarını değiştirir (`PATCH
+  /// /v1/me/account`); durum sunucunun döndürdüğü hesap olur. Başarıda
+  /// `null`, aksi halde gösterilecek hata; hata olursa eski değer kalır.
+  Future<Object?> guncelle(AccountUpdate degisiklik) =>
+      _islem(() => ref.read(profilDeposuProvider).guncelle(degisiklik));
+
+  /// [alan] için "Paylaşmak istemiyorum": alan reddedilenlere eklenir,
+  /// değeri sunucuda silinir ve alan cevaplanmış sayılır (issue #186).
+  /// Liste her zaman tamamıyla gönderilir.
+  Future<Object?> reddet(ProfileField alan) => _islem(() {
+    final onceki = state.value?.declinedProfileFields ?? const <ProfileField>[];
+    final liste = [
+      for (final f in onceki)
+        if (f != ProfileField.unknown && f != alan) f,
+      alan,
+    ];
+    return ref
+        .read(profilDeposuProvider)
+        .guncelle(AccountUpdate(declinedProfileFields: liste));
+  });
+
+  /// "Daha sonra doldur": form 7 gün istenmez (`POST
+  /// /v1/me/profile-prompt/snooze`). Başarıda `null`.
+  Future<Object?> ertele() => _islem(() async {
+    await ref.read(profilDeposuProvider).ertele();
+    final simdiki = state.value;
+    if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
+    return _kopya(simdiki, profileCompletionPending: false);
+  });
 
   /// Yeni referans kodu üretir; eski kod ve linki hemen geçersiz olur.
   /// Onay ekranda sorulur. Başarıda `null`, aksi halde gösterilecek hata.
@@ -58,6 +95,7 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     Account hesap, {
     String? referralCode,
     Object? avatarUploadId = _ayni,
+    bool? profileCompletionPending,
   }) => Account(
     userId: hesap.userId,
     displayName: hesap.displayName,
@@ -75,7 +113,8 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     socialAccounts: hesap.socialAccounts,
     declinedProfileFields: hesap.declinedProfileFields,
     aboutVisibility: hesap.aboutVisibility,
-    profileCompletionPending: hesap.profileCompletionPending,
+    profileCompletionPending:
+        profileCompletionPending ?? hesap.profileCompletionPending,
   );
 
   static const Object _ayni = Object();
@@ -105,3 +144,12 @@ final hesapAyarlariProvider =
     );
 
 Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
+
+/// Görünen adın gönderilecek biçimi: ardışık boşluklar teke indirilir,
+/// baştaki ve sondaki boşluklar atılır (sunucu da aynısını yapar).
+String gorunenAdiDuzenle(String ad) => ad.trim().replaceAll(_bosluklar, ' ');
+
+final RegExp _bosluklar = RegExp(r'\s+');
+
+/// Görünen adın en çok uzunluğu (sözleşme: `display_name` `maxLength: 40`).
+const int gorunenAdEnCok = 40;

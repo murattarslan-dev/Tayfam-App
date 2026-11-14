@@ -11,21 +11,23 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart';
 import 'package:tayfam/features/arkadas/presentation/katilim_gecmisi.dart';
+import 'package:tayfam/features/arkadas/presentation/kisi_hakkinda.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Kişi profili (`/kisi/<kullaniciId>`; ADR-0018 §7; 2026-11-13 tasarım:
-/// Kisi-Profili, Kisi-Profili-Yabanci): büyük avatar, ad, arkadaşlık
-/// durumu ve eylemleri, ortak tayfalar ve katılım geçmişi (görünürlüğe
-/// göre). Başka paketler eylem satırına düğme ekleyebilir
+/// Kisi-Profili, Kisi-Profili-Yabanci, Kisi-Profili-Tanitim): büyük avatar,
+/// ad, arkadaşlık durumu ve eylemleri, "Hakkında" (tanıtım bilgileri ve
+/// doğum günü; issue #185, #186), ortak tayfalar ve katılım geçmişi
+/// (görünürlüğe göre). Başka paketler eylem satırına düğme ekleyebilir
 /// ([kisiProfiliEylemleriProvider]; ör. "Mesaj gönder").
 ///
 /// ⋯ menüsü alttan sayfadır: arkadaşlıktan çıkar (arkadaşsa), şikâyet et
-/// (ortak tayfa varsa; sözleşmede kullanıcı şikâyeti bir tayfada yapılır)
-/// ve engelle. Kendi profilinde (profil sekmesindeki "Başkaları nasıl
-/// görüyor") menü ve eylem yoktur.
+/// ve engelle. Şikâyet ortak tayfa gerektirmez; platforma gider (issue
+/// #187). Kendi profilinde (profil sekmesindeki "Başkaları nasıl görüyor")
+/// menü ve eylem yoktur.
 ///
 /// Adresteki kimlik girdi kabul edilir: UUID biçiminde değilse istek
 /// yapılmaz. Engel varsa sunucu kişiyi var olmayan gibi gösterir.
@@ -82,6 +84,7 @@ class KisiProfiliEkrani extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _Ust(profil: p),
+                  KisiHakkinda(profil: p),
                   if (!p.self) _OrtakTayfalar(profil: p),
                   BolumEtiketi(baslik: m.arkadas_gecmis_baslik),
                   if (p.activityVisible)
@@ -93,8 +96,8 @@ class KisiProfiliEkrani extends ConsumerWidget {
                     const GizliGecmisKutusu(),
                   // Her zaman görünen şikâyet bağlantısı (2026-11-13,
                   // platform sahibi; issue #144). ⋯ menüsündeki satırla
-                  // aynı koşul ve aynı akış.
-                  if (!p.self && p.mutualTayfas.isNotEmpty) ...[
+                  // aynı akış; ortak tayfa gerekmez (issue #187).
+                  if (!p.self) ...[
                     const SizedBox(height: TayfamSpacing.s16),
                     Align(
                       alignment: AlignmentDirectional.centerStart,
@@ -144,13 +147,12 @@ Future<void> _menuyuAc(
               aciklama: m.arkadas_cikar_kisa,
               onTap: () => sec(() => _arkadasliktanCikar(context, ref, profil)),
             ),
-          if (profil.mutualTayfas.isNotEmpty)
-            MenuSatiri(
-              ikon: Icons.flag_outlined,
-              baslik: m.sikayet_et,
-              aciklama: m.arkadas_sikayet_kisa,
-              onTap: () => sec(() => _sikayetEt(context, profil)),
-            ),
+          MenuSatiri(
+            ikon: Icons.flag_outlined,
+            baslik: m.sikayet_et,
+            aciklama: m.arkadas_sikayet_kisa,
+            onTap: () => sec(() => _sikayetEt(context, profil)),
+          ),
           MenuSatiri(
             ikon: Icons.block,
             tur: MenuSatiriTuru.yikici,
@@ -186,55 +188,12 @@ Future<void> _arkadasliktanCikar(
   bildirici.bildir(hata, m.arkadas_cikarildi);
 }
 
-/// Kullanıcıyı şikâyet eder (2026-11-13). Sözleşmede kullanıcı şikâyeti
-/// bir tayfada yapılır (`POST /v1/tayfas/{tayfa_id}/reports`, hedef
-/// `user`); şikâyet o tayfanın moderatörlerine gider. Tek ortak tayfa
-/// varsa o, birden çoksa seçtirilir. Gerekçe seçimi ortak şikâyet
-/// sayfasındadır.
+/// Kullanıcıyı şikâyet eder (issue #187): `POST /v1/me/reports`,
+/// `target_type: user`. Ortak tayfa ve tayfa seçimi yoktur; şikâyet
+/// yalnızca platforma gider. Gerekçe seçimi ortak şikâyet sayfasındadır.
 Future<void> _sikayetEt(BuildContext context, UserProfile profil) async {
   if (!context.mounted) return;
-  final tayfalar = profil.mutualTayfas;
-  final String? tayfaId;
-  if (tayfalar.length == 1) {
-    tayfaId = tayfalar.single.id;
-  } else {
-    final m = AppLocalizations.of(context);
-    tayfaId = await altSayfaAc<String>(
-      context,
-      builder: (sayfa) => AltSayfaIcerigi(
-        baslik: m.arkadas_sikayet_tayfa_baslik,
-        children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              TayfamSpacing.s8,
-              0,
-              TayfamSpacing.s8,
-              TayfamSpacing.s8,
-            ),
-            child: Text(
-              m.arkadas_sikayet_tayfa_aciklama,
-              style: sayfa.yazi.bodySmall,
-            ),
-          ),
-          for (final t in tayfalar)
-            MenuSatiri(
-              ikon: Icons.groups_outlined,
-              baslik: t.name,
-              onTap: () => Navigator.of(sayfa).pop(t.id),
-            ),
-        ],
-      ),
-    );
-  }
-  if (tayfaId == null || !context.mounted) return;
-  await sikayetSayfasiniAc(
-    context,
-    SikayetHedefi.tayfada(
-      tayfaId: tayfaId,
-      tur: ReportTargetType.user,
-      id: profil.userId,
-    ),
-  );
+  await sikayetSayfasiniAc(context, SikayetHedefi.kullanici(profil.userId));
 }
 
 Future<void> _engelle(

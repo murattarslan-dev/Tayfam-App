@@ -25,7 +25,7 @@ typedef HedefOnizlemesi = ({String? baslik, bool gorunmuyor});
 /// uç sınıflarını kullanır; bütün istekler tek `ApiClient`'tan geçer
 /// (ADR-0005).
 ///
-/// Birebir mesaj şikâyetindeki mesaj metni ([birebirMesajiSikayetEt])
+/// Birebir mesaj şikâyetindeki mesaj metni ([platformaSikayetEt])
 /// yalnızca istek gövdesinde gider; burada saklanmaz ve log'a yazılmaz
 /// (kesin kural 3).
 final class SikayetDeposu {
@@ -53,9 +53,10 @@ final class SikayetDeposu {
     ReportCreateRequest istek,
   ) => _sikayetler.createReport(tayfaId: tayfaId, body: istek);
 
-  /// `POST /v1/me/reports`: birebir mesaj şikâyeti; yalnızca platforma
-  /// gider, hiçbir tayfanın kuyruğuna düşmez.
-  Future<MyReport> birebirMesajiSikayetEt(ReportCreateRequest istek) =>
+  /// `POST /v1/me/reports`: birebir mesaj ve kişi profilinden kullanıcı
+  /// şikâyeti (issue #187); yalnızca platforma gider, hiçbir tayfanın
+  /// kuyruğuna düşmez.
+  Future<MyReport> platformaSikayetEt(ReportCreateRequest istek) =>
       _ben.createDirectMessageReport(body: istek);
 
   /// `GET /v1/tayfas/{tayfa_id}/reports`: açık kuyruk öncelik sırasıyla,

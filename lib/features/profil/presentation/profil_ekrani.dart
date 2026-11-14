@@ -21,8 +21,10 @@ import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/application/cikis_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
 import 'package:tayfam/features/profil/application/hukuki_baglantilar.dart';
+import 'package:tayfam/features/profil/presentation/ad_duzenle_sayfasi.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/features/profil/presentation/profil_sayfalari.dart';
+import 'package:tayfam/features/profil/presentation/tanitim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Profil sekmesi (ADR-0018 §2; 2026-11-13 tasarım: Profil-Ana,
@@ -167,7 +169,8 @@ class _UstBolum extends ConsumerWidget {
 }
 
 /// Fotoğraf ve ad (tasarım: Profil-Ana). Fotoğrafa dokununca alttan sayfa
-/// açılır: galeri, kamera, (fotoğraf varsa) kaldır (ADR-0021 §6).
+/// açılır: galeri, kamera, (fotoğraf varsa) kaldır (ADR-0021 §6). Adın
+/// yanındaki kalem "Adın" alttan sayfasını açar (issue #184).
 /// Fotoğraf hazırlanıp yüklenince `PUT /v1/me/avatar` ile bağlanır.
 class _AvatarBolumu extends ConsumerStatefulWidget {
   const _AvatarBolumu({required this.hesap});
@@ -305,16 +308,34 @@ class _AvatarBolumuState extends ConsumerState<_AvatarBolumu> {
             ),
           ),
         ),
-        // Kendi görünen adın (`GET /v1/me/account`; yalnızca bellekte).
-        if (ad.isNotEmpty) ...[
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(
-            hesap.displayName,
-            key: const ValueKey('profil-kendi-adi'),
-            textAlign: TextAlign.center,
-            style: context.yazi.headlineMedium,
-          ),
-        ],
+        // Kendi görünen adın (`GET /v1/me/account`; yalnızca bellekte) ve
+        // yanında düzenleme kalemi (tasarım: Profil-Ad-Duzenle).
+        const SizedBox(height: TayfamSpacing.s8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (ad.isNotEmpty)
+              Flexible(
+                child: Text(
+                  hesap.displayName,
+                  key: const ValueKey('profil-kendi-adi'),
+                  textAlign: TextAlign.center,
+                  style: context.yazi.headlineMedium,
+                ),
+              ),
+            IconButton(
+              key: const ValueKey('profil-ad-duzenle'),
+              tooltip: metinler.profil_ad_duzenle_etiketi,
+              onPressed: () =>
+                  unawaited(adDuzenleSayfasiniAc(context, hesap.displayName)),
+              icon: const Icon(Icons.edit_outlined),
+              style: IconButton.styleFrom(
+                foregroundColor: r.tintMarkaUstu,
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+              ),
+            ),
+          ],
+        ),
         if (mesgul) ...[
           const SizedBox(height: TayfamSpacing.s8),
           Center(
@@ -690,7 +711,8 @@ class _UygulamaBolumu extends ConsumerWidget {
   }
 }
 
-/// Gizlilik: verilerimi indir (ADR-0022), engellenenler ve hukuki metinler
+/// Gizlilik: tanıtım bilgileri ve doğum günü görünürlüğü (issue #185,
+/// #186), verilerimi indir (ADR-0022), engellenenler ve hukuki metinler
 /// (dış bağlantı).
 class _GizlilikBolumu extends ConsumerWidget {
   const _GizlilikBolumu();
@@ -716,6 +738,7 @@ class _GizlilikBolumu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
+    final hesap = ref.watch(hesapAyarlariProvider).value;
     final disBaglanti = ExcludeSemantics(
       child: Icon(
         Icons.open_in_new,
@@ -729,6 +752,24 @@ class _GizlilikBolumu extends ConsumerWidget {
         BolumEtiketi(baslik: m.disa_aktarma_profil_bolum),
         ListeKarti(
           children: [
+            // Tanıtım bilgileri ve doğum günü görünürlüğü (issue #185,
+            // #186); hesap okunana kadar görünmez.
+            if (hesap != null) ...[
+              MenuSatiri.kartta(
+                ikon: Icons.badge_outlined,
+                baslik: m.profil_tanitim_baslik,
+                aciklama: m.profil_tanitim_satir_aciklama,
+                sag: const SatirOku(),
+                onTap: () => context.go(Adresler.tanitimBilgileri),
+              ),
+              MenuSatiri.kartta(
+                ikon: Icons.cake_outlined,
+                baslik: m.profil_dogum_gunu,
+                aciklama: dogumGunuAciklamasi(m, hesap.birthdayVisibility),
+                sag: const SatirOku(),
+                onTap: () => unawaited(dogumGunuSec(context, ref, hesap)),
+              ),
+            ],
             MenuSatiri.kartta(
               ikon: Icons.download_outlined,
               baslik: m.disa_aktarma_baslik,

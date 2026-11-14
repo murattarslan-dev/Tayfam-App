@@ -15,10 +15,13 @@ import 'package:tayfam/features/arkadas/presentation/arkadas_ortak.dart';
 import 'package:tayfam/features/arkadas/presentation/katilim_gecmisi.dart';
 import 'package:tayfam/features/arkadas/presentation/kisi_profili_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/tayfa_davetleri_ekrani.dart';
+import 'package:tayfam/features/sikayet/data/sikayet_deposu.dart';
 import 'package:tayfam/features/sikayet/presentation/sikayet_sayfasi.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 import '../../yardimcilar.dart';
+import '../sikayet/sahteler.dart'
+    show benimSikayetimJson, benimSikayetlerimYolu;
 import '../tayfa/sahteler.dart';
 import 'sahteler.dart';
 
@@ -417,26 +420,7 @@ void main() {
       expect(find.text(arbMetni('arkadas_cikarildi')), findsOneWidget);
     });
 
-    testWidgets('şikâyet: tek ortak tayfada kullanıcı hedefiyle açılır', (
-      tester,
-    ) async {
-      ekranBoyutu(tester);
-      await _ac(
-        tester,
-        const KisiProfiliEkrani(kullaniciId: kisiId1),
-        _doluTasima(),
-      );
-      await _dokun(tester, find.byIcon(Icons.more_horiz));
-      await _dokun(tester, find.text(arbMetni('sikayet_et')));
-
-      final sayfa = tester.widget<SikayetSayfasi>(find.byType(SikayetSayfasi));
-      expect(sayfa.hedef.tur, ReportTargetType.user);
-      expect(sayfa.hedef.id, kisiId1);
-      expect(sayfa.hedef.tayfaId, ornekTayfaId);
-      expect(find.text(arbMetni('sikayet_soru_uye')), findsOneWidget);
-    });
-
-    testWidgets('şikâyet: birden çok ortak tayfada tayfa seçtirilir', (
+    testWidgets('şikâyet: kişi hedefiyle, tayfa seçimi olmadan açılır', (
       tester,
     ) async {
       ekranBoyutu(tester);
@@ -453,31 +437,53 @@ void main() {
       await _dokun(tester, find.byIcon(Icons.more_horiz));
       await _dokun(tester, find.text(arbMetni('sikayet_et')));
 
-      expect(
-        find.text(arbMetni('arkadas_sikayet_tayfa_baslik')),
-        findsOneWidget,
-      );
-      await _dokun(
-        tester,
-        find.descendant(
-          of: find.byType(BottomSheet),
-          matching: find.text('Kampçılar'),
-        ),
-      );
       final sayfa = tester.widget<SikayetSayfasi>(find.byType(SikayetSayfasi));
-      expect(sayfa.hedef.tayfaId, ikinciTayfaId);
+      expect(sayfa.hedef.tur, ReportTargetType.user);
+      expect(sayfa.hedef.id, kisiId1);
+      expect(sayfa.hedef.tayfaId, isNull);
+      expect(find.text(arbMetni('sikayet_soru_uye')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_gerekce_yonetim')), findsNothing);
     });
 
-    testWidgets('ortak tayfa yoksa şikâyet satırı yok', (tester) async {
+    testWidgets('şikâyet platform ucuna gider (`POST /v1/me/reports`)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = arkadasTasimasi()
+        ..yanitlar['POST $benimSikayetlerimYolu'] = yanit(
+          benimSikayetimJson(tur: 'user', hedef: kisiId1, tayfa: null),
+        );
+      await _ac(
+        tester,
+        const KisiProfiliEkrani(kullaniciId: kisiId1),
+        tasima,
+        ek: [sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima))],
+      );
+      await _dokun(tester, find.byIcon(Icons.more_horiz));
+      await _dokun(tester, find.text(arbMetni('sikayet_et')));
+      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_taciz')));
+      await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
+
+      expect(tasima.giden('POST', '/v1/tayfas/{tayfa_id}/reports'), isEmpty);
+      expect(tasima.giden('POST', benimSikayetlerimYolu).single.govde, {
+        'target_type': 'user',
+        'target_id': kisiId1,
+        'reason': 'harassment',
+      });
+      expect(find.text(arbMetni('sikayet_iletildi')), findsOneWidget);
+    });
+
+    testWidgets('ortak tayfa yoksa da şikâyet edilebilir', (tester) async {
       ekranBoyutu(tester);
       await _ac(
         tester,
         const KisiProfiliEkrani(kullaniciId: kisiId1),
         arkadasTasimasi(),
       );
-      expect(find.text(arbMetni('arkadas_sikayet_baglanti')), findsNothing);
+      expect(find.text(arbMetni('arkadas_sikayet_baglanti')), findsOneWidget);
       await _dokun(tester, find.byIcon(Icons.more_horiz));
-      expect(find.text(arbMetni('sikayet_et')), findsNothing);
+      expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
       expect(find.text(arbMetni('arkadas_cikar')), findsNothing);
       expect(find.text(arbMetni('arkadas_engelle')), findsOneWidget);
     });
@@ -498,7 +504,7 @@ void main() {
       final sayfa = tester.widget<SikayetSayfasi>(find.byType(SikayetSayfasi));
       expect(sayfa.hedef.tur, ReportTargetType.user);
       expect(sayfa.hedef.id, kisiId1);
-      expect(sayfa.hedef.tayfaId, ornekTayfaId);
+      expect(sayfa.hedef.tayfaId, isNull);
     });
 
     testWidgets('tayfaya davet: ortak tayfa seçenekte yok', (tester) async {

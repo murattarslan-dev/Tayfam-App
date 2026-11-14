@@ -58,7 +58,7 @@ class SikayetFormuNotifier extends Notifier<SikayetGonderimi> {
       }
       final istek = hedef.istek(gerekce, not);
       if (tayfaId == null) {
-        await depo.birebirMesajiSikayetEt(istek);
+        await depo.platformaSikayetEt(istek);
       } else {
         await depo.tayfadaSikayetEt(tayfaId, istek);
       }
