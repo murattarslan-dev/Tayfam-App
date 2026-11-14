@@ -547,6 +547,49 @@ void main() {
       expect(find.text(arbMetni('yonetim_susturuldu')), findsOneWidget);
     });
 
+    testWidgets('moderasyondan "Üye işlemleri" aynı alttan sayfayı açar', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = uyeTasimasi({
+        'PUT $susturmaYolu': yanit(
+          uyeJson(uyeId1, susturma: '2026-11-12T12:00:00Z'),
+        ),
+      });
+      // Moderasyon kuyruğu gibi tayfa görünümünü izleyen bir ekran.
+      await _ac(
+        tester,
+        Scaffold(
+          body: Consumer(
+            builder: (context, ref, _) {
+              ref.watch(tayfaOzetiProvider(ornekTayfaId));
+              return TextButton(
+                onPressed: () => uyeIslemleriniAc(
+                  context,
+                  tayfaId: ornekTayfaId,
+                  kullaniciId: uyeId1,
+                ),
+                child: const Text('ac'),
+              );
+            },
+          ),
+        ),
+        tasima,
+      );
+
+      await _dokun(tester, find.text('ac'));
+      expect(islemSayfasi, findsOneWidget);
+      expect(find.text(arbMetni('yonetim_sustur')), findsOneWidget);
+      await _dokun(tester, find.text('1 gün'));
+
+      final istek = tasima.giden('PUT', susturmaYolu).single;
+      expect(istek.yolParametreleri['user_id'], uyeId1);
+      expect(
+        find.text(arbMetni('yonetim_susturuldu_bildirim')),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('banlama onaylıdır ve listeden çıkarır', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
       final tasima = uyeTasimasi({'PUT $banYolu': yanit(null)});

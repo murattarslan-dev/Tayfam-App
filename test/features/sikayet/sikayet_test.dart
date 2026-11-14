@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/moduller/uye_islemleri.dart';
 import 'package:tayfam/features/sikayet/application/moderasyon_kuyrugu.dart';
 import 'package:tayfam/features/sikayet/application/sikayet_formu.dart';
 import 'package:tayfam/features/sikayet/application/sikayet_hedefi.dart';
@@ -26,6 +28,16 @@ const SikayetHedefi _duyuruHedefi = SikayetHedefi.tayfada(
   tur: ReportTargetType.announcement,
   id: duyuruId,
 );
+
+const SikayetHedefi _uyeHedefi = SikayetHedefi.tayfada(
+  tayfaId: ornekTayfaId,
+  tur: ReportTargetType.user,
+  id: uyeId,
+);
+
+/// Şikâyet sayfasındaki "Şikâyeti gönder" etkin mi.
+bool _gonderAcik(WidgetTester tester) =>
+    tester.widget<YikiciEylem>(find.byType(YikiciEylem)).onPressed != null;
 
 /// [hedef]'i görünür yapıp dokunur.
 Future<void> _dokun(WidgetTester tester, Finder hedef) async {
@@ -364,21 +376,27 @@ void main() {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         final tasima = SahteTayfaTasima({
+          'GET $duyuruYolu': yanit(duyuruJson()),
           'POST $sikayetlerYolu': yanit(benimSikayetimJson()),
         });
         await _sayfayiAc(tester, tasima, _duyuruHedefi, themeMode: tema);
 
+        // Üstte hedefin önizlemesi: tür ve başlık.
+        expect(find.text(arbMetni('sikayet_tur_duyuru')), findsOneWidget);
+        expect(find.text('Pazar buluşması'), findsOneWidget);
         expect(find.text(arbMetni('sikayet_soru_duyuru')), findsOneWidget);
         expect(find.text(arbMetni('sikayet_gizlilik')), findsOneWidget);
         expect(
           find.text(arbMetni('sikayet_gerekce_cocuk_guvenligi_aciklama')),
           findsOneWidget,
         );
-        // Gerekçe seçilmeden gönderilemez.
+        // Gerekçe seçilmeden gönder düğmesi pasif.
+        expect(_gonderAcik(tester), isFalse);
         await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
-        expect(tasima.istekler, isEmpty);
+        expect(tasima.giden('POST', sikayetlerYolu), isEmpty);
 
         await _dokun(tester, find.text(arbMetni('sikayet_gerekce_spam')));
+        expect(_gonderAcik(tester), isTrue);
         await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
 
         expect(tasima.giden('POST', sikayetlerYolu), hasLength(1));
@@ -387,9 +405,53 @@ void main() {
       });
     }
 
+    testWidgets('çocuk güvenliği en üstte; Diğer en sonda', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final tasima = SahteTayfaTasima({'GET $duyuruYolu': yanit(duyuruJson())});
+      await _sayfayiAc(tester, tasima, _duyuruHedefi);
+
+      final gerekceler = [
+        for (final satir in tester.widgetList<RadioListTile<ReportReason>>(
+          find.byType(RadioListTile<ReportReason>),
+        ))
+          satir.value,
+      ];
+      expect(gerekceler.first, ReportReason.childSafety);
+      expect(gerekceler.last, ReportReason.other);
+    });
+
+    testWidgets('üye: avatar ve ad önizlemesi; yönetim gerekçesi var', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, genislik: 320);
+      ikiKatYazi(tester);
+      final tasima = SahteTayfaTasima();
+      await _sayfayiAc(tester, tasima, _uyeHedefi);
+
+      expect(find.text(arbMetni('sikayet_tur_uye')), findsOneWidget);
+      expect(find.text('Üye Kişi'), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_soru_uye')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_gizlilik')), findsOneWidget);
+      // Yönetim şikâyeti seçilince gizlilik metni platforma döner.
+      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_yonetim')));
+      expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
+      expect(tasima.istekler, isEmpty);
+    });
+
+    testWidgets('tayfa: tayfanın adı önizlemede', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = SahteTayfaTasima();
+      await _sayfayiAc(tester, tasima, const SikayetHedefi.tayfa(ornekTayfaId));
+
+      expect(find.text(arbMetni('sikayet_tur_tayfa')), findsOneWidget);
+      expect(find.text('Klasikçiler'), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
+    });
+
     testWidgets('hata sayfada gösterilir, sayfa açık kalır', (tester) async {
       ekranBoyutu(tester);
       final tasima = SahteTayfaTasima({
+        'GET $duyuruYolu': yanit(duyuruJson()),
         'POST $sikayetlerYolu': yanit(
           const ApiProblem(type: ProblemType.reportTargetNotFound, status: 404),
         ),
@@ -406,47 +468,37 @@ void main() {
       expect(find.text(arbMetni('sikayet_soru_duyuru')), findsOneWidget);
     });
 
-    testWidgets('birebir mesaj: metin gösterilir, platform notu', (
+    testWidgets('birebir mesaj: metin gösterilir, platform notu, log yok', (
       tester,
     ) async {
       ekranBoyutu(tester, genislik: 320);
       ikiKatYazi(tester);
-      final tasima = SahteTayfaTasima({
-        'POST $benimSikayetlerimYolu': yanit(
-          benimSikayetimJson(tur: 'dm_message', hedef: mesajId, tayfa: null),
-        ),
-      });
-      await widgetAc(
+      // Mesaj metni hiçbir hata ayıklama çıktısına girmez (kesin kural 3).
+      final cikti = <String>[];
+      final eskiYazici = debugPrint;
+      debugPrint = (String? satir, {int? wrapWidth}) {
+        if (satir != null) cikti.add(satir);
+      };
+      try {
+        await _mesajSikayetiniGonder(tester);
+      } finally {
+        debugPrint = eskiYazici;
+      }
+      expect(cikti.where((s) => s.contains(_mesajMetni)), isEmpty);
+    });
+
+    testWidgets('boş birebir mesaj gönderilemez', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = SahteTayfaTasima();
+      await _sayfayiAc(
         tester,
-        Scaffold(
-          body: Builder(
-            builder: (context) => TextButton(
-              onPressed: () => birebirMesajiSikayetEt(
-                context,
-                mesajId: mesajId,
-                mesajMetni: 'Kaba bir mesaj',
-              ),
-              child: const Text('ac'),
-            ),
-          ),
-        ),
-        themeMode: ThemeMode.dark,
-        tayfa: sikayetOverridelari(tasima),
+        tasima,
+        const SikayetHedefi.birebirMesaj(id: mesajId, mesajMetni: '  '),
       );
-      await tester.tap(find.text('ac'));
-      await tester.pumpAndSettle();
 
-      expect(find.text('Kaba bir mesaj'), findsOneWidget);
-      expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
-      expect(find.text(arbMetni('sikayet_gerekce_yonetim')), findsNothing);
-
-      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_taciz')));
-      await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
-
-      expect(
-        tasima.giden('POST', benimSikayetlerimYolu).single.govde,
-        containsPair('evidence_text', 'Kaba bir mesaj'),
-      );
+      expect(find.text(arbMetni('sikayet_mesaj_bos')), findsOneWidget);
+      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_spam')));
+      expect(_gonderAcik(tester), isFalse);
     });
   });
 
@@ -455,7 +507,7 @@ void main() {
       testWidgets('${tema.name}: 2× yazı, 320 dp; öncelik ve önizleme', (
         tester,
       ) async {
-        ekranBoyutu(tester, genislik: 320, yukseklik: 1600);
+        ekranBoyutu(tester, genislik: 320, yukseklik: 2000);
         ikiKatYazi(tester);
         final tasima = SahteTayfaTasima({
           'GET $sikayetlerYolu': yanit(
@@ -471,7 +523,15 @@ void main() {
         });
         await _kuyruguAc(tester, tasima, themeMode: tema);
 
-        expect(find.text(arbMetni('sikayet_oncelikli')), findsOneWidget);
+        // Başlığın altında tayfanın adı; seçicide açık sayısı.
+        expect(find.text('Klasikçiler'), findsOneWidget);
+        expect(find.text('Açık · 1'), findsOneWidget);
+        // Etiket ikonlu Text.rich'tir (metinde ikonun yer tutucusu da var).
+        expect(
+          find.textContaining(RegExp('${arbMetni('sikayet_oncelikli')}\$')),
+          findsOneWidget,
+        );
+        expect(find.text(arbMetni('sikayet_oncelikli_not')), findsOneWidget);
         expect(
           find.text(arbMetni('sikayet_gerekce_cocuk_guvenligi')),
           findsOneWidget,
@@ -482,10 +542,24 @@ void main() {
           findsOneWidget,
         );
         expect(find.text('Üye Kişi'), findsOneWidget);
-        expect(find.text(arbMetni('sikayet_sonuclandir')), findsOneWidget);
+        expect(find.text(arbMetni('sikayet_icerigi_ac')), findsOneWidget);
         expect(find.text(arbMetni('sikayet_kaldir')), findsOneWidget);
+        expect(find.text(arbMetni('sikayet_sonuclandir')), findsOneWidget);
+        expect(find.text(arbMetni('sikayet_uye_islemleri')), findsNothing);
       });
     }
+
+    testWidgets('sayfanın devamı varsa "Açık · N+"', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = SahteTayfaTasima({
+        'GET $sikayetlerYolu': yanit(
+          kuyrukJson([kuyrukSikayetiJson()], sonraki: 'sonraki'),
+        ),
+        'GET $duyuruYolu': yanit(duyuruJson()),
+      });
+      await _kuyruguAc(tester, tasima);
+      expect(find.text('Açık · 1+'), findsOneWidget);
+    });
 
     testWidgets('boş kuyruk metni', (tester) async {
       ekranBoyutu(tester);
@@ -494,6 +568,7 @@ void main() {
       });
       await _kuyruguAc(tester, tasima);
       expect(find.text(arbMetni('sikayet_kuyruk_acik_bos')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_kuyruk_acik')), findsOneWidget);
     });
 
     testWidgets('yetki yoksa hata ve tekrar dene', (tester) async {
@@ -508,10 +583,10 @@ void main() {
       expect(find.text(arbMetni('sikayet_tekrar_dene')), findsOneWidget);
     });
 
-    testWidgets('üye şikâyeti: "İçerik kaldırıldı" seçeneği yok; reddedilir', (
+    testWidgets('üye şikâyeti: Üye işlemleri; kaldırma yok; reddedilir', (
       tester,
     ) async {
-      ekranBoyutu(tester);
+      ekranBoyutu(tester, yukseklik: 1200);
       final tasima = SahteTayfaTasima({
         'GET $sikayetlerYolu': yanit(
           kuyrukJson([kuyrukSikayetiJson(tur: 'user', hedef: uyeId)]),
@@ -525,18 +600,65 @@ void main() {
           ),
         ),
       });
-      await _kuyruguAc(tester, tasima);
+      final acilanlar = <(String, String)>[];
+      Future<void> uyeIslemleri(
+        BuildContext context, {
+        required String tayfaId,
+        required String kullaniciId,
+      }) async {
+        acilanlar.add((tayfaId, kullaniciId));
+      }
+
+      await widgetAc(
+        tester,
+        const ModerasyonKuyruguEkrani(tayfaId: ornekTayfaId),
+        tayfa: sikayetOverridelari(tasima),
+        overrides: [uyeIslemleriProvider.overrideWithValue(uyeIslemleri)],
+      );
 
       expect(find.text(arbMetni('sikayet_kaldir')), findsNothing);
+      expect(find.text(arbMetni('sikayet_icerigi_ac')), findsNothing);
+      await _dokun(tester, find.text(arbMetni('sikayet_uye_islemleri')));
+      expect(acilanlar, [(ornekTayfaId, uyeId)]);
+
       await _dokun(tester, find.text(arbMetni('sikayet_sonuclandir')));
+      final sayfa = find.byType(BottomSheet);
+      expect(sayfa, findsOneWidget);
       expect(find.text(arbMetni('sikayet_sonuc_kaldirildi')), findsNothing);
+      expect(find.text(arbMetni('sikayet_sonuc_yaptirim')), findsOneWidget);
+      final sayfaDugmesi = find.descendant(
+        of: sayfa,
+        matching: find.byType(BirincilEylem),
+      );
+      // Sonuç seçilmeden "Sonuçlandır" pasif.
+      expect(tester.widget<BirincilEylem>(sayfaDugmesi).onPressed, isNull);
       await _dokun(tester, find.text(arbMetni('sikayet_sonuc_islem_yok')));
+      await _dokun(tester, sayfaDugmesi);
 
       expect(tasima.giden('POST', cozumYolu).single.govde, {
         'resolution': 'dismissed',
       });
       expect(find.text(arbMetni('sikayet_sonuclandi')), findsOneWidget);
       expect(find.text(arbMetni('sikayet_kuyruk_acik_bos')), findsOneWidget);
+    });
+
+    testWidgets('sonuçlandırma: içerikte kaldırıldı seçeneği var', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, genislik: 320, yukseklik: 1600);
+      ikiKatYazi(tester);
+      final tasima = SahteTayfaTasima({
+        'GET $sikayetlerYolu': yanit(
+          kuyrukJson([kuyrukSikayetiJson(tur: 'answer', hedef: cevapId)]),
+        ),
+      });
+      await _kuyruguAc(tester, tasima, themeMode: ThemeMode.dark);
+
+      await _dokun(tester, find.text(arbMetni('sikayet_sonuclandir')));
+      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_sonuc_kaldirildi')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_sonuc_yaptirim')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_sonuc_islem_yok')), findsOneWidget);
     });
 
     testWidgets('içerik kaldırma onay ister', (tester) async {
@@ -574,6 +696,7 @@ void main() {
                   hedef: cevapId,
                   durum: 'resolved',
                   sonuc: 'content_removed',
+                  not: 'Görünmemeli',
                 ),
               ])
             : kuyrukJson([]),
@@ -592,8 +715,15 @@ void main() {
 
       await tester.tap(find.text(arbMetni('sikayet_kuyruk_sonuclanan')));
       await tester.pumpAndSettle();
+      expect(
+        find.text(arbMetni('sikayet_kuyruk_sonuclanan_aciklama')),
+        findsOneWidget,
+      );
       expect(find.text(arbMetni('sikayet_sonuc_kaldirildi')), findsOneWidget);
-      expect(find.text('Moderatör'), findsOneWidget);
+      expect(find.textContaining('Sonuçlandıran: Moderatör'), findsOneWidget);
+      // Sonuçlanan kartta not ve eylemler yok; yalnızca "Geri al".
+      expect(find.textContaining('Görünmemeli'), findsNothing);
+      expect(find.text(arbMetni('sikayet_sonuclandir')), findsNothing);
 
       await _dokun(tester, find.text(arbMetni('sikayet_geri_al')));
       // Onay penceresi: onay düğmesi de "Geri al".
@@ -610,4 +740,48 @@ void main() {
       expect(find.text(arbMetni('sikayet_geri_alindi')), findsOneWidget);
     });
   });
+}
+
+const String _mesajMetni = 'Kaba bir mesaj';
+
+/// Birebir mesaj şikâyetini koyu temada açar ve gönderir; metin ekranda
+/// görünür ve yalnızca istek gövdesinde gider.
+Future<void> _mesajSikayetiniGonder(WidgetTester tester) async {
+  final tasima = SahteTayfaTasima({
+    'POST $benimSikayetlerimYolu': yanit(
+      benimSikayetimJson(tur: 'dm_message', hedef: mesajId, tayfa: null),
+    ),
+  });
+  await widgetAc(
+    tester,
+    Scaffold(
+      body: Builder(
+        builder: (context) => TextButton(
+          onPressed: () => birebirMesajiSikayetEt(
+            context,
+            mesajId: mesajId,
+            mesajMetni: _mesajMetni,
+          ),
+          child: const Text('ac'),
+        ),
+      ),
+    ),
+    themeMode: ThemeMode.dark,
+    tayfa: sikayetOverridelari(tasima),
+  );
+  await tester.tap(find.text('ac'));
+  await tester.pumpAndSettle();
+
+  expect(find.text(arbMetni('sikayet_mesaj_iletilecek')), findsOneWidget);
+  expect(find.text(_mesajMetni), findsOneWidget);
+  expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
+  expect(find.text(arbMetni('sikayet_gerekce_yonetim')), findsNothing);
+
+  await _dokun(tester, find.text(arbMetni('sikayet_gerekce_taciz')));
+  await _dokun(tester, find.text(arbMetni('sikayet_gonder')));
+
+  expect(
+    tasima.giden('POST', benimSikayetlerimYolu).single.govde,
+    containsPair('evidence_text', _mesajMetni),
+  );
 }
