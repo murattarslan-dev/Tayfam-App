@@ -301,6 +301,40 @@ göre mimari oturumunca belirlenir.
     (`SikayetHedefi.kullanici`); ortak tayfa koşulu ve tayfa seçimi
     kalktı (2026-11-13 notundaki kısıt). `evidence_text` gönderilmez,
     `staff_conduct` bu hedefte listelenmez.
+- **2026-11-13 (issue #157): Şikâyet sayfası ve moderasyon kuyruğu
+  yeniden tasarımı (§8).** Tasarım: Sikayet-Uye, Sikayet-Mesaj,
+  Moderasyon-Kuyruk, Moderasyon-Sonuclandir, Moderasyon-Sonuclanan
+  (`docs/tasarim/17-sikayet-ve-moderasyon/`).
+  - **Şikâyet sayfası tam ekran** açılır (önceden alttan sayfaydı).
+    Üstte hedefin önizlemesi: üyede avatar ve ad, tayfada adı, içerikte
+    türü ve başlığı (duyuru, etkinlik, soru, anket; kuyruktaki önizlemeyle
+    aynı yoldan, yalnızca bellekte okunur), birebir mesajda cihazda
+    çözülen metin ("Şikâyetle birlikte iletilecek mesaj"; yalnızca ekranda
+    ve istek gövdesinde, loglanmaz). Gerekçe sırası değişmedi: "Çocuk ya
+    da genç güvenliği" en üstte nar açıklamalı, "Diğer" en sonda. Not
+    alanı ve gizlilik kutusu (tayfa ya da platform metni hedefe ve
+    gerekçeye göre). "Şikâyeti gönder" dolu yıkıcı düğmedir ve gerekçe
+    seçilmeden pasiftir.
+  - **Kuyruk:** sekmeler yerine "Açık · N | Sonuçlanan" seçicisi; N okunan
+    ilk sayfadaki adettir, devamı varsa "N+" (toplam sözleşmede yok).
+    Öncelikli şikâyet (`minor_involved`) nar kenarlı kart, dolu nar
+    "Öncelikli" etiketi ve "Taraflardan biri 18 yaşından küçük olabilir."
+    notu. Kartta tür, göreli zaman, gerekçe, önizleme (üyede adı), not ve
+    şikâyet edilen. Eylemler: içerikte "İçeriği aç" / "İçeriği kaldır"
+    (onay penceresinde dolu yıkıcı düğme) / "Sonuçlandır"; üye şikâyetinde
+    "Üye işlemleri" / "Sonuçlandır".
+  - **Üye işlemleri:** Üyeler ekranındaki alttan sayfa açılır; şikâyet
+    özelliği tayfa yönetimini import edemediği için kayıtla bağlanır
+    (`core/moduller/uye_islemleri.dart`, `shell/kayitlar.dart`).
+    Sözleşmede tek üyeyi okuyan uç olmadığı için kişi etkin üye listesinde
+    sayfa sayfa aranır (en çok 11 sayfa, yalnızca bellek); bulunamazsa ya da
+    ona yapılabilecek işlem yoksa Üyeler ekranı açılır.
+  - **Sonuçlandırma** alttan sayfada sonuç kartlarıyla seçilir, sonra
+    "Sonuçlandır"; seçilmeden pasif. Sonuçlananda tür ve sonuç etiketi,
+    gerekçe, "Sonuçlandıran: ad · zaman" ve kaldırılan duyuru, soru ve
+    cevapta "Geri al" (30 gün sınırını sunucu uygular). Sonuçlanan kartta
+    not ve önizleme gösterilmez.
+  - Şikâyet edenin kimliği hiçbir yerde gösterilmez (sözleşmede yok).
 
 - **2026-11-13 (platform sahibi, tasarım kararları; issue #163): kalan
   liste ekranlarının yeniden tasarımı (§7, §9; ADR-0015 §1).** Tasarım:

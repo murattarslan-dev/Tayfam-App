@@ -7532,9 +7532,13 @@
   "@sikayet_not_etiketi": {
     "description": "Şikâyet sayfasındaki isteğe bağlı not alanının etiketi."
   },
-  "sikayet_not_yardim": "Notunu şikâyeti inceleyenler okur. Kişisel bilgi yazma.",
-  "@sikayet_not_yardim": {
-    "description": "Şikâyet notu alanının altındaki yardım metni."
+  "sikayet_not_ipucu": "Notunu şikâyeti inceleyenler okur.",
+  "@sikayet_not_ipucu": {
+    "description": "Şikâyet notu alanı boşken içinde görünen ipucu."
+  },
+  "sikayet_not_kisisel": "Kişisel bilgi yazma.",
+  "@sikayet_not_kisisel": {
+    "description": "Şikâyet notu alanının altındaki uyarı."
   },
   "sikayet_gonder": "Şikâyeti gönder",
   "@sikayet_gonder": {
@@ -7592,6 +7596,26 @@
   "@sikayet_kuyruk_sonuclanan": {
     "description": "Moderasyon kuyruğunda sonuçlanmış şikâyetler sekmesi."
   },
+  "sikayet_kuyruk_acik_sayili": "Açık · {sayi}",
+  "@sikayet_kuyruk_acik_sayili": {
+    "description": "Moderasyon kuyruğundaki seçicide açık şikâyetler parçası ve açık şikâyet sayısı (okunan ilk sayfadaki).",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "sikayet_kuyruk_acik_sayili_fazla": "Açık · {sayi}+",
+  "@sikayet_kuyruk_acik_sayili_fazla": {
+    "description": "Moderasyon kuyruğundaki seçicide açık şikâyetler parçası; ilk sayfadan sonra devamı varsa sayının sonunda \"+\".",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
   "sikayet_kuyruk_acik_aciklama": "Öncelikli şikâyetler önce, sonra eskiden yeniye. Şikâyet edenin kimliği gösterilmez. Önce içeriği kaldır ya da üyeye yaptırım uygula, sonra şikâyeti sonuçlandır.",
   "@sikayet_kuyruk_acik_aciklama": {
     "description": "Moderasyon kuyruğunun açık sekmesinin üstündeki açıklama."
@@ -7636,29 +7660,17 @@
   "@sikayet_kuyruk_sikayet_edilen": {
     "description": "Şikâyet edilen kişinin (ya da içeriğin yazarının) adından önce gelen etiket."
   },
-  "sikayet_kuyruk_zamani": "{tarih} tarihinde şikâyet edildi",
-  "@sikayet_kuyruk_zamani": {
-    "description": "Şikâyetin yapıldığı gün (cihazın saatine göre).",
+  "sikayet_kuyruk_sonuclandiran_satiri": "Sonuçlandıran: {ad} · {zaman}",
+  "@sikayet_kuyruk_sonuclandiran_satiri": {
+    "description": "Sonuçlanan şikâyette sonuçlandıran moderatörün adı ve göreli zaman (\"9 Kas\", \"dün\"). Şikâyet edenin kimliği gösterilmez.",
     "placeholders": {
-      "tarih": {
-        "type": "DateTime",
-        "format": "yMMMMd",
-        "example": "2026-11-10"
-      }
-    }
-  },
-  "sikayet_kuyruk_sonuclandiran": "Sonuçlandıran:",
-  "@sikayet_kuyruk_sonuclandiran": {
-    "description": "Şikâyeti sonuçlandıran moderatörün adından önce gelen etiket."
-  },
-  "sikayet_kuyruk_sonuc_zamani": "{tarih} tarihinde sonuçlandı",
-  "@sikayet_kuyruk_sonuc_zamani": {
-    "description": "Şikâyetin sonuçlandığı gün (cihazın saatine göre).",
-    "placeholders": {
-      "tarih": {
-        "type": "DateTime",
-        "format": "yMMMMd",
-        "example": "2026-11-11"
+      "ad": {
+        "type": "String",
+        "example": "Deniz Aksoy"
+      },
+      "zaman": {
+        "type": "String",
+        "example": "9 Kas"
       }
     }
   },
@@ -7666,9 +7678,9 @@
   "@sikayet_oncelikli": {
     "description": "Taraflardan biri 18 yaşından küçük olabilecek şikâyetlerin etiketi; kimin olduğu ve yaş gösterilmez."
   },
-  "sikayet_oncelikli_aciklama": "Öncelikli: taraflardan biri 18 yaşından küçük olabilir",
-  "@sikayet_oncelikli_aciklama": {
-    "description": "Öncelikli etiketinin ekran okuyucu metni."
+  "sikayet_oncelikli_not": "Taraflardan biri 18 yaşından küçük olabilir.",
+  "@sikayet_oncelikli_not": {
+    "description": "Öncelikli şikâyet kartında gerekçenin altındaki not; kimin olduğu ve yaş gösterilmez."
   },
   "sikayet_sonuclandir": "Sonuçlandır",
   "@sikayet_sonuclandir": {
@@ -7733,6 +7745,10 @@
   "sikayet_icerigi_ac": "İçeriği aç",
   "@sikayet_icerigi_ac": {
     "description": "Kuyruktaki şikâyette şikâyet edilen duyuruyu ya da etkinliği açan düğme."
+  },
+  "sikayet_uye_islemleri": "Üye işlemleri",
+  "@sikayet_uye_islemleri": {
+    "description": "Kuyruktaki üye şikâyetinde şikâyet edilen kişinin işlemlerini (susturma, çıkarma, banlama) alttan sayfada açan düğme."
   },
   "sikayet_geri_al": "Geri al",
   "@sikayet_geri_al": {
