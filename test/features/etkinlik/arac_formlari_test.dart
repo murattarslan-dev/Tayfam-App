@@ -88,9 +88,53 @@ void main() {
         MalzemeHatasi.adet,
       });
     });
+
+    test('adet 1–999 (issue #187)', () {
+      expect(malzemeIstegi(ad: 'Ocak', adet: '0').hatalar, {
+        MalzemeHatasi.adet,
+      });
+      expect(malzemeIstegi(ad: 'Ocak', adet: '1').istek!.quantity, 1);
+      expect(malzemeIstegi(ad: 'Ocak', adet: '999').istek!.quantity, 999);
+    });
+
+    test('"Kim getirecek?": seçilen kişi assigned_user_id olur, "Henüz '
+        'kimse"de alan yok', () {
+      const kisi = '0d1e2f3a-4b5c-4d6e-8f7a-8b9c0d1e2f3a';
+      expect(
+        malzemeIstegi(ad: 'Ocak', adet: '1', getiren: kisi).istek!.toJson(),
+        {'name': 'Ocak', 'quantity': 1, 'assigned_user_id': kisi},
+      );
+      expect(
+        malzemeIstegi(
+          ad: 'Ocak',
+          adet: '1',
+        ).istek!.toJson().containsKey('assigned_user_id'),
+        isFalse,
+      );
+    });
   });
 
   group('av formu', () {
+    test('varsayılan görünürlük "Yalnızca ben" (self); yer seçilmeden yer '
+        've görünürlük gönderilmez (issue #187)', () {
+      final varsayilan = avIstegi(
+        tur: 'Levrek',
+        boy: '40',
+        yer: _a,
+        istekKimligi: sahteEtkinlikIstekKimligi,
+      );
+      expect(varsayilan.istek!.toJson()['visibility'], 'self');
+
+      final yersiz = avIstegi(
+        tur: 'Levrek',
+        boy: '40',
+        gorunurluk: FishingCatchCreateRequestVisibility.tayfa,
+        istekKimligi: sahteEtkinlikIstekKimligi,
+      ).istek!.toJson();
+      expect(yersiz.containsKey('location'), isFalse);
+      expect(yersiz.containsKey('visibility'), isFalse);
+    });
+
     test('boy bir ondalığa yuvarlanır, virgül kabul edilir', () {
       final sonuc = avIstegi(
         tur: 'Levrek',

@@ -508,11 +508,11 @@ class _UstBolum extends ConsumerWidget {
   }
 
   Future<void> _iptalEt(BuildContext context, WidgetRef ref) async {
-    final gerekce = await iptalGerekcesiSor(context);
-    if (gerekce == null || !context.mounted) return;
+    final karar = await iptalOnayiSor(context);
+    if (karar == null || !context.mounted) return;
     final hata = await ref
         .read(etkinlikEylemProvider(anahtar).notifier)
-        .iptalEt(gerekce);
+        .iptalEt(karar.gerekce);
     if (hata != null && context.mounted) hataBildir(context, hata);
   }
 }

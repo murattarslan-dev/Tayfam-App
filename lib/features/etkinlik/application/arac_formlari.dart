@@ -79,10 +79,13 @@ enum AracHatasi { marka, model, yil, renk, plaka }
 /// Kamp malzemesi formundaki bir alanın hatası.
 enum MalzemeHatasi { ad, adet }
 
-/// Kamp malzemesi formu; adet boşsa sunucu 1 sayar.
+/// Kamp malzemesi formu; adet boşsa sunucu 1 sayar. [getiren] "Kim
+/// getirecek?" seçimidir (`assigned_user_id`; kendisi ya da seçilen kişi);
+/// `null` ise "Henüz kimse" ve alan gönderilmez.
 ({CampItemCreateRequest? istek, Set<MalzemeHatasi> hatalar}) malzemeIstegi({
   required String ad,
   String adet = '',
+  String? getiren,
 }) {
   final hatalar = <MalzemeHatasi>{};
   final a = ad.trim();
@@ -91,13 +94,17 @@ enum MalzemeHatasi { ad, adet }
   final adetMetni = adet.trim();
   if (adetMetni.isNotEmpty) {
     sayi = int.tryParse(adetMetni);
-    if (sayi == null || sayi < 0 || sayi > malzemeAdediEnCok) {
+    if (sayi == null || sayi < 1 || sayi > malzemeAdediEnCok) {
       hatalar.add(MalzemeHatasi.adet);
     }
   }
   if (hatalar.isNotEmpty) return (istek: null, hatalar: hatalar);
   return (
-    istek: CampItemCreateRequest(name: a, quantity: sayi),
+    istek: CampItemCreateRequest(
+      name: a,
+      quantity: sayi,
+      assignedUserId: getiren,
+    ),
     hatalar: const {},
   );
 }

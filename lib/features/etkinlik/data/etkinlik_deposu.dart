@@ -47,7 +47,7 @@ final class EtkinlikDeposu {
   ) => _api.updateEvent(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
 
   /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/cancellation`.
-  Future<Event> iptalEt(String tayfaId, String etkinlikId, String gerekce) =>
+  Future<Event> iptalEt(String tayfaId, String etkinlikId, String? gerekce) =>
       _api.cancelEvent(
         tayfaId: tayfaId,
         eventId: etkinlikId,

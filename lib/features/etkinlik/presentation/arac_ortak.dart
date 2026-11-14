@@ -284,10 +284,17 @@ void aracBildir(BuildContext context, String metin) {
     ..showSnackBar(SnackBar(content: Text(metin)));
 }
 
-/// Form diyaloğunun ortak iskeleti: başlık, kayan içerik, vazgeç ve
-/// onay düğmeleri.
-class AracFormDiyalogu extends StatelessWidget {
-  const AracFormDiyalogu({
+/// Türe özel ekleme formunu (av, malzeme, araç) alttan sayfa olarak açar
+/// (issue #187; tasarım: 22-etkinlik-turu-formlari).
+Future<T?> aracFormuAc<T>(BuildContext context, WidgetBuilder builder) =>
+    altSayfaAc<T>(context, builder: builder);
+
+/// Ekleme formlarının ortak iskeleti (tasarım: Etkinlik-Av-Ekle,
+/// Etkinlik-Malzeme-Ekle, Etkinlik-Arac-Ekle): alttan sayfada başlık,
+/// kayan alanlar ve altta yan yana "Vazgeç" + onay. Klavye açılınca sayfa
+/// klavyenin üstüne kayar; büyük yazıda içerik kayar, taşmaz.
+class AracFormSayfasi extends StatelessWidget {
+  const AracFormSayfasi({
     super.key,
     required this.baslik,
     required this.alanlar,
@@ -305,30 +312,37 @@ class AracFormDiyalogu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    return AlertDialog(
-      title: Text(baslik),
-      scrollable: true,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: alanlar,
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: AltSayfaIcerigi(
+        baslik: baslik,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: alanlar,
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: CerceveliHapEylem(
+                  etiket: m.etkinlik_vazgec,
+                  notr: true,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+              const SizedBox(width: TayfamSpacing.s8),
+              Expanded(
+                child: BirincilEylem(etiket: onayEtiketi, onPressed: onOnay),
+              ),
+            ],
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          style: TextButton.styleFrom(
-            minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-          ),
-          child: Text(m.etkinlik_vazgec),
-        ),
-        TextButton(
-          onPressed: onOnay,
-          style: TextButton.styleFrom(
-            minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-          ),
-          child: Text(onayEtiketi),
-        ),
-      ],
     );
   }
 }
