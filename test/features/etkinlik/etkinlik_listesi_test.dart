@@ -81,7 +81,7 @@ void main() {
           }),
         ),
       );
-      expect(find.byType(EtkinlikKarti), findsWidgets);
+      expect(find.byType(YaklasanSatiri), findsWidgets);
       expect(tester.takeException(), isNull);
       await tester.dragUntilVisible(
         find.text(arbMetni('tayfa_ana_daha_fazla')),

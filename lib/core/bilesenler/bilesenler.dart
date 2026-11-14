@@ -11,6 +11,7 @@ export 'package:tayfam/core/bilesenler/cerceveli_eylem.dart';
 export 'package:tayfam/core/bilesenler/cok_yakinda_rozeti.dart';
 export 'package:tayfam/core/bilesenler/etiket.dart';
 export 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
+export 'package:tayfam/core/bilesenler/eylemli_satir.dart';
 export 'package:tayfam/core/bilesenler/faydali_sayaci.dart';
 export 'package:tayfam/core/bilesenler/hata_satiri.dart';
 export 'package:tayfam/core/bilesenler/ikincil_eylem.dart';

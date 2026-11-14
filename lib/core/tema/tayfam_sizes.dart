@@ -284,6 +284,11 @@ abstract final class TayfamSizes {
   /// Tür kutusundaki seçili işaretinin dairesi (24 px).
   static const double seciliIsareti = 24;
 
+  // --- 2026-11-13 listeler ve küçük ekranlar (21-listeler-*) --------------
+
+  /// Yeni birebir konuşmanın ortasındaki kişi avatarı (80 px; tasarım:
+  /// Yeni-Konusma).
+  static const double yeniKonusmaAvatari = 80;
   // Karşılama ve davet linki (2026-11-13 yeniden tasarım; tasarım:
   // 16-karsilama-ve-davet/*.dc.html).
 
