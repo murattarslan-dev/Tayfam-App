@@ -341,6 +341,22 @@
   "@tayfa_ana_etkinlik_ac": {
     "description": "Yaklaşan etkinlik yokken, etkinlik açabilen kullanıcıya (moderatör, yönetici ya da tayfa izin veriyorsa üye) gösterilen kısayol düğmesi."
   },
+  "etkinlik_listesi_baslik": "Etkinlikler",
+  "@etkinlik_listesi_baslik": {
+    "description": "Tayfanın yaklaşan etkinlikleri listesinin (ana sayfadaki \"Tümü\") başlığı; altında tayfanın adı yazar."
+  },
+  "etkinlik_listesi_ac": "Etkinlik aç",
+  "@etkinlik_listesi_ac": {
+    "description": "Etkinlikler listesinin başlığında, etkinlik açabilen kullanıcıya (moderatör, yönetici ya da tayfa izin veriyorsa üye) gösterilen düğme."
+  },
+  "etkinlik_listesi_bu_hafta": "Bu hafta",
+  "@etkinlik_listesi_bu_hafta": {
+    "description": "Etkinlikler listesinde bu haftanın (pazartesi–pazar, cihazın saatine göre) etkinliklerinin grup başlığı."
+  },
+  "etkinlik_listesi_gelecek_hafta": "Gelecek hafta",
+  "@etkinlik_listesi_gelecek_hafta": {
+    "description": "Etkinlikler listesinde gelecek haftanın etkinliklerinin grup başlığı; daha sonrakiler ay adıyla gruplanır."
+  },
   "etkinlik_siradaki": "Sıradaki · {neZaman}",
   "@etkinlik_siradaki": {
     "description": "Tayfa ana sayfasındaki büyük \"Sıradaki\" etkinlik kartının etiketi; neZaman geri sayımdır (goreli_* metinleri, ör. \"3 gün sonra\").",
@@ -4299,6 +4315,14 @@
       }
     }
   },
+  "profil_gorunurluk_kim_gorur": "Kim görür:",
+  "@profil_gorunurluk_kim_gorur": {
+    "description": "Katılım geçmişin ekranının üstündeki görünürlük satırında seçili görünürlüğün (kalın) önündeki metin."
+  },
+  "profil_gorunurluk_degistir": "Değiştir",
+  "@profil_gorunurluk_degistir": {
+    "description": "Katılım geçmişin ekranının üstündeki görünürlük satırının sağındaki bağlantı; görünürlük seçeneklerini açar."
+  },
   "profil_uygulama_baslik": "Uygulama",
   "@profil_uygulama_baslik": {
     "description": "Profil sekmesinde bildirimler, tema ve oturumlar kartının bölüm başlığı."
@@ -6585,10 +6609,6 @@
   "@arkadas_davetler_bos": {
     "description": "Gelen tayfa daveti yokken gösterilen metin."
   },
-  "arkadas_davet_eden": "Davet eden:",
-  "@arkadas_davet_eden": {
-    "description": "Tayfa daveti kartında davet edenin adından önce gelen etiket."
-  },
   "arkadas_davet_zamani": "{tarih} tarihinde davet edildin",
   "@arkadas_davet_zamani": {
     "description": "Tayfa davetinin gönderildiği gün (cihazın saatine göre).",
@@ -6597,6 +6617,21 @@
         "type": "DateTime",
         "format": "yMMMMd",
         "example": "2026-11-10"
+      }
+    }
+  },
+  "arkadas_davet_alt": "Davet eden: {ad} · {tarih}",
+  "@arkadas_davet_alt": {
+    "description": "Tayfa davetleri satırında tayfa adının altındaki metin: davet edenin adı ve davetin günü (cihazın saatine göre).",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      },
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-12"
       }
     }
   },
@@ -6675,6 +6710,24 @@
   "arkadas_istekler_giden": "Gönderdiğin",
   "@arkadas_istekler_giden": {
     "description": "İstekler ekranında gönderilen istekleri seçen bölüm."
+  },
+  "arkadas_istekler_gelen_sayili": "Gelen · {sayi}",
+  "@arkadas_istekler_gelen_sayili": {
+    "description": "İstekler ekranındaki seçicide gelen istekler bölümü; sayı gelen isteklerin ilk sayfasından (istek yoksa yalnızca \"Gelen\").",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "arkadas_istekler_gelen_sayili_fazla": "Gelen · {sayi}+",
+  "@arkadas_istekler_gelen_sayili_fazla": {
+    "description": "İstekler ekranındaki seçicide gelen istekler bölümü; ilk sayfa dolu ve devamı varsa (toplam bilinmez).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
   },
   "arkadas_istekler_gelen_bos": "Cevap bekleyen istek yok.",
   "@arkadas_istekler_gelen_bos": {

@@ -28,8 +28,7 @@ class ProfilTamamlamaIstemi extends ConsumerStatefulWidget {
       _ProfilTamamlamaIstemiState();
 }
 
-class _ProfilTamamlamaIstemiState
-    extends ConsumerState<ProfilTamamlamaIstemi> {
+class _ProfilTamamlamaIstemiState extends ConsumerState<ProfilTamamlamaIstemi> {
   /// Hesap dinleyicisini kapatır; dinleyici hesabı kabuk açıkken canlı
   /// tutar (`autoDispose`).
   void Function()? _dinlemeyiBirak;

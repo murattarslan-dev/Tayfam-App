@@ -223,9 +223,8 @@ void main() {
       ) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
-        await _Ortam({
-          hesapYolu: _bekleyenHesap,
-        }).ac(tester, const ProfilTamamlamaEkrani(), themeMode: mod);
+        await _Ortam({hesapYolu: _bekleyenHesap})
+            .ac(tester, const ProfilTamamlamaEkrani(), themeMode: mod);
         expect(tester.takeException(), isNull);
         expect(_metin('profil_tamamla_ilgi_baslik'), findsOneWidget);
         expect(_metin('profil_tamamla_daha_sonra'), findsOneWidget);
@@ -252,9 +251,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('ad ve doğum günü alttan sayfaları taşmıyor', (
-        tester,
-      ) async {
+      testWidgets('ad ve doğum günü alttan sayfaları taşmıyor', (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         await _Ortam().ac(tester, const ProfilEkrani(), themeMode: mod);
@@ -428,9 +425,7 @@ void main() {
       tester,
     ) async {
       ekranBoyutu(tester);
-      final o = _Ortam({
-        hesapGuncelleYolu: () => hesapJson(ad: 'Deniz Yeni'),
-      });
+      final o = _Ortam({hesapGuncelleYolu: () => hesapJson(ad: 'Deniz Yeni')});
       await o.ac(tester, const ProfilEkrani());
 
       await _dokun(tester, find.byKey(const ValueKey('profil-ad-duzenle')));

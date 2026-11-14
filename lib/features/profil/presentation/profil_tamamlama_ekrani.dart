@@ -43,8 +43,7 @@ class ProfilTamamlamaEkrani extends ConsumerStatefulWidget {
       _ProfilTamamlamaEkraniState();
 }
 
-class _ProfilTamamlamaEkraniState
-    extends ConsumerState<ProfilTamamlamaEkrani> {
+class _ProfilTamamlamaEkraniState extends ConsumerState<ProfilTamamlamaEkrani> {
   /// Form açılırken hesaplanan adımlar; kaydedilen alan listeden düşmez.
   List<TamamlamaAdimi>? _adimlar;
   int _sira = 0;
@@ -630,9 +629,7 @@ class _MetinAdimi extends ConsumerStatefulWidget {
 
 class _MetinAdimiState extends ConsumerState<_MetinAdimi>
     with _Kaydedici<_MetinAdimi> {
-  late final TextEditingController _metin = TextEditingController(
-    text: _eski,
-  );
+  late final TextEditingController _metin = TextEditingController(text: _eski);
 
   String get _eski {
     final hesap = widget.ortak.hesap;

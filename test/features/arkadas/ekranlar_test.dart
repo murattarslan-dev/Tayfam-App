@@ -305,7 +305,10 @@ void main() {
         );
       await _ac(tester, const TayfaDavetleriEkrani(), tasima);
       expect(find.text('Kampçılar'), findsOneWidget);
-      expect(find.text(kisiAdi(kisiId1)), findsOneWidget);
+      expect(
+        find.textContaining('Davet eden: ${kisiAdi(kisiId1)} · '),
+        findsOneWidget,
+      );
 
       await _dokun(tester, find.text(arbMetni('arkadas_davet_kabul')));
       expect(tasima.giden('POST', davetKabulYolu), hasLength(1));
@@ -626,6 +629,143 @@ void main() {
       expect(find.byType(BekleyenNoktasi), findsNothing);
       expect(find.text(arbMetni('arkadas_istek_yok_kisa')), findsOneWidget);
       expect(find.text(arbMetni('arkadas_davet_yok_kisa')), findsOneWidget);
+    });
+  });
+
+  group('liste ekranları (2026-11-13 tasarım)', () {
+    testWidgets('boş durumlar mevcut metinlerle', (tester) async {
+      ekranBoyutu(tester);
+      for (final (ekran, anahtar) in const <(Widget, String)>[
+        (ArkadasIstekleriEkrani(), 'arkadas_istekler_gelen_bos'),
+        (TayfaDavetleriEkrani(), 'arkadas_davetler_bos'),
+        (EngellenenlerEkrani(), 'arkadas_engellenenler_bos'),
+        (KatilimlarimEkrani(), 'arkadas_gecmis_kendi_bos'),
+      ]) {
+        // Her ekran kendi kapsamında açılır.
+        await tester.pumpWidget(const SizedBox.shrink());
+        await _ac(tester, ekran, arkadasTasimasi());
+        expect(find.text(arbMetni(anahtar)), findsOneWidget, reason: anahtar);
+      }
+      await tester.pumpWidget(const SizedBox.shrink());
+      await _ac(tester, const ArkadasIstekleriEkrani(), arkadasTasimasi());
+      await _dokun(tester, find.text(arbMetni('arkadas_istekler_giden')));
+      expect(find.text(arbMetni('arkadas_istekler_giden_bos')), findsOneWidget);
+    });
+
+    testWidgets('seçicide gelen sayısı; yoksa yalnızca "Gelen"', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const ArkadasIstekleriEkrani(), _doluTasima());
+      expect(find.text('Gelen · 1'), findsOneWidget);
+      // Gelen satırında "Reddet" ve "Kabul et"; geri çekme yok.
+      expect(find.text(arbMetni('arkadas_reddet')), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_geri_cek')), findsNothing);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await _ac(tester, const ArkadasIstekleriEkrani(), arkadasTasimasi());
+      expect(find.text(arbMetni('arkadas_istekler_gelen')), findsOneWidget);
+    });
+
+    testWidgets('ilk sayfa doluysa seçicide "Gelen · N+"', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = arkadasTasimasi({
+        'GET $isteklerYolu': yanit(
+          arkadasListesiJson([
+            arkadasJson(kisiId1, durum: 'incoming'),
+          ], sonraki: 'sonraki-sayfa'),
+        ),
+      });
+      await _ac(tester, const ArkadasIstekleriEkrani(), tasima);
+      expect(find.text('Gelen · 1+'), findsOneWidget);
+    });
+
+    testWidgets('isteğin adı ve tarihi profil açan tek düğme', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const ArkadasIstekleriEkrani(), _doluTasima());
+      expect(
+        find.ancestor(
+          of: find.text(kisiAdi(kisiId1)),
+          matching: find.byType(ListeKartiSatiri),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('engellenen satırı avatarlı, eylem çerçeveli', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const EngellenenlerEkrani(), _doluTasima());
+      expect(find.byType(EylemliSatir), findsNWidgets(2));
+      expect(
+        find.widgetWithText(
+          CerceveliHapEylem,
+          arbMetni('arkadas_engel_kaldir'),
+        ),
+        findsNWidgets(2),
+      );
+    });
+
+    testWidgets('katılım geçmişin: görünürlük kancası ve ay grupları', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      const kanca = 'gorunurluk-kancasi';
+      await _ac(
+        tester,
+        const KatilimlarimEkrani(),
+        _doluTasima(),
+        ek: [
+          katilimGorunurlukSatiriProvider.overrideWithValue(
+            (context) => const Text(kanca),
+          ),
+        ],
+      );
+      expect(find.text(kanca), findsOneWidget);
+      // İki kayıt da aynı ayda: tek ay başlığı, tek kart.
+      expect(find.byType(BolumEtiketi), findsOneWidget);
+      expect(find.byType(KatilimSatiri), findsNWidgets(2));
+    });
+
+    testWidgets('kanca verilmezse görünürlük satırı yok', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const KatilimlarimEkrani(), _doluTasima());
+      expect(find.byType(KatilimSatiri), findsNWidgets(2));
+    });
+
+    testWidgets('katılımlar aya göre gruplanır; başlıkta yıl gerekirse', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      late AppLocalizations m;
+      await _ac(
+        tester,
+        Builder(
+          builder: (context) {
+            m = AppLocalizations.of(context);
+            return const SizedBox.shrink();
+          },
+        ),
+        arkadasTasimasi(),
+      );
+      ActivityRecord kayit(DateTime yerel) => ActivityRecord.fromJson({
+        ...kayitJson(),
+        'started_at': yerel.toUtc().toIso8601String(),
+      });
+      final gruplar = katilimAylari([
+        kayit(DateTime(2026, 11, 8, 9)),
+        kayit(DateTime(2026, 11, 1, 0, 30)),
+        kayit(DateTime(2026, 10, 31, 23, 30)),
+        kayit(DateTime(2025, 12, 20)),
+      ]);
+      expect(gruplar.map((g) => g.$1), [
+        DateTime(2026, 11),
+        DateTime(2026, 10),
+        DateTime(2025, 12),
+      ]);
+      expect(gruplar.map((g) => g.$2.length), [2, 1, 1]);
+      final simdi = DateTime(2026, 11, 13);
+      expect(katilimAyi(m, DateTime(2026, 11), simdi), 'Kasım');
+      expect(katilimAyi(m, DateTime(2025, 12), simdi), 'Aralık 2025');
     });
   });
 

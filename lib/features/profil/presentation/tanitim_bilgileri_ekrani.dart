@@ -101,9 +101,8 @@ class _Icerik extends ConsumerWidget {
                   baslik: adimAdi(m, adim),
                   aciklama: alanOzeti(m, hesap, alan),
                   sag: const SatirOku(),
-                  onTap: () => unawaited(
-                    context.push(Adresler.tanitimAdimi(adim.yol)),
-                  ),
+                  onTap: () =>
+                      unawaited(context.push(Adresler.tanitimAdimi(adim.yol))),
                 ),
           ],
         ),

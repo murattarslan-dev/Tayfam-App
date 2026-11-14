@@ -2,6 +2,8 @@
 /// altındaki oturumlar ve hesap silme ekranları (ADR-0018 §2), bildirim
 /// ayarları (istemci ADR-0019 §3), KVKK veri dışa aktarma (ADR-0022) ve
 /// tanıtım bilgileri ile profil tamamlama formu (issue #184–#186).
+/// Katılım geçmişin ekranının görünürlük satırı arkadaşlık paketine kanca
+/// olarak verilir.
 ///
 /// - [profilRotalari] `/profil` rotasının altına, [profilTamamlamaRotasi]
 ///   üst düzeye eklenir.
@@ -22,6 +24,8 @@ import 'package:tayfam/features/profil/presentation/profil_tamamlama_istemi.dart
 import 'package:tayfam/features/profil/presentation/tanitim_bilgileri_ekrani.dart';
 import 'package:tayfam/features/profil/presentation/veri_disa_aktarma_ekrani.dart';
 
+export 'package:tayfam/features/profil/presentation/gorunurluk_satiri.dart'
+    show katilimGorunurlukSatiri;
 export 'package:tayfam/features/profil/presentation/profil_ekrani.dart'
     show ProfilEkrani;
 export 'package:tayfam/features/profil/presentation/profil_ortak.dart'

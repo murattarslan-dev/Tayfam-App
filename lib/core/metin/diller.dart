@@ -176,6 +176,5 @@ String? dilAdi(AppLocalizations m, String kod) => switch (kod) {
 
 /// [kodlar]'ın adları virgülle ("Türkçe, İngilizce"); listede olmayan kod
 /// atlanır.
-String dilListesi(AppLocalizations m, Iterable<String> kodlar) => [
-  for (final kod in kodlar) ?dilAdi(m, kod),
-].join(m.profil_liste_ayirici);
+String dilListesi(AppLocalizations m, Iterable<String> kodlar) =>
+    [for (final kod in kodlar) ?dilAdi(m, kod)].join(m.profil_liste_ayirici);
