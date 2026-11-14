@@ -259,8 +259,9 @@ void main() {
         await _dokun(tester, find.byKey(const ValueKey('profil-ad-duzenle')));
         expect(tester.takeException(), isNull);
         expect(_metin('profil_ad_baslik'), findsOneWidget);
-        await tester.tapAt(const Offset(10, 10));
-        await tester.pumpAndSettle();
+        // 2× yazıda sayfa ekranı kaplar; "Vazgeç" ile kapatılır.
+        await _dokun(tester, _metin('profil_vazgec'));
+        expect(_metin('profil_ad_baslik'), findsNothing);
 
         await _kaydirVeDokun(tester, _metin('profil_dogum_gunu'));
         expect(tester.takeException(), isNull);
