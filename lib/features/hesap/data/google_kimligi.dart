@@ -57,6 +57,12 @@ abstract interface class GoogleKimlikSaglayici {
   /// Google hesabı seçtirip ID token alır. Kullanıcı pencereyi kapatırsa
   /// `null`; başka bir sorun varsa [GoogleGirisHatasi].
   Future<GoogleKimligi?> girisYap();
+
+  /// Google hesabından çıkar ki bir sonraki girişte hesap seçici kesin
+  /// açılsın (ADR-0012 Notlar, issue #184). Yalnızca platformun çıkış
+  /// çağrısını yapar; Tayfam sunucusuna istek gitmez. Hata fırlatmaz ve
+  /// hiçbir şey loglamaz.
+  Future<void> cikisYap();
 }
 
 /// `google_sign_in` ile Google girişi (Android; iOS kapsam dışı, ADR-0012).
@@ -108,6 +114,16 @@ final class GoogleSignInSaglayici implements GoogleKimlikSaglayici {
     } on GoogleSignInException catch (hata) {
       if (hata.code == GoogleSignInExceptionCode.canceled) return null;
       throw const GoogleGirisHatasi();
+    }
+  }
+
+  @override
+  Future<void> cikisYap() async {
+    try {
+      await _google.signOut();
+    } on Object {
+      // Çıkış başarısızsa da giriş ekranına dönülür. Hata loglanmaz:
+      // özellikler doğrudan log yazmaz ve ileti hesap bilgisi taşıyabilir.
     }
   }
 }

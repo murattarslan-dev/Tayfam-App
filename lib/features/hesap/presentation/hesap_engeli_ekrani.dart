@@ -12,10 +12,11 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// kapandığında giriş ekranının yerine gösterilir. Nar ikon, mevcut metin ve
 /// tek eylem "Çıkış yap".
 ///
-/// Oturum açılmamıştır (giriş isteği reddedildi); "Çıkış yap" yalnızca
-/// bellekteki engeli bırakır ve giriş ekranına döner (başka bir Google
-/// hesabıyla girmek için). Hesabın kısıtlı olduğuna yine sunucu karar
-/// verir; aynı hesapla yeniden girilirse engel tekrar gelir.
+/// Oturum açılmamıştır (giriş isteği reddedildi); "Çıkış yap" Google
+/// hesabından da çıkar, bellekteki engeli bırakır ve giriş ekranına döner
+/// (başka bir Google hesabıyla girmek için; issue #184). Sunucuya istek
+/// gitmez. Hesabın kısıtlı olduğuna yine sunucu karar verir; aynı hesapla
+/// yeniden girilirse engel tekrar gelir.
 class HesapEngeliEkrani extends ConsumerWidget {
   const HesapEngeliEkrani({super.key, required this.engel});
 
@@ -40,7 +41,7 @@ class HesapEngeliEkrani extends ConsumerWidget {
       eylemler: [
         BirincilEylem(
           etiket: m.hesap_cikis_yap,
-          onPressed: () => ref.read(hesapEngeliProvider.notifier).temizle(),
+          onPressed: () => ref.read(hesapEngeliProvider.notifier).cikisYap(),
         ),
       ],
     );

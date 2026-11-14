@@ -8,6 +8,7 @@ import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 final class _SahteGoogleSignIn extends Fake implements GoogleSignIn {
   final List<String?> nonceler = [];
   int cikis = 0;
+  Object? cikisHatasi;
 
   @override
   Future<void> initialize({
@@ -32,6 +33,8 @@ final class _SahteGoogleSignIn extends Fake implements GoogleSignIn {
   @override
   Future<void> signOut() async {
     cikis++;
+    final h = cikisHatasi;
+    if (h != null) throw h;
   }
 }
 
@@ -84,5 +87,20 @@ void main() {
     final kimlik = await saglayici.girisYap();
     expect(kimlik.toString(), isNot(contains(kimlik!.nonce)));
     expect(kimlik.toString(), isNot(contains('sahte-id-token')));
+  });
+
+  test('çıkış yalnızca Google çıkışını çağırır; hata dışarı taşmaz', () async {
+    final google = _SahteGoogleSignIn();
+    final saglayici = GoogleSignInSaglayici(google: google);
+
+    await saglayici.cikisYap();
+    expect(google.cikis, 1);
+    expect(google.nonceler, isEmpty);
+
+    google.cikisHatasi = const GoogleSignInException(
+      code: GoogleSignInExceptionCode.unknownError,
+    );
+    await saglayici.cikisYap();
+    expect(google.cikis, 2);
   });
 }

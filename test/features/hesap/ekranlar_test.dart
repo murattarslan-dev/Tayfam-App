@@ -77,8 +77,9 @@ Future<void> _ac(
   Widget ekran,
   _Kurulum k, {
   ThemeMode tema = ThemeMode.light,
+  double genislik = 360,
 }) async {
-  ekranBoyutu(tester);
+  ekranBoyutu(tester, genislik: genislik);
   await widgetAc(tester, ekran, themeMode: tema, overrides: k.overrides);
 }
 
@@ -353,19 +354,44 @@ void main() {
       }
     }
 
-    testWidgets('kısıtlı hesapta "Çıkış yap" giriş ekranına döndürüyor', (
+    for (final tema in _temalar) {
+      testWidgets('kısıtlı hesapta "Çıkış yap" Google\'dan da çıkıp giriş '
+          'ekranına döndürüyor (${tema.name}, 2×, 320 dp)', (tester) async {
+        ikiKatYazi(tester);
+        final k = _Kurulum(engel: HesapEngeli.kisitlandi);
+        await _ac(tester, const GirisEkrani(), k, tema: tema, genislik: 320);
+
+        await _dokun(tester, _metin('hesap_cikis_yap'));
+
+        expect(find.byType(HesapEngeliEkrani), findsNothing);
+        expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
+        // Google'dan çıkılır (issue #184); giriş penceresi açılmaz ve
+        // oturum hiç açılmadığı için sunucuya istek gitmez.
+        expect(k.google.cikis, 1);
+        expect(k.google.cagri, 0);
+        expect(k.tasima.istekler, isEmpty);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('Google çıkışı hata verse de giriş ekranına dönülüyor', (
       tester,
     ) async {
-      final k = _Kurulum(engel: HesapEngeli.kisitlandi);
+      final k = _Kurulum(
+        engel: HesapEngeli.kisitlandi,
+        google: SahteGoogle(
+          sonuc: ornekKimlik,
+          cikisHatasi: Exception('çıkış'),
+        ),
+      );
       await _ac(tester, const GirisEkrani(), k);
 
       await _dokun(tester, _metin('hesap_cikis_yap'));
 
+      expect(k.google.cikis, 1);
       expect(find.byType(HesapEngeliEkrani), findsNothing);
       expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
-      // Çıkış yalnızca yerel engeli bırakır; istek gitmez.
       expect(k.tasima.istekler, isEmpty);
-      expect(k.google.cagri, 0);
     });
 
     testWidgets('hesap durumu ekranı erişilebilirlik', (tester) async {
