@@ -171,12 +171,11 @@ void main() {
     });
   });
 
-  group('web geliştirme derlemesi', () {
+  group('E2E kapalı yapılandırma (iOS köprüsü öncesi, web) — issue #125', () {
     for (final tema in [ThemeMode.light, ThemeMode.dark]) {
-      testWidgets('şifreli konuşmada yalnızca mobil boş durumu ($tema, 2×)', (
-        tester,
-      ) async {
-        ekranBoyutu(tester, yukseklik: 2400);
+      testWidgets('şifreli konuşmada yazma alanı yerine bilgi satırı '
+          '(${tema.name}, 2×, 320 dp)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         await widgetAc(
           tester,
@@ -188,14 +187,80 @@ void main() {
             icerik: const BirebirIcerikDurumu(),
           ),
         );
-        expect(find.text(arbMetni('e2e_yalnizca_mobil')), findsOneWidget);
-        expect(find.text(arbMetni('e2e_sifreli_mesaj')), findsNWidgets(2));
+        expect(find.text(arbMetni('e2e_bu_cihazda_kapali')), findsOneWidget);
+        expect(arbMetni('e2e_bu_cihazda_kapali'), isNot(contains('mobil')));
         expect(find.byType(TextField), findsNothing);
-        // Web'de E2E satırları yok.
+        // E2E kapalıyken E2E sistem satırları yok.
         expect(find.text(arbMetni('e2e_mesaj_cozulemedi')), findsNothing);
+        // Satır sarılır, taşmaz (önceden 320 dp ve 2×'te ~198 px taşıyordu).
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('boş konuşmada da yazma alanı yok, aynı satır '
+          '(${tema.name}, 2×, 320 dp)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = birebirTasimasi({
+          'GET $konusmaYolu': (_) => konusmaJson(konusmaId1),
+          'GET $mesajlarYolu': (_) => mesajListesiJson([]),
+        });
+        await widgetAc(
+          tester,
+          const KonusmaEkrani(konusmaId: konusmaId1),
+          themeMode: tema,
+          tayfa: _e2eOverridelari(
+            tasima,
+            e2e: false,
+            icerik: const BirebirIcerikDurumu(),
+          ),
+        );
+        expect(find.text(arbMetni('e2e_bu_cihazda_kapali')), findsOneWidget);
+        expect(find.byType(TextField), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('gelen istekte kabul çubuğu ve satır birlikte taşmıyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, genislik: 320);
+      ikiKatYazi(tester);
+      await widgetAc(
+        tester,
+        const KonusmaEkrani(konusmaId: konusmaId1),
+        themeMode: ThemeMode.dark,
+        tayfa: _e2eOverridelari(
+          birebirTasimasi({
+            'GET $konusmaYolu': (_) =>
+                konusmaJson(konusmaId1, durum: 'request_received'),
+            'GET $mesajlarYolu': (_) => mesajListesiJson([]),
+          }),
+          e2e: false,
+          icerik: const BirebirIcerikDurumu(),
+        ),
+      );
+      expect(find.text(arbMetni('e2e_bu_cihazda_kapali')), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('E2E açıkken satır yok, yazma alanı var', (tester) async {
+      ekranBoyutu(tester, genislik: 320);
+      await widgetAc(
+        tester,
+        const KonusmaEkrani(konusmaId: konusmaId1),
+        tayfa: _e2eOverridelari(
+          birebirTasimasi({
+            'GET $konusmaYolu': (_) => konusmaJson(konusmaId1),
+            'GET $mesajlarYolu': (_) => mesajListesiJson([]),
+          }),
+          cihaz: _hazir,
+          icerik: const BirebirIcerikDurumu(),
+        ),
+      );
+      expect(find.text(arbMetni('e2e_bu_cihazda_kapali')), findsNothing);
+      expect(find.byType(TextField), findsOneWidget);
+    });
   });
 
   group('gönderim', () {

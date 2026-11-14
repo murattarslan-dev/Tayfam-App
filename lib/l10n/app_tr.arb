@@ -8149,9 +8149,9 @@
   "@e2e_yeni_kendi_cihazi": {
     "description": "Kullanıcının kendi hesabına yeni bir şifreli mesajlaşma cihazı eklenince konuşmalarda gösterilen bilgi satırı."
   },
-  "e2e_yalnizca_mobil": "Bu konuşma uçtan uca şifreli. Şifreli mesajlar yalnızca mobil uygulamada okunur ve gönderilir.",
-  "@e2e_yalnizca_mobil": {
-    "description": "Web geliştirme derlemesinde şifreli konuşmanın yazma alanı yerine gösterilen boş durum."
+  "e2e_bu_cihazda_kapali": "Birebir mesajlaşma bu cihazda henüz açık değil.",
+  "@e2e_bu_cihazda_kapali": {
+    "description": "Uçtan uca şifrelemenin olmadığı yapılandırmada (iOS köprüsü gelene kadar iOS, web geliştirme derlemesi) birebir konuşmada yazma alanının yerinde gösterilen satır; boş konuşmada da. Platform adı geçmez (platform sahibi kararı, issue #125)."
   },
   "e2e_sifreli_mesaj": "Şifreli mesaj",
   "@e2e_sifreli_mesaj": {
