@@ -84,7 +84,7 @@ class AnketlerEkrani extends ConsumerWidget {
           const SizedBox(width: TayfamSpacing.s8),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(context, ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

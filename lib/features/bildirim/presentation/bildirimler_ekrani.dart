@@ -65,7 +65,7 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: RefreshIndicator(
+        child: TayfamYenile(
           onRefresh: _yenile,
           child: Align(
             alignment: Alignment.topCenter,

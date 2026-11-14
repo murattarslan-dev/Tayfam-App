@@ -83,6 +83,38 @@ abstract final class TayfamSizes {
   /// Yükleniyor dalgasında bloğun en düşük saydamlığı.
   static const double yukleniyorEnAzSaydamlik = .45;
 
+  // --- Çekip yenileme (TayfamYenile; tasarım: 24-cekip-yenileme) ----------
+
+  /// Yenilemenin tetiklendiği çekme mesafesi (80 dp).
+  static const double yenileEsigi = 80;
+
+  /// Yenilenirken içeriğin üstünde açık kalan boşluk (72 dp).
+  static const double yenileBoslugu = 72;
+
+  /// Çekmenin başında logonun kenarı (36 px; Yenile-Cekiliyor).
+  static const double yenileLogoKucuk = 36;
+
+  /// Eşikte logonun kenarı (44 px; Yenile-Esik).
+  static const double yenileLogoBuyuk = 44;
+
+  /// Yenilenirken dalga oynayan logonun kenarı (40 px; Yenile-Yenileniyor).
+  static const double yenileLogo = 40;
+
+  /// Henüz yerine oturmamış bloğun kesikli çizgisinin kalınlığı (logo
+  /// kutusunun 100 birimi üzerinden; tasarım: 2.5).
+  static const double yenileTaslakKalinligi = 2.5;
+
+  /// Kesikli çizginin bir parçasının ve aralığının uzunluğu (100 birim
+  /// üzerinden; tasarım: `stroke-dasharray="4 4"`).
+  static const double yenileTaslakParcasi = 4;
+
+  /// Henüz yerine oturmamış bloğun taslak saydamlığı (tasarım: .5).
+  static const double yenileTaslakSaydamligi = .5;
+
+  /// Yerine oturan bloğun başladığı ölçek (dalgadaki en küçük ölçekle
+  /// aynı, %70).
+  static const double yenileBlokBaslangicOlcegi = yukleniyorEnKucukOlcek;
+
   /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
 
   /// dokunma alanı 48'in üstünde).

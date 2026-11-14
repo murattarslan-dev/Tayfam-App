@@ -50,7 +50,7 @@ class _ArkadasIstekleriEkraniState
     final gelen = _yon == ListFriendRequestsDirection.incoming;
     return Scaffold(
       appBar: AppBar(title: Text(m.arkadas_istekler)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           await ref.read(saglayici.notifier).yenile();
         },

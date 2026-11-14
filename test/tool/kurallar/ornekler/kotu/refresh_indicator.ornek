@@ -1,0 +1,12 @@
+// yol: lib/shell/liste.dart
+// beklenen: refresh-indicator 2
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+// Yorumdaki RefreshIndicator bulgu üretmez.
+Widget liste(Future<void> Function() yenile) => RefreshIndicator(
+  onRefresh: yenile,
+  child: CustomScrollView(
+    slivers: [CupertinoSliverRefreshControl(onRefresh: yenile)],
+  ),
+);

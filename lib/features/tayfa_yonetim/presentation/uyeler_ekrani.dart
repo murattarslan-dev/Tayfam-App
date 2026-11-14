@@ -50,7 +50,7 @@ class _UyelerEkraniState extends ConsumerState<UyelerEkrani> {
     final benimRolum = ref.watch(tayfaOzetiProvider(widget.tayfaId)).rol;
     return Scaffold(
       appBar: AppBar(title: Text(m.yonetim_uyeler)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           await ref.read(saglayici.notifier).yenile();
         },

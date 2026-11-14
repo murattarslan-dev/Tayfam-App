@@ -277,3 +277,25 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
   text-muted-dark 6.6:1). Okunmamışlık renkle birlikte kalın metin ve
   "Okunmadı" etiketli noktayla gösterilir. Değerler `kontrast_test.dart`
   ve `tayfam_colors_test.dart`'ta korunur.
+- **2026-11-15 (platform sahibi, issue #189; tasarım: 24-cekip-yenileme,
+  03-yukleniyor): çekip yenileme `TayfamYenile`.** Material'ın
+  `RefreshIndicator`'ı uygulamada kullanılmaz; yerine tek ortak bileşen
+  `core/bilesenler/tayfam_yenile.dart` (`TayfamYenile`, aynı arayüz:
+  `onRefresh`, `child`). Çekince sayfanın kendisi aşağı kayar; başlık
+  çubuğu sabittir. Android'de de kayması için bileşen, altındaki kaydırma
+  fiziğini `BouncingScrollPhysics`'e çevirir (çektikçe artan direnç) ve
+  Android'in parlama/esneme göstergesini kapatır. Açılan boşlukta logonun
+  blokları sırayla yerine oturur (mango → nar → turkuaz → L; ilerleme =
+  çekme / eşik; oturmamış blok kesikli taslak). Eşik 80 dp
+  (`TayfamSizes.yenileEsigi`); geçince logo tamamlanır,
+  `HapticFeedback.lightImpact` ve "Bırak, yenilensin". Bırakınca boşluk
+  72 dp'ye (`yenileBoslugu`) oturur ve Dalga (`TayfamYukleniyor`, 40 px)
+  oynar; iş bitince içerik `TayfamMotion.yenileDonus` (250 ms) ile yerine
+  döner. Eşik geçilmeden bırakılırsa yenileme olmaz. Mor üst bölümlü
+  ekranda (tayfa ana sayfası) `zemin: markaYuzey` verilir: boşluk mor, L
+  beyaz. Hareketi azalt: bloklar ara hal olmadan oturur, yenilenirken
+  statik logo + "Yükleniyor", dönüş anında. Ekran okuyucu: "Yenile" özel
+  semantik eylemi yenilemeyi başlatır; yenilenirken "Yükleniyor" canlı
+  bölge olarak bir kez okunur. Kural betiği `RefreshIndicator` ve
+  `CupertinoSliverRefreshControl` kullanımını hata sayar
+  (`refresh-indicator`). Yeni paket yok.

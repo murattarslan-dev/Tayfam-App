@@ -30,7 +30,7 @@ class MesajIstekleriEkrani extends ConsumerWidget {
     final hata = durum.error;
     return Scaffold(
       appBar: AppBar(title: Text(m.birebir_istekler_baslik)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           final hata = await ref.read(konusmaListesiProvider.notifier).yenile();
           if (hata != null && context.mounted) {

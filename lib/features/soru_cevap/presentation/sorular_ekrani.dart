@@ -113,7 +113,7 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
           const SizedBox(width: TayfamSpacing.s12),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(suzgec),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

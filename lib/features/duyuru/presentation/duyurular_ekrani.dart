@@ -88,7 +88,7 @@ class DuyurularEkrani extends ConsumerWidget {
             ),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(context, ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

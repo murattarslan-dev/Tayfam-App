@@ -47,7 +47,7 @@ class VeriDisaAktarmaEkrani extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(metinler.disa_aktarma_baslik)),
       body: SafeArea(
-        child: RefreshIndicator(
+        child: TayfamYenile(
           onRefresh: () =>
               ref.read(disaAktarmaListesiProvider.notifier).yenile(),
           child: SingleChildScrollView(

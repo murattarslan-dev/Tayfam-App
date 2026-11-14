@@ -85,6 +85,13 @@ abstract final class TayfamMotion {
   /// (titreme olmasın).
   static const Duration yukleniyorGecikmesi = Duration(seconds: 1);
 
+  /// Çekip yenilemede bırakınca boşluğun 72 dp'ye oturması ve ekran
+  /// okuyucunun "Yenile" eylemiyle boşluğun açılması.
+  static const Duration yenileOturma = orta;
+
+  /// Yenileme bitince içeriğin yukarı kayarak yerine dönmesi.
+  static const Duration yenileDonus = uzun;
+
   /// Cihaz bağlama tarayıcısındaki tarama çizgisinin bir yönlü geçişi
   /// (tasarım: Cihaz-Tara). Durum göstergesidir; "hareketi azalt" açıkken
   /// çizgi çerçevenin ortasında durur.

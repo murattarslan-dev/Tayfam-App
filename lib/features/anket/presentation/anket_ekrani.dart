@@ -94,7 +94,7 @@ class AnketEkrani extends ConsumerWidget {
             constraints: const BoxConstraints(
               maxWidth: TayfamSizes.okumaGenisligi,
             ),
-            child: RefreshIndicator(
+            child: TayfamYenile(
               onRefresh: () => _yenile(context, ref),
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),

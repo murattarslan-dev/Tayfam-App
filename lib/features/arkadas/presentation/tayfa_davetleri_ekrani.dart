@@ -30,7 +30,7 @@ class TayfaDavetleriEkrani extends ConsumerWidget {
     final durum = ref.watch(tayfaDavetleriProvider);
     return Scaffold(
       appBar: AppBar(title: Text(m.arkadas_davetler_baslik)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           await ref.read(tayfaDavetleriProvider.notifier).yenile();
         },

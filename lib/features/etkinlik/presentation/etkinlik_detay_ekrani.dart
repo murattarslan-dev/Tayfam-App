@@ -112,7 +112,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
     final etkinlik = detay.value;
     if (etkinlik != null) {
       return Scaffold(
-        body: RefreshIndicator(
+        body: TayfamYenile(
           onRefresh: notifier.yenile,
           child: DegerlendirmeFirsati(
             etkinlikler: [etkinlik],
@@ -131,7 +131,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
                 gecikmeli: true,
               ),
             )
-          : RefreshIndicator(
+          : TayfamYenile(
               onRefresh: notifier.yenile,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),

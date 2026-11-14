@@ -229,7 +229,7 @@ class _KuyrukListesi extends ConsumerWidget {
     final durum = ref.watch(saglayici);
     final liste = durum.value;
     final hata = durum.error;
-    return RefreshIndicator(
+    return TayfamYenile(
       onRefresh: () async {
         await ref.read(saglayici.notifier).yenile();
       },

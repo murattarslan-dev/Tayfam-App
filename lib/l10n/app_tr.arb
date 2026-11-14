@@ -3190,6 +3190,18 @@
   "@bilesen_yukleniyor": {
     "description": "Ortak bileşen: yükleniyor animasyonunun (logo dalgası) varsayılan ekran okuyucu etiketi; hareketi azalt açıkken tam ekran yüklemede statik logonun altında da görünür."
   },
+  "bilesen_yenile": "Yenile",
+  "@bilesen_yenile": {
+    "description": "Ortak bileşen (çekip yenileme): ekran okuyucudaki özel eylemin adı; listeyi yeniler."
+  },
+  "bilesen_yenile_cek": "Yenilemek için çek",
+  "@bilesen_yenile_cek": {
+    "description": "Ortak bileşen (çekip yenileme): eşik geçilmeden çekerken logonun altındaki metin."
+  },
+  "bilesen_yenile_birak": "Bırak, yenilensin",
+  "@bilesen_yenile_birak": {
+    "description": "Ortak bileşen (çekip yenileme): eşik geçilince logonun altındaki metin; bırakınca yenilenir."
+  },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {
     "description": "Ortak bileşen: birebir sohbetin üstündeki kilit ikonlu bilgi satırı. Mesajların uçtan uca şifrelendiğini söyler."

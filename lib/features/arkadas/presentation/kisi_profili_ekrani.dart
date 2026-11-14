@@ -62,7 +62,7 @@ class KisiProfiliEkrani extends ConsumerWidget {
             ),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           ref.invalidate(katilimGecmisiProvider(kullaniciId));
           await ref.read(saglayici.notifier).yenile();

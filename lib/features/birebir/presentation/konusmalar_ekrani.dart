@@ -30,7 +30,7 @@ class BirebirSekmesi extends ConsumerWidget {
     return OnPlanaDonunce(
       onResume: () =>
           unawaited(ref.read(konusmaListesiProvider.notifier).yenile()),
-      child: RefreshIndicator(
+      child: TayfamYenile(
         onRefresh: () => _yenile(context, ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

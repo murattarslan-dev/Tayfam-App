@@ -53,7 +53,7 @@ class EtkinliklerEkrani extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: RefreshIndicator(
+        child: TayfamYenile(
           onRefresh: () => _yenile(context, ref),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),

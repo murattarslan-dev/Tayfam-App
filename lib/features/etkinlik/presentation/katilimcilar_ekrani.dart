@@ -104,7 +104,7 @@ class _KatilimcilarEkraniState extends ConsumerState<KatilimcilarEkrani> {
           ),
         ),
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: notifier.yenile,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
