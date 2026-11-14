@@ -30,6 +30,7 @@ Future<void> _ac(
   ekran,
   themeMode: themeMode,
   tayfa: yonetimOverridelari(tasima, paylasici: paylasici),
+  yonlendirici: true,
 );
 
 /// Bütün uygulamayı [rol]'deki kullanıcının tek tayfasıyla açar.
@@ -501,10 +502,13 @@ void main() {
       expect(find.text('Ben'), findsOneWidget);
       expect(find.text('Kişi 2'), findsOneWidget);
       expect(find.text('Kişi 1'), findsOneWidget);
-      // Yönetici kendine değil, alt seviyelere dokunabilir.
+      // Yönetici kendine değil, alt seviyelere dokunabilir; işlemi
+      // olmayan satır doğrudan kişi profilini açar (#185).
       expect(find.text(arbMetni('yonetim_uye_sen')), findsOneWidget);
       await _dokun(tester, find.text('Ben'));
       expect(islemSayfasi, findsNothing);
+      expect(kisiSayfasi(benimId), findsOneWidget);
+      await kisiSayfasindanDon(tester);
       // Rol çipleri.
       expect(find.text(arbMetni('yonetim_rol_admin')), findsOneWidget);
       expect(find.text(arbMetni('yonetim_rol_moderator')), findsOneWidget);
@@ -518,6 +522,7 @@ void main() {
       expect(find.text(arbMetni('yonetim_banli')), findsOneWidget);
       await _dokun(tester, find.text('Kişi 3'));
       expect(islemSayfasi, findsNothing);
+      expect(kisiSayfasi(uyeId3), findsOneWidget);
       expect(tasima.giden('GET', uyelerYolu).last.sorgu['status'], 'banned');
     });
 
@@ -579,6 +584,8 @@ void main() {
 
       await _dokun(tester, find.text('ac'));
       expect(islemSayfasi, findsOneWidget);
+      // En üstte "Profili gör" (#185).
+      expect(find.text(arbMetni('kisi_profili_gor')), findsOneWidget);
       expect(find.text(arbMetni('yonetim_sustur')), findsOneWidget);
       await _dokun(tester, find.text('1 gün'));
 
@@ -682,6 +689,8 @@ void main() {
 
       await _dokun(tester, find.text('Kişi 2'));
       expect(islemSayfasi, findsNothing);
+      expect(kisiSayfasi(uyeId2), findsOneWidget);
+      await kisiSayfasindanDon(tester);
       await _dokun(tester, find.text('Kişi 1'));
       expect(find.text(arbMetni('yonetim_rol_yap_moderator')), findsNothing);
       expect(find.text(arbMetni('yonetim_cikar')), findsOneWidget);
@@ -855,6 +864,103 @@ void main() {
         davetId1,
       );
       expect(find.text(arbMetni('yonetim_davetler_bos')), findsOneWidget);
+    });
+  });
+
+  group('kişi profili (#185)', () {
+    testWidgets('üye işlemleri sayfasının en üstünde "Profili gör"', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ac(
+        tester,
+        const UyelerEkrani(tayfaId: ornekTayfaId),
+        yonetimTasimasi(
+          yanitlar: {
+            'GET $uyelerYolu': yanit(uyeListesiJson([uyeJson(uyeId1)])),
+          },
+        ),
+      );
+
+      await _dokun(tester, find.text('Kişi 1'));
+      final menu = find.byType(MenuSatiri);
+      expect(
+        find.descendant(
+          of: menu.first,
+          matching: find.text(arbMetni('kisi_profili_gor')),
+        ),
+        findsOneWidget,
+      );
+      await _dokun(tester, find.text(arbMetni('kisi_profili_gor')));
+      expect(kisiSayfasi(uyeId1), findsOneWidget);
+    });
+
+    testWidgets('katılım isteğinde isteyen ve davet eden', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ac(
+        tester,
+        const KatilimIstekleriEkrani(tayfaId: ornekTayfaId),
+        yonetimTasimasi(
+          yanitlar: {
+            'GET $isteklerYolu': yanit(
+              istekListesiJson([
+                istekJson(uyeId1, kaynak: 'invite_link', davetEden: uyeId2),
+              ]),
+            ),
+          },
+        ),
+      );
+
+      await _dokun(tester, find.text('Kişi 1'));
+      expect(kisiSayfasi(uyeId1), findsOneWidget);
+      await kisiSayfasindanDon(tester);
+      await _dokun(tester, find.text('Kişi 2'));
+      expect(kisiSayfasi(uyeId2), findsOneWidget);
+    });
+
+    testWidgets('davet linkini açan', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ac(
+        tester,
+        const DavetlerEkrani(tayfaId: ornekTayfaId),
+        yonetimTasimasi(
+          yanitlar: {
+            'GET $davetlerYolu': yanit({
+              'invites': [davetJson(davetId1)],
+            }),
+          },
+        ),
+      );
+
+      await _dokun(tester, find.text('Kişi 1'));
+      expect(kisiSayfasi(uyeId1), findsOneWidget);
+    });
+
+    testWidgets('dokunma alanları 48 dp ve etiketli', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final kulp = tester.ensureSemantics();
+      await _ac(
+        tester,
+        const KatilimIstekleriEkrani(tayfaId: ornekTayfaId),
+        yonetimTasimasi(
+          yanitlar: {
+            'GET $isteklerYolu': yanit(
+              istekListesiJson([
+                istekJson(uyeId1, kaynak: 'invite_link', davetEden: uyeId2),
+              ]),
+            ),
+          },
+        ),
+      );
+      expect(
+        find.bySemanticsLabel(
+          arbMetni('kisi_profilini_ac').replaceAll('{ad}', 'Kişi 1'),
+        ),
+        findsOneWidget,
+      );
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      kulp.dispose();
     });
   });
 

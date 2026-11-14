@@ -5,8 +5,10 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_ekrani.dart';
 import 'package:tayfam/features/sohbet/presentation/katilimcilar_ekrani.dart';
+import 'package:tayfam/features/sohbet/presentation/kisi_secici.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 
 import '../../yardimcilar.dart';
@@ -22,8 +24,15 @@ Future<void> _ac(
   Widget ekran,
   SohbetOrtami ortam, {
   ThemeMode tema = ThemeMode.light,
+  bool yonlendirici = false,
 }) async {
-  await widgetAc(tester, ekran, themeMode: tema, tayfa: ortam.overridelar);
+  await widgetAc(
+    tester,
+    ekran,
+    themeMode: tema,
+    tayfa: ortam.overridelar,
+    yonlendirici: yonlendirici,
+  );
   await tester.pumpAndSettle();
 }
 
@@ -137,6 +146,55 @@ void main() {
     expect(find.text(arbMetni('sohbet_kisi_ekle')), findsNothing);
     expect(find.text(arbMetni('sohbet_katilimci_cikar')), findsNothing);
     expect(find.text(arbMetni('sohbet_katilimcilar_not')), findsNothing);
+  });
+
+  testWidgets('katılımcılar: satıra dokununca kişi profili; "Çıkar" ayrı '
+      '(#185)', (tester) async {
+    final ortam = SohbetOrtami(
+      kanallar: [_seciliKanal()],
+      katilimcilar: [benimId, digerId],
+    );
+    await _ac(
+      tester,
+      const KatilimcilarEkrani(
+        kanal: (tayfaId: ornekTayfaId, kanalId: kanalId1),
+      ),
+      ortam,
+      yonlendirici: true,
+    );
+    ortam.tasima.yanitlar['DELETE $kanalKisisiYolu'] = (_) => null;
+    ortam.tasima.yanitlar['GET $kanalYolu'] = (_) => _seciliKanal();
+    await tester.tap(find.text('Ayşe'));
+    await tester.pumpAndSettle();
+    expect(kisiSayfasi(digerId), findsOneWidget);
+    await kisiSayfasindanDon(tester);
+
+    // "Çıkar" profili açmaz; kendi eylemi değişmez.
+    await tester.tap(find.text(arbMetni('sohbet_katilimci_cikar')));
+    await tester.pumpAndSettle();
+    expect(herhangiKisiSayfasi(), findsNothing);
+    expect(ortam.tasima.giden('DELETE', kanalKisisiYolu), hasLength(1));
+  });
+
+  testWidgets('kişi seçicide dokunmak seçer, profil açmaz (#185)', (
+    tester,
+  ) async {
+    await _ac(
+      tester,
+      const KisiSecici(tayfaId: ornekTayfaId),
+      SohbetOrtami(),
+      yonlendirici: true,
+    );
+    expect(find.byType(KisiyeDokun), findsNothing);
+    await tester.tap(find.text('Ayşe'));
+    await tester.pumpAndSettle();
+    expect(herhangiKisiSayfasi(), findsNothing);
+    expect(
+      tester
+          .widgetList<Checkbox>(find.byType(Checkbox))
+          .where((k) => k.value ?? false),
+      isNotEmpty,
+    );
   });
 
   testWidgets('katılımcılar: etkinlik kanalı salt okunur', (tester) async {

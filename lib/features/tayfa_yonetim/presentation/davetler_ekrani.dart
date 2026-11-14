@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -407,15 +408,20 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
           ),
           const SizedBox(height: TayfamSpacing.s4),
           Text(m.yonetim_davet_bitis(bitis, bitis), style: ikincil),
-          Wrap(
-            spacing: TayfamSpacing.s4,
-            children: [
-              Text(m.yonetim_davet_acan, style: ikincil),
-              KullaniciAdiMetni(
-                kullaniciId: davet.createdByUserId,
-                style: ikincil,
-              ),
-            ],
+          // Davet linkini açanın adına dokununca kişi profili (#185).
+          KisiyeDokun(
+            kullaniciId: davet.createdByUserId,
+            ipucu: m.yonetim_davet_acan,
+            child: Wrap(
+              spacing: TayfamSpacing.s4,
+              children: [
+                Text(m.yonetim_davet_acan, style: ikincil),
+                KullaniciAdiMetni(
+                  kullaniciId: davet.createdByUserId,
+                  style: ikincil,
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: TayfamSpacing.s12),
           Align(

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
@@ -130,35 +131,40 @@ class _MalzemeSatiri extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: MergeSemantics(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MergeSemantics(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          malzeme.name,
+                          style: context.yazi.titleSmall,
+                        ),
+                      ),
+                      const SizedBox(width: TayfamSpacing.s8),
+                      Text(
+                        m.etkinlik_kamp_adet(etkinlikSayi(m, adet)),
+                        style: ikincil,
+                      ),
+                    ],
+                  ),
+                ),
+                // Getirecek kişinin adına dokununca kişi profili (#185).
+                if (getiren != null)
+                  KisiyeDokun(
+                    kullaniciId: getiren,
+                    ipucu: m.etkinlik_kamp_getirecek,
+                    child: Wrap(
+                      spacing: TayfamSpacing.s4,
                       children: [
-                        Text(malzeme.name, style: context.yazi.titleSmall),
-                        if (getiren != null)
-                          Wrap(
-                            spacing: TayfamSpacing.s4,
-                            children: [
-                              Text(m.etkinlik_kamp_getirecek, style: ikincil),
-                              KullaniciAdiMetni(
-                                kullaniciId: getiren,
-                                style: ikincil,
-                              ),
-                            ],
-                          ),
+                        Text(m.etkinlik_kamp_getirecek, style: ikincil),
+                        KullaniciAdiMetni(kullaniciId: getiren, style: ikincil),
                       ],
                     ),
                   ),
-                  const SizedBox(width: TayfamSpacing.s8),
-                  Text(
-                    m.etkinlik_kamp_adet(etkinlikSayi(m, adet)),
-                    style: ikincil,
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
           if (cikarilabilir)

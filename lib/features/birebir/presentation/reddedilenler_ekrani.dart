@@ -125,7 +125,9 @@ class _ReddedilenSatiriState extends ConsumerState<_ReddedilenSatiri> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final istek = widget.istek;
+    // Avatar ve ada dokununca kişi profili (#185).
     return EylemliSatir(
+      kullaniciId: istek.senderUserId,
       oncu: KimlikAvatari(
         kullaniciId: istek.senderUserId,
         cap: TayfamSizes.konusmaAvatari,

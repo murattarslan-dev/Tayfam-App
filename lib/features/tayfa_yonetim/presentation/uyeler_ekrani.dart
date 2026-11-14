@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -206,10 +207,12 @@ class _UyeSatiri extends ConsumerWidget {
     final simdi = ref.watch(saatProvider)();
     final banli = uye.status == MembershipStatus.banned;
     final yazi = context.yazi;
+    // Satıra dokununca üye işlemleri sayfası (en üstte "Profili gör");
+    // yapılabilecek işlem yoksa doğrudan kişi profili (#185).
     return ListeKartiSatiri(
       onTap: eylemler.herhangi
           ? () => unawaited(_islemSayfasiniAc(context, ref, eylemler, simdi))
-          : null,
+          : () => kisiyiAc(context, uye.userId),
       child: Row(
         children: [
           KisiAvatari(kullaniciId: uye.userId),
@@ -285,6 +288,10 @@ Future<void> _uyeIslemleri(
     ),
   );
   if (secim == null || !context.mounted) return;
+  if (secim.tur == _IslemTuru.profil) {
+    kisiyiAc(context, uye.userId);
+    return;
+  }
   await _uygula(context, uye: uye, secim: secim, notifier: notifier);
 }
 
@@ -334,6 +341,8 @@ Future<void> _uygula(
       await n.banla(kim, gerekce: banGerekcesi),
       m.yonetim_banlandi,
     ),
+    // [_uyeIslemleri] profili kendisi açar; buraya gelmez.
+    _IslemTuru.profil => (null, ''),
   };
   bildirici.bildir(hata, basari);
 }
@@ -468,6 +477,13 @@ class _UyeIslemleri extends StatelessWidget {
         ),
       ),
       children: [
+        // Kişi profili (#185); Üyeler ve moderasyon kuyruğu ortak.
+        MenuSatiri(
+          ikon: Icons.person_outline,
+          tur: MenuSatiriTuru.sade,
+          baslik: m.kisi_profili_gor,
+          onTap: () => onSec(const _UyeIslemi.profil()),
+        ),
         for (final rol in eylemler.atanabilirRoller)
           MenuSatiri(
             ikon: Icons.badge_outlined,
@@ -538,7 +554,7 @@ class _UyeIslemleri extends StatelessWidget {
   }
 }
 
-enum _IslemTuru { rol, sustur, susturmayiKaldir, cikar, banla }
+enum _IslemTuru { profil, rol, sustur, susturmayiKaldir, cikar, banla }
 
 final class _UyeIslemi {
   const _UyeIslemi.rol(Role this.rol) : tur = _IslemTuru.rol, sure = null;
@@ -551,6 +567,7 @@ final class _UyeIslemi {
       sure = null;
   const _UyeIslemi.cikar() : tur = _IslemTuru.cikar, rol = null, sure = null;
   const _UyeIslemi.banla() : tur = _IslemTuru.banla, rol = null, sure = null;
+  const _UyeIslemi.profil() : tur = _IslemTuru.profil, rol = null, sure = null;
 
   final _IslemTuru tur;
   final Role? rol;

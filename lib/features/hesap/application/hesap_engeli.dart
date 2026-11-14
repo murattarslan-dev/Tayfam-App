@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 
 /// Girişi kalıcı olarak kapatan sunucu kararları (ADR-0012 §2, §3).
 enum HesapEngeli {
@@ -31,6 +32,26 @@ class HesapEngeliNotifier extends Notifier<HesapEngeli?> {
   void temizle() {
     ref.read(yasEngeliKosullariProvider.notifier).temizle();
     state = null;
+  }
+
+  bool _cikiliyor = false;
+
+  /// Hesap durumu ekranındaki "Çıkış yap" (issue #184): önce Google
+  /// hesabından çıkılır (bir sonraki girişte hesap seçici kesin açılsın),
+  /// sonra [temizle] ile engel bırakılır ve yönlendirici giriş ekranına
+  /// döner. Oturum hiç açılmadığı için Tayfam sunucusuna istek gitmez.
+  /// Google çıkışı başarısız olsa da engel bırakılır.
+  Future<void> cikisYap() async {
+    if (_cikiliyor) return;
+    _cikiliyor = true;
+    try {
+      await ref.read(googleKimlikSaglayiciProvider).cikisYap();
+    } on Object {
+      // Sağlayıcı hatayı kendisi ele alır; burada ayrıntı loglanmaz.
+    } finally {
+      _cikiliyor = false;
+    }
+    if (ref.mounted) temizle();
   }
 }
 

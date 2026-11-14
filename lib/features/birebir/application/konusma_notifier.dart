@@ -51,11 +51,6 @@ final class KonusmaDurumu {
   /// Okunacak daha eski mesaj var mı.
   bool get eskiVar => eskiSayfa != null;
 
-  /// Akışta uçtan uca şifreli mesaj var mı (E2E'nin olmadığı derlemede
-  /// yazma alanı yerine "yalnızca mobil uygulamada" gösterilir).
-  bool get sifreliVar =>
-      mesajlar.any((m) => m.encryption == DirectMessageEncryption.e2e);
-
   /// [mesaj] kullanıcının kendi mesajı mı. Karşı tarafın mesajında
   /// gönderen karşı taraftır; hesabı silinmişse gönderen yoktur.
   bool gidenMi(DirectMessage mesaj) {

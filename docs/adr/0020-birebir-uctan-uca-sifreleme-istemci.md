@@ -397,6 +397,15 @@ dolgu160: veri ‖ 0x80 ‖ 0x00…, uzunluk 160'ın katı (ISO/IEC 7816-4;
 
 ## Notlar
 
+- **2026-11-14 (platform sahibi, sohbette; issue #125): E2E kapalı
+  yapılandırmada birebir konuşma.** "Web geliştirme derlemesi" bölümündeki
+  "yalnızca mobil uygulamada" boş durumu kalktı. E2E'nin olmadığı
+  yapılandırmada (iOS köprüsü gelene kadar iOS, web geliştirme derlemesi)
+  yazma alanının yerinde her konuşmada, boş konuşmada da, "Birebir
+  mesajlaşma bu cihazda henüz açık değil." satırı gösterilir
+  (`e2e_bu_cihazda_kapali`; `e2e_yalnizca_mobil` silindi). Platform adı
+  geçmez. Satır dar ekranda ve büyük yazıda sarılır; gelen istekte kabul
+  çubuğuyla birlikte ekranın yarısını aşarsa kendi içinde kayar.
 - **2026-11-13 (platform sahibi, tasarım kararları; issue #161): QR ile
   cihaz bağlama ekranları yeniden tasarımı.** Tasarım:
   `docs/tasarim/19-cihaz-baglama/` (Cihaz-QR, -Tara, -Basarili, -Hata,

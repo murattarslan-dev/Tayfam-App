@@ -195,3 +195,12 @@ iskeleti (#14) main'de; oturum durumu henüz SessionStore'a bağlı değil.
   yerel engeli bırakıp giriş ekranına döner (oturum zaten açılmamıştır;
   hesabın durumuna yine sunucu karar verir). Yönlendirme, `consent_required`,
   sürüm denetimi ve engel mantığı değişmedi.
+- **2026-11-14 (platform sahibi, sohbette; issue #184):** Kısıtlı / kapalı
+  hesap ekranındaki "Çıkış yap" önce Google hesabından da çıkar
+  (`GoogleKimlikSaglayici.cikisYap`, `google_sign_in`'in `signOut`'u; yeni
+  paket yok), sonra yerel engeli bırakıp giriş ekranına döner. Böylece bir
+  sonraki girişte Google hesap seçici kesin açılır. Oturum hiç açılmadığı
+  için Tayfam sunucusuna istek gitmez. Google çıkışı hata verirse de giriş
+  ekranına dönülür; hata, token ya da hesap bilgisi loglanmaz ve
+  saklanmaz. Normal oturumdaki "Çıkış yap" bu karardan
+  etkilenmez.

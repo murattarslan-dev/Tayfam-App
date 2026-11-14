@@ -146,6 +146,10 @@ class _KonusmaEkraniState extends ConsumerState<KonusmaEkrani> {
 bool _eskiOkunamiyor(AsyncValue<KonusmaArsivi> arsiv) =>
     arsiv.value?.eskiMesajlarOkunamiyor ?? false;
 
+/// E2E kapalıyken alttaki istek çubuğu ve bilgi satırının kaplayabileceği
+/// en büyük ekran yüksekliği oranı.
+const double _altEnFazlaOran = .5;
+
 class _Akis extends ConsumerWidget {
   const _Akis({
     required this.konusmaId,
@@ -173,8 +177,11 @@ class _Akis extends ConsumerWidget {
     final giden = alici == null
         ? const <GidenMesaj>[]
         : ref.watch(bekleyenBirebirProvider(alici));
-    // E2E'nin olmadığı derlemede şifreli konuşmaya yazılamaz (ADR-0020).
-    final yalnizcaMobil = !e2e && durum.sifreliVar;
+    // E2E'nin olmadığı yapılandırmada (iOS köprüsü gelene kadar iOS, web
+    // geliştirme derlemesi) birebir mesaj gönderilemez (ADR-0020; her
+    // birebir mesaj şifrelidir). Yazma alanı boş konuşmada da açılmaz;
+    // yerine bilgi satırı gösterilir (issue #125).
+    final e2eKapali = !e2e;
     final simdi = ref.read(birebirSaatiProvider)();
     // Mesajlar ve E2E sistem satırları, eskiden yeniye; liste ters
     // çizildiği için sonra çevrilir.
@@ -250,33 +257,49 @@ class _Akis extends ConsumerWidget {
           ),
         ),
         if (konusma.otherUserId != null) ...[
-          // Kabul ve ret E2E gerektirmez; yalnızca mobil derlemede de var.
-          if (istekGeldi) _IstekCubugu(konusmaId: konusmaId),
-          if (yalnizcaMobil)
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.renkler.kart,
-                border: Border(
-                  top: BorderSide(
-                    color: context.renkler.cizgi,
-                    width: TayfamSizes.kenar,
-                  ),
-                ),
+          if (e2eKapali)
+            // Büyük yazıda dar ekranda istek çubuğu ve satır ekranın
+            // yarısını aşarsa kendi içinde kayar; taşmaz (issue #125).
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * _altEnFazlaOran,
               ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: TayfamSpacing.kenarMobil,
-                  ),
-                  child: E2eBilgiSatiri(
-                    metin: m.e2e_yalnizca_mobil,
-                    ikon: Icons.phone_android_outlined,
-                  ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Kabul ve ret E2E gerektirmez; E2E kapalıyken de var.
+                    if (istekGeldi) _IstekCubugu(konusmaId: konusmaId),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: context.renkler.kart,
+                        border: Border(
+                          top: BorderSide(
+                            color: context.renkler.cizgi,
+                            width: TayfamSizes.kenar,
+                          ),
+                        ),
+                      ),
+                      child: SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: TayfamSpacing.kenarMobil,
+                          ),
+                          child: E2eBilgiSatiri(
+                            metin: m.e2e_bu_cihazda_kapali,
+                            ikon: Icons.lock_outline,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
           else ...[
+            if (istekGeldi) _IstekCubugu(konusmaId: konusmaId),
             if (e2e)
               const Padding(
                 padding: EdgeInsets.symmetric(

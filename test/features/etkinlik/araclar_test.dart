@@ -86,7 +86,35 @@ VoidCallback? _dugme(WidgetTester tester, String etiket) => tester
     )
     .onPressed;
 
+/// [ad]'a dokununca [kimlik]in kişi profili açılır (#185).
+Future<void> _profilAcilir(
+  WidgetTester tester,
+  Finder ad,
+  String kimlik,
+) async {
+  await _gorunurYap(tester, ad);
+  await tester.tap(ad);
+  // Kişi profili yüklenirken dönen gösterge durmaz; yalnızca geçiş.
+  await tester.pump();
+  await tester.pump(const Duration(seconds: 1));
+  expect(uygulamadaKisiProfili(kimlik), findsOneWidget);
+}
+
 void main() {
+  group('kişi profili (#185)', () {
+    testWidgets('detayda organizatör satırı', (tester) async {
+      ekranBoyutu(tester);
+      await _detayiAc(tester, etkinlikTasimasi());
+      await _profilAcilir(tester, find.text('Ayşe'), organizatorId);
+    });
+
+    testWidgets('katılımcılar ekranında satır', (tester) async {
+      ekranBoyutu(tester);
+      await _detayiAc(tester, etkinlikTasimasi(), katilimcilar: true);
+      await _profilAcilir(tester, find.text('Mert'), katilimciId);
+    });
+  });
+
   group('varış bildirimi', () {
     for (final tema in _temalar) {
       testWidgets('"Geldim": izin reddi ve ayarlar (${tema.name})', (
@@ -253,6 +281,17 @@ void main() {
       });
     }
 
+    testWidgets('araç sahibinin adı kişi profilini açar (#185)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _detayiAc(
+        tester,
+        etkinlikTasimasi({'GET $etkinlikYolu': (_) => konvoy()}),
+      );
+      await _profilAcilir(tester, find.text('Mert'), katilimciId);
+    });
+
     testWidgets('aracını ekler: plaka isteğe bağlı', (tester) async {
       ekranBoyutu(tester);
       const arac = {'id': _aracId, 'user_id': katilimciId, 'make': 'Anadol'};
@@ -384,6 +423,19 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('getirecek kişinin adı kişi profilini açar (#185)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _detayiAc(
+        tester,
+        etkinlikTasimasi({'GET $etkinlikYolu': (_) => kamp()}),
+      );
+      await _gorunurYap(tester, find.text('Ocak'));
+      // Organizatör satırında da "Ayşe" var; malzemedeki sonuncusu.
+      await _profilAcilir(tester, find.text('Ayşe').last, organizatorId);
+    });
 
     testWidgets('üye listeyi görür; ekleme ve çıkarma yok', (tester) async {
       ekranBoyutu(tester);
@@ -546,6 +598,26 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('avı kaydedenin adı kişi profilini açar (#185)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _detayiAc(
+        tester,
+        etkinlikTasimasi({
+          'GET $etkinlikYolu': (_) => etkinlikJson(
+            tur: 'fishing',
+            cevap: 'going',
+            katilim: 'attended',
+            baslangic: gecmisBaslangic,
+            sure: const Duration(hours: 3),
+          ),
+          'GET $avlarYolu': (_) => avlar(),
+        }),
+      );
+      await _profilAcilir(tester, find.text('Mert'), katilimciId);
+    });
 
     testWidgets('katılım doğrulanmadıysa ekleme yerine bilgi', (tester) async {
       ekranBoyutu(tester);

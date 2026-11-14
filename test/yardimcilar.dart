@@ -9,10 +9,12 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/app.dart';
 import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
+import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
+import 'package:tayfam/features/arkadas/presentation/kisi_profili_ekrani.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
@@ -138,10 +140,36 @@ Future<void> uygulamayiAc(
 GoRouter yonlendiriciyiAl(WidgetTester tester) =>
     tester.container().read(yonlendiriciProvider);
 
+/// [kisiSayfasi]'nın gösterdiği metnin öneki.
+const String _kisiSayfasiOneki = 'kisi-sayfasi:';
+
+/// [widgetAc] ile açılan ekrandan `Adresler.kisi(kullaniciId)`'ye
+/// gidildiyse görünen yer tutucu sayfa (issue #185).
+Finder kisiSayfasi(String kullaniciId) =>
+    find.text('$_kisiSayfasiOneki$kullaniciId');
+
+/// Herhangi bir kişi profili yer tutucusu açık mı.
+Finder herhangiKisiSayfasi() => find.textContaining(_kisiSayfasiOneki);
+
+/// Bütün uygulamayla ([uygulamayiAc]) açılan testte [kullaniciId]'nin
+/// kişi profili ekranı (issue #185).
+Finder uygulamadaKisiProfili(String kullaniciId) => find.byWidgetPredicate(
+  (w) => w is KisiProfiliEkrani && w.kullaniciId == kullaniciId,
+);
+
+/// Açık kişi profili yer tutucusunu kapatıp önceki ekrana döner.
+Future<void> kisiSayfasindanDon(WidgetTester tester) async {
+  Navigator.of(tester.element(herhangiKisiSayfasi())).pop();
+  await tester.pumpAndSettle();
+}
+
 /// Tek bir widget'ı uygulamanın çeviri ve tema ayarlarıyla açar (ekran ve
-/// bileşen testleri için; yönlendirici yok). [dur] `false` ise animasyonun
-/// bitmesi beklenmez (dönen ilerleme göstergesi). Tayfa uçları [tayfa] ile
-/// (verilmezse tayfa listesi boş); gerçek ağ yok.
+/// bileşen testleri için; uygulamanın yönlendiricisi yok). [yonlendirici]
+/// `true` ise ekran, yalnızca kendisini ve kişi profili adresinin yer
+/// tutucusunu ([kisiSayfasi]) bilen bir `GoRouter`'la açılır. [dur]
+/// `false` ise animasyonun bitmesi beklenmez (dönen ilerleme göstergesi).
+/// Tayfa uçları [tayfa] ile (verilmezse tayfa listesi boş); gerçek ağ
+/// yok.
 Future<void> widgetAc(
   WidgetTester tester,
   Widget widget, {
@@ -149,19 +177,42 @@ Future<void> widgetAc(
   List<Override> overrides = const [],
   bool dur = true,
   List<Override>? tayfa,
+  bool yonlendirici = false,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [...tayfa ?? tayfaOverridelari(), ...overrides],
-      child: MaterialApp(
-        locale: TayfamApp.yerelAyar,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        theme: TayfamTheme.acik(),
-        darkTheme: TayfamTheme.koyu(),
-        themeMode: themeMode,
-        home: widget,
-      ),
+      child: yonlendirici
+          ? MaterialApp.router(
+              locale: TayfamApp.yerelAyar,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              theme: TayfamTheme.acik(),
+              darkTheme: TayfamTheme.koyu(),
+              themeMode: themeMode,
+              routerConfig: GoRouter(
+                routes: [
+                  GoRoute(path: '/', builder: (_, _) => widget),
+                  GoRoute(
+                    path: '${Adresler.kisiOneki}/:id',
+                    builder: (_, durum) => Scaffold(
+                      body: Text(
+                        '$_kisiSayfasiOneki${durum.pathParameters['id']}',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : MaterialApp(
+              locale: TayfamApp.yerelAyar,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              theme: TayfamTheme.acik(),
+              darkTheme: TayfamTheme.koyu(),
+              themeMode: themeMode,
+              home: widget,
+            ),
     ),
   );
   if (dur) {

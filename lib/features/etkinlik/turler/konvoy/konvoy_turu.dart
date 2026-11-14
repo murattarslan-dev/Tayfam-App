@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -201,17 +202,29 @@ class _AracSatiri extends ConsumerWidget {
           ),
           const SizedBox(width: TayfamSpacing.s12),
           Expanded(
-            child: MergeSemantics(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(ad, style: context.yazi.titleSmall),
-                  if (ayrinti.isNotEmpty) Text(ayrinti, style: ikincil),
-                  if (plaka != null && plaka.isNotEmpty)
-                    Text(m.etkinlik_konvoy_plaka(plaka), style: ikincil),
-                  KullaniciAdiMetni(kullaniciId: arac.userId, style: ikincil),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MergeSemantics(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(ad, style: context.yazi.titleSmall),
+                      if (ayrinti.isNotEmpty) Text(ayrinti, style: ikincil),
+                      if (plaka != null && plaka.isNotEmpty)
+                        Text(m.etkinlik_konvoy_plaka(plaka), style: ikincil),
+                    ],
+                  ),
+                ),
+                // Araç sahibinin adına dokununca kişi profili (#185).
+                KisiyeDokun(
+                  kullaniciId: arac.userId,
+                  child: KullaniciAdiMetni(
+                    kullaniciId: arac.userId,
+                    style: ikincil,
+                  ),
+                ),
+              ],
             ),
           ),
           if (benim)

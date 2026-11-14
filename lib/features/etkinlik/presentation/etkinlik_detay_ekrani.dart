@@ -10,6 +10,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
@@ -687,21 +688,27 @@ class _OzetKarti extends ConsumerWidget {
               alt: bolge,
             ),
             ayirici,
-            _OzetSatiri(
-              kutu: KimlikAvatari(
-                kullaniciId: organizator,
-                cap: TayfamSizes.menuIkonKutusu,
+            // Organizatör satırına dokununca kişi profili açılır (#185).
+            KisiyeDokun(
+              kullaniciId: organizator,
+              ipucu: m.etkinlik_organizator,
+              koseler: BorderRadius.zero,
+              child: _OzetSatiri(
+                kutu: KimlikAvatari(
+                  kullaniciId: organizator,
+                  cap: TayfamSizes.menuIkonKutusu,
+                ),
+                baslik: organizator == null
+                    ? Text(
+                        m.etkinlik_organizator_yok,
+                        style: context.yazi.titleMedium,
+                      )
+                    : KullaniciAdiMetni(
+                        kullaniciId: organizator,
+                        style: context.yazi.titleMedium,
+                      ),
+                alt: m.etkinlik_organizator,
               ),
-              baslik: organizator == null
-                  ? Text(
-                      m.etkinlik_organizator_yok,
-                      style: context.yazi.titleMedium,
-                    )
-                  : KullaniciAdiMetni(
-                      kullaniciId: organizator,
-                      style: context.yazi.titleMedium,
-                    ),
-              alt: m.etkinlik_organizator,
             ),
             ayirici,
             _KatilimBolumu(anahtar: anahtar, etkinlik: etkinlik),

@@ -44,6 +44,7 @@ class SohbetBalonu extends StatelessWidget {
     this.tur = BalonTuru.olagan,
     this.kuyruk = true,
     this.adGoster = false,
+    this.onGonderen,
   });
 
   final String metin;
@@ -63,6 +64,12 @@ class SohbetBalonu extends StatelessWidget {
   /// Gelen balonun başında [gonderen]'in adı yazar (kanal akışında grubun
   /// ilk balonu).
   final bool adGoster;
+
+  /// Gösterilen gönderen adına dokununca (kanal akışında kişi profili;
+  /// issue #185). Yalnızca ada dokunma; balonun kendi eylemleri (uzun
+  /// basma) değişmez. Ekran okuyucu için kişiye giden ayrı bir öğe
+  /// (avatar) bulunur; ad balonun etiketinde okunur.
+  final VoidCallback? onGonderen;
 
   /// Ekran okuyucunun balondan önce okuduğu "kim yazdı" bilgisi.
   String _kim(AppLocalizations metinler) {
@@ -123,10 +130,14 @@ class SohbetBalonu extends StatelessWidget {
             children: [
               // Ad, balonun ekran okuyucu etiketinde zaten okunur.
               ExcludeSemantics(
-                child: Text(
-                  ad,
-                  style: context.yazi.labelMedium?.copyWith(
-                    color: r.tintMarkaUstu,
+                child: GestureDetector(
+                  onTap: onGonderen,
+                  behavior: HitTestBehavior.opaque,
+                  child: Text(
+                    ad,
+                    style: context.yazi.labelMedium?.copyWith(
+                      color: r.tintMarkaUstu,
+                    ),
                   ),
                 ),
               ),

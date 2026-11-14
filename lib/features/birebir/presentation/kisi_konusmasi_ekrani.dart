@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/application/kisi_konusmasi_notifier.dart';
 import 'package:tayfam/features/birebir/presentation/birebir_ortak.dart';
@@ -128,9 +129,16 @@ class _BosKonusma extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            KimlikAvatari(
+            // Avatara dokununca kişi profili (#185); ad başlık olarak
+            // okunur.
+            KisiyeDokun(
               kullaniciId: kullaniciId,
-              cap: TayfamSizes.yeniKonusmaAvatari,
+              hizalama: Alignment.center,
+              koseler: TayfamRadii.hapKoseleri,
+              child: KimlikAvatari(
+                kullaniciId: kullaniciId,
+                cap: TayfamSizes.yeniKonusmaAvatari,
+              ),
             ),
             const SizedBox(height: TayfamSpacing.s12),
             Semantics(

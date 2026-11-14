@@ -104,11 +104,22 @@ Session oturum({int n = 1, bool kayitBekliyor = false, bool? onayGerekli}) {
 
 /// Sahte Google kimlik sağlayıcısı: [sonuc] döner ya da [hata] fırlatır.
 final class SahteGoogle implements GoogleKimlikSaglayici {
-  SahteGoogle({this.sonuc, this.hata});
+  SahteGoogle({this.sonuc, this.hata, this.cikisHatasi});
 
   GoogleKimligi? sonuc;
   Exception? hata;
   int cagri = 0;
+
+  /// [cikisYap] bunu fırlatır (sözleşme dışı; dayanıklılık testi için).
+  Exception? cikisHatasi;
+  int cikis = 0;
+
+  @override
+  Future<void> cikisYap() async {
+    cikis++;
+    final h = cikisHatasi;
+    if (h != null) throw h;
+  }
 
   @override
   Future<GoogleKimligi?> girisYap() async {

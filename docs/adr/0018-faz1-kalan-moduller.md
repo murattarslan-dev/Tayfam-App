@@ -256,6 +256,11 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-14 (platform sahibi, sohbette; issue #183):** "Yönetimin
+  yetkisini kötüye kullanması" (`staff_conduct`) gerekçesi yalnızca tayfa
+  şikâyetinde (`target_type: tayfa`) gösterilir; üye, içerik ve birebir
+  mesaj şikâyetinde yoktur (`docs/tasarim/17-sikayet-ve-moderasyon/`).
+  Gerekçe sırası değişmedi.
 - **2026-11-14 (issue #165; Tayfam-Api #184–#187, PR #188): ad
   düzenleme, doğum günü görünürlüğü, profil tamamlama ve tanıtım
   bilgileri (§2, §7, §8).** Tasarım ve kararlar:

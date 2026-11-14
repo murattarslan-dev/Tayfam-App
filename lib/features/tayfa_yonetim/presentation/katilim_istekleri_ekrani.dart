@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -131,26 +132,35 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              KisiAvatari(
-                kullaniciId: istek.userId,
-                cap: TayfamSizes.tayfaAvatari,
-              ),
-              const SizedBox(width: TayfamSpacing.s12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    KullaniciAdiMetni(
-                      kullaniciId: istek.userId,
-                      style: yazi.titleMedium,
-                    ),
-                    Text(m.yonetim_istek_zamani(zaman), style: yazi.bodySmall),
-                  ],
+          // İsteyenin avatarına ve adına dokununca kişi profili (#185).
+          // Kartta eylem sayfası yok; Onayla / Reddet ayrı kalır.
+          KisiyeDokun(
+            kullaniciId: istek.userId,
+            ipucu: m.yonetim_istek_zamani(zaman),
+            child: Row(
+              children: [
+                KisiAvatari(
+                  kullaniciId: istek.userId,
+                  cap: TayfamSizes.tayfaAvatari,
                 ),
-              ),
-            ],
+                const SizedBox(width: TayfamSpacing.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      KullaniciAdiMetni(
+                        kullaniciId: istek.userId,
+                        style: yazi.titleMedium,
+                      ),
+                      Text(
+                        m.yonetim_istek_zamani(zaman),
+                        style: yazi.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: TayfamSpacing.s12),
           DecoratedBox(
@@ -174,6 +184,7 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
                   Expanded(
                     child: Wrap(
                       spacing: TayfamSpacing.s4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           kaynakMetni(m, istek.source),
@@ -186,9 +197,14 @@ class _IstekKartiState extends ConsumerState<_IstekKarti> {
                               color: r.metinGovde,
                             ),
                           ),
-                          KullaniciAdiMetni(
+                          // Davet edenin adına dokununca profili (#185).
+                          KisiyeDokun(
                             kullaniciId: davetEden,
-                            style: yazi.titleSmall,
+                            ipucu: m.yonetim_istek_davet_eden,
+                            child: KullaniciAdiMetni(
+                              kullaniciId: davetEden,
+                              style: yazi.titleSmall,
+                            ),
                           ),
                         ],
                       ],

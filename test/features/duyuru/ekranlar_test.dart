@@ -34,6 +34,7 @@ Future<void> _duyuruyuAc(
   tester,
   DuyuruEkrani(tayfaId: ornekTayfaId, duyuruId: duyuruId),
   themeMode: themeMode,
+  yonlendirici: true,
   tayfa: modulOverridelari(tasima),
   overrides: [
     sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
@@ -266,7 +267,36 @@ void main() {
         modulTasimasi({'GET $duyuruYolu': yanit(json)}),
       );
       expect(find.text(arbMetni('kullanici_silinmis')), findsOneWidget);
+      // Silinmiş hesapta dokunulamaz (#185).
+      await tester.tap(find.text(arbMetni('kullanici_silinmis')));
+      await tester.pumpAndSettle();
+      expect(herhangiKisiSayfasi(), findsNothing);
     });
+
+    for (final tema in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('yazar satırı kişi profilini açar (#185; ${tema.name}, 2×, '
+          '320 dp)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final kulp = tester.ensureSemantics();
+        await _duyuruyuAc(
+          tester,
+          modulTasimasi({'GET $duyuruYolu': yanit(duyuruJson(duyuruId1))}),
+          themeMode: tema,
+        );
+        expect(
+          find.bySemanticsLabel(
+            arbMetni('kisi_profilini_ac').replaceAll('{ad}', 'Kişi'),
+          ),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.text('Kişi'));
+        await tester.pumpAndSettle();
+        expect(kisiSayfasi(duyuruYazariId), findsOneWidget);
+        kulp.dispose();
+      });
+    }
 
     testWidgets('yönetimde ⋯ alttan sayfa: Düzenle, Sabitle, Sil', (
       tester,

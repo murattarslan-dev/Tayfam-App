@@ -8,6 +8,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/anket/application/anket_kurallari.dart';
@@ -324,10 +325,14 @@ class _AnketIcerigi extends ConsumerWidget {
             const SizedBox(height: TayfamSpacing.s12),
             Text(m.anket_coklu_yuzde_notu, style: kucuk),
           ],
-          const SizedBox(height: TayfamSpacing.s12),
-          Text(
-            m.anket_acan_satiri(_acanAdi(ref, m, anket.createdByUserId)),
-            style: kucuk,
+          const SizedBox(height: TayfamSpacing.s4),
+          // "Açan: <ad>"a dokununca açanın kişi profili (#185).
+          KisiyeDokun(
+            kullaniciId: anket.createdByUserId,
+            child: Text(
+              m.anket_acan_satiri(_acanAdi(ref, m, anket.createdByUserId)),
+              style: kucuk,
+            ),
           ),
         ],
       ],
@@ -575,15 +580,22 @@ class _OyCubugu extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                ozet,
-                textAlign: TextAlign.center,
-                style: context.yazi.labelSmall?.copyWith(
-                  color: r.metinIkincil,
-                  fontWeight: FontWeight.w400,
+              // Özete ("N oy · Açan: <ad>") dokununca açanın profili
+              // (#185).
+              KisiyeDokun(
+                kullaniciId: anket.createdByUserId,
+                ipucu: ozet,
+                hizalama: Alignment.center,
+                child: Text(
+                  ozet,
+                  textAlign: TextAlign.center,
+                  style: context.yazi.labelSmall?.copyWith(
+                    color: r.metinIkincil,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-              const SizedBox(height: TayfamSpacing.s8),
+              const SizedBox(height: TayfamSpacing.s4),
               BirincilEylem(
                 etiket: m.anket_oyu_gonder(
                   anket.multipleChoice ? durum.secim.length : 0,

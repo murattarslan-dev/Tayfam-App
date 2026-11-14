@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
@@ -101,17 +102,23 @@ class KisiYigini extends StatelessWidget {
 
 /// Bir kişi satırının içeriği (tasarım: Kanal-Katilimcilar, Kanal-Kisi-Sec):
 /// avatar, ad (kendinse "(sen)"), isteğe bağlı alt metin ve sağda öğe.
+///
+/// [profileGit] `true` ise avatar ve ada dokununca kişi profili açılır
+/// (katılımcılar; #185). Seçim ekranında (kişi seçici) `false` kalır:
+/// dokunmak seçer.
 class KisiSatiriIcerigi extends ConsumerWidget {
   const KisiSatiriIcerigi({
     super.key,
     required this.kisi,
     this.altMetin,
     this.sag,
+    this.profileGit = false,
   });
 
   final String kisi;
   final String? altMetin;
   final Widget? sag;
+  final bool profileGit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,30 +128,39 @@ class KisiSatiriIcerigi extends ConsumerWidget {
     final ben = ref.watch(kendisiMiProvider(kisi));
     final alt = altMetin;
     final sag = this.sag;
+    final kimlik = Row(
+      children: [
+        KimlikAvatari(kullaniciId: kisi, cap: TayfamSizes.menuIkonKutusu),
+        const SizedBox(width: TayfamSpacing.s12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                ben ? m.sohbet_kisi_sen(ad) : ad,
+                style: context.yazi.titleMedium,
+              ),
+              if (alt != null)
+                Text(
+                  alt,
+                  style: context.yazi.bodySmall?.copyWith(
+                    color: r.metinIkincil,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: TayfamSizes.menuIkonKutusu),
       child: Row(
         children: [
-          KimlikAvatari(kullaniciId: kisi, cap: TayfamSizes.menuIkonKutusu),
-          const SizedBox(width: TayfamSpacing.s12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  ben ? m.sohbet_kisi_sen(ad) : ad,
-                  style: context.yazi.titleMedium,
-                ),
-                if (alt != null)
-                  Text(
-                    alt,
-                    style: context.yazi.bodySmall?.copyWith(
-                      color: r.metinIkincil,
-                    ),
-                  ),
-              ],
-            ),
+            child: profileGit
+                ? KisiyeDokun(kullaniciId: kisi, ipucu: alt, child: kimlik)
+                : kimlik,
           ),
           if (sag != null) ...[const SizedBox(width: TayfamSpacing.s8), sag],
         ],

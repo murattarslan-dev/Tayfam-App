@@ -5,6 +5,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -267,23 +268,32 @@ class YazarSatiri extends StatelessWidget {
               Text(tarih, style: zamanStili),
             ],
           );
-    return Row(
-      children: [
-        KimlikAvatari(kullaniciId: yazarId, cap: TayfamSizes.mesajAvatari),
-        const SizedBox(width: TayfamSpacing.s12),
-        Expanded(
-          child: sag == null
-              ? kimlik
-              : Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: TayfamSpacing.s8,
-                  runSpacing: TayfamSpacing.s4,
-                  children: [kimlik, sag],
-                ),
-        ),
-      ],
+    // Avatar ve ada dokununca yazarın kişi profili (#185); sağdaki öğe
+    // ("Faydalı" vb.) ayrı kalır. Silinmiş hesapta dokunulamaz.
+    final yazarDokunma = KisiyeDokun(
+      kullaniciId: yazarId,
+      ipucu: tarih,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          KimlikAvatari(kullaniciId: yazarId, cap: TayfamSizes.mesajAvatari),
+          const SizedBox(width: TayfamSpacing.s12),
+          Flexible(child: kimlik),
+        ],
+      ),
     );
+    return sag == null
+        ? yazarDokunma
+        : SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: TayfamSpacing.s8,
+              runSpacing: TayfamSpacing.s4,
+              children: [yazarDokunma, sag],
+            ),
+          );
   }
 }
 

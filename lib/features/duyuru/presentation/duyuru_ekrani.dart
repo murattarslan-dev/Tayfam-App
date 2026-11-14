@@ -7,6 +7,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -312,7 +313,9 @@ class _DuyuruIcerigi extends StatelessWidget {
 }
 
 /// Yazar (avatar + ad, ad önbelleğinden; hesap silindiyse "Silinmiş
-/// kullanıcı") ve yayın tarihi. Avatar süstür; ad metni okunur.
+/// kullanıcı") ve yayın tarihi. Avatar süstür; ad metni okunur. Satıra
+/// dokununca yazarın kişi profili açılır (#185); ekran okuyucu "`Ad`
+/// profilini aç" ve tarihi okur.
 class _YazarSatiri extends StatelessWidget {
   const _YazarSatiri({required this.duyuru});
 
@@ -323,7 +326,13 @@ class _YazarSatiri extends StatelessWidget {
     final yazi = context.yazi;
     final yazar = duyuru.authorUserId;
     final adStili = yazi.titleSmall;
-    return MergeSemantics(
+    return KisiyeDokun(
+      kullaniciId: yazar,
+      ipucu: duyuruTarihMetni(
+        AppLocalizations.of(context),
+        duyuru.createdAt,
+        duzenlendi: duyuru.updatedAt.isAfter(duyuru.createdAt),
+      ),
       child: Row(
         children: [
           KimlikAvatari(kullaniciId: yazar, cap: TayfamSizes.ustCubukKutusu),

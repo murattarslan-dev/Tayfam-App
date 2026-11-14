@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
@@ -182,18 +183,22 @@ class _AvSatiri extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                  m.etkinlik_av_ozet(av.species, etkinlikSayi(m, av.lengthCm)),
+                  style: context.yazi.bodyLarge,
+                ),
+                // Avı kaydedenin adına dokununca kişi profili (#185).
+                KisiyeDokun(
+                  kullaniciId: av.userId,
+                  child: KullaniciAdiMetni(
+                    kullaniciId: av.userId,
+                    style: ikincil,
+                  ),
+                ),
                 MergeSemantics(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        m.etkinlik_av_ozet(
-                          av.species,
-                          etkinlikSayi(m, av.lengthCm),
-                        ),
-                        style: context.yazi.bodyLarge,
-                      ),
-                      KullaniciAdiMetni(kullaniciId: av.userId, style: ikincil),
                       Text(etkinlikZamani(m, av.createdAt), style: ikincil),
                       if (benim && yer != null)
                         Text(

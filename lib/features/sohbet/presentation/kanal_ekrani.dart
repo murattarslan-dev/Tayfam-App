@@ -10,6 +10,7 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
@@ -609,6 +610,11 @@ class _MesajSatiri extends ConsumerWidget {
       tur: silinmis ? BalonTuru.silinmis : BalonTuru.akis,
       kuyruk: konum.grupSonu,
       adGoster: konum.grupBasi,
+      // Gönderenin adına dokununca kişi profili (#185); silinmiş hesapta
+      // dokunulamaz.
+      onGonderen: yazar == null || (bilinen?.silinmis ?? false)
+          ? null
+          : () => kisiyiAc(context, yazar),
     );
     if (silinebilir || geriAlinabilir) {
       balon = Semantics(
@@ -646,20 +652,31 @@ class _MesajSatiri extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (konum.grupSonu)
-            Padding(
-              // Avatar, saat satırının üstünde balonun hizasında durur.
-              padding: EdgeInsets.only(
-                bottom: saat == null ? 0 : TayfamSpacing.s24,
-              ),
-              child: KimlikAvatari(
-                kullaniciId: yazar,
-                cap: TayfamSizes.mesajAvatari,
-              ),
-            )
-          else
-            const SizedBox(width: TayfamSizes.mesajAvatari),
-          const SizedBox(width: TayfamSpacing.s8),
+          // Avatara dokununca kişi profili (#185): dokunma alanı 48 dp,
+          // avatar alanın alt köşesinde balonun hizasında durur.
+          SizedBox(
+            width: TayfamSizes.dokunmaMin,
+            child: konum.grupSonu
+                ? Padding(
+                    // Avatar, saat satırının üstünde balonun hizasında
+                    // durur.
+                    padding: EdgeInsets.only(
+                      bottom: saat == null ? 0 : TayfamSpacing.s24,
+                    ),
+                    child: Align(
+                      alignment: AlignmentDirectional.bottomStart,
+                      child: KisiyeDokun(
+                        kullaniciId: yazar,
+                        hizalama: AlignmentDirectional.bottomStart,
+                        child: KimlikAvatari(
+                          kullaniciId: yazar,
+                          cap: TayfamSizes.mesajAvatari,
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

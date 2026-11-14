@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/features/birebir/application/konusma_sessizlik_notifier.dart';
@@ -63,9 +64,15 @@ class KonusmaSatiri extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            KimlikAvatari(
+            // Avatara dokununca karşı tarafın kişi profili (#185); satırın
+            // geri kalanı konuşmayı açar. Silinmiş hesapta dokunulamaz.
+            KisiyeDokun(
               kullaniciId: konusma.otherUserId,
-              cap: TayfamSizes.konusmaAvatari,
+              koseler: TayfamRadii.hapKoseleri,
+              child: KimlikAvatari(
+                kullaniciId: konusma.otherUserId,
+                cap: TayfamSizes.konusmaAvatari,
+              ),
             ),
             const SizedBox(width: TayfamSpacing.s12),
             Expanded(
