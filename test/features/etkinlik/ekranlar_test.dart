@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart';
@@ -17,6 +18,10 @@ import '../tayfa/sahteler.dart';
 import 'sahteler.dart';
 
 const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
+
+/// Liste gruplama testindeki ek etkinlik kimlikleri.
+const String _ucuncuEtkinlikId = '7c6b5a49-3827-4165-a4b3-c2d1e0f9a8b7';
+const String _dorduncuEtkinlikId = '8d7c6b5a-4938-4276-b5c4-d3e2f1a0b9c8';
 
 String _yol(WidgetTester tester) =>
     yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path;
@@ -83,16 +88,10 @@ void main() {
       await _git(tester, tasima, Adresler.etkinlikler(ornekTayfaId));
 
       expect(find.byType(EtkinliklerEkrani), findsOneWidget);
-      expect(
-        find.widgetWithText(
-          FloatingActionButton,
-          arbMetni('tayfa_ana_etkinlik_ac'),
-        ),
-        findsOneWidget,
-      );
+      expect(tester.takeException(), isNull);
+      expect(find.text(arbMetni('etkinlik_listesi_ac')), findsOneWidget);
 
-      await tester.tap(find.text('Göl kampı'));
-      await tester.pumpAndSettle();
+      await _gorunurDokun(tester, find.text('Göl kampı'));
       expect(_yol(tester), Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
       expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
     });
@@ -106,11 +105,106 @@ void main() {
         etkinlikTasimasi(),
         Adresler.etkinlikler(ornekTayfaId),
       );
-      expect(find.byType(FloatingActionButton), findsNothing);
+      expect(find.text(arbMetni('etkinlik_listesi_ac')), findsNothing);
 
       yonlendiriciyiAl(tester).go(Adresler.etkinlikOlustur(ornekTayfaId));
       await tester.pumpAndSettle();
       expect(find.byType(EtkinlikSihirbaziEkrani), findsOneWidget);
+    });
+  });
+
+  group('etkinlik listesi grupları (2026-11-13 tasarım)', () {
+    testWidgets('bu hafta, gelecek hafta, aylar; iptal ve cevap', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      // sabitSimdi: 11 Kasım 2026 Çarşamba; hafta 9–15 Kasım.
+      final tasima = etkinlikTasimasi({
+        'GET $etkinliklerYolu': (_) => etkinlikListesiJson([
+          etkinlikJson(
+            baslik: 'Cumartesi turu',
+            baslangic: DateTime(2026, 11, 14, 10).toUtc(),
+            sure: const Duration(hours: 3),
+            cevap: 'going',
+          ),
+          etkinlikJson(
+            id: ikinciEtkinlikId,
+            baslik: 'Pazar maçı',
+            baslangic: DateTime(2026, 11, 22, 10).toUtc(),
+            sure: const Duration(hours: 2),
+            iptal: true,
+          ),
+          etkinlikJson(
+            id: _ucuncuEtkinlikId,
+            baslik: 'Kış kampı',
+            baslangic: DateTime(2026, 12, 5, 10).toUtc(),
+          ),
+          etkinlikJson(
+            id: _dorduncuEtkinlikId,
+            baslik: 'Yılbaşı sonrası',
+            baslangic: DateTime(2027, 1, 9, 10).toUtc(),
+          ),
+        ]),
+      });
+      await _git(tester, tasima, Adresler.etkinlikler(ornekTayfaId));
+
+      expect(find.text(arbMetni('etkinlik_listesi_baslik')), findsOneWidget);
+      expect(find.text(arbMetni('etkinlik_listesi_bu_hafta')), findsOneWidget);
+      expect(
+        find.text(arbMetni('etkinlik_listesi_gelecek_hafta')),
+        findsOneWidget,
+      );
+      expect(find.text('Aralık'), findsOneWidget);
+      expect(find.text('Ocak 2027'), findsOneWidget);
+      expect(find.byType(ListeKarti), findsNWidgets(4));
+
+      // Cevap ya da "Cevap ver"; iptal edilende etiket ve üstü çizili.
+      expect(find.text(arbMetni('etkinlik_cevap_going')), findsOneWidget);
+      expect(find.text(arbMetni('etkinlik_cevap_ver')), findsNWidgets(2));
+      expect(find.text(arbMetni('etkinlik_karti_iptal')), findsOneWidget);
+      final iptal = tester.widget<Text>(find.text('Pazar maçı'));
+      expect(iptal.style?.decoration, TextDecoration.lineThrough);
+      final olagan = tester.widget<Text>(find.text('Kış kampı'));
+      expect(olagan.style?.decoration, isNot(TextDecoration.lineThrough));
+    });
+
+    for (final tema in _temalar) {
+      testWidgets('yönetici, 2× yazı, 320 dp taşmaz (${tema.name})', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = etkinlikTasimasi({
+          'GET /v1/tayfas/{tayfa_id}': (_) =>
+              gorunumJson(ornekTayfaId, rol: 'admin'),
+          'GET $etkinliklerYolu': (_) => etkinlikListesiJson([
+            etkinlikJson(cevap: 'maybe'),
+            etkinlikJson(
+              id: ikinciEtkinlikId,
+              baslangic: DateTime(2026, 12, 5, 10).toUtc(),
+              iptal: true,
+            ),
+          ]),
+        });
+        await _git(
+          tester,
+          tasima,
+          Adresler.etkinlikler(ornekTayfaId),
+          themeMode: tema,
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text(arbMetni('etkinlik_listesi_ac')), findsOneWidget);
+      });
+    }
+
+    testWidgets('boşken mevcut boş metni', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinliklerYolu': (_) => etkinlikListesiJson(const []),
+      });
+      await _git(tester, tasima, Adresler.etkinlikler(ornekTayfaId));
+      expect(find.text(arbMetni('tayfa_ana_etkinlikler_bos')), findsOneWidget);
+      expect(find.byType(BolumEtiketi), findsNothing);
     });
   });
 

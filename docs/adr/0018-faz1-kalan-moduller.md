@@ -311,6 +311,107 @@ göre mimari oturumunca belirlenir.
     detayından açılabilir. Kanalın kitlesinde olmayan yönetici, etkinliğin
     kanalını göremediği için "Etkinlik sohbetini aç"ı görür; sunucu
     `event-channel-exists` döndürür, liste yenilenir.
+- **2026-11-13 (platform sahibi, tasarım kararları; issue #163): kalan
+  liste ekranlarının yeniden tasarımı (§7, §9; ADR-0015 §1).** Tasarım:
+  `docs/tasarim/21-listeler-ve-kucuk-ekranlar/`.
+  - **Arkadaşlık istekleri:** "Gelen · N" / "Gönderdiğin" iki parçalı
+    seçici (N gelen listesinin ilk sayfasından, devamı varsa "N+"; istek
+    yoksa yalnızca "Gelen"). Satırlar liste kartında; gelende çerçeveli
+    "Reddet" ve birincil "Kabul et", gönderdiğinde yıkıcı çerçeveli
+    "İsteği geri çek". Ada ve avatara dokununca kişi profili açılır.
+  - **Tayfa davetleri:** tayfa avatarı (davette kapak ve ilgi alanı
+    dönmediği için harf ve genel renk), ad, "Davet eden: … · gün", altında
+    "Reddet" / "Katıl". Ret davet edene bildirilmez.
+  - **Engellenenler ve Reddedilenler:** aynı iskelet; üstte mevcut
+    açıklama, satırda avatar, ad, gün ve sağda çerçeveli eylem ("Engeli
+    kaldır" onaylı, "Listeden çıkar"). Büyük yazıda eylem satırın altına
+    iner. Ortak bileşen: `EylemliSatir`.
+  - **Katılım geçmişin:** üstte "Kim görür: …" ve "Değiştir" satırı
+    (profildeki görünürlük alttan sayfası; seçince hemen kaydedilir).
+    Görünürlük profil paketinde olduğu için satır arkadaşlık paketine
+    `katilimGorunurlukSatiriProvider` kancasıyla verilir (döngü yok).
+    Kayıtlar aya göre gruplanır ("Kasım"; bu yıl değilse "Kasım 2025").
+  - **Yeni birebir konuşma:** ortada 80 px avatar
+    (`TayfamSizes.yeniKonusmaAvatari`), ad, mevcut "henüz konuşman yok"
+    açıklaması ve "Uçtan uca şifreli" notu; altta yazma alanı. İlk mesaj giderken ya da
+    gidemediyse akış eskisi gibi gösterilir.
+  - **Etkinlikler listesi:** yalnızca yaklaşanlar
+    (`listUpcomingEvents`); geçmiş etkinlik listesi sözleşmede olmadığı
+    için "Geçmiş" sekmesi yok. Gruplar "Bu hafta", "Gelecek hafta" ve
+    sonrası ay adı (bu yıl değilse yılıyla). Hafta pazartesi başlar; hafta
+    ve ay sınırları cihazın saat dilimine göredir, gün sınırı takvim
+    alanlarıyla hesaplanır. Bu haftadan önce başlamış, sürmekte olan
+    etkinlik "Bu hafta"dadır. Satır ana sayfadaki "Yaklaşan" satırıyla
+    aynıdır (tarih kutusu, başlık, "Tür · gün saat · yer", cevap ya da
+    "Cevap ver"); iptal edilenin başlığı üstü çizili ve "İptal edildi"
+    etiketli (ana sayfada da). "Etkinlik aç" kayan düğmeden başlığa taşındı;
+    yetkiye sunucu karar verir.
+- **2026-11-13 (platform sahibi, tasarım kararı; issue #153): davet
+  linki ekranı yeniden tasarımı (§6; tasarım:
+  `docs/tasarim/16-karsilama-ve-davet/` Davet-Onizleme, Davet-Gonderildi,
+  Davet-Uye, Davet-Gecersiz).** Token akışı ve link doğrulaması
+  değişmedi: token yalnızca bellekteki kutuda ve istek gövdesindedir,
+  adrese, ekrana, diske ve log'a girmez (kesin kural 9).
+  - Uygulama çubuğu yerine mor üst bölüm (`MarkaYuzeyi`; sağda yuvarlak
+    X) ve ona taşan beyaz kart: tayfanın harf avatarı (önizlemede kapak
+    ve ilgi alanı olmadığı için genel tür rengi), adı ve üye sayısı.
+    Önizlemede yalnızca sözleşmedeki alanlar (ad, üye sayısı, zaten üye)
+    kullanılır.
+  - Önizleme: açıklama, altta sabit "Tayfaya katıl" / "Vazgeç".
+    Sonuçlar aynı iskelettedir: onay bekliyor (teal kutu + "Tamam"),
+    zaten üye (tint-brand kutu + "Tayfaya git").
+  - Açılamadı: mor bölümde link ikonu, "Bu davet linki açılamadı" ve
+    neden (bekleyen davet yoksa genel metin, sunucu hatasında ortak
+    eşlemeden gelen metin). Link kullanılamıyorsa birincil eylem "Tayfa
+    kodum var"dır: davet bırakılır, kod sayfası açılır, sayfa kapanınca
+    ana adrese dönülür. Bağlantı ve sunucu hatalarında birincil eylem
+    "Tekrar dene"dir. İkincil eylem "Kapat".
+  - Girişten önce gelen davet Giris-Davet tasarımındaki gibidir
+    (değişmedi).
+
+- **2026-11-13 (platform sahibi; issue #155): Anket ekranlarının yeniden
+  tasarımı (§5).** Tasarım: `docs/tasarim/15-duyuru-anket-soru-cevap/`
+  (Anketler, Anket-Oy, Anket-Sonuc, Anket-Oy-Verenler, Anket-Gizli,
+  Anket-Form). Notifier, depo ve sözleşme mantığı değişmedi.
+  - **Liste:** başlıkta ekran adı, altında tayfanın adı ve tint-brand
+    "Anket aç". Eldeki sayfalar "Açık" ve "Kapanan" bölümlerine ayrılır
+    (sunucu sırası korunur). Kartta anket ikonu, soru, durum çipi (açıkta
+    teal "Açık", kapanınca nötr "Kapandı"), "N kişi oy verdi · <kapanış
+    günü>" ya da gizli ankette "· Gizli anket", oy verdiysen "Oy verdin".
+    Kartta seçenek sayısı yoktur.
+  - **Oy verme:** oy her zaman alttaki sabit "Oyu gönder" düğmesiyle
+    gönderilir (platform sahibi kararı); çoklu seçimde düğmede seçilen
+    sayısı yazar ("Oyu gönder (2 seçenek)"). Tek seçimde radyo, çoklu
+    seçimde onay kutusu işaretli seçenek kutuları; üstte kural metni,
+    altta "Sonuçları gör" (değiştirirken "Vazgeç"). Alt çubukta oy veren
+    sayısı ve açanın adı.
+  - **Sonuçlar:** "N kişi oy verdi." ve açık ankette "Oy verenleri görmek
+    için seçeneğe dokun."; seçenek kutusunda metin (en çok oy alan kalın),
+    kendi oyunda 2 px marka kenar, marka çubuk ve "Senin oyun"; diğer
+    çubuklar saydam marka. Yüzde oy veren kişi sayısına göredir; çoklu
+    seçimde "toplam %100'ü geçebilir" notu. "Oyunu değiştir" (çerçeveli)
+    ve "Oyunu geri çek" (bağlantı). Açık ankette seçeneğe dokununca oy
+    verenler alttan sayfada (`altSayfaAc`): başlıkta seçenek ve oy sayısı,
+    satırlarda avatar ve ad, kendi satırında "(sen)".
+  - **Gizli anket (kesin kural 7):** tint-brand bilgi kutusu ("Gizli anket.
+    Kimin neye oy verdiği kimseye gösterilmez, yöneticilere de."). Oy
+    veren 5'ten azsa yalnızca "N kişi oy verdi. Sonuçlar 5 oydan sonra
+    görünür." kutusu ve sayısız seçenekler (kendi oyunda "Senin oyun");
+    yüzde, çubuk, oy sayısı, kalın önde olan ve çoklu seçim notu yok.
+    Seçenekler hiçbir zaman dokunulmaz, oy verenler ucu çağrılmaz.
+    Eşik widget testleriyle (3, 4 ve 5 oy) korunur.
+  - **⋯ menüsü** artık alttan sayfadır (ADR-0004 Notlar 2026-11-13, madde
+    5): "Anketi kapat" (açan ya da yönetim; onaylı) ve "Şikâyet et".
+  - **Form:** üstte kapat (X), "Yeni anket" ve "Anketi aç"; soru, sayaçlı;
+    "Seçenekler (2–10)", ekle/kaldır; anahtarlar açıklamalı; kapanış
+    kutusu (seçilmemişse "Elle kapatılana kadar açık", dokununca tarih ve
+    saat seçici) ve "Kapanış zamanını kaldır".
+  - **Sapmalar:** tasarımdaki kesik çizgili eşik kutusu düz 1.5 px çizgiyle
+    çizilir (Flutter'da kesik kenar için paket gerekir; yeni paket
+    eklenmedi). Kapanan kartlardaki %75 saydamlık uygulanmadı: ikincil
+    metnin kontrastını 4.5:1'in altına düşürüyordu; ayrımı bölüm başlığı
+    ve nötr "Kapandı" çipi taşır. `Etiket`'e nötr ton (`EtiketTonu.notr`:
+    line zemin + gövde metni) eklendi.
 - **2026-11-13 (platform sahibi; issue #151): Bildirimler sekmesi ve
   bildirim ayarları yeniden tasarımı (§3).** Tasarım: Bildirimler,
   Bildirimler-Koyu, Bildirimler-Bos, Bildirim-Ayarlari.

@@ -20,7 +20,10 @@ enum EtiketTonu {
   teal,
 
   /// tint-nar + nar-metin (yıkıcı durum: "Banlı").
-  nar;
+  nar,
+
+  /// line + gövde metni (bitmiş durum: anketin "Kapandı" çipi).
+  notr;
 
   /// Tonun zemin ve metin renkleri.
   (Color, Color) renkler(TayfamColors r) => switch (this) {
@@ -28,6 +31,7 @@ enum EtiketTonu {
     mango => (r.tintMango, r.tintMangoUstu),
     teal => (r.tintTeal, r.tintTealUstu),
     nar => (r.tintNar, r.narMetin),
+    notr => (r.cizgi, r.metinGovde),
   };
 }
 

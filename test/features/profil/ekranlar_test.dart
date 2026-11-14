@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/medya/jpeg.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
+import 'package:tayfam/features/profil/presentation/gorunurluk_satiri.dart';
 import 'package:tayfam/features/profil/presentation/hesabi_sil_ekrani.dart';
 import 'package:tayfam/features/profil/presentation/oturumlar_ekrani.dart';
 import 'package:tayfam/features/profil/presentation/profil_ekrani.dart';
@@ -360,6 +361,45 @@ void main() {
       // Tema ve hesap satırları yine kullanılabilir.
       expect(_metin('profil_tema_baslik'), findsOneWidget);
     });
+  });
+
+  group('katılım geçmişin görünürlük satırı', () {
+    const satir = Scaffold(body: Center(child: KatilimGorunurlukSatiri()));
+
+    testWidgets('"Değiştir" alttan sayfayı açar, seçim kaydedilir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final o = _Ortam();
+      await o.ac(tester, satir);
+      expect(_metin('profil_gorunurluk_kim_gorur'), findsNothing);
+      expect(
+        find.textContaining(arbMetni('profil_gorunurluk_tayfa')),
+        findsOneWidget,
+      );
+
+      await tester.tap(_metin('profil_gorunurluk_degistir'));
+      await tester.pumpAndSettle();
+      expect(_metin('profil_gorunurluk_soru'), findsOneWidget);
+      await tester.tap(_metin('profil_gorunurluk_ozel'));
+      await tester.pumpAndSettle();
+
+      expect(o.tasima.sayi('PATCH', '/v1/me/account'), 1);
+      expect(
+        find.textContaining(arbMetni('profil_gorunurluk_ozel')),
+        findsOneWidget,
+      );
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('2× yazı, 320 dp taşmıyor (${mod.name})', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _Ortam().ac(tester, satir, themeMode: mod);
+        expect(tester.takeException(), isNull);
+        expect(_metin('profil_gorunurluk_degistir'), findsOneWidget);
+      });
+    }
   });
 
   group('oturumlar ekranı', () {

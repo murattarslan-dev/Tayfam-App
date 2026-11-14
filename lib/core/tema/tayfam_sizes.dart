@@ -84,6 +84,7 @@ abstract final class TayfamSizes {
   static const double yukleniyorEnAzSaydamlik = .45;
 
   /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
+
   /// dokunma alanı 48'in üstünde).
   static const double girisDugmesi = 52;
 
@@ -282,6 +283,55 @@ abstract final class TayfamSizes {
 
   /// Tür kutusundaki seçili işaretinin dairesi (24 px).
   static const double seciliIsareti = 24;
+
+  // --- 2026-11-13 listeler ve küçük ekranlar (21-listeler-*) --------------
+
+  /// Yeni birebir konuşmanın ortasındaki kişi avatarı (80 px; tasarım:
+  /// Yeni-Konusma).
+  static const double yeniKonusmaAvatari = 80;
+  // Karşılama ve davet linki (2026-11-13 yeniden tasarım; tasarım:
+  // 16-karsilama-ve-davet/*.dc.html).
+
+  /// Karşılamadaki büyük seçim kartının en küçük yüksekliği ("Tayfa kodum
+  /// var", "Tayfa kur"; 84 px).
+  static const double secimKarti = 84;
+
+  /// Seçim kartının solundaki ikon kutusu (48 px).
+  static const double secimKartiIkonKutusu = 48;
+
+  /// Seçim kartının ikon kutusundaki ikon (26 px).
+  static const double secimKartiIkonu = 26;
+
+  /// Tür şeridindeki hapın yüksekliği (32 px).
+  static const double turHapi = 32;
+
+  /// Tür hapının solundaki renkli daire (22 px).
+  static const double turHapiDairesi = 22;
+
+  /// Tür hapının dairesindeki ikon (13 px).
+  static const double turHapiIkonu = 13;
+
+  /// Davet önizlemesindeki tayfa avatarının harf kutusu (88 px). Beyaz
+  /// kenarıyla ([davetAvatarKenari]) dış ölçüsü [avatarBuyuk] (96 px).
+  static const double davetAvatari = 88;
+
+  /// Davet önizlemesindeki tayfa avatarının beyaz kenarı (4 px).
+  static const double davetAvatarKenari = 4;
+
+  /// Davet önizlemesinde avatarın kartın üstünden taşan yüksekliği (44 px).
+  static const double davetAvatarTasmasi = 44;
+
+  /// Davet kartında tayfa adının üstündeki boşluk: avatarın kart içinde
+  /// kalan kısmı (96 − 44 − 20 px iç boşluk) + 8 px (40 px).
+  static const double davetKartAvatarBoslugu = 40;
+
+  /// Davet önizlemesinde avatar harfinin punto boyu (38 px; avatar
+  /// görseldir, yazı ölçeğiyle büyümez).
+  static const double davetAvatarHarfi = 38;
+
+  /// "Bu davet linki açılamadı" ekranındaki link ikonu (44 px; kutusu
+  /// [avatarBuyuk]).
+  static const double davetAcilamadiIkonu = 44;
 
   // --- 2026-11-13 cihaz bağlama (Cihaz-*) -------------------------------
 

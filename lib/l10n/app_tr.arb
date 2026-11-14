@@ -341,6 +341,22 @@
   "@tayfa_ana_etkinlik_ac": {
     "description": "Yaklaşan etkinlik yokken, etkinlik açabilen kullanıcıya (moderatör, yönetici ya da tayfa izin veriyorsa üye) gösterilen kısayol düğmesi."
   },
+  "etkinlik_listesi_baslik": "Etkinlikler",
+  "@etkinlik_listesi_baslik": {
+    "description": "Tayfanın yaklaşan etkinlikleri listesinin (ana sayfadaki \"Tümü\") başlığı; altında tayfanın adı yazar."
+  },
+  "etkinlik_listesi_ac": "Etkinlik aç",
+  "@etkinlik_listesi_ac": {
+    "description": "Etkinlikler listesinin başlığında, etkinlik açabilen kullanıcıya (moderatör, yönetici ya da tayfa izin veriyorsa üye) gösterilen düğme."
+  },
+  "etkinlik_listesi_bu_hafta": "Bu hafta",
+  "@etkinlik_listesi_bu_hafta": {
+    "description": "Etkinlikler listesinde bu haftanın (pazartesi–pazar, cihazın saatine göre) etkinliklerinin grup başlığı."
+  },
+  "etkinlik_listesi_gelecek_hafta": "Gelecek hafta",
+  "@etkinlik_listesi_gelecek_hafta": {
+    "description": "Etkinlikler listesinde gelecek haftanın etkinliklerinin grup başlığı; daha sonrakiler ay adıyla gruplanır."
+  },
   "etkinlik_siradaki": "Sıradaki · {neZaman}",
   "@etkinlik_siradaki": {
     "description": "Tayfa ana sayfasındaki büyük \"Sıradaki\" etkinlik kartının etiketi; neZaman geri sayımdır (goreli_* metinleri, ör. \"3 gün sonra\").",
@@ -3123,15 +3139,31 @@
   },
   "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
   "@karsilama_turler_etiketi": {
-    "description": "Karşılama ekranındaki renkli etkinlik türü haplarının ekran okuyucu için grup etiketi."
+    "description": "Karşılama ekranındaki etkinlik türü şeridinin görünen başlığı ve ekran okuyucu grup etiketi."
   },
   "karsilama_kodum_var": "Tayfa kodum var",
   "@karsilama_kodum_var": {
-    "description": "Karşılama ekranındaki birincil düğme; tayfa koduyla katılma akışını açar."
+    "description": "Karşılama ekranındaki birincil seçim kartının başlığı; tayfa koduyla katılma sayfasını açar."
   },
   "karsilama_tayfa_olustur": "Tayfa oluştur",
   "@karsilama_tayfa_olustur": {
-    "description": "Karşılama ekranındaki ikincil düğme; yeni tayfa kurma akışını açar."
+    "description": "Hoş geldin tanıtımındaki karşılama görselinde ikincil düğme; yeni tayfa kurma akışını gösterir."
+  },
+  "karsilama_kodum_var_aciklama": "Yöneticinin paylaştığı kodu gir",
+  "@karsilama_kodum_var_aciklama": {
+    "description": "Karşılama ekranındaki \"Tayfa kodum var\" seçim kartının alt satırı."
+  },
+  "karsilama_tayfa_kur": "Tayfa kur",
+  "@karsilama_tayfa_kur": {
+    "description": "Karşılama ekranındaki ikinci seçim kartının başlığı; tayfa kurma sihirbazını açar."
+  },
+  "karsilama_tayfa_kur_aciklama": "Kendi grubunu birkaç adımda aç",
+  "@karsilama_tayfa_kur_aciklama": {
+    "description": "Karşılama ekranındaki \"Tayfa kur\" seçim kartının alt satırı."
+  },
+  "karsilama_davet_ipucu": "Davet linkin varsa linke dokunman yeterli; tayfa burada açılır.",
+  "@karsilama_davet_ipucu": {
+    "description": "Karşılama ekranında seçim kartlarının altındaki davet linki ipucu."
   },
   "bilesen_logo_yazisi": "tayfam",
   "@bilesen_logo_yazisi": {
@@ -3331,10 +3363,6 @@
   "@anket_oy_verdin": {
     "description": "Kullanıcının oy verdiği anketin kartındaki etiket."
   },
-  "anket_oy_ver": "Oy ver",
-  "@anket_oy_ver": {
-    "description": "Seçilen seçeneklerle oyu gönderen düğme."
-  },
   "anket_oyu_degistir": "Oyunu değiştir",
   "@anket_oyu_degistir": {
     "description": "Oy vermiş kullanıcının seçimini yeniden yapmasını sağlayan düğme."
@@ -3383,10 +3411,6 @@
   "@anket_kapatildi": {
     "description": "Anket kapatılınca kısa bildirim."
   },
-  "anket_oy_verenler": "Oy verenler",
-  "@anket_oy_verenler": {
-    "description": "Açık (gizli olmayan) ankette bir seçeneğe oy verenlerin listesinin başlığı."
-  },
   "anket_oy_verenler_bos": "Bu seçeneğe henüz oy veren yok.",
   "@anket_oy_verenler_bos": {
     "description": "Oy verenler listesi boşken görünen metin."
@@ -3394,10 +3418,6 @@
   "anket_oy_verenler_ipucu": "Oy verenleri görmek için seçeneğe dokun.",
   "@anket_oy_verenler_ipucu": {
     "description": "Açık (gizli olmayan) ankette sonuçların altında görünen ipucu. Gizli ankette gösterilmez."
-  },
-  "anket_acan": "Açan",
-  "@anket_acan": {
-    "description": "Anket ekranında anketi açan kişinin adının önündeki etiket."
   },
   "anket_etkinlige_git": "Bağlı etkinliği aç",
   "@anket_etkinlige_git": {
@@ -3453,10 +3473,6 @@
   "@anket_form_gizli_notu": {
     "description": "Anket formunda gizli anket anahtarının altındaki not."
   },
-  "anket_form_kapanis_yok": "Kapanış zamanı yok; elle kapatılana kadar açık kalır.",
-  "@anket_form_kapanis_yok": {
-    "description": "Anket formunda kapanış zamanı seçilmemişken görünen metin."
-  },
   "anket_form_kapanis_sec": "Kapanış zamanı seç",
   "@anket_form_kapanis_sec": {
     "description": "Anket formunda kapanış günü ve saatini seçtiren düğme."
@@ -3480,6 +3496,168 @@
   "anket_acildi": "Anket açıldı.",
   "@anket_acildi": {
     "description": "Anket açılınca kısa bildirim."
+  },
+  "anket_bolum_acik": "Açık",
+  "@anket_bolum_acik": {
+    "description": "Anket listesinde açık anketlerin bölüm başlığı."
+  },
+  "anket_bolum_kapanan": "Kapanan",
+  "@anket_bolum_kapanan": {
+    "description": "Anket listesinde kapanmış anketlerin bölüm başlığı."
+  },
+  "anket_karti_kapanir": "{tarih} kapanır",
+  "@anket_karti_kapanir": {
+    "description": "Anket kartında açık anketin planlanan kapanma günü, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-20"
+      }
+    }
+  },
+  "anket_karti_kapandi": "{tarih} kapandı",
+  "@anket_karti_kapandi": {
+    "description": "Anket kartında kapanmış anketin kapandığı gün, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-06"
+      }
+    }
+  },
+  "anket_karti_ozet": "{oy} · {ek}",
+  "@anket_karti_ozet": {
+    "description": "Anket kartındaki özet satırı: oy veren sayısı ve kapanış ya da 'Gizli anket'.",
+    "placeholders": {
+      "oy": {
+        "type": "String",
+        "example": "14 kişi oy verdi"
+      },
+      "ek": {
+        "type": "String",
+        "example": "20 Kas kapanır"
+      }
+    }
+  },
+  "anket_elle_kapanana_kadar": "Elle kapatılana kadar açık",
+  "@anket_elle_kapanana_kadar": {
+    "description": "Kapanış zamanı olmayan açık anketin durum satırında ve anket formunun kapanış kutusunda."
+  },
+  "anket_gizli_kutu_baslik": "Gizli anket.",
+  "@anket_gizli_kutu_baslik": {
+    "description": "Anket ekranındaki gizli anket bilgi kutusunun kalın ilk cümlesi; ardından gizlilik açıklaması gelir."
+  },
+  "anket_oy_veren_cumlesi": "{sayi, plural, =0{Henüz oy yok.} other{{sayi} kişi oy verdi.}}",
+  "@anket_oy_veren_cumlesi": {
+    "description": "Anket sonuçlarının üstündeki ve gizli anket eşik kutusundaki toplam oy veren cümlesi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
+  "anket_oyu_gonder": "{sayi, plural, =0{Oyu gönder} other{Oyu gönder ({sayi} seçenek)}}",
+  "@anket_oyu_gonder": {
+    "description": "Anket ekranının altındaki oy gönderme düğmesi; çok seçimli ankette seçilen seçenek sayısıyla.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "anket_alt_ozet": "{oy} · Açan: {ad}",
+  "@anket_alt_ozet": {
+    "description": "Oy verme ekranının altındaki özet: oy veren sayısı ve anketi açanın görünen adı.",
+    "placeholders": {
+      "oy": {
+        "type": "String",
+        "example": "14 kişi oy verdi"
+      },
+      "ad": {
+        "type": "String",
+        "example": "Mert Aydın"
+      }
+    }
+  },
+  "anket_acan_satiri": "Açan: {ad}",
+  "@anket_acan_satiri": {
+    "description": "Anket sonuçlarının altında anketi açanın görünen adı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Mert Aydın"
+      }
+    }
+  },
+  "anket_coklu_yuzde_notu": "Çoklu seçimde yüzdeler oy veren kişi sayısına göredir; toplam %100'ü geçebilir.",
+  "@anket_coklu_yuzde_notu": {
+    "description": "Çok seçimli anketin sonuçlarının altındaki not."
+  },
+  "anket_oy_veren_sen": "{ad} (sen)",
+  "@anket_oy_veren_sen": {
+    "description": "Oy verenler listesinde kullanıcının kendi satırı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Mert Aydın"
+      }
+    }
+  },
+  "anket_form_secenekler": "Seçenekler",
+  "@anket_form_secenekler": {
+    "description": "Anket formunda seçenek alanlarının başlığı."
+  },
+  "anket_form_secenek_araligi": "({enAz}–{enCok})",
+  "@anket_form_secenek_araligi": {
+    "description": "Anket formunda 'Seçenekler' başlığının yanında en az ve en çok seçenek sayısı.",
+    "placeholders": {
+      "enAz": {
+        "type": "int",
+        "example": "2"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "anket_form_coklu_aciklama": "Oy veren birden fazla seçeneği işaretleyebilir.",
+  "@anket_form_coklu_aciklama": {
+    "description": "Anket formunda 'Birden çok seçenek seçilebilsin' anahtarının açıklaması."
+  },
+  "anket_form_kapanis": "Kapanış",
+  "@anket_form_kapanis": {
+    "description": "Anket formunda kapanış zamanı kutusunun küçük etiketi."
+  },
+  "anket_secenek_oy": "{sayi, plural, =0{Oy yok} other{{sayi} oy}}",
+  "@anket_secenek_oy": {
+    "description": "Anket sonuçlarında bir seçeneğin oy sayısı (çubuğun altında).",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "anket_kapanis_degeri": "{tarih}, {saat}",
+  "@anket_kapanis_degeri": {
+    "description": "Anket formunun kapanış kutusunda seçilen gün ve saat, cihazın saatine göre.",
+    "placeholders": {
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMMd",
+        "example": "2026-11-20"
+      },
+      "saat": {
+        "type": "DateTime",
+        "format": "Hm",
+        "example": "2026-11-20T18:00"
+      }
+    }
   },
   "hesap_slogan": "Birlikte yapınca güzel.",
   "@hesap_slogan": {
@@ -4136,6 +4314,14 @@
         "example": "Yalnızca ben"
       }
     }
+  },
+  "profil_gorunurluk_kim_gorur": "Kim görür:",
+  "@profil_gorunurluk_kim_gorur": {
+    "description": "Katılım geçmişin ekranının üstündeki görünürlük satırında seçili görünürlüğün (kalın) önündeki metin."
+  },
+  "profil_gorunurluk_degistir": "Değiştir",
+  "@profil_gorunurluk_degistir": {
+    "description": "Katılım geçmişin ekranının üstündeki görünürlük satırının sağındaki bağlantı; görünürlük seçeneklerini açar."
   },
   "profil_uygulama_baslik": "Uygulama",
   "@profil_uygulama_baslik": {
@@ -5757,10 +5943,6 @@
   "@arkadas_davetler_bos": {
     "description": "Gelen tayfa daveti yokken gösterilen metin."
   },
-  "arkadas_davet_eden": "Davet eden:",
-  "@arkadas_davet_eden": {
-    "description": "Tayfa daveti kartında davet edenin adından önce gelen etiket."
-  },
   "arkadas_davet_zamani": "{tarih} tarihinde davet edildin",
   "@arkadas_davet_zamani": {
     "description": "Tayfa davetinin gönderildiği gün (cihazın saatine göre).",
@@ -5769,6 +5951,21 @@
         "type": "DateTime",
         "format": "yMMMMd",
         "example": "2026-11-10"
+      }
+    }
+  },
+  "arkadas_davet_alt": "Davet eden: {ad} · {tarih}",
+  "@arkadas_davet_alt": {
+    "description": "Tayfa davetleri satırında tayfa adının altındaki metin: davet edenin adı ve davetin günü (cihazın saatine göre).",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      },
+      "tarih": {
+        "type": "DateTime",
+        "format": "MMMd",
+        "example": "2026-11-12"
       }
     }
   },
@@ -5847,6 +6044,24 @@
   "arkadas_istekler_giden": "Gönderdiğin",
   "@arkadas_istekler_giden": {
     "description": "İstekler ekranında gönderilen istekleri seçen bölüm."
+  },
+  "arkadas_istekler_gelen_sayili": "Gelen · {sayi}",
+  "@arkadas_istekler_gelen_sayili": {
+    "description": "İstekler ekranındaki seçicide gelen istekler bölümü; sayı gelen isteklerin ilk sayfasından (istek yoksa yalnızca \"Gelen\").",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "arkadas_istekler_gelen_sayili_fazla": "Gelen · {sayi}+",
+  "@arkadas_istekler_gelen_sayili_fazla": {
+    "description": "İstekler ekranındaki seçicide gelen istekler bölümü; ilk sayfa dolu ve devamı varsa (toplam bilinmez).",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
   },
   "arkadas_istekler_gelen_bos": "Cevap bekleyen istek yok.",
   "@arkadas_istekler_gelen_bos": {
@@ -6150,13 +6365,9 @@
   "@arkadas_sikayet_tayfa_aciklama": {
     "description": "Şikâyet tayfası seçiminin açıklaması (sözleşme: kullanıcı şikâyeti bir tayfada yapılır)."
   },
-  "derin_link_davet_baslik": "Tayfa daveti",
-  "@derin_link_davet_baslik": {
-    "description": "Davet linkiyle açılan ekranın başlığı."
-  },
   "derin_link_davet_kapat": "Kapat",
   "@derin_link_davet_kapat": {
-    "description": "Davet ekranını kapatan düğmenin ipucu ve ekran okuyucu etiketi; daveti bırakır."
+    "description": "Davet ekranını kapatan düğmenin (üstteki X ve açılamadı ekranındaki ikincil düğme) metni ve ekran okuyucu etiketi; daveti bırakır."
   },
   "derin_link_davet_yukleniyor": "Davet yükleniyor",
   "@derin_link_davet_yukleniyor": {
@@ -6164,7 +6375,7 @@
   },
   "derin_link_davet_ust_baslik": "Seni bu tayfaya davet ettiler",
   "@derin_link_davet_ust_baslik": {
-    "description": "Davet ekranında tayfa adının üstündeki kısa satır."
+    "description": "Davet ekranının mor üst bölümündeki kısa satır (önizleme ve zaten üye durumları)."
   },
   "derin_link_davet_aciklama": "Katılınca tayfanın etkinliklerini, duyurularını ve sohbetini görürsün. Tayfa onaylı katılımlıysa yönetici onayından sonra katılırsın.",
   "@derin_link_davet_aciklama": {
@@ -6184,19 +6395,27 @@
   },
   "derin_link_davet_tamam": "Tamam",
   "@derin_link_davet_tamam": {
-    "description": "Davet ekranını kapatan düğme (istek gönderildi, zaten üye ya da hata durumunda)."
+    "description": "Davetle katılma isteği gönderildikten sonra ekranı kapatan düğme."
   },
   "derin_link_davet_gonderildi_baslik": "İsteğin gönderildi",
   "@derin_link_davet_gonderildi_baslik": {
-    "description": "Onaylı katılımlı tayfaya davetle katılma isteği gönderilince görünen başlık."
+    "description": "Onaylı katılımlı tayfaya davetle katılma isteği gönderilince mor üst bölümde ve teal bilgi kutusunda görünen başlık."
   },
-  "derin_link_davet_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın.",
+  "derin_link_davet_gonderildi_aciklama": "Tayfanın yöneticisi onaylayınca tayfaya katılacaksın. Tayfa panelinde \"Onay bekliyor\" olarak görünür.",
   "@derin_link_davet_gonderildi_aciklama": {
-    "description": "Davetle katılma isteği gönderildikten sonra başlığın altındaki açıklama."
+    "description": "Davetle katılma isteği gönderildikten sonra teal bilgi kutusunda başlığın altındaki açıklama."
   },
-  "derin_link_davet_gecersiz": "Bu davet linki açılamadı. Linki gönderen kişiden yenisini iste.",
+  "derin_link_davet_gecersiz": "Bu davet linki açılamadı",
   "@derin_link_davet_gecersiz": {
-    "description": "Bekleyen davet yokken ya da link bozukken davet ekranında görünen metin."
+    "description": "Davet önizlemesi açılamayınca (link bozuk, süresi dolmuş, bağlantı yok…) mor ekranın başlığı."
+  },
+  "derin_link_davet_gecersiz_aciklama": "Linki gönderen kişiden yenisini iste. Tayfa kodun varsa onunla da katılabilirsin.",
+  "@derin_link_davet_gecersiz_aciklama": {
+    "description": "Bekleyen davet yokken ya da link bozukken açılamadı ekranında başlığın altındaki metin; \"Tayfa kodum var\" alternatifini anlatır."
+  },
+  "derin_link_davet_tayfaya_git": "Tayfaya git",
+  "@derin_link_davet_tayfaya_git": {
+    "description": "Davet edilen tayfaya zaten üye olan ya da isteği bekleyen kullanıcının birincil düğmesi; daveti bırakıp tayfaya gider."
   },
   "derin_link_tekrar_dene": "Tekrar dene",
   "@derin_link_tekrar_dene": {
