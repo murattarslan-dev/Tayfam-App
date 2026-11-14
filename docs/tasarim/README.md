@@ -33,3 +33,4 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 | Listeler ve küçük ekranlar | [`21-listeler-ve-kucuk-ekranlar/`](21-listeler-ve-kucuk-ekranlar/README.md) | 8 |
 | Etkinlik türü formları ve iptal | [`22-etkinlik-turu-formlari/`](22-etkinlik-turu-formlari/README.md) | 5 |
 | Hata ve bağlantı durumları | [`23-hata-ve-baglanti-durumlari/`](23-hata-ve-baglanti-durumlari/README.md) | 5 |
+| Çekip yenileme | [`24-cekip-yenileme/`](24-cekip-yenileme/README.md) | 4 |
