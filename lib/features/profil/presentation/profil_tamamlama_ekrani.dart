@@ -15,7 +15,7 @@ import 'package:tayfam/features/profil/application/profil_tamamlama.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/features/profil/presentation/profil_sayfalari.dart';
 import 'package:tayfam/features/profil/presentation/tanitim_ortak.dart';
-import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart' show IlgiCipi, ilgiAlanlari;
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Profil tamamlama formu (issue #186; tasarım: Profil-Tamamla*).
