@@ -106,7 +106,9 @@ void main() {
         tur: ReportTargetType.user,
         id: uyeId,
       );
-      expect(uye.gerekceler, contains(ReportReason.staffConduct));
+      // Yönetim şikâyeti yalnızca tayfa hedefinde (issue #183).
+      expect(uye.gerekceler, isNot(contains(ReportReason.staffConduct)));
+      expect(etkinlik.gerekceler, isNot(contains(ReportReason.staffConduct)));
       expect(
         const SikayetHedefi.tayfa(ornekTayfaId).gerekceler,
         contains(ReportReason.staffConduct),
@@ -458,7 +460,7 @@ void main() {
       expect(gerekceler.last, ReportReason.other);
     });
 
-    testWidgets('üye: avatar ve ad önizlemesi; yönetim gerekçesi var', (
+    testWidgets('üye: avatar ve ad önizlemesi; yönetim gerekçesi yok', (
       tester,
     ) async {
       ekranBoyutu(tester, genislik: 320);
@@ -470,21 +472,53 @@ void main() {
       expect(find.text('Üye Kişi'), findsOneWidget);
       expect(find.text(arbMetni('sikayet_soru_uye')), findsOneWidget);
       expect(find.text(arbMetni('sikayet_gizlilik')), findsOneWidget);
-      // Yönetim şikâyeti seçilince gizlilik metni platforma döner.
-      await _dokun(tester, find.text(arbMetni('sikayet_gerekce_yonetim')));
-      expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
+      // Yönetim şikâyeti yalnızca tayfa şikâyetinde (issue #183).
+      expect(find.text(arbMetni('sikayet_gerekce_yonetim')), findsNothing);
       expect(tasima.istekler, isEmpty);
     });
 
-    testWidgets('tayfa: tayfanın adı önizlemede', (tester) async {
-      ekranBoyutu(tester);
+    testWidgets('içerik: yönetim gerekçesi yok', (tester) async {
+      ekranBoyutu(tester, genislik: 320);
+      ikiKatYazi(tester);
       final tasima = SahteTayfaTasima();
-      await _sayfayiAc(tester, tasima, const SikayetHedefi.tayfa(ornekTayfaId));
+      await _sayfayiAc(
+        tester,
+        tasima,
+        _duyuruHedefi,
+        themeMode: ThemeMode.dark,
+      );
 
-      expect(find.text(arbMetni('sikayet_tur_tayfa')), findsOneWidget);
-      expect(find.text('Klasikçiler'), findsOneWidget);
-      expect(find.text(arbMetni('sikayet_gizlilik_platform')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_gerekce_diger')), findsOneWidget);
+      expect(find.text(arbMetni('sikayet_gerekce_yonetim')), findsNothing);
     });
+
+    for (final tema in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('tayfa: tayfanın adı önizlemede; yönetim gerekçesi var '
+          '(${tema.name})', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = SahteTayfaTasima();
+        await _sayfayiAc(
+          tester,
+          tasima,
+          const SikayetHedefi.tayfa(ornekTayfaId),
+          themeMode: tema,
+        );
+
+        expect(find.text(arbMetni('sikayet_tur_tayfa')), findsOneWidget);
+        expect(find.text('Klasikçiler'), findsOneWidget);
+        expect(
+          find.text(arbMetni('sikayet_gizlilik_platform')),
+          findsOneWidget,
+        );
+        await _dokun(tester, find.text(arbMetni('sikayet_gerekce_yonetim')));
+        expect(
+          find.text(arbMetni('sikayet_gizlilik_platform')),
+          findsOneWidget,
+        );
+        expect(_gonderAcik(tester), isTrue);
+      });
+    }
 
     testWidgets('hata sayfada gösterilir, sayfa açık kalır', (tester) async {
       ekranBoyutu(tester);

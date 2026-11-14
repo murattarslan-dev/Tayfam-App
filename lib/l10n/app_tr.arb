@@ -7869,7 +7869,7 @@
   },
   "sikayet_gerekce_yonetim": "Yönetimin yetkisini kötüye kullanması",
   "@sikayet_gerekce_yonetim": {
-    "description": "Şikâyet gerekçesi: yönetici ya da moderatörün yetkisini kötüye kullanması (staff_conduct); yalnızca üye ve tayfa şikâyetinde."
+    "description": "Şikâyet gerekçesi: yönetici ya da moderatörün yetkisini kötüye kullanması (staff_conduct); yalnızca tayfa şikâyetinde (issue #183)."
   },
   "sikayet_gerekce_yonetim_aciklama": "Tayfa yönetimi görmez; yalnızca Tayfam ekibine gider.",
   "@sikayet_gerekce_yonetim_aciklama": {

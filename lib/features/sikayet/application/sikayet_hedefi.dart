@@ -71,14 +71,16 @@ final class SikayetHedefi {
   final String? mesajMetni;
 
   /// Şikâyet yalnızca platforma mı gidiyor (tayfa, kişi profilinden
-  /// kullanıcı ve birebir mesaj; ayrıca `staff_conduct` gerekçesi).
+  /// kullanıcı ve birebir mesaj; ayrıca tayfadaki `staff_conduct`
+  /// gerekçesi).
   bool get yalnizcaPlatform => tur == ReportTargetType.tayfa || tayfaId == null;
 
   /// Bu hedef için seçilebilecek gerekçeler, gösterim sırasıyla.
   /// "Çocuk/genç güvenliği" en başta durur (Notion: Kötüye Kullanım ve
   /// Genç Kullanıcı Güvenliği §3). `fake_event` yalnızca etkinlikte,
-  /// `staff_conduct` yalnızca tayfadaki üye ve tayfada; birebir mesajda ve
-  /// platforma giden kullanıcı şikâyetinde geçerli değildir (sözleşme).
+  /// `staff_conduct` yalnızca tayfa şikâyetinde (`target_type: tayfa`;
+  /// platform sahibi kararı, issue #183); üye, içerik ve birebir mesaj
+  /// şikâyetinde gösterilmez.
   List<ReportReason> get gerekceler => [
     ReportReason.childSafety,
     ReportReason.harassment,
@@ -94,9 +96,7 @@ final class SikayetHedefi {
     ReportReason.dangerousActivity,
     ReportReason.spam,
     ReportReason.copyright,
-    if (tur == ReportTargetType.tayfa ||
-        (tur == ReportTargetType.user && tayfaId != null))
-      ReportReason.staffConduct,
+    if (tur == ReportTargetType.tayfa) ReportReason.staffConduct,
     ReportReason.other,
   ];
 
