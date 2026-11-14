@@ -1,8 +1,8 @@
 /// Şikâyet ve tayfa moderasyonu özelliğinin dışa açık dosyası (ADR-0002,
 /// ADR-0018 §8):
 ///
-/// - ortak "Şikâyet et" sayfası ([sikayetSayfasiniAc], [SikayetHedefi]);
-///   içerik menüleri bunu tek satırla çağırır,
+/// - ortak, tam ekran "Şikâyet et" sayfası ([sikayetSayfasiniAc],
+///   [SikayetHedefi]); içerik menüleri bunu tek satırla çağırır,
 /// - birebir mesaj şikâyeti ([birebirMesajiSikayetEt]; sohbet paketi
 ///   mesajın kimliği ve cihazdaki metniyle çağırır),
 /// - tayfa ayarları altındaki moderasyon kuyruğu: rotası
@@ -12,7 +12,8 @@
 ///   bunlarla `yonetimEkGirisleriProvider`'ı override eder).
 ///
 /// Şikâyet özelliği tayfa yönetimini import etmez (o, tayfa menüsündeki
-/// "Tayfayı şikâyet et" için bunu import eder; döngü olmaz).
+/// "Tayfayı şikâyet et" için bunu import eder; döngü olmaz). Kuyruktaki
+/// "Üye işlemleri" bu yüzden `uyeIslemleriProvider` kaydıyla bağlanır.
 library;
 
 import 'package:flutter/material.dart';

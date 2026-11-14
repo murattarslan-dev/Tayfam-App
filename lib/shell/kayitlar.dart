@@ -5,6 +5,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
+import 'package:tayfam/core/moduller/uye_islemleri.dart';
 import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
@@ -52,6 +53,8 @@ final List<Override> kayitOverridelari = [
   tayfaSilmeIptaliProvider.overrideWithValue(silmeIptalDugmesi),
   // Tayfa ayarlarındaki ek girişler: moderasyon kuyruğu (ADR-0018 §8).
   yonetimEkGirisleriProvider.overrideWithValue(yonetimEkGirisleri),
+  // Moderasyon kuyruğundaki "Üye işlemleri" (2026-11-13).
+  uyeIslemleriProvider.overrideWithValue(uyeIslemleriniAc),
   // Kişi profilinde "Mesaj gönder" (ADR-0018 §9).
   kisiProfiliEylemleriProvider.overrideWithValue(const [mesajGonderEylemi]),
   // Arkadaşlar ekranında "Kodumu paylaş" (2026-11-13).
