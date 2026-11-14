@@ -25,6 +25,7 @@ Future<void> _anketiAc(
   AnketEkrani(tayfaId: ornekTayfaId, anketId: anketId),
   themeMode: themeMode,
   tayfa: anketOverridelari(tasima),
+  yonlendirici: true,
 );
 
 Future<void> _listeyiAc(
@@ -277,6 +278,67 @@ void main() {
       await tester.tap(find.text('Şile feneri'));
       await tester.pumpAndSettle();
       expect(tasima.giden('GET', oyVerenlerYolu), isEmpty);
+    });
+  });
+
+  group('kişi profili (#185)', () {
+    testWidgets('oy verenler sayfasında satır', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = _tekAnket(
+        anketJson(anketId1, oyVeren: 2, oylar: [1, 1, 0], kendi: [secenekA]),
+        yanitlar: {
+          'GET $oyVerenlerYolu': yanit({
+            'voters': [
+              {'user_id': digerId, 'voted_at': '2026-11-10T11:00:00Z'},
+            ],
+          }),
+        },
+      );
+      await _anketiAc(tester, tasima);
+      await tester.tap(find.text('Belgrad ormanı'));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(BottomSheet),
+          matching: find.text('Ayşe Yılmaz'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(digerId), findsOneWidget);
+    });
+
+    testWidgets('sonuçlarda "Açan: <ad>"', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = _tekAnket(
+        anketJson(anketId1, oyVeren: 1, oylar: [1, 0, 0], kendi: [secenekA]),
+      );
+      await _anketiAc(tester, tasima);
+      await _dokun(tester, find.text('Açan: Ayşe Yılmaz'));
+      expect(kisiSayfasi(digerId), findsOneWidget);
+    });
+
+    for (final tema in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('oy verme alt çubuğundaki özet (${tema.name}, 2×, 320 dp)', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _anketiAc(
+          tester,
+          _tekAnket(anketJson(anketId1)),
+          themeMode: tema,
+        );
+        expect(tester.takeException(), isNull);
+        await _dokun(tester, find.text('Henüz oy yok · Açan: Ayşe Yılmaz'));
+        expect(kisiSayfasi(digerId), findsOneWidget);
+      });
+    }
+
+    testWidgets('açanın hesabı silinmişse dokunulamaz', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _anketiAc(tester, _tekAnket(anketJson(anketId1, acan: null)));
+      await _dokun(tester, find.textContaining(arbMetni('kullanici_silinmis')));
+      expect(herhangiKisiSayfasi(), findsNothing);
     });
   });
 

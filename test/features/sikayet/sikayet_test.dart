@@ -84,6 +84,7 @@ Future<void> _kuyruguAc(
   const ModerasyonKuyruguEkrani(tayfaId: ornekTayfaId),
   themeMode: themeMode,
   tayfa: sikayetOverridelari(tasima),
+  yonlendirici: true,
 );
 
 void main() {
@@ -620,6 +621,33 @@ void main() {
         expect(find.text(arbMetni('sikayet_uye_islemleri')), findsNothing);
       });
     }
+
+    testWidgets('şikâyet edilene ve sonuçlandırana dokununca kişi profili '
+        '(#185)', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      final tasima = SahteTayfaTasima({
+        'GET $sikayetlerYolu': (i) => i.sorgu['status'] == 'resolved'
+            ? kuyrukJson([
+                kuyrukSikayetiJson(
+                  tur: 'answer',
+                  hedef: cevapId,
+                  durum: 'resolved',
+                  sonuc: 'dismissed',
+                ),
+              ])
+            : kuyrukJson([kuyrukSikayetiJson()]),
+        'GET $duyuruYolu': yanit(duyuruJson()),
+      });
+      await _kuyruguAc(tester, tasima);
+
+      await _dokun(tester, find.text('Üye Kişi'));
+      expect(kisiSayfasi(uyeId), findsOneWidget);
+      await kisiSayfasindanDon(tester);
+
+      await _dokun(tester, find.text(arbMetni('sikayet_kuyruk_sonuclanan')));
+      await _dokun(tester, find.textContaining('Sonuçlandıran: Moderatör'));
+      expect(kisiSayfasi(moderatorId), findsOneWidget);
+    });
 
     testWidgets('sayfanın devamı varsa "Açık · N+"', (tester) async {
       ekranBoyutu(tester);

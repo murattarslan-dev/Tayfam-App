@@ -35,6 +35,7 @@ Future<void> _soruyuAc(
   SoruEkrani(tayfaId: ornekTayfaId, soruId: soruId),
   themeMode: themeMode,
   tayfa: soruOverridelari(tasima),
+  yonlendirici: true,
 );
 
 Future<void> _bolumuAc(WidgetTester tester, SahteTayfaTasima tasima) =>
@@ -258,6 +259,27 @@ void main() {
   });
 
   group('soru ekranı', () {
+    testWidgets('soru ve cevap yazarına dokununca kişi profili (#185)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      await _soruyuAc(tester, _detayTasimasi());
+
+      // Soru yazarı (ilk "Ayşe"), sonra kendi cevabın yazarı.
+      await _dokun(tester, find.text(digerAdi).first);
+      expect(kisiSayfasi(digerId), findsOneWidget);
+      await kisiSayfasindanDon(tester);
+      await _dokun(tester, find.text(benimAdim));
+      expect(kisiSayfasi(benimId), findsOneWidget);
+    });
+
+    testWidgets('yazarı silinmiş soruda dokunulamaz (#185)', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      await _soruyuAc(tester, _detayTasimasi(soruYazari: null));
+      await _dokun(tester, find.text(arbMetni('kullanici_silinmis')));
+      expect(herhangiKisiSayfasi(), findsNothing);
+    });
+
     testWidgets('soru düz metin; cevaplar ve faydalı sayaçları', (
       tester,
     ) async {

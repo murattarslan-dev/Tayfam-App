@@ -31,11 +31,13 @@ Future<void> _ac(
   SahteTayfaTasima tasima, {
   ThemeMode themeMode = ThemeMode.light,
   List<Override> ek = const [],
+  bool yonlendirici = false,
 }) => widgetAc(
   tester,
   ekran,
   themeMode: themeMode,
   tayfa: [...arkadasOverridelari(tasima), ...ek],
+  yonlendirici: yonlendirici,
 );
 
 Future<void> _dokun(WidgetTester tester, Finder hedef) async {
@@ -327,6 +329,47 @@ void main() {
       await _dokun(tester, find.text(arbMetni('arkadas_reddet')));
       expect(tasima.giden('DELETE', davetimYolu), hasLength(1));
       expect(find.text(arbMetni('arkadas_davet_reddedildi')), findsOneWidget);
+    });
+  });
+
+  group('kişi profiline gitme (#185)', () {
+    testWidgets('tayfa davetinde davet edenin adı', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const TayfaDavetleriEkrani(),
+        _doluTasima(),
+        yonlendirici: true,
+      );
+      await _dokun(tester, find.textContaining('Davet eden: '));
+      expect(kisiSayfasi(kisiId1), findsOneWidget);
+    });
+
+    testWidgets('arkadaş bulmada bulunan kişi', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = arkadasTasimasi({
+        'POST $referansYolu': yanit({
+          'user_id': kisiId1,
+          'display_name': kisiAdi(kisiId1),
+        }),
+      });
+      await _ac(tester, const ArkadasBulEkrani(), tasima, yonlendirici: true);
+      await tester.enterText(find.byType(TextField), sahteReferansKodu);
+      await _dokun(tester, find.text(arbMetni('arkadas_bul_ara')));
+      await _dokun(tester, find.text(kisiAdi(kisiId1)));
+      expect(kisiSayfasi(kisiId1), findsOneWidget);
+    });
+
+    testWidgets('arkadaşlık isteğinde satır (değişmedi)', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const ArkadasIstekleriEkrani(),
+        _doluTasima(),
+        yonlendirici: true,
+      );
+      await _dokun(tester, find.text(kisiAdi(kisiId1)));
+      expect(kisiSayfasi(kisiId1), findsOneWidget);
     });
   });
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/core/tema/tayfam_spacing.dart';
 import 'package:tayfam/core/tema/tema_baglami.dart';
@@ -14,6 +15,9 @@ const double _yanYanaEnBuyukOlcek = 1.3;
 ///
 /// Büyük yazıda eylem metnin altına iner. Satırın kendisi dokunulmaz;
 /// ekran okuyucu ad ve alt metni birlikte, eylemi ayrı düğme olarak okur.
+/// [kullaniciId] verilirse avatara ve ada dokununca kişi profili açılır
+/// ([KisiyeDokun]; issue #185); ekran okuyucu ad ve alt metni "`Ad`
+/// profilini aç" düğmesi olarak okur.
 class EylemliSatir extends StatelessWidget {
   const EylemliSatir({
     super.key,
@@ -21,7 +25,11 @@ class EylemliSatir extends StatelessWidget {
     required this.baslik,
     required this.eylem,
     this.alt,
+    this.kullaniciId,
   });
+
+  /// Satırdaki kişi; verilirse avatar ve ad kişi profilini açar.
+  final String? kullaniciId;
 
   /// Soldaki öğe (avatar). Süstür; ekran okuyucudan gizlenir.
   final Widget oncu;
@@ -40,7 +48,8 @@ class EylemliSatir extends StatelessWidget {
     final alt = this.alt;
     final yanYana =
         MediaQuery.textScalerOf(context).scale(1) <= _yanYanaEnBuyukOlcek;
-    final metinler = Semantics(
+    final kisi = kullaniciId;
+    final Widget metinler = Semantics(
       container: true,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -60,6 +69,13 @@ class EylemliSatir extends StatelessWidget {
         ],
       ),
     );
+    final Widget metinAlani = kisi == null
+        ? metinler
+        : KisiyeDokun(kullaniciId: kisi, ipucu: alt, child: metinler);
+    final Widget oncuAlani = kisi == null
+        ? ExcludeSemantics(child: oncu)
+        // Aynı kişiye giden ikinci alan; ekran okuyucu adı okur.
+        : KisiyeDokun(kullaniciId: kisi, ekranOkuyucu: false, child: oncu);
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: TayfamSizes.konusmaSatiri),
       child: Padding(
@@ -69,16 +85,16 @@ class EylemliSatir extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ExcludeSemantics(child: oncu),
+            oncuAlani,
             const SizedBox(width: TayfamSpacing.s12),
             Expanded(
               flex: 3,
               child: yanYana
-                  ? metinler
+                  ? metinAlani
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        metinler,
+                        metinAlani,
                         const SizedBox(height: TayfamSpacing.s8),
                         eylem,
                       ],

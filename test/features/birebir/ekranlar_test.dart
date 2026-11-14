@@ -8,6 +8,8 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
+import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
@@ -29,10 +31,12 @@ Future<void> _ac(
   SahteTayfaTasima tasima, {
   ThemeMode tema = ThemeMode.light,
   List<Override> ek = const [],
+  bool yonlendirici = false,
 }) => widgetAc(
   tester,
   ekran,
   themeMode: tema,
+  yonlendirici: yonlendirici,
   tayfa: birebirEkranOverridelari(
     tasima,
     e2e: true,
@@ -427,6 +431,99 @@ void main() {
       });
       expect(find.text('Ece'), findsNothing);
       expect(find.text(arbMetni('birebir_listeden_cikarildi')), findsOneWidget);
+    });
+  });
+
+  group('kişi profili (#185)', () {
+    final Finder avatar = find.ancestor(
+      of: find.byType(KimlikAvatari),
+      matching: find.byType(KisiyeDokun),
+    );
+
+    testWidgets('konuşma satırında avatar profili açar; silinmişte yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      await _ac(
+        tester,
+        const Scaffold(body: BirebirSekmesi()),
+        birebirTasimasi({
+          'GET $konusmalarYolu': (_) => konusmaListesiJson([
+            konusmaJson(konusmaId1),
+            konusmaJson(konusmaId3, karsi: null, durum: 'request_sent'),
+          ]),
+        }),
+        yonlendirici: true,
+      );
+      // Silinmiş hesabın satırında avatar dokunulmaz.
+      expect(
+        find.descendant(of: avatar, matching: find.byType(InkWell)),
+        findsOneWidget,
+      );
+      await tester.tap(avatar.first);
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(karsiId), findsOneWidget);
+    });
+
+    testWidgets('mesaj isteğinde avatar profili açar', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const MesajIstekleriEkrani(),
+        birebirTasimasi({
+          'GET $konusmalarYolu': (_) => konusmaListesiJson([
+            konusmaJson(konusmaId2, karsi: digerId, durum: 'request_received'),
+          ]),
+        }),
+        yonlendirici: true,
+      );
+      await tester.tap(avatar);
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(digerId), findsOneWidget);
+    });
+
+    testWidgets('reddedilende avatar ve ad profili açar; tek etiket', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final kulp = tester.ensureSemantics();
+      await _ac(
+        tester,
+        const ReddedilenlerEkrani(),
+        birebirTasimasi({
+          'GET $reddedilenlerYolu': (_) => reddedilenlerJson([konusmaId2]),
+        }),
+        yonlendirici: true,
+      );
+      expect(
+        find.bySemanticsLabel(
+          arbMetni('kisi_profilini_ac').replaceAll('{ad}', 'Ece'),
+        ),
+        findsOneWidget,
+      );
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await tester.tap(find.text('Ece'));
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(digerId), findsOneWidget);
+      await kisiSayfasindanDon(tester);
+      await tester.tap(avatar);
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(digerId), findsOneWidget);
+      kulp.dispose();
+    });
+
+    testWidgets('yeni konuşmada ortadaki avatar profili açar', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KisiKonusmasiEkrani(kullaniciId: karsiId),
+        _konusmaTasimasi(),
+        yonlendirici: true,
+      );
+      await tester.tap(avatar);
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(karsiId), findsOneWidget);
     });
   });
 

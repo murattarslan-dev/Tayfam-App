@@ -1765,6 +1765,19 @@
   "@kullanici_silinmis": {
     "description": "Hesabı silinmiş ya da artık erişilemeyen bir kişinin adı yerine görünen metin (katılımcı listesi, organizatör)."
   },
+  "kisi_profilini_ac": "{ad} profilini aç",
+  "@kisi_profilini_ac": {
+    "description": "Bir kişinin avatarına ya da adına dokununca kişi profilini açan alanın ekran okuyucu etiketi (issue #185).",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      }
+    }
+  },
+  "kisi_profili_gor": "Profili gör",
+  "@kisi_profili_gor": {
+    "description": "Üye işlemleri alttan sayfasının en üstünde kişinin profilini açan satır (Üyeler ekranı, moderasyon kuyruğu)."
+  },
   "etkinlik_aciklama_baslik": "Açıklama",
   "@etkinlik_aciklama_baslik": {
     "description": "Etkinlik detayında açıklama bölümünün başlığı."

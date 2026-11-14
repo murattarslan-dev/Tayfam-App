@@ -5,10 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
-import 'package:tayfam/features/arkadas/presentation/arkadas_ortak.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 

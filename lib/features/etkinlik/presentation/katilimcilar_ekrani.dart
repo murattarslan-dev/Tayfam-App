@@ -7,6 +7,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -273,27 +274,42 @@ class _KatilimciSatiri extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            KimlikAvatari(kullaniciId: katilimci.userId),
-            const SizedBox(width: TayfamSpacing.s12),
+            // Avatar ve ada dokununca kişi profili (#185); düzeltme menüsü
+            // ayrı kalır.
             Expanded(
-              child: MergeSemantics(
-                child: Wrap(
-                  spacing: TayfamSpacing.s8,
-                  runSpacing: TayfamSpacing.s4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+              child: KisiyeDokun(
+                kullaniciId: katilimci.userId,
+                ipucu: katildi
+                    ? m.etkinlik_katildi
+                    : (duzeltme ? m.etkinlik_varis_yok : null),
+                child: Row(
                   children: [
-                    KullaniciAdiMetni(
-                      kullaniciId: katilimci.userId,
-                      style: context.yazi.titleSmall,
+                    KimlikAvatari(kullaniciId: katilimci.userId),
+                    const SizedBox(width: TayfamSpacing.s12),
+                    Expanded(
+                      child: Wrap(
+                        spacing: TayfamSpacing.s8,
+                        runSpacing: TayfamSpacing.s4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          KullaniciAdiMetni(
+                            kullaniciId: katilimci.userId,
+                            style: context.yazi.titleSmall,
+                          ),
+                          if (katildi)
+                            Etiket(
+                              metin: m.etkinlik_katildi,
+                              ton: EtiketTonu.teal,
+                              ikon: Icons.check,
+                            )
+                          else if (duzeltme)
+                            Text(
+                              m.etkinlik_varis_yok,
+                              style: context.yazi.bodySmall,
+                            ),
+                        ],
+                      ),
                     ),
-                    if (katildi)
-                      Etiket(
-                        metin: m.etkinlik_katildi,
-                        ton: EtiketTonu.teal,
-                        ikon: Icons.check,
-                      )
-                    else if (duzeltme)
-                      Text(m.etkinlik_varis_yok, style: context.yazi.bodySmall),
                   ],
                 ),
               ),

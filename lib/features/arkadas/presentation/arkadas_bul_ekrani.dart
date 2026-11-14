@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -188,8 +189,12 @@ class _BulunanKartiState extends ConsumerState<_BulunanKarti> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Semantics(
-              container: true,
+            // Bulunan kişinin avatarına ve adına dokununca kişi profili
+            // (#185).
+            KisiyeDokun(
+              kullaniciId: kisi.userId,
+              ad: kisi.displayName,
+              ipucu: altMetin,
               child: Row(
                 children: [
                   KullaniciAvatari(

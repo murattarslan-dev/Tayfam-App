@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
@@ -203,6 +204,12 @@ class _DavetAltMetni extends ConsumerWidget {
       KullaniciAdi(:final ad?) => ad,
       KullaniciAdi() => m.kullanici_silinmis,
     };
-    return Text(m.arkadas_davet_alt(ad, gun), style: stil);
+    final metin = m.arkadas_davet_alt(ad, gun);
+    // Davet edenin adına dokununca kişi profili (#185).
+    return KisiyeDokun(
+      kullaniciId: davetEden,
+      ipucu: metin,
+      child: Text(metin, style: stil),
+    );
   }
 }

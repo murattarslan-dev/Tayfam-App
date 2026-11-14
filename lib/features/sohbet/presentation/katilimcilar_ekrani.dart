@@ -264,6 +264,7 @@ class _KatilimciSatiri extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     return KisiSatiriIcerigi(
       kisi: kisi,
+      profileGit: true,
       altMetin: acan ? m.sohbet_katilimci_acan : null,
       sag: cikarGoster
           ? YikiciEylem(

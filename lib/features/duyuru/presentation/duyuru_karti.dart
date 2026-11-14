@@ -150,15 +150,28 @@ class DuyuruTarihi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final yerel = zaman.toLocal();
-    final tarih = m.duyuru_tarih(yerel, yerel);
     return Text(
-      duzenlendi ? m.duyuru_tarih_duzenlendi(tarih) : tarih,
+      duyuruTarihMetni(
+        AppLocalizations.of(context),
+        zaman,
+        duzenlendi: duzenlendi,
+      ),
       style: context.yazi.labelSmall?.copyWith(
         color: context.renkler.metinIkincil,
         fontWeight: FontWeight.w400,
       ),
     );
   }
+}
+
+/// Duyurunun yayın tarihi metni (cihazın saat diliminde); düzenlendiyse
+/// "düzenlendi" ekiyle.
+String duyuruTarihMetni(
+  AppLocalizations m,
+  DateTime zaman, {
+  bool duzenlendi = false,
+}) {
+  final yerel = zaman.toLocal();
+  final tarih = m.duyuru_tarih(yerel, yerel);
+  return duzenlendi ? m.duyuru_tarih_duzenlendi(tarih) : tarih;
 }

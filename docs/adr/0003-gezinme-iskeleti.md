@@ -88,6 +88,25 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
 
 ## Notlar
 
+- **2026-11-14 (platform sahibi, sohbette; issue #185): kişiye dokununca
+  kişi profili.** Bir kullanıcının avatarı ya da adı nerede görünüyorsa
+  oraya dokununca `Adresler.kisi(id)` `context.push` ile açılır (geri tuşu
+  önceki ekrana döner; kendi adında kendi kişi profili). Tek bileşen:
+  `core/kullanici/kisiye_dokun.dart` (`KisiyeDokun`, `kisiyiAc`;
+  `kisiyiAc` arkadaş özelliğinden core'a taşındı). Dokunma alanı en az
+  48 dp; ekran okuyucu "`Ad` profilini aç" (`kisi_profilini_ac`) okur,
+  kaybolan bağlam (tarih, "Organizatör") ipucu olarak verilir; avatar süs
+  kalır. Satırın kendi eylemi (mesaja uzun basma, "Çıkar", "Faydalı",
+  konuşmayı açma) değişmez; profil yalnızca avatar ve ada dokununca
+  açılır. Üyeler ekranında satır üye işlemleri sayfasını açar ve sayfanın
+  en üstünde "Profili gör" (`kisi_profili_gor`) vardır (moderasyon
+  kuyruğundaki "Üye işlemleri" de aynı sayfa); işlem yoksa satır doğrudan
+  profili açar. İstisnalar: seçim ekranları (kanal kişi seçici: dokunmak
+  seçer), gizli ankette oy verenler (hiç gösterilmez), silinmiş hesap
+  (kimlik yok ya da ad önbelleği "Silinmiş kullanıcı"). Profil
+  açılamazsa (engel, bulunamadı) kişi profili ekranının hata durumu
+  gösterilir; istemci önceden karar vermez. Kimlik adreste girdidir;
+  loglanmaz.
 - **2026-11-13 (platform sahibi, sohbette; tayfa ana sayfası yeniden
   tasarımı):** Tayfa sekmesindeki ayrı modül alt gezinmesi kaldırıldı
   (`TayfaModule.gezinmeGirisi`). Modüllere tayfa ana sayfasındaki

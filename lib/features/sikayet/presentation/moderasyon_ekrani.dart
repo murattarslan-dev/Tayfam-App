@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/problem_messages.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/moduller/uye_islemleri.dart';
@@ -572,17 +573,33 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(m.sikayet_kuyruk_sikayet_edilen, style: ikincil),
-            KimlikAvatari(kullaniciId: konu, cap: TayfamSizes.avatarYigini),
-            if (konu != null)
-              KullaniciAdiMetni(
-                kullaniciId: konu,
-                style: yazi.bodyMedium?.copyWith(
-                  color: r.metin,
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            else
-              Text(m.kullanici_silinmis, style: ikincil),
+            // Şikâyet edilenin avatarına ve adına dokununca kişi profili
+            // (#185). Şikâyet edenin kimliği hiçbir yerde gösterilmez.
+            KisiyeDokun(
+              kullaniciId: konu,
+              ipucu: m.sikayet_kuyruk_sikayet_edilen,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  KimlikAvatari(
+                    kullaniciId: konu,
+                    cap: TayfamSizes.avatarYigini,
+                  ),
+                  const SizedBox(width: TayfamSpacing.s8),
+                  Flexible(
+                    child: konu != null
+                        ? KullaniciAdiMetni(
+                            kullaniciId: konu,
+                            style: yazi.bodyMedium?.copyWith(
+                              color: r.metin,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          )
+                        : Text(m.kullanici_silinmis, style: ikincil),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ],
@@ -668,7 +685,13 @@ class _SonuclandiranSatiri extends ConsumerWidget {
       KullaniciAdi(:final ad?) => ad,
       KullaniciAdi() => m.kullanici_silinmis,
     };
-    return Text(m.sikayet_kuyruk_sonuclandiran_satiri(ad, goreli), style: stil);
+    // Sonuçlandıranın adına dokununca kişi profili (#185).
+    final satir = m.sikayet_kuyruk_sonuclandiran_satiri(ad, goreli);
+    return KisiyeDokun(
+      kullaniciId: kimlik,
+      ipucu: satir,
+      child: Text(satir, style: stil),
+    );
   }
 }
 

@@ -6,7 +6,9 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
+import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_ekrani.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_formu.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
@@ -19,8 +21,15 @@ Future<void> _ac(
   Widget ekran,
   SohbetOrtami ortam, {
   ThemeMode tema = ThemeMode.light,
+  bool yonlendirici = false,
 }) async {
-  await widgetAc(tester, ekran, themeMode: tema, tayfa: ortam.overridelar);
+  await widgetAc(
+    tester,
+    ekran,
+    themeMode: tema,
+    tayfa: ortam.overridelar,
+    yonlendirici: yonlendirici,
+  );
   await tester.pumpAndSettle();
 }
 
@@ -113,6 +122,93 @@ void main() {
     await tester.tap(arsiv);
     await tester.pumpAndSettle();
     expect(find.text('eski-konvoy'), findsOneWidget);
+  });
+
+  group('kişi profili (#185)', () {
+    SohbetOrtami ortam() => SohbetOrtami(
+      rol: 'admin',
+      mesajlar: [mesajJson(mesajId2, metin: 'selam')],
+    );
+
+    testWidgets('gönderenin avatarı profili açar; 48 dp ve etiketli', (
+      tester,
+    ) async {
+      final kulp = tester.ensureSemantics();
+      await _ac(
+        tester,
+        const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+        ortam(),
+        yonlendirici: true,
+      );
+      final avatar = find.ancestor(
+        of: find.byType(KimlikAvatari),
+        matching: find.byType(KisiyeDokun),
+      );
+      expect(avatar, findsOneWidget);
+      expect(
+        tester.getSize(avatar).width,
+        greaterThanOrEqualTo(TayfamSizes.dokunmaMin),
+      );
+      expect(
+        find.bySemanticsLabel(
+          arbMetni('kisi_profilini_ac').replaceAll('{ad}', 'Ayşe'),
+        ),
+        findsOneWidget,
+      );
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await tester.tap(avatar);
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(digerId), findsOneWidget);
+      kulp.dispose();
+    });
+
+    testWidgets('balondaki ad profili açar; balona uzun basma değişmez', (
+      tester,
+    ) async {
+      await _ac(
+        tester,
+        const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+        ortam(),
+        yonlendirici: true,
+      );
+      await tester.longPress(find.text('selam'));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('sohbet_mesaj_islemleri')), findsOneWidget);
+      expect(herhangiKisiSayfasi(), findsNothing);
+      await tester.tapAt(Offset.zero);
+      await tester.pumpAndSettle();
+
+      // Balonun kendisine dokunmak profili açmaz.
+      await tester.tap(find.text('selam'));
+      await tester.pumpAndSettle();
+      expect(herhangiKisiSayfasi(), findsNothing);
+
+      await tester.tap(find.text('Ayşe'));
+      await tester.pumpAndSettle();
+      expect(kisiSayfasi(digerId), findsOneWidget);
+    });
+
+    testWidgets('silinmiş hesabın mesajında avatar ve ad dokunulmaz', (
+      tester,
+    ) async {
+      await _ac(
+        tester,
+        const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+        SohbetOrtami(mesajlar: [mesajJson(mesajId2, yazar: null)]),
+        yonlendirici: true,
+      );
+      expect(find.byType(KisiyeDokun), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(KisiyeDokun),
+          matching: find.byType(InkWell),
+        ),
+        findsNothing,
+      );
+      await tester.tap(find.text(arbMetni('kullanici_silinmis')));
+      await tester.pumpAndSettle();
+      expect(herhangiKisiSayfasi(), findsNothing);
+    });
   });
 
   testWidgets('üye başkasının mesajına uzun basınca işlem sayfası açılmaz', (

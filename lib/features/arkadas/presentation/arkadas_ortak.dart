@@ -1,17 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
-
-/// [kullaniciId]'nin profilini açar (sekmelerin üstünde; geri tuşu
-/// önceki ekrana döner).
-void kisiyiAc(BuildContext context, String kullaniciId) {
-  unawaited(context.push(Adresler.kisi(kullaniciId)));
-}
 
 /// Üst üste binen küçük avatarlar (tasarım: Profil-Ana "Arkadaşların",
 /// Profil-Arkadaslar istek kartı): her biri kart renginde ince halkalı,

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
+import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/anket/application/anket_kurallari.dart';
@@ -148,23 +149,28 @@ class _OyVerenSatiri extends ConsumerWidget {
       KullaniciAdi() => m.kullanici_silinmis,
     };
     final kendisi = ref.watch(kendisiMiProvider(kullaniciId));
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: TayfamSpacing.s56),
-      child: Padding(
-        padding: const EdgeInsets.all(TayfamSpacing.s8),
-        child: Row(
-          children: [
-            KimlikAvatari(kullaniciId: kullaniciId),
-            const SizedBox(width: TayfamSpacing.s12),
-            Expanded(
-              child: Text(
-                kendisi ? m.anket_oy_veren_sen(ad) : ad,
-                style: context.yazi.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+    // Satıra dokununca oy verenin kişi profili açılır (#185). Gizli
+    // ankette bu sayfa hiç açılmaz (kesin kural 7).
+    return KisiyeDokun(
+      kullaniciId: kullaniciId,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: TayfamSpacing.s56),
+        child: Padding(
+          padding: const EdgeInsets.all(TayfamSpacing.s8),
+          child: Row(
+            children: [
+              KimlikAvatari(kullaniciId: kullaniciId),
+              const SizedBox(width: TayfamSpacing.s12),
+              Expanded(
+                child: Text(
+                  kendisi ? m.anket_oy_veren_sen(ad) : ad,
+                  style: context.yazi.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
