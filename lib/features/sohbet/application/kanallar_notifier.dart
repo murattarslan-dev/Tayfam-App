@@ -7,6 +7,7 @@ import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/sohbet/application/kanal_kitlesi.dart';
 import 'package:tayfam/features/sohbet/data/kanal_deposu.dart';
 import 'package:tayfam/features/sohbet/data/kanal_mesaj_isi.dart';
 
@@ -120,11 +121,16 @@ class KanallarNotifier extends AsyncNotifier<List<Channel>> {
     }
   }
 
-  /// Kanal açar (yönetim; kararı sunucu verir). Hata fırlatılır.
+  /// Kanal açar; hata fırlatılır (Tayfam-Api #183). Kitle [kitle]:
+  /// etkinlik kanalında [etkinlikId] zorunludur, seçili kişi kanalında
+  /// [kisiler] ilk üyelerdir (açan her zaman içeridedir; boşsa
+  /// gönderilmez). Kim açabileceğine sunucu karar verir.
   Future<Channel> olustur({
     required String ad,
-    required bool yonetimKanali,
+    required KanalKitlesi kitle,
     required int yavasModSaniye,
+    String? etkinlikId,
+    List<String> kisiler = const [],
   }) async {
     final kanal = await ref
         .read(kanalDeposuProvider)
@@ -132,10 +138,12 @@ class KanallarNotifier extends AsyncNotifier<List<Channel>> {
           tayfaId,
           ChannelCreateRequest(
             name: ad,
-            visibility: yonetimKanali
-                ? ChannelCreateRequestVisibility.staff
-                : ChannelCreateRequestVisibility.members,
+            visibility: kitle.olusturmaDegeri,
             slowModeSeconds: yavasModSaniye,
+            eventId: kitle == KanalKitlesi.etkinlik ? etkinlikId : null,
+            memberUserIds: kitle == KanalKitlesi.secili && kisiler.isNotEmpty
+                ? List.unmodifiable(kisiler)
+                : null,
           ),
         );
     if (ref.mounted) kanaliYaz(kanal);
@@ -143,17 +151,20 @@ class KanallarNotifier extends AsyncNotifier<List<Channel>> {
   }
 
   /// Kanalın adını, görünürlüğünü ya da yavaş modunu değiştirir; yalnızca
-  /// değişen alanlar gönderilir. Değişen yoksa istek gitmez.
+  /// değişen alanlar gönderilir. Değişen yoksa istek gitmez. Etkinlik ve
+  /// seçili kişi kanallarının görünürlüğü değiştirilemez (sözleşme);
+  /// onlarda [yonetimKanali] yok sayılır.
   Future<Channel> guncelle(
     Channel eski, {
     required String ad,
     required bool yonetimKanali,
     required int yavasModSaniye,
   }) async {
+    final sabit = KanalKitlesi.kanaldan(eski).sabit;
     final eskiYonetim = eski.visibility == ChannelVisibility.staff;
     final istek = ChannelUpdateRequest(
       name: ad == eski.name ? null : ad,
-      visibility: yonetimKanali == eskiYonetim
+      visibility: sabit || yonetimKanali == eskiYonetim
           ? null
           : (yonetimKanali
                 ? ChannelUpdateRequestVisibility.staff
@@ -168,6 +179,29 @@ class KanallarNotifier extends AsyncNotifier<List<Channel>> {
         .guncelle(tayfaId, eski.id, istek);
     if (ref.mounted) kanaliYaz(kanal);
     return kanal;
+  }
+
+  /// Seçili kişi kanalına [kisiler]'i ekler (yalnızca kanalı açan; kararı
+  /// sunucu verir). Dönen kanal (yeni kişi sayısıyla) listeye yazılır.
+  Future<Channel> katilimciEkle(String kanalId, List<String> kisiler) async {
+    final kanal = await ref
+        .read(kanalDeposuProvider)
+        .katilimciEkle(tayfaId, kanalId, kisiler);
+    if (ref.mounted) kanaliYaz(kanal);
+    return kanal;
+  }
+
+  /// Seçili kişi kanalından [kisi]'yi çıkarır. Ardından kanal yeniden
+  /// okunur ki kişi sayısı güncellensin; okunamazsa eldeki kalır.
+  Future<void> katilimciCikar(String kanalId, String kisi) async {
+    final depo = ref.read(kanalDeposuProvider);
+    await depo.katilimciCikar(tayfaId, kanalId, kisi);
+    try {
+      final kanal = await depo.kanal(tayfaId, kanalId);
+      if (ref.mounted) kanaliYaz(kanal);
+    } on Exception {
+      // Sayı bir sonraki yenilemede düzelir.
+    }
   }
 
   /// Kanalı arşivler ya da arşivden çıkarır.
@@ -292,7 +326,25 @@ Channel _okunmamisIle(Channel k, int sayi) => Channel(
   updatedAt: k.updatedAt,
   unreadCount: sayi,
   lastReadMessageId: k.lastReadMessageId,
+  eventId: k.eventId,
+  memberCount: k.memberCount,
+  archiveAt: k.archiveAt,
 );
+
+/// [etkinlikId] etkinliğinin görebildiğin kanalı: arşivlenmemiş olan
+/// önce; yoksa `null`. Etkinlik kanalını yalnızca kitlesi görür
+/// (Tayfam-Api #183).
+Channel? etkinlikKanali(List<Channel> kanallar, String etkinlikId) {
+  Channel? arsivde;
+  for (final k in kanallar) {
+    if (k.visibility != ChannelVisibility.event || k.eventId != etkinlikId) {
+      continue;
+    }
+    if (k.archivedAt == null) return k;
+    arsivde ??= k;
+  }
+  return arsivde;
+}
 
 /// Tayfanın kanalları (`family(tayfaId)` + `autoDispose`; ADR-0001).
 final kanallarProvider = AsyncNotifierProvider.autoDispose

@@ -8,8 +8,10 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/sohbet/application/kanal_kitlesi.dart';
 import 'package:tayfam/features/sohbet/application/kanallar_notifier.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_formu.dart';
+import 'package:tayfam/features/sohbet/presentation/kanal_ortak.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -182,10 +184,13 @@ class _TayfaSatiri extends ConsumerWidget {
   }
 }
 
-/// Kanal listesindeki bir satır (tasarım: Sohbet-Kanallar): ikon kutusu
-/// (# ya da yönetim kanalında kilit; arşivde kutu), ad (okunmamışsa kalın)
-/// ve yönetim kanalında "Yönetim" etiketi; alt metinde yavaş mod ya da
-/// yönetim açıklaması; okunmamışsa sayı rozeti ("99+" üstü).
+/// Kanal listesindeki bir satır (tasarım: Sohbet-Kanallar,
+/// Sohbet-Kanallar-Ozel): ikon kutusu (#, yönetimde kilit, etkinlikte
+/// takvim, seçili kişilerde kişiler; arşivde kutu), ad (okunmamışsa kalın)
+/// ve kitle etiketi ("Yönetim", "Etkinlik", "Seçili kişiler"); alt metinde
+/// yavaş mod, yönetim açıklaması ya da kişi sayısı (`member_count`);
+/// okunmamışsa sayı rozeti ("99+" üstü). Etkinliğin adı sözleşmede
+/// kanalla dönmez; gösterilmez.
 class KanalSatiri extends StatelessWidget {
   const KanalSatiri({super.key, required this.kanal, required this.onTap});
 
@@ -197,12 +202,26 @@ class KanalSatiri extends StatelessWidget {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final arsivde = kanal.archivedAt != null;
-    final yonetim = kanal.visibility == ChannelVisibility.staff;
+    final kitle = KanalKitlesi.kanaldan(kanal);
     final okunmamis = arsivde ? 0 : (kanal.unreadCount ?? 0);
     final yavas = kanal.slowModeSeconds;
+    final kisiSayisi = kanal.memberCount;
+    final kisiMetni = kisiSayisi == null
+        ? null
+        : m.sohbet_kanal_kisi_sayisi(kisiSayisi);
     final altMetin = yavas > 0
         ? m.sohbet_yavas_mod_bilgi(yavas)
-        : (yonetim ? m.sohbet_form_yonetim_aciklama : null);
+        : switch (kitle) {
+            KanalKitlesi.yonetim => m.sohbet_form_yonetim_aciklama,
+            KanalKitlesi.etkinlik || KanalKitlesi.secili => kisiMetni,
+            KanalKitlesi.herkes => null,
+          };
+    final etiket = switch (kitle) {
+      KanalKitlesi.yonetim => m.sohbet_kanal_yonetim,
+      KanalKitlesi.etkinlik => m.sohbet_kanal_etkinlik,
+      KanalKitlesi.secili => m.sohbet_kanal_secili,
+      KanalKitlesi.herkes => null,
+    };
     return ListeKartiSatiri(
       onTap: onTap,
       child: ConstrainedBox(
@@ -235,7 +254,7 @@ class KanalSatiri extends StatelessWidget {
                               : FontWeight.w600,
                         ),
                       ),
-                      if (yonetim) Etiket(metin: m.sohbet_kanal_yonetim),
+                      if (etiket != null) Etiket(metin: etiket),
                     ],
                   ),
                   if (altMetin != null)
@@ -263,13 +282,6 @@ class KanalSatiri extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Kanalın ikonu: arşivde kutu, yönetim kanalında kilit, diğerlerinde #.
-IconData kanalIkonu(Channel kanal) {
-  if (kanal.archivedAt != null) return Icons.inventory_2_outlined;
-  if (kanal.visibility == ChannelVisibility.staff) return Icons.lock_outline;
-  return Icons.tag;
 }
 
 /// Kanalın ikon kutusu: tint-brand zemin, 12 px köşe, tint-brand üstü ikon.

@@ -18,10 +18,13 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/sohbet/application/kanal_akisi_notifier.dart';
+import 'package:tayfam/features/sohbet/application/kanal_kitlesi.dart';
 import 'package:tayfam/features/sohbet/application/kanallar_notifier.dart';
 import 'package:tayfam/features/sohbet/data/kanal_mesaj_isi.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_formu.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_listesi.dart';
+import 'package:tayfam/features/sohbet/presentation/kanal_ortak.dart';
+import 'package:tayfam/features/sohbet/presentation/katilimcilar_ekrani.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -42,7 +45,13 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// - Uzun basınca "Mesaj işlemleri" alttan sayfası: kendi mesajın ya da
 ///   yönetimse "Mesajı sil"; silinmiş ve geri alınabilir mesajda yönetime
 ///   "Geri al". Kanal mesajı şikâyeti sözleşmede yoktur.
-/// - Kanala erişim kalmazsa Sohbet sekmesine dönülür.
+/// - Kanala erişim kalmazsa (ör. seçili kişi kanalından çıkarıldın;
+///   sunucu aboneliği keser) Sohbet sekmesine dönülür.
+/// - Etkinlik ve seçili kişi kanalında üst çubukta kitle ve kişi sayısı;
+///   "Katılımcıları gör" katılımcılar ekranını açar (Tayfam-Api #183).
+/// - Etkinlik bitince etkinlik kanalının üstünde kapatılamayan sarı
+///   kapanış bandı (tasarım: Kanal-Etkinlik-Bitti); akış kayarken üstte
+///   kalır. Arşivde yazma alanının yerinde arşiv bilgisi.
 ///
 /// Mesaj metni yalnızca bellekte ve ekrandadır; loglanmaz, diske yazılmaz.
 class KanalEkrani extends ConsumerStatefulWidget {
@@ -192,6 +201,13 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
     final kalan = bitis == null ? 0 : bitis.difference(simdi).inSeconds + 1;
     final bekle = bitis != null && bitis.isAfter(simdi) ? kalan : 0;
     final yavas = kanal?.slowModeSeconds ?? 0;
+    final kitle = kanal == null ? null : KanalKitlesi.kanaldan(kanal);
+    final altBaslik = kanal == null ? null : _altBaslik(m, kanal, ozet.ad);
+    final arsivZamani = kanal?.archiveAt;
+    final bant =
+        kanal == null || kanal.archivedAt != null || arsivZamani == null
+        ? null
+        : kapanisBandi(arsivZamani, simdi);
 
     return Scaffold(
       appBar: AppBar(
@@ -220,9 +236,9 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
                           overflow: TextOverflow.ellipsis,
                           style: context.yazi.titleMedium,
                         ),
-                        if (ozet.ad case final tayfaAdi?)
+                        if (altBaslik != null)
                           Text(
-                            tayfaAdi,
+                            altBaslik,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: context.yazi.labelSmall?.copyWith(
@@ -236,6 +252,12 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
                 ],
               ),
         actions: [
+          if (kanal != null && (kitle?.sabit ?? false))
+            IconButton(
+              tooltip: m.sohbet_katilimcilari_gor,
+              icon: const Icon(Icons.group_outlined),
+              onPressed: () => unawaited(katilimcilariAc(context, _kanal)),
+            ),
           if (yonetimde && kanal != null)
             IconButton(
               tooltip: m.sohbet_kanal_ayarlari,
@@ -248,6 +270,7 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
       ),
       body: Column(
         children: [
+          if (bant != null) _KapanisBandi(bant: bant),
           Expanded(
             child: switch (durum) {
               AsyncValue(value: final akis?) => _MesajListesi(
@@ -294,6 +317,89 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
               ust: yavas > 0 ? _YavasModSatiri(saniye: yavas) : null,
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Üst çubuktaki alt metin: etkinlik kanalında "Etkinlik kanalı · 24
+/// kişi" (arşivde "Etkinlik kanalı · arşivde"), seçili kişi kanalında
+/// "Seçili kişiler · 5 kişi", diğerlerinde tayfanın adı.
+String? _altBaslik(AppLocalizations m, Channel kanal, String? tayfaAdi) {
+  final sayi = kanal.memberCount;
+  switch (KanalKitlesi.kanaldan(kanal)) {
+    case KanalKitlesi.etkinlik:
+      if (kanal.archivedAt != null) return m.sohbet_kanal_alt_arsiv;
+      if (sayi == null) return m.sohbet_kanal_alt_etkinlik_sayisiz;
+      return m.sohbet_kanal_alt_etkinlik(sayi);
+    case KanalKitlesi.secili:
+      if (sayi == null) return tayfaAdi;
+      return m.sohbet_kanal_alt_secili(sayi);
+    case KanalKitlesi.herkes || KanalKitlesi.yonetim:
+      return tayfaAdi;
+  }
+}
+
+/// Etkinlik kanalının kapanış bandı (tasarım: Kanal-Etkinlik-Bitti):
+/// tint-mango zemin, ikon, başlık ve arşiv tarihi. Kapatılamaz; akışın
+/// üstünde sabittir. Ekran okuyucuya durum olarak okunur.
+class _KapanisBandi extends StatelessWidget {
+  const _KapanisBandi({required this.bant});
+
+  final KapanisBandi bant;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    return Semantics(
+      liveRegion: true,
+      container: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: r.tintMango,
+          border: Border(
+            bottom: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: TayfamSpacing.kenarMobil,
+            vertical: TayfamSpacing.s12,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.inventory_2_outlined,
+                  size: TayfamSizes.ikon,
+                  color: r.tintMangoUstu,
+                ),
+              ),
+              const SizedBox(width: TayfamSpacing.s12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      kapanisBasligi(m, bant),
+                      style: context.yazi.titleSmall?.copyWith(
+                        color: r.tintMangoUstu,
+                      ),
+                    ),
+                    Text(
+                      kapanisAciklamasi(m, bant),
+                      style: context.yazi.bodySmall?.copyWith(
+                        color: r.tintMangoUstu,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

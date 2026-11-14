@@ -8,6 +8,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
+import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/sohbet/data/kanal_deposu.dart';
 
 import '../../core/realtime/sahte_soket.dart';
@@ -22,6 +23,18 @@ const String mesajId2 = '33333333-3333-4333-8333-333333333332';
 const String mesajId3 = '33333333-3333-4333-8333-333333333333';
 const String benimId = '44444444-4444-4444-8444-444444444441';
 const String digerId = '44444444-4444-4444-8444-444444444442';
+const String ucuncuId = '44444444-4444-4444-8444-444444444443';
+const String sohbetEtkinlikId = '55555555-5555-4555-8555-555555555551';
+
+/// Kanal uçlarının yolları.
+const String kanallarYolu = '/v1/tayfas/{tayfa_id}/channels';
+const String kanalYolu = '/v1/tayfas/{tayfa_id}/channels/{channel_id}';
+const String kanalKisileriYolu =
+    '/v1/tayfas/{tayfa_id}/channels/{channel_id}/members';
+const String kanalKisisiYolu =
+    '/v1/tayfas/{tayfa_id}/channels/{channel_id}/members/{user_id}';
+const String tayfaUyeleriYolu = '/v1/tayfas/{tayfa_id}/members';
+const String tayfaEtkinlikleriYolu = '/v1/tayfas/{tayfa_id}/events';
 
 /// `Channel` JSON'u.
 Map<String, Object?> kanalJson(
@@ -31,16 +44,33 @@ Map<String, Object?> kanalJson(
   bool yonetim = false,
   bool arsiv = false,
   int yavas = 0,
+  String? gorunurluk,
+  String? etkinlik,
+  int? kisiSayisi,
+  DateTime? arsivZamani,
+  String? acan,
 }) => {
   'id': id,
   'tayfa_id': ornekTayfaId,
   'name': ad,
-  'visibility': yonetim ? 'staff' : 'members',
+  'visibility': gorunurluk ?? (yonetim ? 'staff' : 'members'),
   'slow_mode_seconds': yavas,
+  'creator_user_id': ?acan,
   'archived_at': arsiv ? '2026-11-10T10:00:00Z' : null,
   'created_at': '2026-11-01T10:00:00Z',
   'updated_at': '2026-11-01T10:00:00Z',
   'unread_count': okunmamis,
+  'event_id': ?etkinlik,
+  'member_count': ?kisiSayisi,
+  'archive_at': ?arsivZamani?.toUtc().toIso8601String(),
+};
+
+/// Tayfa üyesi (`Membership`) JSON'u.
+Map<String, Object?> sohbetUyeJson(String kisi, {String rol = 'member'}) => {
+  'tayfa_id': ornekTayfaId,
+  'user_id': kisi,
+  'role': rol,
+  'status': 'active',
 };
 
 /// `ChannelMessage` JSON'u.
@@ -83,6 +113,9 @@ final class SohbetOrtami {
     List<Map<String, Object?>>? mesajlar,
     String rol = 'member',
     this.aktifTayfaVar = true,
+    List<String>? katilimcilar,
+    List<Map<String, Object?>>? etkinlikler,
+    this.simdi,
   }) {
     tasima.yanitlar.addAll({
       'GET /v1/tayfas/{tayfa_id}/channels': (_) => {
@@ -92,6 +125,19 @@ final class SohbetOrtami {
         'messages': mesajlar ?? <Object?>[],
       },
       'PUT /v1/tayfas/{tayfa_id}/channels/{channel_id}/read': (_) => null,
+      'GET $kanalKisileriYolu': (_) => {
+        'user_ids': katilimcilar ?? [benimId, digerId],
+      },
+      'GET $tayfaUyeleriYolu': (_) => {
+        'members': [
+          sohbetUyeJson(benimId, rol: 'admin'),
+          sohbetUyeJson(digerId),
+          sohbetUyeJson(ucuncuId, rol: 'moderator'),
+        ],
+      },
+      'GET $tayfaEtkinlikleriYolu': (_) => {
+        'events': etkinlikler ?? const <Object?>[],
+      },
       'GET /v1/tayfas': (_) => listeJson([etkinJson(ornekTayfaId, rol: rol)]),
       'GET /v1/tayfas/{tayfa_id}': (i) =>
           gorunumJson(i.yolParametreleri['tayfa_id']!, rol: rol),
@@ -115,6 +161,9 @@ final class SohbetOrtami {
   /// `false` ise aktif tayfa yoktur.
   final bool aktifTayfaVar;
 
+  /// Verilirse saat buna sabitlenir.
+  final DateTime? simdi;
+
   final SahteTayfaTasima tasima = SahteTayfaTasima();
   final SahteZamanlayici zaman = SahteZamanlayici();
   final List<SahteSoket> soketler = [];
@@ -137,12 +186,16 @@ final class SohbetOrtami {
       aktifTayfaVar ? SabitAktifTayfa.new : TayfasizAktifTayfa.new,
     ),
     kanalDeposuProvider.overrideWithValue(KanalDeposu(tasima)),
+    etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
+    if (simdi case final an?) simdiProvider.overrideWithValue(() => an),
     realtimeIstemcisiProvider.overrideWithValue(realtime),
     zamanlayiciProvider.overrideWithValue(zaman.kur),
     profilOkuyucuProvider.overrideWithValue(
-      (id) async => id == benimId
-          ? const KullaniciAdi('Ben')
-          : const KullaniciAdi('Ayşe'),
+      (id) async => switch (id) {
+        benimId => const KullaniciAdi('Ben'),
+        ucuncuId => const KullaniciAdi('Deniz'),
+        _ => const KullaniciAdi('Ayşe'),
+      },
     ),
     kendiKimligiOkuyucuProvider.overrideWithValue(() async => benimId),
   ];
