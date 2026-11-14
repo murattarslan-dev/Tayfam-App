@@ -256,6 +256,61 @@ göre mimari oturumunca belirlenir.
 
 ### Notlar
 
+- **2026-11-14 (issue #166; Tayfam-Api #183, PR #188, ADR-0024): kanal
+  kitlesi (§9).** Tasarım: Kanal-Kitle, Kanal-Kisi-Sec,
+  Kanal-Etkinlik-Sec, Kanal-Katilimcilar, Kanal-Katilimcilar-Etkinlik,
+  Sohbet-Kanallar-Ozel, Kanal-Etkinlik-Bitti, Kanal-Etkinlik-Arsiv,
+  Etkinlik-Sohbet. 2026-11-13 notundaki "tasarlandı, kodlanmadı" maddesi
+  böylece kapandı.
+  - **Yeni kanal:** "Kimler görsün?" dört seçenek: bütün tayfa
+    (`members`), yalnızca yönetim (`staff`), bir etkinliğe gelenler
+    (`event`, etkinlik seçiciyle `event_id`), seçtiğim kişiler
+    (`selected`, kişi seçiciyle `member_user_ids`, en çok 100; açan
+    gönderilmez, her zaman içeridedir). Düzenlemede yalnızca bütün tayfa
+    ile yönetim arasında geçilir; etkinlik ve seçili kişi kanallarının
+    kitlesi değişmez (sözleşme), onlarda "Katılımcılar" girişi vardır.
+    Yavaş mod seçimi formda kaldı.
+  - **Etkinlik seçici** tayfanın yaklaşan etkinliklerini
+    (`GET …/events`, ana sayfayla aynı durum) listeler; görebildiğin açık
+    kanalı olan etkinlik pasiftir. Seçilen etkinliğin başlığı ad boşsa
+    kanal adı olarak önerilir (Türkçe küçük harf, boşluk yerine tire, en
+    çok 40 karakter).
+  - **Liste ve kanal ekranı:** etkinlik ve seçili kişi kanallarında
+    "Etkinlik" / "Seçili kişiler" etiketi ve `member_count` ile "N kişi";
+    kanal ekranının üst çubuğunda "Etkinlik kanalı · N kişi" (arşivde
+    "… · arşivde") ve "Katılımcıları gör".
+  - **Katılımcılar:** `GET …/channels/{id}/members` (kimlikler; adlar
+    profil önbelleğinden). Seçili kişi kanalında "Kişi ekle" ve "Çıkar"
+    yalnızca kanalı açana görünür (`creator_user_id` = kendi kimliğin);
+    yetkiyi sunucu verir. Çıkarmadan sonra kanal `GET …/channels/{id}`
+    ile yeniden okunur (kişi sayısı). Etkinlik kanalının listesi salt
+    okunurdur.
+  - **Kapanış bandı:** etkinlik bitince (arşive 7 gün ya da daha az
+    kalınca) sarı bant: "Kanal N gün sonra kapanacak", son gün "Kanal
+    yarın kapanacak", aynı gün "Kanal bugün HH:MM'de kapanacak"; hesap
+    `archive_at`'ten cihazın saat diliminde, takvim gününe göredir.
+    Saatin bulunma eki (`'da/'de/'ta/'te`) son okunan sayıdan seçilir.
+    Açıklamadaki tarih ek gerektirmesin diye "20 Kasım tarihinde
+    arşivlenir" biçimindedir. Bant kapatılamaz, akışın üstünde sabittir.
+  - **Etkinlik detayı:** "Sohbet" bölümü kabuktaki yuvayla
+    (`etkinlikSohbetiYuvasiProvider`) yerleşir; etkinlik paketi sohbet
+    paketini import etmez (sohbet etkinlik seçici için etkinliği import
+    eder; döngü yok). Görebildiğin kanal varsa kart (kişi sayısı,
+    okunmamış), yoksa organizatöre ve yönetime "Etkinlik sohbetini aç"
+    (bitiş ya da iptalden 7 gün sonrasına kadar). Katılım cevabın
+    değişince kanal listesi yenilenir.
+  - **Erişim kaybı:** çıkarılan kişinin aboneliğini sunucu keser
+    (`access_lost`); mevcut akışla kanal listeden düşer, açık kanal
+    ekranı bildirimle Sohbet'e döner, katılımcılar ekranı kapanır.
+  - **Boşluklar (sözleşmede yok, uydurulmadı):** etkinlik kanalı
+    satırında etkinliğin adı ("Boğaz sabah turu · 24 kişi") gösterilmez,
+    kanal etkinlik başlığını döndürmez. Katılımcı listesinde
+    "Organizatör" ve rol etiketleri yok (uç yalnızca kimlik döndürür).
+    Etkinlik seçici yalnızca bitmemiş etkinlikleri görür; bitişinin
+    üzerinden 7 günden az geçmiş etkinliğe kanal yalnızca etkinlik
+    detayından açılabilir. Kanalın kitlesinde olmayan yönetici, etkinliğin
+    kanalını göremediği için "Etkinlik sohbetini aç"ı görür; sunucu
+    `event-channel-exists` döndürür, liste yenilenir.
 - **2026-11-13 (issue #157): Şikâyet sayfası ve moderasyon kuyruğu
   yeniden tasarımı (§8).** Tasarım: Sikayet-Uye, Sikayet-Mesaj,
   Moderasyon-Kuyruk, Moderasyon-Sonuclandir, Moderasyon-Sonuclanan
@@ -290,7 +345,6 @@ göre mimari oturumunca belirlenir.
     cevapta "Geri al" (30 gün sınırını sunucu uygular). Sonuçlanan kartta
     not ve önizleme gösterilmez.
   - Şikâyet edenin kimliği hiçbir yerde gösterilmez (sözleşmede yok).
-
 - **2026-11-13 (platform sahibi, tasarım kararları; issue #163): kalan
   liste ekranlarının yeniden tasarımı (§7, §9; ADR-0015 §1).** Tasarım:
   `docs/tasarim/21-listeler-ve-kucuk-ekranlar/`.

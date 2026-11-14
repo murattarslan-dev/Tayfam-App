@@ -6,6 +6,8 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/features/sohbet/application/kanal_akisi_notifier.dart';
+import 'package:tayfam/features/sohbet/application/kanal_kisileri.dart';
+import 'package:tayfam/features/sohbet/application/kanal_kitlesi.dart';
 import 'package:tayfam/features/sohbet/application/kanallar_notifier.dart';
 
 import '../../yardimcilar.dart';
@@ -270,5 +272,152 @@ void main() {
           .single;
       expect(isaret.govde, {'message_id': mesajId2});
     });
+  });
+
+  group('kanal kitlesi (Tayfam-Api #183)', () {
+    test('okunmamış güncellenince etkinlik kimliği, kişi sayısı ve arşiv '
+        'zamanı korunur', () async {
+      final arsiv = DateTime.utc(2026, 11, 20, 18);
+      final o = SohbetOrtami(
+        kanallar: [
+          kanalJson(
+            kanalId2,
+            gorunurluk: 'event',
+            etkinlik: sohbetEtkinlikId,
+            kisiSayisi: 24,
+            arsivZamani: arsiv,
+            okunmamis: 3,
+          ),
+        ],
+      );
+      final k = _Kurulum(o);
+      k.kap.listen(kanallarProvider(ornekTayfaId), (_, _) {});
+      await k.okunmamislar();
+      k.kap.read(kanallarProvider(ornekTayfaId).notifier).okundu(kanalId2);
+      final kanal = k.kap
+          .read(kanallarProvider(ornekTayfaId))
+          .requireValue
+          .single;
+      expect(kanal.unreadCount, 0);
+      expect(kanal.eventId, sohbetEtkinlikId);
+      expect(kanal.memberCount, 24);
+      expect(kanal.archiveAt, arsiv);
+      expect(etkinlikKanali([kanal], sohbetEtkinlikId), kanal);
+    });
+
+    test('kanal açma isteği kitleye göre alan gönderir', () async {
+      final o = SohbetOrtami(kanallar: const []);
+      o.tasima.yanitlar['POST $kanallarYolu'] = (i) => kanalJson(
+        kanalId1,
+        gorunurluk: (i.govde! as Map<String, Object?>)['visibility']! as String,
+      );
+      final k = _Kurulum(o);
+      k.kap.listen(kanallarProvider(ornekTayfaId), (_, _) {});
+      await k.okunmamislar();
+      final n = k.kap.read(kanallarProvider(ornekTayfaId).notifier);
+      await n.olustur(
+        ad: 'parça-alımı',
+        kitle: KanalKitlesi.secili,
+        yavasModSaniye: 0,
+        kisiler: const [digerId, ucuncuId],
+      );
+      await n.olustur(
+        ad: 'boğaz-sabah-turu',
+        kitle: KanalKitlesi.etkinlik,
+        yavasModSaniye: 0,
+        etkinlikId: sohbetEtkinlikId,
+        kisiler: const [digerId],
+      );
+      await n.olustur(
+        ad: 'genel',
+        kitle: KanalKitlesi.herkes,
+        yavasModSaniye: 30,
+        etkinlikId: sohbetEtkinlikId,
+      );
+      final govdeler = [
+        for (final i in o.tasima.giden('POST', kanallarYolu)) i.govde,
+      ];
+      expect(govdeler, [
+        {
+          'name': 'parça-alımı',
+          'visibility': 'selected',
+          'slow_mode_seconds': 0,
+          'member_user_ids': [digerId, ucuncuId],
+        },
+        {
+          'name': 'boğaz-sabah-turu',
+          'visibility': 'event',
+          'slow_mode_seconds': 0,
+          'event_id': sohbetEtkinlikId,
+        },
+        {'name': 'genel', 'visibility': 'members', 'slow_mode_seconds': 30},
+      ]);
+    });
+
+    test('etkinlik ve seçili kişi kanalında görünürlük güncellenmez', () async {
+      final o = SohbetOrtami(
+        kanallar: [kanalJson(kanalId1, gorunurluk: 'selected', ad: 'eski')],
+      );
+      o.tasima.yanitlar['PATCH $kanalYolu'] = (_) =>
+          kanalJson(kanalId1, gorunurluk: 'selected', ad: 'yeni');
+      final k = _Kurulum(o);
+      k.kap.listen(kanallarProvider(ornekTayfaId), (_, _) {});
+      final liste = await k.kap.read(kanallarProvider(ornekTayfaId).future);
+      await k.kap
+          .read(kanallarProvider(ornekTayfaId).notifier)
+          .guncelle(
+            liste.single,
+            ad: 'yeni',
+            yonetimKanali: true,
+            yavasModSaniye: 0,
+          );
+      expect(o.tasima.giden('PATCH', kanalYolu).single.govde, {'name': 'yeni'});
+    });
+
+    test(
+      'kişi çıkarılınca kanal yeniden okunur, kişi listeden düşer',
+      () async {
+        final o = SohbetOrtami(
+          kanallar: [
+            kanalJson(
+              kanalId1,
+              gorunurluk: 'selected',
+              kisiSayisi: 3,
+              acan: benimId,
+            ),
+          ],
+          katilimcilar: [benimId, digerId, ucuncuId],
+        );
+        o.tasima.yanitlar['DELETE $kanalKisisiYolu'] = (_) => null;
+        o.tasima.yanitlar['GET $kanalYolu'] = (_) => kanalJson(
+          kanalId1,
+          gorunurluk: 'selected',
+          kisiSayisi: 2,
+          acan: benimId,
+        );
+        final k = _Kurulum(o);
+        k.kap.listen(kanallarProvider(ornekTayfaId), (_, _) {});
+        await k.okunmamislar();
+        k.kap.listen(katilimcilarProvider(_kanal1), (_, _) {});
+        await k.kap.read(katilimcilarProvider(_kanal1).future);
+        await k.kap
+            .read(kanallarProvider(ornekTayfaId).notifier)
+            .katilimciCikar(kanalId1, digerId);
+        k.kap.read(katilimcilarProvider(_kanal1).notifier).dus(digerId);
+        expect(
+          o.tasima.giden('DELETE', kanalKisisiYolu).single.yolParametreleri,
+          containsPair('user_id', digerId),
+        );
+        final kanal = k.kap
+            .read(kanallarProvider(ornekTayfaId))
+            .requireValue
+            .single;
+        expect(kanal.memberCount, 2);
+        expect(k.kap.read(katilimcilarProvider(_kanal1)).requireValue.ogeler, [
+          benimId,
+          ucuncuId,
+        ]);
+      },
+    );
   });
 }

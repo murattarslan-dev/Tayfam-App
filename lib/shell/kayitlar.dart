@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
@@ -62,6 +63,8 @@ final List<Override> kayitOverridelari = [
   katilimGorunurlukSatiriProvider.overrideWithValue(katilimGorunurlukSatiri),
   // Sohbet sekmesinin Birebir bölümü (ADR-0018 §9).
   birebirBolumuProvider.overrideWithValue(_birebirBolumu),
+  // Etkinlik detayındaki sohbet bölümü (Tayfam-Api #183).
+  etkinlikSohbetiYuvasiProvider.overrideWithValue(_etkinlikSohbeti),
   // Sohbet sekmesindeki parça seçicinin Birebir sayısı (2026-11-13).
   birebirOkunmamisYuvasiProvider.overrideWith(
     (ref) => ref.watch(birebirOkunmamisBilinenProvider),
@@ -90,6 +93,9 @@ const List<YonetimEkGirisi> yonetimEkGirisleri = [
 ];
 
 Widget _birebirBolumu(BuildContext context) => const BirebirSekmesi();
+
+Widget _etkinlikSohbeti(BuildContext context, Event etkinlik, Widget baslik) =>
+    EtkinlikSohbeti(etkinlik: etkinlik, baslik: baslik);
 
 Future<void> _birebirMesajSikayeti(
   BuildContext context, {
