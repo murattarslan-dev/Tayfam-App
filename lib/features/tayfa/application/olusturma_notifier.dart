@@ -63,6 +63,7 @@ final class OlusturmaDurumu {
     this.gonderiliyor = false,
     this.hata,
     this.olusturulan,
+    this.kurulan,
   });
 
   /// Sihirbaz açılınca bir kez üretilen `client_request_id`; aynı
@@ -96,6 +97,19 @@ final class OlusturmaDurumu {
   /// Başarıda oluşturulan tayfanın kimliği.
   final String? olusturulan;
 
+  /// Başarıda oluşturma yanıtındaki tayfa; "Tayfa kuruldu" ekranı yalnızca
+  /// bununla çizilir, ek istek yapılmaz (ADR-0014 Notlar 2026-11-13).
+  /// Yalnızca bellektedir.
+  final Tayfa? kurulan;
+
+  /// Sihirbaza bir şey girildi mi: ad, ilgi alanı, açıklama ya da
+  /// varsayılandan farklı katılım. Varsa kapatırken vazgeç onayı sorulur.
+  bool get girdiVar =>
+      ad.trim().isNotEmpty ||
+      ilgiler.isNotEmpty ||
+      aciklama.trim().isNotEmpty ||
+      katilim != JoinPolicy.approval;
+
   OlusturmaDurumu _degistir({
     int? adim,
     String? ad,
@@ -106,6 +120,7 @@ final class OlusturmaDurumu {
     bool gonderiliyor = false,
     Object? hata,
     String? olusturulan,
+    Tayfa? kurulan,
   }) => OlusturmaDurumu(
     istekKimligi: istekKimligi,
     adim: adim ?? this.adim,
@@ -117,14 +132,16 @@ final class OlusturmaDurumu {
     gonderiliyor: gonderiliyor,
     hata: hata,
     olusturulan: olusturulan,
+    kurulan: kurulan,
   );
 }
 
 /// Tayfa oluşturma sihirbazı (ADR-0014 §4): ad → ilgi alanları →
 /// katılım ve açıklama → `POST /v1/tayfas`.
 ///
-/// Başarıda yeni tayfa listeye eklenir, aktif olur ve ana sayfasında davet
-/// kısayolu gösterilir; liste arka planda yenilenir.
+/// Başarıda yeni tayfa listeye eklenir, aktif olur ve ana sayfasında
+/// kurulum adımları gösterilir; liste arka planda yenilenir. Sihirbaz
+/// "Tayfa kuruldu" ekranına geçer (ADR-0014 Notlar 2026-11-13).
 class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
   @override
   OlusturmaDurumu build() =>
@@ -237,7 +254,7 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
     unawaited(liste.yenile());
     // İlk gerçek ihtiyaç: bildirim izni açıklaması (istemci ADR-0019 §3).
     unawaited(ref.read(bildirimIzniProvider.notifier).ihtiyacDogdu());
-    state = mevcut._degistir(olusturulan: tayfa.id);
+    state = mevcut._degistir(olusturulan: tayfa.id, kurulan: tayfa);
   }
 }
 

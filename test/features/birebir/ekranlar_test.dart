@@ -430,7 +430,60 @@ void main() {
     });
   });
 
+  group('reddedilenler (2026-11-13 tasarım)', () {
+    testWidgets('boşken mevcut boş metni', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = birebirTasimasi({
+        'GET $reddedilenlerYolu': (_) => reddedilenlerJson(const []),
+      });
+      await _ac(tester, const ReddedilenlerEkrani(), tasima);
+      expect(find.text(arbMetni('birebir_reddedilenler_bos')), findsOneWidget);
+      expect(
+        find.text(arbMetni('birebir_reddedilenler_aciklama')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('satır avatarlı, tarihli, "Listeden çıkar" çerçeveli', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = birebirTasimasi({
+        'GET $reddedilenlerYolu': (_) => reddedilenlerJson([konusmaId2]),
+      });
+      await _ac(tester, const ReddedilenlerEkrani(), tasima);
+      expect(find.byType(EylemliSatir), findsOneWidget);
+      expect(find.textContaining('Reddedildi: '), findsOneWidget);
+      expect(
+        find.widgetWithText(
+          CerceveliHapEylem,
+          arbMetni('birebir_listeden_cikar'),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
   group('kişiyle konuşma', () {
+    testWidgets('yeni konuşma: ortada avatar, ad, açıklama ve şifreli notu', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KisiKonusmasiEkrani(kullaniciId: karsiId),
+        _konusmaTasimasi(),
+      );
+      // Ad hem üst çubukta hem ortada.
+      expect(find.text('Deniz'), findsNWidgets(2));
+      expect(find.byType(UctanUcaSifreliSatiri), findsOneWidget);
+      expect(
+        find.text(arbMetni('birebir_yeni_konusma_aciklama')),
+        findsOneWidget,
+      );
+      expect(find.byType(TextField), findsOneWidget);
+    });
+
     testWidgets('konuşma yoksa ilk mesaj yazılıyor ve konuşmaya geçiliyor', (
       tester,
     ) async {

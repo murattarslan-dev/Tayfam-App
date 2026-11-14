@@ -57,3 +57,13 @@ final referansPaylasimiProvider = Provider<ReferansPaylasimi?>(
   (ref) => null,
   name: 'referansPaylasimiProvider',
 );
+
+/// Katılım geçmişin ekranının üstündeki görünürlük satırı ("Kim görür:
+/// … · Değiştir"; 2026-11-13 tasarım: Katilimlarim). Görünürlük hesap
+/// ayarıdır ve profil paketindedir; arkadaşlık paketi onu import etmez
+/// (döngü olmaz). Varsayılanı `null`dur (satır görünmez); profil paketi
+/// `shell/kayitlar.dart`'ta override eder.
+final katilimGorunurlukSatiriProvider = Provider<WidgetBuilder?>(
+  (ref) => null,
+  name: 'katilimGorunurlukSatiriProvider',
+);

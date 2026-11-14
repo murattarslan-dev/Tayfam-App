@@ -58,6 +58,8 @@ final List<Override> kayitOverridelari = [
   kisiProfiliEylemleriProvider.overrideWithValue(const [mesajGonderEylemi]),
   // Arkadaşlar ekranında "Kodumu paylaş" (2026-11-13).
   referansPaylasimiProvider.overrideWithValue(kendiKodunuPaylas),
+  // Katılım geçmişin ekranında görünürlük satırı (2026-11-13).
+  katilimGorunurlukSatiriProvider.overrideWithValue(katilimGorunurlukSatiri),
   // Sohbet sekmesinin Birebir bölümü (ADR-0018 §9).
   birebirBolumuProvider.overrideWithValue(_birebirBolumu),
   // Sohbet sekmesindeki parça seçicinin Birebir sayısı (2026-11-13).

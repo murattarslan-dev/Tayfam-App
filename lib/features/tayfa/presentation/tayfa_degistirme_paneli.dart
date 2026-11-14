@@ -45,7 +45,10 @@ Future<void> tayfaDegistirmePaneliniAc(
         },
         onTayfaOlustur: () {
           kapat();
-          unawaited(context.push<void>(Adresler.tayfaOlustur));
+          // Sihirbaz yığının üstüne itilmez: başarıda aktif tayfa değişince
+          // yönlendirici alttaki adresi ana sayfaya çevirir ve "Tayfa
+          // kuruldu" ekranı kaybolurdu (ADR-0014 Notlar 2026-11-13).
+          context.go(Adresler.tayfaOlustur);
         },
       );
     },
@@ -147,12 +150,7 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           _BekleyenTayfaSatiri(
             ad: _ad(metinler, tayfa),
             onGeriCek: () => unawaited(
-              _geriCekmeyiSor(
-                context,
-                ref,
-                tayfa.tayfaId,
-                _ad(metinler, tayfa),
-              ),
+              geriCekmeyiSor(context, ref, tayfa.tayfaId, _ad(metinler, tayfa)),
             ),
           ),
         const SizedBox(height: TayfamSpacing.s8),
@@ -296,10 +294,10 @@ class _BekleyenTayfaSatiri extends StatelessWidget {
   }
 }
 
-/// Bekleyen isteği geri çekme onayı (ADR-0014 §2). Onaylanırsa
-/// `DELETE /v1/tayfas/{tayfa_id}/membership`; sonuç kısa bir bildirimle
-/// gösterilir.
-Future<void> _geriCekmeyiSor(
+/// Bekleyen isteği geri çekme onayı (ADR-0014 §2; panel ve karşılama
+/// ekranı). Onaylanırsa `DELETE /v1/tayfas/{tayfa_id}/membership`; sonuç
+/// kısa bir bildirimle gösterilir.
+Future<void> geriCekmeyiSor(
   BuildContext context,
   WidgetRef ref,
   String tayfaId,

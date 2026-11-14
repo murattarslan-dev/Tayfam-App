@@ -443,6 +443,28 @@ void main() {
       expect(k.kap.read(olusturmaProvider).ilgiler, [EventType.hike]);
     });
 
+    test('girilen bir şey var mı (vazgeç onayı)', () async {
+      final k = await kur({});
+      final n = k.kap.read(olusturmaProvider.notifier);
+      expect(k.kap.read(olusturmaProvider).girdiVar, isFalse);
+
+      n.adAyarla('   ');
+      expect(k.kap.read(olusturmaProvider).girdiVar, isFalse);
+      n.adAyarla('K');
+      expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
+      n.adAyarla('');
+      n.ilgiDegistir(EventType.camp);
+      expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
+      n.ilgiDegistir(EventType.camp);
+      n.katilimAyarla(JoinPolicy.open);
+      expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
+      n.katilimAyarla(JoinPolicy.approval);
+      n.aciklamaAyarla('Kamp');
+      expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
+      n.aciklamaAyarla('');
+      expect(k.kap.read(olusturmaProvider).girdiVar, isFalse);
+    });
+
     test('varsayılan onaylı; boş açıklama ve ilgi gönderilmiyor', () async {
       final k = await kur({
         'POST /v1/tayfas': (_) => tayfaJson(id: _yeniId, kod: sahteKod),
@@ -531,6 +553,10 @@ void main() {
       await _bekle();
 
       expect(k.kap.read(olusturmaProvider).olusturulan, _yeniId);
+      // "Tayfa kuruldu" ekranı oluşturma yanıtıyla çizilir.
+      final kurulan = k.kap.read(olusturmaProvider).kurulan;
+      expect(kurulan?.id, _yeniId);
+      expect(kurulan?.joinCode, sahteKod);
       expect(k.aktif, _yeniId);
       expect(k.depo.kayit, _yeniId);
       expect(k.kap.read(etkinTayfaIdleriProvider), {_yeniId});

@@ -30,13 +30,7 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     final kod = await ref.read(profilDeposuProvider).yeniReferansKodu();
     final simdiki = state.value;
     if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
-    return Account(
-      userId: simdiki.userId,
-      displayName: simdiki.displayName,
-      avatarUploadId: simdiki.avatarUploadId,
-      referralCode: kod,
-      activityVisibility: simdiki.activityVisibility,
-    );
+    return _kopya(simdiki, referralCode: kod);
   });
 
   /// Hazır [uploadId] yüklemesini avatar yapar (`PUT /v1/me/avatar`;
@@ -55,14 +49,36 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
   Future<Account> _avatarli(String? avatarUploadId) async {
     final simdiki = state.value;
     if (simdiki == null) return ref.read(profilDeposuProvider).hesap();
-    return Account(
-      userId: simdiki.userId,
-      displayName: simdiki.displayName,
-      avatarUploadId: avatarUploadId,
-      referralCode: simdiki.referralCode,
-      activityVisibility: simdiki.activityVisibility,
-    );
+    return _kopya(simdiki, avatarUploadId: avatarUploadId);
   }
+
+  /// [hesap]'ın kopyası; yalnızca verilen alanlar değişir. Sözleşmedeki
+  /// her alan taşınır, yoksa yerel güncelleme profil alanlarını düşürür.
+  static Account _kopya(
+    Account hesap, {
+    String? referralCode,
+    Object? avatarUploadId = _ayni,
+  }) => Account(
+    userId: hesap.userId,
+    displayName: hesap.displayName,
+    avatarUploadId: identical(avatarUploadId, _ayni)
+        ? hesap.avatarUploadId
+        : avatarUploadId as String?,
+    referralCode: referralCode ?? hesap.referralCode,
+    activityVisibility: hesap.activityVisibility,
+    birthdayVisibility: hesap.birthdayVisibility,
+    interests: hesap.interests,
+    about: hesap.about,
+    occupation: hesap.occupation,
+    team: hesap.team,
+    languages: hesap.languages,
+    socialAccounts: hesap.socialAccounts,
+    declinedProfileFields: hesap.declinedProfileFields,
+    aboutVisibility: hesap.aboutVisibility,
+    profileCompletionPending: hesap.profileCompletionPending,
+  );
+
+  static const Object _ayni = Object();
 
   Future<Object?> _islem(Future<Account> Function() islem) async {
     try {

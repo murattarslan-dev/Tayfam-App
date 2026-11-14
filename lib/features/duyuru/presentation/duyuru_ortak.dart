@@ -17,14 +17,16 @@ Future<void> duyuruFormunuAc(
   final metinler = AppLocalizations.of(context);
   final bildirim = ScaffoldMessenger.of(context);
   final sonuc = await Navigator.of(context, rootNavigator: true).push(
-    MaterialPageRoute<Announcement>(
+    MaterialPageRoute<DuyuruFormuSonucu>(
       fullscreenDialog: true,
       builder: (_) =>
           DuyuruFormuEkrani(tayfaId: tayfaId, duzenlenen: duzenlenen),
     ),
   );
   if (sonuc == null) return;
-  final metin = duzenlenen == null
+  final metin = sonuc.sabitlenemedi
+      ? metinler.duyuru_yayinlandi_sabitlenemedi
+      : duzenlenen == null
       ? metinler.duyuru_yayinlandi
       : metinler.duyuru_kaydedildi;
   bildirimGoster(bildirim, metin);

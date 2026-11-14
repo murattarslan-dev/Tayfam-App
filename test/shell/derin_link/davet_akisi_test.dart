@@ -5,10 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/derin_link/davet_deposu.dart';
 import 'package:tayfam/shell/derin_link/derin_link_rotalari.dart';
@@ -86,6 +88,13 @@ DerinLinkKutusu _kutu(WidgetTester tester) =>
 
 Finder _metin(String anahtar) => find.text(arbMetni(anahtar));
 
+/// Açılamadı ekranındaki alttaki "Kapat" düğmesi (üstteki X ipucu
+/// metniyle karışmasın diye bileşenle aranır).
+final Finder _kapatDugmesi = find.widgetWithText(
+  CerceveliHapEylem,
+  arbMetni('derin_link_davet_kapat'),
+);
+
 Future<void> _dokun(WidgetTester tester, Finder bulucu) async {
   await tester.ensureVisible(bulucu);
   await tester.pumpAndSettle();
@@ -103,6 +112,13 @@ void main() {
 
     expect(find.byType(DavetEkrani), findsOneWidget);
     expect(find.text('Ege Klasikleri'), findsOneWidget);
+    // Kart: harf avatarı, ad ve üye sayısı (yalnızca sözleşmedeki alanlar).
+    expect(find.byType(TayfaAvatari), findsOneWidget);
+    expect(find.text('E'), findsOneWidget);
+    expect(find.textContaining('24'), findsOneWidget);
+    expect(_metin('derin_link_davet_ust_baslik'), findsOneWidget);
+    expect(_metin('derin_link_davet_aciklama'), findsOneWidget);
+    expect(_metin('derin_link_davet_vazgec'), findsOneWidget);
     expect(_konum(tester).toString(), '/davet');
     expect(_konum(tester).toString(), isNot(contains(_token)));
     // Token yalnızca istek gövdesinde.
@@ -142,7 +158,12 @@ void main() {
     await _linkleAc(tester, k);
 
     await _dokun(tester, _metin('derin_link_davet_katil'));
-    expect(_metin('derin_link_davet_gonderildi_baslik'), findsOneWidget);
+    // Mor üst bölümde ve teal kutuda.
+    expect(_metin('derin_link_davet_gonderildi_baslik'), findsNWidgets(2));
+    expect(_metin('derin_link_davet_gonderildi_aciklama'), findsOneWidget);
+    // Kart görünür kalır; katıl düğmesi yok.
+    expect(find.text('Ege Klasikleri'), findsOneWidget);
+    expect(_metin('derin_link_davet_katil'), findsNothing);
     expect(_kutu(tester).davetBekliyor, isFalse);
 
     await _dokun(tester, _metin('derin_link_davet_tamam'));
@@ -158,7 +179,7 @@ void main() {
     expect(_metin('derin_link_davet_zaten_uye'), findsOneWidget);
     expect(_metin('derin_link_davet_katil'), findsNothing);
 
-    await _dokun(tester, _metin('derin_link_davet_tamam'));
+    await _dokun(tester, _metin('derin_link_davet_tayfaya_git'));
     expect(find.byType(DavetEkrani), findsNothing);
     expect(_kutu(tester).davetBekliyor, isFalse);
     expect(k.govdeler('/v1/invite-joins'), isEmpty);
@@ -174,12 +195,49 @@ void main() {
     );
     await _linkleAc(tester, k);
 
+    expect(_metin('derin_link_davet_gecersiz'), findsOneWidget);
     expect(_metin('hata_invite_expired'), findsOneWidget);
     expect(_metin('derin_link_tekrar_dene'), findsNothing);
+    // Alternatif: tayfa koduyla katılma.
+    expect(
+      find.widgetWithText(BirincilEylem, arbMetni('tayfa_kodla_katil')),
+      findsOneWidget,
+    );
 
-    await _dokun(tester, _metin('derin_link_davet_tamam'));
+    await _dokun(tester, _kapatDugmesi);
     expect(find.byType(DavetEkrani), findsNothing);
     expect(_kutu(tester).davetBekliyor, isFalse);
+  });
+
+  testWidgets('açılamadı ekranında "Tayfa kodum var" kod sayfasını açıyor', (
+    tester,
+  ) async {
+    ekranBoyutu(tester);
+    final k = _Kurulum(
+      onizleme: (_) =>
+          const ApiProblem(type: ProblemType.inviteRevoked, status: 410),
+    );
+    await _linkleAc(tester, k);
+
+    await _dokun(
+      tester,
+      find.widgetWithText(BirincilEylem, arbMetni('tayfa_kodla_katil')),
+    );
+    expect(find.byType(KodlaKatilmaSayfasi), findsOneWidget);
+    // Davet bırakıldı; kodla katılım davetle karışmaz.
+    expect(_kutu(tester).davetBekliyor, isFalse);
+    expect(k.govdeler('/v1/invite-joins'), isEmpty);
+  });
+
+  testWidgets('üstteki kapat düğmesi daveti bırakıyor', (tester) async {
+    ekranBoyutu(tester);
+    final k = _Kurulum();
+    await _linkleAc(tester, k);
+
+    await _dokun(tester, find.byTooltip(arbMetni('derin_link_davet_kapat')));
+    expect(find.byType(DavetEkrani), findsNothing);
+    expect(_kutu(tester).davetBekliyor, isFalse);
+    expect(k.govdeler('/v1/invite-joins'), isEmpty);
   });
 
   testWidgets('bağlantı hatasında tekrar denenebiliyor', (tester) async {
@@ -310,7 +368,7 @@ void main() {
       expect(tester.takeException(), isNull);
 
       await _dokun(tester, _metin('derin_link_davet_katil'));
-      expect(_metin('derin_link_davet_gonderildi_baslik'), findsOneWidget);
+      expect(_metin('derin_link_davet_gonderildi_aciklama'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -323,6 +381,25 @@ void main() {
       await _linkleAc(tester, k, tema: tema);
 
       expect(_metin('derin_link_tekrar_dene'), findsOneWidget);
+      expect(_kapatDugmesi, findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('${tema.name} temada 2× yazıda zaten üye durumu taşmıyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, genislik: 320);
+      ikiKatYazi(tester);
+      final k = _Kurulum(onizleme: (_) => _onizlemeJson(zatenUye: true));
+      await _linkleAc(tester, k, tema: tema);
+
+      expect(_metin('derin_link_davet_zaten_uye'), findsOneWidget);
+      final context = tester.element(find.byType(DavetEkrani));
+      expect(
+        Theme.of(context).brightness,
+        tema == ThemeMode.dark ? Brightness.dark : Brightness.light,
+      );
+      expect(MediaQuery.textScalerOf(context).scale(10), 20);
       expect(tester.takeException(), isNull);
     });
   }

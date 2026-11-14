@@ -5,13 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Engellenen kullanıcılar (`/profil/arkadaslar/engellenenler`; ADR-0018
-/// §7). Engeli kaldırmak onaylıdır; arkadaşlık geri gelmez.
+/// §7; 2026-11-13 tasarım: Engellenenler): üstte açıklama, altında
+/// satırlar bir liste kartında (avatar, ad, engellendiği gün ve çerçeveli
+/// "Engeli kaldır"). Engeli kaldırmak onaylıdır; arkadaşlık geri gelmez.
 class EngellenenlerEkrani extends ConsumerWidget {
   const EngellenenlerEkrani({super.key});
 
@@ -27,12 +30,20 @@ class EngellenenlerEkrani extends ConsumerWidget {
         },
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s4,
+            TayfamSpacing.kenarMobil,
+            TayfamSpacing.s40,
+          ),
           children: [
-            Text(
-              m.arkadas_engellenenler_aciklama,
-              style: context.yazi.bodyMedium?.copyWith(
-                color: context.renkler.metinGovde,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s4),
+              child: Text(
+                m.arkadas_engellenenler_aciklama,
+                style: context.yazi.bodyMedium?.copyWith(
+                  color: context.renkler.metinGovde,
+                ),
               ),
             ),
             const SizedBox(height: TayfamSpacing.s16),
@@ -44,12 +55,15 @@ class EngellenenlerEkrani extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (liste.ogeler.isEmpty)
-                    BosMetin(m.arkadas_engellenenler_bos),
-                  for (final (sira, kisi) in liste.ogeler.indexed) ...[
-                    if (sira > 0) const SizedBox(height: TayfamSpacing.s12),
-                    _EngelKarti(kisi: kisi),
-                  ],
-                  const SizedBox(height: TayfamSpacing.s16),
+                    BosMetin(m.arkadas_engellenenler_bos)
+                  else
+                    ListeKarti(
+                      children: [
+                        for (final kisi in liste.ogeler)
+                          _EngelSatiri(key: ValueKey(kisi.userId), kisi: kisi),
+                      ],
+                    ),
+                  const SizedBox(height: TayfamSpacing.s8),
                   SayfaSonu(
                     dahaVar: liste.dahaVar,
                     yukleniyor: liste.dahaYukleniyor,
@@ -68,16 +82,16 @@ class EngellenenlerEkrani extends ConsumerWidget {
   }
 }
 
-class _EngelKarti extends ConsumerStatefulWidget {
-  const _EngelKarti({required this.kisi});
+class _EngelSatiri extends ConsumerStatefulWidget {
+  const _EngelSatiri({super.key, required this.kisi});
 
   final BlockedUser kisi;
 
   @override
-  ConsumerState<_EngelKarti> createState() => _EngelKartiState();
+  ConsumerState<_EngelSatiri> createState() => _EngelSatiriState();
 }
 
-class _EngelKartiState extends ConsumerState<_EngelKarti> {
+class _EngelSatiriState extends ConsumerState<_EngelSatiri> {
   bool _gonderiliyor = false;
 
   Future<void> _kaldir() async {
@@ -102,31 +116,17 @@ class _EngelKartiState extends ConsumerState<_EngelKarti> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final kisi = widget.kisi;
-    return TayfamKart(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            kisi.displayName ?? m.kullanici_silinmis,
-            style: context.yazi.titleMedium,
-          ),
-          const SizedBox(height: TayfamSpacing.s4),
-          Text(
-            m.arkadas_engel_zamani(kisi.blockedAt.toLocal()),
-            style: context.yazi.bodyMedium?.copyWith(
-              color: context.renkler.metinGovde,
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: IkincilEylem(
-              etiket: m.arkadas_engel_kaldir,
-              ikon: Icons.lock_open,
-              onPressed: _gonderiliyor ? null : () => unawaited(_kaldir()),
-            ),
-          ),
-        ],
+    return EylemliSatir(
+      oncu: KullaniciAvatari(
+        ad: kisi.displayName,
+        avatarUploadId: kisi.avatarUploadId,
+        cap: TayfamSizes.konusmaAvatari,
+      ),
+      baslik: Text(kisi.displayName ?? m.kullanici_silinmis),
+      alt: m.arkadas_engel_zamani(kisi.blockedAt.toLocal()),
+      eylem: CerceveliHapEylem(
+        etiket: m.arkadas_engel_kaldir,
+        onPressed: _gonderiliyor ? null : () => unawaited(_kaldir()),
       ),
     );
   }
