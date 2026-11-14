@@ -126,3 +126,20 @@ mesajlar REST ile son görülen kimlikten çekilir ve mesaj gönderme "REST
   sayıları tayfa değiştirme panelinde REST'ten alınır.
 - **Arka planda bağlantıyı açık tutmak:** pil ve işletim sistemi
   kısıtlamaları nedeniyle güvenilmez; push bu iş içindir.
+
+## Notlar
+
+- **2026-11-15 (platform sahibi, issue #188; tasarım:
+  23-hata-ve-baglanti-durumlari/Durum-Baglaniyor): "Bağlanıyor…".**
+  Canlı bağlantı açık değilken 3 saniye (`baglaniyorGecikmesi`; kısa
+  kopmalarda başlık titremesin) geçince kanal ve birebir konuşma
+  başlığının alt satırı "Bağlanıyor…" olur; bağlantı kurulunca hemen eski
+  haline döner (`core/baglanti/`, `sohbetBaglaniyorProvider`). İkon döner,
+  "hareketi azalt" açıkken durur; durum ekran okuyucuya bir kez okunur.
+  Web geliştirme derlemesinde canlı bağlantı kurulmadığı için görünmez.
+  Bu sırada gönderilen mesaj soluk (%70) ve "Gönderiliyor" durumunda
+  bekler; gönderim kuralı değişmez: bağlantı açık değilse aynı
+  `client_request_id` ile REST'ten gider. Canlı bağlantının kurulamaması
+  (bağlanıyor → kapalı) "Bağlantı yok" bandını da açar (ADR-0005 Notlar,
+  2026-11-15); uygulamanın kendisinin kapattığı bağlantı (arka plan,
+  çıkış) bandı açmaz.

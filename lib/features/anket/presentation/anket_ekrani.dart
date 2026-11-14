@@ -113,10 +113,12 @@ class AnketEkrani extends ConsumerWidget {
                       secim: secim,
                       durum: oylama,
                     )
-                  else if (hata != null) ...[
-                    HataSatiri.hatadan(hata),
-                    AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
-                  ] else
+                  else if (hata != null)
+                    YuklemeHatasi(
+                      hata: hata,
+                      onTekrarDene: () => ref.invalidate(saglayici),
+                    )
+                  else
                     Center(
                       child: TayfamYukleniyor(
                         boyut: TayfamSizes.yukleniyorTamEkran,

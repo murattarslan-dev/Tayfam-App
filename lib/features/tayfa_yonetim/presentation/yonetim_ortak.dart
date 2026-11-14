@@ -110,8 +110,8 @@ class TekrarDeneDugmesi extends StatelessWidget {
   }
 }
 
-/// Liste yüklenirken ya da yüklenemediğinde gösterilen satırlar; liste
-/// varsa [icerik].
+/// Liste yüklenirken ya da yüklenemediğinde gösterilen içerik; liste
+/// varsa [icerik]. Yüklenemediyse [YuklemeHatasi].
 class ListeDurumu<T> extends StatelessWidget {
   const ListeDurumu({
     super.key,
@@ -132,13 +132,8 @@ class ListeDurumu<T> extends StatelessWidget {
     final hata = this.hata;
     if (deger != null) return icerik(deger);
     if (hata != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          HataSatiri.hatadan(hata),
-          TekrarDeneDugmesi(onPressed: onTekrar),
-        ],
-      );
+      // İlk yükleme hatası: ortak tam ekran kalıp (issue #188).
+      return YuklemeHatasi(hata: hata, onTekrarDene: onTekrar);
     }
     return Center(
       child: TayfamYukleniyor(

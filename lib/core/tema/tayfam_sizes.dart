@@ -91,6 +91,28 @@ abstract final class TayfamSizes {
   /// Yenilenirken içeriğin üstünde açık kalan boşluk (72 dp).
   static const double yenileBoslugu = 72;
 
+  // --- Hata ve bağlantı durumları (tasarım: 23-hata-ve-baglanti-durumlari)
+
+  /// İlk yükleme hatasındaki ikon kutusu (72 px; Durum-Yukleme-Hatasi).
+  static const double hataIkonKutusu = 72;
+
+  /// [hataIkonKutusu] içindeki ikon (34 px).
+  static const double hataIkonu = 34;
+
+  /// "Bu profil görüntülenemiyor" ekranındaki daire (88 px;
+  /// Durum-Profil-Yok).
+  static const double profilYokDairesi = 88;
+
+  /// [profilYokDairesi] içindeki ikon (40 px).
+  static const double profilYokIkonu = 40;
+
+  /// Bağlantı yok bandının en küçük yüksekliği (36 px; Durum-Cevrimdisi).
+  static const double baglantiBandi = 36;
+
+  /// Canlı bağlantı yokken gönderilmeyi bekleyen mesaj balonunun
+  /// saydamlığı (Durum-Baglaniyor: .7).
+  static const double bekleyenMesajSaydamligi = .7;
+
   /// Çekmenin başında logonun kenarı (36 px; Yenile-Cekiliyor).
   static const double yenileLogoKucuk = 36;
 

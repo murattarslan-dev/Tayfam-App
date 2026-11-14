@@ -176,3 +176,23 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
      onaylandı (2026-11-10): bedeli, yenileme sırasında bağlantı koparsa
      yeniden giriştir; "yenileme token'ı iki kez gönderilmez" kuralından
      taviz verilmez.
+- **2026-11-15 (platform sahibi, issue #188; tasarım:
+  23-hata-ve-baglanti-durumlari): bağlantı hatası sinyali ve ortak hata
+  kalıpları.** `ApiClient` her istekte yalnızca okunur bir sinyal yayınlar
+  (`ulasilabilirlik`, `Stream<bool>`): sunucudan cevap geldiyse (başarılı
+  ya da problem) `true`, istek sunucuya ulaşamadıysa (`ApiOffline`)
+  `false`; zaman aşımı yayınlanmaz. Sinyal adres, gövde ya da hata
+  ayrıntısı taşımaz; isteğin, hatanın ve yenilemenin davranışı değişmez.
+  `core/baglanti/`'daki tek notifier bu sinyalle ve canlı bağlantının
+  kurulamamasıyla (bağlanıyor → kapalı) "Bağlantı yok · Bağlanınca
+  güncellenir" bandını açar; ilk başarılı istekte ya da canlı bağlantı
+  kurulunca kapatır. Cihazın ağ durumu dinlenmez, yeni paket yok. Bant
+  kabukta tek yerde, bütün sekmelerin üstündedir ve ekran okuyucuya bir
+  kez durum olarak okunur. Hata metni eşlemesi (§4) iki ortak kalıpta
+  kullanılır: ilk yükleme hatası `YuklemeHatasi` (ortada ikon,
+  "Yüklenemedi", hatanın ortak metni, "Tekrar dene"; başlık ve geri
+  yerinde) ve dolu listede yenileme hatası `yenilemeHatasiBildir` (içerik
+  yerinde, alttan "Yenilenemedi. …" + "Tekrar dene"). Kişi profili 404 /
+  `user-not-found` / `not-found` için tek ortak "Bu profil
+  görüntülenemiyor" ekranıdır; engellenme, silinme ve bulunamama hiçbir
+  metinde ayrılmaz.

@@ -3202,6 +3202,47 @@
   "@bilesen_yenile_birak": {
     "description": "Ortak bileşen (çekip yenileme): eşik geçilince logonun altındaki metin; bırakınca yenilenir."
   },
+  "baglanti_yok_bandi": "Bağlantı yok · Bağlanınca güncellenir",
+  "@baglanti_yok_bandi": {
+    "description": "Kabuk: bir istek sunucuya ulaşamadığında ya da canlı bağlantı kurulamadığında durum çubuğunun altında görünen koyu bant; ilk başarılı istekte kaybolur."
+  },
+  "baglanti_baglaniyor": "Bağlanıyor…",
+  "@baglanti_baglaniyor": {
+    "description": "Kanal ve birebir konuşma başlığının alt satırı: canlı bağlantı birkaç saniyedir kopuksa görünür; bağlanınca eski haline döner."
+  },
+  "yukleme_hatasi_baslik": "Yüklenemedi",
+  "@yukleme_hatasi_baslik": {
+    "description": "İlk yükleme hatası: ekran hiç dolmadan istek düştüğünde ortadaki başlık; altında hatanın ortak metni (bağlantı yok ya da genel hata) ve 'Tekrar dene' durur."
+  },
+  "yukleme_hatasi_tekrar_dene": "Tekrar dene",
+  "@yukleme_hatasi_tekrar_dene": {
+    "description": "İlk yükleme hatasındaki ve yenileme hatası bildirimindeki düğme: isteği yeniden dener."
+  },
+  "yenileme_hatasi": "Yenilenemedi. {neden}",
+  "@yenileme_hatasi": {
+    "description": "Dolu listede yenileme başarısız olunca alttan çıkan kısa bildirim; içerik yerinde kalır. {neden} hatanın ortak metnidir.",
+    "placeholders": {
+      "neden": {
+        "type": "String"
+      }
+    }
+  },
+  "yenileme_hatasi_baglanti_yok": "Yenilenemedi. Bağlantı yok.",
+  "@yenileme_hatasi_baglanti_yok": {
+    "description": "Dolu listede yenileme bağlantı olmadığı için başarısız olunca alttan çıkan kısa bildirim; içerik yerinde kalır."
+  },
+  "profil_goruntulenemiyor_baslik": "Bu profil görüntülenemiyor",
+  "@profil_goruntulenemiyor_baslik": {
+    "description": "Kişi profili açılamadığında (bulunamadı; engellenme, silinme ve bulunamama bilerek ayrılmaz) ortadaki başlık."
+  },
+  "profil_goruntulenemiyor_aciklama": "Hesap kapanmış ya da bu profile erişimin olmayabilir.",
+  "@profil_goruntulenemiyor_aciklama": {
+    "description": "Kişi profili açılamadığında başlığın altındaki açıklama; engellendiğini ya da silindiğini ayırt ettirmez."
+  },
+  "profil_goruntulenemiyor_geri": "Geri dön",
+  "@profil_goruntulenemiyor_geri": {
+    "description": "Kişi profili açılamadığında önceki ekrana dönen düğme."
+  },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {
     "description": "Ortak bileşen: birebir sohbetin üstündeki kilit ikonlu bilgi satırı. Mesajların uçtan uca şifrelendiğini söyler."
@@ -6871,10 +6912,6 @@
   "arkadas_engel_kaldirildi": "Engel kaldırıldı.",
   "@arkadas_engel_kaldirildi": {
     "description": "Engel kaldırılınca kısa süre görünen bildirim."
-  },
-  "arkadas_profil_baslik": "Profil",
-  "@arkadas_profil_baslik": {
-    "description": "Kişi profili ekranının ad gelmeden önceki başlığı."
   },
   "arkadas_profil_menu": "Diğer seçenekler",
   "@arkadas_profil_menu": {

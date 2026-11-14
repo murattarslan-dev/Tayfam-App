@@ -135,16 +135,10 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
               onRefresh: notifier.yenile,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
                 children: [
-                  HataSatiri.hatadan(hata),
-                  const SizedBox(height: TayfamSpacing.s16),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: CerceveliHapEylem(
-                      etiket: m.etkinlik_tekrar_dene,
-                      onPressed: () => unawaited(notifier.yenile()),
-                    ),
+                  YuklemeHatasi(
+                    hata: hata,
+                    onTekrarDene: () => unawaited(notifier.yenile()),
                   ),
                 ],
               ),

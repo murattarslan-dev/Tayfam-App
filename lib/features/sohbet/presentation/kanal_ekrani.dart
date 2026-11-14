@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/baglanti/baglanti_bandi.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
@@ -237,16 +238,21 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
                           overflow: TextOverflow.ellipsis,
                           style: context.yazi.titleMedium,
                         ),
-                        if (altBaslik != null)
-                          Text(
-                            altBaslik,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.yazi.labelSmall?.copyWith(
-                              color: r.metinIkincil,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                        // Canlı bağlantı koptuysa birkaç saniye sonra
+                        // "Bağlanıyor…" (issue #188).
+                        BaglaniyorSatiri(
+                          child: altBaslik == null
+                              ? null
+                              : Text(
+                                  altBaslik,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: context.yazi.labelSmall?.copyWith(
+                                    color: r.metinIkincil,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                        ),
                       ],
                     ),
                   ),
@@ -790,10 +796,14 @@ class _BekleyenMesaj extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SohbetBalonu(
-            metin: metin,
-            giden: true,
-            tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
+          // Gönderilmeyi bekleyen mesaj soluk (Durum-Baglaniyor).
+          Opacity(
+            opacity: basarisiz ? 1 : TayfamSizes.bekleyenMesajSaydamligi,
+            child: SohbetBalonu(
+              metin: metin,
+              giden: true,
+              tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
+            ),
           ),
           if (basarisiz)
             GonderilemediSatiri(
@@ -806,12 +816,14 @@ class _BekleyenMesaj extends ConsumerWidget {
           else
             MesajAltSatiri(
               children: [
-                Icon(
-                  Icons.schedule,
-                  size: TayfamSizes.ikonKucuk,
-                  color: r.metinIkincil,
-                  semanticLabel: m.sohbet_mesaj_gonderiliyor,
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.schedule,
+                    size: TayfamSizes.ikonKucuk,
+                    color: r.metinIkincil,
+                  ),
                 ),
+                Text(m.sohbet_mesaj_gonderiliyor),
               ],
             ),
         ],

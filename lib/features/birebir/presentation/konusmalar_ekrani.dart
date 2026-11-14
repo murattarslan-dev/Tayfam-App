@@ -53,7 +53,11 @@ class BirebirSekmesi extends ConsumerWidget {
     final hata = await ref.read(konusmaListesiProvider.notifier).yenile();
     if (hata == null || !context.mounted) return;
     if (ref.read(konusmaListesiProvider).hasValue) {
-      birebirHatasiniBildir(context, hata);
+      yenilemeHatasiBildir(
+        context,
+        hata,
+        tekrarDene: () => unawaited(_yenile(context, ref)),
+      );
     }
   }
 }

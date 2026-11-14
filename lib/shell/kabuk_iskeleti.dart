@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/baglanti/baglanti_bandi.dart';
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -18,7 +19,8 @@ import 'package:tayfam/shell/okunmamis.dart';
 /// bildirimler ([BildirimYenileyici]) yenilenir; Bildirimler sekmesi
 /// açılınca da bildirimler yenilenir (ADR-0018 §3). Bildirim izni
 /// açıklama kartı içeriğin altında görünür ([BildirimIzniAlani]; istemci
-/// ADR-0019 §3).
+/// ADR-0019 §3). Bağlantı yok bandı ([BaglantiBandi]) bütün sekmelerin
+/// üstünde aynı yerde durur (issue #188).
 class KabukIskeleti extends ConsumerWidget {
   const KabukIskeleti({super.key, required this.navigationShell});
 
@@ -92,9 +94,11 @@ class KabukIskeleti extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: BildirimYenileyici(
-                child: BildirimIzniAlani(
-                  child: TayfaYenileyici(child: navigationShell),
+              child: BaglantiBandi(
+                child: BildirimYenileyici(
+                  child: BildirimIzniAlani(
+                    child: TayfaYenileyici(child: navigationShell),
+                  ),
                 ),
               ),
             ),
@@ -104,9 +108,11 @@ class KabukIskeleti extends ConsumerWidget {
     }
 
     return Scaffold(
-      body: BildirimYenileyici(
-        child: BildirimIzniAlani(
-          child: TayfaYenileyici(child: navigationShell),
+      body: BaglantiBandi(
+        child: BildirimYenileyici(
+          child: BildirimIzniAlani(
+            child: TayfaYenileyici(child: navigationShell),
+          ),
         ),
       ),
       bottomNavigationBar: NavigationBar(

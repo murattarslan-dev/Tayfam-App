@@ -118,10 +118,12 @@ class SoruEkrani extends ConsumerWidget {
                       soru: soru,
                       yonetimde: yonetimde,
                     ),
-                  ] else if (hata != null) ...[
-                    HataSatiri.hatadan(hata),
-                    _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
-                  ] else
+                  ] else if (hata != null)
+                    YuklemeHatasi(
+                      hata: hata,
+                      onTekrarDene: () => ref.invalidate(saglayici),
+                    )
+                  else
                     Center(
                       child: TayfamYukleniyor(
                         boyut: TayfamSizes.yukleniyorTamEkran,

@@ -173,7 +173,7 @@ void main() {
       expect(find.text('İkinci sayfa'), findsOneWidget);
     });
 
-    testWidgets('ilk sayfa okunamazsa HataSatiri', (tester) async {
+    testWidgets('ilk sayfa okunamazsa ortak yükleme hatası', (tester) async {
       ekranBoyutu(tester);
       await _listeyiAc(
         tester,
@@ -184,9 +184,10 @@ void main() {
         }),
       );
 
-      expect(find.byType(HataSatiri), findsOneWidget);
+      expect(find.byType(YuklemeHatasi), findsOneWidget);
+      expect(find.text(arbMetni('yukleme_hatasi_baslik')), findsOneWidget);
       expect(find.text(arbMetni('hata_module_disabled')), findsOneWidget);
-      expect(find.text(arbMetni('tayfa_ana_tekrar_dene')), findsOneWidget);
+      expect(find.text(arbMetni('yukleme_hatasi_tekrar_dene')), findsOneWidget);
     });
 
     testWidgets('yenileme başarısızsa liste kalıyor, hata bildiriliyor', (
@@ -209,10 +210,25 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(SnackBar),
-          matching: find.text(arbMetni('hata_baglanti_yok')),
+          matching: find.text(arbMetni('yenileme_hatasi_baglanti_yok')),
         ),
         findsOneWidget,
       );
+
+      // "Tekrar dene" yenilemeyi yeniden dener; içerik yerinde kalır.
+      final once = tasima.giden('GET', duyurularYolu).length;
+      tasima.yanitlar['GET $duyurularYolu'] = yanit(
+        duyuruListesiJson([duyuruJson(duyuruId1, baslik: 'Yeni')]),
+      );
+      await tester.tap(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(arbMetni('yukleme_hatasi_tekrar_dene')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tasima.giden('GET', duyurularYolu).length, once + 1);
+      expect(find.text('Yeni'), findsOneWidget);
     });
   });
 
@@ -334,7 +350,7 @@ void main() {
       expect(tasima.giden('GET', duyuruYolu), isEmpty);
     });
 
-    testWidgets('bulunamayan duyuru HataSatiri ile', (tester) async {
+    testWidgets('bulunamayan duyuru ortak yükleme hatasıyla', (tester) async {
       ekranBoyutu(tester);
       await _duyuruyuAc(
         tester,
@@ -348,7 +364,7 @@ void main() {
         }),
       );
 
-      expect(find.byType(HataSatiri), findsOneWidget);
+      expect(find.byType(YuklemeHatasi), findsOneWidget);
       expect(
         find.text(arbMetni('hata_announcement_not_found')),
         findsOneWidget,

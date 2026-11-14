@@ -68,10 +68,14 @@ final class _SahteGateway {
   /// Engelleme uçlarının kaç kez daha `integrity-required` döneceği.
   int butunlukReddi = 0;
 
+  /// Doluysa istek sunucuya ulaşamaz (bağlantı yok).
+  bool cevrimdisi = false;
+
   String get gecerliErisim => 'erisim-$_surum';
 
   Future<http.Response> isle(http.Request istek) async {
     istekler.add(istek);
+    if (cevrimdisi) throw http.ClientException('ağ yok');
     final yol = istek.url.path;
     if (yol == '/v1/status') {
       return _json({
@@ -162,6 +166,45 @@ final class _Kurulum {
 }
 
 void main() {
+  group('ulaşılabilirlik sinyali (issue #188)', () {
+    test('bağlantı hatası false, cevap ve problem true yayınlar', () async {
+      final k = _Kurulum();
+      await k.girisYap();
+      final sinyaller = <bool>[];
+      final abonelik = k.istemci.ulasilabilirlik.listen(sinyaller.add);
+      addTearDown(abonelik.cancel);
+
+      k.sunucu.cevrimdisi = true;
+      await expectLater(
+        MeApi(k.istemci).blockUser(userId: '1'),
+        throwsA(isA<ApiOffline>()),
+      );
+      k.sunucu.cevrimdisi = false;
+      await MeApi(k.istemci).blockUser(userId: '1');
+      await StatusApi(k.istemci).getStatus();
+      // Sunucu cevap verdi (404 problemi): bağlantı var.
+      await expectLater(
+        MeApi(k.istemci).listSessions(),
+        throwsA(isA<ApiProblem>()),
+      );
+      await pumpEventQueue();
+
+      expect(sinyaller, [false, true, true, true]);
+    });
+
+    test('sinyal hata ayrıntısı taşımaz, istek davranışı değişmez', () async {
+      final k = _Kurulum();
+      await k.girisYap();
+      k.sunucu.cevrimdisi = true;
+      // Dinleyici yokken de aynı hata döner.
+      await expectLater(
+        MeApi(k.istemci).blockUser(userId: '1'),
+        throwsA(isA<ApiOffline>()),
+      );
+      expect(k.istemci.ulasilabilirlik, isA<Stream<bool>>());
+    });
+  });
+
   test('eşzamanlı 5 istek tek yenileme yapar', () async {
     final k = _Kurulum();
     await k.girisYap(omur: Duration.zero);

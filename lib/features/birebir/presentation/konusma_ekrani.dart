@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/baglanti/baglanti_bandi.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/e2e/gecmis/arsiv_okuyucu.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
@@ -733,27 +734,30 @@ class KonusmaBasligi extends StatelessWidget {
                   style: context.yazi.titleMedium,
                   maxLines: 1,
                 ),
-                Row(
-                  children: [
-                    ExcludeSemantics(
-                      child: Icon(
-                        Icons.lock_outline_rounded,
-                        size: TayfamSizes.ikonKucuk,
-                        color: r.metinIkincil,
-                      ),
-                    ),
-                    const SizedBox(width: TayfamSpacing.s4),
-                    Flexible(
-                      child: Text(
-                        AppLocalizations.of(context).bilesen_uctan_uca_sifreli,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.yazi.bodySmall?.copyWith(
+                BaglaniyorSatiri(
+                  child: Row(
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.lock_outline_rounded,
+                          size: TayfamSizes.ikonKucuk,
                           color: r.metinIkincil,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: TayfamSpacing.s4),
+                      Flexible(
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .bilesen_uctan_uca_sifreli,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.yazi.bodySmall?.copyWith(
+                            color: r.metinIkincil,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

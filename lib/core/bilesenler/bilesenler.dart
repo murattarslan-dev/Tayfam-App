@@ -28,3 +28,4 @@ export 'package:tayfam/core/bilesenler/tayfam_yenile.dart';
 export 'package:tayfam/core/bilesenler/tayfam_yukleniyor.dart';
 export 'package:tayfam/core/bilesenler/uctan_uca_sifreli_satiri.dart';
 export 'package:tayfam/core/bilesenler/yikici_eylem.dart';
+export 'package:tayfam/core/bilesenler/yukleme_hatasi.dart';

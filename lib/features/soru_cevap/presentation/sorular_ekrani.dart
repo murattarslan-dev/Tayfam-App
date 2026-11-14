@@ -157,10 +157,12 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
               ),
             ],
             const SizedBox(height: TayfamSpacing.s12),
-            if (liste == null && hata != null) ...[
-              HataSatiri.hatadan(hata),
-              _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
-            ] else if (liste == null)
+            if (liste == null && hata != null)
+              YuklemeHatasi(
+                hata: hata,
+                onTekrarDene: () => ref.invalidate(saglayici),
+              )
+            else if (liste == null)
               Center(
                 child: TayfamYukleniyor(
                   boyut: TayfamSizes.yukleniyorTamEkran,
@@ -230,7 +232,13 @@ class _SorularEkraniState extends ConsumerState<SorularEkrani> {
     final saglayici = soruListesiProvider(suzgec.anahtar(_tayfaId));
     final hata = await ref.read(saglayici.notifier).yenile();
     if (hata == null || !mounted) return;
-    if (ref.read(saglayici).hasValue) islemHatasiniBildir(context, hata);
+    if (ref.read(saglayici).hasValue) {
+      yenilemeHatasiBildir(
+        context,
+        hata,
+        tekrarDene: () => unawaited(_yenile(suzgec)),
+      );
+    }
   }
 }
 

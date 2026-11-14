@@ -65,11 +65,12 @@ class EtkinliklerEkrani extends ConsumerWidget {
             ),
             children: [
               _Baslik(tayfaId: tayfaId),
-              if (liste == null && hata != null) ...[
-                const SizedBox(height: TayfamSpacing.s16),
-                HataSatiri.hatadan(hata),
-                _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
-              ] else if (liste == null)
+              if (liste == null && hata != null)
+                YuklemeHatasi(
+                  hata: hata,
+                  onTekrarDene: () => ref.invalidate(saglayici),
+                )
+              else if (liste == null)
                 yukleniyor
               else if (liste.ogeler.isEmpty) ...[
                 const SizedBox(height: TayfamSpacing.s16),
@@ -120,7 +121,13 @@ class EtkinliklerEkrani extends ConsumerWidget {
     final saglayici = etkinlikListesiProvider(tayfaId);
     final hata = await ref.read(saglayici.notifier).yenile();
     if (hata == null || !context.mounted) return;
-    if (ref.read(saglayici).hasValue) hataBildir(context, hata);
+    if (ref.read(saglayici).hasValue) {
+      yenilemeHatasiBildir(
+        context,
+        hata,
+        tekrarDene: () => unawaited(_yenile(context, ref)),
+      );
+    }
   }
 }
 

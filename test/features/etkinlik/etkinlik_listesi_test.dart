@@ -48,7 +48,7 @@ void main() {
     expect(find.text(arbMetni('tayfa_ana_etkinlikler_bos')), findsOneWidget);
   });
 
-  testWidgets('liste ekranı: hata HataSatiri ile', (tester) async {
+  testWidgets('liste ekranı: ilk yükleme hatası ortak kalıpla', (tester) async {
     ekranBoyutu(tester);
     await widgetAc(
       tester,
@@ -58,7 +58,8 @@ void main() {
       ),
     );
 
-    expect(find.byType(HataSatiri), findsOneWidget);
+    expect(find.byType(YuklemeHatasi), findsOneWidget);
+    expect(find.text(arbMetni('yukleme_hatasi_baslik')), findsOneWidget);
     expect(find.text(arbMetni('hata_baglanti_yok')), findsOneWidget);
   });
 

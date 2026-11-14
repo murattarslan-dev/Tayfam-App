@@ -581,7 +581,7 @@ void main() {
       expect(tasima.giden('GET', anketYolu), isEmpty);
     });
 
-    testWidgets('bulunamayan anket HataSatiri ile', (tester) async {
+    testWidgets('bulunamayan anket ortak yükleme hatasıyla', (tester) async {
       ekranBoyutu(tester);
       await _anketiAc(
         tester,
@@ -591,7 +591,7 @@ void main() {
           ),
         }),
       );
-      expect(find.byType(HataSatiri), findsOneWidget);
+      expect(find.byType(YuklemeHatasi), findsOneWidget);
       expect(find.text(arbMetni('hata_poll_not_found')), findsOneWidget);
     });
 

@@ -92,6 +92,10 @@ abstract final class TayfamMotion {
   /// Yenileme bitince içeriğin yukarı kayarak yerine dönmesi.
   static const Duration yenileDonus = uzun;
 
+  /// Sohbet başlığındaki "Bağlanıyor…" ikonunun bir tam dönüşü. Durum
+  /// göstergesidir; "hareketi azalt" açıkken ikon dönmez.
+  static const Duration baglaniyorDonusu = Duration(milliseconds: 1200);
+
   /// Cihaz bağlama tarayıcısındaki tarama çizgisinin bir yönlü geçişi
   /// (tasarım: Cihaz-Tara). Durum göstergesidir; "hareketi azalt" açıkken
   /// çizgi çerçevenin ortasında durur.

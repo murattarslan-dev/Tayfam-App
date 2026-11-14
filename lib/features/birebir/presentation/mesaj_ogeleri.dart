@@ -122,10 +122,14 @@ class GidenOgesi extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SohbetBalonu(
-            metin: giden.metin,
-            giden: true,
-            tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
+          // Gönderilmeyi bekleyen mesaj soluk (Durum-Baglaniyor).
+          Opacity(
+            opacity: basarisiz ? 1 : TayfamSizes.bekleyenMesajSaydamligi,
+            child: SohbetBalonu(
+              metin: giden.metin,
+              giden: true,
+              tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
+            ),
           ),
           if (basarisiz) ...[
             if (hata != null)
