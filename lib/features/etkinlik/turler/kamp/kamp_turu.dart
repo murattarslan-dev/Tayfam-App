@@ -12,9 +12,12 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/arac_eylemleri.dart';
 import 'package:tayfam/features/etkinlik/application/arac_formlari.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
+import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
+import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart'
+    show ozetAyraci;
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
@@ -22,7 +25,10 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Kamp (ADR-0015 §6): ortak malzeme listesi. Ekleme ve çıkarma yalnızca
 /// yönetebilen kullanıcıya (organizatör, moderatör, yönetici;
-/// `caller_can_manage`) görünür; yetkiyi sunucu verir.
+/// `caller_can_manage`) görünür; "Ben getiririm" yalnızca "Geliyorum"
+/// diyene, "Vazgeç" kendi üstlendiği malzemede (issue #187). Düğmeleri
+/// gizlemek kolaylıktır; yetkiyi sunucu verir, hatası her durumda
+/// gösterilir.
 final class KampTuru extends KayitliEtkinlikTuru {
   const KampTuru() : super(EventType.camp);
 
@@ -44,6 +50,9 @@ class KampBolumu extends ConsumerWidget {
     final mesgul = ref.watch(aracEylemProvider(anahtar));
     final malzemeler = etkinlik.camp?.items ?? const <CampItem>[];
     final yonetebilir = etkinlik.callerCanManage && !iptalEdildi(etkinlik);
+    final ben = ref.watch(kendiKimligimProvider).value;
+    final acik = katilimAcik(etkinlik, ref.watch(etkinlikSaatiProvider)());
+    final gelen = etkinlik.callerRsvp == RsvpStatus.going;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -65,6 +74,13 @@ class KampBolumu extends ConsumerWidget {
             for (final malzeme in malzemeler)
               _MalzemeSatiri(
                 malzeme: malzeme,
+                benim: ben != null && malzeme.assignedUserId == ben,
+                atama: _atama(malzeme, ben: ben, acik: acik, gelen: gelen),
+                onAta: mesgul
+                    ? null
+                    : (kullaniciId) => unawaited(
+                        _ata(context, ref, anahtar, malzeme, kullaniciId),
+                      ),
                 onCikar: !yonetebilir || mesgul
                     ? null
                     : () => unawaited(_cikar(context, ref, anahtar, malzeme)),
@@ -88,6 +104,39 @@ class KampBolumu extends ConsumerWidget {
     ),
   );
 
+  /// Satırdaki atama düğmesi: boştaki malzemede, "Geliyorum" diyene "Ben
+  /// getiririm"; kendi üstlendiğinde "Vazgeç". İptal edilmiş ya da bitmiş
+  /// etkinlikte yok. Yönetimin başkasını atama ve atamasını kaldırma
+  /// düğmesi tasarımda yoktur (yönetim "Kişi seç"i ekleme formunda
+  /// kullanır).
+  static _MalzemeAtamasi? _atama(
+    CampItem malzeme, {
+    required String? ben,
+    required bool acik,
+    required bool gelen,
+  }) {
+    if (ben == null || !acik) return null;
+    final getiren = malzeme.assignedUserId;
+    if (getiren == null) return gelen ? _MalzemeAtamasi.ustlen : null;
+    return getiren == ben ? _MalzemeAtamasi.birak : null;
+  }
+
+  /// "Ben getiririm" ([kullaniciId] kendi kimliği) ya da "Vazgeç"
+  /// (`null`). Hata kısa bildirimle gösterilir; `event-item-taken`
+  /// gibi bayat liste hatalarında etkinlik ayrıca yeniden okunur.
+  Future<void> _ata(
+    BuildContext context,
+    WidgetRef ref,
+    EtkinlikAnahtari anahtar,
+    CampItem malzeme,
+    String? kullaniciId,
+  ) async {
+    final hata = await ref
+        .read(aracEylemProvider(anahtar).notifier)
+        .malzemeAta(malzeme.id, kullaniciId);
+    if (hata != null && context.mounted) hataBildir(context, hata);
+  }
+
   Future<void> _cikar(
     BuildContext context,
     WidgetRef ref,
@@ -107,24 +156,72 @@ class KampBolumu extends ConsumerWidget {
   }
 }
 
-class _MalzemeSatiri extends StatelessWidget {
+/// Malzeme satırındaki atama düğmesi.
+enum _MalzemeAtamasi {
+  /// "Ben getiririm": boştaki malzemeyi kendine alır.
+  ustlen,
+
+  /// "Vazgeç": kendi üstlendiği malzemeyi bırakır.
+  birak,
+}
+
+/// Bu yazı ölçeğinin üstünde atama düğmesi metnin altına iner.
+const double _dugmeYanYanaEnBuyukOlcek = 1.3;
+
+class _MalzemeSatiri extends ConsumerWidget {
   const _MalzemeSatiri({
     required this.malzeme,
+    required this.benim,
+    required this.atama,
+    required this.onAta,
     required this.onCikar,
     required this.cikarilabilir,
   });
 
   final CampItem malzeme;
+
+  /// Malzemeyi oturumdaki kullanıcı üstlenmiş ("Getirecek: Sen").
+  final bool benim;
+
+  /// Gösterilecek atama düğmesi; `null` ise yok.
+  final _MalzemeAtamasi? atama;
+
+  /// Atama isteği: kendi kimliği ("Ben getiririm") ya da `null`
+  /// ("Vazgeç"). `null` ise (istek sürerken) düğme kilitlidir.
+  final ValueChanged<String?>? onAta;
+
   final VoidCallback? onCikar;
   final bool cikarilabilir;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final getiren = malzeme.assignedUserId;
     // Sözleşme: 0 ya da yok, 1 adet.
     final adet = malzeme.quantity < 1 ? 1 : malzeme.quantity;
     final ikincil = context.yazi.bodySmall;
+    final atama = this.atama;
+    final onAta = this.onAta;
+    final Widget? dugme = switch (atama) {
+      null => null,
+      _MalzemeAtamasi.ustlen => _SatirHapi(
+        etiket: m.etkinlik_kamp_ben_getiririm,
+        dolu: true,
+        onPressed: onAta == null
+            ? null
+            : () {
+                final ben = ref.read(kendiKimligimProvider).value;
+                if (ben != null) onAta(ben);
+              },
+      ),
+      _MalzemeAtamasi.birak => _SatirHapi(
+        etiket: m.etkinlik_kamp_vazgec,
+        dolu: false,
+        onPressed: onAta == null ? null : () => onAta(null),
+      ),
+    };
+    final yanYana =
+        MediaQuery.textScalerOf(context).scale(1) <= _dugmeYanYanaEnBuyukOlcek;
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
       child: Row(
@@ -133,43 +230,58 @@ class _MalzemeSatiri extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MergeSemantics(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          malzeme.name,
-                          style: context.yazi.titleSmall,
+                Text(malzeme.name, style: context.yazi.titleSmall),
+                // Alt satır (tasarım: Etkinlik-Malzeme-Liste): "2 adet ·
+                // Getirecek: …", kendi üstlendiğinde "Getirecek: Sen",
+                // boştaysa "Henüz kimse üstlenmedi". Getirecek kişinin
+                // adına dokununca kişi profili (#185).
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      m.etkinlik_kamp_adet(etkinlikSayi(m, adet)),
+                      style: ikincil,
+                    ),
+                    ExcludeSemantics(child: Text(ozetAyraci, style: ikincil)),
+                    if (getiren == null)
+                      Text(m.etkinlik_kamp_kimse_ustlenmedi, style: ikincil)
+                    else if (benim)
+                      Text(
+                        m.etkinlik_kamp_getirecek_sen,
+                        style: ikincil?.copyWith(
+                          color: context.renkler.tintMarkaUstu,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    else
+                      KisiyeDokun(
+                        kullaniciId: getiren,
+                        ipucu: m.etkinlik_kamp_getirecek,
+                        child: Wrap(
+                          spacing: TayfamSpacing.s4,
+                          children: [
+                            Text(m.etkinlik_kamp_getirecek, style: ikincil),
+                            KullaniciAdiMetni(
+                              kullaniciId: getiren,
+                              style: ikincil,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: TayfamSpacing.s8),
-                      Text(
-                        m.etkinlik_kamp_adet(etkinlikSayi(m, adet)),
-                        style: ikincil,
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
-                // Getirecek kişinin adına dokununca kişi profili (#185).
-                // "Ben getiririm" / "Vazgeç" Tayfam-Api'deki atama ucu
-                // birleşince eklenir (issue #187); şimdilik yalnızca metin.
-                if (getiren == null)
-                  Text(m.etkinlik_kamp_kimse_ustlenmedi, style: ikincil)
-                else
-                  KisiyeDokun(
-                    kullaniciId: getiren,
-                    ipucu: m.etkinlik_kamp_getirecek,
-                    child: Wrap(
-                      spacing: TayfamSpacing.s4,
-                      children: [
-                        Text(m.etkinlik_kamp_getirecek, style: ikincil),
-                        KullaniciAdiMetni(kullaniciId: getiren, style: ikincil),
-                      ],
-                    ),
+                if (dugme != null && !yanYana)
+                  Padding(
+                    padding: const EdgeInsets.only(top: TayfamSpacing.s4),
+                    child: dugme,
                   ),
               ],
             ),
           ),
+          if (dugme != null && yanYana) ...[
+            const SizedBox(width: TayfamSpacing.s12),
+            dugme,
+          ],
           if (cikarilabilir)
             AracIkonDugmesi(
               ipucu: m.etkinlik_kamp_malzeme_cikar,
@@ -177,6 +289,54 @@ class _MalzemeSatiri extends StatelessWidget {
               onPressed: onCikar,
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Satır içi küçük hap düğme (tasarım: Etkinlik-Malzeme-Liste): [dolu]
+/// marka zemin + beyaz metin ("Ben getiririm"; iki temada aynı), değilse
+/// kart zemin, çizgi kenar, ana metin ("Vazgeç"). Dokunma alanı en az
+/// 48 px; `onPressed` `null` ise (istek sürerken) kilitlidir.
+class _SatirHapi extends StatelessWidget {
+  const _SatirHapi({
+    required this.etiket,
+    required this.dolu,
+    required this.onPressed,
+  });
+
+  final String etiket;
+  final bool dolu;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    final (zemin, yazi) = dolu
+        ? (r.markaYuzey, r.markaYuzeyUstu)
+        : (r.kart, r.metin);
+    return OdakCercevesi(
+      koseler: TayfamRadii.hapKoseleri,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: zemin,
+          foregroundColor: yazi,
+          disabledBackgroundColor: r.pasif,
+          disabledForegroundColor: r.pasifUstu,
+          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+          padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s16),
+          shape: StadiumBorder(
+            side: dolu
+                ? BorderSide.none
+                : BorderSide(
+                    color: onPressed == null ? r.pasif : r.cizgi,
+                    width: TayfamSizes.vurguKenari,
+                  ),
+          ),
+          textStyle: context.yazi.labelLarge,
+        ),
+        child: Text(etiket, textAlign: TextAlign.center),
       ),
     );
   }

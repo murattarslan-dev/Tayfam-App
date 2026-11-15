@@ -64,6 +64,7 @@ Map<String, Object?> davetJson(String tayfaId, {String ad = 'Kampçılar'}) => {
   'user_id': benimId,
   'inviter_user_id': kisiId1,
   'invited_at': '2026-11-10T09:00:00Z',
+  'interests': const <Object?>['camp'],
 };
 
 /// `UserProfile` JSON'u.

@@ -681,6 +681,7 @@ void main() {
           'tayfa_name': ikinciAd,
           'user_id': kisiId1,
           'invited_at': '2026-11-11T09:00:00Z',
+          'interests': const <Object?>[],
         });
       await _ac(tester, const KisiProfiliEkrani(kullaniciId: kisiId1), tasima);
 

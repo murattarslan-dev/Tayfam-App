@@ -398,3 +398,17 @@ Platform sahibinin kararı (2026-11-11):
      Son düğme dolu yıkıcı "İptal et". Menüdeki alt metin "Katılımcılara
      bildirim gider; gerekçe isteğe bağlı". §3'teki "iptalde gerekçe
      istenir" kuralı bu notla değişti.
+- **2026-11-15 (issue #187 devamı; Tayfam-Api #200): malzeme listesinde
+  "Ben getiririm" / "Vazgeç".** Yukarıdaki 3. madde bu notla tamamlandı.
+  Atama `PATCH …/camp-items/{item_id}` (`assignCampItem`) ile yapılır:
+  "Ben getiririm" gövdede kendi kimliğini, "Vazgeç" boş gövde gönderir.
+  "Ben getiririm" yalnızca boştaki malzemede ve "Geliyorum" diyene,
+  "Vazgeç" kendi üstlendiği malzemede görünür; iptal edilmiş ya da
+  bitmiş etkinlikte ikisi de yoktur. Kendi üstlendiği malzemenin alt
+  satırı "Getirecek: Sen"dir. İstek sürerken düğmeler kilitlidir (tek
+  işlem). Hata kısa bildirimle gösterilir; `event-item-taken`,
+  `event-item-not-found`, `event-not-going`, `event-cancelled` ve
+  `event-ended` listenin bayatladığını gösterdiği için etkinlik ayrıca
+  yeniden okunur. Yönetimin listede başkasını atama ya da atamasını
+  kaldırma düğmesi tasarımda yoktur; yönetim atamayı ekleme formundaki
+  "Kişi seç" ile yapar.

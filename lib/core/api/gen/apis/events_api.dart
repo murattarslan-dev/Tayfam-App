@@ -357,7 +357,8 @@ final class EventsApi {
   ///
   /// Yalnızca kamp etkinliğinde (`event-type-mismatch`); en fazla 200
   /// malzeme (`event-limit`). Liste tek etkinlik yanıtındaki
-  /// `camp.items`'tadır.
+  /// `camp.items`'tadır. `assigned_user_id` verilirse kişi tayfanın etkin
+  /// üyesi olmalı ve `going` cevabı vermiş olmalıdır (`event-not-going`).
   ///
   /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/camp-items`
   Future<CampItem> addCampItem({
@@ -374,6 +375,42 @@ final class EventsApi {
       authenticated: true,
     );
     return CampItem.fromJson(jsonObject(response, 'addCampItem'));
+  }
+
+  /// Malzemeyi kimin getireceğini belirler ya da atamayı kaldırır
+  ///
+  /// `assigned_user_id` bir kullanıcı kimliği atar; alan yoksa ya da
+  /// `null` ise atama kaldırılır.
+  ///
+  /// - Organizatör, moderatör ve yönetici `going` cevabı vermiş herhangi
+  ///   bir etkin üyeyi atayabilir ya da herhangi bir atamayı kaldırabilir.
+  /// - `going` cevabı vermiş diğer üyeler yalnızca boştaki malzemeyi
+  ///   kendine atayabilir ve yalnızca kendi atamasını kaldırabilir.
+  ///   Başkasına atamak `permission-denied`dır.
+  ///
+  /// `going` cevabı olmayan (ya da etkin üye olmayan) kişi:
+  /// `event-not-going`. Malzemeyi başkası üstlenmişse (aynı anda üstlenen
+  /// iki kişiden ikincisi dahil): `event-item-taken`; istemci etkinliği
+  /// yeniden yükler. Değeri zaten olana ayarlamak değişiklik yapmadan
+  /// başarılı olur. Yalnızca kamp etkinliğinde (`event-type-mismatch`).
+  ///
+  /// `PATCH /v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}`
+  Future<CampItem> assignCampItem({
+    required String tayfaId,
+    required String eventId,
+    required String itemId,
+    required CampItemAssignRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PATCH',
+      pathTemplate:
+          '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'item_id': itemId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return CampItem.fromJson(jsonObject(response, 'assignCampItem'));
   }
 
   /// Kamp listesinden malzeme çıkarır (organizatör, moderatör, yönetici)

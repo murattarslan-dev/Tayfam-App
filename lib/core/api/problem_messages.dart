@@ -78,6 +78,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.eventCancelled => m.hata_event_cancelled,
   ProblemType.eventEnded => m.hata_event_ended,
   ProblemType.eventNotGoing => m.hata_event_not_going,
+  ProblemType.eventItemTaken => m.hata_event_item_taken,
   ProblemType.eventItemNotFound => m.hata_event_item_not_found,
   ProblemType.eventLimit => m.hata_event_limit,
   ProblemType.eventTypeMismatch => m.hata_event_type_mismatch,

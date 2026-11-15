@@ -128,6 +128,20 @@ final class EtkinlikDeposu {
     CampItemCreateRequest istek,
   ) => _api.addCampItem(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
 
+  /// `PATCH .../camp-items/{item_id}`: malzemeyi [kullaniciId]'ye atar;
+  /// `null` ise atamayı kaldırır (gövdede alan yok).
+  Future<CampItem> kampMalzemesiAta(
+    String tayfaId,
+    String etkinlikId,
+    String malzemeId,
+    String? kullaniciId,
+  ) => _api.assignCampItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    itemId: malzemeId,
+    body: CampItemAssignRequest(assignedUserId: kullaniciId),
+  );
+
   /// `DELETE .../camp-items/{item_id}`.
   Future<void> kampMalzemesiCikar(
     String tayfaId,

@@ -2122,6 +2122,18 @@
   "@etkinlik_kamp_getirecek": {
     "description": "Kamp malzemesini getirecek kişinin adından önceki etiket."
   },
+  "etkinlik_kamp_getirecek_sen": "Getirecek: Sen",
+  "@etkinlik_kamp_getirecek_sen": {
+    "description": "Malzeme listesinde kullanıcının kendi üstlendiği malzemenin alt satırı (tasarım: Etkinlik-Malzeme-Liste)."
+  },
+  "etkinlik_kamp_ben_getiririm": "Ben getiririm",
+  "@etkinlik_kamp_ben_getiririm": {
+    "description": "Malzeme listesinde boştaki malzemeyi kendine alan düğme; yalnızca \"Geliyorum\" diyene görünür (tasarım: Etkinlik-Malzeme-Liste)."
+  },
+  "etkinlik_kamp_vazgec": "Vazgeç",
+  "@etkinlik_kamp_vazgec": {
+    "description": "Malzeme listesinde kullanıcının kendi üstlendiği malzemeyi bırakan düğme (tasarım: Etkinlik-Malzeme-Liste)."
+  },
   "etkinlik_yuruyus_yoklama": "Yürüyüş yoklaması",
   "@etkinlik_yuruyus_yoklama": {
     "description": "Yürüyüş etkinliğinde \"Çıktım\" ve \"Döndüm\" bölümünün başlığı."
@@ -5322,6 +5334,10 @@
   "hata_event_not_going": "Bunun için önce etkinlikte \"Geliyorum\" seç.",
   "@hata_event_not_going": {
     "description": "Hata kodu `event-not-going`. Konvoya araç ekleme ya da check-in gibi işlemler 'katılıyorum' cevabı olmadan denendiğinde görünen hata."
+  },
+  "hata_event_item_taken": "Bu malzemeyi az önce başkası üstlendi.",
+  "@hata_event_item_taken": {
+    "description": "Hata kodu `event-item-taken`. Kamp malzemesini üstlenmek istenirken başkası daha önce üstlenmişse görünen hata; liste ardından yenilenir."
   },
   "hata_event_item_not_found": "Bu kayıt bulunamadı.",
   "@hata_event_item_not_found": {
