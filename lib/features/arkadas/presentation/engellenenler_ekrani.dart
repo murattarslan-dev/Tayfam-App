@@ -24,7 +24,7 @@ class EngellenenlerEkrani extends ConsumerWidget {
     final durum = ref.watch(engellenenlerProvider);
     return Scaffold(
       appBar: AppBar(title: Text(m.arkadas_engellenenler)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           await ref.read(engellenenlerProvider.notifier).yenile();
         },

@@ -48,7 +48,7 @@ class ArkadaslarEkrani extends ConsumerWidget {
     );
     return Scaffold(
       appBar: AppBar(title: Text(m.arkadas_baslik)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           ref
             ..invalidate(gelenIstekVarProvider)

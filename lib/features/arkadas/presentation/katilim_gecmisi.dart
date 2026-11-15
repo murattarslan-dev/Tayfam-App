@@ -309,7 +309,7 @@ class KatilimlarimEkrani extends ConsumerWidget {
     final gorunurluk = ref.watch(katilimGorunurlukSatiriProvider);
     return Scaffold(
       appBar: AppBar(title: Text(m.arkadas_katilimlarim_baslik)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           final id = kimlik.value;
           if (id != null) {

@@ -37,7 +37,7 @@ class DavetlerEkrani extends ConsumerWidget {
     final durum = ref.watch(saglayici);
     return Scaffold(
       appBar: AppBar(title: Text(m.yonetim_davetler)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => ref.read(saglayici.notifier).yenile(),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

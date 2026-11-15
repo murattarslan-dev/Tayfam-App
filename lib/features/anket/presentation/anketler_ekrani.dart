@@ -84,7 +84,7 @@ class AnketlerEkrani extends ConsumerWidget {
           const SizedBox(width: TayfamSpacing.s8),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(context, ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -95,11 +95,12 @@ class AnketlerEkrani extends ConsumerWidget {
             TayfamSpacing.s40,
           ),
           children: [
-            if (liste == null && hata != null) ...[
-              const SizedBox(height: TayfamSpacing.s16),
-              HataSatiri.hatadan(hata),
-              AnketTekrarDene(onPressed: () => ref.invalidate(saglayici)),
-            ] else if (liste == null)
+            if (liste == null && hata != null)
+              YuklemeHatasi(
+                hata: hata,
+                onTekrarDene: () => ref.invalidate(saglayici),
+              )
+            else if (liste == null)
               Padding(
                 padding: const EdgeInsets.only(top: TayfamSpacing.s24),
                 child: Center(
@@ -165,7 +166,13 @@ class AnketlerEkrani extends ConsumerWidget {
     final saglayici = anketListesiProvider(_anahtar);
     final hata = await ref.read(saglayici.notifier).yenile();
     if (hata == null || !context.mounted) return;
-    if (ref.read(saglayici).hasValue) anketHatasiniBildir(context, hata);
+    if (ref.read(saglayici).hasValue) {
+      yenilemeHatasiBildir(
+        context,
+        hata,
+        tekrarDene: () => unawaited(_yenile(context, ref)),
+      );
+    }
   }
 }
 

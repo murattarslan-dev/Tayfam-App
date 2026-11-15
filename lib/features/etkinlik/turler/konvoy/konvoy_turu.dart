@@ -17,6 +17,7 @@ import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -136,9 +137,9 @@ Future<void> _aracKaydet(
   EtkinlikAnahtari anahtar,
   ConvoyVehicle? mevcut,
 ) async {
-  final istek = await showDialog<ConvoyVehicleCreateRequest>(
-    context: context,
-    builder: (_) => AracFormu(mevcut: mevcut),
+  final istek = await aracFormuAc<ConvoyVehicleCreateRequest>(
+    context,
+    (_) => AracFormu(mevcut: mevcut),
   );
   if (istek == null || !context.mounted) return;
   final hata = await ref
@@ -325,11 +326,11 @@ class _AracFormuState extends ConsumerState<AracFormu> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final h = _hatalar;
-    return AracFormDiyalogu(
+    return AracFormSayfasi(
       baslik: widget.mevcut == null
           ? m.etkinlik_konvoy_arac_ekle
           : m.etkinlik_konvoy_arac_degistir,
-      onayEtiketi: m.etkinlik_kaydet,
+      onayEtiketi: widget.mevcut == null ? m.etkinlik_ekle : m.etkinlik_kaydet,
       onOnay: _kaydet,
       alanlar: [
         TextField(
@@ -384,13 +385,16 @@ class _AracFormuState extends ConsumerState<AracFormu> {
           enableSuggestions: false,
           decoration: InputDecoration(
             labelText: m.etkinlik_arac_plaka,
-            helperText: m.etkinlik_arac_plaka_notu,
-            helperMaxLines: 3,
             errorText: h.contains(AracHatasi.plaka)
                 ? m.etkinlik_arac_plaka_hata
                 : null,
             errorMaxLines: 3,
           ),
+        ),
+        const SizedBox(height: TayfamSpacing.s8),
+        SihirbazBilgiKutusu(
+          metin: m.etkinlik_arac_gizlilik_notu,
+          ikon: Icons.lock_outline,
         ),
       ],
     );

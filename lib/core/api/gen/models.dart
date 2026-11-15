@@ -658,6 +658,7 @@ final class Announcement {
     required this.pinned,
     required this.createdAt,
     required this.updatedAt,
+    this.editedAt,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -675,6 +676,10 @@ final class Announcement {
     pinned: _readBool(json['pinned'], 'Announcement.pinned'),
     createdAt: _readDateTime(json['created_at'], 'Announcement.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Announcement.updated_at'),
+    editedAt: switch (json['edited_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'Announcement.edited_at'),
+    },
   );
 
   final String id;
@@ -695,6 +700,12 @@ final class Announcement {
   /// Her düzenleme, sabitleme ve geri almada değişir.
   final DateTime updatedAt;
 
+  /// Başlık ya da gövdenin son değiştiği zaman (issue #191).
+  /// Sabitleme, sabitlemeyi kaldırma ve geri alma onu değiştirmez.
+  /// Hiç düzenlenmemiş duyuruda yoktur; istemci "düzenlendi"
+  /// etiketini bu alana göre gösterir.
+  final DateTime? editedAt;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -705,6 +716,8 @@ final class Announcement {
     'pinned': pinned,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
+    if (editedAt case final value?)
+      'edited_at': value.toUtc().toIso8601String(),
   };
 
   @override
@@ -718,7 +731,8 @@ final class Announcement {
           body == other.body &&
           pinned == other.pinned &&
           createdAt == other.createdAt &&
-          updatedAt == other.updatedAt;
+          updatedAt == other.updatedAt &&
+          editedAt == other.editedAt;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -730,6 +744,7 @@ final class Announcement {
     pinned,
     createdAt,
     updatedAt,
+    editedAt,
   ]);
 }
 
@@ -1719,6 +1734,40 @@ final class CampItem {
       Object.hashAll(<Object?>[id, name, quantity, assignedUserId]);
 }
 
+final class CampItemAssignRequest {
+  const CampItemAssignRequest({this.assignedUserId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CampItemAssignRequest.fromJson(Map<String, Object?> json) =>
+      CampItemAssignRequest(
+        assignedUserId: switch (json['assigned_user_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'CampItemAssignRequest.assigned_user_id',
+          ),
+        },
+      );
+
+  /// Getirecek kişi. Yoksa (ya da `null`) atama kaldırılır.
+  final String? assignedUserId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (assignedUserId case final value?) 'assigned_user_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CampItemAssignRequest && assignedUserId == other.assignedUserId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[assignedUserId]);
+}
+
 final class CampItemCreateRequest {
   const CampItemCreateRequest({
     required this.name,
@@ -1753,7 +1802,7 @@ final class CampItemCreateRequest {
   /// Kısıtlar: minimum: 0; maximum: 999.
   final int? quantity;
 
-  /// Tayfanın etkin bir üyesi.
+  /// Tayfanın `going` cevabı vermiş etkin bir üyesi (`event-not-going`).
   final String? assignedUserId;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -1789,6 +1838,7 @@ final class Channel {
     this.unreadCount,
     this.lastReadMessageId,
     this.eventId,
+    this.eventTitle,
     this.memberCount,
     this.archiveAt,
   });
@@ -1828,6 +1878,10 @@ final class Channel {
     eventId: switch (json['event_id']) {
       null => null,
       final Object v => _readString(v, 'Channel.event_id'),
+    },
+    eventTitle: switch (json['event_title']) {
+      null => null,
+      final Object v => _readString(v, 'Channel.event_title'),
     },
     memberCount: switch (json['member_count']) {
       null => null,
@@ -1873,6 +1927,10 @@ final class Channel {
   /// Yalnızca `event` kanalında.
   final String? eventId;
 
+  /// Yalnızca `event` kanalında: etkinliğin başlığı, iptal edilmiş olsa
+  /// da (issue #193). Etkinlik size görünmüyorsa yoktur.
+  final String? eventTitle;
+
   /// Yalnızca `event` ve `selected` kanalında; kitlenin büyüklüğü.
   ///
   /// Kısıtlar: minimum: 0.
@@ -1898,6 +1956,7 @@ final class Channel {
     if (unreadCount case final value?) 'unread_count': value,
     if (lastReadMessageId case final value?) 'last_read_message_id': value,
     if (eventId case final value?) 'event_id': value,
+    if (eventTitle case final value?) 'event_title': value,
     if (memberCount case final value?) 'member_count': value,
     if (archiveAt case final value?)
       'archive_at': value.toUtc().toIso8601String(),
@@ -1919,6 +1978,7 @@ final class Channel {
           unreadCount == other.unreadCount &&
           lastReadMessageId == other.lastReadMessageId &&
           eventId == other.eventId &&
+          eventTitle == other.eventTitle &&
           memberCount == other.memberCount &&
           archiveAt == other.archiveAt;
 
@@ -1936,6 +1996,7 @@ final class Channel {
     unreadCount,
     lastReadMessageId,
     eventId,
+    eventTitle,
     memberCount,
     archiveAt,
   ]);
@@ -2094,8 +2155,51 @@ final class ChannelList {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(channels)]);
 }
 
+final class ChannelMember {
+  const ChannelMember({required this.userId, required this.roles});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChannelMember.fromJson(Map<String, Object?> json) => ChannelMember(
+    userId: _readString(json['user_id'], 'ChannelMember.user_id'),
+    roles: List<ChannelMemberRolesItem>.unmodifiable(
+      _readList(json['roles'], 'ChannelMember.roles').map(
+        (Object? e0) => ChannelMemberRolesItem.fromWire(
+          _readString(e0, 'ChannelMember.roles'),
+        ),
+      ),
+    ),
+  );
+
+  final String userId;
+
+  /// `organizer`: etkinliğin organizatörü (yalnızca `event`); `creator`: kanalı açan. Boş olabilir.
+  final List<ChannelMemberRolesItem> roles;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'roles': <Object?>[for (final e0 in roles) e0.wire],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChannelMember &&
+          userId == other.userId &&
+          _deepEquals(roles, other.roles);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, _deepHash(roles)]);
+}
+
 final class ChannelMemberList {
-  const ChannelMemberList({required this.userIds, this.nextPageToken});
+  const ChannelMemberList({
+    required this.userIds,
+    required this.members,
+    this.nextPageToken,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -2108,6 +2212,13 @@ final class ChannelMemberList {
             'ChannelMemberList.user_ids',
           ).map((Object? e0) => _readString(e0, 'ChannelMemberList.user_ids')),
         ),
+        members: List<ChannelMember>.unmodifiable(
+          _readList(json['members'], 'ChannelMemberList.members').map(
+            (Object? e0) => ChannelMember.fromJson(
+              _readObject(e0, 'ChannelMemberList.members'),
+            ),
+          ),
+        ),
         nextPageToken: switch (json['next_page_token']) {
           null => null,
           final Object v => _readString(v, 'ChannelMemberList.next_page_token'),
@@ -2116,11 +2227,17 @@ final class ChannelMemberList {
 
   final List<String> userIds;
 
+  /// `user_ids` ile aynı kişiler aynı sırada, kanaldaki rolleriyle
+  /// (issue #193). Tayfa rolü burada yoktur; ad ve avatar profil
+  /// ucundan gelir.
+  final List<ChannelMember> members;
+
   final String? nextPageToken;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'user_ids': <Object?>[for (final e0 in userIds) e0],
+    'members': <Object?>[for (final e0 in members) e0.toJson()],
     if (nextPageToken case final value?) 'next_page_token': value,
   };
 
@@ -2129,11 +2246,44 @@ final class ChannelMemberList {
       identical(this, other) ||
       other is ChannelMemberList &&
           _deepEquals(userIds, other.userIds) &&
+          _deepEquals(members, other.members) &&
           nextPageToken == other.nextPageToken;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[_deepHash(userIds), nextPageToken]);
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(userIds),
+    _deepHash(members),
+    nextPageToken,
+  ]);
+}
+
+enum ChannelMemberRolesItem {
+  organizer('organizer'),
+  creator('creator'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const ChannelMemberRolesItem(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('ChannelMemberRolesItem.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static ChannelMemberRolesItem fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class ChannelMembersAddRequest {
@@ -8018,6 +8168,7 @@ final class Invitation {
     required this.userId,
     this.inviterUserId,
     required this.invitedAt,
+    required this.interests,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -8032,6 +8183,12 @@ final class Invitation {
       final Object v => _readString(v, 'Invitation.inviter_user_id'),
     },
     invitedAt: _readDateTime(json['invited_at'], 'Invitation.invited_at'),
+    interests: List<EventType>.unmodifiable(
+      _readList(json['interests'], 'Invitation.interests').map(
+        (Object? e0) =>
+            EventType.fromWire(_readString(e0, 'Invitation.interests')),
+      ),
+    ),
   );
 
   final String tayfaId;
@@ -8046,6 +8203,9 @@ final class Invitation {
 
   final DateTime invitedAt;
 
+  /// Tayfanın ilgi alanları (issue
+  final List<EventType> interests;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa_id': tayfaId,
@@ -8053,6 +8213,7 @@ final class Invitation {
     'user_id': userId,
     if (inviterUserId case final value?) 'inviter_user_id': value,
     'invited_at': invitedAt.toUtc().toIso8601String(),
+    'interests': <Object?>[for (final e0 in interests) e0.wire],
   };
 
   @override
@@ -8063,7 +8224,8 @@ final class Invitation {
           tayfaName == other.tayfaName &&
           userId == other.userId &&
           inviterUserId == other.inviterUserId &&
-          invitedAt == other.invitedAt;
+          invitedAt == other.invitedAt &&
+          _deepEquals(interests, other.interests);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -8072,6 +8234,7 @@ final class Invitation {
     userId,
     inviterUserId,
     invitedAt,
+    _deepHash(interests),
   ]);
 }
 
@@ -8281,6 +8444,7 @@ final class InvitePreview {
     required this.name,
     required this.memberCount,
     required this.alreadyMember,
+    required this.interests,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -8294,6 +8458,12 @@ final class InvitePreview {
       json['already_member'],
       'InvitePreview.already_member',
     ),
+    interests: List<EventType>.unmodifiable(
+      _readList(json['interests'], 'InvitePreview.interests').map(
+        (Object? e0) =>
+            EventType.fromWire(_readString(e0, 'InvitePreview.interests')),
+      ),
+    ),
   );
 
   final String tayfaId;
@@ -8305,12 +8475,17 @@ final class InvitePreview {
   /// Zaten etkin üyeyseniz ya da bekleyen isteğiniz varsa.
   final bool alreadyMember;
 
+  /// Tayfanın ilgi alanları (issue #194; avatar rengi). Yalnızca geçerli
+  /// davette döner; geçersiz davette hiçbir tayfa bilgisi dönmez.
+  final List<EventType> interests;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa_id': tayfaId,
     'name': name,
     'member_count': memberCount,
     'already_member': alreadyMember,
+    'interests': <Object?>[for (final e0 in interests) e0.wire],
   };
 
   @override
@@ -8320,11 +8495,17 @@ final class InvitePreview {
           tayfaId == other.tayfaId &&
           name == other.name &&
           memberCount == other.memberCount &&
-          alreadyMember == other.alreadyMember;
+          alreadyMember == other.alreadyMember &&
+          _deepEquals(interests, other.interests);
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[tayfaId, name, memberCount, alreadyMember]);
+  int get hashCode => Object.hashAll(<Object?>[
+    tayfaId,
+    name,
+    memberCount,
+    alreadyMember,
+    _deepHash(interests),
+  ]);
 }
 
 final class InviteTokenRequest {
@@ -9814,6 +9995,7 @@ final class Notification {
     this.subjectUserId,
     this.warningReason,
     this.unreadCount,
+    this.resolution,
     required this.read,
     required this.createdAt,
   });
@@ -9855,6 +10037,12 @@ final class Notification {
     unreadCount: switch (json['unread_count']) {
       null => null,
       final Object v => _readInt(v, 'Notification.unread_count'),
+    },
+    resolution: switch (json['resolution']) {
+      null => null,
+      final Object v => NotificationResolution.fromWire(
+        _readString(v, 'Notification.resolution'),
+      ),
     },
     read: _readBool(json['read'], 'Notification.read'),
     createdAt: _readDateTime(json['created_at'], 'Notification.created_at'),
@@ -9925,6 +10113,15 @@ final class Notification {
   /// Kısıtlar: minimum: 1; maximum: 100.
   final int? unreadCount;
 
+  /// Yalnızca `friend_request` ve `tayfa_invitation` (issue #192):
+  /// isteğin ya da davetin şu anki durumu. `pending` yanıt bekliyor
+  /// (satır içi düğmeler gösterilir); `accepted` kabul edildi;
+  /// `declined` siz reddettiniz; `withdrawn` karşı taraf geri çekti;
+  /// `expired` artık bilinmiyor. Liste alınırken core'dan hesaplanır,
+  /// bildirime yazılmaz; yalnızca alıcıya döner, kimin geri çektiği
+  /// söylenmez. O an hesaplanamazsa alan yoktur.
+  final NotificationResolution? resolution;
+
   final bool read;
 
   final DateTime createdAt;
@@ -9941,6 +10138,7 @@ final class Notification {
     if (subjectUserId case final value?) 'subject_user_id': value,
     if (warningReason case final value?) 'warning_reason': value.wire,
     if (unreadCount case final value?) 'unread_count': value,
+    if (resolution case final value?) 'resolution': value.wire,
     'read': read,
     'created_at': createdAt.toUtc().toIso8601String(),
   };
@@ -9959,6 +10157,7 @@ final class Notification {
           subjectUserId == other.subjectUserId &&
           warningReason == other.warningReason &&
           unreadCount == other.unreadCount &&
+          resolution == other.resolution &&
           read == other.read &&
           createdAt == other.createdAt;
 
@@ -9974,6 +10173,7 @@ final class Notification {
     subjectUserId,
     warningReason,
     unreadCount,
+    resolution,
     read,
     createdAt,
   ]);
@@ -10263,6 +10463,44 @@ enum NotificationPreferenceScopeType {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static NotificationPreferenceScopeType fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Yalnızca `friend_request` ve `tayfa_invitation` (issue #192):
+/// isteğin ya da davetin şu anki durumu. `pending` yanıt bekliyor
+/// (satır içi düğmeler gösterilir); `accepted` kabul edildi;
+/// `declined` siz reddettiniz; `withdrawn` karşı taraf geri çekti;
+/// `expired` artık bilinmiyor. Liste alınırken core'dan hesaplanır,
+/// bildirime yazılmaz; yalnızca alıcıya döner, kimin geri çektiği
+/// söylenmez. O an hesaplanamazsa alan yoktur.
+enum NotificationResolution {
+  pending('pending'),
+  accepted('accepted'),
+  declined('declined'),
+  withdrawn('withdrawn'),
+  expired('expired'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const NotificationResolution(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('NotificationResolution.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static NotificationResolution fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;

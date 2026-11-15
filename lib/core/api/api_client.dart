@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/api_ayarlari.dart';
@@ -21,11 +23,28 @@ import 'package:tayfam/core/oturum/session_store.dart';
 /// - `integrity-required` gelirse (istemci ADR-0023 §5) bütünlük kanıtıyla
 ///   bir kez yenilenir ve istek bir kez tekrarlanır.
 /// - Başlıklar, problem ayrıştırma, zaman aşımı ve günlük [HttpTasima]'dadır.
+/// - Her istekte sunucuya ulaşılıp ulaşılamadığı [ulasilabilirlik]'te
+///   yayınlanır (bağlantı yok bandı; issue #188). Yalnızca okunur bir
+///   sinyaldir: istek, hata ve yeniden deneme davranışı değişmez.
 final class ApiClient implements ApiTransport {
   ApiClient({required this._tasima, required this._oturum});
 
   final HttpTasima _tasima;
   final SessionStore _oturum;
+
+  final StreamController<bool> _ulasilabilirlik =
+      StreamController<bool>.broadcast();
+
+  /// Bağlantı hatası sınıflandırması: sunucudan bir cevap geldiyse (başarılı
+  /// ya da problem) `true`, istek sunucuya ulaşamadıysa ([ApiOffline])
+  /// `false`. Zaman aşımı ve diğer hatalar yayınlanmaz. Yalnızca durum
+  /// taşır; adres, gövde ya da hata ayrıntısı taşımaz (CLAUDE.md kesin
+  /// kural 3).
+  Stream<bool> get ulasilabilirlik => _ulasilabilirlik.stream;
+
+  void _bildir(bool ulasildi) {
+    if (_ulasilabilirlik.hasListener) _ulasilabilirlik.add(ulasildi);
+  }
 
   @override
   Future<Object?> send({
@@ -37,15 +56,27 @@ final class ApiClient implements ApiTransport {
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
-    Future<Object?> gonder(String? token) => _tasima.gonder(
-      method: method,
-      pathTemplate: pathTemplate,
-      pathParams: pathParams,
-      query: query,
-      body: body,
-      expect: expect,
-      erisimTokeni: token,
-    );
+    Future<Object?> gonder(String? token) async {
+      try {
+        final cevap = await _tasima.gonder(
+          method: method,
+          pathTemplate: pathTemplate,
+          pathParams: pathParams,
+          query: query,
+          body: body,
+          expect: expect,
+          erisimTokeni: token,
+        );
+        _bildir(true);
+        return cevap;
+      } on ApiProblem {
+        _bildir(true);
+        rethrow;
+      } on ApiOffline {
+        _bildir(false);
+        rethrow;
+      }
+    }
 
     if (!authenticated) return gonder(null);
 

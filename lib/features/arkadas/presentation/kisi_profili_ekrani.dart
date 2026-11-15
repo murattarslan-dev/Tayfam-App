@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
@@ -30,7 +32,11 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// menü ve eylem yoktur.
 ///
 /// Adresteki kimlik girdi kabul edilir: UUID biçiminde değilse istek
-/// yapılmaz. Engel varsa sunucu kişiyi var olmayan gibi gösterir.
+/// yapılmaz. Engel varsa sunucu kişiyi var olmayan gibi gösterir; kişi
+/// bulunamazsa (biçimsiz kimlik, 404 / `user-not-found`) tek ortak "Bu
+/// profil görüntülenemiyor" ekranı gelir: engellenme, silinme ve
+/// bulunamama hiçbir metinde ayrılmaz (issue #188; tasarım:
+/// Durum-Profil-Yok). Diğer hatalar ortak yükleme hatasıdır.
 class KisiProfiliEkrani extends ConsumerWidget {
   const KisiProfiliEkrani({super.key, required this.kullaniciId});
 
@@ -40,17 +46,14 @@ class KisiProfiliEkrani extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     if (!uuidBicimindeMi(kullaniciId)) {
-      return Scaffold(
-        appBar: AppBar(title: Text(m.arkadas_profil_baslik)),
-        body: Padding(
-          padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
-          child: HataSatiri(metin: m.hata_user_not_found),
-        ),
-      );
+      return const _ProfilGoruntulenemiyor();
     }
     final saglayici = kisiProfiliProvider(kullaniciId);
     final durum = ref.watch(saglayici);
     final profil = durum.value;
+    if (profil == null && profilBulunamadiMi(durum.error)) {
+      return const _ProfilGoruntulenemiyor();
+    }
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -62,7 +65,7 @@ class KisiProfiliEkrani extends ConsumerWidget {
             ),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           ref.invalidate(katilimGecmisiProvider(kullaniciId));
           await ref.read(saglayici.notifier).yenile();
@@ -114,6 +117,45 @@ class KisiProfiliEkrani extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Kişi profili bulunamadı mı: 404 ya da `user-not-found` /
+/// `not-found`. Engellenme, silinme ve bulunamama bilerek ayrılmaz.
+bool profilBulunamadiMi(Object? hata) => switch (hata) {
+  ApiProblem(type: ProblemType.userNotFound) ||
+  ApiProblem(type: ProblemType.notFound) ||
+  ApiProblem(status: 404) => true,
+  _ => false,
+};
+
+/// "Bu profil görüntülenemiyor" (tasarım: Durum-Profil-Yok): başlık çubuğu
+/// ve geri tuşu yerinde; ortada kişi ikonu, tek ortak metin, açıklama ve
+/// "Geri dön".
+class _ProfilGoruntulenemiyor extends StatelessWidget {
+  const _ProfilGoruntulenemiyor();
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final gezgin = Navigator.of(context);
+    return Scaffold(
+      appBar: AppBar(),
+      body: ListView(
+        children: [
+          OrtaDurum(
+            daire: true,
+            ikon: Icons.person_outline_rounded,
+            baslik: m.profil_goruntulenemiyor_baslik,
+            aciklama: m.profil_goruntulenemiyor_aciklama,
+            eylem: CerceveliHapEylem(
+              etiket: m.profil_goruntulenemiyor_geri,
+              onPressed: () => unawaited(gezgin.maybePop()),
+            ),
+          ),
+        ],
       ),
     );
   }

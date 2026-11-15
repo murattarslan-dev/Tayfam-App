@@ -22,6 +22,7 @@ import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/harita_secici_ekrani.dart';
+import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -132,9 +133,9 @@ class AvGunluguBolumu extends ConsumerWidget {
     WidgetRef ref,
     EtkinlikAnahtari anahtar,
   ) async {
-    await showDialog<void>(
-      context: context,
-      builder: (_) => AvFormu(anahtar: anahtar, merkez: etkinlik.meetingPoint),
+    await aracFormuAc<void>(
+      context,
+      (_) => AvFormu(anahtar: anahtar, merkez: etkinlik.meetingPoint),
     );
   }
 }
@@ -337,7 +338,7 @@ class _AvFormuState extends ConsumerState<AvFormu> {
     final mesgul = ref.watch(aracEylemProvider(widget.anahtar));
     final yer = _yer;
     final hata = _hata;
-    return AracFormDiyalogu(
+    return AracFormSayfasi(
       baslik: m.etkinlik_av_ekle,
       onayEtiketi: m.etkinlik_ekle,
       onOnay: mesgul ? null : () => unawaited(_ekle()),
@@ -419,8 +420,11 @@ class _AvFormuState extends ConsumerState<AvFormu> {
             ),
           ),
         ],
-        const SizedBox(height: TayfamSpacing.s8),
-        AracBilgisi(metin: m.etkinlik_av_yer_notu),
+        const SizedBox(height: TayfamSpacing.s12),
+        SihirbazBilgiKutusu(
+          metin: m.etkinlik_av_gizlilik_notu,
+          ikon: Icons.lock_outline,
+        ),
         if (hata != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
           HataSatiri.hatadan(hata),

@@ -111,10 +111,12 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
     });
   }
 
-  /// Etkinliği [gerekce] ile iptal eder.
-  Future<Object?> iptalEt(String gerekce) async {
-    final metin = gerekce.trim();
-    if (state != null || metin.isEmpty) return null;
+  /// Etkinliği iptal eder. Gerekçe isteğe bağlıdır (issue #187): boşsa
+  /// istek gövdesinde `reason` hiç yoktur.
+  Future<Object?> iptalEt(String? gerekce) async {
+    final kirpik = gerekce?.trim();
+    final metin = kirpik == null || kirpik.isEmpty ? null : kirpik;
+    if (state != null) return null;
     return _calistir(EtkinlikEylemi.iptal, () async {
       final etkinlik = await _depo.iptalEt(
         anahtar.tayfaId,

@@ -65,7 +65,7 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: RefreshIndicator(
+        child: TayfamYenile(
           onRefresh: _yenile,
           child: Align(
             alignment: Alignment.topCenter,
@@ -100,14 +100,13 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
                       onTap: () => _ac(uyari),
                     ),
                   ],
-                  if (liste == null && hata != null) ...[
-                    const SizedBox(height: TayfamSpacing.s16),
-                    HataSatiri.hatadan(hata),
-                    _MetinDugmesi(
-                      etiket: m.tayfa_ana_tekrar_dene,
-                      onPressed: () => ref.invalidate(bildirimListesiProvider),
-                    ),
-                  ] else if (liste == null)
+                  if (liste == null && hata != null)
+                    YuklemeHatasi(
+                      hata: hata,
+                      onTekrarDene: () =>
+                          ref.invalidate(bildirimListesiProvider),
+                    )
+                  else if (liste == null)
                     Padding(
                       padding: const EdgeInsets.only(top: TayfamSpacing.s32),
                       child: Center(
@@ -235,7 +234,13 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     await rozet;
     if (!mounted) return;
     if (hata == null || hata is OturumYok) return;
-    if (ref.read(bildirimListesiProvider).hasValue) hataBildir(context, hata);
+    if (ref.read(bildirimListesiProvider).hasValue) {
+      yenilemeHatasiBildir(
+        context,
+        hata,
+        tekrarDene: () => unawaited(_yenile()),
+      );
+    }
   }
 }
 

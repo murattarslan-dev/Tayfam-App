@@ -1675,7 +1675,7 @@
   "@etkinlik_menu_seri_notu": {
     "description": "Etkinlik detayının ⋯ sayfasında, seri etkinlikte \"Düzenle\"nin alt metni."
   },
-  "etkinlik_menu_iptal_aciklama": "Gerekçe istenir; üyeler iptal edildiğini görür",
+  "etkinlik_menu_iptal_aciklama": "Katılımcılara bildirim gider; gerekçe isteğe bağlı",
   "@etkinlik_menu_iptal_aciklama": {
     "description": "Etkinlik detayının ⋯ sayfasında \"Etkinliği iptal et\"in alt metni."
   },
@@ -2006,10 +2006,6 @@
   "@etkinlik_arac_plaka": {
     "description": "Araç formundaki plaka alanı."
   },
-  "etkinlik_arac_plaka_notu": "Plakayı yalnızca etkinliğe gelenler ve organizatör görür; 30 gün içinde silinir.",
-  "@etkinlik_arac_plaka_notu": {
-    "description": "Araç formunda plaka alanının altındaki gizlilik notu (ADR-0015 §6)."
-  },
   "etkinlik_arac_marka_hata": "Markayı yaz (en çok 40 karakter).",
   "@etkinlik_arac_marka_hata": {
     "description": "Araç formunda marka boş ya da uzunsa görünen hata."
@@ -2068,9 +2064,49 @@
   "@etkinlik_kamp_malzeme_adi_hata": {
     "description": "Kamp malzemesi adı boş ya da uzunsa görünen hata."
   },
-  "etkinlik_kamp_malzeme_adedi": "Adet (isteğe bağlı)",
-  "@etkinlik_kamp_malzeme_adedi": {
-    "description": "Kamp malzemesi formundaki adet alanı; boşsa 1."
+  "etkinlik_kamp_adet_etiketi": "Adet",
+  "@etkinlik_kamp_adet_etiketi": {
+    "description": "Malzeme ekle formundaki adet sayacının etiketi (1–999)."
+  },
+  "etkinlik_kamp_kim_getirecek": "Kim getirecek?",
+  "@etkinlik_kamp_kim_getirecek": {
+    "description": "Malzeme ekle formunda getirecek kişinin seçildiği bölümün başlığı."
+  },
+  "etkinlik_kamp_getiren_ben": "Ben",
+  "@etkinlik_kamp_getiren_ben": {
+    "description": "Malzeme ekle formu, \"Kim getirecek?\": malzemeyi kendisi getirecek."
+  },
+  "etkinlik_kamp_getiren_kimse": "Henüz kimse",
+  "@etkinlik_kamp_getiren_kimse": {
+    "description": "Malzeme ekle formu, \"Kim getirecek?\": henüz kimse üstlenmedi."
+  },
+  "etkinlik_kamp_getiren_kisi": "Kişi seç",
+  "@etkinlik_kamp_getiren_kisi": {
+    "description": "Malzeme ekle formu, \"Kim getirecek?\": etkinliğe gelenlerden birini seç (yalnızca organizatör ve yönetim)."
+  },
+  "etkinlik_kamp_kisi_sec_notu": "\"Kişi seç\" yalnızca organizatöre ve yönetime görünür; etkinliğe gelenlerden biri seçilir.",
+  "@etkinlik_kamp_kisi_sec_notu": {
+    "description": "Malzeme ekle formunda \"Kim getirecek?\" seçeneklerinin altındaki not."
+  },
+  "etkinlik_kamp_kisi_sec_hata": "Malzemeyi getirecek kişiyi seç.",
+  "@etkinlik_kamp_kisi_sec_hata": {
+    "description": "Malzeme ekle formunda \"Kişi seç\" (ya da \"Ben\") seçilip kişi belli değilken gösterilen hata."
+  },
+  "etkinlik_kamp_gelen_yok": "Henüz \"Geliyorum\" diyen yok.",
+  "@etkinlik_kamp_gelen_yok": {
+    "description": "Malzeme ekle formunda \"Kişi seç\" açıkken etkinliğe gelen kimse yoksa."
+  },
+  "etkinlik_kamp_kimse_ustlenmedi": "Henüz kimse üstlenmedi",
+  "@etkinlik_kamp_kimse_ustlenmedi": {
+    "description": "Malzeme listesinde getirecek kişisi olmayan malzemenin alt satırı."
+  },
+  "etkinlik_av_gizlilik_notu": "Avın türü ve boyu tayfaya görünür. Yer, seçmediğin sürece yalnızca sende kalır; fotoğrafın konum bilgisi gönderilmeden silinir. Yer haritada senin işaretlediğin noktadır; cihazının konumu kullanılmaz.",
+  "@etkinlik_av_gizlilik_notu": {
+    "description": "Av ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Av-Ekle)."
+  },
+  "etkinlik_arac_gizlilik_notu": "Plaka yalnızca bu etkinliğe gelenlere ve organizatöre görünür ve 30 gün içinde silinir. Araç listesine yalnızca \"Geliyorum\" diyenler araç ekleyebilir.",
+  "@etkinlik_arac_gizlilik_notu": {
+    "description": "Aracını ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Arac-Ekle)."
   },
   "etkinlik_kamp_adet": "{adet} adet",
   "@etkinlik_kamp_adet": {
@@ -2085,6 +2121,18 @@
   "etkinlik_kamp_getirecek": "Getirecek:",
   "@etkinlik_kamp_getirecek": {
     "description": "Kamp malzemesini getirecek kişinin adından önceki etiket."
+  },
+  "etkinlik_kamp_getirecek_sen": "Getirecek: Sen",
+  "@etkinlik_kamp_getirecek_sen": {
+    "description": "Malzeme listesinde kullanıcının kendi üstlendiği malzemenin alt satırı (tasarım: Etkinlik-Malzeme-Liste)."
+  },
+  "etkinlik_kamp_ben_getiririm": "Ben getiririm",
+  "@etkinlik_kamp_ben_getiririm": {
+    "description": "Malzeme listesinde boştaki malzemeyi kendine alan düğme; yalnızca \"Geliyorum\" diyene görünür (tasarım: Etkinlik-Malzeme-Liste)."
+  },
+  "etkinlik_kamp_vazgec": "Vazgeç",
+  "@etkinlik_kamp_vazgec": {
+    "description": "Malzeme listesinde kullanıcının kendi üstlendiği malzemeyi bırakan düğme (tasarım: Etkinlik-Malzeme-Liste)."
   },
   "etkinlik_yuruyus_yoklama": "Yürüyüş yoklaması",
   "@etkinlik_yuruyus_yoklama": {
@@ -2191,10 +2239,6 @@
   "etkinlik_av_yer_kaldir": "Yeri kaldır",
   "@etkinlik_av_yer_kaldir": {
     "description": "Av formunda seçilen yeri kaldıran düğme."
-  },
-  "etkinlik_av_yer_notu": "Yer, haritada senin işaretlediğin noktadır; cihazının konumu kullanılmaz.",
-  "@etkinlik_av_yer_notu": {
-    "description": "Av formunda yer seçiminin altındaki not."
   },
   "etkinlik_av_yer_kimin": "Yeri kim görsün?",
   "@etkinlik_av_yer_kimin": {
@@ -2474,17 +2518,21 @@
   "@etkinlik_iptal_baslik": {
     "description": "İptal diyaloğunun başlığı."
   },
-  "etkinlik_iptal_aciklama": "Etkinlik silinmez; üyeler iptal edildiğini ve gerekçesini görür. Bu işlem geri alınamaz.",
+  "etkinlik_iptal_aciklama": "Etkinlik silinmez; tayfa onu iptal edildi olarak görmeye devam eder. Katılım cevapları değişmez.",
   "@etkinlik_iptal_aciklama": {
     "description": "İptal diyaloğundaki açıklama."
   },
-  "etkinlik_iptal_gerekce_etiketi": "Gerekçe",
+  "etkinlik_iptal_gerekce_etiketi": "Gerekçe (isteğe bağlı)",
   "@etkinlik_iptal_gerekce_etiketi": {
     "description": "İptal diyaloğundaki gerekçe alanının etiketi."
   },
-  "etkinlik_iptal_gerekce_hata": "Gerekçe yaz (en çok 500 karakter).",
-  "@etkinlik_iptal_gerekce_hata": {
-    "description": "İptal diyaloğunda gerekçe boşken ya da çok uzunken alanın altındaki hata."
+  "etkinlik_iptal_gerekce_notu": "Detayda katılımcılara görünür.",
+  "@etkinlik_iptal_gerekce_notu": {
+    "description": "İptal penceresinde isteğe bağlı gerekçe alanının altındaki not (sayaç yanında)."
+  },
+  "etkinlik_iptal_pencere_baslik": "Etkinlik iptal edilsin mi?",
+  "@etkinlik_iptal_pencere_baslik": {
+    "description": "İptal onay penceresinin başlığı (tasarım: Etkinlik-Iptal-Penceresi)."
   },
   "etkinlik_iptal_onayla": "İptal et",
   "@etkinlik_iptal_onayla": {
@@ -3189,6 +3237,59 @@
   "bilesen_yukleniyor": "Yükleniyor",
   "@bilesen_yukleniyor": {
     "description": "Ortak bileşen: yükleniyor animasyonunun (logo dalgası) varsayılan ekran okuyucu etiketi; hareketi azalt açıkken tam ekran yüklemede statik logonun altında da görünür."
+  },
+  "bilesen_yenile": "Yenile",
+  "@bilesen_yenile": {
+    "description": "Ortak bileşen (çekip yenileme): ekran okuyucudaki özel eylemin adı; listeyi yeniler."
+  },
+  "bilesen_yenile_cek": "Yenilemek için çek",
+  "@bilesen_yenile_cek": {
+    "description": "Ortak bileşen (çekip yenileme): eşik geçilmeden çekerken logonun altındaki metin."
+  },
+  "bilesen_yenile_birak": "Bırak, yenilensin",
+  "@bilesen_yenile_birak": {
+    "description": "Ortak bileşen (çekip yenileme): eşik geçilince logonun altındaki metin; bırakınca yenilenir."
+  },
+  "baglanti_yok_bandi": "Bağlantı yok · Bağlanınca güncellenir",
+  "@baglanti_yok_bandi": {
+    "description": "Kabuk: bir istek sunucuya ulaşamadığında ya da canlı bağlantı kurulamadığında durum çubuğunun altında görünen koyu bant; ilk başarılı istekte kaybolur."
+  },
+  "baglanti_baglaniyor": "Bağlanıyor…",
+  "@baglanti_baglaniyor": {
+    "description": "Kanal ve birebir konuşma başlığının alt satırı: canlı bağlantı birkaç saniyedir kopuksa görünür; bağlanınca eski haline döner."
+  },
+  "yukleme_hatasi_baslik": "Yüklenemedi",
+  "@yukleme_hatasi_baslik": {
+    "description": "İlk yükleme hatası: ekran hiç dolmadan istek düştüğünde ortadaki başlık; altında hatanın ortak metni (bağlantı yok ya da genel hata) ve 'Tekrar dene' durur."
+  },
+  "yukleme_hatasi_tekrar_dene": "Tekrar dene",
+  "@yukleme_hatasi_tekrar_dene": {
+    "description": "İlk yükleme hatasındaki ve yenileme hatası bildirimindeki düğme: isteği yeniden dener."
+  },
+  "yenileme_hatasi": "Yenilenemedi. {neden}",
+  "@yenileme_hatasi": {
+    "description": "Dolu listede yenileme başarısız olunca alttan çıkan kısa bildirim; içerik yerinde kalır. {neden} hatanın ortak metnidir.",
+    "placeholders": {
+      "neden": {
+        "type": "String"
+      }
+    }
+  },
+  "yenileme_hatasi_baglanti_yok": "Yenilenemedi. Bağlantı yok.",
+  "@yenileme_hatasi_baglanti_yok": {
+    "description": "Dolu listede yenileme bağlantı olmadığı için başarısız olunca alttan çıkan kısa bildirim; içerik yerinde kalır."
+  },
+  "profil_goruntulenemiyor_baslik": "Bu profil görüntülenemiyor",
+  "@profil_goruntulenemiyor_baslik": {
+    "description": "Kişi profili açılamadığında (bulunamadı; engellenme, silinme ve bulunamama bilerek ayrılmaz) ortadaki başlık."
+  },
+  "profil_goruntulenemiyor_aciklama": "Hesap kapanmış ya da bu profile erişimin olmayabilir.",
+  "@profil_goruntulenemiyor_aciklama": {
+    "description": "Kişi profili açılamadığında başlığın altındaki açıklama; engellendiğini ya da silindiğini ayırt ettirmez."
+  },
+  "profil_goruntulenemiyor_geri": "Geri dön",
+  "@profil_goruntulenemiyor_geri": {
+    "description": "Kişi profili açılamadığında önceki ekrana dönen düğme."
   },
   "bilesen_uctan_uca_sifreli": "Uçtan uca şifreli",
   "@bilesen_uctan_uca_sifreli": {
@@ -5234,6 +5335,10 @@
   "@hata_event_not_going": {
     "description": "Hata kodu `event-not-going`. Konvoya araç ekleme ya da check-in gibi işlemler 'katılıyorum' cevabı olmadan denendiğinde görünen hata."
   },
+  "hata_event_item_taken": "Bu malzemeyi az önce başkası üstlendi.",
+  "@hata_event_item_taken": {
+    "description": "Hata kodu `event-item-taken`. Kamp malzemesini üstlenmek istenirken başkası daha önce üstlenmişse görünen hata; liste ardından yenilenir."
+  },
   "hata_event_item_not_found": "Bu kayıt bulunamadı.",
   "@hata_event_item_not_found": {
     "description": "Hata kodu `event-item-not-found`. Etkinlikteki kamp malzemesi, konvoy aracı ya da av kaydı yoksa veya kullanıcı onu kaldıramıyorsa görünen hata."
@@ -6859,10 +6964,6 @@
   "arkadas_engel_kaldirildi": "Engel kaldırıldı.",
   "@arkadas_engel_kaldirildi": {
     "description": "Engel kaldırılınca kısa süre görünen bildirim."
-  },
-  "arkadas_profil_baslik": "Profil",
-  "@arkadas_profil_baslik": {
-    "description": "Kişi profili ekranının ad gelmeden önceki başlığı."
   },
   "arkadas_profil_menu": "Diğer seçenekler",
   "@arkadas_profil_menu": {

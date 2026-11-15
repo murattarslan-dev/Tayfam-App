@@ -236,7 +236,7 @@ void main() {
       expect(_okunmadi(), findsNothing);
     });
 
-    testWidgets('liste okunamazsa hata satırı ve "Tekrar dene"', (
+    testWidgets('liste okunamazsa ortak yükleme hatası ve "Tekrar dene"', (
       tester,
     ) async {
       ekranBoyutu(tester);
@@ -247,10 +247,11 @@ void main() {
             : bildirimListesiJson([bildirimJson(bildirimId1)]),
       });
       await _ekraniAc(tester, tasima);
-      expect(find.byType(HataSatiri), findsOneWidget);
+      expect(find.byType(YuklemeHatasi), findsOneWidget);
+      expect(find.text(arbMetni('hata_baglanti_yok')), findsOneWidget);
 
       hata = false;
-      await tester.tap(find.text(arbMetni('tayfa_ana_tekrar_dene')));
+      await tester.tap(find.text(arbMetni('yukleme_hatasi_tekrar_dene')));
       await tester.pumpAndSettle();
       expect(find.byType(BildirimSatiri), findsOneWidget);
     });

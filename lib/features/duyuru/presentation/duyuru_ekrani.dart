@@ -107,19 +107,12 @@ class DuyuruEkrani extends ConsumerWidget {
               children: [
                 if (duyuru != null)
                   _DuyuruIcerigi(duyuru: duyuru)
-                else if (hata != null) ...[
-                  HataSatiri.hatadan(hata),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton(
-                      onPressed: () => ref.invalidate(saglayici),
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                      ),
-                      child: Text(metinler.tayfa_ana_tekrar_dene),
-                    ),
-                  ),
-                ] else
+                else if (hata != null)
+                  YuklemeHatasi(
+                    hata: hata,
+                    onTekrarDene: () => ref.invalidate(saglayici),
+                  )
+                else
                   Center(
                     child: TayfamYukleniyor(
                       boyut: TayfamSizes.yukleniyorTamEkran,

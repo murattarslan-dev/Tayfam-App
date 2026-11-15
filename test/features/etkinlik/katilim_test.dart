@@ -150,7 +150,7 @@ void main() {
     });
 
     test(
-      'iptal: gerekçe gövdede, detay güncellenir; boş gerekçe gitmez',
+      'iptal: gerekçe gövdede, detay güncellenir; boş gerekçede reason yok',
       () async {
         final tasima = etkinlikTasimasi({
           'POST $iptalYolu': (_) => etkinlikJson(iptal: true),
@@ -159,11 +159,15 @@ void main() {
         await c.read(etkinlikDetayProvider(_anahtar).future);
         final n = c.read(etkinlikEylemProvider(_anahtar).notifier);
 
+        // Gerekçe isteğe bağlı (issue #187): boş ya da yalnızca boşluksa
+        // istek gider ama gövdede `reason` yoktur.
         expect(await n.iptalEt('   '), isNull);
-        expect(tasima.giden('POST', iptalYolu), isEmpty);
+        expect(tasima.giden('POST', iptalYolu).single.govde, isEmpty);
+        expect(await n.iptalEt(null), isNull);
+        expect(tasima.giden('POST', iptalYolu)[1].govde, isEmpty);
 
         expect(await n.iptalEt(' Hava kötü '), isNull);
-        expect(tasima.giden('POST', iptalYolu).single.govde, {
+        expect(tasima.giden('POST', iptalYolu).last.govde, {
           'reason': 'Hava kötü',
         });
         final e = c.read(etkinlikDetayProvider(_anahtar)).value!;

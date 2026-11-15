@@ -58,7 +58,7 @@ class _KanalListesiState extends ConsumerState<KanalListesi> {
     ];
     void ac(Channel kanal) => context.go(Adresler.kanal(tayfaId, kanal.id));
 
-    return RefreshIndicator(
+    return TayfamYenile(
       onRefresh: () async {
         final hata = await ref.read(saglayici.notifier).yenile();
         if (hata != null && context.mounted && ref.read(saglayici).hasValue) {

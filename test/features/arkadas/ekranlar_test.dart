@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
@@ -382,8 +384,122 @@ void main() {
         const KisiProfiliEkrani(kullaniciId: '../v1/me'),
         tasima,
       );
-      expect(find.text(arbMetni('hata_user_not_found')), findsOneWidget);
+      expect(
+        find.text(arbMetni('profil_goruntulenemiyor_baslik')),
+        findsOneWidget,
+      );
       expect(tasima.giden('GET', profilYolu), isEmpty);
+    });
+
+    group('profil görüntülenemiyor (#188)', () {
+      // Engellenme, silinme ve bulunamama sunucuda aynı cevaptır; istemci
+      // de hiçbir metinde ayırmaz.
+      final durumlar = <String, Object>{
+        'user-not-found': const ApiProblem(
+          type: ProblemType.userNotFound,
+          status: 404,
+        ),
+        'not-found': const ApiProblem(type: ProblemType.notFound, status: 404),
+        'bilinmeyen 404': const ApiProblem(
+          type: ProblemType.unknown,
+          status: 404,
+        ),
+      };
+      for (final MapEntry(key: ad, value: hata) in durumlar.entries) {
+        testWidgets('$ad: tek ortak metin, engellenme ayrılmıyor', (
+          tester,
+        ) async {
+          ekranBoyutu(tester);
+          await _ac(
+            tester,
+            const KisiProfiliEkrani(kullaniciId: kisiId1),
+            arkadasTasimasi({'GET $profilYolu': (_) => hata}),
+          );
+          expect(
+            find.text(arbMetni('profil_goruntulenemiyor_baslik')),
+            findsOneWidget,
+          );
+          expect(
+            find.text(arbMetni('profil_goruntulenemiyor_aciklama')),
+            findsOneWidget,
+          );
+          expect(
+            find.text(arbMetni('profil_goruntulenemiyor_geri')),
+            findsOneWidget,
+          );
+          final metinler = [
+            for (final e in find.byType(Text).evaluate())
+              (e.widget as Text).data ?? '',
+          ].join(' ');
+          for (final ipucu in ['ngel', 'silin', 'bulunamad']) {
+            expect(metinler, isNot(contains(ipucu)), reason: ipucu);
+          }
+        });
+      }
+
+      testWidgets('bağlantı hatası profil yok sayılmaz: yükleme hatası', (
+        tester,
+      ) async {
+        ekranBoyutu(tester);
+        await _ac(
+          tester,
+          const KisiProfiliEkrani(kullaniciId: kisiId1),
+          arkadasTasimasi({'GET $profilYolu': (_) => const ApiOffline()}),
+        );
+        expect(find.byType(YuklemeHatasi), findsOneWidget);
+        expect(
+          find.text(arbMetni('profil_goruntulenemiyor_baslik')),
+          findsNothing,
+        );
+      });
+
+      testWidgets('"Geri dön" önceki ekrana döner', (tester) async {
+        ekranBoyutu(tester);
+        await _ac(
+          tester,
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const KisiProfiliEkrani(kullaniciId: kisiId1),
+                ),
+              ),
+              child: const Text('aç'),
+            ),
+          ),
+          arkadasTasimasi({
+            'GET $profilYolu': (_) =>
+                const ApiProblem(type: ProblemType.userNotFound, status: 404),
+          }),
+        );
+        await tester.tap(find.text('aç'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(arbMetni('profil_goruntulenemiyor_geri')));
+        await tester.pumpAndSettle();
+        expect(find.byType(KisiProfiliEkrani), findsNothing);
+        expect(find.text('aç'), findsOneWidget);
+      });
+
+      for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+        testWidgets('${mod.name}: 2× yazı, 320 dp taşmıyor', (tester) async {
+          ekranBoyutu(tester, genislik: 320);
+          ikiKatYazi(tester);
+          await _ac(
+            tester,
+            const KisiProfiliEkrani(kullaniciId: kisiId1),
+            arkadasTasimasi({
+              'GET $profilYolu': (_) =>
+                  const ApiProblem(type: ProblemType.userNotFound, status: 404),
+            }),
+            themeMode: mod,
+          );
+          expect(
+            find.text(arbMetni('profil_goruntulenemiyor_baslik')),
+            findsOneWidget,
+          );
+          expect(tester.takeException(), isNull);
+        });
+      }
     });
 
     testWidgets('ilişki yok: istek gönder; geçmiş gizli', (tester) async {
@@ -565,6 +681,7 @@ void main() {
           'tayfa_name': ikinciAd,
           'user_id': kisiId1,
           'invited_at': '2026-11-11T09:00:00Z',
+          'interests': const <Object?>[],
         });
       await _ac(tester, const KisiProfiliEkrani(kullaniciId: kisiId1), tasima);
 

@@ -83,6 +83,60 @@ abstract final class TayfamSizes {
   /// Yükleniyor dalgasında bloğun en düşük saydamlığı.
   static const double yukleniyorEnAzSaydamlik = .45;
 
+  // --- Çekip yenileme (TayfamYenile; tasarım: 24-cekip-yenileme) ----------
+
+  /// Yenilemenin tetiklendiği çekme mesafesi (80 dp).
+  static const double yenileEsigi = 80;
+
+  /// Yenilenirken içeriğin üstünde açık kalan boşluk (72 dp).
+  static const double yenileBoslugu = 72;
+
+  // --- Hata ve bağlantı durumları (tasarım: 23-hata-ve-baglanti-durumlari)
+
+  /// İlk yükleme hatasındaki ikon kutusu (72 px; Durum-Yukleme-Hatasi).
+  static const double hataIkonKutusu = 72;
+
+  /// [hataIkonKutusu] içindeki ikon (34 px).
+  static const double hataIkonu = 34;
+
+  /// "Bu profil görüntülenemiyor" ekranındaki daire (88 px;
+  /// Durum-Profil-Yok).
+  static const double profilYokDairesi = 88;
+
+  /// [profilYokDairesi] içindeki ikon (40 px).
+  static const double profilYokIkonu = 40;
+
+  /// Bağlantı yok bandının en küçük yüksekliği (36 px; Durum-Cevrimdisi).
+  static const double baglantiBandi = 36;
+
+  /// Canlı bağlantı yokken gönderilmeyi bekleyen mesaj balonunun
+  /// saydamlığı (Durum-Baglaniyor: .7).
+  static const double bekleyenMesajSaydamligi = .7;
+
+  /// Çekmenin başında logonun kenarı (36 px; Yenile-Cekiliyor).
+  static const double yenileLogoKucuk = 36;
+
+  /// Eşikte logonun kenarı (44 px; Yenile-Esik).
+  static const double yenileLogoBuyuk = 44;
+
+  /// Yenilenirken dalga oynayan logonun kenarı (40 px; Yenile-Yenileniyor).
+  static const double yenileLogo = 40;
+
+  /// Henüz yerine oturmamış bloğun kesikli çizgisinin kalınlığı (logo
+  /// kutusunun 100 birimi üzerinden; tasarım: 2.5).
+  static const double yenileTaslakKalinligi = 2.5;
+
+  /// Kesikli çizginin bir parçasının ve aralığının uzunluğu (100 birim
+  /// üzerinden; tasarım: `stroke-dasharray="4 4"`).
+  static const double yenileTaslakParcasi = 4;
+
+  /// Henüz yerine oturmamış bloğun taslak saydamlığı (tasarım: .5).
+  static const double yenileTaslakSaydamligi = .5;
+
+  /// Yerine oturan bloğun başladığı ölçek (dalgadaki en küçük ölçekle
+  /// aynı, %70).
+  static const double yenileBlokBaslangicOlcegi = yukleniyorEnKucukOlcek;
+
   /// Giriş ekranındaki giriş düğmelerinin yüksekliği (Design: Giriş, 52 px;
 
   /// dokunma alanı 48'in üstünde).

@@ -28,6 +28,7 @@ Map<String, Object?> _onizlemeJson({bool zatenUye = false}) => {
   'name': 'Ege Klasikleri',
   'member_count': 24,
   'already_member': zatenUye,
+  'interests': const <Object?>[],
 };
 
 Object? _varsayilanOnizleme(TayfaIstegi _) => _onizlemeJson();

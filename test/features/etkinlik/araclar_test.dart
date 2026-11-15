@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
@@ -70,8 +74,15 @@ Future<void> _gorunurDokun(WidgetTester tester, Finder bulucu) async {
 
 /// Kaydırılabilir bir bölümdeki öğeyi görünür yapıp dokunur.
 Future<void> _dokun(WidgetTester tester, Finder bulucu) async {
-  await tester.ensureVisible(bulucu);
+  // Odaktaki metin alanı imleci görünür tutmak için kaydırmayı geri
+  // almasın (alttan sayfadaki formlar).
+  FocusManager.instance.primaryFocus?.unfocus();
   await tester.pumpAndSettle();
+  final ekran = tester.view.physicalSize / tester.view.devicePixelRatio;
+  if (!(Offset.zero & ekran).contains(tester.getCenter(bulucu))) {
+    await tester.ensureVisible(bulucu);
+    await tester.pumpAndSettle();
+  }
   await tester.tap(bulucu);
   await tester.pumpAndSettle();
 }
@@ -313,15 +324,16 @@ void main() {
         tester,
         find.text(arbMetni('etkinlik_konvoy_arac_ekle')),
       );
-      expect(find.text(arbMetni('etkinlik_arac_plaka_notu')), findsOneWidget);
-      await tester.tap(find.text(arbMetni('etkinlik_kaydet')));
-      await tester.pumpAndSettle();
+      expect(
+        find.text(arbMetni('etkinlik_arac_gizlilik_notu')),
+        findsOneWidget,
+      );
+      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
       expect(find.text(arbMetni('etkinlik_arac_marka_hata')), findsOneWidget);
       expect(tasima.giden('POST', araclarYolu), isEmpty);
 
       await tester.enterText(find.byType(TextField).first, 'Anadol');
-      await tester.tap(find.text(arbMetni('etkinlik_kaydet')));
-      await tester.pumpAndSettle();
+      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
       expect(tasima.giden('POST', araclarYolu).single.govde, {
         'make': 'Anadol',
       });
@@ -368,9 +380,11 @@ void main() {
 
     Map<String, Object?> kamp({
       bool yonetebilir = false,
+      String? cevap,
       List<Map<String, Object?>> malzemeler = const [ocak],
     }) => etkinlikJson(
       yonetebilir: yonetebilir,
+      cevap: cevap,
       ayrinti: {'site_name': 'Göl kenarı', 'items': malzemeler},
     );
 
@@ -406,10 +420,12 @@ void main() {
           find.text(arbMetni('etkinlik_kamp_malzeme_ekle')),
         );
         await tester.enterText(find.byType(TextField).first, 'Çadır');
-        await tester.tap(find.text(arbMetni('etkinlik_ekle')));
-        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
+        // Adet sayacı 1'den başlar; "Henüz kimse" seçili: atama gitmez.
         expect(tasima.giden('POST', malzemelerYolu).single.govde, {
           'name': 'Çadır',
+          'quantity': 1,
         });
         await _gorunurYap(tester, find.text('Çadır'));
 
@@ -449,6 +465,273 @@ void main() {
         find.byTooltip(arbMetni('etkinlik_kamp_malzeme_cikar')),
         findsNothing,
       );
+    });
+    for (final cevap in [null, 'maybe', 'not_going']) {
+      testWidgets('listede üstlenilmemiş malzeme "Henüz kimse üstlenmedi"; '
+          '"Geliyorum" demeyene ($cevap) "Ben getiririm" yok (#187)', (
+        tester,
+      ) async {
+        ekranBoyutu(tester);
+        await _detayiAc(
+          tester,
+          etkinlikTasimasi({
+            'GET $etkinlikYolu': (_) =>
+                kamp(cevap: cevap, malzemeler: [ocak, cadir]),
+          }),
+        );
+        await _gorunurYap(tester, find.text('Çadır'));
+        expect(
+          find.text(arbMetni('etkinlik_kamp_kimse_ustlenmedi')),
+          findsOneWidget,
+        );
+        expect(find.text(arbMetni('etkinlik_kamp_getirecek')), findsOneWidget);
+        expect(
+          find.text(arbMetni('etkinlik_kamp_ben_getiririm')),
+          findsNothing,
+          reason: 'cevap: $cevap',
+        );
+        // Başkasının üstlendiği malzemede "Vazgeç" yok.
+        expect(find.text(arbMetni('etkinlik_kamp_vazgec')), findsNothing);
+      });
+    }
+
+    for (final tema in _temalar) {
+      testWidgets('"Ben getiririm" kendi kimliğiyle, "Vazgeç" boş gövdeyle '
+          'gider (${tema.name}, 2× yazı, 320 dp; #187)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        // Sunucu tarafı: çadırı kim getiriyor (PATCH sonrası okuma da
+        // aynısını döndürür).
+        String? kimde;
+        Map<String, Object?> cadirSimdi() => {
+          ...cadir,
+          'assigned_user_id': ?kimde,
+        };
+        final tasima = etkinlikTasimasi({
+          'GET $etkinlikYolu': (_) =>
+              kamp(cevap: 'going', malzemeler: [ocak, cadirSimdi()]),
+          'PATCH $malzemeYolu': (i) {
+            kimde =
+                (i.govde! as Map<String, Object?>)['assigned_user_id']
+                    as String?;
+            return cadirSimdi();
+          },
+        });
+        await _detayiAc(tester, tasima, themeMode: tema);
+        final benGetiririm = find.text(arbMetni('etkinlik_kamp_ben_getiririm'));
+        await _gorunurYap(tester, benGetiririm);
+        expect(benGetiririm, findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        await _dokun(tester, benGetiririm);
+        final alma = tasima.giden('PATCH', malzemeYolu).single;
+        expect(alma.yolParametreleri['item_id'], cadir['id']);
+        expect(alma.govde, {'assigned_user_id': katilimciId});
+        expect(
+          find.text(arbMetni('etkinlik_kamp_getirecek_sen')),
+          findsOneWidget,
+        );
+        expect(benGetiririm, findsNothing);
+
+        final vazgec = find.text(arbMetni('etkinlik_kamp_vazgec'));
+        await _gorunurYap(tester, vazgec);
+        expect(tester.takeException(), isNull);
+        await _dokun(tester, vazgec);
+        expect(tasima.giden('PATCH', malzemeYolu).last.govde, isEmpty);
+        expect(benGetiririm, findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('istek uçarken düğme kilitli; çift dokunma tek istek (#187)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) =>
+            kamp(cevap: 'going', malzemeler: [ocak, cadir]),
+        'PATCH $malzemeYolu': (_) => {
+          ...cadir,
+          'assigned_user_id': katilimciId,
+        },
+      });
+      await _detayiAc(tester, tasima);
+      final etiket = arbMetni('etkinlik_kamp_ben_getiririm');
+      await _gorunurYap(tester, find.text(etiket));
+      final bekle = Completer<void>();
+      tasima.bekle = bekle;
+      await tester.tap(find.text(etiket));
+      await tester.pump();
+      expect(_dugme(tester, etiket), isNull);
+      await tester.tap(find.text(etiket), warnIfMissed: false);
+      await tester.pump();
+      tasima.bekle = null;
+      bekle.complete();
+      await tester.pumpAndSettle();
+      expect(tasima.giden('PATCH', malzemeYolu), hasLength(1));
+    });
+
+    testWidgets('event-item-taken: kısa bildirim ve etkinlik yeniden '
+        'okunur (#187)', (tester) async {
+      ekranBoyutu(tester);
+      var alindi = false;
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => kamp(
+          cevap: 'going',
+          malzemeler: [
+            ocak,
+            if (alindi)
+              {...cadir, 'assigned_user_id': organizatorId}
+            else
+              cadir,
+          ],
+        ),
+        'PATCH $malzemeYolu': (_) {
+          alindi = true;
+          return const ApiProblem(
+            type: ProblemType.eventItemTaken,
+            status: 409,
+          );
+        },
+      });
+      await _detayiAc(tester, tasima);
+      final okuma = tasima.giden('GET', etkinlikYolu).length;
+      await _gorunurDokun(
+        tester,
+        find.text(arbMetni('etkinlik_kamp_ben_getiririm')),
+      );
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(arbMetni('hata_event_item_taken')),
+        ),
+        findsOneWidget,
+      );
+      expect(tasima.giden('GET', etkinlikYolu).length, okuma + 1);
+      // Yenilenen listede malzeme artık başkasında; düğme yok.
+      expect(find.text(arbMetni('etkinlik_kamp_ben_getiririm')), findsNothing);
+      expect(
+        find.text(arbMetni('etkinlik_kamp_kimse_ustlenmedi')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('düğme gizlenmese de sunucu hatası gösterilir '
+        '(permission-denied; #187)', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => kamp(
+          cevap: 'going',
+          malzemeler: [
+            {...ocak, 'assigned_user_id': katilimciId},
+          ],
+        ),
+        'PATCH $malzemeYolu': (_) =>
+            const ApiProblem(type: ProblemType.permissionDenied, status: 403),
+      });
+      await _detayiAc(tester, tasima);
+      await _gorunurDokun(tester, find.text(arbMetni('etkinlik_kamp_vazgec')));
+      expect(tasima.giden('PATCH', malzemeYolu).single.govde, isEmpty);
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(arbMetni('hata_permission_denied')),
+        ),
+        findsOneWidget,
+      );
+      // Liste değişmedi; düğme yeniden kullanılabilir.
+      expect(_dugme(tester, arbMetni('etkinlik_kamp_vazgec')), isNotNull);
+    });
+
+    testWidgets('iptal edilmiş etkinlikte atama düğmesi yok (#187)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _detayiAc(
+        tester,
+        etkinlikTasimasi({
+          'GET $etkinlikYolu': (_) => etkinlikJson(
+            cevap: 'going',
+            iptal: true,
+            ayrinti: {
+              'site_name': 'Göl kenarı',
+              'items': [
+                cadir,
+                {...ocak, 'assigned_user_id': katilimciId},
+              ],
+            },
+          ),
+        }),
+      );
+      await _gorunurYap(tester, find.text('Çadır'));
+      expect(find.text(arbMetni('etkinlik_kamp_ben_getiririm')), findsNothing);
+      expect(find.text(arbMetni('etkinlik_kamp_vazgec')), findsNothing);
+    });
+
+    testWidgets('"Kim getirecek?: Ben" kendi kimliğiyle gider; '
+        'event-not-going formda gösterilir (#187)', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => kamp(yonetebilir: true),
+        'POST $malzemelerYolu': (_) =>
+            const ApiProblem(type: ProblemType.eventNotGoing, status: 409),
+      });
+      await _detayiAc(tester, tasima);
+      await _gorunurDokun(
+        tester,
+        find.text(arbMetni('etkinlik_kamp_malzeme_ekle')),
+      );
+      await tester.enterText(find.byType(TextField).first, 'Tüp');
+      await _dokun(tester, find.text(arbMetni('etkinlik_kamp_getiren_ben')));
+      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
+      expect(tasima.giden('POST', malzemelerYolu).single.govde, {
+        'name': 'Tüp',
+        'quantity': 1,
+        'assigned_user_id': katilimciId,
+      });
+      // Form açık kalır, sunucunun hata kodu metniyle.
+      expect(find.text(arbMetni('hata_event_not_going')), findsOneWidget);
+      expect(
+        find.text(arbMetni('etkinlik_kamp_kim_getirecek')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('"Kişi seç" yönetime görünür, gelenlerden seçer (#187)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => kamp(yonetebilir: true),
+        'GET $katilimcilarYolu': (_) => katilimcilarJson([organizatorId]),
+        'POST $malzemelerYolu': (_) => cadir,
+      });
+      await _detayiAc(tester, tasima);
+      await _gorunurDokun(
+        tester,
+        find.text(arbMetni('etkinlik_kamp_malzeme_ekle')),
+      );
+      await tester.enterText(find.byType(TextField).first, 'Çadır');
+      await _dokun(tester, find.text(arbMetni('etkinlik_kamp_getiren_kisi')));
+      expect(
+        tasima.giden('GET', katilimcilarYolu).last.sorgu['status'],
+        'going',
+      );
+      // Kişi seçilmeden eklenmez.
+      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
+      expect(
+        find.text(arbMetni('etkinlik_kamp_kisi_sec_hata')),
+        findsOneWidget,
+      );
+      expect(tasima.giden('POST', malzemelerYolu), isEmpty);
+
+      await _dokun(tester, find.byType(RadioListTile<String>).first);
+      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
+      expect(tasima.giden('POST', malzemelerYolu).single.govde, {
+        'name': 'Çadır',
+        'quantity': 1,
+        'assigned_user_id': organizatorId,
+      });
     });
   });
 
@@ -587,8 +870,12 @@ void main() {
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_av_ekle')));
         await tester.enterText(find.byType(TextField).at(0), 'Lüfer');
         await tester.enterText(find.byType(TextField).at(1), '28,5');
-        await tester.tap(find.text(arbMetni('etkinlik_ekle')));
-        await tester.pumpAndSettle();
+        // Alttan sayfa; varsayılan görünürlük "Yalnızca ben", yer seçilmedi.
+        expect(
+          find.text(arbMetni('etkinlik_av_gizlilik_notu')),
+          findsOneWidget,
+        );
+        await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
         expect(tasima.giden('POST', avlarYolu).single.govde, {
           'species': 'Lüfer',
           'length_cm': 28.5,
@@ -631,6 +918,78 @@ void main() {
       expect(find.text(arbMetni('etkinlik_av_ekle')), findsNothing);
       expect(find.text(arbMetni('etkinlik_av_yok')), findsOneWidget);
     });
+  });
+
+  group('ekleme formları alttan sayfa (#187)', () {
+    final formlar = <String, (Map<String, Object?> Function(), String)>{
+      'av': (
+        () => etkinlikJson(
+          tur: 'fishing',
+          cevap: 'going',
+          katilim: 'attended',
+          baslangic: gecmisBaslangic,
+          sure: const Duration(hours: 3),
+        ),
+        'etkinlik_av_ekle',
+      ),
+      'malzeme': (
+        () => etkinlikJson(
+          yonetebilir: true,
+          ayrinti: {'site_name': 'Göl', 'items': const <Object?>[]},
+        ),
+        'etkinlik_kamp_malzeme_ekle',
+      ),
+      'araç': (
+        () => etkinlikJson(
+          tur: 'convoy',
+          cevap: 'going',
+          baslangic: yakinBaslangic,
+          ayrinti: {'route': const <Object?>[], 'vehicles': const <Object?>[]},
+        ),
+        'etkinlik_konvoy_arac_ekle',
+      ),
+    };
+    for (final tema in _temalar) {
+      for (final MapEntry(key: ad, value: (etkinlik, dugme))
+          in formlar.entries) {
+        testWidgets('$ad formu ${tema.name}, 2× yazı, 320 dp, klavye açık: '
+            'taşmıyor; altta Vazgeç + Ekle', (tester) async {
+          ekranBoyutu(tester, genislik: 320);
+          ikiKatYazi(tester);
+          await _detayiAc(
+            tester,
+            etkinlikTasimasi({'GET $etkinlikYolu': (_) => etkinlik()}),
+            themeMode: tema,
+          );
+          await _gorunurDokun(tester, find.text(arbMetni(dugme)).first);
+          expect(find.byType(BottomSheet), findsOneWidget);
+          tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+          addTearDown(tester.view.resetViewInsets);
+          await tester.enterText(find.byType(TextField).first, 'Uzun bir ad');
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+          // Sayfa klavyenin üstüne kayar.
+          expect(
+            tester.getBottomLeft(find.byType(SingleChildScrollView).last).dy,
+            lessThanOrEqualTo(640 - 300 + 1),
+          );
+          final vazgec = find.descendant(
+            of: find.byType(BottomSheet),
+            matching: find.text(arbMetni('etkinlik_vazgec')),
+          );
+          expect(vazgec, findsOneWidget);
+          expect(
+            find.descendant(
+              of: find.byType(BottomSheet),
+              matching: find.text(arbMetni('etkinlik_ekle')),
+            ),
+            findsOneWidget,
+          );
+          await _dokun(tester, vazgec);
+          expect(find.byType(BottomSheet), findsNothing);
+        });
+      }
+    }
   });
 
   group('organizatör düzeltmesi', () {

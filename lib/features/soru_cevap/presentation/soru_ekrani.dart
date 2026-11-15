@@ -100,7 +100,7 @@ class SoruEkrani extends ConsumerWidget {
             constraints: const BoxConstraints(
               maxWidth: TayfamSizes.okumaGenisligi,
             ),
-            child: RefreshIndicator(
+            child: TayfamYenile(
               onRefresh: () => _yenile(context, ref),
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -118,10 +118,12 @@ class SoruEkrani extends ConsumerWidget {
                       soru: soru,
                       yonetimde: yonetimde,
                     ),
-                  ] else if (hata != null) ...[
-                    HataSatiri.hatadan(hata),
-                    _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
-                  ] else
+                  ] else if (hata != null)
+                    YuklemeHatasi(
+                      hata: hata,
+                      onTekrarDene: () => ref.invalidate(saglayici),
+                    )
+                  else
                     Center(
                       child: TayfamYukleniyor(
                         boyut: TayfamSizes.yukleniyorTamEkran,

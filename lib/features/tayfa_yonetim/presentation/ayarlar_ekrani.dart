@@ -98,7 +98,7 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
           ],
         ),
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

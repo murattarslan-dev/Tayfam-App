@@ -57,6 +57,7 @@ enum ProblemType {
   eventCancelled('event-cancelled'),
   eventEnded('event-ended'),
   eventNotGoing('event-not-going'),
+  eventItemTaken('event-item-taken'),
   eventItemNotFound('event-item-not-found'),
   eventLimit('event-limit'),
   eventTypeMismatch('event-type-mismatch'),

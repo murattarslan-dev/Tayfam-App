@@ -135,7 +135,7 @@ class _KatilimcilarEkraniState extends ConsumerState<KatilimcilarEkrani> {
           ],
         ),
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           final hata = await ref.read(saglayici.notifier).yenile();
           if (hata != null && context.mounted) hataBildir(context, hata);

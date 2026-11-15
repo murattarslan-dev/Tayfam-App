@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/baglanti/baglanti_durumu.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
@@ -358,6 +359,28 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('canlı bağlantı yoksa birkaç saniye sonra "Bağlanıyor…", '
+      'bağlanınca eski alt satır (#188)', (tester) async {
+    final ortam = SohbetOrtami(kanallar: [kanalJson(kanalId1, ad: 'genel')]);
+    await _ac(
+      tester,
+      const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+      ortam,
+    );
+    final baglaniyor = find.text(arbMetni('baglanti_baglaniyor'));
+    // Gecikme dolmadan görünmez (titreme olmasın).
+    expect(baglaniyor, findsNothing);
+
+    ortam.zaman.calistir(baglaniyorGecikmesi);
+    await tester.pump();
+    expect(baglaniyor, findsOneWidget);
+
+    await tester.runAsync(ortam.baglan);
+    await tester.pump();
+    expect(baglaniyor, findsNothing);
+    expect(find.text('genel'), findsOneWidget);
+  });
 
   testWidgets('arşivli kanalda yazma alanı yok', (tester) async {
     final ortam = SohbetOrtami(kanallar: [kanalJson(kanalId1, arsiv: true)]);

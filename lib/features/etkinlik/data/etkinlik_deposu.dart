@@ -47,7 +47,7 @@ final class EtkinlikDeposu {
   ) => _api.updateEvent(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
 
   /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/cancellation`.
-  Future<Event> iptalEt(String tayfaId, String etkinlikId, String gerekce) =>
+  Future<Event> iptalEt(String tayfaId, String etkinlikId, String? gerekce) =>
       _api.cancelEvent(
         tayfaId: tayfaId,
         eventId: etkinlikId,
@@ -127,6 +127,20 @@ final class EtkinlikDeposu {
     String etkinlikId,
     CampItemCreateRequest istek,
   ) => _api.addCampItem(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
+
+  /// `PATCH .../camp-items/{item_id}`: malzemeyi [kullaniciId]'ye atar;
+  /// `null` ise atamayı kaldırır (gövdede alan yok).
+  Future<CampItem> kampMalzemesiAta(
+    String tayfaId,
+    String etkinlikId,
+    String malzemeId,
+    String? kullaniciId,
+  ) => _api.assignCampItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    itemId: malzemeId,
+    body: CampItemAssignRequest(assignedUserId: kullaniciId),
+  );
 
   /// `DELETE .../camp-items/{item_id}`.
   Future<void> kampMalzemesiCikar(

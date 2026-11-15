@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/etkinlik/application/av_gunlugu.dart';
@@ -151,6 +153,42 @@ class AracEylemNotifier extends Notifier<bool> {
     );
   });
 
+  /// Kamp malzemesini [kullaniciId]'ye atar ("Ben getiririm"); `null` ise
+  /// atamayı kaldırır ("Vazgeç"; gövdede alan yok). Yetki sunucudadır
+  /// (sözleşme: `assignCampItem`).
+  ///
+  /// Hata, listenin bayatladığını gösteriyorsa (başkası üstlendi:
+  /// `event-item-taken`; malzeme silindi, etkinlik iptal edildi ya da
+  /// bitti, cevap değişti) etkinlik yeniden okunur; hata yine döner ve
+  /// ekran onu gösterir.
+  Future<Object?> malzemeAta(String malzemeId, String? kullaniciId) async {
+    final hata = await _calistir(() async {
+      final malzeme = await _depo.kampMalzemesiAta(
+        anahtar.tayfaId,
+        anahtar.etkinlikId,
+        malzemeId,
+        kullaniciId,
+      );
+      final etkinlik = _etkinlik;
+      if (!ref.mounted || etkinlik == null) return;
+      _detay.guncelle(
+        etkinlikKopyasi(
+          etkinlik,
+          camp: _kampKopyasi(etkinlik.camp, [
+            for (final m in etkinlik.camp?.items ?? const <CampItem>[])
+              m.id == malzeme.id ? malzeme : m,
+          ]),
+        ),
+      );
+    });
+    if (hata is ApiProblem &&
+        _bayatListeHatalari.contains(hata.type) &&
+        ref.mounted) {
+      unawaited(_detay.sessizceYenile());
+    }
+    return hata;
+  }
+
   /// Av günlüğüne av ekler. Tekrar denemede aynı `client_request_id`
   /// gönderilir (form açılınca bir kez üretilir).
   Future<Object?> avEkle(FishingCatchCreateRequest istek) => _calistir(
@@ -205,6 +243,15 @@ class AracEylemNotifier extends Notifier<bool> {
     }
   }
 }
+
+/// Malzeme atamasında etkinliğin yeniden okunmasını gerektiren hatalar.
+const Set<ProblemType> _bayatListeHatalari = {
+  ProblemType.eventItemTaken,
+  ProblemType.eventItemNotFound,
+  ProblemType.eventNotGoing,
+  ProblemType.eventCancelled,
+  ProblemType.eventEnded,
+};
 
 CampDetails _kampKopyasi(CampDetails? kamp, List<CampItem> malzemeler) =>
     CampDetails(

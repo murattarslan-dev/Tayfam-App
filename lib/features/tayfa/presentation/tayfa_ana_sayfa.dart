@@ -104,8 +104,10 @@ class TayfaAnaSayfa extends ConsumerWidget {
               label: Text(metinler.tayfa_olustur_dugmesi),
             )
           : null,
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(ref, moduller),
+        // Mor üst bölümün üstünde açılan boşluk da mor, L beyaz.
+        zemin: context.renkler.markaYuzey,
         // Üst bölüm içerikle birlikte kayar; büyük yazıda da taşmaz.
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),

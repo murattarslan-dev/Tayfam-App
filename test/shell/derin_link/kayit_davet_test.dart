@@ -22,6 +22,7 @@ Map<String, Object?> _onizlemeJson() => {
   'name': 'Ege Klasikleri',
   'member_count': 24,
   'already_member': false,
+  'interests': const <Object?>[],
 };
 
 class _SabitKarsilama extends KayitKarsilamasiNotifier {

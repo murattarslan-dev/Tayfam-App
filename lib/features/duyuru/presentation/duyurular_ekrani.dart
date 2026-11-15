@@ -88,7 +88,7 @@ class DuyurularEkrani extends ConsumerWidget {
             ),
         ],
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () => _yenile(context, ref),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -106,10 +106,12 @@ class DuyurularEkrani extends ConsumerWidget {
               ),
               const SizedBox(height: TayfamSpacing.s12),
             ],
-            if (liste == null && hata != null) ...[
-              HataSatiri.hatadan(hata),
-              _TekrarDene(onPressed: () => ref.invalidate(saglayici)),
-            ] else if (liste == null)
+            if (liste == null && hata != null)
+              YuklemeHatasi(
+                hata: hata,
+                onTekrarDene: () => ref.invalidate(saglayici),
+              )
+            else if (liste == null)
               Center(
                 child: TayfamYukleniyor(
                   boyut: TayfamSizes.yukleniyorTamEkran,
@@ -159,7 +161,13 @@ class DuyurularEkrani extends ConsumerWidget {
     final saglayici = duyuruListesiProvider(tayfaId);
     final hata = await ref.read(saglayici.notifier).yenile();
     if (hata == null || !context.mounted) return;
-    if (ref.read(saglayici).hasValue) islemHatasiniBildir(context, hata);
+    if (ref.read(saglayici).hasValue) {
+      yenilemeHatasiBildir(
+        context,
+        hata,
+        tekrarDene: () => unawaited(_yenile(context, ref)),
+      );
+    }
   }
 }
 

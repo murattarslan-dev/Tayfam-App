@@ -28,7 +28,7 @@ class ReddedilenlerEkrani extends ConsumerWidget {
     final hata = durum.error;
     return Scaffold(
       appBar: AppBar(title: Text(m.birebir_reddedilenler)),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           final hata = await ref.read(reddedilenlerProvider.notifier).yenile();
           if (hata != null &&

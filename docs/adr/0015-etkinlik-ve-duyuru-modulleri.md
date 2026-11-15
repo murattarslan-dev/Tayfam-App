@@ -369,3 +369,46 @@ Platform sahibinin kararı (2026-11-11):
     metni hiç düzenlenmemiş ama sabitlenmiş (ya da "Yayınlayınca sabitle"
     ile yayınlanmış) duyuruda da görünür. Ayrı bir `edited_at` alanı Tayfam-Api'de
     değerlendirilmelidir; o zamana kadar README'deki kural uygulanır.
+- **2026-11-15 (platform sahibi, issue #187; tasarım:
+  22-etkinlik-turu-formlari): türe özel ekleme formları ve iptal
+  penceresi.** Av, malzeme ve araç ekleme formları diyalog değil alttan
+  sayfadır (`aracFormuAc` + `AracFormSayfasi`; altta yan yana Vazgeç +
+  Ekle, klavye açılınca sayfa yukarı kayar); eski `AracFormDiyalogu`
+  kalktı.
+  1. **Av ekle:** tür (60), boy cm (zorunlu), isteğe bağlı fotoğraf (GPS
+     temizliği değişmez) ve harita seçiciyle isteğe bağlı yer; "Yerini kim
+     görsün?" varsayılanı Yalnızca ben (`visibility: self`); yer
+     seçilmezse ne `location` ne `visibility` gider. Altta gizlilik bilgi
+     notu. "Av ekle" yalnızca katılım doğrulanmış ve bitişten sonraki 7
+     gün içinde görünür; `not-attended` / `event-ended` formda gösterilir.
+  2. **Malzeme ekle:** ad (60), adet sayacı (1–999, 1'den başlar),
+     "Kim getirecek?" Ben / Henüz kimse / Kişi seç (`assigned_user_id`).
+     "Kişi seç" yalnızca organizatöre ve yönetime (`caller_can_manage`)
+     görünür ve "Geliyorum" diyenlerden seçer. Atanan kişi `going` değilse
+     sunucu `event-not-going` döner; form açık kalır ve hatayı gösterir.
+  3. **Malzeme listesi:** boştaki malzemede "Henüz kimse üstlenmedi",
+     atanmışta "Getirecek: …". "Ben getiririm" / "Vazgeç" Tayfam-Api'deki
+     atama ucu (`PATCH …/camp-items/{item_id}`) sözleşmeye girince ayrı
+     bir işte eklenir; o zamana kadar listede düğme yoktur.
+  4. **Aracını ekle:** marka zorunlu (40), model (40), yıl, renk (30),
+     plaka (16, isteğe bağlı); plaka gizlilik notu bilgi kutusundadır.
+     Yalnızca "Geliyorum" diyenlerde görünür; `event-not-going` gösterilir.
+  5. **İptal:** onay penceresi ("Etkinlik iptal edilsin mi?"), gerekçe
+     isteğe bağlı (500, sayaçlı); boşsa istek gövdesinde `reason` yoktur.
+     Son düğme dolu yıkıcı "İptal et". Menüdeki alt metin "Katılımcılara
+     bildirim gider; gerekçe isteğe bağlı". §3'teki "iptalde gerekçe
+     istenir" kuralı bu notla değişti.
+- **2026-11-15 (issue #187 devamı; Tayfam-Api #200): malzeme listesinde
+  "Ben getiririm" / "Vazgeç".** Yukarıdaki 3. madde bu notla tamamlandı.
+  Atama `PATCH …/camp-items/{item_id}` (`assignCampItem`) ile yapılır:
+  "Ben getiririm" gövdede kendi kimliğini, "Vazgeç" boş gövde gönderir.
+  "Ben getiririm" yalnızca boştaki malzemede ve "Geliyorum" diyene,
+  "Vazgeç" kendi üstlendiği malzemede görünür; iptal edilmiş ya da
+  bitmiş etkinlikte ikisi de yoktur. Kendi üstlendiği malzemenin alt
+  satırı "Getirecek: Sen"dir. İstek sürerken düğmeler kilitlidir (tek
+  işlem). Hata kısa bildirimle gösterilir; `event-item-taken`,
+  `event-item-not-found`, `event-not-going`, `event-cancelled` ve
+  `event-ended` listenin bayatladığını gösterdiği için etkinlik ayrıca
+  yeniden okunur. Yönetimin listede başkasını atama ya da atamasını
+  kaldırma düğmesi tasarımda yoktur; yönetim atamayı ekleme formundaki
+  "Kişi seç" ile yapar.

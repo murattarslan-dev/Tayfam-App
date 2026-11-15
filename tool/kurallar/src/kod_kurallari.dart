@@ -53,6 +53,14 @@ void kodKurallariniUygula(String yol, TaranmisKaynak t, BulguEkle ekle) {
       '`$parca`: font uygulamaya gömülüdür, çalışma anında indirilmez.',
     );
   });
+  _kaliplar(t.kod, _yenilemeKaliplari, (ofset, parca) {
+    ekle(
+      Kurallar.refreshIndicator,
+      ofset,
+      '`$parca`: çekip yenileme ortak TayfamYenile bileşeniyle yapılır '
+      '(sayfa kayar, boşlukta logo animasyonu).',
+    );
+  });
   _kaliplar(t.kod, _rastgeleKaliplari, (ofset, parca) {
     ekle(
       Kurallar.guvensizRastgele,
@@ -341,6 +349,12 @@ final List<RegExp> _diskKaliplari = [
 
 final List<RegExp> _googleFontsKaliplari = [
   RegExp(r'(?<![\w$])GoogleFonts\s*\.\s*\w*'),
+];
+
+final List<RegExp> _yenilemeKaliplari = [
+  RegExp(
+    r'(?<![\w$])(?:RefreshIndicator|CupertinoSliverRefreshControl)(?![\w$])',
+  ),
 ];
 
 final List<RegExp> _rastgeleKaliplari = [RegExp(r'(?<![\w$])Random\s*\(')];

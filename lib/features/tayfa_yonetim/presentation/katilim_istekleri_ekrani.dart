@@ -47,7 +47,7 @@ class KatilimIstekleriEkrani extends ConsumerWidget {
           ],
         ),
       ),
-      body: RefreshIndicator(
+      body: TayfamYenile(
         onRefresh: () async {
           await ref.read(saglayici.notifier).yenile();
         },

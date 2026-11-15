@@ -175,6 +175,14 @@ abstract final class Kurallar {
     aciklama: 'google_fonts paketi kullanılmaz; font uygulamaya gömülüdür.',
   );
 
+  static const refreshIndicator = KuralTanimi(
+    ad: 'refresh-indicator',
+    dayanak: 'ADR-0004 Notlar (2026-11-15, issue #189)',
+    aciklama:
+        'RefreshIndicator ve CupertinoSliverRefreshControl kullanılmaz; '
+        'çekip yenileme yalnızca TayfamYenile ile yapılır.',
+  );
+
   static const guvensizRastgele = KuralTanimi(
     ad: 'guvensiz-rastgele',
     dayanak: 'CLAUDE.md kesin kural 4',
@@ -265,6 +273,7 @@ abstract final class Kurallar {
     logCiktisi,
     diskeYazma,
     googleFonts,
+    refreshIndicator,
     guvensizRastgele,
     riverpodApi,
     kodUretimi,

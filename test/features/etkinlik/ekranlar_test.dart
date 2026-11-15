@@ -413,9 +413,8 @@ void main() {
       expect(baglanti.adresler, [Uri.parse('https://ornek.tayfam.app/oda')]);
     });
 
-    testWidgets('iptal: gerekçe zorunlu, istek gider, etiket görünür', (
-      tester,
-    ) async {
+    testWidgets('iptal: menü alt metni, gerekçe isteğe bağlı, istek gider, '
+        'etiket görünür', (tester) async {
       ekranBoyutu(tester);
       final tasima = etkinlikTasimasi({
         'GET $etkinlikYolu': (_) => etkinlikJson(yonetebilir: true),
@@ -431,24 +430,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('etkinlik_duzenle')), findsOneWidget);
       expect(find.text(arbMetni('sikayet_et')), findsNothing);
+      expect(
+        find.text('Katılımcılara bildirim gider; gerekçe isteğe bağlı'),
+        findsOneWidget,
+      );
       await tester.tap(find.text(arbMetni('etkinlik_iptal_baslik')));
       await tester.pumpAndSettle();
       expect(find.byType(IptalDiyalogu), findsOneWidget);
-
-      final onay = find.descendant(
-        of: find.byType(IptalDiyalogu),
-        matching: find.text(arbMetni('etkinlik_iptal_onayla')),
-      );
-      await tester.tap(onay);
-      await tester.pumpAndSettle();
       expect(
-        find.text(arbMetni('etkinlik_iptal_gerekce_hata')),
+        find.text(arbMetni('etkinlik_iptal_pencere_baslik')),
         findsOneWidget,
       );
-      expect(tasima.giden('POST', iptalYolu), isEmpty);
 
       await tester.enterText(find.byType(TextField), 'Hava kötü');
-      await tester.tap(onay);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(IptalDiyalogu),
+          matching: find.text(arbMetni('etkinlik_iptal_onayla')),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(tasima.giden('POST', iptalYolu).single.govde, {
@@ -462,6 +462,74 @@ void main() {
       expect(find.text(arbMetni('etkinlik_iptal_baslik')), findsNothing);
       expect(find.text(arbMetni('sikayet_et')), findsOneWidget);
     });
+
+    testWidgets('iptal: gerekçesiz onayda gövdede reason yok; vazgeç '
+        'istek göndermez', (tester) async {
+      ekranBoyutu(tester);
+      final tasima = etkinlikTasimasi({
+        'GET $etkinlikYolu': (_) => etkinlikJson(yonetebilir: true),
+        'POST $iptalYolu': (_) => etkinlikJson(iptal: true),
+      });
+      await _git(
+        tester,
+        tasima,
+        Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
+      );
+      Future<void> pencereyiAc() async {
+        await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(arbMetni('etkinlik_iptal_baslik')));
+        await tester.pumpAndSettle();
+      }
+
+      await pencereyiAc();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(IptalDiyalogu),
+          matching: find.text(arbMetni('etkinlik_vazgec')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tasima.giden('POST', iptalYolu), isEmpty);
+
+      await pencereyiAc();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(IptalDiyalogu),
+          matching: find.text(arbMetni('etkinlik_iptal_onayla')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tasima.giden('POST', iptalYolu).single.govde, isEmpty);
+      expect(find.text(arbMetni('etkinlik_karti_iptal')), findsOneWidget);
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('iptal penceresi ${mod.name}, 2× yazı, 320 dp, klavye '
+          'açık: taşmıyor', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = etkinlikTasimasi({
+          'GET $etkinlikYolu': (_) => etkinlikJson(yonetebilir: true),
+        });
+        await _git(
+          tester,
+          tasima,
+          Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
+          themeMode: mod,
+        );
+        await tester.tap(find.byTooltip(arbMetni('etkinlik_islemler')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(arbMetni('etkinlik_iptal_baslik')));
+        await tester.pumpAndSettle();
+        tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+        addTearDown(tester.view.resetViewInsets);
+        await tester.enterText(find.byType(TextField), 'x' * 120);
+        await tester.pumpAndSettle();
+        expect(find.byType(IptalDiyalogu), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
 
     testWidgets('üye etkinliği şikâyet eder: sahte etkinlik gerekçesi', (
       tester,

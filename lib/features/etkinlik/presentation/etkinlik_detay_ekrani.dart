@@ -112,7 +112,7 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
     final etkinlik = detay.value;
     if (etkinlik != null) {
       return Scaffold(
-        body: RefreshIndicator(
+        body: TayfamYenile(
           onRefresh: notifier.yenile,
           child: DegerlendirmeFirsati(
             etkinlikler: [etkinlik],
@@ -131,20 +131,14 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
                 gecikmeli: true,
               ),
             )
-          : RefreshIndicator(
+          : TayfamYenile(
               onRefresh: notifier.yenile,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
                 children: [
-                  HataSatiri.hatadan(hata),
-                  const SizedBox(height: TayfamSpacing.s16),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: CerceveliHapEylem(
-                      etiket: m.etkinlik_tekrar_dene,
-                      onPressed: () => unawaited(notifier.yenile()),
-                    ),
+                  YuklemeHatasi(
+                    hata: hata,
+                    onTekrarDene: () => unawaited(notifier.yenile()),
                   ),
                 ],
               ),
@@ -514,11 +508,11 @@ class _UstBolum extends ConsumerWidget {
   }
 
   Future<void> _iptalEt(BuildContext context, WidgetRef ref) async {
-    final gerekce = await iptalGerekcesiSor(context);
-    if (gerekce == null || !context.mounted) return;
+    final karar = await iptalOnayiSor(context);
+    if (karar == null || !context.mounted) return;
     final hata = await ref
         .read(etkinlikEylemProvider(anahtar).notifier)
-        .iptalEt(gerekce);
+        .iptalEt(karar.gerekce);
     if (hata != null && context.mounted) hataBildir(context, hata);
   }
 }

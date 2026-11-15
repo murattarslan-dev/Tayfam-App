@@ -45,6 +45,30 @@ final class MembersApi {
     return MemberList.fromJson(jsonObject(response, 'listMembers'));
   }
 
+  /// Tek bir üye, üye listesindeki satırla aynı
+  ///
+  /// Issue #194. Tayfanın her etkin üyesi etkin bir üyeyi okuyabilir;
+  /// banlı üyeyi yalnızca banlıları listeleyebilen roller (moderatör,
+  /// yönetici) okur. Kişi tayfada değilse, bekleyen ya da davetliyse veya
+  /// görmeye yetkiniz yoksa `member-not-found`. Susturma bitişi yalnızca
+  /// kendinize ve yönetime görünür. Etkin üyesi olmadığınız tayfa
+  /// `tayfa-not-found`.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/members/{user_id}`
+  Future<Membership> getMember({
+    required String tayfaId,
+    required String userId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/members/{user_id}',
+      pathParams: {'tayfa_id': tayfaId, 'user_id': userId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Membership.fromJson(jsonObject(response, 'getMember'));
+  }
+
   /// Etkin bir üyenin rolünü değiştirir (yönetici)
   ///
   /// Hedefin rolü sizinkinden düşük olmalı, yeni rol sizinkinden yüksek

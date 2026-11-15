@@ -127,6 +127,10 @@ final class SohbetOrtami {
       'PUT /v1/tayfas/{tayfa_id}/channels/{channel_id}/read': (_) => null,
       'GET $kanalKisileriYolu': (_) => {
         'user_ids': katilimcilar ?? [benimId, digerId],
+        'members': [
+          for (final id in katilimcilar ?? [benimId, digerId])
+            {'user_id': id, 'roles': const <Object?>[]},
+        ],
       },
       'GET $tayfaUyeleriYolu': (_) => {
         'members': [
