@@ -137,7 +137,7 @@ ADR-0014'tür. Özet:
   kullanıcıya gösterilmez. Bilinmeyen `type` için genel bir hata metni
   gösterilir.
 - **Arayüz metinleri** çeviri dosyalarındadır; kodda sabit kullanıcı metni
-  yoktur. API Türkçe metin döndürmez.
+  yoktur. API Türkçe metin döndürmez (katalog metinleri hariç, ADR-0024 §2).
 - **Sayfalama:** `page_size` + opak `page_token` → `next_page_token`. Token
   ayrıştırılmaz, üretilmez.
 - **Tekrar gönderim:** Oluşturma isteklerinde istemcinin ürettiği
@@ -202,6 +202,8 @@ test/              lib/ ile aynı yapı
 - **Metin (ADR-0008):** `gen_l10n` ve ARB; kodda sabit kullanıcı metni yok;
   arayüzde `toUpperCase`/`toLowerCase` yok, arama ve tekillik için
   `turkceKucukHarf()`.
+  İstisna: katalogdaki tür, ilgi alanı ve alan adları sunucudan gelir ve
+  düz metin olarak gösterilir (ADR-0024 §2).
 - **Bağımlılık:** her yeni paket PR'da gerekçelenir (kesin kural 8);
   ADR'lerde adı geçen paketler: `flutter_riverpod`, `go_router`, `http`,
   `flutter_secure_storage`, `web_socket_channel`, `flutter_localizations`,
