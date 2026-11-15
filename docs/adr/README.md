@@ -36,6 +36,7 @@ olarak anar.
 | [0021](0021-fotograf-yukleme-ve-goruntuleme.md) | Fotoğraf yükleme ve görüntüleme | Kabul edildi |
 | [0022](0022-kvkk-veri-disa-aktarma.md) | KVKK veri dışa aktarma (istemci) | Kabul edildi |
 | [0023](0023-uygulama-butunlugu-istemci.md) | Uygulama bütünlüğü (istemci): Android Play Integrity | Kabul edildi |
+| [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi |
 
 ## Şablon
 
