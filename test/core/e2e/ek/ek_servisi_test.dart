@@ -21,8 +21,11 @@ import '../signal/sahte_signal_motoru.dart';
 
 const String _ekId = '5b6f4a1e-9c3d-4f1a-8b9e-8d7c7d0e8c4a';
 
+/// Gönderen hattının ürettiği gibi metadata'sız JPEG (1600×1200).
+final Uint8List _jpeg = sofYaz(jpegTemizle(ornekJpeg()), 1600, 1200);
+
 HazirGoruntu _goruntu() => HazirGoruntu(
-  tam: Uint8List.fromList([for (var i = 0; i < 300; i++) i % 256]),
+  tam: _jpeg,
   onizleme: Uint8List.fromList(List.filled(10, 2)),
   tamOlcu: const JpegOlculeri(1600, 1200),
   onizlemeOlcu: const JpegOlculeri(400, 300),
@@ -87,18 +90,23 @@ final class _Ortam {
   final EkOnbellegi onbellek = EkOnbellegi();
   late final E2eEkServisi servis;
 
-  /// Bir görüntüyü şifreler ve [ekId] kimliğiyle zarftaki gibi anahtar
-  /// üretir; blob indiriciye konur.
-  Future<EkAnahtari> hazirEk({String ekId = _ekId}) async {
-    final s = await servis.sifrele(_goruntu());
+  /// [duz]'ü (verilmezse örnek görüntüyü) şifreler ve zarftaki gibi
+  /// anahtar üretir; blob indiriciye konur.
+  Future<EkAnahtari> hazirEk({
+    String ekId = _ekId,
+    Uint8List? duz,
+    int en = 1600,
+    int boy = 1200,
+  }) async {
+    final s = await servis.sifreleyici.sifrele(duz ?? _jpeg);
     indirici.blob = s.blob;
     return EkAnahtari(
       uploadId: ekId,
       anahtar: s.anahtar,
       ozet: s.ozet,
       boyut: s.blob.length,
-      genislik: 1600,
-      yukseklik: 1200,
+      genislik: en,
+      yukseklik: boy,
     );
   }
 }
@@ -158,6 +166,45 @@ void main() {
         expect(await o.servis.ac(ek), _goruntu().tam);
       },
     );
+
+    test('çözülen görüntü bitmap\'e açılmadan denetlenir: devasa ölçü, '
+        'zarftan farklı ölçü, JPEG olmayan ya da metadata\'lı içerik '
+        'doğrulanamadı', () async {
+      // Bellek tüketmek için devasa piksel ölçülü görüntü (zarf da öyle
+      // söylese bile).
+      final dev = _Ortam();
+      await expectLater(
+        dev.servis.ac(
+          await dev.hazirEk(
+            duz: sofYaz(jpegTemizle(ornekJpeg()), 30000, 30000),
+            en: 30000,
+            boy: 30000,
+          ),
+        ),
+        throwsA(isA<EkDogrulanamadi>()),
+      );
+      final farkli = _Ortam();
+      await expectLater(
+        farkli.servis.ac(await farkli.hazirEk(en: 1200, boy: 1600)),
+        throwsA(isA<EkDogrulanamadi>()),
+      );
+      final jpegDegil = _Ortam();
+      await expectLater(
+        jpegDegil.servis.ac(
+          await jpegDegil.hazirEk(duz: Uint8List.fromList(List.filled(64, 1))),
+        ),
+        throwsA(isA<EkDogrulanamadi>()),
+      );
+      // EXIF taşıyan (gönderen hattından geçmemiş) görüntü.
+      final metadatali = _Ortam();
+      await expectLater(
+        metadatali.servis.ac(
+          await metadatali.hazirEk(duz: sofYaz(ornekJpeg(), 1600, 1200)),
+        ),
+        throwsA(isA<EkDogrulanamadi>()),
+      );
+      expect(dev.onbellek.toplamBayt, 0);
+    });
 
     test('görülemeyen ek ve görüntü linki (blob değil)', () async {
       final yok = _Ortam(linkler: (_) => const []);

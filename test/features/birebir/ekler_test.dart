@@ -61,6 +61,7 @@ Future<void> _ac(
   ThemeMode tema = ThemeMode.light,
   _Sikayet? sikayet,
   bool onbellekte = true,
+  List<String>? linkIstekleri,
 }) async {
   final tasima = birebirTasimasi({
     'GET $konusmaYolu': (_) => konusmaJson(konusmaId1),
@@ -106,7 +107,10 @@ Future<void> _ac(
         ),
       ),
       ekOnbellegiProvider.overrideWithValue(onbellek),
-      medyaLinkIsteyiciProvider.overrideWithValue((_) async => const []),
+      medyaLinkIsteyiciProvider.overrideWithValue((idler) async {
+        linkIstekleri?.addAll(idler);
+        return const [];
+      }),
       karoSaglayiciProvider.overrideWithValue(() => null),
       if (sikayet != null)
         birebirMesajSikayetiProvider.overrideWithValue(sikayet.kanca),
@@ -249,6 +253,26 @@ void main() {
     await _ac(tester, onbellekte: false);
     expect(find.text(arbMetni('sohbet_fotograf_gorulemiyor')), findsOneWidget);
     // Görüntü yoksa şikâyette iletilecek kanıt da yok.
+  });
+
+  testWidgets('ek kimliği tutmayan mesaj: ek indirilmez, şikâyete '
+      'kanıt olarak eklenmez', (tester) async {
+    ekranBoyutu(tester, yukseklik: 1400);
+    final istekler = <String>[];
+    final sikayet = _Sikayet();
+    await _ac(
+      tester,
+      onbellekte: false,
+      linkIstekleri: istekler,
+      sikayet: sikayet,
+    );
+    expect(istekler, isNot(contains(_baskaEkId)));
+    await tester.longPress(
+      find.text(arbMetni('sohbet_fotograf_dogrulanamadi')),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(arbMetni('birebir_sikayet_et')), findsNothing);
+    expect(sikayet.cagrilar, isEmpty);
   });
 
   testWidgets('gelen fotoğraf şikâyete cihazdaki görüntüyle gider', (

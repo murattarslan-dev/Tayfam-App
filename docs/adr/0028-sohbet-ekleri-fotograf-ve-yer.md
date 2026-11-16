@@ -136,11 +136,18 @@ JSON, 160 bayt dolgu aynı):
 - **Gösterim:** `EkCozucu` → `POST /v1/media/urls` (yalnızca `full_url`,
   `application/octet-stream`) → imzalı linkten tam `boyut` bayt
   (`ImzaliIndirici`; token gönderilmez, yönlendirme izlenmez) → özet →
-  çözme → `Image.memory`. Sonuç türleri: `hazir`, `baglanti` (tekrar
+  çözme → görüntü denetimi (metadata'sız tek JPEG, en uzun kenar en çok
+  1600, ölçüler zarftaki `en`/`boy` ile aynı; aksi halde bitmap'e hiç
+  açılmaz) → en çok 1600 piksele sınırlı çözmeyle gösterim (devasa piksel
+  ölçülü görüntüyle bellek tüketmeye karşı). Sonuç türleri: `hazir`, `baglanti` (tekrar
   denenebilir), `dogrulanamadi` (özet, etiket, boyut ya da kimlik
   tutmadı; tekrar denenmez), `gorulemez`.
 - **Bellek:** çözülmüş görüntüler `EkOnbellegi`'nde (en çok 32 MiB, en
-  eski kullanılan atılır) ve oturum değişince boşalır. Anahtar, blob ve
+  eski kullanılan atılır) ve oturum değişince boşalır; Flutter'ın global
+  görüntü önbelleği (çözülmüş bitmap'ler, `imageCache` ve canlı
+  görüntüler) de oturum değişince temizlenir. Zarftaki ek kimliği mesajın
+  `attachment_upload_id`'siyle tutmazsa ek indirilmez, çözülmez ve
+  şikâyete kanıt olarak eklenmez. Anahtar, blob ve
   çözülmüş görüntü **diske yazılmaz**, log'a ve hata mesajına girmez;
   `toString`'ler içerik yazmaz. Tam ekran görüntüleyicide kaydet/paylaş
   yoktur.
@@ -171,6 +178,11 @@ JSON, 160 bayt dolgu aynı):
   içerik).
 - Koordinat ve yer adı log'a, hata mesajına, `toString`'e ve analitiğe
   girmez; yalnızca istek gövdesinde, bellekteki mesajda ve ekranda.
+- Harita karoları (seçici, yer kartı, tam ekran harita) OpenStreetMap
+  karo sunucusundan istenir; istek bakılan bölgeyi (karo koordinatı) OSM'ye
+  bildirir. Bu, ADR-0015 §4'te etkinlik haritası için kabul edilen
+  bedelin aynısıdır; disk önbelleği kapalıdır. Sohbette bir yer kartı
+  ekranda göründüğünde karoları alıcının cihazı ister.
 - Yeni platform izni yoktur: konum izinleri varış bildirimi için zaten
   manifestte (ADR-0015 §5); yalnızca isteme anı sohbette de var.
 

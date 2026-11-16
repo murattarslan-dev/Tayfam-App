@@ -12,6 +12,7 @@ import 'package:tayfam/core/e2e/ek/ek_sifreleme.dart' show EkDogrulanamadi;
 import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 import 'package:tayfam/core/harita/harita_secimi.dart' show noktaYakinligi;
 import 'package:tayfam/core/harita/osm_harita.dart';
+import 'package:tayfam/core/medya/goruntu_hazirlama.dart' show tamUzunKenar;
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
@@ -241,8 +242,15 @@ class _BellektekiGorsel extends StatelessWidget {
   final BoxFit fit;
 
   @override
-  Widget build(BuildContext context) => Image.memory(
-    baytlar,
+  Widget build(BuildContext context) => Image(
+    // Çözme en çok 1600 piksele sınırlı (bellek; ADR-0028 §4).
+    image: ResizeImage(
+      MemoryImage(baytlar),
+      width: tamUzunKenar,
+      height: tamUzunKenar,
+      policy: ResizeImagePolicy.fit,
+      allowUpscaling: false,
+    ),
     fit: fit,
     gaplessPlayback: true,
     excludeFromSemantics: true,

@@ -7,6 +7,7 @@ import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/gen/apis/media_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/medya_tasima.dart';
+import 'package:tayfam/core/medya/goruntu_onbellegi.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 
 /// Bir dosyanın iki varyantından hangisi.
@@ -280,6 +281,9 @@ final medyaOnbellegiProvider = Provider<MedyaOnbellegi>((ref) {
     tasima: ref.watch(medyaTasimaProvider),
     saat: ref.watch(medyaSaatiProvider),
   );
-  ref.onDispose(onbellek.kapat);
+  ref.onDispose(() {
+    onbellek.kapat();
+    flutterGoruntuOnbelleginiTemizle();
+  });
   return onbellek;
 }, name: 'medyaOnbellegiProvider');

@@ -414,8 +414,12 @@ class _Akis extends ConsumerWidget {
       ),
       _ => null,
     };
+    // Zarftaki ek mesajın ekiyle aynı değilse indirilmez, çözülmez ve
+    // şikâyete kanıt olarak eklenmez.
     final fotograf = switch (cozulmus) {
-      FotografIcerigi(:final ek) => ref.watch(birebirEkProvider(ek)).value,
+      FotografIcerigi(:final ek)
+          when ayniKimlik(mesaj.attachmentUploadId ?? '', ek.uploadId) =>
+        ref.watch(birebirEkProvider(ek)).value,
       _ => null,
     };
     final sikayet = ref.watch(birebirMesajSikayetiProvider);

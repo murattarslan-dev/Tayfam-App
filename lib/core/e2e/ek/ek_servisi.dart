@@ -8,6 +8,8 @@ import 'package:tayfam/core/e2e/cihaz/e2e_cihaz.dart' show e2eMotoruProvider;
 import 'package:tayfam/core/e2e/ek/ek_sifreleme.dart';
 import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 import 'package:tayfam/core/medya/goruntu_hazirlama.dart';
+import 'package:tayfam/core/medya/goruntu_onbellegi.dart';
+import 'package:tayfam/core/medya/jpeg.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/medya/yukleyici.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
@@ -153,8 +155,27 @@ final class E2eEkServisi {
       anahtar: ek.anahtar,
       ozet: ek.ozet,
     );
+    _goruntuyuDenetle(duz, ek);
     onbellek.yaz(ek.uploadId, duz);
     return duz;
+  }
+
+  /// Çözülen baytlar, bitmap'e açılmadan önce, gönderen hattının ürettiği
+  /// biçimde olmalı: metadata'sız tek JPEG, en uzun kenar en çok
+  /// [tamUzunKenar] ve ölçüler zarftakiyle aynı. Aksi halde (ör. bellek
+  /// tüketmek için devasa piksel ölçülü görüntü) [EkDogrulanamadi].
+  static void _goruntuyuDenetle(Uint8List duz, EkAnahtari ek) {
+    final JpegOlculeri olcu;
+    try {
+      olcu = jpegDenetle(duz);
+    } on JpegHatasi {
+      throw const EkDogrulanamadi();
+    }
+    if (olcu.uzunKenar > tamUzunKenar ||
+        olcu.genislik != ek.genislik ||
+        olcu.yukseklik != ek.yukseklik) {
+      throw const EkDogrulanamadi();
+    }
   }
 }
 
@@ -162,7 +183,11 @@ final class E2eEkServisi {
 final ekOnbellegiProvider = Provider<EkOnbellegi>((ref) {
   ref.watch(oturumDurumuProvider);
   final onbellek = EkOnbellegi();
-  ref.onDispose(onbellek.temizle);
+  ref.onDispose(() {
+    onbellek.temizle();
+    // Çözülmüş bitmap'ler Flutter'ın görüntü önbelleğinde de kalmasın.
+    flutterGoruntuOnbelleginiTemizle();
+  });
   return onbellek;
 }, name: 'ekOnbellegiProvider');
 
