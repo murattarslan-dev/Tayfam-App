@@ -23,8 +23,8 @@ dependencies:
   # manifestte kapalı. Android'de POST_NOTIFICATIONS, WAKE_LOCK,
   # ACCESS_NETWORK_STATE ve c2dm RECEIVE izinlerini getirir. 17.x'in
   # registration token API'leri deprecated olduğu için 16.7 hattı.
-  firebase_core: ^4.15.1
-  firebase_messaging: ^16.7.1
+  firebase_core: ^5.1.0
+  firebase_messaging: ^17.0.1
   # Fotoğrafı cihazda çözme (HEIC dahil), EXIF yönünü uygulama, küçültme ve
   # JPEG kodlama (ADR-0021 §2): platform kodlayıcıları (Android Bitmap,
   # iOS UIImage/ImageIO). Yayıncı fluttercandies.com, MIT; izin eklemez.
