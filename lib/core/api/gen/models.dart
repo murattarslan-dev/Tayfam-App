@@ -6939,6 +6939,175 @@ enum EventMode {
   }
 }
 
+final class EventPhoto {
+  const EventPhoto({
+    required this.id,
+    required this.eventId,
+    required this.uploaderId,
+    required this.uploadId,
+    this.caption,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPhoto.fromJson(Map<String, Object?> json) => EventPhoto(
+    id: _readString(json['id'], 'EventPhoto.id'),
+    eventId: _readString(json['event_id'], 'EventPhoto.event_id'),
+    uploaderId: _readString(json['uploader_id'], 'EventPhoto.uploader_id'),
+    uploadId: _readString(json['upload_id'], 'EventPhoto.upload_id'),
+    caption: switch (json['caption']) {
+      null => null,
+      final Object v => _readString(v, 'EventPhoto.caption'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'EventPhoto.created_at'),
+  );
+
+  final String id;
+
+  final String eventId;
+
+  final String uploaderId;
+
+  /// Linkleri `POST /v1/media/urls`.
+  final String uploadId;
+
+  /// Açıklama yoksa alan yoktur.
+  final String? caption;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'event_id': eventId,
+    'uploader_id': uploaderId,
+    'upload_id': uploadId,
+    if (caption case final value?) 'caption': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPhoto &&
+          id == other.id &&
+          eventId == other.eventId &&
+          uploaderId == other.uploaderId &&
+          uploadId == other.uploadId &&
+          caption == other.caption &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    eventId,
+    uploaderId,
+    uploadId,
+    caption,
+    createdAt,
+  ]);
+}
+
+final class EventPhotoCreateRequest {
+  const EventPhotoCreateRequest({
+    required this.uploadId,
+    this.caption,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPhotoCreateRequest.fromJson(Map<String, Object?> json) =>
+      EventPhotoCreateRequest(
+        uploadId: _readString(
+          json['upload_id'],
+          'EventPhotoCreateRequest.upload_id',
+        ),
+        caption: switch (json['caption']) {
+          null => null,
+          final Object v => _readString(v, 'EventPhotoCreateRequest.caption'),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'EventPhotoCreateRequest.client_request_id',
+        ),
+      );
+
+  /// Kendi hazır `event_photo` yüklemeniz (bu tayfa için, başka içeriğe
+  /// bağlanmamış). Konum bilgisi (EXIF/GPS) işlemede silinmiştir.
+  final String uploadId;
+
+  /// İsteğe bağlı; boşluklar kırpılır, boş ise yok sayılır.
+  ///
+  /// Kısıtlar: maxLength: 200.
+  final String? caption;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'upload_id': uploadId,
+    if (caption case final value?) 'caption': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPhotoCreateRequest &&
+          uploadId == other.uploadId &&
+          caption == other.caption &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[uploadId, caption, clientRequestId]);
+}
+
+final class EventPhotoList {
+  const EventPhotoList({required this.photos, this.nextPageToken});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPhotoList.fromJson(Map<String, Object?> json) => EventPhotoList(
+    photos: List<EventPhoto>.unmodifiable(
+      _readList(json['photos'], 'EventPhotoList.photos').map(
+        (Object? e0) =>
+            EventPhoto.fromJson(_readObject(e0, 'EventPhotoList.photos')),
+      ),
+    ),
+    nextPageToken: switch (json['next_page_token']) {
+      null => null,
+      final Object v => _readString(v, 'EventPhotoList.next_page_token'),
+    },
+  );
+
+  final List<EventPhoto> photos;
+
+  final String? nextPageToken;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'photos': <Object?>[for (final e0 in photos) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPhotoList &&
+          _deepEquals(photos, other.photos) &&
+          nextPageToken == other.nextPageToken;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(photos), nextPageToken]);
+}
+
 final class EventSeries {
   const EventSeries({
     required this.id,
@@ -12221,6 +12390,7 @@ enum ReportTargetType {
   poll('poll'),
   fishingCatch('fishing_catch'),
   dmMessage('dm_message'),
+  eventPhoto('event_photo'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -13711,7 +13881,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 2; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover` ve `catch_photo` için zorunlu; `avatar`'da verilmez.
+  /// `cover`, `catch_photo` ve `event_photo` için zorunlu; `avatar`'da verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -13783,11 +13953,14 @@ final class UploadCreated {
   int get hashCode => Object.hashAll(<Object?>[upload, _deepHash(targets)]);
 }
 
-/// `cover` tayfa ya da etkinlik kapağıdır.
+/// `cover` tayfa ya da etkinlik kapağıdır. `event_photo` etkinlik
+/// albümünün fotoğrafıdır (`POST .../events/{event_id}/photos`); kapak
+/// olarak kullanılamaz.
 enum UploadPurpose {
   avatar('avatar'),
   catchPhoto('catch_photo'),
   cover('cover'),
+  eventPhoto('event_photo'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

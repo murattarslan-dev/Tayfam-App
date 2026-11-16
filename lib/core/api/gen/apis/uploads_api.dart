@@ -15,7 +15,7 @@ final class UploadsApi {
   /// geçerlidir ve yalnızca o varyantın nesnesi, türü ve boyutu içindir:
   /// `headers`'taki `Content-Type` ve `Content-Length` aynen
   /// gönderilmelidir; başka tür ya da boyutla R2 isteği reddeder. Anahtarı
-  /// sunucu belirler. Kapak ve av fotoğrafında `tayfa_id` zorunludur
+  /// sunucu belirler. Kapak, av ve albüm fotoğrafında `tayfa_id` zorunludur
   /// (aktif üye olunmalı, tayfa salt okunur olmamalı); avatarda verilmez.
   /// Aynı `client_request_id` ile tekrar, kayıt `pending` iken aynı
   /// yüklemeyi yeni linklerle döner. Sınırlar: kullanıcı başına saatte 30
