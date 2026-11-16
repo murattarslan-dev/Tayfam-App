@@ -6,11 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
-import 'package:tayfam/features/etkinlik/presentation/harita_secici_ekrani.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 
 import '../../yardimcilar.dart';
-import 'sahteler.dart';
+import '../../features/etkinlik/sahteler.dart';
 
 const YerSonucu _abant = YerSonucu(
   ad: 'Abant Gölü, Bolu, Türkiye',

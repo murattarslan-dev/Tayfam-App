@@ -251,7 +251,7 @@ final class KonusmaArsiviNotifier extends AsyncNotifier<KonusmaArsivi> {
           mesajId: m.mesajId,
           konusmaId: konusmaId,
           gonderenKullaniciId: m.gonderenId,
-          metin: m.govde,
+          icerik: m.icerik,
           olusturma: m.olusturma,
           kaynak: CozulmusMesajKaynagi.arsiv,
         ),

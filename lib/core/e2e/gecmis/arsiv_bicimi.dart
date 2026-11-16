@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/e2e/mesaj/dolgu.dart';
+import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
 /// Arşiv kaydı biçimi (ADR-0020 "Geçmiş arşivi, eşleştirme ve yenileme").
@@ -67,8 +68,9 @@ Uint8List arsivAad({
   ]);
 }
 
-/// Arşiv kaydının düz metni: `{v:1, gonderen, created_at, t:"metin",
-/// govde}` UTF-8 JSON, 160 bayt bloklara dolgulu.
+/// Arşiv kaydının düz metni: `{v:1, gonderen, created_at, t, …}` UTF-8
+/// JSON, 160 bayt bloklara dolgulu. `t` ve türün alanları zarftakiyle
+/// aynıdır (`metin`, `foto`, `yer`; istemci ADR-0026 §3).
 ///
 /// `toString` içerik yazmaz.
 @immutable
@@ -76,25 +78,21 @@ final class ArsivDuzMetni {
   const ArsivDuzMetni({
     required this.gonderenId,
     required this.olusturma,
-    required this.govde,
+    required this.icerik,
   });
 
   final String gonderenId;
   final DateTime olusturma;
-  final String govde;
+  final BirebirIcerik icerik;
 
   /// Dolgulu UTF-8 JSON.
   Uint8List kodla() => dolguEkle(
-    Uint8List.fromList(
-      utf8.encode(
-        jsonEncode({
-          'v': 1,
-          'gonderen': gonderenId,
-          'created_at': olusturma.toUtc().toIso8601String(),
-          't': 'metin',
-          'govde': govde,
-        }),
-      ),
+    icerikJsonu(
+      icerik,
+      ekler: {
+        'gonderen': gonderenId,
+        'created_at': olusturma.toUtc().toIso8601String(),
+      },
     ),
   );
 
@@ -102,30 +100,21 @@ final class ArsivDuzMetni {
   static ArsivDuzMetni? coz(Uint8List dolgulu) {
     final veri = dolguKaldir(dolgulu);
     if (veri == null) return null;
-    try {
-      final json = jsonDecode(utf8.decode(veri));
-      if (json is! Map<String, Object?> || json['v'] != 1) return null;
-      final gonderen = json['gonderen'];
-      final zaman = json['created_at'];
-      final tur = json['t'];
-      final govde = json['govde'];
-      if (gonderen is! String ||
-          !uuidBicimindeMi(gonderen) ||
-          zaman is! String ||
-          tur != 'metin' ||
-          govde is! String) {
-        return null;
-      }
-      final olusturma = DateTime.tryParse(zaman);
-      if (olusturma == null) return null;
-      return ArsivDuzMetni(
-        gonderenId: gonderen,
-        olusturma: olusturma.toUtc(),
-        govde: govde,
-      );
-    } on FormatException {
+    final json = icerikNesnesi(veri);
+    if (json == null) return null;
+    final gonderen = json['gonderen'];
+    final zaman = json['created_at'];
+    if (gonderen is! String || !uuidBicimindeMi(gonderen) || zaman is! String) {
       return null;
     }
+    final olusturma = DateTime.tryParse(zaman);
+    final icerik = BirebirIcerik.oku(json);
+    if (olusturma == null || icerik == null) return null;
+    return ArsivDuzMetni(
+      gonderenId: gonderen,
+      olusturma: olusturma.toUtc(),
+      icerik: icerik,
+    );
   }
 
   @override

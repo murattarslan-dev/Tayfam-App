@@ -150,14 +150,14 @@ final class ArsivlenecekMesaj {
     required this.konusmaId,
     required this.gonderenId,
     required this.olusturma,
-    required this.govde,
+    required this.icerik,
   });
 
   final String mesajId;
   final String konusmaId;
   final String gonderenId;
   final DateTime olusturma;
-  final String govde;
+  final BirebirIcerik icerik;
 
   @override
   String toString() => 'ArsivlenecekMesaj($mesajId)';

@@ -97,21 +97,25 @@ final class E2eBirebir {
 
   final Ref _ref;
 
-  /// [aliciId]'ye şifreli gönderir (yalnızca REST, aynı
-  /// [istekKimligi]). Cihaz hazır değilse ya da gönderim başarısızsa
-  /// hata fırlatılır.
+  /// [aliciId]'ye [icerik]'i şifreli gönderir (yalnızca REST, aynı
+  /// [istekKimligi]). Fotoğrafta ek önce [E2eEkServisi] ile hazırlanır.
+  /// Cihaz hazır değilse ya da gönderim başarısızsa hata fırlatılır.
   Future<DirectMessageSent> gonder({
     required String aliciId,
-    required String metin,
+    required BirebirIcerik icerik,
     required String istekKimligi,
   }) async {
-    await _ref.read(e2eCihazProvider.notifier).hazirOl();
-    final (sonuc, icerik) = await _ref
+    await hazirOl();
+    final (sonuc, gonderilen) = await _ref
         .read(e2eGondericiProvider)
-        .gonder(aliciId: aliciId, metin: metin, istekKimligi: istekKimligi);
-    _ref.read(birebirIcerikProvider.notifier).ekle([icerik]);
+        .gonder(aliciId: aliciId, icerik: icerik, istekKimligi: istekKimligi);
+    _ref.read(birebirIcerikProvider.notifier).ekle([gonderilen]);
     return sonuc;
   }
+
+  /// Cihazın E2E'ye hazır olmasını bekler (ek yüklemeden önce: cihaz
+  /// hazır değilse boşuna yükleme yapılmaz).
+  Future<void> hazirOl() => _ref.read(e2eCihazProvider.notifier).hazirOl();
 
   /// Konuşma açıldı: karşı tarafın anahtar olayları ve cihaz listesi
   /// denetlenir, yeni "güvenlik kodu değişti" satırları eklenir. Hata

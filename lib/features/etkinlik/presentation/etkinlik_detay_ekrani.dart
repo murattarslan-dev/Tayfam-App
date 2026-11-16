@@ -31,7 +31,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';

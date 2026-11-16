@@ -7,8 +7,9 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
-import 'package:tayfam/features/etkinlik/application/harita_secimi.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/harita_secimi.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Arama sonuçlarının ekran yüksekliğine oranla en çok payı.
@@ -19,12 +20,22 @@ const double aramaSonuclariOrani = .4;
 typedef HaritaSecimSonucu = ({LatLng nokta, YerSonucu? oneri});
 
 /// Buluşma noktası seçicisini açar; vazgeçilirse `null`.
+///
+/// [konumDugmesi] yalnızca sohbetteki yer paylaşımında açılır ("Bulunduğum
+/// yer"; istemci ADR-0026 §5); etkinlikte cihaz konumu istenmez (ADR-0015
+/// §4). [secEtiketi] seçim düğmesinin metnidir.
 Future<HaritaSecimSonucu?> haritaSeciciAc(
   BuildContext context, {
   LatLng? baslangic,
+  bool konumDugmesi = false,
+  String? secEtiketi,
 }) => Navigator.of(context).push(
   MaterialPageRoute<HaritaSecimSonucu>(
-    builder: (_) => HaritaSeciciEkrani(baslangic: baslangic),
+    builder: (_) => HaritaSeciciEkrani(
+      baslangic: baslangic,
+      konumDugmesi: konumDugmesi,
+      secEtiketi: secEtiketi,
+    ),
   ),
 );
 
@@ -33,13 +44,29 @@ Future<HaritaSecimSonucu?> haritaSeciciAc(
 /// olan arama alanı, altında ipucu ya da sonuçlar; altta "Bu noktayı seç".
 /// Haritaya dokunarak iğne bırakılır ya da yer adı aranır. Arama yalnızca
 /// "Ara" düğmesiyle yapılır (yazarken ya da klavyeden istek gitmez); OSM
-/// atfı haritada her zaman görünür. Cihaz konumu istenmez; harita
-/// Türkiye'yle açılır.
+/// atfı haritada her zaman görünür. Harita Türkiye'yle açılır.
+///
+/// Cihaz konumu yalnızca [konumDugmesi] açıkken ve kullanıcı "Bulunduğum
+/// yer"e basınca istenir (sohbet; tasarım 28 `Yer-Secici-Konum`): harita
+/// oraya taşınır, iğne bırakılır; kullanıcı noktayı görüp seçer. İzin
+/// reddi ya da kapalı servis seçicinin üstünde metinle gösterilir; seçici
+/// elle çalışmaya devam eder.
 class HaritaSeciciEkrani extends ConsumerStatefulWidget {
-  const HaritaSeciciEkrani({super.key, this.baslangic});
+  const HaritaSeciciEkrani({
+    super.key,
+    this.baslangic,
+    this.konumDugmesi = false,
+    this.secEtiketi,
+  });
 
   /// Taslaktaki nokta; yoksa harita Türkiye'yle açılır.
   final LatLng? baslangic;
+
+  /// "Bulunduğum yer" düğmesi gösterilir mi.
+  final bool konumDugmesi;
+
+  /// Seçim düğmesinin metni; yoksa "Bu noktayı seç".
+  final String? secEtiketi;
 
   @override
   ConsumerState<HaritaSeciciEkrani> createState() => _HaritaSeciciEkraniState();
@@ -71,7 +98,9 @@ class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
         secim.oneri == null) {
       bilgi = m.etkinlik_harita_sonuc_yok;
     } else if (secim.sonuclar.isEmpty) {
-      bilgi = m.etkinlik_harita_ipucu;
+      bilgi = widget.konumDugmesi
+          ? m.harita_ipucu_konumlu
+          : m.etkinlik_harita_ipucu;
     } else {
       bilgi = null;
     }
@@ -90,7 +119,7 @@ class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
           child: Padding(
             padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
             child: BirincilEylem(
-              etiket: m.etkinlik_harita_sec,
+              etiket: widget.secEtiketi ?? m.etkinlik_harita_sec,
               ikon: Icons.place,
               onPressed: nokta == null
                   ? null
@@ -181,6 +210,15 @@ class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
                           ),
                         ],
                       ),
+                      if (secim.konumEngeli case final engel?) ...[
+                        const SizedBox(height: TayfamSpacing.s8),
+                        _Kutu(
+                          child: _KonumEngeli(
+                            engel: engel,
+                            onAyarlar: () => unawaited(notifier.ayarlariAc()),
+                          ),
+                        ),
+                      ],
                       if (secim.araniyor) ...[
                         const SizedBox(height: TayfamSpacing.s8),
                         const LinearProgressIndicator(),
@@ -240,8 +278,91 @@ class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
                 ),
               ),
             ),
+            if (widget.konumDugmesi)
+              PositionedDirectional(
+                end: TayfamSpacing.kenarMobil,
+                // OSM atfının üstünde.
+                bottom: TayfamSpacing.s40,
+                child: _KonumDugmesi(
+                  araniyor: secim.konumAraniyor,
+                  onPressed: () => unawaited(notifier.konumaGit()),
+                ),
+              ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// "Bulunduğum yer" hap düğmesi (tasarım 28 `Yer-Secici-Konum`): kart
+/// zemin, çizgi kenar, 48 dp. Basılınca konum izni istenir.
+class _KonumDugmesi extends StatelessWidget {
+  const _KonumDugmesi({required this.araniyor, required this.onPressed});
+
+  final bool araniyor;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    return OdakCercevesi(
+      koseler: TayfamRadii.hapKoseleri,
+      child: TextButton.icon(
+        onPressed: araniyor ? null : onPressed,
+        style: TextButton.styleFrom(
+          backgroundColor: r.kart,
+          foregroundColor: r.metin,
+          minimumSize: const Size(
+            TayfamSizes.dokunmaMin,
+            TayfamSizes.dokunmaMin,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s16),
+          shape: StadiumBorder(
+            side: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
+          ),
+        ),
+        icon: araniyor
+            ? const SizedBox.square(
+                dimension: TayfamSizes.ikon,
+                child: TayfamYukleniyor(boyut: TayfamSizes.ikon),
+              )
+            : Icon(Icons.my_location, color: r.marka),
+        label: Text(m.harita_bulundugum_yer),
+      ),
+    );
+  }
+}
+
+/// "Bulunduğum yer" konum vermediğinde nedeni ve (izin ya da servis
+/// kapalıysa) ayarlara giden düğme.
+class _KonumEngeli extends StatelessWidget {
+  const _KonumEngeli({required this.engel, required this.onAyarlar});
+
+  final KonumSonucu engel;
+  final VoidCallback onAyarlar;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final (metin, ayar) = switch (engel) {
+      KonumIzniYok(:final kalici) => (
+        m.harita_konum_izni_yok,
+        kalici ? m.harita_ayarlari_ac : null,
+      ),
+      KonumServisiKapali() => (m.harita_konum_kapali, m.harita_konum_ayarlari),
+      _ => (m.harita_konum_alinamadi, null),
+    };
+    return Semantics(
+      liveRegion: true,
+      container: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          HataSatiri(metin: metin),
+          if (ayar != null) BaglantiEylemi(etiket: ayar, onPressed: onAyarlar),
+        ],
       ),
     );
   }

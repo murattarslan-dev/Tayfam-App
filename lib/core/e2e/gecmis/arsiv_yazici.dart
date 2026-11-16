@@ -133,7 +133,7 @@ final class ArsivYazici {
             duz: ArsivDuzMetni(
               gonderenId: m.gonderenId,
               olusturma: m.olusturma,
-              govde: m.govde,
+              icerik: m.icerik,
             ),
           ),
         ),

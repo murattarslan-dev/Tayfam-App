@@ -58,7 +58,8 @@ final class MedyaYukleyici {
 
   /// [goruntu]'yü yükler ve hazır yüklemenin kimliğini döndürür.
   ///
-  /// [tayfaId] kapak ve av fotoğrafında zorunludur, avatarda verilmez.
+  /// [tayfaId] kapak, av ve sohbet fotoğrafında zorunludur; avatarda ve
+  /// şikâyet kanıtında verilmez.
   /// Hata: [ApiHatasi] (ör. `upload-rate-limited`, `upload-quota-exceeded`,
   /// `unavailable`), [MedyaTasimaHatasi] ya da [YuklemeReddedildi].
   Future<String> yukle({
@@ -66,8 +67,8 @@ final class MedyaYukleyici {
     required HazirGoruntu goruntu,
     required String istekKimligi,
     String? tayfaId,
-  }) async {
-    final istek = UploadCreateRequest(
+  }) => _yukle(
+    istek: UploadCreateRequest(
       purpose: amac,
       variants: [
         UploadVariant(
@@ -81,17 +82,63 @@ final class MedyaYukleyici {
           sizeBytes: goruntu.tam.length,
         ),
       ],
-      tayfaId: amac == UploadPurpose.avatar ? null : tayfaId,
+      tayfaId: _tayfasiz.contains(amac) ? null : tayfaId,
       clientRequestId: istekKimligi,
-    );
+    ),
+    govdeler: {
+      UploadTargetKind.preview: goruntu.onizleme,
+      UploadTargetKind.full: goruntu.tam,
+    },
+    tamamlama: UploadCompleteRequest(
+      width: goruntu.tamOlcu.genislik,
+      height: goruntu.tamOlcu.yukseklik,
+    ),
+  );
 
+  /// Birebir mesajın şifreli ekini (`dm_attachment`, tek `blob`,
+  /// `application/octet-stream`; Tayfam-Api ADR-0031 §3, istemci ADR-0026
+  /// §4) yükler. Tamamlama gövdesi `{width: 0, height: 0}`'dır; sunucu
+  /// yalnızca boyutu denetler. Hatalar [yukle] ile aynı.
+  Future<String> sifreliEkYukle({
+    required Uint8List blob,
+    required String istekKimligi,
+  }) => _yukle(
+    istek: UploadCreateRequest(
+      purpose: UploadPurpose.dmAttachment,
+      variants: [
+        UploadVariant(
+          kind: UploadVariantKind.blob,
+          contentType: UploadVariantContentType.applicationOctetStream,
+          sizeBytes: blob.length,
+        ),
+      ],
+      clientRequestId: istekKimligi,
+    ),
+    govdeler: {UploadTargetKind.blob: blob},
+    tamamlama: const UploadCompleteRequest(width: 0, height: 0),
+  );
+
+  /// Tayfası olmayan amaçlar (sözleşme: `tayfa_id` verilmez).
+  static const Set<UploadPurpose> _tayfasiz = {
+    UploadPurpose.avatar,
+    UploadPurpose.dmAttachment,
+    UploadPurpose.reportEvidence,
+  };
+
+  Future<String> _yukle({
+    required UploadCreateRequest istek,
+    required Map<UploadTargetKind, Uint8List> govdeler,
+    required UploadCompleteRequest tamamlama,
+  }) async {
     for (var tur = 1; ; tur++) {
       final acilan = await _uploads.createUpload(body: istek);
       final upload = acilan.upload;
       if (upload.status != UploadStatus.pending) return _sonuc(upload);
       try {
-        await _hedeflereYukle(acilan.targets, goruntu);
-        return _sonuc(await _tamamla(upload.id, goruntu, acilan.targets));
+        await _hedeflereYukle(acilan.targets, govdeler);
+        return _sonuc(
+          await _tamamla(upload.id, tamamlama, acilan.targets, govdeler),
+        );
       } on MedyaDurumHatasi catch (hata) {
         // Linkin süresi dolmuş olabilir: aynı id ile yeni linkler.
         if (hata.durum != 403 || tur >= enCokDeneme) rethrow;
@@ -101,12 +148,11 @@ final class MedyaYukleyici {
 
   Future<void> _hedeflereYukle(
     List<UploadTarget> hedefler,
-    HazirGoruntu goruntu,
+    Map<UploadTargetKind, Uint8List> govdeler,
   ) async {
-    final onizleme = _hedef(hedefler, UploadTargetKind.preview);
-    final tam = _hedef(hedefler, UploadTargetKind.full);
-    await _put(onizleme, goruntu.onizleme);
-    await _put(tam, goruntu.tam);
+    for (final MapEntry(key: tur, value: govde) in govdeler.entries) {
+      await _put(_hedef(hedefler, tur), govde);
+    }
   }
 
   static UploadTarget _hedef(
@@ -139,13 +185,10 @@ final class MedyaYukleyici {
 
   Future<Upload> _tamamla(
     String uploadId,
-    HazirGoruntu goruntu,
+    UploadCompleteRequest govde,
     List<UploadTarget> hedefler,
+    Map<UploadTargetKind, Uint8List> govdeler,
   ) async {
-    final govde = UploadCompleteRequest(
-      width: goruntu.tamOlcu.genislik,
-      height: goruntu.tamOlcu.yukseklik,
-    );
     for (var deneme = 1; ; deneme++) {
       try {
         final view = await _uploads.completeUpload(
@@ -157,7 +200,7 @@ final class MedyaYukleyici {
         if (deneme >= enCokDeneme) rethrow;
         switch (p.type) {
           case ProblemType.uploadNotReceived:
-            await _hedeflereYukle(hedefler, goruntu);
+            await _hedeflereYukle(hedefler, govdeler);
           case ProblemType.unavailable:
             await _bekle(p.retryAfter ?? _aralik(deneme));
           default:

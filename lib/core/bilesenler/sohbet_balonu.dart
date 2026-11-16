@@ -45,9 +45,16 @@ class SohbetBalonu extends StatelessWidget {
     this.kuyruk = true,
     this.adGoster = false,
     this.onGonderen,
+    this.medya,
   });
 
+  /// Balonun metni. [medya] varsa görünmez; ekran okuyucu etiketidir
+  /// ("Fotoğraf", "Paylaşılan yer: …").
   final String metin;
+
+  /// Fotoğraf ya da yer kartı (tasarım 28): metnin yerinde, 4 px iç
+  /// boşlukla. Alt yazı yoktur.
+  final Widget? medya;
 
   /// `true`: kullanıcının kendi mesajı (sağda, brand zemin).
   final bool giden;
@@ -122,26 +129,41 @@ class SohbetBalonu extends StatelessWidget {
       color: yazi,
       fontStyle: tur == BalonTuru.silinmis ? FontStyle.italic : null,
     );
+    final medya = this.medya;
+    // Fotoğraf ve yer kartı kendi etiketini taşır (dokununca açılır).
+    final Widget govde = medya ?? Text(metin, style: govdeStili);
     final Widget icerik = ad == null
-        ? Text(metin, style: govdeStili)
+        ? govde
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               // Ad, balonun ekran okuyucu etiketinde zaten okunur.
               ExcludeSemantics(
-                child: GestureDetector(
-                  onTap: onGonderen,
-                  behavior: HitTestBehavior.opaque,
-                  child: Text(
-                    ad,
-                    style: context.yazi.labelMedium?.copyWith(
-                      color: r.tintMarkaUstu,
+                child: Padding(
+                  // Fotoğraf balonunda ad metnin hizasında durur.
+                  padding: medya == null
+                      ? EdgeInsets.zero
+                      : const EdgeInsetsDirectional.fromSTEB(
+                          TayfamSpacing.s8,
+                          TayfamSpacing.s4,
+                          TayfamSpacing.s8,
+                          0,
+                        ),
+                  child: GestureDetector(
+                    onTap: onGonderen,
+                    behavior: HitTestBehavior.opaque,
+                    child: Text(
+                      ad,
+                      style: context.yazi.labelMedium?.copyWith(
+                        color: r.tintMarkaUstu,
+                      ),
                     ),
                   ),
                 ),
               ),
-              Text(metin, style: govdeStili),
+              if (medya != null) const SizedBox(height: TayfamSpacing.s4),
+              govde,
             ],
           );
     final akista = tur != BalonTuru.olagan;
@@ -166,7 +188,9 @@ class SohbetBalonu extends StatelessWidget {
                     : Border.fromBorderSide(kenar),
               ),
               child: Padding(
-                padding: akista
+                padding: medya != null
+                    ? const EdgeInsets.all(TayfamSpacing.s4)
+                    : akista
                     ? const EdgeInsets.symmetric(
                         horizontal: TayfamSpacing.s12,
                         vertical: TayfamSpacing.s8,

@@ -43,17 +43,23 @@ final class E2eGonderici {
   /// Gönderilen mesajın geçmiş arşivine yazılması için yayın (E3).
   final E2eMesajYayini? yayin;
 
-  /// [aliciId]'ye [metin]'i şifreli gönderir. Başarıda sunucunun yazdığı
-  /// mesaj ve gönderilen içerik döner.
+  /// [aliciId]'ye [icerik]'i şifreli gönderir. Fotoğrafta [ekUploadId]
+  /// şifreli ekin hazır `dm_attachment` yüklemesidir (zarftaki kimlikle
+  /// aynı; ADR-0026 §4). Başarıda sunucunun yazdığı mesaj ve gönderilen
+  /// içerik döner.
   Future<(DirectMessageSent, CozulmusBirebirMesaj)> gonder({
     required String aliciId,
-    required String metin,
+    required BirebirIcerik icerik,
     required String istekKimligi,
   }) async {
     final benId = await kullaniciKimligi();
     final kendi = cihazKimligi();
     if (kendi == null) throw const E2eHazirDegil();
-    final duz = zarfIcerigiKodla(metin);
+    final ekUploadId = switch (icerik) {
+      FotografIcerigi(:final ek) => ek.uploadId,
+      _ => null,
+    };
+    final duz = zarfIcerigiKodla(icerik);
     var tazele = false;
     for (var deneme = 0; ; deneme++) {
       final alicilar = await oturumlar.cihazlar(aliciId, tazele: tazele);
@@ -79,18 +85,19 @@ final class E2eGonderici {
             recipientUserId: aliciId,
             envelopes: zarflar,
             clientRequestId: istekKimligi,
+            attachmentUploadId: ekUploadId,
           ),
         );
-        final icerik = CozulmusBirebirMesaj(
+        final gonderilen = CozulmusBirebirMesaj(
           mesajId: sonuc.message.id,
           konusmaId: sonuc.message.conversationId,
           gonderenKullaniciId: benId,
-          metin: metin,
+          icerik: icerik,
           olusturma: sonuc.message.createdAt,
           kaynak: CozulmusMesajKaynagi.gonderildi,
         );
-        yayin?.yay(icerik);
-        return (sonuc, icerik);
+        yayin?.yay(gonderilen);
+        return (sonuc, gonderilen);
       } on ApiProblem catch (hata) {
         if (hata.type != ProblemType.e2eDevicesChanged ||
             deneme >= enCokTekrar) {

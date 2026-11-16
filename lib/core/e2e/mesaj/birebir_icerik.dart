@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+
+export 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart'
+    show BirebirIcerik, EkAnahtari, FotografIcerigi, MetinIcerigi, YerIcerigi;
 
 /// Çözülmüş birebir mesajın geldiği yol.
 enum CozulmusMesajKaynagi {
@@ -27,7 +31,7 @@ final class CozulmusBirebirMesaj {
     required this.mesajId,
     required this.konusmaId,
     required this.gonderenKullaniciId,
-    required this.metin,
+    required this.icerik,
     required this.olusturma,
     required this.kaynak,
   });
@@ -35,7 +39,12 @@ final class CozulmusBirebirMesaj {
   final String mesajId;
   final String konusmaId;
   final String gonderenKullaniciId;
-  final String metin;
+
+  /// Metin, fotoğraf eki ya da yer (istemci ADR-0026 §3).
+  final BirebirIcerik icerik;
+
+  /// Metin mesajında metin; fotoğraf ve yerde `null`.
+  String? get metin => icerik.metin;
   final DateTime olusturma;
   final CozulmusMesajKaynagi kaynak;
 

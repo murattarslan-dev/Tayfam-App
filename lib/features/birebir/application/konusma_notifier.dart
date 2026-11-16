@@ -7,10 +7,13 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
+import 'package:tayfam/core/medya/goruntu_hazirlama.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
+import 'package:tayfam/core/sohbet/giden_icerik.dart';
+import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
 import 'package:tayfam/features/birebir/application/birebir_gonderici.dart';
 import 'package:tayfam/features/birebir/application/birebir_islemi.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
@@ -257,14 +260,33 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
   /// olarak görünür.
   bool gonder(String ham) {
     final metin = birebirMetniniHazirla(ham);
+    if (!birebirMetniGecerli(metin)) return false;
+    return _kuyruga(GidenMetin(metin));
+  }
+
+  /// Cihazda hazırlanmış (metadata'sı silinmiş) fotoğrafı kuyruğa koyar;
+  /// gönderimde şifrelenip yüklenir (istemci ADR-0026 §4). Yazılacak kişi
+  /// yoksa `false`.
+  bool fotografGonder(HazirGoruntu goruntu) => _kuyruga(
+    GidenFotograf(
+      goruntu: goruntu,
+      yuklemeKimligi: ref.read(istekKimligiUreticisiProvider)(),
+    ),
+  );
+
+  /// Kullanıcının haritada görüp onayladığı yeri kuyruğa koyar. Değerler
+  /// sınır dışıysa ya da yazılacak kişi yoksa `false`.
+  bool yerGonder(PaylasilanYer yer) => yer.gecerliMi && _kuyruga(GidenYer(yer));
+
+  bool _kuyruga(GidenIcerik icerik) {
     final alici = state.value?.konusma.otherUserId;
-    if (alici == null || !birebirMetniGecerli(metin)) return false;
+    if (alici == null) return false;
     ref
         .read(cevrimdisiKuyrukProvider.notifier)
         .ekle(
           BirebirMesajIsi(
             aliciId: alici,
-            metin: metin,
+            icerik: icerik,
             istekKimligi: ref.read(istekKimligiUreticisiProvider)(),
             gonderici: ref.read(birebirGondericiProvider),
           ),
@@ -473,11 +495,11 @@ final bekleyenBirebirProvider = Provider.autoDispose
       final ogeler = ref.watch(cevrimdisiKuyrukProvider);
       return [
         for (final o in ogeler)
-          if (o.isi case BirebirMesajIsi(:final metin, aliciId: final a)
+          if (o.isi case BirebirMesajIsi(:final icerik, aliciId: final a)
               when a == aliciId)
             GidenMesaj(
               istekKimligi: o.istekKimligi,
-              metin: metin,
+              icerik: icerik,
               durum: o.durum == KuyrukDurumu.gonderilemedi
                   ? GidenDurumu.basarisiz
                   : GidenDurumu.gonderiliyor,

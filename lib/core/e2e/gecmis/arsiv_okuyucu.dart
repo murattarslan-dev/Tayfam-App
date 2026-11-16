@@ -8,6 +8,7 @@ import 'package:tayfam/core/e2e/gecmis/arsiv_bicimi.dart';
 import 'package:tayfam/core/e2e/gecmis/bagimliliklar.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_anahtari_deposu.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_api.dart';
+import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 
 /// Arşivden çözülmüş bir mesaj. Yalnızca bellektedir; `toString` içerik
 /// yazmaz.
@@ -17,13 +18,13 @@ final class ArsivMesaji {
     required this.mesajId,
     required this.gonderenId,
     required this.olusturma,
-    required this.govde,
+    required this.icerik,
   });
 
   final String mesajId;
   final String gonderenId;
   final DateTime olusturma;
-  final String govde;
+  final BirebirIcerik icerik;
 
   @override
   String toString() => 'ArsivMesaji($mesajId)';
@@ -176,7 +177,7 @@ final class ArsivOkuyucu {
         mesajId: kayit.messageId,
         gonderenId: duz.gonderenId,
         olusturma: duz.olusturma,
-        govde: duz.govde,
+        icerik: duz.icerik,
       );
     }
     return KonusmaArsivi(

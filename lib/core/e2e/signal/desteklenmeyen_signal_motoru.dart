@@ -93,6 +93,14 @@ final class DesteklenmeyenSignalMotoru implements SignalMotoru {
   }) async => _yok();
 
   @override
+  Future<Uint8List> aes256GcmSifrele({
+    required Uint8List anahtar,
+    required Uint8List nonce,
+    required Uint8List duz,
+    required Uint8List aad,
+  }) async => _yok();
+
+  @override
   Future<Uint8List?> aes256GcmCoz({
     required Uint8List anahtar,
     required Uint8List nonce,
