@@ -24,6 +24,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
+import 'package:tayfam/features/etkinlik/presentation/album_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
@@ -74,7 +75,8 @@ const String ozetAyraci = ' · ';
 ///   İptalde gerekçe kartın altında tint-nar kutudadır.
 /// - Varış penceresi açıkken "Geldim" kartı (ADR-0015 §5), buluşma noktası
 ///   haritası ya da çevrimiçi bağlantı, açıklama, türe özel bilgiler ve
-///   araçlar (§6), etkinliğin anketleri ve katılımcı özeti (dokununca
+///   araçlar (§6), etkinliğin anketleri, fotoğraf albümü (istemci
+///   ADR-0025) ve katılımcı özeti (dokununca
 ///   ayrı Katılımcılar ekranı). Seri ise en altta seri notu.
 /// - Varış kartının altında "Sohbet" bölümü (etkinlik kanalı; tasarım:
 ///   Etkinlik-Sohbet); sohbet paketi kabuktaki yuvayla yerleştirir.
@@ -240,6 +242,7 @@ class _Detay extends ConsumerWidget {
                   tayfaId: anahtar.tayfaId,
                   etkinlikId: anahtar.etkinlikId,
                 ),
+                AlbumBolumu(etkinlik: etkinlik),
                 AracBasligi(metin: m.etkinlik_katilimcilar_baslik),
                 _KatilimciOzeti(anahtar: anahtar, etkinlik: etkinlik),
                 if (etkinlik.seriesId != null) ...[

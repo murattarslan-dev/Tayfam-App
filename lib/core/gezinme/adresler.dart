@@ -178,6 +178,13 @@ abstract final class Adresler {
   static String etkinlikKatilimcilari(String tayfaId, String etkinlikId) =>
       '${etkinlik(tayfaId, etkinlikId)}/$etkinlikKatilimcilariYolu';
 
+  /// Albüm ekranının etkinlik detayı altındaki yolu (istemci ADR-0025).
+  static const etkinlikAlbumuYolu = 'album';
+
+  /// Etkinliğin fotoğraf albümü.
+  static String etkinlikAlbumu(String tayfaId, String etkinlikId) =>
+      '${etkinlik(tayfaId, etkinlikId)}/$etkinlikAlbumuYolu';
+
   /// Profil sekmesindeki oturumlar ekranının profil altındaki yolu
   /// (ADR-0018 §2).
   static const oturumlarYolu = 'oturumlar';

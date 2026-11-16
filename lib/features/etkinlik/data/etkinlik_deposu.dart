@@ -10,6 +10,10 @@ import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
 /// 100).
 const int etkinlikSayfaBoyutu = 20;
 
+/// Albümün sayfa boyutu (sözleşme: en çok 100; 3 sütunlu ızgaraya tam
+/// bölünür). Bir sayfanın linkleri tek `POST /v1/media/urls`'e sığar.
+const int albumSayfaBoyutu = 60;
+
 /// Etkinlik uçları (ADR-0015 §3, §5, §6): liste, tek etkinlik, oluşturma,
 /// düzenleme, iptal, katılım, katılımcılar, `.ics`, varış bildirimi, türe
 /// özel araçlar ve organizatör düzeltmesi. Yalnızca üretilmiş uç
@@ -197,6 +201,39 @@ final class EtkinlikDeposu {
   /// `DELETE .../fishing-catches/{catch_id}`.
   Future<void> avCikar(String tayfaId, String etkinlikId, String avId) => _api
       .removeFishingCatch(tayfaId: tayfaId, eventId: etkinlikId, catchId: avId);
+
+  /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
+  /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
+  Future<Sayfa<EventPhoto>> albumFotograflari(
+    String tayfaId,
+    String etkinlikId, {
+    String? sayfaToken,
+  }) async {
+    final liste = await _api.listEventPhotos(
+      tayfaId: tayfaId,
+      eventId: etkinlikId,
+      pageSize: albumSayfaBoyutu,
+      pageToken: sayfaToken,
+    );
+    return (ogeler: liste.photos, sonraki: liste.nextPageToken);
+  }
+
+  /// `POST .../photos`: hazır `event_photo` yüklemesini albüme bağlar.
+  /// Aynı `client_request_id` ile tekrar gönderim ilk fotoğrafı döndürür.
+  /// Açıklama log'a yazılmaz.
+  Future<EventPhoto> albumeEkle(
+    String tayfaId,
+    String etkinlikId,
+    EventPhotoCreateRequest istek,
+  ) => _api.addEventPhoto(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
+
+  /// `DELETE .../photos/{photo_id}`.
+  Future<void> albumdenSil(String tayfaId, String etkinlikId, String fotoId) =>
+      _api.removeEventPhoto(
+        tayfaId: tayfaId,
+        eventId: etkinlikId,
+        photoId: fotoId,
+      );
 
   /// Organizatör düzeltmesi: `PUT .../attendees/{user_id}/attendance`
   /// ([ekle]) ya da `DELETE` ile katılımı ekler veya kaldırır.
