@@ -15,6 +15,12 @@ Bildirimde şunlar yardımcı olur:
 - Yeniden üretme adımları veya kavram kanıtı
 - Olası etkisi (örneğin başka bir kullanıcının verisine erişim)
 
+## Desteklenen sürümler
+
+Yalnızca en son yayınlanan sürüm (`main` dalı ve en son `vX.Y.Z` etiketi)
+desteklenir. Düzeltmeler yeni bir sürümle çıkar; eski sürümlere ayrıca
+düzeltme yapılmaz.
+
 ## Ne bekleyebilirsin
 
 - Bildirim birkaç gün içinde yanıtlanır.

@@ -1,7 +1,9 @@
 name: Site yayını
 
 # tayfam.app'i main'den Cloudflare Pages'e yayınlar — ADR-0013 §5–6,
-# issue #25. Yalnızca main'e push'ta (site/** değişince) ya da elle
+# issue #25. main = prod (ADR-0029): dev'e birleşmede yayın yoktur; site
+# değişiklikleri sürüm PR'ıyla (dev → main) yayına çıkar. Yalnızca main'e
+# push'ta (site/** değişince) ya da elle
 # (workflow_dispatch, yalnızca main'de) çalışır. PR'lardan yayın ya da
 # önizleme yoktur. Yayından önce CI'daki site denetimi aynen çalışır.
 #
