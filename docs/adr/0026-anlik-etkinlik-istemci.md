@@ -85,8 +85,9 @@ bildirimi, sohbet ve albüm mevcut tayfa altyapısıyla çalışır.
   `DonusturmeNotifier`); adres `/tayfa-donustur/<tayfaId>`, kimlik girdi
   kabul edilir. Gönderim `POST /v1/tayfas/{id}/conversion`.
 - "Tayfa kuruldu" ekranı yoktur (üyeler zaten var): başarıda liste ve
-  görünüm tazelenir, kurulum kartı gösterilir, ana sayfa açılır ve kısa
-  bildirim çıkar. `tayfa-create-limit` / `rate-limited` Tayfa-Kur-Limit
+  görünüm tazelenir, ana sayfa açılır ve kısa bildirim çıkar. Kurulum
+  kartı ve "7 günde 3 üye" dönemi `converted_at`'ten sayıldığı için
+  dönüşümden sonraki 7 gün görünür (Notlar 5). `tayfa-create-limit` / `rate-limited` Tayfa-Kur-Limit
   kutusunda.
 
 ### 5. Ortak bileşenler
@@ -139,11 +140,13 @@ yoktur.
   2. Karşılamadaki ikinci giriş ("Anlık etkinlik aç") uygun.
   3. "Bir şey yapalım" varsayılanı 19:00, süre 2 saat uygun.
   4. Dönüşümde "Tayfa kuruldu" ekranının atlanması uygun.
-  5. **`converted_at` (geçici çözüm):** sözleşmede yoktur; ana sayfadaki
-     kurulum dönemi `created_at`'ten sayılır ve dönüşümde kurulum kartı bir
-     kez zorla gösterilir. Tayfam-Api'de alanı eklemek için ayrı küçük bir
-     issue açılacak; alan sözleşmeye girince kurulum dönemi
-     `COALESCE(converted_at, created_at)`'ten sayılır.
+  5. **`converted_at`:** ~~sözleşmede yoktur; ana sayfadaki kurulum dönemi
+     `created_at`'ten sayılır ve dönüşümde kurulum kartı bir kez zorla
+     gösterilir~~ (geçici çözüm, kaldırıldı). Alan Tayfam-Api PR #220 ile
+     sözleşmeye girdi (`Tayfa.converted_at`); istemci issue #209 ile kurulum
+     dönemini `converted_at ?? created_at`'ten sayar (`kurulumBaslangici`).
+     Dönüşümde zorla gösterme yoktur; kart dönüşümden sonraki 7 gün
+     görünür, sonra kaybolur.
   6. "Arkadaş davet et"te zaten üye olanların süzülmemesi; sunucu hatası
      gösterilir. Yeterli.
   7. Etkinlik kanalı otomatik açılmaz; organizatör detaydaki mevcut

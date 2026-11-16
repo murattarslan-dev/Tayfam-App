@@ -201,6 +201,64 @@ void main() {
       expect(find.text(arbMetni('tayfa_kurulum_kural')), findsNothing);
     });
 
+    // 2026-11-01'de açılıp 2026-11-10'da anlık tayfadan dönmüş tayfa;
+    // kurulum dönemi `converted_at`'ten sayılır (issue #209).
+    List<Override> donusmus() => _gorunum(
+      (_) => gorunumJson(
+        ornekTayfaId,
+        rol: 'admin',
+        uyeSayisi: 1,
+        donusum: '2026-11-10T12:00:00Z',
+      ),
+    );
+
+    for (final tema in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets(
+        '${tema.name}: dönüşmüş tayfada dönüşümden 6 gün sonra kart; 2× yazı',
+        (tester) async {
+          ekranBoyutu(tester, genislik: 320, yukseklik: 1200);
+          ikiKatYazi(tester);
+          await _ac(
+            tester,
+            themeMode: tema,
+            tayfa: donusmus(),
+            overrides: [
+              tayfaSaatiProvider.overrideWithValue(
+                () => DateTime.utc(2026, 11, 16, 11),
+              ),
+            ],
+          );
+
+          expect(find.byType(TayfaKurulumKarti), findsOneWidget);
+          expect(find.text(arbMetni('tayfa_kurulum_baslik')), findsOneWidget);
+          await tester.scrollUntilVisible(
+            find.text(arbMetni('tayfa_kurulum_kural')),
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
+          expect(find.text(arbMetni('tayfa_kurulum_kural')), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+
+    testWidgets('dönüşmüş tayfada dönüşümden 7 gün sonra kart yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        tayfa: donusmus(),
+        overrides: [
+          tayfaSaatiProvider.overrideWithValue(
+            () => DateTime.utc(2026, 11, 17, 12),
+          ),
+        ],
+      );
+      expect(find.byType(TayfaKurulumKarti), findsNothing);
+      expect(find.text(arbMetni('tayfa_kurulum_kural')), findsNothing);
+    });
+
     testWidgets('yeni oluşturulan tayfada kart; davet adımı üyeyle tamam', (
       tester,
     ) async {
