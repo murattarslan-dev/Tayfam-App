@@ -72,14 +72,14 @@ Future<HazirGoruntu?> sohbetFotografiSec(
   }
   if (ham == null || !context.mounted) return null;
   final hazirlik = ref.read(goruntuHazirlayiciProvider).hazirla(ham);
+  // Hata onay ekranında gösterilir; ekran kurulmadan gelirse de yakalanır.
+  unawaited(hazirlik.then((_) {}, onError: (Object _) {}));
   final sonuc = await Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute<HazirGoruntu>(
       fullscreenDialog: true,
       builder: (_) => FotografOnayi(hazirlik: hazirlik, sifreli: sifreli),
     ),
   );
-  // Ekran hazırlık bitmeden kapandıysa sonucun hatası yutulur.
-  unawaited(hazirlik.then((_) {}, onError: (Object _) {}));
   return sonuc;
 }
 
