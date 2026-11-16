@@ -50,6 +50,7 @@ Map<String, Object?> uyeJson(
   String rol = 'member',
   String durum = 'active',
   String? susturma,
+  bool? kesfetten,
 }) => {
   'tayfa_id': ornekTayfaId,
   'user_id': kullanici,
@@ -57,6 +58,7 @@ Map<String, Object?> uyeJson(
   'status': durum,
   'joined_at': '2026-11-01T10:00:00Z',
   'muted_until': ?susturma,
+  'joined_via_discover': ?kesfetten,
 };
 
 /// `GET …/members` yanıtı.

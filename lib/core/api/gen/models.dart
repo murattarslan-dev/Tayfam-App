@@ -4706,6 +4706,331 @@ final class DirectMessageSent {
   int get hashCode => Object.hashAll(<Object?>[message, conversation]);
 }
 
+final class DiscoverFeed {
+  const DiscoverFeed({required this.items});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DiscoverFeed.fromJson(Map<String, Object?> json) => DiscoverFeed(
+    items: List<DiscoverItem>.unmodifiable(
+      _readList(json['items'], 'DiscoverFeed.items').map(
+        (Object? e0) =>
+            DiscoverItem.fromJson(_readObject(e0, 'DiscoverFeed.items')),
+      ),
+    ),
+  );
+
+  /// Kısıtlar: maxItems: 50.
+  final List<DiscoverItem> items;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'items': <Object?>[for (final e0 in items) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DiscoverFeed && _deepEquals(items, other.items);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(items)]);
+}
+
+final class DiscoverItem {
+  const DiscoverItem({
+    required this.event,
+    required this.tayfa,
+    required this.friends,
+    required this.friendCount,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DiscoverItem.fromJson(Map<String, Object?> json) => DiscoverItem(
+    event: DiscoverItemEvent.fromJson(
+      _readObject(json['event'], 'DiscoverItem.event'),
+    ),
+    tayfa: DiscoverItemTayfa.fromJson(
+      _readObject(json['tayfa'], 'DiscoverItem.tayfa'),
+    ),
+    friends: List<DiscoverPerson>.unmodifiable(
+      _readList(json['friends'], 'DiscoverItem.friends').map(
+        (Object? e0) =>
+            DiscoverPerson.fromJson(_readObject(e0, 'DiscoverItem.friends')),
+      ),
+    ),
+    friendCount: _readInt(json['friend_count'], 'DiscoverItem.friend_count'),
+  );
+
+  /// Açıklama, buluşma noktası ve koordinat yoktur.
+  final DiscoverItemEvent event;
+
+  /// Yalnızca olgular. `event_count` bitişinden 7 gün geçmiş, iptal
+  /// edilmemiş etkinlikler; `attendance_count` bu etkinliklerdeki
+  /// doğrulanmış katılımlar.
+  final DiscoverItemTayfa tayfa;
+
+  /// Kısıtlar: maxItems: 3.
+  final List<DiscoverPerson> friends;
+
+  /// Görünür arkadaşların tamamı (`friends` dahil).
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int friendCount;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'event': event.toJson(),
+    'tayfa': tayfa.toJson(),
+    'friends': <Object?>[for (final e0 in friends) e0.toJson()],
+    'friend_count': friendCount,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DiscoverItem &&
+          event == other.event &&
+          tayfa == other.tayfa &&
+          _deepEquals(friends, other.friends) &&
+          friendCount == other.friendCount;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[event, tayfa, _deepHash(friends), friendCount]);
+}
+
+/// Açıklama, buluşma noktası ve koordinat yoktur.
+final class DiscoverItemEvent {
+  const DiscoverItemEvent({
+    required this.id,
+    required this.type,
+    required this.title,
+    required this.startsAt,
+    required this.endsAt,
+    this.city,
+    this.district,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DiscoverItemEvent.fromJson(Map<String, Object?> json) =>
+      DiscoverItemEvent(
+        id: _readString(json['id'], 'DiscoverItemEvent.id'),
+        type: EventType.fromWire(
+          _readString(json['type'], 'DiscoverItemEvent.type'),
+        ),
+        title: _readString(json['title'], 'DiscoverItemEvent.title'),
+        startsAt: _readDateTime(
+          json['starts_at'],
+          'DiscoverItemEvent.starts_at',
+        ),
+        endsAt: _readDateTime(json['ends_at'], 'DiscoverItemEvent.ends_at'),
+        city: switch (json['city']) {
+          null => null,
+          final Object v => _readString(v, 'DiscoverItemEvent.city'),
+        },
+        district: switch (json['district']) {
+          null => null,
+          final Object v => _readString(v, 'DiscoverItemEvent.district'),
+        },
+      );
+
+  final String id;
+
+  final EventType type;
+
+  final String title;
+
+  final DateTime startsAt;
+
+  final DateTime endsAt;
+
+  final String? city;
+
+  final String? district;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'type': type.wire,
+    'title': title,
+    'starts_at': startsAt.toUtc().toIso8601String(),
+    'ends_at': endsAt.toUtc().toIso8601String(),
+    if (city case final value?) 'city': value,
+    if (district case final value?) 'district': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DiscoverItemEvent &&
+          id == other.id &&
+          type == other.type &&
+          title == other.title &&
+          startsAt == other.startsAt &&
+          endsAt == other.endsAt &&
+          city == other.city &&
+          district == other.district;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    type,
+    title,
+    startsAt,
+    endsAt,
+    city,
+    district,
+  ]);
+}
+
+/// Yalnızca olgular. `event_count` bitişinden 7 gün geçmiş, iptal
+/// edilmemiş etkinlikler; `attendance_count` bu etkinliklerdeki
+/// doğrulanmış katılımlar.
+final class DiscoverItemTayfa {
+  const DiscoverItemTayfa({
+    required this.id,
+    required this.name,
+    this.description,
+    this.city,
+    required this.createdAt,
+    required this.eventCount,
+    required this.attendanceCount,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DiscoverItemTayfa.fromJson(Map<String, Object?> json) =>
+      DiscoverItemTayfa(
+        id: _readString(json['id'], 'DiscoverItemTayfa.id'),
+        name: _readString(json['name'], 'DiscoverItemTayfa.name'),
+        description: switch (json['description']) {
+          null => null,
+          final Object v => _readString(v, 'DiscoverItemTayfa.description'),
+        },
+        city: switch (json['city']) {
+          null => null,
+          final Object v => _readString(v, 'DiscoverItemTayfa.city'),
+        },
+        createdAt: _readDateTime(
+          json['created_at'],
+          'DiscoverItemTayfa.created_at',
+        ),
+        eventCount: _readInt(
+          json['event_count'],
+          'DiscoverItemTayfa.event_count',
+        ),
+        attendanceCount: _readInt(
+          json['attendance_count'],
+          'DiscoverItemTayfa.attendance_count',
+        ),
+      );
+
+  final String id;
+
+  final String name;
+
+  final String? description;
+
+  final String? city;
+
+  final DateTime createdAt;
+
+  /// Kısıtlar: minimum: 0.
+  final int eventCount;
+
+  /// Kısıtlar: minimum: 0.
+  final int attendanceCount;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'name': name,
+    if (description case final value?) 'description': value,
+    if (city case final value?) 'city': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'event_count': eventCount,
+    'attendance_count': attendanceCount,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DiscoverItemTayfa &&
+          id == other.id &&
+          name == other.name &&
+          description == other.description &&
+          city == other.city &&
+          createdAt == other.createdAt &&
+          eventCount == other.eventCount &&
+          attendanceCount == other.attendanceCount;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    name,
+    description,
+    city,
+    createdAt,
+    eventCount,
+    attendanceCount,
+  ]);
+}
+
+final class DiscoverPerson {
+  const DiscoverPerson({
+    required this.userId,
+    required this.displayName,
+    this.avatarUploadId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DiscoverPerson.fromJson(Map<String, Object?> json) => DiscoverPerson(
+    userId: _readString(json['user_id'], 'DiscoverPerson.user_id'),
+    displayName: _readString(
+      json['display_name'],
+      'DiscoverPerson.display_name',
+    ),
+    avatarUploadId: switch (json['avatar_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'DiscoverPerson.avatar_upload_id'),
+    },
+  );
+
+  final String userId;
+
+  final String displayName;
+
+  final String? avatarUploadId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'display_name': displayName,
+    if (avatarUploadId case final value?) 'avatar_upload_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DiscoverPerson &&
+          userId == other.userId &&
+          displayName == other.displayName &&
+          avatarUploadId == other.avatarUploadId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[userId, displayName, avatarUploadId]);
+}
+
 final class E2EArchiveEntry {
   const E2EArchiveEntry({
     required this.messageId,
@@ -6798,6 +7123,9 @@ final class Event {
 
   final String? cancelReason;
 
+  /// Organizatörün işareti: etkinlik halka açık bir yerde buluşur ve
+  /// Keşfet'te görünebilir (ADR-0033). Yalnızca yüz yüze etkinlikte
+  /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool discoverable;
 
   /// Organizatör; hesabı silindiyse yoktur.
@@ -7165,6 +7493,9 @@ final class EventCreateRequest {
   /// Kısıtlar: minimum: 0; maximum: 10000.
   final int? capacity;
 
+  /// Organizatörün işareti: etkinlik halka açık bir yerde buluşur ve
+  /// Keşfet'te görünebilir (ADR-0033). Yalnızca yüz yüze etkinlikte
+  /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
   final ConvoyDetailsInput? convoy;
@@ -7262,6 +7593,132 @@ final class EventCreateRequest {
     recurrence,
     clientRequestId,
   ]);
+}
+
+final class EventFeedback {
+  const EventFeedback({this.answer, this.updatedAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventFeedback.fromJson(Map<String, Object?> json) => EventFeedback(
+    answer: switch (json['answer']) {
+      null => null,
+      final Object v => EventFeedbackAnswer.fromWire(
+        _readString(v, 'EventFeedback.answer'),
+      ),
+    },
+    updatedAt: switch (json['updated_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventFeedback.updated_at'),
+    },
+  );
+
+  final EventFeedbackAnswer? answer;
+
+  final DateTime? updatedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (answer case final value?) 'answer': value.wire,
+    if (updatedAt case final value?)
+      'updated_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventFeedback &&
+          answer == other.answer &&
+          updatedAt == other.updatedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[answer, updatedAt]);
+}
+
+enum EventFeedbackAnswer {
+  ok('ok'),
+  notOk('not_ok'),
+  serious('serious'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const EventFeedbackAnswer(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventFeedbackAnswer.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventFeedbackAnswer fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventFeedbackInput {
+  const EventFeedbackInput({required this.answer});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventFeedbackInput.fromJson(Map<String, Object?> json) =>
+      EventFeedbackInput(
+        answer: EventFeedbackInputAnswer.fromWire(
+          _readString(json['answer'], 'EventFeedbackInput.answer'),
+        ),
+      );
+
+  final EventFeedbackInputAnswer answer;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'answer': answer.wire};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventFeedbackInput && answer == other.answer;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[answer]);
+}
+
+enum EventFeedbackInputAnswer {
+  ok('ok'),
+  notOk('not_ok'),
+  serious('serious'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventFeedbackInputAnswer(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('EventFeedbackInputAnswer.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventFeedbackInputAnswer fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class EventList {
@@ -7867,6 +8324,9 @@ final class EventUpdateRequest {
   /// Kısıtlar: minimum: 0; maximum: 10000.
   final int? capacity;
 
+  /// Organizatörün işareti: etkinlik halka açık bir yerde buluşur ve
+  /// Keşfet'te görünebilir (ADR-0033). Yalnızca yüz yüze etkinlikte
+  /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
   final ConvoyDetailsInput? convoy;
@@ -9938,6 +10398,7 @@ final class Membership {
     required this.status,
     this.joinedAt,
     this.mutedUntil,
+    this.joinedViaDiscover,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -9958,6 +10419,10 @@ final class Membership {
       null => null,
       final Object v => _readDateTime(v, 'Membership.muted_until'),
     },
+    joinedViaDiscover: switch (json['joined_via_discover']) {
+      null => null,
+      final Object v => _readBool(v, 'Membership.joined_via_discover'),
+    },
   );
 
   final String tayfaId;
@@ -9974,6 +10439,10 @@ final class Membership {
   /// Susturma bitişi; yalnızca üyenin kendisine, moderatöre ve yöneticiye döner.
   final DateTime? mutedUntil;
 
+  /// Kişi Keşfet'ten katılım istedi (ADR-0033). Yalnızca moderatör ve
+  /// yöneticiye döner; diğer üyelere hiç dönmez.
+  final bool? joinedViaDiscover;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa_id': tayfaId,
@@ -9984,6 +10453,7 @@ final class Membership {
       'joined_at': value.toUtc().toIso8601String(),
     if (mutedUntil case final value?)
       'muted_until': value.toUtc().toIso8601String(),
+    if (joinedViaDiscover case final value?) 'joined_via_discover': value,
   };
 
   @override
@@ -9995,7 +10465,8 @@ final class Membership {
           role == other.role &&
           status == other.status &&
           joinedAt == other.joinedAt &&
-          mutedUntil == other.mutedUntil;
+          mutedUntil == other.mutedUntil &&
+          joinedViaDiscover == other.joinedViaDiscover;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -10005,6 +10476,7 @@ final class Membership {
     status,
     joinedAt,
     mutedUntil,
+    joinedViaDiscover,
   ]);
 }
 
@@ -10865,6 +11337,11 @@ final class Notification {
   /// `friend_suggestion` (arkadaş önerisi; `target_id` önerilen kişi,
   /// `tayfa_id` ve `actor_id` yoktur; yalnızca uygulama içi, push
   /// gitmez; açık öneriler `GET /v1/me/friend-suggestions`).
+  /// `safety_alert` (#210, ADR-0033): sizi güvenlik kişisi seçen
+  /// `target_id` (hedef `user`) etkinliğin bitişi ve toleransı geçtiği
+  /// halde "Döndüm" demedi; `tayfa_id` ve `actor_id` yoktur, içerik ve
+  /// konum taşımaz; etkinliği `GET /v1/me/safety-shares` verir.
+  /// Susturma uygulanmaz, push gider.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -11382,6 +11859,11 @@ enum NotificationTargetType {
 /// `friend_suggestion` (arkadaş önerisi; `target_id` önerilen kişi,
 /// `tayfa_id` ve `actor_id` yoktur; yalnızca uygulama içi, push
 /// gitmez; açık öneriler `GET /v1/me/friend-suggestions`).
+/// `safety_alert` (#210, ADR-0033): sizi güvenlik kişisi seçen
+/// `target_id` (hedef `user`) etkinliğin bitişi ve toleransı geçtiği
+/// halde "Döndüm" demedi; `tayfa_id` ve `actor_id` yoktur, içerik ve
+/// konum taşımaz; etkinliği `GET /v1/me/safety-shares` verir.
+/// Susturma uygulanmaz, push gider.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -11406,6 +11888,7 @@ enum NotificationType {
   dmMessage('dm_message'),
   dataExportReady('data_export_ready'),
   friendSuggestion('friend_suggestion'),
+  safetyAlert('safety_alert'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -13309,6 +13792,272 @@ enum RsvpStatus {
   }
 }
 
+final class SafetyContact {
+  const SafetyContact({
+    this.contact,
+    required this.graceMinutes,
+    this.returnedAt,
+    this.alertSentAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SafetyContact.fromJson(Map<String, Object?> json) => SafetyContact(
+    contact: switch (json['contact']) {
+      null => null,
+      final Object v => DiscoverPerson.fromJson(
+        _readObject(v, 'SafetyContact.contact'),
+      ),
+    },
+    graceMinutes: _readInt(
+      json['grace_minutes'],
+      'SafetyContact.grace_minutes',
+    ),
+    returnedAt: switch (json['returned_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'SafetyContact.returned_at'),
+    },
+    alertSentAt: switch (json['alert_sent_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'SafetyContact.alert_sent_at'),
+    },
+  );
+
+  final DiscoverPerson? contact;
+
+  /// Seçilmemişse 0.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 1440.
+  final int graceMinutes;
+
+  final DateTime? returnedAt;
+
+  final DateTime? alertSentAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (contact case final value?) 'contact': value.toJson(),
+    'grace_minutes': graceMinutes,
+    if (returnedAt case final value?)
+      'returned_at': value.toUtc().toIso8601String(),
+    if (alertSentAt case final value?)
+      'alert_sent_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SafetyContact &&
+          contact == other.contact &&
+          graceMinutes == other.graceMinutes &&
+          returnedAt == other.returnedAt &&
+          alertSentAt == other.alertSentAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[contact, graceMinutes, returnedAt, alertSentAt]);
+}
+
+final class SafetyContactInput {
+  const SafetyContactInput({required this.contactUserId, this.graceMinutes});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SafetyContactInput.fromJson(Map<String, Object?> json) =>
+      SafetyContactInput(
+        contactUserId: _readString(
+          json['contact_user_id'],
+          'SafetyContactInput.contact_user_id',
+        ),
+        graceMinutes: switch (json['grace_minutes']) {
+          null => null,
+          final Object v => _readInt(v, 'SafetyContactInput.grace_minutes'),
+        },
+      );
+
+  final String contactUserId;
+
+  /// Bitişten sonra beklenecek dakika; yoksa 60.
+  ///
+  /// Kısıtlar: minimum: 15; maximum: 1440.
+  final int? graceMinutes;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'contact_user_id': contactUserId,
+    if (graceMinutes case final value?) 'grace_minutes': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SafetyContactInput &&
+          contactUserId == other.contactUserId &&
+          graceMinutes == other.graceMinutes;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[contactUserId, graceMinutes]);
+}
+
+/// Katılımcının güvenlik kişisiyle paylaştığı en az bilgi: kim, saat
+/// aralığı (başlangıç, bitiş, tolerans) ve durum. Tayfa, etkinlik
+/// başlığı ya da kimliği, buluşma yeri, il/ilçe ve koordinat yoktur.
+final class SafetyShare {
+  const SafetyShare({
+    required this.participant,
+    required this.startsAt,
+    required this.endsAt,
+    required this.graceMinutes,
+    this.returnedAt,
+    this.alertSentAt,
+    required this.state,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SafetyShare.fromJson(Map<String, Object?> json) => SafetyShare(
+    participant: DiscoverPerson.fromJson(
+      _readObject(json['participant'], 'SafetyShare.participant'),
+    ),
+    startsAt: _readDateTime(json['starts_at'], 'SafetyShare.starts_at'),
+    endsAt: _readDateTime(json['ends_at'], 'SafetyShare.ends_at'),
+    graceMinutes: _readInt(json['grace_minutes'], 'SafetyShare.grace_minutes'),
+    returnedAt: switch (json['returned_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'SafetyShare.returned_at'),
+    },
+    alertSentAt: switch (json['alert_sent_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'SafetyShare.alert_sent_at'),
+    },
+    state: SafetyShareState.fromWire(
+      _readString(json['state'], 'SafetyShare.state'),
+    ),
+  );
+
+  final DiscoverPerson participant;
+
+  final DateTime startsAt;
+
+  final DateTime endsAt;
+
+  /// Alarm `ends_at` + bu süre sonunda gider.
+  final int graceMinutes;
+
+  final DateTime? returnedAt;
+
+  final DateTime? alertSentAt;
+
+  /// `not_returned`: henüz dönmedi, alarm gitmedi. `returned`: "Döndüm"
+  /// dedi (alarmdan sonra da olabilir). `alert_sent`: alarm gitti,
+  /// "Döndüm" yok.
+  final SafetyShareState state;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'participant': participant.toJson(),
+    'starts_at': startsAt.toUtc().toIso8601String(),
+    'ends_at': endsAt.toUtc().toIso8601String(),
+    'grace_minutes': graceMinutes,
+    if (returnedAt case final value?)
+      'returned_at': value.toUtc().toIso8601String(),
+    if (alertSentAt case final value?)
+      'alert_sent_at': value.toUtc().toIso8601String(),
+    'state': state.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SafetyShare &&
+          participant == other.participant &&
+          startsAt == other.startsAt &&
+          endsAt == other.endsAt &&
+          graceMinutes == other.graceMinutes &&
+          returnedAt == other.returnedAt &&
+          alertSentAt == other.alertSentAt &&
+          state == other.state;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    participant,
+    startsAt,
+    endsAt,
+    graceMinutes,
+    returnedAt,
+    alertSentAt,
+    state,
+  ]);
+}
+
+final class SafetyShareList {
+  const SafetyShareList({required this.shares});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SafetyShareList.fromJson(Map<String, Object?> json) =>
+      SafetyShareList(
+        shares: List<SafetyShare>.unmodifiable(
+          _readList(json['shares'], 'SafetyShareList.shares').map(
+            (Object? e0) =>
+                SafetyShare.fromJson(_readObject(e0, 'SafetyShareList.shares')),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 50.
+  final List<SafetyShare> shares;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'shares': <Object?>[for (final e0 in shares) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SafetyShareList && _deepEquals(shares, other.shares);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(shares)]);
+}
+
+/// `not_returned`: henüz dönmedi, alarm gitmedi. `returned`: "Döndüm"
+/// dedi (alarmdan sonra da olabilir). `alert_sent`: alarm gitti,
+/// "Döndüm" yok.
+enum SafetyShareState {
+  notReturned('not_returned'),
+  returned('returned'),
+  alertSent('alert_sent'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const SafetyShareState(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('SafetyShareState.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static SafetyShareState fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class Session {
   const Session({
     required this.userId,
@@ -13622,6 +14371,7 @@ final class SocialSettings {
   const SocialSettings({
     required this.profilingEnabled,
     required this.hideFromSuggestions,
+    required this.discoverVisibleToFriends,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -13636,6 +14386,10 @@ final class SocialSettings {
       json['hide_from_suggestions'],
       'SocialSettings.hide_from_suggestions',
     ),
+    discoverVisibleToFriends: _readBool(
+      json['discover_visible_to_friends'],
+      'SocialSettings.discover_visible_to_friends',
+    ),
   );
 
   /// "Profilleme": ortak katılımdan arkadaşlık puanı hesaplanır ve öneri yapılır.
@@ -13644,10 +14398,17 @@ final class SocialSettings {
   /// "Beni önerme": kimseye önerilmezsiniz.
   final bool hideFromSuggestions;
 
+  /// "Keşfet'te arkadaşlarım görebilsin" (varsayılan açık): bir
+  /// etkinliğe gideceğiniz ya da katıldığınız, arkadaşlarınıza
+  /// Keşfet'te gösterilebilir. Katılım geçmişiniz `private` ise bu
+  /// ayar açık olsa da gösterilmez.
+  final bool discoverVisibleToFriends;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'profiling_enabled': profilingEnabled,
     'hide_from_suggestions': hideFromSuggestions,
+    'discover_visible_to_friends': discoverVisibleToFriends,
   };
 
   @override
@@ -13655,16 +14416,24 @@ final class SocialSettings {
       identical(this, other) ||
       other is SocialSettings &&
           profilingEnabled == other.profilingEnabled &&
-          hideFromSuggestions == other.hideFromSuggestions;
+          hideFromSuggestions == other.hideFromSuggestions &&
+          discoverVisibleToFriends == other.discoverVisibleToFriends;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[profilingEnabled, hideFromSuggestions]);
+  int get hashCode => Object.hashAll(<Object?>[
+    profilingEnabled,
+    hideFromSuggestions,
+    discoverVisibleToFriends,
+  ]);
 }
 
 /// Kısıtlar: minProperties: 1.
 final class SocialSettingsUpdate {
-  const SocialSettingsUpdate({this.profilingEnabled, this.hideFromSuggestions});
+  const SocialSettingsUpdate({
+    this.profilingEnabled,
+    this.hideFromSuggestions,
+    this.discoverVisibleToFriends,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -13685,16 +14454,27 @@ final class SocialSettingsUpdate {
             'SocialSettingsUpdate.hide_from_suggestions',
           ),
         },
+        discoverVisibleToFriends: switch (json['discover_visible_to_friends']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'SocialSettingsUpdate.discover_visible_to_friends',
+          ),
+        },
       );
 
   final bool? profilingEnabled;
 
   final bool? hideFromSuggestions;
 
+  final bool? discoverVisibleToFriends;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (profilingEnabled case final value?) 'profiling_enabled': value,
     if (hideFromSuggestions case final value?) 'hide_from_suggestions': value,
+    if (discoverVisibleToFriends case final value?)
+      'discover_visible_to_friends': value,
   };
 
   @override
@@ -13702,11 +14482,15 @@ final class SocialSettingsUpdate {
       identical(this, other) ||
       other is SocialSettingsUpdate &&
           profilingEnabled == other.profilingEnabled &&
-          hideFromSuggestions == other.hideFromSuggestions;
+          hideFromSuggestions == other.hideFromSuggestions &&
+          discoverVisibleToFriends == other.discoverVisibleToFriends;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[profilingEnabled, hideFromSuggestions]);
+  int get hashCode => Object.hashAll(<Object?>[
+    profilingEnabled,
+    hideFromSuggestions,
+    discoverVisibleToFriends,
+  ]);
 }
 
 final class SportsDetails {
@@ -14330,6 +15114,102 @@ final class TayfaCreateRequest {
     joinPolicy,
     clientRequestId,
   ]);
+}
+
+final class TayfaDiscover {
+  const TayfaDiscover({required this.state, required this.enabled});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaDiscover.fromJson(Map<String, Object?> json) => TayfaDiscover(
+    state: TayfaDiscoverState.fromWire(
+      _readString(json['state'], 'TayfaDiscover.state'),
+    ),
+    enabled: _readBool(json['enabled'], 'TayfaDiscover.enabled'),
+  );
+
+  /// `off` kapalı; `pending` incelemede; `listed` açık (Keşfet'te
+  /// görünebilir); `under_review` platform Keşfet'ten çıkardı, yeniden
+  /// inceleniyor (neden söylenmez); `rejected` kabul edilmedi.
+  final TayfaDiscoverState state;
+
+  /// Yöneticilerin Keşfet isteği.
+  final bool enabled;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'state': state.wire,
+    'enabled': enabled,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaDiscover &&
+          state == other.state &&
+          enabled == other.enabled;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[state, enabled]);
+}
+
+final class TayfaDiscoverInput {
+  const TayfaDiscoverInput({required this.enabled});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaDiscoverInput.fromJson(Map<String, Object?> json) =>
+      TayfaDiscoverInput(
+        enabled: _readBool(json['enabled'], 'TayfaDiscoverInput.enabled'),
+      );
+
+  final bool enabled;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'enabled': enabled};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaDiscoverInput && enabled == other.enabled;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[enabled]);
+}
+
+/// `off` kapalı; `pending` incelemede; `listed` açık (Keşfet'te
+/// görünebilir); `under_review` platform Keşfet'ten çıkardı, yeniden
+/// inceleniyor (neden söylenmez); `rejected` kabul edilmedi.
+enum TayfaDiscoverState {
+  off('off'),
+  pending('pending'),
+  listed('listed'),
+  underReview('under_review'),
+  rejected('rejected'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const TayfaDiscoverState(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('TayfaDiscoverState.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static TayfaDiscoverState fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 /// `standard`: tayfa. `instant`: anlık etkinliğin gizli, tek etkinlikli

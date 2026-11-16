@@ -15,7 +15,7 @@ WebSocket'iyle yapılır.
 ```
 Flutter uygulaması (Android / iOS)
   shell/      gezinme, tayfa geçişi, derin linkler, modül kayıtları
-  features/   tayfa · duyuru · etkinlik · soru_cevap · anket · sohbet · bildirim · profil · hesap · hosgeldin
+  features/   tayfa · duyuru · etkinlik · soru_cevap · anket · sohbet · bildirim · profil · hesap · hosgeldin · kesfet
   core/       ApiClient + üretilmiş uçlar · SessionStore · realtime · kuyruk · push · tema · çeviri
         │  HTTPS (REST, problem+json)  ·  WebSocket
         ▼

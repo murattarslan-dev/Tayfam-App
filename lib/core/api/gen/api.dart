@@ -11,6 +11,7 @@ export 'package:tayfam/core/api/gen/apis/client_config_api.dart';
 export 'package:tayfam/core/api/gen/apis/conversion_api.dart';
 export 'package:tayfam/core/api/gen/apis/deletion_api.dart';
 export 'package:tayfam/core/api/gen/apis/direct_messages_api.dart';
+export 'package:tayfam/core/api/gen/apis/discover_api.dart';
 export 'package:tayfam/core/api/gen/apis/event_series_api.dart';
 export 'package:tayfam/core/api/gen/apis/events_api.dart';
 export 'package:tayfam/core/api/gen/apis/instant_events_api.dart';

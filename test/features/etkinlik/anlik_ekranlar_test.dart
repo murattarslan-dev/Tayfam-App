@@ -116,6 +116,22 @@ Future<void> _davetAdiminaGel(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('anlık sihirbazın yer adımında "Halka açık yerde buluşur" yok '
+      '(anlık etkinlik Keşfet\'e çıkmaz; ADR-0027)', (tester) async {
+    ekranBoyutu(tester);
+    await _ac(tester, _tasima(), tema: ThemeMode.light, davetEdilen: []);
+    _n(tester).turSec(EventType.camp);
+    await tester.pumpAndSettle();
+    await _dokun(tester, _metin('etkinlik_ileri'));
+    _n(tester)
+      ..baslikAyarla('Göl kampı')
+      ..baslangicAyarla(ornekBaslangic);
+    await tester.pumpAndSettle();
+    await _dokun(tester, _metin('etkinlik_ileri'));
+    expect(_metin('etkinlik_il_etiketi'), findsOneWidget);
+    expect(_metin('etkinlik_halka_acik'), findsNothing);
+  });
+
   for (final tema in _temalar) {
     testWidgets('${tema.name}: anlık sihirbaz 6 adım, davet, açıldı ekranı', (
       tester,

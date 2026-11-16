@@ -409,6 +409,7 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.tayfaInvitation => BildirimKategorisi.arkadaslik,
   NotificationType.eventCancelled ||
   NotificationType.hikeOverdue ||
+  NotificationType.safetyAlert ||
   NotificationType.tayfaWarned ||
   NotificationType.tayfaArchived ||
   NotificationType.tayfaSuspended ||
@@ -449,6 +450,7 @@ String bildirimMetni(
   NotificationType.tayfaSuspended => m.bildirim_askiya_alindi,
   NotificationType.tayfaUnsuspended => m.bildirim_aski_kaldirildi,
   NotificationType.hikeOverdue => m.bildirim_yuruyus_donmedi(kisi),
+  NotificationType.safetyAlert => m.bildirim_guvenlik_donmedi(kisi),
   NotificationType.friendRequest => m.bildirim_arkadaslik_istegi(kisi),
   NotificationType.friendAccepted => m.bildirim_arkadaslik_kabul(kisi),
   NotificationType.tayfaInvitation => m.bildirim_tayfa_daveti(kisi),
@@ -475,7 +477,8 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.tayfaArchived ||
   NotificationType.tayfaSuspended ||
   NotificationType.tayfaUnsuspended => Icons.groups_outlined,
-  NotificationType.hikeOverdue => Icons.warning_amber_outlined,
+  NotificationType.hikeOverdue ||
+  NotificationType.safetyAlert => Icons.warning_amber_outlined,
   NotificationType.friendRequest ||
   NotificationType.friendAccepted => Icons.people_outline,
   NotificationType.tayfaInvitation => Icons.mail_outline,

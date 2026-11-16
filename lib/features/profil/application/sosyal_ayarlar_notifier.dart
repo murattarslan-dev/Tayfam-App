@@ -46,6 +46,13 @@ class SosyalAyarlarNotifier extends AsyncNotifier<SosyalAyarlarDurumu> {
   Future<Object?> beniOnermeAyarla({required bool acik}) =>
       _degistir(SocialSettingsUpdate(hideFromSuggestions: acik));
 
+  /// "Keşfet'te arkadaşlarım görebilsin"i [acik] yapar (Tayfam-Api
+  /// ADR-0033 §4; 30-kesfet-ve-guvenlik, karar 27). Profillemeden
+  /// bağımsızdır, onaysızdır. Başarıda `null`, aksi halde gösterilecek
+  /// hata.
+  Future<Object?> kesfetGorunurlukAyarla({required bool acik}) =>
+      _degistir(SocialSettingsUpdate(discoverVisibleToFriends: acik));
+
   Future<Object?> _degistir(SocialSettingsUpdate degisiklik) async {
     final simdiki = state.value;
     if (simdiki == null || simdiki.kaydediliyor) return null;

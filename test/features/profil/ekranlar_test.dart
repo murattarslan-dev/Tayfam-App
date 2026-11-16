@@ -80,10 +80,12 @@ void main() {
 
         expect(tester.takeException(), isNull);
         expect(find.text(ornekKod), findsOneWidget);
+        // 2× yazıda sayfa uzun (Gizlilik'te üç anahtar, ADR-0027).
         await tester.scrollUntilVisible(
           _metin('profil_hesabi_sil'),
           200,
           scrollable: find.byType(Scrollable).first,
+          maxScrolls: 100,
         );
         expect(tester.takeException(), isNull);
       });
@@ -403,6 +405,31 @@ void main() {
       expect('${istek.method} ${istek.yol}', sosyalAyarlarDegistirYolu);
       expect(istek.govde, {'hide_from_suggestions': true});
       expect(anahtarDegeri(tester, 'profil_beni_onerme').value, isTrue);
+    });
+
+    testWidgets('"Keşfet\'te arkadaşlarım görebilsin": varsayılan açık, '
+        'onaysız kaydediliyor ve profillemeden bağımsız', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarYolu: () => sosyalAyarlarJson(profilleme: false),
+        sosyalAyarlarDegistirYolu: () =>
+            sosyalAyarlarJson(profilleme: false, kesfet: false),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      expect(_metin('profil_kesfet_gorunurluk_aciklama'), findsOneWidget);
+      expect(anahtarDegeri(tester, 'profil_kesfet_gorunurluk').value, isTrue);
+      // Profilleme kapalıyken de değiştirilebilir.
+      expect(
+        anahtarDegeri(tester, 'profil_kesfet_gorunurluk').onChanged,
+        isNotNull,
+      );
+      await _kaydirVeDokun(tester, anahtar('profil_kesfet_gorunurluk'));
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(o.tasima.istekler.last.govde, {
+        'discover_visible_to_friends': false,
+      });
+      expect(anahtarDegeri(tester, 'profil_kesfet_gorunurluk').value, isFalse);
     });
 
     testWidgets('profillemeyi kapatmak onay istiyor; vazgeçilirse istek yok', (

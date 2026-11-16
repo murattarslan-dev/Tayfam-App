@@ -644,4 +644,144 @@ final class EventsApi {
       authenticated: true,
     );
   }
+
+  /// "Her şey yolunda mıydı?" cevabınız
+  ///
+  /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten
+  /// gelip üyeliği son 30 günde biten kişiye de açıktır (yalnızca
+  /// katıldığı etkinlik için).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/feedback`
+  Future<EventFeedback> getEventFeedback({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/feedback',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventFeedback.fromJson(jsonObject(response, 'getEventFeedback'));
+  }
+
+  /// "Her şey yolunda mıydı?" cevabını verir ya da değiştirir
+  ///
+  /// Yalnızca katılımı doğrulanmış (`not-attended`) katılımcı, "halka açık
+  /// yerde buluşur" işaretli yüz yüze etkinlikte, bitişten bitiş + 7 güne
+  /// kadar (`feedback-closed`). Serbest metin yoktur; anlatmak için şikâyet
+  /// akışını kullanın. Cevabı yalnızca siz görürsünüz; `serious` tayfayı
+  /// inceleme bitene kadar Keşfet'ten çıkarır ve tayfaya nedeni söylenmez.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/feedback`
+  Future<EventFeedback> setEventFeedback({
+    required String tayfaId,
+    required String eventId,
+    required EventFeedbackInput body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/feedback',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventFeedback.fromJson(jsonObject(response, 'setEventFeedback'));
+  }
+
+  /// Bu etkinlik için güvenlik kişiniz
+  ///
+  /// Seçilmemişse `contact` yoktur.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact`
+  Future<SafetyContact> getSafetyContact({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return SafetyContact.fromJson(jsonObject(response, 'getSafetyContact'));
+  }
+
+  /// Güvenlik kişisi seçer ya da değiştirir
+  ///
+  /// Etkinliğe `going` demiş olmalısınız (`event-not-going`); etkinlik yüz
+  /// yüze, iptal edilmemiş ve bitmemiş olmalı, alarm gitmemiş olmalı
+  /// (`safety-contact-closed`). Kişi kabul edilmiş arkadaşınız olmalı
+  /// (`not-friends`). Bitiş + `grace_minutes` geçtiğinde "Döndüm"
+  /// işaretlenmemişse yalnızca bu kişiye `safety_alert` bildirimi gider.
+  /// Kişi yalnızca sizi, etkinliğin başlangıç ve bitiş saatini, toleransı
+  /// ve "döndü / dönmedi / alarm gitti" durumunu görür
+  /// (`GET /v1/me/safety-shares`); tayfa, etkinlik başlığı ve yer görmez.
+  /// Seçildiğinde kişiye bildirim gitmez. Keşfet'ten bağımsızdır (sunucu
+  /// bayrağı `SAFETY_CONTACT_ENABLED`, varsayılan açık); bütün yüz yüze
+  /// etkinliklerde çalışır.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact`
+  Future<SafetyContact> setSafetyContact({
+    required String tayfaId,
+    required String eventId,
+    required SafetyContactInput body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return SafetyContact.fromJson(jsonObject(response, 'setSafetyContact'));
+  }
+
+  /// Güvenlik kişisini kaldırır
+  ///
+  /// Kaldırılacak bir şey yoksa da başarılıdır. Alarm gittikten sonra
+  /// kaldırılamaz (`safety-contact-closed`). Keşfet kapalıyken, tayfadan
+  /// ayrıldıktan sonra ya da etkinlik modülü kapalıyken de çalışır;
+  /// yalnızca kendi kaydınıza dokunur.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact`
+  Future<void> clearSafetyContact({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// "Döndüm": güvenlik alarmını durdurur
+  ///
+  /// Güvenlik kişisi seçilmemişse `safety-contact-not-found`. Tekrar
+  /// çağrı ilk zamanı korur. Keşfet kapalıyken, susturulmuşken, tayfadan
+  /// ayrıldıktan sonra ya da etkinlik modülü kapalıyken de çalışır;
+  /// yalnızca kendi kaydınıza dokunur.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact/return`
+  Future<SafetyContact> markReturned({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate:
+          '/v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact/return',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return SafetyContact.fromJson(jsonObject(response, 'markReturned'));
+  }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/kabuk_katmanlari.dart';
+import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/moduller/uye_islemleri.dart';
@@ -14,6 +15,7 @@ import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
@@ -80,6 +82,11 @@ final List<Override> kayitOverridelari = [
   kayitDavetProvider.overrideWith(KabukKayitDavetNotifier.new),
   // Girişten sonra profil tamamlama formu (issue #186).
   kabukKatmanlariProvider.overrideWithValue(const [profilTamamlamaKatmani]),
+  // Keşfet ve güvenlik ağı (ADR-0027): girişlerin görünürlüğü, tayfa
+  // ayarlarındaki bölüm ve etkinlik detayındaki kartlar.
+  kesfetGorunurProvider.overrideWith((ref) => ref.watch(kesfetAcikProvider)),
+  tayfaAyarEkBolumuProvider.overrideWithValue(_tayfaKesfetBolumu),
+  etkinlikGuvenlikYuvasiProvider.overrideWithValue(_etkinlikGuvenlikKartlari),
 ];
 
 /// Tayfa ayarları ekranına başka paketlerin eklediği girişler; rotaları
@@ -114,3 +121,12 @@ Future<void> _birebirMesajSikayeti(
   mesajMetni: metin,
   fotograf: fotograf,
 );
+
+Widget _tayfaKesfetBolumu(BuildContext context, String tayfaId) =>
+    TayfaKesfetBolumu(tayfaId: tayfaId);
+
+Widget _etkinlikGuvenlikKartlari(
+  BuildContext context,
+  Event etkinlik,
+  DateTime simdi,
+) => EtkinlikGuvenlikKartlari(etkinlik: etkinlik, simdi: simdi);

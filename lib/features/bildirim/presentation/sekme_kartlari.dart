@@ -19,6 +19,11 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// etkinliğin adı, tayfa ve zaman; "Yoklamayı aç" etkinliği açar.
 /// Okununca kart kalkar, bildirim listedeki yerine döner.
 ///
+/// Güvenlik kişisi alarmı (`safety_alert`; 30-kesfet-ve-guvenlik, karar
+/// 22) aynı karttır, ama yalnızca kişinin adı ve zaman vardır (tayfa,
+/// etkinlik ve yer güvenlik kişisine gösterilmez); "Durumu gör"
+/// paylaşımlar ekranını açar.
+///
 /// Ekran okuyucu kartı uyarı olarak duyurur (`liveRegion`); kartın tamamı
 /// tek düğmedir.
 class GuvenlikUyarisiKarti extends ConsumerWidget {
@@ -39,18 +44,24 @@ class GuvenlikUyarisiKarti extends ConsumerWidget {
     final r = context.renkler;
     final yazi = context.yazi;
     final kisi = bildirimKisiAdi(context, ref, bildirim);
-    final tayfaId = bildirim.tayfaId;
-    final tayfaAdi = tayfaId == null
-        ? m.tayfa_adi_bilinmiyor
-        : ref.watch(tayfaAdiProvider(tayfaId)) ?? m.tayfa_adi_bilinmiyor;
-    final etkinlik = uyariEtkinligi(bildirim);
-    final etkinlikAdi = etkinlik == null
-        ? null
-        : ref.watch(uyariEtkinligiProvider(etkinlik)).value;
     final zaman = bildirimZamani(m, bildirim.createdAt, simdi);
-    final ayrinti = etkinlikAdi == null || etkinlikAdi.isEmpty
-        ? m.bildirim_uyari_ayrinti_kisa(tayfaAdi, zaman)
-        : m.bildirim_uyari_ayrinti(etkinlikAdi, tayfaAdi, zaman);
+    final guvenlikKisisi = bildirim.type == NotificationType.safetyAlert;
+    final String ayrinti;
+    if (guvenlikKisisi) {
+      ayrinti = zaman;
+    } else {
+      final tayfaId = bildirim.tayfaId;
+      final tayfaAdi = tayfaId == null
+          ? m.tayfa_adi_bilinmiyor
+          : ref.watch(tayfaAdiProvider(tayfaId)) ?? m.tayfa_adi_bilinmiyor;
+      final etkinlik = uyariEtkinligi(bildirim);
+      final etkinlikAdi = etkinlik == null
+          ? null
+          : ref.watch(uyariEtkinligiProvider(etkinlik)).value;
+      ayrinti = etkinlikAdi == null || etkinlikAdi.isEmpty
+          ? m.bildirim_uyari_ayrinti_kisa(tayfaAdi, zaman)
+          : m.bildirim_uyari_ayrinti(etkinlikAdi, tayfaAdi, zaman);
+    }
     const koseler = TayfamRadii.kartKoseleri;
 
     return Semantics(
@@ -86,7 +97,9 @@ class GuvenlikUyarisiKarti extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          m.bildirim_yuruyus_donmedi(kisi),
+                          guvenlikKisisi
+                              ? m.bildirim_guvenlik_donmedi(kisi)
+                              : m.bildirim_yuruyus_donmedi(kisi),
                           style: yazi.titleMedium?.copyWith(
                             color: r.narMetin,
                             fontWeight: TayfamTypography.buyukBaslikAgirligi,
@@ -103,7 +116,9 @@ class GuvenlikUyarisiKarti extends ConsumerWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                m.bildirim_yoklamayi_ac,
+                                guvenlikKisisi
+                                    ? m.bildirim_guvenlik_durumu_gor
+                                    : m.bildirim_yoklamayi_ac,
                                 style: yazi.labelLarge?.copyWith(
                                   color: r.narMetin,
                                 ),

@@ -750,7 +750,7 @@ final class MeApi {
     return SocialSettings.fromJson(jsonObject(response, 'getSocialSettings'));
   }
 
-  /// Profilleme ve "Beni önerme" ayarlarını değiştirir
+  /// Profilleme, "Beni önerme" ve Keşfet görünürlüğü ayarlarını değiştirir
   ///
   /// Gövdedeki alanlar değişir, olmayanlar olduğu gibi kalır; en az bir
   /// alan gerekir (yoksa `invalid-request`).
@@ -764,6 +764,10 @@ final class MeApi {
   /// **Beni önerme** (`hide_from_suggestions`, varsayılan kapalı):
   /// açınca kimseye önerilmezsiniz ve sizin önerildiğiniz açık öneriler
   /// geri çekilir; siz öneri almaya devam edersiniz.
+  ///
+  /// **Keşfet'te arkadaşlarım görebilsin** (`discover_visible_to_friends`,
+  /// varsayılan açık): kapatınca etkinliklere katılımınız arkadaşlarınızın
+  /// Keşfet akışında gösterilmez ve sayılmaz (hemen).
   ///
   /// Ayarı kapatıp açmak haftalık öneri sınırını ve daha önce kimin
   /// önerildiğini sıfırlamaz; kapattığınız öneriler de hatırlanır.
@@ -901,6 +905,28 @@ final class MeApi {
       expect: ResponseKind.none,
       authenticated: true,
     );
+  }
+
+  /// Sizi güvenlik kişisi seçenlerin etkinlikleri
+  ///
+  /// Bitişinden 24 saat geçmemiş ya da alarmı son 7 günde gitmiş
+  /// etkinlikler, en yeni başlangıç önce (en fazla 50). Paylaşım yalnızca
+  /// hâlâ geçerliyse görünür: arkadaşlık sürüyor, engel yok, katılımcı
+  /// tayfanın aktif üyesi ve `going`; etkinlik ve tayfa silinmemiş, iptal
+  /// edilmemiş ya da askıda değil (alarm gittiyse ve katılımcı check-in
+  /// yaptıysa kalır). Yalnızca en az bilgi: kim, saat aralığı
+  /// (başlangıç, bitiş, tolerans) ve durum. Tayfa, etkinlik başlığı,
+  /// buluşma yeri, il/ilçe ve koordinat yoktur.
+  ///
+  /// `GET /v1/me/safety-shares`
+  Future<SafetyShareList> listSafetyShares() async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/me/safety-shares',
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return SafetyShareList.fromJson(jsonObject(response, 'listSafetyShares'));
   }
 
   /// Size gelen cevaplanmamış davetler, yeniden eskiye

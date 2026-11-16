@@ -15,6 +15,7 @@ import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
+import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
@@ -181,6 +182,8 @@ class _Detay extends ConsumerWidget {
     final ayrintilar = _ayrintiSatirlari(m, etkinlik);
     final cevrimici = etkinlik.mode == EventMode.online;
     final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
+    final guvenlik = ref.watch(etkinlikGuvenlikYuvasiProvider);
+    final simdi = ref.watch(etkinlikSaatiProvider)();
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
@@ -203,6 +206,8 @@ class _Detay extends ConsumerWidget {
                   _IptalKutusu(gerekce: gerekce),
                 ],
                 VarisBolumu(anahtar: anahtar, etkinlik: etkinlik),
+                // Güvenlik kişisi ve "Her şey yolunda mıydı?" (ADR-0027).
+                if (guvenlik != null) guvenlik(context, etkinlik, simdi),
                 if (sohbet != null)
                   sohbet(
                     context,
