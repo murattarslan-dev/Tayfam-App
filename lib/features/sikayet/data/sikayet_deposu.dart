@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/gen/apis/announcements_api.dart';
 import 'package:tayfam/core/api/gen/apis/answers_api.dart';
+import 'package:tayfam/core/api/gen/apis/channels_api.dart';
 import 'package:tayfam/core/api/gen/apis/events_api.dart';
 import 'package:tayfam/core/api/gen/apis/me_api.dart';
 import 'package:tayfam/core/api/gen/apis/polls_api.dart';
@@ -36,7 +37,8 @@ final class SikayetDeposu {
       _etkinlikler = EventsApi(istemci),
       _sorular = QuestionsApi(istemci),
       _cevaplar = AnswersApi(istemci),
-      _anketler = PollsApi(istemci);
+      _anketler = PollsApi(istemci),
+      _kanallar = ChannelsApi(istemci);
 
   final ReportsApi _sikayetler;
   final MeApi _ben;
@@ -45,6 +47,7 @@ final class SikayetDeposu {
   final QuestionsApi _sorular;
   final AnswersApi _cevaplar;
   final PollsApi _anketler;
+  final ChannelsApi _kanallar;
 
   /// `POST /v1/tayfas/{tayfa_id}/reports`. Aynı hedefin ikinci şikâyeti
   /// ilk şikâyeti döndürür (`200`); yeni kayıt açılmaz.
@@ -91,34 +94,53 @@ final class SikayetDeposu {
   );
 
   /// Şikâyet edilen içeriği moderatör olarak siler (duyuru, soru, cevap,
-  /// anket). Başka türler için [ArgumentError].
-  Future<void> icerigiKaldir(String tayfaId, ReportTargetType tur, String id) =>
-      switch (tur) {
-        ReportTargetType.announcement => _duyurular.deleteAnnouncement(
-          tayfaId: tayfaId,
-          announcementId: id,
-        ),
-        ReportTargetType.question => _sorular.deleteQuestion(
-          tayfaId: tayfaId,
-          questionId: id,
-        ),
-        ReportTargetType.answer => _cevaplar.deleteAnswer(
-          tayfaId: tayfaId,
-          answerId: id,
-        ),
-        ReportTargetType.poll => _anketler.deletePoll(
-          tayfaId: tayfaId,
-          pollId: id,
-        ),
-        _ => throw ArgumentError.value(tur.name, 'tur'),
-      };
+  /// anket) ya da kanal mesajını gizler ([kanalId] ile; 30 gün geri
+  /// alınabilir). Başka türler için [ArgumentError].
+  Future<void> icerigiKaldir(
+    String tayfaId,
+    ReportTargetType tur,
+    String id, {
+    String? kanalId,
+  }) => switch (tur) {
+    ReportTargetType.channelMessage when kanalId != null =>
+      _kanallar.deleteChannelMessage(
+        tayfaId: tayfaId,
+        channelId: kanalId,
+        messageId: id,
+      ),
+    ReportTargetType.announcement => _duyurular.deleteAnnouncement(
+      tayfaId: tayfaId,
+      announcementId: id,
+    ),
+    ReportTargetType.question => _sorular.deleteQuestion(
+      tayfaId: tayfaId,
+      questionId: id,
+    ),
+    ReportTargetType.answer => _cevaplar.deleteAnswer(
+      tayfaId: tayfaId,
+      answerId: id,
+    ),
+    ReportTargetType.poll => _anketler.deletePoll(tayfaId: tayfaId, pollId: id),
+    _ => throw ArgumentError.value(tur.name, 'tur'),
+  };
 
   /// Moderasyonla gizlenen içeriği geri alır (`…/restoration`; duyuru,
   /// soru, cevap). 30 gün içinde ve yazarın rolü sizinkinden düşükse;
   /// görünen içerik için de başarılıdır. Başka türler için
   /// [ArgumentError].
-  Future<void> geriAl(String tayfaId, ReportTargetType tur, String id) async {
+  Future<void> geriAl(
+    String tayfaId,
+    ReportTargetType tur,
+    String id, {
+    String? kanalId,
+  }) async {
     switch (tur) {
+      case ReportTargetType.channelMessage when kanalId != null:
+        await _kanallar.restoreChannelMessage(
+          tayfaId: tayfaId,
+          channelId: kanalId,
+          messageId: id,
+        );
       case ReportTargetType.announcement:
         await _duyurular.restoreAnnouncement(
           tayfaId: tayfaId,

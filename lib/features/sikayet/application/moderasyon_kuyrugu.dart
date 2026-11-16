@@ -13,21 +13,30 @@ typedef KuyrukAnahtari = ({String tayfaId, bool acik});
 /// Önizlemenin anahtarı: tayfa, içerik türü ve kimliği.
 typedef HedefAnahtari = ({String tayfaId, ReportTargetType tur, String id});
 
-/// Moderatörün kaldırabildiği içerik türleri (duyuru, soru, cevap, anket).
+/// Moderatörün kaldırabildiği içerik türleri (duyuru, soru, cevap, anket,
+/// kanal mesajı). Kanal mesajında şikâyetin `channel_id`'si gerekir
+/// (kanalı okuyamayan moderatörde yoktur; Tayfam-Api ADR-0031 §6).
 const Set<ReportTargetType> kaldirilabilirTurler = {
   ReportTargetType.announcement,
   ReportTargetType.question,
   ReportTargetType.answer,
   ReportTargetType.poll,
+  ReportTargetType.channelMessage,
 };
 
-/// Geri alma ucu olan içerik türleri (duyuru, soru, cevap). Kanal mesajı
-/// sözleşmede şikâyet edilemediği için kuyrukta görünmez.
+/// Geri alma ucu olan içerik türleri (duyuru, soru, cevap, kanal mesajı).
 const Set<ReportTargetType> geriAlinabilirTurler = {
   ReportTargetType.announcement,
   ReportTargetType.question,
   ReportTargetType.answer,
+  ReportTargetType.channelMessage,
 };
+
+/// Şikâyetin içeriğine moderatör olarak dokunulabilir mi: kanal mesajında
+/// kanal kimliği bilinmeli (kanalı okuyamayan moderatör mesajı açamaz ve
+/// gizleyemez; yetkiyi yine sunucu verir).
+bool icerigeErisilebilir(ModerationReport s) =>
+    s.targetType != ReportTargetType.channelMessage || s.channelId != null;
 
 /// Önizlemesi okunabilen türler.
 const Set<ReportTargetType> onizlenebilirTurler = {
@@ -114,6 +123,7 @@ class ModerasyonKuyruguNotifier extends SayfaliListeNotifier<ModerationReport> {
           anahtar.tayfaId,
           sikayet.targetType,
           sikayet.targetId,
+          kanalId: sikayet.channelId,
         );
         _onizlemeyiYenile(sikayet);
         await depo.sonuclandir(
@@ -129,7 +139,12 @@ class ModerasyonKuyruguNotifier extends SayfaliListeNotifier<ModerationReport> {
   Future<Object?> geriAl(ModerationReport sikayet) => _islem(ref, () async {
     await ref
         .read(sikayetDeposuProvider)
-        .geriAl(anahtar.tayfaId, sikayet.targetType, sikayet.targetId);
+        .geriAl(
+          anahtar.tayfaId,
+          sikayet.targetType,
+          sikayet.targetId,
+          kanalId: sikayet.channelId,
+        );
     _onizlemeyiYenile(sikayet);
   });
 
