@@ -1267,6 +1267,200 @@ final class AttendeeList {
       Object.hashAll(<Object?>[_deepHash(attendees), nextPageToken]);
 }
 
+final class AvailabilityDay {
+  const AvailabilityDay({
+    required this.date,
+    required this.slots,
+    this.note,
+    required this.updatedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AvailabilityDay.fromJson(Map<String, Object?> json) =>
+      AvailabilityDay(
+        date: _readString(json['date'], 'AvailabilityDay.date'),
+        slots: List<DaySlot>.unmodifiable(
+          _readList(json['slots'], 'AvailabilityDay.slots').map(
+            (Object? e0) =>
+                DaySlot.fromWire(_readString(e0, 'AvailabilityDay.slots')),
+          ),
+        ),
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'AvailabilityDay.note'),
+        },
+        updatedAt: _readDateTime(
+          json['updated_at'],
+          'AvailabilityDay.updated_at',
+        ),
+      );
+
+  /// Takvim günü (Europe/Istanbul).
+  ///
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  final String date;
+
+  /// Sabah, öğleden sonra, akşam sırasıyla; ya da yalnızca `all_day`.
+  ///
+  /// Kısıtlar: minItems: 1; maxItems: 3.
+  final List<DaySlot> slots;
+
+  /// Not yoksa alan yoktur.
+  ///
+  /// Kısıtlar: maxLength: 60.
+  final String? note;
+
+  final DateTime updatedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'date': date,
+    'slots': <Object?>[for (final e0 in slots) e0.wire],
+    if (note case final value?) 'note': value,
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AvailabilityDay &&
+          date == other.date &&
+          _deepEquals(slots, other.slots) &&
+          note == other.note &&
+          updatedAt == other.updatedAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[date, _deepHash(slots), note, updatedAt]);
+}
+
+final class AvailabilityDayList {
+  const AvailabilityDayList({required this.days});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AvailabilityDayList.fromJson(Map<String, Object?> json) =>
+      AvailabilityDayList(
+        days: List<AvailabilityDay>.unmodifiable(
+          _readList(json['days'], 'AvailabilityDayList.days').map(
+            (Object? e0) => AvailabilityDay.fromJson(
+              _readObject(e0, 'AvailabilityDayList.days'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 31.
+  final List<AvailabilityDay> days;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'days': <Object?>[for (final e0 in days) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AvailabilityDayList && _deepEquals(days, other.days);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(days)]);
+}
+
+final class AvailabilityInput {
+  const AvailabilityInput({required this.slots, this.note});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AvailabilityInput.fromJson(Map<String, Object?> json) =>
+      AvailabilityInput(
+        slots: List<DaySlot>.unmodifiable(
+          _readList(json['slots'], 'AvailabilityInput.slots').map(
+            (Object? e0) =>
+                DaySlot.fromWire(_readString(e0, 'AvailabilityInput.slots')),
+          ),
+        ),
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'AvailabilityInput.note'),
+        },
+      );
+
+  /// Tekrar eden dilim yok sayılır. `all_day` tek başına.
+  ///
+  /// Kısıtlar: minItems: 1; maxItems: 4.
+  final List<DaySlot> slots;
+
+  /// İsteğe bağlı, en fazla 60 karakter. Kontrol karakteri (satır sonu
+  /// dahil), satır/paragraf ayırıcı (U+2028, U+2029), yön kontrolü
+  /// (U+202A–U+202E, U+2066–U+2069) ve görünmez karakter (U+200B
+  /// gibi) içeremez; emoji dizileri (U+200D) serbesttir. Baştaki ve
+  /// sondaki boşluk kırpılır.
+  ///
+  /// Kısıtlar: maxLength: 60.
+  final String? note;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'slots': <Object?>[for (final e0 in slots) e0.wire],
+    if (note case final value?) 'note': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AvailabilityInput &&
+          _deepEquals(slots, other.slots) &&
+          note == other.note;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(slots), note]);
+}
+
+final class AvailabilitySummary {
+  const AvailabilitySummary({required this.date, required this.slots});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AvailabilitySummary.fromJson(Map<String, Object?> json) =>
+      AvailabilitySummary(
+        date: _readString(json['date'], 'AvailabilitySummary.date'),
+        slots: List<DaySlot>.unmodifiable(
+          _readList(json['slots'], 'AvailabilitySummary.slots').map(
+            (Object? e0) =>
+                DaySlot.fromWire(_readString(e0, 'AvailabilitySummary.slots')),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  final String date;
+
+  /// Kısıtlar: minItems: 1; maxItems: 3.
+  final List<DaySlot> slots;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'date': date,
+    'slots': <Object?>[for (final e0 in slots) e0.wire],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AvailabilitySummary &&
+          date == other.date &&
+          _deepEquals(slots, other.slots);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[date, _deepHash(slots)]);
+}
+
 final class AvatarRequest {
   const AvatarRequest({required this.uploadId});
 
@@ -3777,6 +3971,37 @@ enum DataExportStatus {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static DataExportStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Günün kaba bir bölümü; saat değil. `all_day` başka dilimle birlikte olmaz.
+enum DaySlot {
+  morning('morning'),
+  afternoon('afternoon'),
+  evening('evening'),
+  allDay('all_day'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const DaySlot(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('DaySlot.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static DaySlot fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;
@@ -6939,6 +7164,175 @@ enum EventMode {
   }
 }
 
+final class EventPhoto {
+  const EventPhoto({
+    required this.id,
+    required this.eventId,
+    required this.uploaderId,
+    required this.uploadId,
+    this.caption,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPhoto.fromJson(Map<String, Object?> json) => EventPhoto(
+    id: _readString(json['id'], 'EventPhoto.id'),
+    eventId: _readString(json['event_id'], 'EventPhoto.event_id'),
+    uploaderId: _readString(json['uploader_id'], 'EventPhoto.uploader_id'),
+    uploadId: _readString(json['upload_id'], 'EventPhoto.upload_id'),
+    caption: switch (json['caption']) {
+      null => null,
+      final Object v => _readString(v, 'EventPhoto.caption'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'EventPhoto.created_at'),
+  );
+
+  final String id;
+
+  final String eventId;
+
+  final String uploaderId;
+
+  /// Linkleri `POST /v1/media/urls`.
+  final String uploadId;
+
+  /// Açıklama yoksa alan yoktur.
+  final String? caption;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'event_id': eventId,
+    'uploader_id': uploaderId,
+    'upload_id': uploadId,
+    if (caption case final value?) 'caption': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPhoto &&
+          id == other.id &&
+          eventId == other.eventId &&
+          uploaderId == other.uploaderId &&
+          uploadId == other.uploadId &&
+          caption == other.caption &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    eventId,
+    uploaderId,
+    uploadId,
+    caption,
+    createdAt,
+  ]);
+}
+
+final class EventPhotoCreateRequest {
+  const EventPhotoCreateRequest({
+    required this.uploadId,
+    this.caption,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPhotoCreateRequest.fromJson(Map<String, Object?> json) =>
+      EventPhotoCreateRequest(
+        uploadId: _readString(
+          json['upload_id'],
+          'EventPhotoCreateRequest.upload_id',
+        ),
+        caption: switch (json['caption']) {
+          null => null,
+          final Object v => _readString(v, 'EventPhotoCreateRequest.caption'),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'EventPhotoCreateRequest.client_request_id',
+        ),
+      );
+
+  /// Kendi hazır `event_photo` yüklemeniz (bu tayfa için, başka içeriğe
+  /// bağlanmamış). Konum bilgisi (EXIF/GPS) işlemede silinmiştir.
+  final String uploadId;
+
+  /// İsteğe bağlı; boşluklar kırpılır, boş ise yok sayılır.
+  ///
+  /// Kısıtlar: maxLength: 200.
+  final String? caption;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'upload_id': uploadId,
+    if (caption case final value?) 'caption': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPhotoCreateRequest &&
+          uploadId == other.uploadId &&
+          caption == other.caption &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[uploadId, caption, clientRequestId]);
+}
+
+final class EventPhotoList {
+  const EventPhotoList({required this.photos, this.nextPageToken});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPhotoList.fromJson(Map<String, Object?> json) => EventPhotoList(
+    photos: List<EventPhoto>.unmodifiable(
+      _readList(json['photos'], 'EventPhotoList.photos').map(
+        (Object? e0) =>
+            EventPhoto.fromJson(_readObject(e0, 'EventPhotoList.photos')),
+      ),
+    ),
+    nextPageToken: switch (json['next_page_token']) {
+      null => null,
+      final Object v => _readString(v, 'EventPhotoList.next_page_token'),
+    },
+  );
+
+  final List<EventPhoto> photos;
+
+  final String? nextPageToken;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'photos': <Object?>[for (final e0 in photos) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPhotoList &&
+          _deepEquals(photos, other.photos) &&
+          nextPageToken == other.nextPageToken;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(photos), nextPageToken]);
+}
+
 final class EventSeries {
   const EventSeries({
     required this.id,
@@ -7769,6 +8163,7 @@ final class Friend {
     required this.state,
     required this.requestedAt,
     this.acceptedAt,
+    this.nextAvailable,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -7787,6 +8182,12 @@ final class Friend {
       null => null,
       final Object v => _readDateTime(v, 'Friend.accepted_at'),
     },
+    nextAvailable: switch (json['next_available']) {
+      null => null,
+      final Object v => AvailabilitySummary.fromJson(
+        _readObject(v, 'Friend.next_available'),
+      ),
+    },
   );
 
   final String userId;
@@ -7802,6 +8203,13 @@ final class Friend {
 
   final DateTime? acceptedAt;
 
+  /// "Boşum" rozeti (#207): arkadaşın önümüzdeki 7 takvim günündeki
+  /// (bugün dahil, bugün … bugün+6, Europe/Istanbul) en yakın boş
+  /// günü, not olmadan. Yalnızca `GET /v1/me/friends`'te ve bu
+  /// pencerede boş günü varsa döner; 30 günün tamamı
+  /// `GET /v1/users/{user_id}/availability` ile görülür.
+  final AvailabilitySummary? nextAvailable;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'user_id': userId,
@@ -7811,6 +8219,7 @@ final class Friend {
     'requested_at': requestedAt.toUtc().toIso8601String(),
     if (acceptedAt case final value?)
       'accepted_at': value.toUtc().toIso8601String(),
+    if (nextAvailable case final value?) 'next_available': value.toJson(),
   };
 
   @override
@@ -7822,7 +8231,8 @@ final class Friend {
           avatarUploadId == other.avatarUploadId &&
           state == other.state &&
           requestedAt == other.requestedAt &&
-          acceptedAt == other.acceptedAt;
+          acceptedAt == other.acceptedAt &&
+          nextAvailable == other.nextAvailable;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -7832,6 +8242,7 @@ final class Friend {
     state,
     requestedAt,
     acceptedAt,
+    nextAvailable,
   ]);
 }
 
@@ -7903,6 +8314,107 @@ enum FriendState {
     }
     return unknown;
   }
+}
+
+/// Arkadaşlık puanı, ortak etkinlik sayısı ve gerekçe bilinçli olarak yoktur (ADR-0030).
+final class FriendSuggestion {
+  const FriendSuggestion({
+    required this.userId,
+    required this.displayName,
+    this.avatarUploadId,
+    required this.suggestedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory FriendSuggestion.fromJson(Map<String, Object?> json) =>
+      FriendSuggestion(
+        userId: _readString(json['user_id'], 'FriendSuggestion.user_id'),
+        displayName: _readString(
+          json['display_name'],
+          'FriendSuggestion.display_name',
+        ),
+        avatarUploadId: switch (json['avatar_upload_id']) {
+          null => null,
+          final Object v => _readString(v, 'FriendSuggestion.avatar_upload_id'),
+        },
+        suggestedAt: _readDateTime(
+          json['suggested_at'],
+          'FriendSuggestion.suggested_at',
+        ),
+      );
+
+  final String userId;
+
+  final String displayName;
+
+  final String? avatarUploadId;
+
+  final DateTime suggestedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'display_name': displayName,
+    if (avatarUploadId case final value?) 'avatar_upload_id': value,
+    'suggested_at': suggestedAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FriendSuggestion &&
+          userId == other.userId &&
+          displayName == other.displayName &&
+          avatarUploadId == other.avatarUploadId &&
+          suggestedAt == other.suggestedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    userId,
+    displayName,
+    avatarUploadId,
+    suggestedAt,
+  ]);
+}
+
+final class FriendSuggestionList {
+  const FriendSuggestionList({required this.suggestions});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory FriendSuggestionList.fromJson(Map<String, Object?> json) =>
+      FriendSuggestionList(
+        suggestions: List<FriendSuggestion>.unmodifiable(
+          _readList(
+            json['suggestions'],
+            'FriendSuggestionList.suggestions',
+          ).map(
+            (Object? e0) => FriendSuggestion.fromJson(
+              _readObject(e0, 'FriendSuggestionList.suggestions'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 10.
+  final List<FriendSuggestion> suggestions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'suggestions': <Object?>[for (final e0 in suggestions) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FriendSuggestionList &&
+          _deepEquals(suggestions, other.suggestions);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(suggestions)]);
 }
 
 final class GamingDetails {
@@ -10076,6 +10588,9 @@ final class Notification {
   /// veri dışa aktarmanız 7 gün indirilebilir; hedef `data_export`,
   /// `tayfa_id` ve `actor_id` yoktur; push çeviri anahtarları
   /// `push_data_export_ready_title` ve `push_data_export_ready_body`).
+  /// `friend_suggestion` (arkadaş önerisi; `target_id` önerilen kişi,
+  /// `tayfa_id` ve `actor_id` yoktur; yalnızca uygulama içi, push
+  /// gitmez; açık öneriler `GET /v1/me/friend-suggestions`).
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -10120,6 +10635,13 @@ final class Notification {
   /// `expired` artık bilinmiyor. Liste alınırken core'dan hesaplanır,
   /// bildirime yazılmaz; yalnızca alıcıya döner, kimin geri çektiği
   /// söylenmez. O an hesaplanamazsa alan yoktur.
+  ///
+  /// `friend_suggestion` (issue #208, ADR-0030): `pending` öneri hâlâ
+  /// geçerli ("Arkadaş ekle" / "Kapat" gösterilir); `accepted`
+  /// arkadaş oldunuz ya da istek gönderildi; `declined` siz
+  /// kapattınız; `expired` öneri geri çekildi ya da artık geçerli
+  /// değil (neden söylenmez). İstemci `pending` olmayan öneri
+  /// bildirimini göstermez.
   final NotificationResolution? resolution;
 
   final bool read;
@@ -10479,6 +11001,13 @@ enum NotificationPreferenceScopeType {
 /// `expired` artık bilinmiyor. Liste alınırken core'dan hesaplanır,
 /// bildirime yazılmaz; yalnızca alıcıya döner, kimin geri çektiği
 /// söylenmez. O an hesaplanamazsa alan yoktur.
+///
+/// `friend_suggestion` (issue #208, ADR-0030): `pending` öneri hâlâ
+/// geçerli ("Arkadaş ekle" / "Kapat" gösterilir); `accepted`
+/// arkadaş oldunuz ya da istek gönderildi; `declined` siz
+/// kapattınız; `expired` öneri geri çekildi ya da artık geçerli
+/// değil (neden söylenmez). İstemci `pending` olmayan öneri
+/// bildirimini göstermez.
 enum NotificationResolution {
   pending('pending'),
   accepted('accepted'),
@@ -10576,6 +11105,9 @@ enum NotificationTargetType {
 /// veri dışa aktarmanız 7 gün indirilebilir; hedef `data_export`,
 /// `tayfa_id` ve `actor_id` yoktur; push çeviri anahtarları
 /// `push_data_export_ready_title` ve `push_data_export_ready_body`).
+/// `friend_suggestion` (arkadaş önerisi; `target_id` önerilen kişi,
+/// `tayfa_id` ve `actor_id` yoktur; yalnızca uygulama içi, push
+/// gitmez; açık öneriler `GET /v1/me/friend-suggestions`).
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -10599,6 +11131,7 @@ enum NotificationType {
   dmRequest('dm_request'),
   dmMessage('dm_message'),
   dataExportReady('data_export_ready'),
+  friendSuggestion('friend_suggestion'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -12221,6 +12754,7 @@ enum ReportTargetType {
   poll('poll'),
   fishingCatch('fishing_catch'),
   dmMessage('dm_message'),
+  eventPhoto('event_photo'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -12743,6 +13277,97 @@ enum SocialAccountPlatform {
     }
     return unknown;
   }
+}
+
+final class SocialSettings {
+  const SocialSettings({
+    required this.profilingEnabled,
+    required this.hideFromSuggestions,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SocialSettings.fromJson(Map<String, Object?> json) => SocialSettings(
+    profilingEnabled: _readBool(
+      json['profiling_enabled'],
+      'SocialSettings.profiling_enabled',
+    ),
+    hideFromSuggestions: _readBool(
+      json['hide_from_suggestions'],
+      'SocialSettings.hide_from_suggestions',
+    ),
+  );
+
+  /// "Profilleme": ortak katılımdan arkadaşlık puanı hesaplanır ve öneri yapılır.
+  final bool profilingEnabled;
+
+  /// "Beni önerme": kimseye önerilmezsiniz.
+  final bool hideFromSuggestions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'profiling_enabled': profilingEnabled,
+    'hide_from_suggestions': hideFromSuggestions,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SocialSettings &&
+          profilingEnabled == other.profilingEnabled &&
+          hideFromSuggestions == other.hideFromSuggestions;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[profilingEnabled, hideFromSuggestions]);
+}
+
+/// Kısıtlar: minProperties: 1.
+final class SocialSettingsUpdate {
+  const SocialSettingsUpdate({this.profilingEnabled, this.hideFromSuggestions});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SocialSettingsUpdate.fromJson(Map<String, Object?> json) =>
+      SocialSettingsUpdate(
+        profilingEnabled: switch (json['profiling_enabled']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'SocialSettingsUpdate.profiling_enabled',
+          ),
+        },
+        hideFromSuggestions: switch (json['hide_from_suggestions']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'SocialSettingsUpdate.hide_from_suggestions',
+          ),
+        },
+      );
+
+  final bool? profilingEnabled;
+
+  final bool? hideFromSuggestions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (profilingEnabled case final value?) 'profiling_enabled': value,
+    if (hideFromSuggestions case final value?) 'hide_from_suggestions': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SocialSettingsUpdate &&
+          profilingEnabled == other.profilingEnabled &&
+          hideFromSuggestions == other.hideFromSuggestions;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[profilingEnabled, hideFromSuggestions]);
 }
 
 final class SportsDetails {
@@ -13711,7 +14336,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 2; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover` ve `catch_photo` için zorunlu; `avatar`'da verilmez.
+  /// `cover`, `catch_photo` ve `event_photo` için zorunlu; `avatar`'da verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -13783,11 +14408,14 @@ final class UploadCreated {
   int get hashCode => Object.hashAll(<Object?>[upload, _deepHash(targets)]);
 }
 
-/// `cover` tayfa ya da etkinlik kapağıdır.
+/// `cover` tayfa ya da etkinlik kapağıdır. `event_photo` etkinlik
+/// albümünün fotoğrafıdır (`POST .../events/{event_id}/photos`); kapak
+/// olarak kullanılamaz.
 enum UploadPurpose {
   avatar('avatar'),
   catchPhoto('catch_photo'),
   cover('cover'),
+  eventPhoto('event_photo'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

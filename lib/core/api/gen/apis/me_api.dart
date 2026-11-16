@@ -685,6 +685,100 @@ final class MeApi {
     return Friend.fromJson(jsonObject(response, 'acceptFriendRequest'));
   }
 
+  /// Size yapılan arkadaş önerileri (yalnızca size görünür)
+  ///
+  /// Son 12 ayda en az 3 etkinliğe birlikte katıldığınız (check-in ile
+  /// doğrulanmış) ve arkadaşınız olmayan kişiler; günlük bir işle, haftada
+  /// en fazla bir öneri (issue #208, ADR-0030). Son 30 günün kapatılmamış
+  /// önerileri, yeniden eskiye, en çok 10. Arkadaş olunca ya da istek
+  /// gönderilince, iki taraftan biri engelleyince veya şikâyet edince,
+  /// önerilen kişi "Beni önerme" deyince ya da hesabını silince öneri
+  /// listeden düşer. 18 yaşından küçük biriyle 18 yaşından büyük biri
+  /// birbirine önerilmez.
+  ///
+  /// **Arkadaşlık puanı, ortak etkinlik sayısı ve önerinin gerekçesi
+  /// hiçbir zaman dönmez.** Profillemeniz kapalıysa liste boştur. "Arkadaş
+  /// ekle" `POST /v1/me/friend-requests`'tir.
+  ///
+  /// `GET /v1/me/friend-suggestions`
+  Future<FriendSuggestionList> listFriendSuggestions() async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/me/friend-suggestions',
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return FriendSuggestionList.fromJson(
+      jsonObject(response, 'listFriendSuggestions'),
+    );
+  }
+
+  /// Öneriyi kapatır; ikiniz bir daha birbirinize önerilmezsiniz
+  ///
+  /// Karşı tarafa bildirilmez. Böyle bir öneri yoksa da başarılıdır.
+  ///
+  /// `DELETE /v1/me/friend-suggestions/{user_id}`
+  Future<void> dismissFriendSuggestion({required String userId}) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/me/friend-suggestions/{user_id}',
+      pathParams: {'user_id': userId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Profilleme ve "Beni önerme" ayarlarınız
+  ///
+  /// `GET /v1/me/social-settings`
+  Future<SocialSettings> getSocialSettings() async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/me/social-settings',
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return SocialSettings.fromJson(jsonObject(response, 'getSocialSettings'));
+  }
+
+  /// Profilleme ve "Beni önerme" ayarlarını değiştirir
+  ///
+  /// Gövdedeki alanlar değişir, olmayanlar olduğu gibi kalır; en az bir
+  /// alan gerekir (yoksa `invalid-request`).
+  ///
+  /// **Profilleme** (`profiling_enabled`, varsayılan açık): kapatınca
+  /// arkadaşlık puanlarınız hemen silinir; size yapılmış ya da sizin
+  /// önerildiğiniz açık öneriler hemen geri çekilir (listelenmez,
+  /// bildirimi `expired` olur); öneri almazsınız ve kimseye
+  /// önerilmezsiniz. Yeniden açınca puan ertesi gün hesaplanır.
+  ///
+  /// **Beni önerme** (`hide_from_suggestions`, varsayılan kapalı):
+  /// açınca kimseye önerilmezsiniz ve sizin önerildiğiniz açık öneriler
+  /// geri çekilir; siz öneri almaya devam edersiniz.
+  ///
+  /// Ayarı kapatıp açmak haftalık öneri sınırını ve daha önce kimin
+  /// önerildiğini sıfırlamaz; kapattığınız öneriler de hatırlanır.
+  ///
+  /// `PATCH /v1/me/social-settings`
+  Future<SocialSettings> updateSocialSettings({
+    required SocialSettingsUpdate body,
+  }) async {
+    final json = body.toJson();
+    if (json.length < 1) {
+      throw ArgumentError('SocialSettingsUpdate: en az 1 alan verilmeli');
+    }
+    final response = await _transport.send(
+      method: 'PATCH',
+      pathTemplate: '/v1/me/social-settings',
+      body: json,
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return SocialSettings.fromJson(
+      jsonObject(response, 'updateSocialSettings'),
+    );
+  }
+
   /// Engellediğiniz kullanıcılar (sizi engelleyenler hiç listelenmez)
   ///
   /// `GET /v1/me/blocks`
@@ -732,6 +826,69 @@ final class MeApi {
       method: 'DELETE',
       pathTemplate: '/v1/me/blocks/{user_id}',
       pathParams: {'user_id': userId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Boş günleriniz (bugünden itibaren, en fazla 31; sayfalanmaz)
+  ///
+  /// Gün, Europe/Istanbul takvimine göre bugünden başlar; geçmiş günler
+  /// dönmez ve günlük bir işle silinir.
+  ///
+  /// `GET /v1/me/availability`
+  Future<AvailabilityDayList> listMyAvailability() async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/me/availability',
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return AvailabilityDayList.fromJson(
+      jsonObject(response, 'listMyAvailability'),
+    );
+  }
+
+  /// Bu günü boş olarak işaretler ya da bütünüyle değiştirir
+  ///
+  /// Gün bugünden (Europe/Istanbul) en fazla 30 gün ileri olabilir.
+  /// Bildirim gitmez; tüm arkadaşlarınız görür, başka kimse görmez. Not
+  /// isteğe bağlıdır; boş ya da yalnızca boşluk ise not yoktur.
+  ///
+  /// `PUT /v1/me/availability/{date}`
+  ///
+  /// [date]: Takvim günü (YYYY-MM-DD), saat değil; "bugün" Europe/Istanbul tarihidir.
+  ///
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  Future<AvailabilityDay> setAvailability({
+    required String date,
+    required AvailabilityInput body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/me/availability/{date}',
+      pathParams: {'date': date},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return AvailabilityDay.fromJson(jsonObject(response, 'setAvailability'));
+  }
+
+  /// Bu günün boş vaktini siler
+  ///
+  /// Silinecek bir şey yoksa da başarılıdır.
+  ///
+  /// `DELETE /v1/me/availability/{date}`
+  ///
+  /// [date]: Takvim günü (YYYY-MM-DD), saat değil; "bugün" Europe/Istanbul tarihidir.
+  ///
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  Future<void> deleteAvailability({required String date}) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/me/availability/{date}',
+      pathParams: {'date': date},
       expect: ResponseKind.none,
       authenticated: true,
     );

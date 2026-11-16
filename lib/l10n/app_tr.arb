@@ -5375,6 +5375,10 @@
   "@hata_not_attended": {
     "description": "Hata kodu `not-attended`. Av kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
   },
+  "hata_album_closed": "Bu etkinliğin albümüne artık fotoğraf eklenemiyor.",
+  "@hata_album_closed": {
+    "description": "Hata kodu `album-closed`. Etkinlik albümü (başlangıçtan bitişin 7 gün sonrasına kadar açık) kapandıktan sonra fotoğraf eklenmeye çalışılınca."
+  },
   "hata_event_series_not_found": "Bu etkinlik serisi bulunamadı.",
   "@hata_event_series_not_found": {
     "description": "Hata kodu `event-series-not-found`. Tekrarlayan etkinlik serisi bu tayfada yoksa görünen hata."

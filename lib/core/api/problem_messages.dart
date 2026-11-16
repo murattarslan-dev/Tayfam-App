@@ -153,6 +153,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.e2ePairedDeviceExists => m.hata_e2e_paired_device_exists,
   ProblemType.e2eHistoryKeyStale => m.hata_e2e_history_key_stale,
   ProblemType.e2eLinkRequestNotFound => m.hata_e2e_link_request_not_found,
+  ProblemType.albumClosed => m.hata_album_closed,
   ProblemType.unknown => m.hata_genel,
 };
 

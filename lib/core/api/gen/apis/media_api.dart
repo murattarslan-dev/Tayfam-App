@@ -11,14 +11,14 @@ final class MediaApi {
 
   /// Dosyaların 1 saat geçerli imzalı indirme linkleri
   ///
-  /// Yanıtlardaki `*_upload_id` alanlarını (avatar, kapak, av fotoğrafı)
+  /// Yanıtlardaki `*_upload_id` alanlarını (avatar, kapak, av ve albüm fotoğrafı)
   /// toplu çözer; istemci linkleri süreleri dolana kadar önbellekte
   /// tutar. Görülemeyen dosya nedeni söylenmeden atlanır (bilinmeyen,
   /// hazır olmayan, silinmiş ve yetkisiz aynıdır). Kurallar: kendi
   /// dosyanız her zaman; avatar oturum açmış herkese (iki taraftan biri
   /// engellediyse ya da hesap silindiyse kimseye); tayfa kapağı aktif
-  /// üyelere; etkinlik kapağı ve av fotoğrafı etkinliği görebilen aktif
-  /// üyelere. 1–100 farklı kimlik; sıra korunur.
+  /// üyelere; etkinlik kapağı, av fotoğrafı ve albüm fotoğrafı etkinliği
+  /// görebilen aktif üyelere. 1–100 farklı kimlik; sıra korunur.
   ///
   /// `POST /v1/media/urls`
   Future<MediaUrlsList> getMediaUrls({required MediaUrlsRequest body}) async {
