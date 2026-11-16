@@ -18,7 +18,7 @@ import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Sohbet balonundaki fotoğraf ve yer (tasarım 28; istemci ADR-0026).
+/// Sohbet balonundaki fotoğraf ve yer (tasarım 28; istemci ADR-0028).
 ///
 /// Bu dosyadaki bileşenler kanal ve birebir akışında aynıdır; içerik
 /// yalnızca bellektedir (ADR-0006) ve loglanmaz. Görseller kendi
@@ -127,7 +127,7 @@ final _kanalLinkiProvider = AsyncNotifierProvider.autoDispose
       retry: (_, _) => null,
     );
 
-/// Birebir mesajdaki şifreli fotoğraf (istemci ADR-0026 §4): indirilir,
+/// Birebir mesajdaki şifreli fotoğraf (istemci ADR-0028 §4): indirilir,
 /// özeti doğrulanır, çözülür ve yalnızca bellekte gösterilir. Yüklenirken
 /// kilitli yüzey ("Fotoğraf açılıyor…"); bağlantı hatasında "Tekrar dene";
 /// doğrulanamazsa nar yüzey (tekrar yok). [kimlikTutmuyor] mesajın

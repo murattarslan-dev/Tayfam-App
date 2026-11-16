@@ -132,7 +132,7 @@ class KanalAkisiNotifier extends AsyncNotifier<KanalAkisi> {
 
   /// Cihazda hazırlanmış (metadata'sı silinmiş; ADR-0021) fotoğrafı
   /// kuyruğa koyar; gönderimde `chat_photo` olarak yüklenip mesaj olur.
-  /// Alt yazı yoktur (istemci ADR-0026 §1).
+  /// Alt yazı yoktur (istemci ADR-0028 §1).
   void fotografGonder(HazirGoruntu goruntu) => _kuyruga(
     GidenFotograf(
       goruntu: goruntu,

@@ -22,7 +22,7 @@ final class EkGorulemez implements Exception {
 }
 
 /// Çözülmüş ek görüntüleri için bellek önbelleği (ADR-0006, istemci
-/// ADR-0026 §4): en çok [baytEnCok] bayt, en eski kullanılan önce atılır.
+/// ADR-0028 §4): en çok [baytEnCok] bayt, en eski kullanılan önce atılır.
 /// Diske hiçbir şey yazılmaz; oturum değişince boşalır.
 final class EkOnbellegi {
   /// Önbelleğin üst sınırı.
@@ -63,7 +63,7 @@ final class EkOnbellegi {
 }
 
 /// Birebir mesaj eklerinin (şifreli fotoğraf) hazırlanması ve açılması
-/// (istemci ADR-0026 §2, §4).
+/// (istemci ADR-0028 §2, §4).
 ///
 /// - [hazirla]: ADR-0021 hattından geçmiş görüntünün tam varyantını yeni
 ///   bir anahtarla şifreler, `dm_attachment` olarak yükler ve zarfa

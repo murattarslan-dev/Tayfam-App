@@ -12,7 +12,7 @@ import 'package:tayfam/features/sohbet/data/kanal_deposu.dart';
 String kanalGrubu(String kanalId) => 'kanal:$kanalId';
 
 /// Çevrimdışı kuyruktaki bir kanal mesajı (ADR-0006, ADR-0007, istemci
-/// ADR-0026 §1): metin, fotoğraf ya da yer.
+/// ADR-0028 §1): metin, fotoğraf ya da yer.
 ///
 /// Fotoğrafta iş önce hazırlanmış görüntüyü `chat_photo` olarak (bu tayfa
 /// için) yükler; yükleme kendi `client_request_id`'siyle bir kez yapılır ve

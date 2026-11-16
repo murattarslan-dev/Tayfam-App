@@ -8,7 +8,7 @@ import 'package:tayfam/core/e2e/gecmis/anahtar_paketi.dart'
     show sabitZamanliEsit;
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
-/// Birebir mesaj ekinin biçim etiketi (AAD; ADR-0026 §2).
+/// Birebir mesaj ekinin biçim etiketi (AAD; ADR-0028 §2).
 // kural-istisnası: elle-uc — AES-GCM AAD bağlam etiketi; API yolu değil
 const String ekBaglami = 'tayfam/ek/v1';
 
@@ -66,7 +66,7 @@ final class EkDogrulanamadi implements Exception {
   String toString() => 'EkDogrulanamadi';
 }
 
-/// Birebir mesaj ekini şifreler ve çözer (istemci ADR-0026 §2):
+/// Birebir mesaj ekini şifreler ve çözer (istemci ADR-0028 §2):
 ///
 /// ```
 /// blob = 0x01 ‖ nonce(12) ‖ AES-256-GCM(anahtar, nonce, düz, "tayfam/ek/v1") ‖ etiket(16)

@@ -4,7 +4,7 @@ import 'package:tayfam/core/medya/goruntu_hazirlama.dart';
 import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
 
 /// Çevrimdışı kuyruktaki bir sohbet mesajının içeriği (kanal ve birebir;
-/// ADR-0006, istemci ADR-0026 §1, §4). Yalnızca bellekte yaşar; hiçbir
+/// ADR-0006, istemci ADR-0028 §1, §4). Yalnızca bellekte yaşar; hiçbir
 /// yere yazılmaz ve loglanmaz. `toString` içerik yazmaz.
 @immutable
 sealed class GidenIcerik {

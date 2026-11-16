@@ -326,7 +326,7 @@ class _Akis extends ConsumerWidget {
 
   /// ⊕: ek menüsü → fotoğraf (seç, cihazda hazırla, onayla; gönderimde
   /// uçtan uca şifrelenir) ya da yer (seç, onayla). Vazgeçilirse hiçbir
-  /// şey gönderilmez (tasarım 28; istemci ADR-0026 §4).
+  /// şey gönderilmez (tasarım 28; istemci ADR-0028 §4).
   Future<void> _ekEkle(BuildContext context, WidgetRef ref) async {
     final secim = await ekMenusuAc(context);
     if (secim == null || !context.mounted) return;
@@ -380,7 +380,7 @@ class _Akis extends ConsumerWidget {
     final giden = durum.gidenMi(mesaj);
     // Her birebir mesaj uçtan uca şifrelidir (Tayfam-Api #151); içerik
     // yalnızca bellekte çözülmüş zarftan gelir (metin, fotoğraf, yer;
-    // istemci ADR-0026 §3).
+    // istemci ADR-0028 §3).
     final cozulmus = icerik.mesajlar[mesaj.id]?.icerik;
     final yedek = e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj;
     final (String metin, Widget? medya) = switch (cozulmus) {

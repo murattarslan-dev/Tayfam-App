@@ -53,7 +53,7 @@ final class KonumAlinamadi extends KonumSonucu {
 abstract interface class KonumServisi {
   /// Gerekirse izin ister ve o anki konumu bir kez okur. [hassas] `false`
   /// ise yaklaşık konum da kabul edilir (yer seçicide haritayı taşımak
-  /// için; istemci ADR-0026 §5); `true` ise yaklaşık izinde
+  /// için; istemci ADR-0028 §5); `true` ise yaklaşık izinde
   /// [KonumYaklasik].
   Future<KonumSonucu> tekSeferlikKonum({bool hassas = true});
 

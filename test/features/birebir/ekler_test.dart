@@ -149,7 +149,7 @@ final class _EkIslemleri implements BirebirEkIslemleri {
 }
 
 void main() {
-  group('gönderim işi (ADR-0026 §4)', () {
+  group('gönderim işi (ADR-0028 §4)', () {
     test('fotoğraf bir kez şifrelenir; tekrarda aynı blob ve yükleme kimliği; '
         'hazır ek yeniden yüklenmez', () async {
       final islemler = _EkIslemleri()..yuklemeHatasi = Exception('ağ');

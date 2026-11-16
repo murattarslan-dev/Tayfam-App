@@ -265,7 +265,7 @@ class KonusmaNotifier extends AsyncNotifier<KonusmaDurumu> {
   }
 
   /// Cihazda hazırlanmış (metadata'sı silinmiş) fotoğrafı kuyruğa koyar;
-  /// gönderimde şifrelenip yüklenir (istemci ADR-0026 §4). Yazılacak kişi
+  /// gönderimde şifrelenip yüklenir (istemci ADR-0028 §4). Yazılacak kişi
   /// yoksa `false`.
   bool fotografGonder(HazirGoruntu goruntu) => _kuyruga(
     GidenFotograf(

@@ -70,7 +70,7 @@ Uint8List arsivAad({
 
 /// Arşiv kaydının düz metni: `{v:1, gonderen, created_at, t, …}` UTF-8
 /// JSON, 160 bayt bloklara dolgulu. `t` ve türün alanları zarftakiyle
-/// aynıdır (`metin`, `foto`, `yer`; istemci ADR-0026 §3).
+/// aynıdır (`metin`, `foto`, `yer`; istemci ADR-0028 §3).
 ///
 /// `toString` içerik yazmaz.
 @immutable

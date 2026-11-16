@@ -118,7 +118,7 @@ class HaritaSecimiNotifier extends Notifier<HaritaSecimi> {
     );
   }
 
-  /// "Bulunduğum yer" (yalnızca sohbetteki seçici; istemci ADR-0026 §5):
+  /// "Bulunduğum yer" (yalnızca sohbetteki seçici; istemci ADR-0028 §5):
   /// konum izni **yalnızca burada** istenir ve konum bir kez okunur
   /// (yaklaşık konum da kabul). Okunursa iğne oraya bırakılır ve harita
   /// oraya gider; okunmazsa neden [HaritaSecimi.konumEngeli]'nde durur.

@@ -22,7 +22,7 @@ typedef HaritaSecimSonucu = ({LatLng nokta, YerSonucu? oneri});
 /// Buluşma noktası seçicisini açar; vazgeçilirse `null`.
 ///
 /// [konumDugmesi] yalnızca sohbetteki yer paylaşımında açılır ("Bulunduğum
-/// yer"; istemci ADR-0026 §5); etkinlikte cihaz konumu istenmez (ADR-0015
+/// yer"; istemci ADR-0028 §5); etkinlikte cihaz konumu istenmez (ADR-0015
 /// §4). [secEtiketi] seçim düğmesinin metnidir.
 Future<HaritaSecimSonucu?> haritaSeciciAc(
   BuildContext context, {

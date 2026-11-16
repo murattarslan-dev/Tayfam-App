@@ -325,7 +325,7 @@ object SignalIslemleri {
     }
 
     /**
-     * AES-256-GCM şifreleme (birebir mesaj eki; istemci ADR-0026 §2).
+     * AES-256-GCM şifreleme (birebir mesaj eki; istemci ADR-0028 §2).
      * Dönüş: şifreli metin ‖ 16 bayt etiket. Anahtar ve nonce çağıranındır
      * (Dart'ta `Random.secure()`); köprü hiçbir şey saklamaz.
      */

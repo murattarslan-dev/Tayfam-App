@@ -96,7 +96,7 @@ final class MedyaYukleyici {
   );
 
   /// Birebir mesajın şifreli ekini (`dm_attachment`, tek `blob`,
-  /// `application/octet-stream`; Tayfam-Api ADR-0031 §3, istemci ADR-0026
+  /// `application/octet-stream`; Tayfam-Api ADR-0031 §3, istemci ADR-0028
   /// §4) yükler. Tamamlama gövdesi `{width: 0, height: 0}`'dır; sunucu
   /// yalnızca boyutu denetler. Hatalar [yukle] ile aynı.
   Future<String> sifreliEkYukle({

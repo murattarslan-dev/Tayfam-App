@@ -40,7 +40,7 @@ final class CozulmusBirebirMesaj {
   final String konusmaId;
   final String gonderenKullaniciId;
 
-  /// Metin, fotoğraf eki ya da yer (istemci ADR-0026 §3).
+  /// Metin, fotoğraf eki ya da yer (istemci ADR-0028 §3).
   final BirebirIcerik icerik;
 
   /// Metin mesajında metin; fotoğraf ve yerde `null`.

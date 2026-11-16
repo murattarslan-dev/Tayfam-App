@@ -152,7 +152,7 @@ abstract interface class SignalMotoru {
   });
 
   /// AES-256-GCM şifreleme (libsignal `Aes256GcmEncryption`; birebir
-  /// mesaj eki, ADR-0026 §2). [anahtar] 32, [nonce] 12 bayt; aynı anahtar
+  /// mesaj eki, ADR-0028 §2). [anahtar] 32, [nonce] 12 bayt; aynı anahtar
   /// ve nonce çifti bir kez kullanılır (çağıran her ek için
   /// `Random.secure()` ile yeni anahtar üretir). Dönüş: şifreli metin ‖ 16
   /// bayt etiket. Girdi değiştirilmez.

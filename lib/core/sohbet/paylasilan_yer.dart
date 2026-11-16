@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 const int yerAdiEnCok = 120;
 
 /// Kullanıcının haritadan seçip paylaştığı yer (Tayfam-Api ADR-0031 §4,
-/// ADR-0008: içerik, cihaz konumu değil; istemci ADR-0026 §5).
+/// ADR-0008: içerik, cihaz konumu değil; istemci ADR-0028 §5).
 ///
 /// Kanal mesajında sözleşmedeki `Place`'ten, birebirde zarfın içinden
 /// gelir; ikisi de girdidir ve [gecerliMi] ile denetlenir. Koordinat ve ad

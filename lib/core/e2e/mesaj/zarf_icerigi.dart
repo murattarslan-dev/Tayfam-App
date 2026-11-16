@@ -12,7 +12,7 @@ import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
 const int ekOlcuEnCok = 1600;
 
 /// Uçtan uca şifreli bir birebir mesajın içeriği (ADR-0020, istemci
-/// ADR-0026 §3). Zarfın ve geçmiş arşivi kaydının düz metnindedir; yalnızca
+/// ADR-0028 §3). Zarfın ve geçmiş arşivi kaydının düz metnindedir; yalnızca
 /// bellekte yaşar, hiçbir yere yazılmaz ve loglanmaz. `toString` içerik
 /// yazmaz.
 @immutable

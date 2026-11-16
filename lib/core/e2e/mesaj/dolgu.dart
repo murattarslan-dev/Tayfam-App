@@ -25,7 +25,7 @@ Uint8List? dolguKaldir(Uint8List veri) {
   return Uint8List.sublistView(veri, 0, i);
 }
 
-/// Zarfın düz metin içeriği (ADR-0020, istemci ADR-0026 §3): `{v:1,
+/// Zarfın düz metin içeriği (ADR-0020, istemci ADR-0028 §3): `{v:1,
 /// t:"metin", govde}`, `{v:1, t:"foto", ek:{…}}` ya da `{v:1, t:"yer",
 /// enlem, boylam, ad?}`; UTF-8 JSON, dolgulu. Yalnızca bellekte yaşar.
 Uint8List zarfIcerigiKodla(BirebirIcerik icerik) =>

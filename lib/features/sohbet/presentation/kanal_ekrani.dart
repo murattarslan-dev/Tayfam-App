@@ -56,7 +56,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   yönetimse "Mesajı sil"; silinmiş ve geri alınabilir mesajda yönetime
 ///   "Geri al"; üyeye başkasının mesajında "Şikâyet et" (yönetim şikâyet
 ///   etmez, gizler; tasarım 28).
-/// - Fotoğraf ve yer (tasarım 28; istemci ADR-0026 §1): yazma çubuğundaki
+/// - Fotoğraf ve yer (tasarım 28; istemci ADR-0028 §1): yazma çubuğundaki
 ///   ⊕ ek menüsünü açar; fotoğraf cihazda hazırlanıp onaylanınca, yer
 ///   haritada görülüp onaylanınca kuyruğa girer. Balonda fotoğraf (dokununca
 ///   tam ekran) ya da harita kartı; alt yazı yoktur.

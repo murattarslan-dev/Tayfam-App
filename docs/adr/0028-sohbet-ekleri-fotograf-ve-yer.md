@@ -1,4 +1,4 @@
-# ADR-0026: Sohbet ekleri — fotoğraf ve yer (istemci)
+# ADR-0028: Sohbet ekleri — fotoğraf ve yer (istemci)
 
 - **Durum:** Önerildi (platform sahibinin onayına; ürün kararları
   2026-11-15/16'da verildi)

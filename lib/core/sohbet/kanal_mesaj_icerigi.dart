@@ -5,7 +5,7 @@ import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
 
 /// Bir kanal mesajının gösterilecek içeriği (Tayfam-Api ADR-0031 §1,
-/// istemci ADR-0026 §1). Sunucudan gelen mesaj girdidir: türün beklenen
+/// istemci ADR-0028 §1). Sunucudan gelen mesaj girdidir: türün beklenen
 /// alanı yoksa ya da sınır dışındaysa [KanalIcerikBilinmeyen] olur.
 @immutable
 sealed class KanalIcerigi {

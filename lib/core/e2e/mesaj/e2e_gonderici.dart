@@ -45,7 +45,7 @@ final class E2eGonderici {
 
   /// [aliciId]'ye [icerik]'i şifreli gönderir. Fotoğrafta [ekUploadId]
   /// şifreli ekin hazır `dm_attachment` yüklemesidir (zarftaki kimlikle
-  /// aynı; ADR-0026 §4). Başarıda sunucunun yazdığı mesaj ve gönderilen
+  /// aynı; ADR-0028 §4). Başarıda sunucunun yazdığı mesaj ve gönderilen
   /// içerik döner.
   Future<(DirectMessageSent, CozulmusBirebirMesaj)> gonder({
     required String aliciId,

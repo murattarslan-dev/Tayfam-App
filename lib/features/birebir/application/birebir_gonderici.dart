@@ -29,7 +29,7 @@ typedef SifreliGonderim = Future<DirectMessageSent> Function({
   required String istekKimligi,
 });
 
-/// Birebir fotoğrafın şifreli ekini hazırlayan işlemler (istemci ADR-0026
+/// Birebir fotoğrafın şifreli ekini hazırlayan işlemler (istemci ADR-0028
 /// §4); uygulamada [E2eEkServisi]. Testlerde sahtesi verilir.
 abstract interface class BirebirEkIslemleri {
   /// Cihazın E2E'ye hazır olmasını bekler (hazır değilse yükleme yapılmaz).
@@ -67,7 +67,7 @@ final class _UygulamaEkIslemleri implements BirebirEkIslemleri {
 }
 
 /// Birebir mesajı sunucuya ileten tek nokta (ADR-0007 "Mesaj gönderimi"
-/// birebir istisnası, ADR-0020, istemci ADR-0026 §4).
+/// birebir istisnası, ADR-0020, istemci ADR-0028 §4).
 ///
 /// Birebir mesaj yalnızca uçtan uca şifreli gider (Tayfam-Api #151): her
 /// zaman [E2eBirebir] üzerinden, yalnızca REST'ten (`envelopes`);
@@ -119,7 +119,7 @@ String birebirGrubu(String aliciId) => 'birebir:$aliciId';
 ///
 /// Fotoğrafta iş, görüntüyü bir kez şifreler ve aynı yükleme kimliğiyle
 /// bir kez yükler; ikisi de iş boyunca bellekte tutulur, tekrar denemede
-/// aynı ek (aynı anahtar ve blob) gider (istemci ADR-0026 §4).
+/// aynı ek (aynı anahtar ve blob) gider (istemci ADR-0028 §4).
 final class BirebirMesajIsi extends KuyrukIsi {
   BirebirMesajIsi({
     required this.aliciId,

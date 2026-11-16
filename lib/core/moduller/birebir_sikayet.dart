@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Fotoğraf mesajında [fotograf] cihazda çözülmüş görüntüdür; şikâyet eden
 /// onu kanıt olarak kendi cihazından yükler (`evidence_upload_id`;
-/// Tayfam-Api ADR-0031 §6, istemci ADR-0026 §6). [metin] ya da [fotograf]
+/// Tayfam-Api ADR-0031 §6, istemci ADR-0028 §6). [metin] ya da [fotograf]
 /// ten en az biri verilir. Yer mesajında metin, yerin adı ve
 /// koordinatıdır (kullanıcı ekranda görür).
 typedef BirebirMesajSikayeti = Future<void> Function(

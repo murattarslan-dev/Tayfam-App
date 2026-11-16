@@ -26,7 +26,7 @@ Uint8List _ham(Map<String, Object?> json) =>
     dolguEkle(Uint8List.fromList(utf8.encode(jsonEncode(json))));
 
 void main() {
-  group('zarf içeriği (ADR-0026 §3)', () {
+  group('zarf içeriği (ADR-0028 §3)', () {
     test('metin, fotoğraf ve yer gidiş-dönüş', () {
       expect(
         _gidisDonus(const MetinIcerigi('Selam')),
@@ -122,7 +122,7 @@ void main() {
     });
   });
 
-  group('arşiv kaydı (ADR-0020 §2, ADR-0026 §3)', () {
+  group('arşiv kaydı (ADR-0020 §2, ADR-0028 §3)', () {
     test('foto ve yer arşiv düz metninde gidiş-dönüş', () {
       for (final icerik in <BirebirIcerik>[
         FotografIcerigi(_ek()),

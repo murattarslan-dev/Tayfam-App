@@ -1,7 +1,7 @@
 # Sohbette fotoğraf ve yer
 
 > Sözleşme: Tayfam-Api PR #214 (issue #205, ADR-0031), main'de. İstemci
-> işi: Tayfam-App #194, istemci ADR-0026. Ürün kararları: Notion "Faz 2
+> işi: Tayfam-App #194, istemci ADR-0028. Ürün kararları: Notion "Faz 2
 > (v2) — Medya ve Sosyal" §1, §7a ve §9 (2026-11-15/16).
 
 ## Ekranlar

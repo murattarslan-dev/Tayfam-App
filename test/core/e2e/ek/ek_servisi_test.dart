@@ -104,7 +104,7 @@ final class _Ortam {
 }
 
 void main() {
-  group('açma (ADR-0026 §4)', () {
+  group('açma (ADR-0028 §4)', () {
     test('link → tam boyutta indir → özet → çöz; bellekte tutulur', () async {
       final o = _Ortam();
       final ek = await o.hazirEk();

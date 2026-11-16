@@ -89,7 +89,7 @@ Map<String, Object?> _yerMesaji(String id, {Object? enlem = 40.7}) => {
 };
 
 void main() {
-  group('gönderim (ADR-0026 §1)', () {
+  group('gönderim (ADR-0028 §1)', () {
     test('fotoğraf: chat_photo olarak bir kez yüklenir, mesaj photo türünde; '
         'tekrarda yeniden yüklenmez', () async {
       final o = SohbetOrtami();
