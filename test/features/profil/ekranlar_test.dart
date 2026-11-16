@@ -358,7 +358,13 @@ void main() {
       await o.ac(tester, const ProfilEkrani());
 
       expect(_metin('profil_tekrar_dene'), findsOneWidget);
-      // Tema ve hesap satırları yine kullanılabilir.
+      // Tema ve hesap satırları yine kullanılabilir (liste tembel kurulur;
+      // Arkadaşlar kartındaki "Boş vaktin" satırıyla ekranın altında).
+      await tester.scrollUntilVisible(
+        _metin('profil_tema_baslik'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(_metin('profil_tema_baslik'), findsOneWidget);
     });
   });

@@ -136,6 +136,24 @@ final class ArkadasDeposu {
     );
     return (ogeler: liste.records, sonraki: liste.nextPageToken);
   }
+
+  /// `GET /v1/me/availability`: kendi boş günlerin, bugünden itibaren
+  /// eskiden yeniye (en fazla 31; sayfalanmaz; ADR-0029).
+  Future<List<AvailabilityDay>> bosGunlerim() async =>
+      (await _ben.listMyAvailability()).days;
+
+  /// `PUT /v1/me/availability/{date}`: o günü ekler ya da bütünüyle
+  /// değiştirir. Bildirim gitmez. Tarih ve not log'a yazılmaz.
+  Future<AvailabilityDay> bosGunKaydet(String gun, AvailabilityInput girdi) =>
+      _ben.setAvailability(date: gun, body: girdi);
+
+  /// `DELETE /v1/me/availability/{date}`: yoksa da başarılıdır.
+  Future<void> bosGunSil(String gun) => _ben.deleteAvailability(date: gun);
+
+  /// `GET /v1/users/{user_id}/availability`: arkadaşın boş günleri.
+  /// Arkadaş değilse, engel varsa ya da hesap yoksa `user-not-found`.
+  Future<List<AvailabilityDay>> arkadasBosGunleri(String kullaniciId) async =>
+      (await _kullanicilar.listUserAvailability(userId: kullaniciId)).days;
 }
 
 /// Arkadaşlık uçlarının deposu.

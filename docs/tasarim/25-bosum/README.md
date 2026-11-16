@@ -52,7 +52,8 @@ Bu bölümün arayüz kararları (mevcut bileşenlerle):
    `BirincilEylem` "Boş gün ekle", `BolumEtiketi` "Önümüzdeki günler" ve
    günler `ListeKarti` içinde. Satır: solda tarih kutusu (etkinlik listesindeki
    gün/ay kutusu; ortak bileşene taşındı: `TarihKutusu`), başlık gün adı ve
-   tarih ("Cumartesi, 21 Kasım"; bugün ve yarın için "Bugün", "Yarın"),
+   tarih (`intl` tr: "21 Kasım Cumartesi"; bugün ve yarın için "Bugün",
+   "Yarın"),
    açıklama dilimler ("Sabah · Akşam"), varsa not alıntı olarak. Satıra
    dokununca düzenleme alttan sayfası.
 3. **Boş gün ekle** tam ekran, `/profil/arkadaslar/bos-vakit/ekle`; altta
@@ -84,8 +85,12 @@ Bu bölümün arayüz kararları (mevcut bileşenlerle):
    altta kişi profilindeki eylem kancasından gelen "Mesaj gönder" (birebir
    paketi; arkadaş olduğu için görünür, karar sunucuda).
 7. **Saat yok.** Gün takvim günüdür; "bugün" Europe/Istanbul tarihidir
-   (ADR-0029 §3). İstemci bugünü sabit UTC+3 ile hesaplar (mevcut
-   `istanbulFarki`); dilim saate çevrilmez.
+   (ADR-0029 §3). İstemci bugünü sabit UTC+3 ile hesaplar
+   (`core/zaman/takvim_gunu.dart`; etkinlik tekrarındaki `istanbulFarki`
+   aynı sabite bağlandı); dilim saate çevrilmez.
+8. **Not sınırı kod noktasıdır.** Sunucu 60'ı Unicode kod noktası olarak
+   sayar; sayaç ve sınır da kod noktası sayar (birleşik bir emoji birden çok
+   sayılır), böylece sunucu sessizce `invalid-request` döndürmez.
 
 ## Durumlar
 

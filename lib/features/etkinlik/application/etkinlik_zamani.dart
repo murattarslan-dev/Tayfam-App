@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Türkiye saatinin UTC farkı. Türkiye 2016'dan beri yaz saati
-/// uygulamıyor; `Europe/Istanbul` sabit UTC+3'tür. Saat dilimi veritabanı
-/// paketi gerektirmemek için fark sabittir. Yalnızca tekrar kuralının
-/// (`Europe/Istanbul`) son günü hesaplanırken kullanılır; ekranlarda zaman
-/// cihazın saatiyle gösterilir ve girilir (ADR-0008).
-const Duration istanbulFarki = Duration(hours: 3);
+import 'package:tayfam/core/zaman/takvim_gunu.dart';
+
+/// Türkiye saatinin UTC farkı ([istanbulSaatFarki]). Yalnızca tekrar
+/// kuralının (`Europe/Istanbul`) son günü hesaplanırken kullanılır;
+/// ekranlarda zaman cihazın saatiyle gösterilir ve girilir (ADR-0008).
+const Duration istanbulFarki = istanbulSaatFarki;
 
 /// Tekrar kuralının saat dilimi (sözleşme: boşsa da `Europe/Istanbul`).
 const String istanbulSaatDilimi = 'Europe/Istanbul';
