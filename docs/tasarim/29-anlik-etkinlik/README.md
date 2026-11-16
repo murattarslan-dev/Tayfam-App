@@ -237,7 +237,6 @@ organizatör onaylar); en fazla 3 açık ve günde 5 anlık etkinlik (sunucu
 söyler); bitince 7 gün sonra arşiv; organizatörde "Bu ekiple tayfa kur";
 panelde ayrı işaret; moderatör yok; Boşum rozetinde "Bir şey yapalım".
 
-Bu bölümün önerdiği ve platform sahibinin onayını bekleyen ayrıntılar
-(PR açıklamasında "Açık sorular"): karşılamadaki ikinci giriş noktası,
-"Bir şey yapalım"ın varsayılan saati (19:00), dönüşümde "Tayfa kuruldu"
-ekranının atlanması.
+Platform sahibi (2026-11-16, mimari oturumu aracılığıyla; ADR-0026 Notlar):
+karşılamadaki ikinci giriş, "Bir şey yapalım"ın varsayılan saati (19:00, 2
+saat) ve dönüşümde "Tayfa kuruldu" ekranının atlanması onaylandı.

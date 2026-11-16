@@ -1,7 +1,8 @@
 # ADR-0026: Anlık (bireysel) etkinlik (istemci)
 
-- **Durum:** Önerildi (ürün kararları platform sahibinin, 2026-11-15; bu
-  ADR'deki istemci seçimleri PR'da onaya sunulur)
+- **Durum:** Kabul edildi (ürün kararları platform sahibinin, 2026-11-15;
+  istemci seçimleri 2026-11-16'da mimari oturumu aracılığıyla, platform
+  sahibinin yetkisiyle onaylandı)
 - **Tarih:** 2026-11-16
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0002](0002-modul-yapisi.md), [ADR-0003](0003-gezinme-iskeleti.md),
@@ -129,11 +130,21 @@ yoktur.
   sohbet, katılım istekleri ve dönüştürme tayfa yüzeyinde; platform sahibi
   "panelde ayrı işaretli" dedi.
 
-## Açık sorular (platform sahibine)
+## Notlar
 
-1. Karşılamada ikinci giriş noktası ("Anlık etkinlik aç") uygun mu?
-2. "Bir şey yapalım" varsayılan saati 19:00 uygun mu?
-3. Dönüşümde "Tayfa kuruldu" ekranı atlanıyor; uygun mu?
-4. Sözleşmede `converted_at` dönmediği için ana sayfadaki kurulum dönemi
-   dönüşümden sonra `created_at`'ten sayılır; dönüşümde kurulum kartı bir
-   kez zorla gösterilir. Sözleşmeye `converted_at` eklensin mi?
+- **2026-11-16 (platform sahibi, mimari oturumu aracılığıyla; PR #205):**
+  PR'daki açık sorular cevaplandı.
+  1. İstemci ADR numaraları: 0025 albüm, 0026 anlık etkinlik, 0027 Keşfet,
+     0028 sohbet ekleri.
+  2. Karşılamadaki ikinci giriş ("Anlık etkinlik aç") uygun.
+  3. "Bir şey yapalım" varsayılanı 19:00, süre 2 saat uygun.
+  4. Dönüşümde "Tayfa kuruldu" ekranının atlanması uygun.
+  5. **`converted_at` (geçici çözüm):** sözleşmede yoktur; ana sayfadaki
+     kurulum dönemi `created_at`'ten sayılır ve dönüşümde kurulum kartı bir
+     kez zorla gösterilir. Tayfam-Api'de alanı eklemek için ayrı küçük bir
+     issue açılacak; alan sözleşmeye girince kurulum dönemi
+     `COALESCE(converted_at, created_at)`'ten sayılır.
+  6. "Arkadaş davet et"te zaten üye olanların süzülmemesi; sunucu hatası
+     gösterilir. Yeterli.
+  7. Etkinlik kanalı otomatik açılmaz; organizatör detaydaki mevcut
+     "Etkinlik sohbetini aç"ı kullanır.
