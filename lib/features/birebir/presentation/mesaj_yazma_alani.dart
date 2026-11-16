@@ -11,9 +11,17 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// metin kalır ve kural hatası gösterilir. Metin yalnızca bu alanın
 /// belleğindedir; taslak hiçbir yere yazılmaz (ADR-0006).
 class MesajYazmaAlani extends StatefulWidget {
-  const MesajYazmaAlani({super.key, required this.onGonder, this.etkin = true});
+  const MesajYazmaAlani({
+    super.key,
+    required this.onGonder,
+    this.etkin = true,
+    this.onEk,
+  });
 
   final bool Function(String metin) onGonder;
+
+  /// ⊕ (fotoğraf ya da yer; tasarım 28); `null` ise ⊕ yok.
+  final VoidCallback? onEk;
 
   /// `false` iken alan ve düğme kapalıdır (ör. ilk mesaj giderken).
   final bool etkin;
@@ -50,6 +58,8 @@ class _MesajYazmaAlaniState extends State<MesajYazmaAlani> {
       enUzun: birebirMetniEnCok,
       etkin: widget.etkin,
       onGonder: _gonder,
+      onEk: widget.onEk,
+      ekEtiketi: m.sohbet_ek_ekle,
       ust: _gecersiz ? HataSatiri(metin: m.birebir_metin_gecersiz) : null,
     );
   }

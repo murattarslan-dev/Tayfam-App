@@ -14,8 +14,15 @@ import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
+import 'package:tayfam/core/medya/fotograf_secici.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/sohbet/akis_duzeni.dart';
+import 'package:tayfam/core/sohbet/ek_akislari.dart';
+import 'package:tayfam/core/sohbet/giden_balon.dart';
+import 'package:tayfam/core/sohbet/giden_icerik.dart';
+import 'package:tayfam/core/sohbet/kanal_mesaj_icerigi.dart';
+import 'package:tayfam/core/sohbet/sohbet_ekleri.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/core/zaman/zamanlayici.dart';
@@ -27,6 +34,7 @@ import 'package:tayfam/features/sohbet/presentation/kanal_formu.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_listesi.dart';
 import 'package:tayfam/features/sohbet/presentation/kanal_ortak.dart';
 import 'package:tayfam/features/sohbet/presentation/katilimcilar_ekrani.dart';
+import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -46,7 +54,12 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   istemci yalnızca sadeleştirir).
 /// - Uzun basınca "Mesaj işlemleri" alttan sayfası: kendi mesajın ya da
 ///   yönetimse "Mesajı sil"; silinmiş ve geri alınabilir mesajda yönetime
-///   "Geri al". Kanal mesajı şikâyeti sözleşmede yoktur.
+///   "Geri al"; üyeye başkasının mesajında "Şikâyet et" (yönetim şikâyet
+///   etmez, gizler; tasarım 28).
+/// - Fotoğraf ve yer (tasarım 28; istemci ADR-0028 §1): yazma çubuğundaki
+///   ⊕ ek menüsünü açar; fotoğraf cihazda hazırlanıp onaylanınca, yer
+///   haritada görülüp onaylanınca kuyruğa girer. Balonda fotoğraf (dokununca
+///   tam ekran) ya da harita kartı; alt yazı yoktur.
 /// - Kanala erişim kalmazsa (ör. seçili kişi kanalından çıkarıldın;
 ///   sunucu aboneliği keser) Sohbet sekmesine dönülür.
 /// - Etkinlik ve seçili kişi kanalında üst çubukta kitle ve kişi sayısı;
@@ -159,6 +172,36 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
     final gitti = ref.read(kanalAkisiProvider(_kanal).notifier).gonder(metin);
     if (!gitti) return;
     _metin.clear();
+    _yavasModuBaslat(kanal, yonetimde);
+  }
+
+  /// ⊕: ek menüsü → fotoğraf (seç, hazırla, onayla) ya da yer (seç,
+  /// onayla). Vazgeçilirse hiçbir şey gönderilmez.
+  Future<void> _ekEkle(Channel? kanal, bool yonetimde) async {
+    final secim = await ekMenusuAc(context);
+    if (secim == null || !mounted) return;
+    final notifier = ref.read(kanalAkisiProvider(_kanal).notifier);
+    switch (secim) {
+      case EkSecimi.galeri || EkSecimi.kamera:
+        final goruntu = await sohbetFotografiSec(
+          context,
+          ref,
+          secim == EkSecimi.kamera
+              ? FotografKaynagi.kamera
+              : FotografKaynagi.galeri,
+          sifreli: false,
+        );
+        if (goruntu == null || !mounted) return;
+        notifier.fotografGonder(goruntu);
+      case EkSecimi.yer:
+        final yer = await yerSecVeOnayla(context);
+        if (yer == null || !mounted) return;
+        if (!notifier.yerGonder(yer)) return;
+    }
+    _yavasModuBaslat(kanal, yonetimde);
+  }
+
+  void _yavasModuBaslat(Channel? kanal, bool yonetimde) {
     final yavas = kanal?.slowModeSeconds ?? 0;
     if (yavas > 0 && !yonetimde) {
       setState(() {
@@ -319,6 +362,8 @@ class _KanalEkraniState extends ConsumerState<KanalEkrani> {
               gonderEtiketi: m.sohbet_gonder,
               enUzun: mesajEnUzun,
               onGonder: () => _gonder(kanal, yonetimde),
+              onEk: () => unawaited(_ekEkle(kanal, yonetimde)),
+              ekEtiketi: m.sohbet_ek_ekle,
               geriSayim: bekle > 0 ? m.sohbet_geri_sayim(bekle) : null,
               geriSayimEtiketi: bekle > 0 ? m.sohbet_gonder_bekle(bekle) : null,
               ust: yavas > 0 ? _YavasModSatiri(saniye: yavas) : null,
@@ -606,11 +651,40 @@ class _MesajSatiri extends ConsumerWidget {
     final silinebilir = !mesaj.deleted && (ben || yonetimde);
     final geriAlinabilir =
         yonetimde && mesaj.deleted && (mesaj.restorable ?? false);
-    final body = mesaj.body;
-    final silinmis = mesaj.deleted || body == null;
+    final icerik = kanalMesajIcerigi(mesaj);
+    final silinmis = mesaj.deleted;
+    // Yönetim başkasının içeriğini şikâyet etmez, gizler (Notion
+    // 2026-11-14; tasarım 28). Yetki sunucudadır (kesin kural 5).
+    final sikayetEdilebilir = !silinmis && !ben && !yonetimde && yazar != null;
+    final zaman = saatMetni(m, mesaj.createdAt);
+    final (metin, medya) = switch (icerik) {
+      _ when silinmis => (m.sohbet_mesaj_silindi, null),
+      KanalIcerikMetin(:final metin) => (metin, null),
+      KanalIcerikFotograf(:final uploadId) => (
+        m.sohbet_fotograf_etiketi,
+        KanalFotografi(
+          uploadId: uploadId,
+          etiket: m.sohbet_fotograf_etiketi,
+          baslik: ben ? null : '$gonderen · $zaman',
+        ),
+      ),
+      KanalIcerikYer(:final yer) => (
+        m.sohbet_yer_etiketi(yer.ad ?? m.sohbet_yer_adsiz),
+        SohbetYerKarti(yer: yer, giden: ben),
+      ),
+      KanalIcerikBilinmeyen() => (m.sohbet_mesaj_gosterilemiyor, null),
+    };
+    final alinti = switch (icerik) {
+      _ when silinmis => null,
+      KanalIcerikMetin(:final metin) => metin,
+      KanalIcerikFotograf() => m.sohbet_mesaj_fotograf,
+      KanalIcerikYer(:final yer) => yer.ad ?? m.sohbet_yer_adsiz,
+      KanalIcerikBilinmeyen() => null,
+    };
 
     Widget balon = SohbetBalonu(
-      metin: body == null || mesaj.deleted ? m.sohbet_mesaj_silindi : body,
+      metin: metin,
+      medya: medya,
       giden: ben,
       gonderen: ben ? null : gonderen,
       tur: silinmis ? BalonTuru.silinmis : BalonTuru.akis,
@@ -622,7 +696,7 @@ class _MesajSatiri extends ConsumerWidget {
           ? null
           : () => kisiyiAc(context, yazar),
     );
-    if (silinebilir || geriAlinabilir) {
+    if (silinebilir || geriAlinabilir || sikayetEdilebilir) {
       balon = Semantics(
         onLongPressHint: m.sohbet_mesaj_islemleri,
         child: GestureDetector(
@@ -631,9 +705,10 @@ class _MesajSatiri extends ConsumerWidget {
             _eylemler(
               context,
               ref,
-              alinti: silinmis ? null : body,
+              alinti: alinti,
               sil: silinebilir,
               geriAl: geriAlinabilir,
+              sikayet: sikayetEdilebilir,
             ),
           ),
           child: balon,
@@ -641,7 +716,7 @@ class _MesajSatiri extends ConsumerWidget {
       );
     }
     final saat = konum.grupSonu
-        ? MesajAltSatiri(children: [Text(saatMetni(m, mesaj.createdAt))])
+        ? MesajAltSatiri(children: [Text(zaman)])
         : null;
     final ust = konum.grupBasi ? TayfamSpacing.s12 : TayfamSpacing.s4;
     if (ben) {
@@ -700,6 +775,7 @@ class _MesajSatiri extends ConsumerWidget {
     required String? alinti,
     required bool sil,
     required bool geriAl,
+    required bool sikayet,
   }) async {
     final m = AppLocalizations.of(context);
     final secim = await altSayfaAc<_KanalMesajIslemi>(
@@ -738,6 +814,13 @@ class _MesajSatiri extends ConsumerWidget {
               baslik: m.sohbet_mesaj_geri_al,
               onTap: () => Navigator.of(sayfa).pop(_KanalMesajIslemi.geriAl),
             ),
+          if (sikayet)
+            MenuSatiri(
+              ikon: Icons.flag_outlined,
+              baslik: m.sohbet_sikayet_et,
+              aciklama: m.sohbet_sikayet_aciklama,
+              onTap: () => Navigator.of(sayfa).pop(_KanalMesajIslemi.sikayet),
+            ),
         ],
       ),
     );
@@ -767,6 +850,15 @@ class _MesajSatiri extends ConsumerWidget {
           await notifier.sil(mesaj.id);
         case _KanalMesajIslemi.geriAl:
           await notifier.geriAl(mesaj.id);
+        case _KanalMesajIslemi.sikayet:
+          await sikayetSayfasiniAc(
+            context,
+            SikayetHedefi.tayfada(
+              tayfaId: kanal.tayfaId,
+              tur: ReportTargetType.channelMessage,
+              id: mesaj.id,
+            ),
+          );
       }
     } on Exception catch (hata) {
       if (context.mounted) hataBildir(context, hata);
@@ -774,7 +866,7 @@ class _MesajSatiri extends ConsumerWidget {
   }
 }
 
-enum _KanalMesajIslemi { sil, geriAl }
+enum _KanalMesajIslemi { sil, geriAl, sikayet }
 
 /// Kuyruktaki kendi mesajın: gönderiliyorsa saat ikonu, gönderilemediyse
 /// nar kenarlı balon ve "Tekrar dene" / "Sil".
@@ -788,7 +880,7 @@ class _BekleyenMesaj extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final isi = oge.isi;
-    final metin = isi is KanalMesajIsi ? isi.metin : '';
+    final icerik = isi is KanalMesajIsi ? isi.icerik : const GidenMetin('');
     final basarisiz = oge.durum == KuyrukDurumu.gonderilemedi;
     final kuyruk = ref.read(cevrimdisiKuyrukProvider.notifier);
     return Padding(
@@ -799,21 +891,26 @@ class _BekleyenMesaj extends ConsumerWidget {
           // Gönderilmeyi bekleyen mesaj soluk (Durum-Baglaniyor).
           Opacity(
             opacity: basarisiz ? 1 : TayfamSizes.bekleyenMesajSaydamligi,
-            child: SohbetBalonu(
-              metin: metin,
-              giden: true,
+            child: GidenBalon(
+              icerik: icerik,
               tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
             ),
           ),
-          if (basarisiz)
+          if (basarisiz) ...[
+            // Fotoğrafta yükleme hatasının nedeni (ör. kota) söylenir.
+            if (icerik is GidenFotograf && oge.hata != null)
+              Padding(
+                padding: const EdgeInsets.only(top: TayfamSpacing.s4),
+                child: HataSatiri(metin: fotografHataMetni(m, oge.hata!)),
+              ),
             GonderilemediSatiri(
               durum: m.sohbet_mesaj_gonderilemedi,
               tekrarDene: m.sohbet_tekrar_dene,
               sil: m.sohbet_mesaj_sil,
               onTekrarDene: () => kuyruk.tekrarDene(oge.istekKimligi),
               onSil: () => kuyruk.sil(oge.istekKimligi),
-            )
-          else
+            ),
+          ] else
             MesajAltSatiri(
               children: [
                 ExcludeSemantics(

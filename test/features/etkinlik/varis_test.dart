@@ -15,7 +15,7 @@ import 'package:tayfam/core/oturum/token_deposu.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/varis_bildirimi.dart';
-import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';

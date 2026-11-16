@@ -310,13 +310,17 @@ void main() {
       final sonuc = k.istemci.kanalaGonder(
         tayfaId: tayfaA,
         kanalId: kanal1,
-        metin: 'merhaba',
-        istekKimligi: istek,
+        istek: const ChannelMessageCreateRequest(
+          kind: ChannelMessageCreateRequestKind.text,
+          body: 'merhaba',
+          clientRequestId: istek,
+        ),
       );
       final giden = soket.tur('send').single;
       expect(giden['data'], {
         'tayfa_id': tayfaA,
         'channel_id': kanal1,
+        'kind': 'text',
         'body': 'merhaba',
         'client_request_id': istek,
       });
@@ -332,8 +336,10 @@ void main() {
         k.istemci.kanalaGonder(
           tayfaId: tayfaA,
           kanalId: kanal1,
-          metin: 'x',
-          istekKimligi: istek,
+          istek: const ChannelMessageCreateRequest(
+            body: 'x',
+            clientRequestId: istek,
+          ),
         ),
         throwsA(isA<RealtimeKapali>()),
       );
@@ -345,8 +351,11 @@ void main() {
       final sonuc = k.istemci.kanalaGonder(
         tayfaId: tayfaA,
         kanalId: kanal1,
-        metin: 'x',
-        istekKimligi: istek,
+        istek: const ChannelMessageCreateRequest(
+          kind: ChannelMessageCreateRequestKind.text,
+          body: 'x',
+          clientRequestId: istek,
+        ),
       );
       k.zaman.calistir(RealtimeIstemcisi.cevapSuresi);
       await expectLater(sonuc, throwsA(isA<TimeoutException>()));
@@ -358,8 +367,11 @@ void main() {
       final sonuc = k.istemci.kanalaGonder(
         tayfaId: tayfaA,
         kanalId: kanal1,
-        metin: 'x',
-        istekKimligi: istek,
+        istek: const ChannelMessageCreateRequest(
+          kind: ChannelMessageCreateRequestKind.text,
+          body: 'x',
+          clientRequestId: istek,
+        ),
       );
       final beklenti = expectLater(sonuc, throwsA(isA<RealtimeKapali>()));
       await soket.sunucuKapatti(1006);
@@ -372,8 +384,11 @@ void main() {
       final sonuc = k.istemci.kanalaGonder(
         tayfaId: tayfaA,
         kanalId: kanal1,
-        metin: 'x',
-        istekKimligi: istek,
+        istek: const ChannelMessageCreateRequest(
+          kind: ChannelMessageCreateRequestKind.text,
+          body: 'x',
+          clientRequestId: istek,
+        ),
       );
       soket.cerceve('error', {
         'code': 'slow_mode',
@@ -467,6 +482,7 @@ void main() {
           'id': mesaj1,
           'tayfa_id': tayfaA,
           'channel_id': kanal1,
+          'kind': 'text',
           'body': 'gizli metin',
           'created_at': '2026-11-11T10:00:00Z',
         });

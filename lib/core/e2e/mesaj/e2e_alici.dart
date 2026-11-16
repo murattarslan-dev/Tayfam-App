@@ -111,21 +111,21 @@ final class E2eAlici {
         _islenen.add(z.id);
         return ZarfSonucu.tekrar;
       }
-      String? metin;
+      BirebirIcerik? icerik;
       var eski = false;
       try {
-        metin = zarfIcerigiCoz(await oturumlar.coz(z));
+        icerik = zarfIcerigiCoz(await oturumlar.coz(z));
       } on SignalHatasi catch (hata) {
         eski = hata.tur == SignalHatasiTuru.eskiMesaj;
       } on E2eHazirDegil {
-        metin = null;
+        icerik = null;
       } on FormatException {
-        metin = null;
+        icerik = null;
       }
       if (!await _depo.gorulduYaz(z.id)) throw const E2eDepoHatasi();
       _islenen.add(z.id);
       if (eski) return ZarfSonucu.tekrar;
-      if (metin == null) {
+      if (icerik == null) {
         cozulemedi(
           z.conversationId,
           E2eSistemSatiri(
@@ -136,16 +136,16 @@ final class E2eAlici {
         );
         return ZarfSonucu.cozulemedi;
       }
-      final icerik = CozulmusBirebirMesaj(
+      final mesaj = CozulmusBirebirMesaj(
         mesajId: z.messageId,
         konusmaId: z.conversationId,
         gonderenKullaniciId: z.senderUserId,
-        metin: metin,
+        icerik: icerik,
         olusturma: z.createdAt,
         kaynak: CozulmusMesajKaynagi.zarf,
       );
-      icerikEkle(icerik);
-      yayin?.yay(icerik);
+      icerikEkle(mesaj);
+      yayin?.yay(mesaj);
       return ZarfSonucu.cozuldu;
     });
   }

@@ -14,6 +14,7 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/kurulum.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
+import 'package:tayfam/features/tayfa/presentation/anlik_etkinlik_karti.dart';
 import 'package:tayfam/features/tayfa/presentation/tayfa_avatari.dart';
 import 'package:tayfam/features/tayfa/presentation/tayfa_degistirme_paneli.dart';
 import 'package:tayfam/features/tayfa/presentation/tayfa_ortak.dart';
@@ -70,13 +71,20 @@ class TayfaAnaSayfa extends ConsumerWidget {
     final kural = kuralGosterilsin(ozet, simdi: simdi);
     final durum = tayfa == null ? null : tayfaDurumu(tayfa);
     final bekleyen = ozet.bekleyenIstekSayisi;
+    // Anlık tayfada (ADR-0026) "Oluştur" yoktur: tek etkinlik, diğer
+    // modüller kapalı; davetler anlık etkinlik kartındadır.
+    final anlik = ozet.anlik;
     final secenekler = [
-      for (final modul in moduller)
-        if (modul.olusturmaSecenegi case final secenek?)
-          if (secenek.izinli(ozet.yetki)) secenek,
+      if (!anlik)
+        for (final modul in moduller)
+          if (modul.olusturmaSecenegi case final secenek?)
+            if (secenek.izinli(ozet.yetki)) secenek,
     ];
-    final olusturVar = secenekler.isNotEmpty || davet != null;
+    final olusturVar = !anlik && (secenekler.isNotEmpty || davet != null);
+    // Anlık tayfada linki yalnızca organizatör açar (Tayfam-Api ADR-0032 §3).
+    final ustDavet = anlik && ozet.rol != Role.admin ? null : davet;
     final oneCikanlar = [
+      if (anlik) AnlikEtkinlikKarti(tayfaId: tayfaId, ozet: ozet),
       if (kurulum) TayfaKurulumKarti(tayfaId: tayfaId),
       for (final modul in moduller) ?modul.anaSayfaOneCikan(context, tayfaId),
     ];
@@ -122,9 +130,9 @@ class TayfaAnaSayfa extends ConsumerWidget {
               durum: durum,
               durumEylemi: iptalDugmesi,
               menu: menu?.call(context, tayfaId),
-              onDavet: davet == null
+              onDavet: ustDavet == null
                   ? null
-                  : () => unawaited(davet(context, tayfaId)),
+                  : () => unawaited(ustDavet(context, tayfaId)),
             ),
             if (oneCikanlar.isNotEmpty) MorTasma(children: oneCikanlar),
             if (bekleyen != null)

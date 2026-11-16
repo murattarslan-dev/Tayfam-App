@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
@@ -16,10 +18,13 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
+import 'package:tayfam/features/arkadas/arkadas.dart';
+import 'package:tayfam/features/etkinlik/presentation/anlik/anlik_acildi_ekrani.dart';
+import 'package:tayfam/features/etkinlik/presentation/anlik/arkadas_secimi.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
-import 'package:tayfam/features/etkinlik/presentation/harita_secici_ekrani.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';
@@ -111,17 +116,35 @@ class _EtkinlikDuzenlemeEkraniState
 /// Düzenlemede tür değişmez (tür adımı yoktur), tekrar düzenlenmez ve seri
 /// etkinlikte yalnızca bu etkinliğin değişeceği söylenir. Oluşturmada
 /// başarıyla etkinliğin detayı açılır; düzenlemede detaya dönülür.
+///
+/// [EtkinlikSihirbaziEkrani.anlik] anlık (bireysel) etkinliktir (ADR-0026;
+/// tasarım: `docs/tasarim/29`): tayfa yoktur, başlık "Anlık etkinlik"; tür
+/// adımında ilgi alanı grubu, bilgi adımında kapak, ayrıntı adımında tekrar
+/// yoktur; ayrıntıdan sonra "Kimleri çağıralım?" adımı gelir. Başarıda
+/// "Etkinlik açıldı" ekranı ([AnlikAcildiEkrani]) sihirbazın yerine çizilir.
 class EtkinlikSihirbaziEkrani extends ConsumerStatefulWidget {
   const EtkinlikSihirbaziEkrani({
     super.key,
-    required this.tayfaId,
+    required String this.tayfaId,
     this.duzenlenen,
-  });
+  }) : anlikBaslangic = (gun: null, davetli: null);
 
-  final String tayfaId;
+  /// Anlık etkinlik sihirbazı; [anlikBaslangic] adresten gelen, doğrulanmış
+  /// açılış değerleridir.
+  const EtkinlikSihirbaziEkrani.anlik({
+    super.key,
+    this.anlikBaslangic = (gun: null, davetli: null),
+  }) : tayfaId = null,
+       duzenlenen = null;
+
+  /// Etkinliğin tayfası; anlık etkinlikte `null`.
+  final String? tayfaId;
 
   /// Düzenlenen etkinlik; oluşturmada `null`.
   final Event? duzenlenen;
+
+  /// Anlık etkinliğin açılış değerleri.
+  final AnlikAnahtari anlikBaslangic;
 
   @override
   ConsumerState<EtkinlikSihirbaziEkrani> createState() =>
@@ -134,6 +157,13 @@ class _EtkinlikSihirbaziEkraniState
     tayfaId: widget.tayfaId,
     duzenlenen: widget.duzenlenen,
   );
+
+  late final NotifierProvider<EtkinlikSihirbaziNotifier, EtkinlikTaslagi>
+  _provider = widget.tayfaId == null
+      ? anlikSihirbazProvider(widget.anlikBaslangic)
+      : etkinlikSihirbaziProvider(_anahtar);
+
+  bool get _anlik => widget.tayfaId == null;
 
   late final TextEditingController _baslik;
   late final TextEditingController _aciklama;
@@ -156,7 +186,7 @@ class _EtkinlikSihirbaziEkraniState
   @override
   void initState() {
     super.initState();
-    final t = ref.read(etkinlikSihirbaziProvider(_anahtar));
+    final t = ref.read(_provider);
     _baslik = TextEditingController(text: t.baslik);
     _aciklama = TextEditingController(text: t.aciklama);
     _noktaAdi = TextEditingController(text: t.yer.noktaAdi);
@@ -196,10 +226,9 @@ class _EtkinlikSihirbaziEkraniState
     super.dispose();
   }
 
-  EtkinlikSihirbaziNotifier get _n =>
-      ref.read(etkinlikSihirbaziProvider(_anahtar).notifier);
+  EtkinlikSihirbaziNotifier get _n => ref.read(_provider.notifier);
 
-  EtkinlikTaslagi get _t => ref.read(etkinlikSihirbaziProvider(_anahtar));
+  EtkinlikTaslagi get _t => ref.read(_provider);
 
   bool get _duzenleme => _anahtar.duzenlenen != null;
 
@@ -224,10 +253,13 @@ class _EtkinlikSihirbaziEkraniState
       return;
     }
     final eski = _anahtar.duzenlenen;
+    final tayfaId = widget.tayfaId;
     context.go(
-      eski == null
-          ? Adresler.etkinlikler(widget.tayfaId)
-          : Adresler.etkinlik(widget.tayfaId, eski.id),
+      tayfaId == null
+          ? Adresler.kok
+          : eski == null
+          ? Adresler.etkinlikler(tayfaId)
+          : Adresler.etkinlik(tayfaId, eski.id),
     );
   }
 
@@ -301,22 +333,35 @@ class _EtkinlikSihirbaziEkraniState
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    final provider = etkinlikSihirbaziProvider(_anahtar);
+    final provider = _provider;
     ref.listen(provider, (_, sonraki) {
       final id = sonraki.sonuc;
-      if (id == null) return;
+      final tayfaId = widget.tayfaId;
+      // Anlık etkinlikte "Etkinlik açıldı" ekranı sihirbazın yerine çizilir.
+      if (id == null || tayfaId == null) return;
       if (_duzenleme && context.canPop()) {
         context.pop();
       } else {
-        context.go(Adresler.etkinlik(widget.tayfaId, id));
+        context.go(Adresler.etkinlik(tayfaId, id));
       }
     });
     final t = ref.watch(provider);
-    final ilkAdim = _n.ilkAdim;
-    final sonAdim = t.adim == SihirbazAdimi.onizleme;
+    if (t.anlikSonuc case final sonuc?) {
+      return AnlikAcildiEkrani(
+        sonuc: sonuc,
+        davetliSayisi: t.davetliler.length,
+      );
+    }
+    final n = _n;
+    final ilkAdim = n.ilkAdim;
+    final adimSayisi = n.adimSayisi;
+    final sonAdim = t.adim == n.onizlemeAdimi;
     final kilitli = t.gonderiliyor;
     return PopScope(
-      canPop: t.sonuc != null || (t.adim <= ilkAdim && !_n.girdiVar),
+      // Anlık sihirbaz `go` ile açılır; altında sayfa olmayabilir (kapat
+      // kök adrese döner).
+      canPop:
+          !_anlik && (t.sonuc != null || (t.adim <= ilkAdim && !n.girdiVar)),
       onPopInvokedWithResult: (geriDonuldu, _) {
         if (geriDonuldu || kilitli) return;
         if (!_n.geri()) unawaited(_kapat());
@@ -326,15 +371,17 @@ class _EtkinlikSihirbaziEkraniState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SihirbazUstCubugu(
-              baslik: _duzenleme
+              baslik: _anlik
+                  ? m.anlik_baslik
+                  : _duzenleme
                   ? m.etkinlik_duzenle_baslik
                   : m.etkinlik_olustur_baslik,
               adimMetni: m.etkinlik_adim(
                 t.adim - ilkAdim + 1,
-                etkinlikAdimSayisi - ilkAdim,
+                adimSayisi - ilkAdim,
               ),
               adim: t.adim - ilkAdim + 1,
-              toplam: etkinlikAdimSayisi - ilkAdim,
+              toplam: adimSayisi - ilkAdim,
               onKapat: kilitli ? null : () => unawaited(_kapat()),
             ),
             Expanded(
@@ -369,10 +416,18 @@ class _EtkinlikSihirbaziEkraniState
                           SihirbazAdimi.bilgi => _bilgiAdimi(context, t),
                           SihirbazAdimi.yer => _yerAdimi(context, t),
                           SihirbazAdimi.ayrinti => _ayrintiAdimi(context, t),
+                          SihirbazAdimi.davet when _anlik => _davetAdimi(
+                            context,
+                            t,
+                          ),
                           _ => _OnizlemeAdimi(
                             taslak: t,
                             duzenlenen: _anahtar.duzenlenen,
-                            onDegistir: kilitli ? null : _n.adimaGit,
+                            anlik: _anlik,
+                            davetliOzeti: _anlik
+                                ? _davetliOzeti(context, t.davetliler)
+                                : null,
+                            onDegistir: kilitli ? null : n.adimaGit,
                           ),
                         },
                       ],
@@ -405,9 +460,12 @@ class _EtkinlikSihirbaziEkraniState
 
   Widget _turAdimi(BuildContext context, EtkinlikTaslagi t) {
     final m = AppLocalizations.of(context);
-    final ilgi =
-        ref.watch(tayfaOzetiProvider(widget.tayfaId)).tayfa?.interests ??
-        const <EventType>[];
+    final tayfaId = widget.tayfaId;
+    // Anlık etkinlikte tayfa yoktur; türler tek ızgarada.
+    final ilgi = tayfaId == null
+        ? const <EventType>[]
+        : ref.watch(tayfaOzetiProvider(tayfaId)).tayfa?.interests ??
+              const <EventType>[];
     final onde = [
       for (final tur in secilebilirEtkinlikTurleri)
         if (ilgi.contains(tur)) tur,
@@ -537,17 +595,21 @@ class _EtkinlikSihirbaziEkraniState
                 : null,
           ),
         ),
-        BolumEtiketi(baslik: m.etkinlik_kapak_baslik),
-        FotografAlani(
-          amac: UploadPurpose.cover,
-          tayfaId: widget.tayfaId,
-          deger: t.kapak,
-          etiket: m.medya_kapak_etiketi,
-          etkin: !kapali,
-          onDegisti: _n.kapakAyarla,
-        ),
-        const SizedBox(height: TayfamSpacing.s8),
-        Text(m.etkinlik_kapak_aciklama, style: context.yazi.bodySmall),
+        // Anlık etkinlikte kapak oluşturmada verilemez (sözleşme); sonra
+        // düzenlemeyle eklenir.
+        if (widget.tayfaId case final tayfaId?) ...[
+          BolumEtiketi(baslik: m.etkinlik_kapak_baslik),
+          FotografAlani(
+            amac: UploadPurpose.cover,
+            tayfaId: tayfaId,
+            deger: t.kapak,
+            etiket: m.medya_kapak_etiketi,
+            etkin: !kapali,
+            onDegisti: _n.kapakAyarla,
+          ),
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(m.etkinlik_kapak_aciklama, style: context.yazi.bodySmall),
+        ],
       ],
     );
   }
@@ -664,6 +726,44 @@ class _EtkinlikSihirbaziEkraniState
     );
   }
 
+  // --- Anlık etkinlik, adım 5: kimleri çağıralım? --------------------------
+
+  Widget _davetAdimi(BuildContext context, EtkinlikTaslagi t) {
+    final m = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AdimBasligi(
+          baslik: m.anlik_davet_baslik,
+          aciklama: m.anlik_davet_aciklama(anlikDavetliEnCok),
+        ),
+        const SizedBox(height: TayfamSpacing.s20),
+        ArkadasSecimi(
+          secili: t.davetliler,
+          onDegistir: t.gonderiliyor ? null : _n.davetliDegistir,
+        ),
+      ],
+    );
+  }
+
+  /// Önizlemedeki "Davetliler" satırı: ilk iki ad ve kalan sayı. Adlar
+  /// yüklü arkadaş listesinden; bilinmiyorsa yalnızca sayı.
+  String _davetliOzeti(BuildContext context, List<String> davetliler) {
+    final m = AppLocalizations.of(context);
+    if (davetliler.isEmpty) return m.anlik_davetli_yok;
+    final arkadaslar =
+        ref.watch(arkadaslarProvider).value?.ogeler ?? const <Friend>[];
+    final adlar = {for (final a in arkadaslar) a.userId: a.displayName};
+    final bilinen = [for (final id in davetliler) ?adlar[id]];
+    if (bilinen.length != davetliler.length) {
+      return m.anlik_davetli_sayi(davetliler.length);
+    }
+    const gosterilen = 2;
+    final ilkler = bilinen.take(gosterilen).join(', ');
+    final kalan = bilinen.length - gosterilen;
+    return kalan > 0 ? m.anlik_davetli_fazla(ilkler, kalan) : ilkler;
+  }
+
   // --- Adım 4: türe özel alanlar, kontenjan ve tekrar ----------------------
 
   Widget _ayrintiAdimi(BuildContext context, EtkinlikTaslagi t) {
@@ -722,7 +822,8 @@ class _EtkinlikSihirbaziEkraniState
           HataSatiri(metin: m.etkinlik_sayi_hata(etkinlikKontenjanEnCok)),
         ],
         ..._turAlanlari(context, t),
-        if (!_duzenleme) ...[
+        // Anlık etkinlik tekrarlanmaz (sözleşme).
+        if (!_duzenleme && !_anlik) ...[
           BolumEtiketi(baslik: m.etkinlik_tekrar_baslik),
           ListeKarti(
             children: [
@@ -1351,10 +1452,19 @@ class _OnizlemeAdimi extends StatelessWidget {
     required this.taslak,
     required this.duzenlenen,
     required this.onDegistir,
+    this.anlik = false,
+    this.davetliOzeti,
   });
 
   final EtkinlikTaslagi taslak;
   final Event? duzenlenen;
+
+  /// Anlık etkinlik: tekrar satırı yerine "Davetliler"; altta arşiv ve
+  /// davet linki bilgisi; `instant-event-limit` sınır kutusunda.
+  final bool anlik;
+
+  /// Anlık etkinlikte "Davetliler" satırının değeri.
+  final String? davetliOzeti;
 
   /// `null` ise "Değiştir" devre dışıdır (gönderim sürerken).
   final ValueChanged<int>? onDegistir;
@@ -1397,7 +1507,7 @@ class _OnizlemeAdimi extends StatelessWidget {
             : m.etkinlik_kontenjan_sinirsiz,
         SihirbazAdimi.ayrinti,
       ),
-      if (duzenlenen == null)
+      if (duzenlenen == null && !anlik)
         (
           m.etkinlik_tekrar_baslik,
           tekrarKisaOzeti(m, t.tekrar),
@@ -1413,19 +1523,36 @@ class _OnizlemeAdimi extends StatelessWidget {
                 ),
           SihirbazAdimi.ayrinti,
         ),
+      if (anlik)
+        (
+          m.anlik_onizleme_davetliler,
+          davetliOzeti ?? m.anlik_davetli_yok,
+          SihirbazAdimi.davet,
+        ),
     ];
+    final hata = t.hata;
+    final sinirHatasi =
+        hata is ApiProblem && hata.type == ProblemType.instantEventLimit;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AdimBasligi(
           baslik: m.etkinlik_onizleme_baslik,
-          aciklama: duzenlenen == null
+          aciklama: anlik
+              ? m.anlik_onizleme_aciklama
+              : duzenlenen == null
               ? m.etkinlik_onizleme_aciklama
               : m.etkinlik_onizleme_duzenleme_aciklama,
         ),
-        if (t.hata case final hata?) ...[
+        if (hata != null) ...[
           const SizedBox(height: TayfamSpacing.s16),
-          HataSatiri.hatadan(hata),
+          if (sinirHatasi)
+            SinirKutusu(
+              baslik: m.anlik_sinir_baslik,
+              metin: m.anlik_sinir_metni,
+            )
+          else
+            HataSatiri.hatadan(hata),
         ],
         const SizedBox(height: TayfamSpacing.s20),
         Material(
@@ -1489,6 +1616,13 @@ class _OnizlemeAdimi extends StatelessWidget {
             ],
           ),
         ),
+        if (anlik) ...[
+          const SizedBox(height: TayfamSpacing.s16),
+          SihirbazBilgiKutusu(
+            metin: m.anlik_onizleme_bilgi,
+            ikon: Icons.info_outline,
+          ),
+        ],
       ],
     );
   }

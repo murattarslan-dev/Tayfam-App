@@ -745,8 +745,14 @@ class BosVakitRozeti extends StatelessWidget {
 }
 
 /// Arkadaşın boş günleri alttan sayfası (tasarım: Bosum-Arkadas-Gunleri):
-/// 30 günün tamamı ve notlar, altta kişi profilindeki ek eylemler (ör.
-/// "Mesaj gönder"). "Bir şey yapalım" anlık etkinlik işiyle eklenecek.
+/// 30 günün tamamı ve notlar, "Bir şey yapalım" ve altta kişi profilindeki
+/// ek eylemler (ör. "Mesaj gönder").
+///
+/// "Bir şey yapalım" (ADR-0026; Notion Faz 2 §3; `docs/tasarim/29` §1):
+/// anlık etkinlik sihirbazını ilk boş gün için, bu arkadaş davetli açar.
+/// Bir güne dokunmak sihirbazı o gün için açar. Sihirbaz etkinlik
+/// özelliğindedir; buradan yalnızca adresle (`Adresler.anlikEtkinlik`)
+/// gidilir (arkadaş özelliği etkinliği import edemez, ADR-0002).
 Future<void> arkadasBosGunleriniAc(
   BuildContext context, {
   required String kullaniciId,
@@ -762,6 +768,19 @@ Future<void> arkadasBosGunleriniAc(
 );
 
 class _ArkadasGunleriSayfasi extends ConsumerWidget {
+  /// Sayfayı kapatıp anlık etkinlik sihirbazını [gun] için, bu arkadaş
+  /// davetli açar. Sihirbaz kabuğun üstünde `go` ile açılır (ADR-0026).
+  void _birSeyYapalim(BuildContext context, DateTime gun) {
+    final yonlendirici = GoRouter.of(context);
+    Navigator.of(context).pop();
+    yonlendirici.go(
+      Adresler.anlikEtkinlik(
+        gun: DateTime(gun.year, gun.month, gun.day),
+        davetli: kullaniciId,
+      ),
+    );
+  }
+
   const _ArkadasGunleriSayfasi({
     required this.kullaniciId,
     required this.ad,
@@ -790,6 +809,10 @@ class _ArkadasGunleriSayfasi extends ConsumerWidget {
       arkadas: true,
       ortakTayfaVar: false,
     );
+    // "Bir şey yapalım"ın günü: listedeki ilk (en yakın) boş gün.
+    final ilkGun = deger == null
+        ? null
+        : [for (final g in deger) ?takvimGunuOku(g.date)].firstOrNull;
     final eylemler = gorunmuyor
         ? const <Widget>[]
         : [
@@ -815,7 +838,11 @@ class _ArkadasGunleriSayfasi extends ConsumerWidget {
     } else if (deger != null) {
       icerik = deger.isEmpty
           ? BosMetin(m.bosum_arkadas_bos)
-          : _GunKarti(gunler: deger, bugun: bugun);
+          : _GunKarti(
+              gunler: deger,
+              bugun: bugun,
+              onTap: (_, tarih) => _birSeyYapalim(context, tarih),
+            );
     } else if (hata != null) {
       icerik = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -865,6 +892,14 @@ class _ArkadasGunleriSayfasi extends ConsumerWidget {
       ),
       children: [
         icerik,
+        if (!gorunmuyor && ilkGun != null) ...[
+          const SizedBox(height: TayfamSpacing.s16),
+          BirincilEylem(
+            etiket: m.bosum_bir_sey_yapalim,
+            ikon: Icons.bolt_outlined,
+            onPressed: () => _birSeyYapalim(context, ilkGun),
+          ),
+        ],
         for (final eylem in eylemler) ...[
           const SizedBox(height: TayfamSpacing.s16),
           eylem,

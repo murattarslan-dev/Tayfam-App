@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
@@ -53,6 +54,8 @@ final List<Override> kayitOverridelari = [
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Ana sayfadan davet linki ve "Silmeyi iptal et" (2026-11-13).
   tayfaDavetiProvider.overrideWithValue(tayfayaDavetEt),
+  // Anlık tayfada organizatörün arkadaş daveti (ADR-0026).
+  arkadasDavetiProvider.overrideWithValue(anlikArkadasDavetEt),
   tayfaSilmeIptaliProvider.overrideWithValue(silmeIptalDugmesi),
   // Tayfa ayarlarındaki ek girişler: moderasyon kuyruğu (ADR-0018 §8).
   yonetimEkGirisleriProvider.overrideWithValue(yonetimEkGirisleri),
@@ -110,8 +113,14 @@ Widget _etkinlikSohbeti(BuildContext context, Event etkinlik, Widget baslik) =>
 Future<void> _birebirMesajSikayeti(
   BuildContext context, {
   required String mesajId,
-  required String metin,
-}) => birebirMesajiSikayetEt(context, mesajId: mesajId, mesajMetni: metin);
+  String? metin,
+  Uint8List? fotograf,
+}) => birebirMesajiSikayetEt(
+  context,
+  mesajId: mesajId,
+  mesajMetni: metin,
+  fotograf: fotograf,
+);
 
 Widget _tayfaKesfetBolumu(BuildContext context, String tayfaId) =>
     TayfaKesfetBolumu(tayfaId: tayfaId);

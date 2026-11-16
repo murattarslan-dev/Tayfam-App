@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/sohbet/giden_icerik.dart';
 
 /// Gönderilmekte olan bir birebir mesajın durumu (ADR-0006: bekleyen öğe
 /// saat ikonuyla, başarısız olan uyarı ikonuyla gösterilir).
@@ -16,19 +17,20 @@ enum GidenDurumu {
 ///
 /// [istekKimligi] mesaj yazıldığı anda bir kez üretilir ve her denemede
 /// aynı değer gönderilir (`client_request_id`); sunucu ikinci mesaj açmaz.
-/// Metin hiçbir yere yazılmaz ve loglanmaz (kesin kural 3).
+/// İçerik hiçbir yere yazılmaz ve loglanmaz (kesin kural 3).
 @immutable
 final class GidenMesaj {
   const GidenMesaj({
     required this.istekKimligi,
-    required this.metin,
+    required this.icerik,
     this.durum = GidenDurumu.gonderiliyor,
     this.hata,
   });
 
   final String istekKimligi;
 
-  final String metin;
+  /// Metin, fotoğraf (yerel önizlemesiyle) ya da yer.
+  final GidenIcerik icerik;
 
   final GidenDurumu durum;
 
@@ -37,12 +39,12 @@ final class GidenMesaj {
 
   /// Yeniden deneniyor.
   GidenMesaj gonderiliyor() =>
-      GidenMesaj(istekKimligi: istekKimligi, metin: metin);
+      GidenMesaj(istekKimligi: istekKimligi, icerik: icerik);
 
   /// Gönderilemedi.
   GidenMesaj basarisiz(Object hata) => GidenMesaj(
     istekKimligi: istekKimligi,
-    metin: metin,
+    icerik: icerik,
     durum: GidenDurumu.basarisiz,
     hata: hata,
   );

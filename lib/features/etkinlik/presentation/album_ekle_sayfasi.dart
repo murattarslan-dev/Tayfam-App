@@ -10,7 +10,6 @@ import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_albumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
-import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// "Albüme ekle" sayfasının sonucu: hazır görüntüler ve (tek fotoğrafta)

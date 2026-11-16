@@ -212,9 +212,8 @@ void main() {
     });
   });
 
-  testWidgets('üye başkasının mesajına uzun basınca işlem sayfası açılmaz', (
-    tester,
-  ) async {
+  testWidgets('üye başkasının mesajına uzun basınca yalnızca "Şikâyet et" '
+      '(tasarım 28)', (tester) async {
     final ortam = SohbetOrtami(mesajlar: [mesajJson(mesajId2, metin: 'selam')]);
     await _ac(
       tester,
@@ -223,7 +222,47 @@ void main() {
     );
     await tester.longPress(find.text('selam'));
     await tester.pumpAndSettle();
-    expect(find.text(arbMetni('sohbet_mesaj_islemleri')), findsNothing);
+    expect(find.text(arbMetni('sohbet_mesaj_islemleri')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_sikayet_et')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_mesaji_sil')), findsNothing);
+    // Şikâyet sayfası kanal mesajı hedefiyle açılır.
+    await tester.tap(find.text(arbMetni('sohbet_sikayet_et')));
+    await tester.pumpAndSettle();
+    expect(find.text(arbMetni('sikayet_baslik')), findsOneWidget);
+    expect(find.text(arbMetni('sikayet_tur_kanal_mesaji')), findsOneWidget);
+  });
+
+  testWidgets('yönetim başkasının mesajını şikâyet etmez, gizler', (
+    tester,
+  ) async {
+    final ortam = SohbetOrtami(
+      rol: 'moderator',
+      mesajlar: [mesajJson(mesajId2, metin: 'selam')],
+    );
+    await _ac(
+      tester,
+      const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+      ortam,
+    );
+    await tester.longPress(find.text('selam'));
+    await tester.pumpAndSettle();
+    expect(find.text(arbMetni('sohbet_mesaji_sil')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_sikayet_et')), findsNothing);
+  });
+
+  testWidgets('kendi mesajında "Şikâyet et" yok', (tester) async {
+    final ortam = SohbetOrtami(
+      mesajlar: [mesajJson(mesajId2, metin: 'benimki', yazar: benimId)],
+    );
+    await _ac(
+      tester,
+      const KanalEkrani(tayfaId: ornekTayfaId, kanalId: kanalId1),
+      ortam,
+    );
+    await tester.longPress(find.text('benimki'));
+    await tester.pumpAndSettle();
+    expect(find.text(arbMetni('sohbet_mesaji_sil')), findsOneWidget);
+    expect(find.text(arbMetni('sohbet_sikayet_et')), findsNothing);
   });
 
   testWidgets('yavaş modda gönderdikten sonra düğme geri sayıma döner', (

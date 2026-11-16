@@ -13,6 +13,7 @@ import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/shell/derin_link/davet_deposu.dart';
+import 'package:tayfam/shell/derin_link/derin_link.dart';
 import 'package:tayfam/shell/derin_link/derin_link_rotalari.dart';
 
 import '../../features/tayfa/sahteler.dart';
@@ -171,6 +172,49 @@ void main() {
     expect(find.byType(DavetEkrani), findsNothing);
     expect(find.byType(KarsilamaEkrani), findsOneWidget);
   });
+
+  testWidgets(
+    'anlık etkinliğin linki: aynı doğrulama, istek organizatör onayına düşer',
+    (tester) async {
+      // Anlık tayfada linkle gelen her zaman katılım isteği bırakır
+      // (Tayfam-Api ADR-0032 §4); link biçimi ve doğrulaması aynıdır.
+      ekranBoyutu(tester);
+      final k = _Kurulum(
+        katilim: (_) => uyelikJson(ornekTayfaId, durum: 'pending'),
+      );
+      k.tasima.yanitlar['GET /v1/tayfas'] = (_) => listeJson([
+        bekleyenJson(ornekTayfaId, ad: 'Cumartesi kahvaltı', tur: 'instant'),
+      ]);
+      await _linkleAc(tester, k);
+      expect(_konum(tester).fragment, isEmpty, reason: 'token adreste yok');
+
+      await _dokun(tester, _metin('derin_link_davet_katil'));
+      expect(_metin('derin_link_davet_gonderildi_anlik'), findsOneWidget);
+      expect(_metin('derin_link_davet_gonderildi_aciklama'), findsNothing);
+      // Token yalnızca istek gövdelerinde gider.
+      expect(k.govdeler('/v1/invite-joins'), [
+        {'token': _token},
+      ]);
+      expect(_kutu(tester).davetBekliyor, isFalse);
+    },
+  );
+
+  testWidgets(
+    'başka yoldaki ya da alan adındaki anlık davet linki işlenmiyor',
+    (tester) async {
+      for (final link in [
+        'https://tayfam.app/anlik-etkinlik#$_token',
+        'https://tayfam.app.kotu.example/davet#$_token',
+        'http://tayfam.app/davet#$_token',
+      ]) {
+        expect(
+          gelenAdresiAyristir(Uri.parse(link)),
+          isNot(isA<DavetLinki>()),
+          reason: link,
+        );
+      }
+    },
+  );
 
   testWidgets('zaten üyeyse katıl düğmesi yok', (tester) async {
     ekranBoyutu(tester);
@@ -372,6 +416,23 @@ void main() {
       expect(_metin('derin_link_davet_gonderildi_aciklama'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+      '${tema.name} temada 2× yazıda anlık etkinlik isteği taşmıyor',
+      (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final k = _Kurulum(
+          katilim: (_) => uyelikJson(ornekTayfaId, durum: 'pending'),
+        );
+        k.tasima.yanitlar['GET /v1/tayfas'] = (_) =>
+            listeJson([bekleyenJson(ornekTayfaId, tur: 'instant')]);
+        await _linkleAc(tester, k, tema: tema);
+        await _dokun(tester, _metin('derin_link_davet_katil'));
+        expect(_metin('derin_link_davet_gonderildi_anlik'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('${tema.name} temada 2× yazıda hata durumu taşmıyor', (
       tester,

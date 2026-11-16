@@ -64,7 +64,7 @@ Future<Map<String, Object?>> _kayit(String mesajId) async => {
       duz: ArsivDuzMetni(
         gonderenId: karsiId,
         olusturma: DateTime.utc(2026, 11, 10, 10),
-        govde: 'Arşivden selam',
+        icerik: const MetinIcerigi('Arşivden selam'),
       ),
     ),
   ),

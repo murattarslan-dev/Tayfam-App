@@ -1,6 +1,7 @@
 package com.murattarslan.tayfam.e2e
 
 import org.signal.libsignal.crypto.Aes256GcmDecryption
+import org.signal.libsignal.crypto.Aes256GcmEncryption
 import org.signal.libsignal.crypto.Aes256GcmSiv
 import org.signal.libsignal.protocol.DuplicateMessageException
 import org.signal.libsignal.protocol.IdentityKey
@@ -118,6 +119,7 @@ object SignalIslemleri {
             "hkdf" -> hkdf(a)
             "aesGcmSivSifrele" -> aesGcmSivSifrele(a)
             "aesGcmSivCoz" -> aesGcmSivCoz(a)
+            "aes256GcmSifrele" -> aes256GcmSifrele(a)
             "aes256GcmCoz" -> aes256GcmCoz(a)
             "guvenlikKodu" -> guvenlikKodu(a)
             else -> throw SignalHatasi(SignalHatasiTuru.bilinmeyen)
@@ -320,6 +322,23 @@ object SignalIslemleri {
             null
         }
         return mapOf("duz" to duz)
+    }
+
+    /**
+     * AES-256-GCM şifreleme (birebir mesaj eki; istemci ADR-0028 §2).
+     * Dönüş: şifreli metin ‖ 16 bayt etiket. Anahtar ve nonce çağıranındır
+     * (Dart'ta `Random.secure()`); köprü hiçbir şey saklamaz.
+     */
+    private fun aes256GcmSifrele(a: Map<String, Any?>): Map<String, Any?> {
+        val anahtar = a.bayt("anahtar")
+        val nonce = a.bayt("nonce")
+        if (anahtar.size != 32 || nonce.size != 12) {
+            throw SignalHatasi(SignalHatasiTuru.gecersizAnahtar)
+        }
+        val tampon = a.bayt("duz").copyOf()
+        val sifreleyici = Aes256GcmEncryption(anahtar, nonce, a.bayt("aad"))
+        sifreleyici.encrypt(tampon)
+        return mapOf("sifreliVeEtiket" to tampon + sifreleyici.computeTag())
     }
 
     /**

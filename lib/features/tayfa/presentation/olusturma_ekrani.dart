@@ -8,6 +8,7 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -28,7 +29,17 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// adımda tint-nar kutuda gösterilir; girilenler kalır. Başarıda sihirbazın
 /// yerine "Tayfa kuruldu" ekranı ([TayfaKurulduEkrani]) açılır.
 class OlusturmaEkrani extends ConsumerStatefulWidget {
-  const OlusturmaEkrani({super.key});
+  const OlusturmaEkrani({super.key}) : donusturulen = null;
+
+  /// "Bu ekiple tayfa kur" (ADR-0026; tasarım: `docs/tasarim/29` §6): aynı
+  /// üç adım, başlık "Bu ekiple tayfa kur", ilk adımda "üyeler ve etkinlik
+  /// kalır" bilgisi. Başarıda "Tayfa kuruldu" ekranı yerine tayfanın ana
+  /// sayfası açılır. Kapat tayfanın ana sayfasına döner.
+  const OlusturmaEkrani.donustur({super.key, required String tayfaId})
+    : donusturulen = tayfaId;
+
+  /// Dönüştürülen anlık tayfa; oluşturmada `null`.
+  final String? donusturulen;
 
   @override
   ConsumerState<OlusturmaEkrani> createState() => _OlusturmaEkraniState();
@@ -38,10 +49,16 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
   late final TextEditingController _ad;
   late final TextEditingController _aciklama;
 
+  late final NotifierProvider<OlusturmaNotifier, OlusturmaDurumu> _provider =
+      switch (widget.donusturulen) {
+        final tayfaId? => donusturmeProvider(tayfaId),
+        null => olusturmaProvider,
+      };
+
   @override
   void initState() {
     super.initState();
-    final durum = ref.read(olusturmaProvider);
+    final durum = ref.read(_provider);
     _ad = TextEditingController(text: durum.ad);
     _aciklama = TextEditingController(text: durum.aciklama);
   }
@@ -53,19 +70,22 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
     super.dispose();
   }
 
-  OlusturmaNotifier get _notifier => ref.read(olusturmaProvider.notifier);
+  OlusturmaNotifier get _notifier => ref.read(_provider.notifier);
 
   /// Kapat (X) ya da ilk adımda geri: girilen bir şey varsa onay sorulur.
   /// Sihirbaz `go` ile açılır (yığına itilmez); kapanınca kök adrese
   /// dönülür, yönlendirici aktif tayfanın ana sayfasını ya da karşılamayı
   /// açar.
   Future<void> _kapat() async {
-    if (ref.read(olusturmaProvider).girdiVar) {
+    if (ref.read(_provider).girdiVar) {
       final vazgec = await _vazgecOnayi(context);
       if (!vazgec || !mounted) return;
     }
     if (!mounted) return;
-    context.go(Adresler.kok);
+    final donusturulen = widget.donusturulen;
+    context.go(
+      donusturulen == null ? Adresler.kok : Adresler.tayfa(donusturulen),
+    );
   }
 
   /// Örnek ad çipi: ad alana yazılır.
@@ -80,7 +100,18 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    final durum = ref.watch(olusturmaProvider);
+    final donusturulen = widget.donusturulen;
+    if (donusturulen != null) {
+      ref.listen(_provider, (_, sonraki) {
+        final id = sonraki.olusturulan;
+        if (id == null) return;
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(m.donustur_tamam)));
+        context.go(Adresler.tayfa(id));
+      });
+    }
+    final durum = ref.watch(_provider);
     final kurulan = durum.kurulan;
     if (kurulan != null) return TayfaKurulduEkrani(tayfa: kurulan);
     final sonAdim = durum.adim == olusturmaAdimSayisi - 1;
@@ -97,7 +128,9 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SihirbazUstCubugu(
-              baslik: m.olusturma_baslik,
+              baslik: donusturulen == null
+                  ? m.olusturma_baslik
+                  : m.donustur_baslik,
               adimMetni: m.olusturma_adim(durum.adim + 1, olusturmaAdimSayisi),
               adim: durum.adim + 1,
               toplam: olusturmaAdimSayisi,
@@ -120,6 +153,7 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
                     ),
                     child: switch (durum.adim) {
                       0 => _AdAdimi(
+                        bilgi: donusturulen == null ? null : m.donustur_bilgi,
                         denetleyici: _ad,
                         durum: durum,
                         onChanged: _notifier.adAyarla,
@@ -146,7 +180,11 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
         bottomNavigationBar: SihirbazAltCubugu(
           geriEtiketi: m.olusturma_geri,
           onGeri: durum.adim > 0 && !kilitli ? () => _notifier.geri() : null,
-          ileriEtiketi: sonAdim ? m.olusturma_gonder : m.olusturma_ileri,
+          ileriEtiketi: !sonAdim
+              ? m.olusturma_ileri
+              : donusturulen == null
+              ? m.olusturma_gonder
+              : m.donustur_gonder,
           onIleri: kilitli
               ? null
               : sonAdim
@@ -162,12 +200,17 @@ class _OlusturmaEkraniState extends ConsumerState<OlusturmaEkrani> {
 /// listede nasıl görüneceğinin önizlemesi.
 class _AdAdimi extends StatelessWidget {
   const _AdAdimi({
+    this.bilgi,
     required this.denetleyici,
     required this.durum,
     required this.onChanged,
     required this.onSubmitted,
     required this.onOrnek,
   });
+
+  /// Dönüştürmede adımın üstündeki bilgi ("Üyeler, etkinlik ve sohbet
+  /// olduğu gibi kalır").
+  final String? bilgi;
 
   final TextEditingController denetleyici;
   final OlusturmaDurumu durum;
@@ -186,6 +229,10 @@ class _AdAdimi extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (bilgi case final bilgi?) ...[
+          SihirbazBilgiKutusu(metin: bilgi),
+          const SizedBox(height: TayfamSpacing.s20),
+        ],
         AdimBasligi(
           baslik: m.olusturma_ad_baslik,
           aciklama: m.olusturma_ad_aciklama,
@@ -613,7 +660,6 @@ class _GonderimHatasi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    final r = context.renkler;
     final tur = switch (hata) {
       ApiProblem(:final type) => type,
       _ => null,
@@ -630,50 +676,7 @@ class _GonderimHatasi extends StatelessWidget {
       _ => ('', ''),
     };
     if (baslik.isEmpty) return HataSatiri.hatadan(hata);
-    final yazi = context.yazi.bodyMedium?.copyWith(color: r.metin);
-    return Semantics(
-      liveRegion: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: r.tintNar,
-          borderRadius: TayfamRadii.secimKoseleri,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(TayfamSpacing.s12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ExcludeSemantics(
-                child: Icon(
-                  Icons.error_outline,
-                  size: TayfamSizes.ikon,
-                  color: r.narMetin,
-                ),
-              ),
-              const SizedBox(width: TayfamSpacing.s8),
-              Expanded(
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: baslik,
-                        style: TextStyle(
-                          color: r.narMetin,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const TextSpan(text: ' '),
-                      TextSpan(text: metin),
-                    ],
-                  ),
-                  style: yazi,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return SinirKutusu(baslik: baslik, metin: metin);
   }
 }
 
@@ -762,4 +765,28 @@ Future<bool> _vazgecOnayi(BuildContext context) async {
     ),
   );
   return sonuc ?? false;
+}
+
+/// "Bu ekiple tayfa kur" rotasının ekranı (`/tayfa-donustur/<tayfaId>`;
+/// ADR-0026). Adresteki kimlik girdi kabul edilir: biçimi bozuksa
+/// sihirbaz açılmaz, bilgi gösterilir. Yetkiyi sunucu verir (kesin kural 5).
+class DonusturmeEkrani extends StatelessWidget {
+  const DonusturmeEkrani({super.key, required this.tayfaId});
+
+  final String tayfaId;
+
+  @override
+  Widget build(BuildContext context) {
+    if (uuidBicimindeMi(tayfaId)) {
+      return OlusturmaEkrani.donustur(tayfaId: tayfaId);
+    }
+    final m = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(m.donustur_baslik)),
+      body: Padding(
+        padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
+        child: HataSatiri(metin: m.hata_tayfa_not_found),
+      ),
+    );
+  }
 }

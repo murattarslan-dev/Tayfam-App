@@ -15,8 +15,8 @@ const int sikayetNotuEnCok = 1000;
 /// Tayfadaki hedefler (`tayfa`, duyuru, etkinlik, soru, cevap, anket, av
 /// kaydı) `POST /v1/tayfas/{tayfa_id}/reports` ile; kişi profilinden
 /// kullanıcı (issue #187) ve birebir mesaj yalnızca platforma, `POST
-/// /v1/me/reports` ile gider. Kanal mesajları sözleşmede henüz şikâyet
-/// edilemez.
+/// /v1/me/reports` ile gider. Kanal mesajı (`channel_message`, Tayfam-Api
+/// ADR-0031 §6) tayfada şikâyet edilir.
 @immutable
 final class SikayetHedefi {
   /// Tayfadaki bir içerik ya da üye. [tur] `tayfa` ya da `dm_message`
@@ -32,7 +32,8 @@ final class SikayetHedefi {
              tur != ReportTargetType.unknown,
          'tayfa ve birebir mesaj için kendi kurucuları',
        ),
-       mesajMetni = null;
+       mesajMetni = null,
+       kanitFotografi = null;
 
   /// Kişi profilinden kullanıcının kendisi (issue #187): ortak tayfa
   /// gerekmez, tayfa seçilmez; yalnızca platforma gider (`POST
@@ -40,21 +41,28 @@ final class SikayetHedefi {
   const SikayetHedefi.kullanici(this.id)
     : tur = ReportTargetType.user,
       tayfaId = null,
-      mesajMetni = null;
+      mesajMetni = null,
+      kanitFotografi = null;
 
   /// Tayfanın kendisi (`target_id` = `tayfa_id`); yalnızca platforma gider.
   const SikayetHedefi.tayfa(String this.tayfaId)
     : tur = ReportTargetType.tayfa,
       id = tayfaId,
-      mesajMetni = null;
+      mesajMetni = null,
+      kanitFotografi = null;
 
   /// Birebir mesaj. [mesajMetni] şikâyet edenin cihazındaki açık metindir
-  /// (ADR-0018 §8); kullanıcı gönderirken bunu bilerek paylaşır. Yalnızca
-  /// istek gövdesinde gider; saklanmaz, log'a yazılmaz (kesin kural 3).
+  /// (ADR-0018 §8); fotoğraf mesajında [kanitFotografi] cihazda çözülmüş
+  /// görüntüdür ve kanıt olarak şikâyet edenin cihazından yüklenir
+  /// (Tayfam-Api ADR-0031 §6). En az biri verilir. Kullanıcı gönderirken
+  /// bunları bilerek paylaşır; yalnızca istek gövdesinde ve yüklemede
+  /// gider, saklanmaz, log'a yazılmaz (kesin kural 3).
   const SikayetHedefi.birebirMesaj({
     required this.id,
-    required String this.mesajMetni,
-  }) : tur = ReportTargetType.dmMessage,
+    this.mesajMetni,
+    this.kanitFotografi,
+  }) : assert(mesajMetni != null || kanitFotografi != null, 'kanıt yok'),
+       tur = ReportTargetType.dmMessage,
        tayfaId = null;
 
   /// Hedefin tayfası; kişi profilinden kullanıcı ve birebir mesajda
@@ -69,6 +77,10 @@ final class SikayetHedefi {
 
   /// Birebir mesajın metni; başka hedeflerde `null`.
   final String? mesajMetni;
+
+  /// Birebir fotoğraf mesajının cihazda çözülmüş görüntüsü; başka
+  /// hedeflerde `null`. Yalnızca bellektedir.
+  final Uint8List? kanitFotografi;
 
   /// Şikâyet yalnızca platforma mı gidiyor (tayfa, kişi profilinden
   /// kullanıcı ve birebir mesaj; ayrıca tayfadaki `staff_conduct`
@@ -101,8 +113,13 @@ final class SikayetHedefi {
   ];
 
   /// Gönderilecek istek. [not] kırpılır, boşsa gönderilmez; birebir
-  /// mesajda metin [kanitMetniEnCok] karakterde kesilir.
-  ReportCreateRequest istek(ReportReason gerekce, String not) {
+  /// mesajda metin [kanitMetniEnCok] karakterde kesilir. [kanitUploadId]
+  /// kanıt fotoğrafının hazır `report_evidence` yüklemesidir.
+  ReportCreateRequest istek(
+    ReportReason gerekce,
+    String not, {
+    String? kanitUploadId,
+  }) {
     final kirpik = not.trim();
     return ReportCreateRequest(
       targetType: tur,
@@ -113,6 +130,7 @@ final class SikayetHedefi {
         null => null,
         final metin => kanitMetni(metin),
       },
+      evidenceUploadId: kanitUploadId,
     );
   }
 
@@ -122,10 +140,17 @@ final class SikayetHedefi {
       other.tayfaId == tayfaId &&
       other.tur == tur &&
       other.id == id &&
-      other.mesajMetni == mesajMetni;
+      other.mesajMetni == mesajMetni &&
+      identical(other.kanitFotografi, kanitFotografi);
 
   @override
-  int get hashCode => Object.hash(tayfaId, tur, id, mesajMetni);
+  int get hashCode => Object.hash(
+    tayfaId,
+    tur,
+    id,
+    mesajMetni,
+    identityHashCode(kanitFotografi),
+  );
 }
 
 /// Birebir mesajın iletilecek metni: kırpılmış, en çok [kanitMetniEnCok]

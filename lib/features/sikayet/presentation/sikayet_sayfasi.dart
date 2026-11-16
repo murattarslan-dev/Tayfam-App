@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,16 +42,25 @@ Future<void> sikayetSayfasiniAc(
 }
 
 /// Birebir mesaj şikâyeti (ADR-0018 §8): yalnızca platforma gider; mesajın
-/// metni şikâyet edenin cihazından, kullanıcının gördüğü ve onayladığı
-/// haliyle iletilir. Sohbet paketi mesaj menüsünden bunu çağırır.
+/// metni ya da fotoğrafı şikâyet edenin cihazından, kullanıcının gördüğü
+/// ve onayladığı haliyle iletilir (fotoğraf kanıt olarak yüklenir;
+/// Tayfam-Api ADR-0031 §6). Sohbet paketi mesaj menüsünden bunu çağırır.
 Future<void> birebirMesajiSikayetEt(
   BuildContext context, {
   required String mesajId,
-  required String mesajMetni,
-}) => sikayetSayfasiniAc(
-  context,
-  SikayetHedefi.birebirMesaj(id: mesajId, mesajMetni: mesajMetni),
-);
+  String? mesajMetni,
+  Uint8List? fotograf,
+}) {
+  if (mesajMetni == null && fotograf == null) return Future.value();
+  return sikayetSayfasiniAc(
+    context,
+    SikayetHedefi.birebirMesaj(
+      id: mesajId,
+      mesajMetni: mesajMetni,
+      kanitFotografi: fotograf,
+    ),
+  );
+}
 
 /// Şikâyet sayfası (tasarım: Sikayet-Uye, Sikayet-Mesaj): üstte hedefin
 /// kısa önizlemesi (üye: avatar ve ad; içerik: tür ve başlık; tayfa: adı;
@@ -122,7 +132,9 @@ class _SikayetSayfasiState extends ConsumerState<SikayetSayfasi> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (hedef.mesajMetni == null)
+            if (hedef.kanitFotografi case final fotograf?)
+              _FotografOnizlemesi(fotograf: fotograf)
+            else if (hedef.mesajMetni == null)
               _HedefOnizlemesi(hedef: hedef)
             else if (mesaj != null)
               _MesajOnizlemesi(metin: mesaj)
@@ -379,6 +391,53 @@ class _MesajOnizlemesi extends StatelessWidget {
           ),
           const SizedBox(height: TayfamSpacing.s4),
           Text(metin, style: yazi.bodyLarge?.copyWith(color: r.metin)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Birebir fotoğraf şikâyetinde iletilecek fotoğraf (tasarım 28
+/// `Sikayet-Fotograf`): kullanıcı ne paylaştığını görür. Görüntü yalnızca
+/// bellekte ve yüklemededir; saklanmaz, loglanmaz.
+class _FotografOnizlemesi extends StatelessWidget {
+  const _FotografOnizlemesi({required this.fotograf});
+
+  final Uint8List fotograf;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final r = context.renkler;
+    final yazi = context.yazi;
+    return _OnizlemeKutusu(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            m.sikayet_fotograf_iletilecek,
+            style: yazi.labelMedium?.copyWith(color: r.metinIkincil),
+          ),
+          const SizedBox(height: TayfamSpacing.s8),
+          ClipRRect(
+            borderRadius: TayfamRadii.onizlemeKoseleri,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxHeight: TayfamSizes.sohbetFotografEnYuksek,
+              ),
+              child: Semantics(
+                image: true,
+                label: m.sohbet_fotograf_etiketi,
+                excludeSemantics: true,
+                child: Image.memory(fotograf, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(
+            m.sikayet_fotograf_aciklama,
+            style: yazi.bodySmall?.copyWith(color: r.metinGovde),
+          ),
         ],
       ),
     );

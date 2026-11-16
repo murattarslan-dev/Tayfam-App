@@ -198,6 +198,9 @@ class GonderilemediSatiri extends StatelessWidget {
 /// gösterilir; ekran okuyucu [geriSayimEtiketi]'ni okur. [ust] alanın
 /// üstündeki bilgi satırıdır (yavaş mod, kural hatası).
 ///
+/// [onEk] verilirse alanın solunda 48 dp ⊕ ("Fotoğraf ya da yer ekle";
+/// tasarım 28 `Kanal-Ek-Menu`) durur; `null` ise düğme yoktur.
+///
 /// Metin yalnızca [denetleyici]'nin belleğindedir; taslak hiçbir yere
 /// yazılmaz (ADR-0006).
 class MesajYazmaCubugu extends StatelessWidget {
@@ -212,9 +215,17 @@ class MesajYazmaCubugu extends StatelessWidget {
     this.ust,
     this.geriSayim,
     this.geriSayimEtiketi,
+    this.onEk,
+    this.ekEtiketi,
   });
 
   final TextEditingController denetleyici;
+
+  /// ⊕'ya basınca (ek menüsü); `null` ise ⊕ yok.
+  final VoidCallback? onEk;
+
+  /// ⊕'nın ipucu ve ekran okuyucu etiketi.
+  final String? ekEtiketi;
 
   /// Alan boşken görünen ipucu ("Mesaj yaz").
   final String ipucu;
@@ -315,6 +326,22 @@ class MesajYazmaCubugu extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  if (onEk case final ek?)
+                    OdakCercevesi(
+                      koseler: TayfamRadii.hapKoseleri,
+                      child: IconButton(
+                        tooltip: ekEtiketi,
+                        // Yavaş modda geri sayım sürerken ek de bekler.
+                        onPressed: etkin && geriSayim == null ? ek : null,
+                        style: IconButton.styleFrom(
+                          foregroundColor: r.metin,
+                          minimumSize: const Size.square(
+                            TayfamSizes.dokunmaMin,
+                          ),
+                        ),
+                        icon: const Icon(Icons.add_circle_outline),
+                      ),
+                    ),
                   Expanded(
                     child: TextField(
                       controller: denetleyici,

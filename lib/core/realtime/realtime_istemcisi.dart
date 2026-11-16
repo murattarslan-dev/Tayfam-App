@@ -204,20 +204,20 @@ final class RealtimeIstemcisi {
   }
 
   /// Kanal mesajını `send` çerçevesiyle gönderir; sunucunun yazdığı
-  /// mesajı döndürür. Bağlantı açık değilse ya da kopunca [RealtimeKapali],
+  /// mesajı döndürür. [istek] REST'teki gövdenin aynısıdır (`kind`,
+  /// `body`, `photo_upload_id`, `place`, `client_request_id`; Tayfam-Api
+  /// #205). Bağlantı açık değilse ya da kopunca [RealtimeKapali],
   /// [cevapSuresi]'nde cevap gelmezse [TimeoutException], hata çerçevesinde
-  /// [ApiProblem] fırlatır.
+  /// [ApiProblem] fırlatır. İçerik (metin, yer) loglanmaz.
   Future<ChannelMessage> kanalaGonder({
     required String tayfaId,
     required String kanalId,
-    required String metin,
-    required String istekKimligi,
+    required ChannelMessageCreateRequest istek,
   }) async {
     final veri = await _istek('send', {
       'tayfa_id': tayfaId,
       'channel_id': kanalId,
-      'body': metin,
-      'client_request_id': istekKimligi,
+      ...istek.toJson(),
     });
     return gonderilenKanalMesaji(veri);
   }

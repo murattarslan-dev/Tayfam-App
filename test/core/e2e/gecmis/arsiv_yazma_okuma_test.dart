@@ -13,6 +13,7 @@ import 'package:tayfam/core/e2e/gecmis/bagimliliklar.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_anahtari_deposu.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_api.dart';
 import 'package:tayfam/core/e2e/gecmis/paylasim_alici.dart';
+import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 
 import '../signal/sahte_signal_motoru.dart';
 import 'sahteler.dart';
@@ -22,7 +23,7 @@ ArsivlenecekMesaj _mesaj(int i) => ArsivlenecekMesaj(
   konusmaId: konusmaId,
   gonderenId: karsiKullanici,
   olusturma: DateTime.utc(2026, 11, 11, 18, i % 60),
-  govde: 'mesaj $i',
+  icerik: MetinIcerigi('mesaj $i'),
 );
 
 /// Ortak kurulum: A cihazı, eşleştirilmiş, sürüm 1 anahtarı depoda.
@@ -115,7 +116,7 @@ void main() {
       final arsiv = await o.okuyucu.oku(konusmaId);
       expect(arsiv.erisim, ArsivErisimi.okundu);
       expect(arsiv.okunamayan, 0);
-      expect(arsiv.mesajlar[mesajId(2)]!.govde, 'mesaj 2');
+      expect(arsiv.mesajlar[mesajId(2)]!.icerik.metin, 'mesaj 2');
       expect(arsiv.mesajlar[mesajId(1)]!.gonderenId, karsiKullanici);
     });
 
@@ -227,7 +228,7 @@ void main() {
           duz: ArsivDuzMetni(
             gonderenId: karsiKullanici,
             olusturma: DateTime.utc(2026),
-            govde: 'g$i',
+            icerik: MetinIcerigi('g$i'),
           ),
         ),
       ),
@@ -289,7 +290,7 @@ void main() {
         mesajId: mesajId(1),
         gonderenId: karsiKullanici,
         olusturma: DateTime.utc(2026),
-        govde: 'gizli',
+        icerik: const MetinIcerigi('gizli'),
       ).toString(),
       isNot(contains('gizli')),
     );

@@ -9,7 +9,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
-import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
 
 /// Varış bildirimi penceresi başlangıçtan bu kadar önce açılır; bitişte
 /// kapanır (sözleşme: `check-in-closed`, ADR-0015 §5). Yürüyüşte "Çıktım"

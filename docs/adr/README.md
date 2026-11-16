@@ -38,7 +38,9 @@ olarak anar.
 | [0023](0023-uygulama-butunlugu-istemci.md) | Uygulama bütünlüğü (istemci): Android Play Integrity | Kabul edildi |
 | [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi |
 | [0025](0025-etkinlik-fotograf-albumu.md) | Etkinlik fotoğraf albümü (istemci): çoklu seçim, bellekte yükleme kuyruğu, görüntüleyici | Kabul edildi |
+| [0026](0026-anlik-etkinlik-istemci.md) | Anlık (bireysel) etkinlik (istemci) | Kabul edildi |
 | [0027](0027-kesfet-ve-guvenlik-agi.md) | Keşfet ilk aşama ve güvenlik ağı (istemci): yuvalar, cevaba bakan bayrak, güvenlik kişisi, geri bildirim | Önerildi |
+| [0028](0028-sohbet-ekleri-fotograf-ve-yer.md) | Sohbet ekleri: fotoğraf (kanal ve uçtan uca birebir), yer, kanal mesajı şikâyeti | Kabul edildi |
 
 ## Şablon
 

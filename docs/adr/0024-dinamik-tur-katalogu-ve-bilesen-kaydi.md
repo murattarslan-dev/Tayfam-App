@@ -12,7 +12,7 @@
   [ADR-0007](0007-websocket.md),
   [ADR-0008](0008-ceviri-ve-yerel-ayar.md),
   [ADR-0015](0015-etkinlik-ve-duyuru-modulleri.md);
-  Tayfam-Api ADR-0025, ADR-0026, ADR-0027, ADR-0016
+  Tayfam-Api ADR-0025, ADR-0028, ADR-0027, ADR-0016
 
 ## Bağlam
 

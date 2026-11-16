@@ -151,6 +151,18 @@ abstract interface class SignalMotoru {
     required Uint8List aad,
   });
 
+  /// AES-256-GCM şifreleme (libsignal `Aes256GcmEncryption`; birebir
+  /// mesaj eki, ADR-0028 §2). [anahtar] 32, [nonce] 12 bayt; aynı anahtar
+  /// ve nonce çifti bir kez kullanılır (çağıran her ek için
+  /// `Random.secure()` ile yeni anahtar üretir). Dönüş: şifreli metin ‖ 16
+  /// bayt etiket. Girdi değiştirilmez.
+  Future<Uint8List> aes256GcmSifrele({
+    required Uint8List anahtar,
+    required Uint8List nonce,
+    required Uint8List duz,
+    required Uint8List aad,
+  });
+
   /// AES-256-GCM çözme (libsignal `Aes256GcmDecryption`; KVKK veri dışa
   /// aktarma dosyası için). [anahtar] 32, [nonce] 12 bayt;
   /// [sifreliVeEtiket]'in son 16 baytı etikettir. Etiket doğrulanamazsa

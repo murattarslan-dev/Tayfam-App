@@ -121,9 +121,15 @@ Future<void> _davetAkisi(
   required String tayfaId,
   required Future<DavetSonucu> Function(DavetSecimi secim) olustur,
 }) async {
+  // Anlık etkinliğin tayfasında linkle gelen katılım isteği gönderir;
+  // metinler buna göre seçilir (ADR-0026).
+  final anlik = ProviderScope.containerOf(
+    context,
+    listen: false,
+  ).read(tayfaOzetiProvider(tayfaId)).anlik;
   final secim = await altSayfaAc<DavetSecimi>(
     context,
-    builder: (_) => const DavetSecenekleri(),
+    builder: (_) => DavetSecenekleri(anlik: anlik),
   );
   if (secim == null || !context.mounted) return;
   final m = AppLocalizations.of(context);
@@ -143,14 +149,14 @@ Future<void> _davetAkisi(
   try {
     await kap
         .read(paylasiciProvider)
-        .paylas(m.yonetim_davet_paylasim_metni(ad, link));
+        .paylas(davetPaylasimMetni(m, ad, link, anlik: anlik));
   } on Exception {
     // Paylaşım menüsü açılamazsa link aşağıdaki sayfada yine gösterilir.
   }
   if (!context.mounted) return;
   await altSayfaAc<void>(
     context,
-    builder: (_) => DavetLinkiPaylasimi(link: link, tayfaAdi: ad),
+    builder: (_) => DavetLinkiPaylasimi(link: link, tayfaAdi: ad, anlik: anlik),
   );
 }
 
@@ -158,7 +164,11 @@ Future<void> _davetAkisi(
 /// (1 / 7 / 30 gün) ve kullanım sayısı (1 / 10 / 100 kişi); varsayılan 7
 /// gün, 10 kişi. "Oluştur ve paylaş"a basınca seçimle kapanır.
 class DavetSecenekleri extends StatefulWidget {
-  const DavetSecenekleri({super.key});
+  const DavetSecenekleri({super.key, this.anlik = false});
+
+  /// Anlık etkinliğin tayfası: açıklama "gelenler katılım isteği gönderir,
+  /// sen onaylarsın" der (Tayfam-Api ADR-0032 §4).
+  final bool anlik;
 
   @override
   State<DavetSecenekleri> createState() => _DavetSecenekleriState();
@@ -179,7 +189,9 @@ class _DavetSecenekleriState extends State<DavetSecenekleri> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
           child: Text(
-            m.yonetim_davet_olustur_aciklama,
+            widget.anlik
+                ? m.yonetim_davet_olustur_aciklama_anlik
+                : m.yonetim_davet_olustur_aciklama,
             style: yazi.bodyMedium?.copyWith(color: r.metinGovde),
           ),
         ),
@@ -287,10 +299,18 @@ class _SecimGrubu<T> extends StatelessWidget {
 /// Yeni linkin paylaşımı: link bir daha gösterilemeyeceği için hemen
 /// paylaşılır ya da kopyalanır. Link yalnızca bu sayfanın belleğindedir.
 class DavetLinkiPaylasimi extends ConsumerWidget {
-  const DavetLinkiPaylasimi({super.key, required this.link, this.tayfaAdi});
+  const DavetLinkiPaylasimi({
+    super.key,
+    required this.link,
+    this.tayfaAdi,
+    this.anlik = false,
+  });
 
   final String link;
   final String? tayfaAdi;
+
+  /// Anlık etkinliğin tayfası: paylaşım metni etkinliğe çağırır.
+  final bool anlik;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -325,7 +345,7 @@ class DavetLinkiPaylasimi extends ConsumerWidget {
                         _paylas(
                           dugme,
                           ref,
-                          m.yonetim_davet_paylasim_metni(ad, link),
+                          davetPaylasimMetni(m, ad, link, anlik: anlik),
                         ),
                       ),
                     ),
@@ -437,3 +457,14 @@ class _DavetKartiState extends ConsumerState<_DavetKarti> {
     );
   }
 }
+
+/// Davet linkinin paylaşım metni; anlık etkinliğin tayfasında ad etkinlik
+/// başlığıdır ve metin etkinliğe çağırır (ADR-0026).
+String davetPaylasimMetni(
+  AppLocalizations m,
+  String ad,
+  String link, {
+  bool anlik = false,
+}) => anlik
+    ? m.yonetim_davet_paylasim_metni_anlik(ad, link)
+    : m.yonetim_davet_paylasim_metni(ad, link);

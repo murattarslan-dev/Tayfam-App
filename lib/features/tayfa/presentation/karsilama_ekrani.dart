@@ -116,18 +116,27 @@ class KarsilamaEkrani extends ConsumerWidget {
                     // Yığına itilmez (bkz. tayfa değiştirme paneli).
                     onTap: () => context.go(Adresler.tayfaOlustur),
                   ),
+                  const SizedBox(height: TayfamSpacing.s8),
+                  // Tayfasız, tek seferlik etkinlik (ADR-0026;
+                  // docs/tasarim/29 §1). İki seçim kartı aynen kalır.
+                  MenuSatiri(
+                    ikon: Icons.bolt_outlined,
+                    tur: MenuSatiriTuru.sade,
+                    baslik: metinler.anlik_ac,
+                    aciklama: metinler.anlik_ac_aciklama,
+                    onTap: () => context.go(Adresler.anlikEtkinlik()),
+                  ),
                   // Keşfet açıksa (ADR-0027): arkadaşlarının gittiği
-                  // etkinlikler; kapalıyken kart yok.
-                  if (ref.watch(kesfetGorunurProvider)) ...[
-                    const SizedBox(height: TayfamSpacing.s16),
-                    SecimKarti(
+                  // etkinlikler; kapalıyken satır yok.
+                  if (ref.watch(kesfetGorunurProvider))
+                    MenuSatiri(
                       ikon: Icons.explore_outlined,
+                      tur: MenuSatiriTuru.sade,
                       baslik: metinler.kesfet_baslik,
                       aciklama: metinler.kesfet_giris_aciklama,
                       onTap: () => unawaited(context.push(Adresler.kesfet)),
                     ),
-                  ],
-                  const SizedBox(height: TayfamSpacing.s16),
+                  const SizedBox(height: TayfamSpacing.s8),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: TayfamSpacing.s4,

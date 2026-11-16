@@ -14,7 +14,7 @@ CozulmusBirebirMesaj _mesaj(int i, CozulmusMesajKaynagi kaynak) =>
       mesajId: mesajId(i),
       konusmaId: konusmaId,
       gonderenKullaniciId: karsiKullanici,
-      metin: 'm$i',
+      icerik: MetinIcerigi('m$i'),
       olusturma: DateTime.utc(2026),
       kaynak: kaynak,
     );
@@ -31,7 +31,7 @@ void main() {
       ..add(_mesaj(3, CozulmusMesajKaynagi.zarf));
     await pumpEventQueue();
     expect(gelen.map((m) => m.mesajId), [mesajId(1), mesajId(3)]);
-    expect(gelen.last.govde, 'm3');
+    expect(gelen.last.icerik.metin, 'm3');
     expect(gelen.last.gonderenId, karsiKullanici);
     await akis.close();
   });

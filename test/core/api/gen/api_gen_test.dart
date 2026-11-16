@@ -9,8 +9,8 @@ const String _eventId = '00000000-0000-4000-8000-000000000003';
 Map<String, Object?> _tayfaJson() => {
   'id': _tayfaId,
   'name': 'Örnek tayfa',
-  'description': 'Açıklama',
   'kind': 'standard',
+  'description': 'Açıklama',
   'interests': ['convoy', 'camp'],
   'join_policy': 'approval',
   'modules': {'announcements': true, 'events': true, 'qa': false},

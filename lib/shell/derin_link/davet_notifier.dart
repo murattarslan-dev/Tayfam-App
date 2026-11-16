@@ -33,6 +33,7 @@ final class DavetDurumu {
     this.hata,
     this.sonuc,
     this.tayfaId,
+    this.anlik = false,
   });
 
   /// Tayfanın dar görünümü (ad, üye sayısı, zaten üye mi).
@@ -49,6 +50,11 @@ final class DavetDurumu {
 
   /// [sonuc] [DavetSonucu.etkin] ise katılınan tayfa.
   final String? tayfaId;
+
+  /// İstek bir anlık etkinliğin tayfasına gitti (ADR-0026): onayı
+  /// organizatör verir. Tür, katılımdan sonra yenilenen tayfa listesinden
+  /// okunur; bilinmiyorsa `false`.
+  final bool anlik;
 }
 
 /// Davet akışı (ADR-0018 §6): önizleme `POST /v1/invite-previews`,
@@ -106,8 +112,8 @@ class DavetNotifier extends AsyncNotifier<DavetDurumu> {
         MyTayfa(
           tayfaId: uyelik.tayfaId,
           name: mevcut.onizleme.name,
-          // Tür bir sonraki yenilemede gelir; katılım standart tayfaya.
-          kind: TayfaKind.standard,
+          // Önizleme türü taşımaz; liste bir sonraki yenilemede düzeltir.
+          kind: TayfaKind.unknown,
           role: uyelik.role,
           status: etkin ? MyTayfaStatus.active : MyTayfaStatus.pending,
         ),
@@ -124,8 +130,16 @@ class DavetNotifier extends AsyncNotifier<DavetDurumu> {
         ),
       );
     } else {
+      final liste = ref.read(tayfalarimProvider).value ?? const <MyTayfa>[];
+      final anlik = liste.any(
+        (t) => t.tayfaId == uyelik.tayfaId && t.kind == TayfaKind.instant,
+      );
       state = AsyncData(
-        DavetDurumu(onizleme: mevcut.onizleme, sonuc: DavetSonucu.bekliyor),
+        DavetDurumu(
+          onizleme: mevcut.onizleme,
+          sonuc: DavetSonucu.bekliyor,
+          anlik: anlik,
+        ),
       );
     }
   }

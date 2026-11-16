@@ -51,6 +51,11 @@ Future<void> tayfaDegistirmePaneliniAc(
           // kuruldu" ekranı kaybolurdu (ADR-0014 Notlar 2026-11-13).
           context.go(Adresler.tayfaOlustur);
         },
+        // Anlık etkinlik sihirbazı da `go` ile açılır (ADR-0026).
+        onAnlikEtkinlik: () {
+          kapat();
+          context.go(Adresler.anlikEtkinlik());
+        },
         onKesfet: () {
           kapat();
           unawaited(context.push(Adresler.kesfet));
@@ -62,8 +67,12 @@ Future<void> tayfaDegistirmePaneliniAc(
 
 /// Tayfa değiştirme panelinin içeriği: etkin tayfalar (avatar, üye sayısı
 /// ve rol; seçili olan tint zeminli ve işaretli), "Onay bekliyor"
-/// etiketli bekleyen istekler ("İsteği geri çek"), "Tayfa kodum var" ve
-/// "Tayfa oluştur".
+/// etiketli bekleyen istekler ("İsteği geri çek"), "Tayfa kodum var",
+/// "Tayfa oluştur" ve "Anlık etkinlik aç".
+///
+/// Anlık etkinliklerin gizli tayfaları (ADR-0026) kalıcı tayfalardan sonra,
+/// "Anlık etkinlikler" başlığı altında ve etkinlik ikonuyla listelenir;
+/// bekleyen istek anlık tayfaya aitse "Anlık" etiketi de taşır.
 ///
 /// Bekleyen tayfanın yalnızca adı görünür; dokununca isteği geri çekme
 /// onayı açılır (ADR-0014 §2).
@@ -73,6 +82,7 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
     required this.onTayfaSec,
     required this.onKodlaKatil,
     required this.onTayfaOlustur,
+    this.onAnlikEtkinlik,
     this.onKesfet,
   });
 
@@ -85,6 +95,9 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
   /// "Tayfa oluştur" seçildiğinde.
   final VoidCallback onTayfaOlustur;
 
+  /// "Anlık etkinlik aç" seçildiğinde; `null` ise satır gösterilmez.
+  final VoidCallback? onAnlikEtkinlik;
+
   /// "Keşfet" seçildiğinde (ADR-0027). Satır yalnızca Keşfet açıksa
   /// görünür ([kesfetGorunurProvider]).
   final VoidCallback? onKesfet;
@@ -96,7 +109,15 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
     final durum = ref.watch(tayfalarimProvider);
     final aktif = ref.watch(aktifTayfaIdProvider);
     final liste = durum.value;
-    final etkinler = liste == null ? const <MyTayfa>[] : etkinTayfalar(liste);
+    final hepsi = liste == null ? const <MyTayfa>[] : etkinTayfalar(liste);
+    final etkinler = [
+      for (final t in hepsi)
+        if (t.kind != TayfaKind.instant) t,
+    ];
+    final anliklar = [
+      for (final t in hepsi)
+        if (t.kind == TayfaKind.instant) t,
+    ];
     final bekleyenler = liste == null
         ? const <MyTayfa>[]
         : bekleyenTayfalar(liste);
@@ -136,7 +157,7 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
               ],
             ),
           )
-        else if (etkinler.isEmpty && bekleyenler.isEmpty)
+        else if (hepsi.isEmpty && bekleyenler.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: TayfamSpacing.s8,
@@ -158,9 +179,24 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
               onTayfaSec(tayfa.tayfaId);
             },
           ),
+        if (anliklar.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: TayfamSpacing.s8),
+            child: BolumEtiketi(baslik: metinler.anlik_panel_bolum),
+          ),
+        for (final tayfa in anliklar)
+          _EtkinTayfaSatiri(
+            tayfa: tayfa,
+            secili: tayfa.tayfaId == aktif,
+            onTap: () {
+              ref.read(aktifTayfaIdProvider.notifier).sec(tayfa.tayfaId);
+              onTayfaSec(tayfa.tayfaId);
+            },
+          ),
         for (final tayfa in bekleyenler)
           _BekleyenTayfaSatiri(
             ad: _ad(metinler, tayfa),
+            anlik: tayfa.kind == TayfaKind.instant,
             onGeriCek: () => unawaited(
               geriCekmeyiSor(context, ref, tayfa.tayfaId, _ad(metinler, tayfa)),
             ),
@@ -179,6 +215,14 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           baslik: metinler.tayfa_olustur,
           onTap: onTayfaOlustur,
         ),
+        if (onAnlikEtkinlik case final anlik?)
+          MenuSatiri(
+            ikon: Icons.bolt_outlined,
+            tur: MenuSatiriTuru.sade,
+            baslik: metinler.anlik_ac,
+            aciklama: metinler.anlik_ac_aciklama,
+            onTap: anlik,
+          ),
         if (kesfet)
           MenuSatiri(
             ikon: Icons.explore_outlined,
@@ -223,17 +267,24 @@ class _EtkinTayfaSatiri extends StatelessWidget {
     // Onay bekleyen katılım isteği sayısı; yalnızca moderatör ve yöneticiye
     // gelir (`pending_join_request_count`). `null` ise rozet yok.
     final bekleyen = bekleyenIstekRozeti(tayfa.tayfa);
-    final ozet = switch ((uyeSayisi, rol)) {
-      (final int sayi, final String rol) => metinler.tayfa_panel_ozet(
-        sayi,
-        rol,
-      ),
-      (final int sayi, null) => metinler.tayfa_uye_sayisi(sayi),
-      (null, final String rol) => rol,
-      (null, null) => null,
-    };
+    final anlik = tayfa.kind == TayfaKind.instant;
+    final ozet = anlik
+        ? (uyeSayisi == null
+              ? metinler.anlik_etkinlik
+              : metinler.anlik_panel_ozet(uyeSayisi))
+        : switch ((uyeSayisi, rol)) {
+            (final int sayi, final String rol) => metinler.tayfa_panel_ozet(
+              sayi,
+              rol,
+            ),
+            (final int sayi, null) => metinler.tayfa_uye_sayisi(sayi),
+            (null, final String rol) => rol,
+            (null, null) => null,
+          };
     return MenuSatiri(
-      ikonKutusu: TayfaAvatari.tayfadan(tayfa.tayfa, ad: ad),
+      ikonKutusu: anlik
+          ? const AnlikIkonKutusu()
+          : TayfaAvatari.tayfadan(tayfa.tayfa, ad: ad),
       tur: secili ? MenuSatiriTuru.vurgulu : MenuSatiriTuru.olagan,
       icBosluk: const EdgeInsets.symmetric(
         horizontal: TayfamSpacing.s12,
@@ -274,9 +325,16 @@ class _EtkinTayfaSatiri extends StatelessWidget {
 /// etiketi ve "İsteği geri çek". Satıra dokunmak da geri çekme onayını
 /// açar.
 class _BekleyenTayfaSatiri extends StatelessWidget {
-  const _BekleyenTayfaSatiri({required this.ad, required this.onGeriCek});
+  const _BekleyenTayfaSatiri({
+    required this.ad,
+    required this.onGeriCek,
+    this.anlik = false,
+  });
 
   final String ad;
+
+  /// Anlık etkinliğin tayfası: "Anlık" etiketi de gösterilir.
+  final bool anlik;
   final VoidCallback onGeriCek;
 
   @override
@@ -299,6 +357,8 @@ class _BekleyenTayfaSatiri extends StatelessWidget {
             ton: EtiketTonu.mango,
             ikon: Icons.schedule,
           ),
+          if (anlik)
+            Etiket(metin: metinler.anlik_etiket, ikon: Icons.bolt_outlined),
           TextButton(
             onPressed: onGeriCek,
             style: TextButton.styleFrom(
@@ -352,4 +412,31 @@ Future<void> geriCekmeyiSor(
   bildirim
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(metinler.tayfa_geri_cekildi)));
+}
+
+/// Anlık etkinliğin tayfasının panel satırındaki simgesi (ADR-0026): avatar
+/// boyutunda, tint-brand zeminde etkinlik ikonu. Süstür; satırın metni
+/// "Anlık etkinlik" der.
+class AnlikIkonKutusu extends StatelessWidget {
+  const AnlikIkonKutusu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return ExcludeSemantics(
+      child: Container(
+        width: TayfamSizes.tayfaAvatari,
+        height: TayfamSizes.tayfaAvatari,
+        decoration: BoxDecoration(
+          color: r.tintMarka,
+          borderRadius: TayfamRadii.secimKoseleri,
+        ),
+        child: Icon(
+          Icons.bolt_outlined,
+          size: TayfamSizes.ikon,
+          color: r.tintMarkaUstu,
+        ),
+      ),
+    );
+  }
 }

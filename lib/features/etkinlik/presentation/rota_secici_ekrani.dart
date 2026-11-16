@@ -6,10 +6,10 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
-import 'package:tayfam/features/etkinlik/application/harita_secimi.dart';
+import 'package:tayfam/core/harita/harita_secimi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Rota seçicisinin açılış yakınlığı (buluşma noktası ya da rota varsa).

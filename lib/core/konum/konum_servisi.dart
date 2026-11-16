@@ -51,8 +51,11 @@ final class KonumAlinamadi extends KonumSonucu {
 ///
 /// Testlerde sahtesi verilir.
 abstract interface class KonumServisi {
-  /// Gerekirse izin ister ve o anki konumu bir kez okur.
-  Future<KonumSonucu> tekSeferlikKonum();
+  /// Gerekirse izin ister ve o anki konumu bir kez okur. [hassas] `false`
+  /// ise yaklaşık konum da kabul edilir (yer seçicide haritayı taşımak
+  /// için; istemci ADR-0028 §5); `true` ise yaklaşık izinde
+  /// [KonumYaklasik].
+  Future<KonumSonucu> tekSeferlikKonum({bool hassas = true});
 
   /// Uygulamanın sistem ayarlarını açar (izin reddedildiyse).
   Future<bool> uygulamaAyarlariniAc();
@@ -69,7 +72,7 @@ final class CihazKonumServisi implements KonumServisi {
   static const Duration zamanAsimi = Duration(seconds: 20);
 
   @override
-  Future<KonumSonucu> tekSeferlikKonum() async {
+  Future<KonumSonucu> tekSeferlikKonum({bool hassas = true}) async {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
         return const KonumServisiKapali();
@@ -89,7 +92,8 @@ final class CihazKonumServisi implements KonumServisi {
           break;
       }
       // Web geliştirme derlemesinde doğruluk durumu sorulamaz.
-      if (!kIsWeb &&
+      if (hassas &&
+          !kIsWeb &&
           await Geolocator.getLocationAccuracy() ==
               LocationAccuracyStatus.reduced) {
         return const KonumYaklasik();

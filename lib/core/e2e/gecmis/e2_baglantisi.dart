@@ -239,7 +239,7 @@ final class E2MesajAkisi implements CozulmusMesajAkisi {
           konusmaId: m.konusmaId,
           gonderenId: m.gonderenKullaniciId,
           olusturma: m.olusturma,
-          govde: m.metin,
+          icerik: m.icerik,
         ),
       );
 }

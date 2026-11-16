@@ -89,14 +89,19 @@ Map<String, Object?> tayfaJson({
   String? askida,
   String? silinme,
   int? bekleyen,
+  String tur = 'standard',
+  String? anlikEtkinlikId,
 }) => {
   'id': id,
   'name': ad,
+  'kind': tur,
+  'instant_event_id': ?anlikEtkinlikId,
   'description': '',
-  'kind': 'standard',
-  'interests': ['convoy'],
+  'interests': tur == 'instant' ? <String>[] : ['convoy'],
   'join_policy': 'approval',
-  'modules': {'announcements': true, 'events': true, 'qa': true, 'polls': true},
+  'modules': tur == 'instant'
+      ? {'announcements': false, 'events': true, 'qa': false, 'polls': false}
+      : {'announcements': true, 'events': true, 'qa': true, 'polls': true},
   'status': durum,
   'suspended_at': ?askida,
   'deletion_at': ?silinme,
@@ -115,20 +120,33 @@ Map<String, Object?> etkinJson(
   String rol = 'member',
   String? kod,
   int? bekleyen,
+  String tur = 'standard',
+  String? anlikEtkinlikId,
 }) => {
   'tayfa_id': id,
   'name': ad,
-  'kind': 'standard',
+  'kind': tur,
   'role': rol,
   'status': 'active',
-  'tayfa': tayfaJson(id: id, ad: ad, kod: kod, bekleyen: bekleyen),
+  'tayfa': tayfaJson(
+    id: id,
+    ad: ad,
+    kod: kod,
+    bekleyen: bekleyen,
+    tur: tur,
+    anlikEtkinlikId: anlikEtkinlikId,
+  ),
 };
 
 /// Bekleyen istek satırı (`MyTayfa`) JSON'u: yalnızca kimlik ve ad.
-Map<String, Object?> bekleyenJson(String id, {String ad = 'Kampçılar'}) => {
+Map<String, Object?> bekleyenJson(
+  String id, {
+  String ad = 'Kampçılar',
+  String tur = 'standard',
+}) => {
   'tayfa_id': id,
   'name': ad,
-  'kind': 'standard',
+  'kind': tur,
   'role': 'member',
   'status': 'pending',
 };
@@ -150,6 +168,8 @@ Map<String, Object?> gorunumJson(
   String? askida,
   String? silinme,
   int? bekleyen,
+  String tur = 'standard',
+  String? anlikEtkinlikId,
 }) => {
   'tayfa': tayfaJson(
     id: id,
@@ -160,6 +180,8 @@ Map<String, Object?> gorunumJson(
     askida: askida,
     silinme: silinme,
     bekleyen: bekleyen,
+    tur: tur,
+    anlikEtkinlikId: anlikEtkinlikId,
   ),
   'caller_role': rol,
 };
