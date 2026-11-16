@@ -2,6 +2,9 @@
 /// kaydı ve türe özel araçları olan türler, etkinlik modülü, yaklaşan
 /// etkinlikler listesi ve etkinlik kartı (ADR-0015 §1, §3, §6). Detaydaki
 /// sohbet bölümünün yuvası kabukta doldurulur (Tayfam-Api #183).
+///
+/// Anlık (bireysel) etkinlik (ADR-0026): [anlikEtkinlikRotasi] üst düzeye
+/// eklenir; [anlikArkadasDavetEt] `arkadasDavetiProvider`'a verilir.
 library;
 
 export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart'
@@ -12,6 +15,10 @@ export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
         etkinlikSirala;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'
     show EtkinlikDeposu, etkinlikDeposuProvider;
+export 'package:tayfam/features/etkinlik/presentation/anlik/anlik_davet_sayfasi.dart'
+    show anlikArkadasDavetEt;
+export 'package:tayfam/features/etkinlik/presentation/anlik/anlik_rotasi.dart'
+    show anlikEtkinlikRotasi;
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_bolumu.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_modulu.dart';

@@ -111,6 +111,8 @@ class KatilimNotifier extends Notifier<KatilimDurumu> {
         MyTayfa(
           tayfaId: uyelik.tayfaId,
           name: '',
+          // Kodla katılım yalnızca kalıcı tayfada vardır (ADR-0032 §4).
+          kind: TayfaKind.standard,
           role: uyelik.role,
           status: etkin ? MyTayfaStatus.active : MyTayfaStatus.pending,
         ),

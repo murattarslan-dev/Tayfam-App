@@ -185,10 +185,8 @@ final class MedyaOnbellegi {
         gecerlilik: m.expiresAt,
       );
     }
-    final onizlemeAdresi = m.previewUrl;
-    final onizleme = onizlemeAdresi == null
-        ? null
-        : Uri.tryParse(onizlemeAdresi);
+    // Önizleme yoksa (sözleşmede isteğe bağlı) tam boy kullanılır.
+    final onizleme = Uri.tryParse(m.previewUrl ?? m.fullUrl);
     if (onizleme == null ||
         !medyaLinkiGecerli(onizleme) ||
         m.width < 1 ||

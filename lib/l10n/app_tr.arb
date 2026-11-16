@@ -9817,5 +9817,259 @@
   "album_hata_iptal": "Etkinlik iptal edildiği için albüme fotoğraf eklenemez.",
   "@album_hata_iptal": {
     "description": "Albüme ekleme `event-cancelled` ile reddedildi."
+  },
+  "hata_instant_event_limit": "Şu an daha fazla anlık etkinlik açamazsın. Açık etkinliklerinden biri bitince ya da yarın tekrar dene.",
+  "@hata_instant_event_limit": {
+    "description": "Hata kodu `instant-event-limit` (ADR-0032 §5): aynı anda 3 açık ya da 24 saatte 5 anlık etkinlik sınırı. Hangi sınırın aşıldığını sunucu söylemez; sayı yazılmaz."
+  },
+  "anlik_baslik": "Anlık etkinlik",
+  "@anlik_baslik": {
+    "description": "Anlık (tayfasız, tek seferlik) etkinlik sihirbazının üst çubuğundaki başlık (ADR-0026)."
+  },
+  "anlik_ac": "Anlık etkinlik aç",
+  "@anlik_ac": {
+    "description": "Tayfa değiştirme panelinde ve karşılama ekranında anlık etkinlik sihirbazını açan satır."
+  },
+  "anlik_ac_aciklama": "Tayfasız, tek seferlik; arkadaşlarınla",
+  "@anlik_ac_aciklama": {
+    "description": "\"Anlık etkinlik aç\" satırının altındaki kısa açıklama."
+  },
+  "anlik_onizleme_aciklama": "Açınca etkinliği yalnızca davet ettiklerin ve onayladıkların görür. Sonra da düzenleyebilirsin.",
+  "@anlik_onizleme_aciklama": {
+    "description": "Anlık etkinlik sihirbazının son adımında (\"Her şey doğru mu?\") başlığın altındaki açıklama."
+  },
+  "anlik_davet_baslik": "Kimleri çağıralım?",
+  "@anlik_davet_baslik": {
+    "description": "Anlık etkinlik sihirbazında arkadaş seçimi adımının başlığı."
+  },
+  "anlik_davet_aciklama": "En fazla {enCok} arkadaşını doğrudan davet et. Açtıktan sonra davet linkini de paylaşabilirsin.",
+  "@anlik_davet_aciklama": {
+    "description": "Arkadaş seçimi adımında başlığın altındaki açıklama.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "anlik_davet_ara": "Arkadaşlarında ara",
+  "@anlik_davet_ara": {
+    "description": "Arkadaş seçimi listesinin üstündeki arama alanının etiketi; yalnızca yüklü arkadaşlarda süzer."
+  },
+  "anlik_davet_secilen": "{sayi} / {enCok} kişi seçildi",
+  "@anlik_davet_secilen": {
+    "description": "Arkadaş seçimi listesinin üstündeki seçili kişi sayacı; ekran okuyucuya canlı bölge olarak okunur.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "anlik_davet_sinir": "En fazla {enCok} kişi davet edebilirsin. Fazlası için davet linkini paylaş.",
+  "@anlik_davet_sinir": {
+    "description": "Arkadaş seçiminde sınıra ulaşınca sayacın altında görünen bilgi.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "anlik_davet_sonuc_yok": "Bu adla arkadaş yok.",
+  "@anlik_davet_sonuc_yok": {
+    "description": "Arkadaş seçiminde arama sonucu boşsa."
+  },
+  "anlik_davet_bos": "Henüz arkadaşın yok. Etkinliği açıp davet linkini paylaşabilirsin.",
+  "@anlik_davet_bos": {
+    "description": "Arkadaş seçiminde arkadaş listesi boşsa."
+  },
+  "anlik_davet_daha": "Daha fazla göster",
+  "@anlik_davet_daha": {
+    "description": "Arkadaş seçimi listesinin altında sonraki sayfayı yükleyen düğme."
+  },
+  "anlik_onizleme_davetliler": "Davetliler",
+  "@anlik_onizleme_davetliler": {
+    "description": "Anlık etkinlik önizlemesinde davet edilecek arkadaşların satırının etiketi."
+  },
+  "anlik_davetli_yok": "Kimse seçilmedi",
+  "@anlik_davetli_yok": {
+    "description": "Önizlemedeki \"Davetliler\" satırında kimse seçilmediyse."
+  },
+  "anlik_davetli_fazla": "{adlar} ve {sayi, plural, other{{sayi} kişi}}",
+  "@anlik_davetli_fazla": {
+    "description": "Önizlemedeki \"Davetliler\" satırı: ilk iki adın ardından kalan kişi sayısı.",
+    "placeholders": {
+      "adlar": {
+        "type": "String",
+        "example": "Ayşe K., Mert Y."
+      },
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "anlik_davetli_sayi": "{sayi, plural, other{{sayi} kişi}}",
+  "@anlik_davetli_sayi": {
+    "description": "Önizlemedeki \"Davetliler\" satırı; adlar henüz bilinmiyorsa yalnızca sayı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "anlik_onizleme_bilgi": "Etkinlik bittikten 7 gün sonra arşivlenir. Davet linkiyle gelenler katılım isteği gönderir; sen onaylarsın.",
+  "@anlik_onizleme_bilgi": {
+    "description": "Anlık etkinlik önizlemesinin altındaki bilgi kutusu (Tayfam-Api ADR-0032 §4, §6)."
+  },
+  "anlik_sinir_baslik": "Şu an daha fazla anlık etkinlik açamazsın.",
+  "@anlik_sinir_baslik": {
+    "description": "`instant-event-limit` hatasında önizlemedeki kutunun kalın başlığı; hangi sınırın aşıldığı söylenmez."
+  },
+  "anlik_sinir_metni": "Açık etkinliklerinden biri bitince ya da yarın tekrar dene. Girdiklerin bu ekranda duruyor.",
+  "@anlik_sinir_metni": {
+    "description": "`instant-event-limit` kutusunun metni."
+  },
+  "anlik_acildi_baslik": "{baslik} hazır!",
+  "@anlik_acildi_baslik": {
+    "description": "Anlık etkinlik açılınca gösterilen mor ekranın başlığı.",
+    "placeholders": {
+      "baslik": {
+        "type": "String",
+        "example": "Cumartesi kahvaltı"
+      }
+    }
+  },
+  "anlik_acildi_davetli": "{sayi, plural, other{{sayi} arkadaşına davet gitti.}} Kabul edenler etkinliğe katılır.",
+  "@anlik_acildi_davetli": {
+    "description": "\"Etkinlik açıldı\" ekranında davet edilen arkadaş varsa açıklama.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "anlik_acildi_davetsiz": "Davet linkini paylaş; gelenler katılım isteği gönderir, sen onaylarsın.",
+  "@anlik_acildi_davetsiz": {
+    "description": "\"Etkinlik açıldı\" ekranında kimse davet edilmediyse açıklama."
+  },
+  "anlik_acildi_git": "Etkinliğe git",
+  "@anlik_acildi_git": {
+    "description": "\"Etkinlik açıldı\" ekranında etkinliğin detayını açan ikincil düğme."
+  },
+  "anlik_etiket": "Anlık",
+  "@anlik_etiket": {
+    "description": "Tayfa panelinde ve ana sayfada anlık etkinliğin tayfasını işaretleyen etiket."
+  },
+  "anlik_etkinlik": "Anlık etkinlik",
+  "@anlik_etkinlik": {
+    "description": "Anlık tayfanın ana sayfasındaki kartın başlığı ve paneldeki satır açıklaması."
+  },
+  "anlik_panel_bolum": "Anlık etkinlikler",
+  "@anlik_panel_bolum": {
+    "description": "Tayfa değiştirme panelinde anlık etkinliklerin grubu."
+  },
+  "anlik_panel_ozet": "Anlık etkinlik · {sayi, plural, other{{sayi} kişi}}",
+  "@anlik_panel_ozet": {
+    "description": "Tayfa panelinde anlık etkinlik satırının açıklaması.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "anlik_kart_arsiv": "Etkinlik bittikten 7 gün sonra arşivlenir.",
+  "@anlik_kart_arsiv": {
+    "description": "Anlık tayfanın ana sayfasındaki kartta herkese görünen bilgi."
+  },
+  "anlik_kart_arkadas_davet": "Arkadaş davet et",
+  "@anlik_kart_arkadas_davet": {
+    "description": "Anlık etkinlik kartında organizatörün arkadaşlarını doğrudan davet ettiği satır."
+  },
+  "anlik_kart_link_aciklama": "Linkle gelenler katılım isteği gönderir; sen onaylarsın.",
+  "@anlik_kart_link_aciklama": {
+    "description": "Anlık etkinlik kartında \"Davet linkini paylaş\" satırının açıklaması."
+  },
+  "anlik_kart_donustur": "Bu ekiple tayfa kur",
+  "@anlik_kart_donustur": {
+    "description": "Anlık etkinlik kartında organizatörün anlık tayfayı kalıcı tayfaya dönüştürdüğü satır."
+  },
+  "anlik_kart_donustur_aciklama": "Bu ekip kalıcı tayfa olsun; üyeler ve etkinlik kalır.",
+  "@anlik_kart_donustur_aciklama": {
+    "description": "\"Bu ekiple tayfa kur\" satırının açıklaması."
+  },
+  "anlik_davet_sayfa_baslik": "Arkadaşlarını davet et",
+  "@anlik_davet_sayfa_baslik": {
+    "description": "Anlık tayfada arkadaş davet etme alttan sayfasının başlığı."
+  },
+  "anlik_davet_gonder": "{sayi, plural, =0{Davet et} other{Davet et ({sayi})}}",
+  "@anlik_davet_gonder": {
+    "description": "Arkadaş davet etme sayfasının birincil düğmesi; seçili kişi sayısıyla.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "anlik_davet_gitti": "{sayi, plural, other{{sayi} kişiye davet gitti.}}",
+  "@anlik_davet_gitti": {
+    "description": "Arkadaş davet etme sayfası kapanınca kısa bildirim.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "donustur_baslik": "Bu ekiple tayfa kur",
+  "@donustur_baslik": {
+    "description": "Anlık tayfayı kalıcı tayfaya dönüştüren sihirbazın başlığı."
+  },
+  "donustur_bilgi": "Üyeler, etkinlik ve sohbet olduğu gibi kalır.",
+  "@donustur_bilgi": {
+    "description": "Dönüştürme sihirbazının ilk adımında üstteki bilgi kutusu."
+  },
+  "donustur_gonder": "Tayfayı kur",
+  "@donustur_gonder": {
+    "description": "Dönüştürme sihirbazının son adımındaki gönder düğmesi."
+  },
+  "donustur_tamam": "Tayfan kuruldu.",
+  "@donustur_tamam": {
+    "description": "Dönüştürme başarılı olunca tayfanın ana sayfasında kısa bildirim."
+  },
+  "derin_link_davet_gonderildi_anlik": "Organizatör onaylayınca etkinliği görürsün.",
+  "@derin_link_davet_gonderildi_anlik": {
+    "description": "Anlık etkinliğin davet linkiyle katılım isteği gönderilince bilgi kutusunun metni."
+  },
+  "yonetim_davet_paylasim_metni_anlik": "{ad} etkinliğine Tayfam'da katıl:\n{link}",
+  "@yonetim_davet_paylasim_metni_anlik": {
+    "description": "Anlık etkinliğin davet linki paylaşılırken sistem paylaşım menüsüne giden metin.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Cumartesi kahvaltı"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://tayfam.app/davet#…"
+      }
+    }
+  },
+  "yonetim_davet_olustur_aciklama_anlik": "Linki arkadaşlarına at; gelenler katılım isteği gönderir, sen onaylarsın.",
+  "@yonetim_davet_olustur_aciklama_anlik": {
+    "description": "Anlık etkinlikte davet linki seçenekleri sayfasının açıklaması."
+  },
+  "bosum_bir_sey_yapalim": "Bir şey yapalım",
+  "@bosum_bir_sey_yapalim": {
+    "description": "Arkadaşın boş günleri alttan sayfasındaki birincil düğme: anlık etkinlik sihirbazını ilk boş gün için, bu arkadaş davetli açar (ADR-0026)."
   }
 }

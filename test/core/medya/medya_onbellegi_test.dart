@@ -58,15 +58,23 @@ void main() {
     expect(link.onizleme, isNull);
   });
 
-  test('görüntüde önizleme ya da ölçü yoksa link geçersiz', () async {
-    final o = _Ortam(
+  test('görüntüde önizleme yoksa tam boy; ölçü yoksa link geçersiz', () async {
+    final onizlemesiz = _Ortam(
       yanit: (idler) => [
         MediaUrls.fromJson(
           {...medyaLinkiJson(idler.single)}..remove('preview_url'),
         ),
       ],
     );
-    expect(await o.onbellek.link(_a), isNull);
+    final link = await onizlemesiz.onbellek.link(_a);
+    expect(link?.onizleme, link?.tam);
+    expect(link?.sifreliEk, isFalse);
+    final olcusuz = _Ortam(
+      yanit: (idler) => [
+        MediaUrls.fromJson({...medyaLinkiJson(idler.single), 'width': 0}),
+      ],
+    );
+    expect(await olcusuz.onbellek.link(_a), isNull);
   });
 
   test('aynı turda istenen linkler tek istekte birleşir', () async {

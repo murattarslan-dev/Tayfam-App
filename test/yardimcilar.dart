@@ -148,6 +148,10 @@ const String _kisiSayfasiOneki = 'kisi-sayfasi:';
 Finder kisiSayfasi(String kullaniciId) =>
     find.text('$_kisiSayfasiOneki$kullaniciId');
 
+/// [widgetAc] ile açılan ekrandan anlık etkinlik sihirbazına gidildiyse
+/// görünen yer tutucunun öneki; ardından adresin sorgu metni gelir.
+const String anlikSayfasiOneki = 'anlik-sayfasi:';
+
 /// Herhangi bir kişi profili yer tutucusu açık mı.
 Finder herhangiKisiSayfasi() => find.textContaining(_kisiSayfasiOneki);
 
@@ -199,6 +203,14 @@ Future<void> widgetAc(
                       body: Text(
                         '$_kisiSayfasiOneki${durum.pathParameters['id']}',
                       ),
+                    ),
+                  ),
+                  // Anlık etkinlik sihirbazının yer tutucusu (ADR-0026): sorgu
+                  // metni görünür ("Bir şey yapalım").
+                  GoRoute(
+                    path: Adresler.anlikEtkinlikYolu,
+                    builder: (_, durum) => Scaffold(
+                      body: Text('$anlikSayfasiOneki${durum.uri.query}'),
                     ),
                   ),
                 ],

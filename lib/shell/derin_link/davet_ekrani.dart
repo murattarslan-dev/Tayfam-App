@@ -80,7 +80,9 @@ class DavetEkrani extends ConsumerWidget {
           govde: _BilgiKutusu(
             teal: true,
             baslik: m.derin_link_davet_gonderildi_baslik,
-            metin: m.derin_link_davet_gonderildi_aciklama,
+            metin: deger.anlik
+                ? m.derin_link_davet_gonderildi_anlik
+                : m.derin_link_davet_gonderildi_aciklama,
           ),
           eylemler: [
             BirincilEylem(etiket: m.derin_link_davet_tamam, onPressed: kapat),

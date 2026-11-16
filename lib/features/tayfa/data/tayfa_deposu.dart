@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/api_client.dart';
+import 'package:tayfam/core/api/gen/apis/conversion_api.dart';
 import 'package:tayfam/core/api/gen/apis/membership_api.dart';
 import 'package:tayfam/core/api/gen/apis/tayfa_joins_api.dart';
 import 'package:tayfam/core/api/gen/apis/tayfas_api.dart';
@@ -15,16 +16,19 @@ const int tayfaSayfaBoyutu = 100;
 /// yeni bir `next_page_token` döndürse bile sonsuz döngü olmasın diye.
 const int tayfaEnCokSayfa = 50;
 
-/// Tayfa listesi, tayfa görünümü, kodla katılım, oluşturma ve bekleyen
-/// isteği geri çekme uçları (ADR-0014). Yalnızca üretilmiş uç sınıflarını
+/// Tayfa listesi, tayfa görünümü, kodla katılım, oluşturma, bekleyen
+/// isteği geri çekme (ADR-0014) ve anlık tayfayı dönüştürme (ADR-0026)
+/// uçları. Yalnızca üretilmiş uç sınıflarını
 /// kullanır; bütün istekler tek `ApiClient`'tan geçer (ADR-0005).
 final class TayfaDeposu {
   TayfaDeposu(ApiTransport istemci)
     : _tayfalar = TayfasApi(istemci),
       _katilim = TayfaJoinsApi(istemci),
-      _uyelik = MembershipApi(istemci);
+      _uyelik = MembershipApi(istemci),
+      _donusum = ConversionApi(istemci);
 
   final TayfasApi _tayfalar;
+  final ConversionApi _donusum;
   final TayfaJoinsApi _katilim;
   final MembershipApi _uyelik;
 
@@ -60,6 +64,12 @@ final class TayfaDeposu {
   /// `POST /v1/tayfas`.
   Future<Tayfa> olustur(TayfaCreateRequest istek) =>
       _tayfalar.createTayfa(body: istek);
+
+  /// `POST /v1/tayfas/{tayfa_id}/conversion`: anlık tayfayı kalıcı tayfaya
+  /// dönüştürür ("Bu ekiple tayfa kur"; Tayfam-Api ADR-0032 §7). Dönüşmüş
+  /// tayfada tekrar istek bir şey değiştirmeden tayfayı döndürür.
+  Future<Tayfa> donustur(String tayfaId, TayfaConvertRequest istek) =>
+      _donusum.convertInstantTayfa(tayfaId: tayfaId, body: istek);
 
   /// `DELETE /v1/tayfas/{tayfa_id}/membership`: bekleyen isteği geri çeker.
   Future<void> istegiGeriCek(String tayfaId) =>

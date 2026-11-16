@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/istek_kimligi.dart';
+import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
@@ -10,6 +13,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
 import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 
 /// Etkinlik oluşturmanın `client_request_id` üreticisi; testlerde sabit
 /// değer verilir.
@@ -19,7 +23,8 @@ final etkinlikIstekKimligiProvider = Provider<String Function()>(
 );
 
 /// Sihirbazın anahtarı: tayfa ve (düzenlemede) düzenlenen etkinlik.
-typedef SihirbazAnahtari = ({String tayfaId, Event? duzenlenen});
+/// [tayfaId] `null` ise anlık etkinliktir (ADR-0026; [AnlikSihirbazNotifier]).
+typedef SihirbazAnahtari = ({String? tayfaId, Event? duzenlenen});
 
 /// Etkinlik oluşturma ve düzenleme sihirbazı (ADR-0015 §3 ve Notlar
 /// 2026-11-13): tür → başlık, açıklama, başlangıç, bitiş → yer → türe
@@ -37,6 +42,18 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
 
   /// Düzenleme mi.
   bool get duzenleme => anahtar.duzenlenen != null;
+
+  /// Anlık (bireysel) etkinlik mi (ADR-0026): tayfa yoktur, sunucu gizli
+  /// bir tayfa açar. Tekrar ve kapak yoktur; ayrıntıdan sonra arkadaş
+  /// seçimi adımı gelir.
+  bool get anlik => anahtar.tayfaId == null;
+
+  /// Önizleme ("Her şey doğru mu?") adımı.
+  int get onizlemeAdimi =>
+      anlik ? SihirbazAdimi.anlikOnizleme : SihirbazAdimi.onizleme;
+
+  /// Adım sayısı.
+  int get adimSayisi => anlik ? anlikAdimSayisi : etkinlikAdimSayisi;
 
   /// Sihirbazın ilk adımı: oluşturmada tür, düzenlemede başlık ve zaman.
   int get ilkAdim => duzenleme ? 1 : 0;
@@ -90,8 +107,9 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   }
 
   /// Kapak fotoğrafını ayarlar ya da kaldırır (`null`; ADR-0021 §6).
+  /// Anlık etkinlikte kapak yoktur (sözleşme; sonra düzenlemeyle eklenir).
   void kapakAyarla(String? uploadId) {
-    if (_kilitli) return;
+    if (_kilitli || anlik) return;
     _ayarla(state.kopya(kapak: uploadId));
   }
 
@@ -151,7 +169,7 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
 
   /// Tekrarı ayarlar; `null` tek seferlik (yalnızca oluşturmada).
   void tekrarAyarla(TekrarSecimi? tekrar) {
-    if (_kilitli || duzenleme) return;
+    if (_kilitli || duzenleme || anlik) return;
     _ayarla(state.kopya(tekrar: tekrar));
   }
 
@@ -159,6 +177,18 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   void ayrintiAyarla(TurAyrintisi ayrinti) {
     if (_kilitli) return;
     _ayarla(state.kopya(ayrinti: ayrinti, ayrintiDegisti: true));
+  }
+
+  /// Anlık etkinlikte [kullaniciId] arkadaşını davetlilere ekler ya da
+  /// çıkarır. En çok [anlikDavetliEnCok] kişi seçilir; fazlası yok sayılır.
+  void davetliDegistir(String kullaniciId) {
+    if (_kilitli || !anlik || !uuidBicimindeMi(kullaniciId)) return;
+    final secili = [...state.davetliler];
+    if (!secili.remove(kullaniciId)) {
+      if (secili.length >= anlikDavetliEnCok) return;
+      secili.add(kullaniciId);
+    }
+    _ayarla(state.kopya(davetliler: List.unmodifiable(secili)));
   }
 
   /// Sonraki adıma geçer; adımda hata varsa geçmez ve hatalar gösterilir.
@@ -171,9 +201,9 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
       state = state.kopya(hatalar: hatalar);
       return;
     }
-    if (state.adim >= SihirbazAdimi.onizleme) return;
+    if (state.adim >= onizlemeAdimi) return;
     state = state.kopya(
-      adim: state.onizlemeyeDon ? SihirbazAdimi.onizleme : state.adim + 1,
+      adim: state.onizlemeyeDon ? onizlemeAdimi : state.adim + 1,
       onizlemeyeDon: false,
       hatalar: const {},
     );
@@ -194,9 +224,9 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   /// döner. Yalnızca önizlemeden ve gösterilen adımlar için.
   void adimaGit(int adim) {
     if (_kilitli ||
-        state.adim != SihirbazAdimi.onizleme ||
+        state.adim != onizlemeAdimi ||
         adim < ilkAdim ||
-        adim >= SihirbazAdimi.onizleme) {
+        adim >= onizlemeAdimi) {
       return;
     }
     state = state.kopya(adim: adim, onizlemeyeDon: true, hatalar: const {});
@@ -208,20 +238,21 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   Future<void> gonder() async {
     final mevcut = state;
     if (_kilitli) return;
-    for (var adim = ilkAdim; adim < etkinlikAdimSayisi; adim++) {
+    for (var adim = ilkAdim; adim < adimSayisi; adim++) {
       final hatalar = _hatalar(adim, mevcut);
       if (hatalar.isNotEmpty) {
         // Düzeltilince "İleri" önizlemeye döner.
         state = mevcut.kopya(
           adim: adim,
           hatalar: hatalar,
-          onizlemeyeDon: mevcut.adim == SihirbazAdimi.onizleme,
+          onizlemeyeDon: mevcut.adim == onizlemeAdimi,
         );
         return;
       }
     }
-    final islemler = ref.read(etkinlikDeposuProvider);
     final tayfaId = anahtar.tayfaId;
+    if (tayfaId == null) return _anlikGonder(mevcut);
+    final islemler = ref.read(etkinlikDeposuProvider);
     final eski = anahtar.duzenlenen;
     state = mevcut.kopya(gonderiliyor: true, hatalar: const {});
     final Event etkinlik;
@@ -251,6 +282,125 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
     etkinlikListeleriniYenile(ref, tayfaId);
     state = mevcut.kopya(sonuc: etkinlik.id);
   }
+
+  /// `POST /v1/instant-events`. Başarıda gizli tayfa tayfa listesine
+  /// eklenir (etkinlik adresi açılınca aktif tayfa adrese göre değişir,
+  /// ADR-0014 §1) ve liste arka planda yenilenir; "Etkinlik açıldı" ekranı
+  /// yanıttaki veriyle çizilir.
+  Future<void> _anlikGonder(EtkinlikTaslagi mevcut) async {
+    state = mevcut.kopya(gonderiliyor: true, hatalar: const {});
+    final InstantEvent sonuc;
+    try {
+      sonuc = await ref
+          .read(etkinlikDeposuProvider)
+          .anlikOlustur(anlikIstegi(mevcut));
+    } on OturumYok {
+      if (!ref.mounted) return;
+      ref.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
+      return;
+    } on Exception catch (hata) {
+      if (ref.mounted) state = mevcut.kopya(hata: hata);
+      return;
+    }
+    if (!ref.mounted) return;
+    final tayfa = sonuc.tayfa;
+    final liste = ref.read(tayfalarimProvider.notifier);
+    if (uuidBicimindeMi(tayfa.id)) {
+      liste.ekle(
+        MyTayfa(
+          tayfaId: tayfa.id,
+          name: tayfa.name,
+          kind: tayfa.kind,
+          role: Role.admin,
+          status: MyTayfaStatus.active,
+          tayfa: tayfa,
+        ),
+      );
+    }
+    unawaited(liste.yenile());
+    state = mevcut.kopya(sonuc: sonuc.event.id, anlikSonuc: sonuc);
+  }
+}
+
+/// Anlık etkinlik sihirbazının açılış değerleri; adresten gelir ve
+/// [anlikBaslangicCoz] ile doğrulanır. [gun] yerel takvim günü (yalnızca
+/// yıl, ay, gün), [davetli] önceden seçili arkadaş ("Boşum" rozetindeki
+/// "Bir şey yapalım"; ADR-0026).
+typedef AnlikAnahtari = ({DateTime? gun, String? davetli});
+
+/// "Bir şey yapalım"da en çok kaç gün sonrası kabul edilir (Boşum: en
+/// fazla 30 gün ileri; Notion Faz 2 §3).
+const int anlikGunEnCok = 30;
+
+/// "Bir şey yapalım"da önerilen başlangıç saati (yerel).
+const int anlikVarsayilanSaat = 19;
+
+final RegExp _gunBicimi = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$');
+
+/// Adresteki `gun` ve `davetli` parametrelerini doğrular (adres girdi
+/// kabul edilir, ADR-0003). Gün `YYYY-MM-DD` biçiminde, geçerli bir takvim
+/// günü ve bugünden (yerel) [anlikGunEnCok] gün sonrasına kadar olmalıdır;
+/// davetli UUID biçiminde olmalıdır. Geçmeyen değer yok sayılır.
+AnlikAnahtari anlikBaslangicCoz(
+  String? gunMetni,
+  String? davetli, {
+  required DateTime simdi,
+}) {
+  DateTime? gun;
+  final eslesme = gunMetni == null ? null : _gunBicimi.firstMatch(gunMetni);
+  if (eslesme != null) {
+    final yil = int.parse(eslesme.group(1)!);
+    final ay = int.parse(eslesme.group(2)!);
+    final gunNo = int.parse(eslesme.group(3)!);
+    final aday = DateTime(yil, ay, gunNo);
+    final yerel = simdi.toLocal();
+    final bugun = DateTime(yerel.year, yerel.month, yerel.day);
+    final sinir = DateTime(bugun.year, bugun.month, bugun.day + anlikGunEnCok);
+    final gecerli = aday.year == yil && aday.month == ay && aday.day == gunNo;
+    if (gecerli && !aday.isBefore(bugun) && !aday.isAfter(sinir)) gun = aday;
+  }
+  return (
+    gun: gun,
+    davetli: davetli != null && uuidBicimindeMi(davetli) ? davetli : null,
+  );
+}
+
+/// [gun] için önerilen başlangıç (UTC): o gün [anlikVarsayilanSaat]:00;
+/// bu an bir saatten yakınsa ya da geçtiyse bir sonraki tam saatten bir
+/// saat sonrası.
+DateTime anlikOnerilenBaslangic(DateTime gun, {required DateTime simdi}) {
+  final yerel = simdi.toLocal();
+  final oneri = DateTime(gun.year, gun.month, gun.day, anlikVarsayilanSaat);
+  if (oneri.difference(yerel) >= const Duration(hours: 1)) {
+    return oneri.toUtc();
+  }
+  final tamSaat = DateTime(yerel.year, yerel.month, yerel.day, yerel.hour);
+  return tamSaat.add(const Duration(hours: 2)).toUtc();
+}
+
+/// Anlık etkinlik sihirbazı (ADR-0026): etkinlik sihirbazının kendisi,
+/// tayfasız. Açılış değerleri ([AnlikAnahtari]) taslağa işlenir ama
+/// "girilen" sayılmaz; kullanıcı bir şey değiştirmeden kapatırsa vazgeç
+/// onayı sorulmaz.
+class AnlikSihirbazNotifier extends EtkinlikSihirbaziNotifier {
+  AnlikSihirbazNotifier(this.baslangic)
+    : super((tayfaId: null, duzenlenen: null));
+
+  final AnlikAnahtari baslangic;
+
+  @override
+  EtkinlikTaslagi build() {
+    var taslak = super.build();
+    final gun = baslangic.gun;
+    if (gun != null) {
+      final bas = anlikOnerilenBaslangic(gun, simdi: _simdi);
+      taslak = taslak.kopya(baslangic: bas, bitis: bas.add(varsayilanSure));
+    }
+    final davetli = baslangic.davetli;
+    if (davetli != null) taslak = taslak.kopya(davetliler: [davetli]);
+    _ilk = taslak;
+    return taslak;
+  }
 }
 
 /// Başlangıç seçilince önerilen süre.
@@ -261,6 +411,14 @@ String _kisalt(String metin, int enCok) {
   if (harfler.length <= enCok) return metin;
   return String.fromCharCodes(harfler.take(enCok));
 }
+
+/// Anlık etkinlik sihirbazının notifier'ı (ADR-0026); sihirbaz kapanınca
+/// bırakılır.
+final anlikSihirbazProvider = NotifierProvider.autoDispose
+    .family<EtkinlikSihirbaziNotifier, EtkinlikTaslagi, AnlikAnahtari>(
+      AnlikSihirbazNotifier.new,
+      name: 'anlikSihirbazProvider',
+    );
 
 /// Sihirbazın notifier'ı; sihirbaz kapanınca bırakılır ve yeniden açılınca
 /// yeni bir `client_request_id` üretilir.

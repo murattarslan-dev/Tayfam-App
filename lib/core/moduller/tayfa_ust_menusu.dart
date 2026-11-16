@@ -36,6 +36,22 @@ final tayfaDavetiProvider = Provider<TayfaDaveti?>(
   name: 'tayfaDavetiProvider',
 );
 
+/// Anlık tayfada organizatörün arkadaşlarını doğrudan davet etmesi
+/// (ADR-0026; `POST /v1/tayfas/{tayfa_id}/invitations`): arkadaş seçme
+/// sayfasını açar. Arkadaş listesi arkadaşlık özelliğinde, seçim sayfası
+/// etkinlik özelliğindedir; tayfa özelliği ikisini de import edemez (döngü
+/// olurdu), bu yüzden kayıtla bağlanır. `null` iken satır gösterilmez.
+typedef ArkadasDaveti = Future<void> Function(
+  BuildContext context,
+  String tayfaId,
+);
+
+/// Uygulamaya kayıtlı arkadaş daveti; varsayılanı `null`.
+final arkadasDavetiProvider = Provider<ArkadasDaveti?>(
+  (ref) => null,
+  name: 'arkadasDavetiProvider',
+);
+
 /// Silinmesi planlanmış tayfanın durum şeridindeki "Silmeyi iptal et"
 /// düğmesini kuran işlev (tasarım: Ayar-Silme). Yalnızca yöneticiye
 /// gösterilir; iptali sunucu yetkilendirir. Tayfa yönetimi kaydıyla

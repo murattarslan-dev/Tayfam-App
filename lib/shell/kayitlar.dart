@@ -52,6 +52,8 @@ final List<Override> kayitOverridelari = [
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Ana sayfadan davet linki ve "Silmeyi iptal et" (2026-11-13).
   tayfaDavetiProvider.overrideWithValue(tayfayaDavetEt),
+  // Anlık tayfada organizatörün arkadaş daveti (ADR-0026).
+  arkadasDavetiProvider.overrideWithValue(anlikArkadasDavetEt),
   tayfaSilmeIptaliProvider.overrideWithValue(silmeIptalDugmesi),
   // Tayfa ayarlarındaki ek girişler: moderasyon kuyruğu (ADR-0018 §8).
   yonetimEkGirisleriProvider.overrideWithValue(yonetimEkGirisleri),

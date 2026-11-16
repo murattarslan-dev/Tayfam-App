@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/gen/apis/events_api.dart';
+import 'package:tayfam/core/api/gen/apis/instant_events_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
@@ -16,13 +17,23 @@ const int albumSayfaBoyutu = 60;
 
 /// Etkinlik uçları (ADR-0015 §3, §5, §6): liste, tek etkinlik, oluşturma,
 /// düzenleme, iptal, katılım, katılımcılar, `.ics`, varış bildirimi, türe
-/// özel araçlar ve organizatör düzeltmesi. Yalnızca üretilmiş uç
+/// özel araçlar, organizatör düzeltmesi ve anlık etkinlik (ADR-0026).
+/// Yalnızca üretilmiş uç
 /// sınıflarını kullanır; bütün istekler tek `ApiClient`'tan geçer
 /// (ADR-0005).
 final class EtkinlikDeposu {
-  EtkinlikDeposu(ApiTransport istemci) : _api = EventsApi(istemci);
+  EtkinlikDeposu(ApiTransport istemci)
+    : _api = EventsApi(istemci),
+      _anlik = InstantEventsApi(istemci);
 
   final EventsApi _api;
+  final InstantEventsApi _anlik;
+
+  /// `POST /v1/instant-events`: gizli, tek etkinlikli tayfa ve etkinliği
+  /// açar (Tayfam-Api ADR-0032). Aynı `event.client_request_id` ile tekrar
+  /// gönderim ilk açılanı döndürür.
+  Future<InstantEvent> anlikOlustur(InstantEventCreateRequest istek) =>
+      _anlik.createInstantEvent(body: istek);
 
   /// `GET /v1/tayfas/{tayfa_id}/events`: bitmemiş etkinlikler, başlangıç
   /// zamanına göre; iptal edilenler de listededir. [sayfaToken] opaktır.

@@ -482,6 +482,7 @@ void main() {
           'id': mesaj1,
           'tayfa_id': tayfaA,
           'channel_id': kanal1,
+          'kind': 'text',
           'body': 'gizli metin',
           'created_at': '2026-11-11T10:00:00Z',
         });

@@ -8841,6 +8841,87 @@ final class HikeStartRequest {
   int get hashCode => Object.hashAll(<Object?>[startedAt]);
 }
 
+final class InstantEvent {
+  const InstantEvent({required this.tayfa, required this.event});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory InstantEvent.fromJson(Map<String, Object?> json) => InstantEvent(
+    tayfa: Tayfa.fromJson(_readObject(json['tayfa'], 'InstantEvent.tayfa')),
+    event: Event.fromJson(_readObject(json['event'], 'InstantEvent.event')),
+  );
+
+  final Tayfa tayfa;
+
+  final Event event;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'tayfa': tayfa.toJson(),
+    'event': event.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InstantEvent && tayfa == other.tayfa && event == other.event;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[tayfa, event]);
+}
+
+final class InstantEventCreateRequest {
+  const InstantEventCreateRequest({required this.event, this.inviteeUserIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory InstantEventCreateRequest.fromJson(Map<String, Object?> json) =>
+      InstantEventCreateRequest(
+        event: EventCreateRequest.fromJson(
+          _readObject(json['event'], 'InstantEventCreateRequest.event'),
+        ),
+        inviteeUserIds: switch (json['invitee_user_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'InstantEventCreateRequest.invitee_user_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'InstantEventCreateRequest.invitee_user_ids'),
+            ),
+          ),
+        },
+      );
+
+  /// Etkinlik; kuralları tayfa etkinliğiyle aynı. `recurrence` ve
+  /// `cover_upload_id` verilemez, `discoverable` `true` olamaz. `client_request_id` isteğin tekrar
+  /// gönderim anahtarıdır.
+  final EventCreateRequest event;
+
+  /// Doğrudan davet edilecek arkadaşlarınız (en fazla 10, siz değil).
+  ///
+  /// Kısıtlar: maxItems: 10; uniqueItems: true.
+  final List<String>? inviteeUserIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'event': event.toJson(),
+    if (inviteeUserIds case final value?)
+      'invitee_user_ids': <Object?>[for (final e0 in value) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InstantEventCreateRequest &&
+          event == other.event &&
+          _deepEquals(inviteeUserIds, other.inviteeUserIds);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[event, _deepHash(inviteeUserIds)]);
+}
+
 final class Invitation {
   const Invitation({
     required this.tayfaId,
@@ -10556,6 +10637,7 @@ final class MyTayfa {
   const MyTayfa({
     required this.tayfaId,
     required this.name,
+    required this.kind,
     required this.role,
     required this.status,
     this.tayfa,
@@ -10567,6 +10649,7 @@ final class MyTayfa {
   factory MyTayfa.fromJson(Map<String, Object?> json) => MyTayfa(
     tayfaId: _readString(json['tayfa_id'], 'MyTayfa.tayfa_id'),
     name: _readString(json['name'], 'MyTayfa.name'),
+    kind: TayfaKind.fromWire(_readString(json['kind'], 'MyTayfa.kind')),
     role: Role.fromWire(_readString(json['role'], 'MyTayfa.role')),
     status: MyTayfaStatus.fromWire(
       _readString(json['status'], 'MyTayfa.status'),
@@ -10581,6 +10664,8 @@ final class MyTayfa {
 
   final String name;
 
+  final TayfaKind kind;
+
   final Role role;
 
   final MyTayfaStatus status;
@@ -10592,6 +10677,7 @@ final class MyTayfa {
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa_id': tayfaId,
     'name': name,
+    'kind': kind.wire,
     'role': role.wire,
     'status': status.wire,
     if (tayfa case final value?) 'tayfa': value.toJson(),
@@ -10603,13 +10689,14 @@ final class MyTayfa {
       other is MyTayfa &&
           tayfaId == other.tayfaId &&
           name == other.name &&
+          kind == other.kind &&
           role == other.role &&
           status == other.status &&
           tayfa == other.tayfa;
 
   @override
   int get hashCode =>
-      Object.hashAll(<Object?>[tayfaId, name, role, status, tayfa]);
+      Object.hashAll(<Object?>[tayfaId, name, kind, role, status, tayfa]);
 }
 
 final class MyTayfaList {
@@ -13888,6 +13975,8 @@ final class Tayfa {
     this.coverUploadId,
     required this.id,
     required this.name,
+    required this.kind,
+    this.instantEventId,
     required this.description,
     required this.interests,
     required this.joinPolicy,
@@ -13913,6 +14002,11 @@ final class Tayfa {
     },
     id: _readString(json['id'], 'Tayfa.id'),
     name: _readString(json['name'], 'Tayfa.name'),
+    kind: TayfaKind.fromWire(_readString(json['kind'], 'Tayfa.kind')),
+    instantEventId: switch (json['instant_event_id']) {
+      null => null,
+      final Object v => _readString(v, 'Tayfa.instant_event_id'),
+    },
     description: _readString(json['description'], 'Tayfa.description'),
     interests: List<EventType>.unmodifiable(
       _readList(json['interests'], 'Tayfa.interests').map(
@@ -13956,7 +14050,13 @@ final class Tayfa {
 
   final String id;
 
+  /// 3–50 karakter; anlık tayfada etkinliğin başlığıdır (1–120).
   final String name;
+
+  final TayfaKind kind;
+
+  /// Yalnızca anlık tayfada; tayfanın tek etkinliği.
+  final String? instantEventId;
 
   final String description;
 
@@ -14001,6 +14101,8 @@ final class Tayfa {
     if (coverUploadId case final value?) 'cover_upload_id': value,
     'id': id,
     'name': name,
+    'kind': kind.wire,
+    if (instantEventId case final value?) 'instant_event_id': value,
     'description': description,
     'interests': <Object?>[for (final e0 in interests) e0.wire],
     'join_policy': joinPolicy.wire,
@@ -14026,6 +14128,8 @@ final class Tayfa {
           coverUploadId == other.coverUploadId &&
           id == other.id &&
           name == other.name &&
+          kind == other.kind &&
+          instantEventId == other.instantEventId &&
           description == other.description &&
           _deepEquals(interests, other.interests) &&
           joinPolicy == other.joinPolicy &&
@@ -14045,6 +14149,8 @@ final class Tayfa {
     coverUploadId,
     id,
     name,
+    kind,
+    instantEventId,
     description,
     _deepHash(interests),
     joinPolicy,
@@ -14058,6 +14164,83 @@ final class Tayfa {
     pendingJoinRequestCount,
     createdAt,
     updatedAt,
+  ]);
+}
+
+final class TayfaConvertRequest {
+  const TayfaConvertRequest({
+    required this.name,
+    this.description,
+    this.interests,
+    this.joinPolicy,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaConvertRequest.fromJson(Map<String, Object?> json) =>
+      TayfaConvertRequest(
+        name: _readString(json['name'], 'TayfaConvertRequest.name'),
+        description: switch (json['description']) {
+          null => null,
+          final Object v => _readString(v, 'TayfaConvertRequest.description'),
+        },
+        interests: switch (json['interests']) {
+          null => null,
+          final Object v => List<EventType>.unmodifiable(
+            _readList(v, 'TayfaConvertRequest.interests').map(
+              (Object? e0) => EventType.fromWire(
+                _readString(e0, 'TayfaConvertRequest.interests'),
+              ),
+            ),
+          ),
+        },
+        joinPolicy: switch (json['join_policy']) {
+          null => null,
+          final Object v => JoinPolicy.fromWire(
+            _readString(v, 'TayfaConvertRequest.join_policy'),
+          ),
+        },
+      );
+
+  /// Baştaki ve sondaki boşluklar atıldıktan sonra 3–50 karakter.
+  ///
+  /// Kısıtlar: minLength: 3; maxLength: 50.
+  final String name;
+
+  /// Kısıtlar: maxLength: 500.
+  final String? description;
+
+  /// Kısıtlar: maxItems: 7; uniqueItems: true.
+  final List<EventType>? interests;
+
+  /// Kısıtlar: varsayılan (sunucu): `approval`.
+  final JoinPolicy? joinPolicy;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'name': name,
+    if (description case final value?) 'description': value,
+    if (interests case final value?)
+      'interests': <Object?>[for (final e0 in value) e0.wire],
+    if (joinPolicy case final value?) 'join_policy': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaConvertRequest &&
+          name == other.name &&
+          description == other.description &&
+          _deepEquals(interests, other.interests) &&
+          joinPolicy == other.joinPolicy;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    name,
+    description,
+    _deepHash(interests),
+    joinPolicy,
   ]);
 }
 
@@ -14147,6 +14330,37 @@ final class TayfaCreateRequest {
     joinPolicy,
     clientRequestId,
   ]);
+}
+
+/// `standard`: tayfa. `instant`: anlık etkinliğin gizli, tek etkinlikli
+/// tayfası; Keşfet'e çıkmaz, etkinlik bitince 7 gün sonra arşivlenir
+/// (ADR-0032).
+enum TayfaKind {
+  standard('standard'),
+  instant('instant'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const TayfaKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('TayfaKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static TayfaKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 /// Her modülün açık olup olmadığı.

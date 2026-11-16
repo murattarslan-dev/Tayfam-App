@@ -10,6 +10,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/push/bildirim_izni.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
 
@@ -239,6 +240,7 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
       MyTayfa(
         tayfaId: tayfa.id,
         name: tayfa.name,
+        kind: tayfa.kind,
         role: Role.admin,
         status: MyTayfaStatus.active,
         tayfa: tayfa,
@@ -257,6 +259,79 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
     state = mevcut._degistir(olusturulan: tayfa.id, kurulan: tayfa);
   }
 }
+
+/// "Bu ekiple tayfa kur" (ADR-0026; Tayfam-Api ADR-0032 §7): anlık tayfayı
+/// kalıcı tayfaya dönüştürür. Tayfa kurma sihirbazının aynı üç adımıdır
+/// (ad, ilgi alanları, katılım ve açıklama); gönderim
+/// `POST /v1/tayfas/{tayfa_id}/conversion`'dır.
+///
+/// Başarıda tayfa listesi ve görünüm tazelenir, ana sayfada kurulum
+/// adımları gösterilir ("7 günde 3 üye" dönüşüm anından işler) ve
+/// [OlusturmaDurumu.olusturulan] dolar; "Tayfa kuruldu" ekranı yoktur
+/// ([OlusturmaDurumu.kurulan] boş kalır), üyeler zaten vardır.
+class DonusturmeNotifier extends OlusturmaNotifier {
+  DonusturmeNotifier(this.tayfaId);
+
+  /// Dönüştürülen anlık tayfa (adresten; biçimi doğrulanmış).
+  final String tayfaId;
+
+  @override
+  Future<void> gonder() async {
+    final mevcut = state;
+    if (mevcut.gonderiliyor || mevcut.olusturulan != null) return;
+    if (!tayfaAdiGecerli(mevcut.ad)) {
+      state = mevcut._degistir(adim: 0, adHatali: true);
+      return;
+    }
+    final aciklama = mevcut.aciklama.trim();
+    if (aciklama.runes.length > tayfaAciklamasiEnCok) return;
+    state = mevcut._degistir(gonderiliyor: true);
+    final Tayfa tayfa;
+    try {
+      tayfa = await ref
+          .read(tayfaDeposuProvider)
+          .donustur(
+            tayfaId,
+            TayfaConvertRequest(
+              name: mevcut.ad.trim(),
+              description: aciklama.isEmpty ? null : aciklama,
+              interests: mevcut.ilgiler.isEmpty ? null : mevcut.ilgiler,
+              joinPolicy: mevcut.katilim,
+            ),
+          );
+    } on OturumYok {
+      if (!ref.mounted) return;
+      ref.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
+      return;
+    } on Exception catch (hata) {
+      if (ref.mounted) state = mevcut._degistir(hata: hata);
+      return;
+    }
+    if (!ref.mounted) return;
+    final liste = ref.read(tayfalarimProvider.notifier);
+    liste.ekle(
+      MyTayfa(
+        tayfaId: tayfa.id,
+        name: tayfa.name,
+        kind: tayfa.kind,
+        role: Role.admin,
+        status: MyTayfaStatus.active,
+        tayfa: tayfa,
+      ),
+    );
+    ref.invalidate(tayfaGorunumuProvider(tayfaId));
+    ref.read(davetKisayoluProvider.notifier).goster(tayfa.id);
+    unawaited(liste.yenile());
+    state = mevcut._degistir(olusturulan: tayfa.id);
+  }
+}
+
+/// Dönüştürme sihirbazının notifier'ı (`family(tayfaId)` + `autoDispose`).
+final donusturmeProvider = NotifierProvider.autoDispose
+    .family<OlusturmaNotifier, OlusturmaDurumu, String>(
+      DonusturmeNotifier.new,
+      name: 'donusturmeProvider',
+    );
 
 /// Oluşturma sihirbazının notifier'ı; sihirbaz kapanınca bırakılır ve
 /// yeniden açılınca yeni bir `client_request_id` üretilir.

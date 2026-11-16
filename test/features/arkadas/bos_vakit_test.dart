@@ -350,6 +350,7 @@ void main() {
           find.textContaining(arbMetni('bosum_rozet_bugun')),
         );
         expect(find.text('Mesaj-düğmesi'), findsOneWidget);
+        expect(find.text(arbMetni('bosum_bir_sey_yapalim')), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
     }
@@ -594,6 +595,46 @@ void main() {
       expect(find.text('Mesaj-düğmesi'), findsOneWidget);
     });
 
+    testWidgets('"Bir şey yapalım": ilk boş gün için, arkadaş davetli', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 900);
+      await widgetAc(
+        tester,
+        const ArkadaslarEkrani(),
+        yonlendirici: true,
+        tayfa: [
+          ...arkadasOverridelari(_doluTasima()),
+          simdiProvider.overrideWithValue(() => _simdi),
+        ],
+      );
+      await _dokun(tester, find.textContaining('Cumartesi boş'));
+      await _dokun(tester, find.text(arbMetni('bosum_bir_sey_yapalim')));
+      final sorgu = Uri.splitQueryString(
+        _anlikSorgusu(tester).substring(anlikSayfasiOneki.length),
+      );
+      expect(sorgu, {'gun': '2026-11-21', 'davetli': kisiId2});
+    });
+
+    testWidgets('güne dokununca o gün için anlık etkinlik', (tester) async {
+      ekranBoyutu(tester, yukseklik: 900);
+      await widgetAc(
+        tester,
+        const ArkadaslarEkrani(),
+        yonlendirici: true,
+        tayfa: [
+          ...arkadasOverridelari(_doluTasima()),
+          simdiProvider.overrideWithValue(() => _simdi),
+        ],
+      );
+      await _dokun(tester, find.textContaining('Cumartesi boş'));
+      await _dokun(tester, find.text('5 Aralık Cumartesi'));
+      expect(
+        _anlikSorgusu(tester),
+        '${anlikSayfasiOneki}gun=2026-12-05&davetli=$kisiId2',
+      );
+    });
+
     testWidgets('görünmüyorsa ortak metin, mesaj eylemi yok', (tester) async {
       ekranBoyutu(tester, yukseklik: 900);
       final tasima = _doluTasima();
@@ -631,3 +672,7 @@ void main() {
     });
   });
 }
+
+/// Açılan anlık etkinlik yer tutucusunun metni.
+String _anlikSorgusu(WidgetTester tester) =>
+    (tester.widget<Text>(find.textContaining(anlikSayfasiOneki))).data!;
