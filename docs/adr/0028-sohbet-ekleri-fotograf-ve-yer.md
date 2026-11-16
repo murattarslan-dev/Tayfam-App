@@ -1,7 +1,8 @@
 # ADR-0028: Sohbet ekleri — fotoğraf ve yer (istemci)
 
-- **Durum:** Önerildi (platform sahibinin onayına; ürün kararları
-  2026-11-15/16'da verildi)
+- **Durum:** Kabul edildi (2026-11-16; platform sahibi sohbette onayladı:
+  ürün kararları 2026-11-15/16, ayrıntılar (a)–(e) ve zarf v1'e `foto`/`yer`
+  türlerinin eklenmesi mimari oturumunun önerisiyle)
 - **Tarih:** 2026-11-16
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0004](0004-tema-ve-bilesen-dili.md),
