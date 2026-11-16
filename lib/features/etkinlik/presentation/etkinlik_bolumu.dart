@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
@@ -142,7 +141,7 @@ class YaklasanSatiri extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          _TarihKutusu(an: yerel),
+          TarihKutusu(an: yerel),
           const SizedBox(width: TayfamSpacing.s12),
           Expanded(
             flex: 2,
@@ -164,55 +163,6 @@ class YaklasanSatiri extends StatelessWidget {
           // Büyük yazıda etiket satıra sarılır; başlığa daha çok yer kalır.
           Flexible(child: _CevapRozeti(etkinlik: etkinlik)),
         ],
-      ),
-    );
-  }
-}
-
-/// Satırın solundaki gün ve ay kısaltması ("26 / Kas"); ay adı `intl`'den,
-/// büyük harfe çevrilmeden (ADR-0008). Satırın metni zaten okunduğu için
-/// ekran okuyucudan gizlenir.
-class _TarihKutusu extends StatelessWidget {
-  const _TarihKutusu({required this.an});
-
-  final DateTime an;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    final yazi = context.yazi;
-    return ExcludeSemantics(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: r.tintMarka,
-          borderRadius: TayfamRadii.onizlemeKoseleri,
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: TayfamSizes.tarihKutusuGenislik,
-            minHeight: TayfamSizes.tarihKutusuYukseklik,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(TayfamSpacing.s4),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  DateFormat.d(m.localeName).format(an),
-                  style: yazi.titleLarge?.copyWith(
-                    fontWeight: TayfamTypography.buyukBaslikAgirligi,
-                  ),
-                ),
-                Text(
-                  DateFormat.MMM(m.localeName).format(an),
-                  style: yazi.labelSmall?.copyWith(color: r.tintMarkaUstu),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
