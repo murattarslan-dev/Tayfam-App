@@ -85,6 +85,7 @@ Map<String, Object?> mesajJson(
   'id': id,
   'channel_id': kanal,
   'author_user_id': ?yazar,
+  'kind': 'text',
   'body': silindi ? null : metin,
   'deleted': silindi,
   'created_at': zaman,
@@ -101,6 +102,7 @@ Map<String, Object?> olayMesaji(
   'tayfa_id': ornekTayfaId,
   'channel_id': kanal,
   'author_user_id': yazar,
+  'kind': 'text',
   'body': 'yeni',
   'created_at': zaman,
 };

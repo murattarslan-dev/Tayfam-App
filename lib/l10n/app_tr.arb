@@ -5252,6 +5252,14 @@
     "description": "Hata kodu `tayfa-read-only`. Tayfa askıya alınmış, arşivlenmiş ya da silinmeyi bekliyorken bir değişiklik denendiğinde görünen hata; okuma sürer."
   },
   "hata_tayfa_create_limit": "Son 24 saatte zaten bir tayfa açtın. Daha sonra tekrar dene.",
+  "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
+  "@hata_album_closed": {
+    "description": "Hata kodu `album-closed`. Etkinlik albümüne, etkinlik başlamadan ya da bitişten yedi gün sonra fotoğraf eklenmeye çalışıldığında görünen hata."
+  },
+  "hata_instant_event_limit": "Şu an daha fazla anlık etkinlik açamazsın. Açık etkinliklerinden biri bitince ya da yarın tekrar dene.",
+  "@hata_instant_event_limit": {
+    "description": "Hata kodu `instant-event-limit` (ADR-0032 §5): aynı anda 3 açık ya da 24 saatte 5 anlık etkinlik sınırı. Hangi sınırın aşıldığını sunucu söylemez; sayı yazılmaz."
+  },
   "@hata_tayfa_create_limit": {
     "description": "Hata kodu `tayfa-create-limit`. Kullanıcı 24 saat içinde ikinci tayfayı açmaya çalıştığında görünen hata (kullanıcı başına günde bir tayfa)."
   },

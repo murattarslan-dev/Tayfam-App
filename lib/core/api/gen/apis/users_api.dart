@@ -90,6 +90,28 @@ final class UsersApi {
     );
   }
 
+  /// Bir arkadaşınızın boş günleri (bugünden itibaren)
+  ///
+  /// Yalnızca kabul edilmiş arkadaşlar görür. Arkadaş değilseniz, istek
+  /// bekliyorsa, iki yönden biri engellediyse ya da kullanıcı yoksa cevap
+  /// aynıdır (`user-not-found`). Kendi kimliğinizle kendi günleriniz döner.
+  ///
+  /// `GET /v1/users/{user_id}/availability`
+  Future<AvailabilityDayList> listUserAvailability({
+    required String userId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/users/{user_id}/availability',
+      pathParams: {'user_id': userId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return AvailabilityDayList.fromJson(
+      jsonObject(response, 'listUserAvailability'),
+    );
+  }
+
   /// Bir kullanıcının profili (ad, avatar, ortak tayfalar)
   ///
   /// Ad ve avatar, ortak tayfanız ya da arkadaşlığınız olmasa da her

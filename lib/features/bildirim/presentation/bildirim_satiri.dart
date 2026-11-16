@@ -391,7 +391,10 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.dmMessage => BildirimKategorisi.mesaj,
   NotificationType.friendRequest ||
   NotificationType.friendAccepted ||
-  NotificationType.tayfaInvitation => BildirimKategorisi.arkadaslik,
+  NotificationType.tayfaInvitation ||
+  // Arkadaş önerisi (Tayfam-App #197) kendi işiyle metin kazanır; o
+  // birleşene kadar genel metinle arkadaşlık renginde gösterilir.
+  NotificationType.friendSuggestion => BildirimKategorisi.arkadaslik,
   NotificationType.eventCancelled ||
   NotificationType.hikeOverdue ||
   NotificationType.tayfaWarned ||
@@ -441,6 +444,7 @@ String bildirimMetni(
   NotificationType.dmRequest => m.bildirim_mesaj_istegi,
   NotificationType.dmMessage => m.bildirim_mesaj,
   NotificationType.dataExportReady => m.bildirim_veri_hazir,
+  NotificationType.friendSuggestion ||
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -461,7 +465,8 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.tayfaUnsuspended => Icons.groups_outlined,
   NotificationType.hikeOverdue => Icons.warning_amber_outlined,
   NotificationType.friendRequest ||
-  NotificationType.friendAccepted => Icons.people_outline,
+  NotificationType.friendAccepted ||
+  NotificationType.friendSuggestion => Icons.people_outline,
   NotificationType.tayfaInvitation => Icons.mail_outline,
   NotificationType.reportResolved => Icons.flag_outlined,
   NotificationType.dmRequest ||

@@ -286,6 +286,7 @@ ChannelMessage silinmisMesaj(ChannelMessage m) => ChannelMessage(
   id: m.id,
   channelId: m.channelId,
   authorUserId: m.authorUserId,
+  kind: m.kind,
   deleted: true,
   restorable: m.restorable,
   createdAt: m.createdAt,

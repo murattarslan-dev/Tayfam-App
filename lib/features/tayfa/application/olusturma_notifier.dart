@@ -239,6 +239,7 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
       MyTayfa(
         tayfaId: tayfa.id,
         name: tayfa.name,
+        kind: tayfa.kind,
         role: Role.admin,
         status: MyTayfaStatus.active,
         tayfa: tayfa,
