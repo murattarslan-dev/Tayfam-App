@@ -5252,14 +5252,6 @@
     "description": "Hata kodu `tayfa-read-only`. Tayfa askıya alınmış, arşivlenmiş ya da silinmeyi bekliyorken bir değişiklik denendiğinde görünen hata; okuma sürer."
   },
   "hata_tayfa_create_limit": "Son 24 saatte zaten bir tayfa açtın. Daha sonra tekrar dene.",
-  "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
-  "@hata_album_closed": {
-    "description": "Hata kodu `album-closed`. Etkinlik albümüne, etkinlik başlamadan ya da bitişten yedi gün sonra fotoğraf eklenmeye çalışıldığında görünen hata."
-  },
-  "hata_instant_event_limit": "Şu an daha fazla anlık etkinlik açamazsın. Açık etkinliklerinden biri bitince ya da yarın tekrar dene.",
-  "@hata_instant_event_limit": {
-    "description": "Hata kodu `instant-event-limit` (ADR-0032 §5): aynı anda 3 açık ya da 24 saatte 5 anlık etkinlik sınırı. Hangi sınırın aşıldığını sunucu söylemez; sayı yazılmaz."
-  },
   "@hata_tayfa_create_limit": {
     "description": "Hata kodu `tayfa-create-limit`. Kullanıcı 24 saat içinde ikinci tayfayı açmaya çalıştığında görünen hata (kullanıcı başına günde bir tayfa)."
   },
@@ -5382,6 +5374,10 @@
   "hata_not_attended": "Bunun için etkinliğe katıldığın doğrulanmış olmalı.",
   "@hata_not_attended": {
     "description": "Hata kodu `not-attended`. Av kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
+  },
+  "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
+  "@hata_album_closed": {
+    "description": "Hata kodu `album-closed`. Etkinlik albümüne, etkinlik başlamadan ya da bitişten yedi gün sonra fotoğraf eklenmeye çalışıldığında görünen hata."
   },
   "hata_event_series_not_found": "Bu etkinlik serisi bulunamadı.",
   "@hata_event_series_not_found": {
@@ -7901,6 +7897,10 @@
   "@sikayet_soru_av_kaydi": {
     "description": "Balık etkinliğindeki bir av kaydını şikâyet ederken sayfanın sorusu."
   },
+  "sikayet_soru_album_fotografi": "Bu fotoğrafı neden şikâyet ediyorsun?",
+  "@sikayet_soru_album_fotografi": {
+    "description": "Etkinlik albümündeki bir fotoğrafı şikâyet ederken sayfanın sorusu."
+  },
   "sikayet_soru_mesaj": "Bu mesajı neden şikâyet ediyorsun?",
   "@sikayet_soru_mesaj": {
     "description": "Birebir mesajı şikâyet ederken sayfanın sorusu."
@@ -8048,6 +8048,10 @@
   "sikayet_tur_av_kaydi": "Av kaydı",
   "@sikayet_tur_av_kaydi": {
     "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: balık etkinliğinin av kaydı."
+  },
+  "sikayet_tur_album_fotografi": "Albüm fotoğrafı",
+  "@sikayet_tur_album_fotografi": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: etkinlik albümündeki fotoğraf."
   },
   "sikayet_tur_mesaj": "Mesaj",
   "@sikayet_tur_mesaj": {
@@ -9198,6 +9202,214 @@
   "yonetim_ban_diger_gerekceler": "Diğer gerekçeleri göster",
   "@yonetim_ban_diger_gerekceler": {
     "description": "Ban penceresinde kısa gerekçe listesinin altındaki düğme; kapalı listenin geri kalanını açar."
+  },
+  "album_baslik": "Albüm",
+  "@album_baslik": {
+    "description": "Etkinlik detayındaki albüm bölümünün ve albüm ekranının başlığı (fotoğraf albümü)."
+  },
+  "album_tumu": "Tümü",
+  "@album_tumu": {
+    "description": "Albüm bölümü başlığının sağında, albüm ekranını açan bağlantı."
+  },
+  "album_ekle": "Fotoğraf ekle",
+  "@album_ekle": {
+    "description": "Albüme fotoğraf ekleme düğmesi (bölümde metinli, albüm ekranında simge düğmesinin ipucu)."
+  },
+  "album_bos": "Albümde henüz fotoğraf yok.",
+  "@album_bos": {
+    "description": "Albüm boşken gösterilen metin."
+  },
+  "album_baslamadi": "Albüm etkinlik başlayınca açılır.",
+  "@album_baslamadi": {
+    "description": "Etkinlik başlamadan albüm bölümünde gösterilen bilgi."
+  },
+  "album_katilim_yok": "Fotoğraf eklemek için önce varışını bildir.",
+  "@album_katilim_yok": {
+    "description": "Katılımı doğrulanmamış kullanıcıya albüm bölümünde gösterilen bilgi (\"Geldim\" ile varış bildirimi)."
+  },
+  "album_kapandi": "Albüm fotoğraf eklemeye kapandı.",
+  "@album_kapandi": {
+    "description": "Bitişten yedi gün sonra albüm bölümünde gösterilen bilgi."
+  },
+  "album_fotograf_etiketi": "Albüm fotoğrafı {sira}",
+  "@album_fotograf_etiketi": {
+    "description": "Albüm ızgarasındaki ve görüntüleyicideki bir fotoğrafın ekran okuyucu etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "album_fotograf_etiketi_aciklamali": "Albüm fotoğrafı {sira}: {aciklama}",
+  "@album_fotograf_etiketi_aciklamali": {
+    "description": "Açıklaması olan albüm fotoğrafının ekran okuyucu etiketi; açıklama kullanıcının yazdığı metindir.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      },
+      "aciklama": {
+        "type": "String",
+        "example": "Gün batımı"
+      }
+    }
+  },
+  "album_sayac": "{sira} / {toplam}",
+  "@album_sayac": {
+    "description": "Görüntüleyicinin üstünde kaçıncı fotoğrafta olunduğu (okunan fotoğraflara göre).",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "23"
+      }
+    }
+  },
+  "album_sayac_devami": "{sira} / {toplam}+",
+  "@album_sayac_devami": {
+    "description": "Görüntüleyicinin sayacı; albümün okunmamış sayfaları da var.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "60"
+      }
+    }
+  },
+  "album_ekle_baslik": "Albüme ekle",
+  "@album_ekle_baslik": {
+    "description": "Seçilen fotoğrafları albüme ekleme sayfasının başlığı."
+  },
+  "album_ekle_onay": "{sayi, plural, =1{Ekle} other{{sayi} fotoğraf ekle}}",
+  "@album_ekle_onay": {
+    "description": "Albüme ekle sayfasının onay düğmesi; hazırlanan fotoğraf sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "album_secildi": "{sayi, plural, other{{sayi} fotoğraf seçildi}}",
+  "@album_secildi": {
+    "description": "Albüme ekle sayfasında seçilen fotoğraf sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "album_hazirlaniyor": "Fotoğraflar hazırlanıyor",
+  "@album_hazirlaniyor": {
+    "description": "Albüme ekle sayfasında seçilen fotoğraflar okunup konum bilgisi silinirken gösterilen metin."
+  },
+  "album_aciklama": "Açıklama (isteğe bağlı)",
+  "@album_aciklama": {
+    "description": "Tek fotoğraf eklerken açıklama alanının etiketi (en çok 200 karakter)."
+  },
+  "album_gizlilik_notu": "Fotoğraflardaki konum ve cihaz bilgisi gönderilmeden silinir. Albümü tayfanın üyeleri görür.",
+  "@album_gizlilik_notu": {
+    "description": "Albüme ekle sayfasındaki gizlilik notu."
+  },
+  "album_yukleniyor": "Fotoğraflar yükleniyor: {tamam} / {toplam}",
+  "@album_yukleniyor": {
+    "description": "Albüm yükleme kartının başlığı; eklenen ve toplam fotoğraf sayısı.",
+    "placeholders": {
+      "tamam": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "album_yukleme_bekliyor": "Sırada",
+  "@album_yukleme_bekliyor": {
+    "description": "Yükleme kartında sırası bekleyen fotoğrafın ekran okuyucu durumu."
+  },
+  "album_yukleme_suruyor": "Yükleniyor",
+  "@album_yukleme_suruyor": {
+    "description": "Yükleme kartında yüklenen fotoğrafın ekran okuyucu durumu."
+  },
+  "album_kaldir": "Kaldır",
+  "@album_kaldir": {
+    "description": "Yükleme kartında hatalı fotoğrafı kuyruktan çıkaran düğme."
+  },
+  "album_islemler": "Fotoğraf işlemleri",
+  "@album_islemler": {
+    "description": "Görüntüleyicideki ⋯ düğmesinin ipucu."
+  },
+  "album_menu_baslik": "Fotoğraf",
+  "@album_menu_baslik": {
+    "description": "Görüntüleyicinin işlem sayfasının başlığı."
+  },
+  "album_sil": "Fotoğrafı sil",
+  "@album_sil": {
+    "description": "Görüntüleyicinin işlem sayfasında yıkıcı satır."
+  },
+  "album_sil_onay": "Fotoğraf albümden silinsin mi?",
+  "@album_sil_onay": {
+    "description": "Fotoğraf silme onay penceresinin başlığı."
+  },
+  "album_sil_eylem": "Sil",
+  "@album_sil_eylem": {
+    "description": "Fotoğraf silme onay penceresinin onay düğmesi."
+  },
+  "album_silindi": "Fotoğraf silindi.",
+  "@album_silindi": {
+    "description": "Fotoğraf silindikten sonra kısa bildirim."
+  },
+  "album_kapat": "Kapat",
+  "@album_kapat": {
+    "description": "Görüntüleyiciyi kapatan düğmenin ipucu."
+  },
+  "album_onceki": "Önceki fotoğraf",
+  "@album_onceki": {
+    "description": "Görüntüleyicide önceki fotoğrafa geçen düğmenin ipucu."
+  },
+  "album_sonraki": "Sonraki fotoğraf",
+  "@album_sonraki": {
+    "description": "Görüntüleyicide sonraki fotoğrafa geçen düğmenin ipucu."
+  },
+  "album_hata_kapali": "Albüm şu an fotoğraf eklemeye kapalı.",
+  "@album_hata_kapali": {
+    "description": "Albüme ekleme `album-closed` ile reddedildi (başlangıçtan önce ya da bitişten yedi gün sonra)."
+  },
+  "album_hata_katilim": "Fotoğraf eklemek için etkinliğe katıldığın doğrulanmış olmalı.",
+  "@album_hata_katilim": {
+    "description": "Albüme ekleme `not-attended` ile reddedildi."
+  },
+  "album_hata_sinir": "Fotoğraf sınırına ulaşıldı: kişi başı {kisi}, albüm başına {album}.",
+  "@album_hata_sinir": {
+    "description": "Albüme ekleme `event-limit` ile reddedildi.",
+    "placeholders": {
+      "kisi": {
+        "type": "int",
+        "example": "30"
+      },
+      "album": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
+  "album_hata_iptal": "Etkinlik iptal edildiği için albüme fotoğraf eklenemez.",
+  "@album_hata_iptal": {
+    "description": "Albüme ekleme `event-cancelled` ile reddedildi."
+  },
+  "hata_instant_event_limit": "Şu an daha fazla anlık etkinlik açamazsın. Açık etkinliklerinden biri bitince ya da yarın tekrar dene.",
+  "@hata_instant_event_limit": {
+    "description": "Hata kodu `instant-event-limit` (ADR-0032 §5): aynı anda 3 açık ya da 24 saatte 5 anlık etkinlik sınırı. Hangi sınırın aşıldığını sunucu söylemez; sayı yazılmaz."
   },
   "anlik_baslik": "Anlık etkinlik",
   "@anlik_baslik": {
