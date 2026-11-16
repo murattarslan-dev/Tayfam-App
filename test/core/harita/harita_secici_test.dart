@@ -86,6 +86,9 @@ void main() {
       expect(find.byType(HaritaSeciciEkrani), findsOneWidget);
       expect(find.text(arbMetni('etkinlik_harita_atif')), findsOneWidget);
       expect(find.text(arbMetni('etkinlik_harita_ipucu')), findsOneWidget);
+      // Etkinlik seçicisinde cihaz konumu istenmez (ADR-0015 §4); "Bulunduğum
+      // yer" yalnızca sohbette (ADR-0026 §5).
+      expect(find.text(arbMetni('harita_bulundugum_yer')), findsNothing);
 
       final secButonu = tester.widget<FilledButton>(
         find.ancestor(
