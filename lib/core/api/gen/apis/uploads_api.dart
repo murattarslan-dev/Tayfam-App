@@ -11,12 +11,14 @@ final class UploadsApi {
 
   /// Dosya yüklemesi açar ve her varyant için imzalı PUT linki döner
   ///
-  /// `variants`'ta tam bir `preview` ve bir `full`. Her link 5 dakika
+  /// `variants`'ta tam bir `preview` ve bir `full`; `dm_attachment`'ta
+  /// yalnızca bir `blob` (`application/octet-stream`). Her link 5 dakika
   /// geçerlidir ve yalnızca o varyantın nesnesi, türü ve boyutu içindir:
   /// `headers`'taki `Content-Type` ve `Content-Length` aynen
   /// gönderilmelidir; başka tür ya da boyutla R2 isteği reddeder. Anahtarı
-  /// sunucu belirler. Kapak, av ve albüm fotoğrafında `tayfa_id` zorunludur
-  /// (aktif üye olunmalı, tayfa salt okunur olmamalı); avatarda verilmez.
+  /// sunucu belirler. Kapak, av fotoğrafı, albüm fotoğrafı ve `chat_photo`'da
+  /// `tayfa_id` zorunludur (aktif üye olunmalı, tayfa salt okunur
+  /// olmamalı); avatar, `dm_attachment` ve `report_evidence`'ta verilmez.
   /// Aynı `client_request_id` ile tekrar, kayıt `pending` iken aynı
   /// yüklemeyi yeni linklerle döner. Sınırlar: kullanıcı başına saatte 30
   /// yükleme (`upload-rate-limited`) ve 500 MiB toplam
@@ -65,6 +67,10 @@ final class UploadsApi {
   /// PUT'u bitirip link geçerliyken tekrar çağırın. Depoya ulaşılamazsa
   /// 503 ve yükleme `pending` kalır. Yükleme `pending` değilse tekrar
   /// çağrı onu değiştirmeden döner.
+  ///
+  /// `dm_attachment`'ta gövde `{width: 0, height: 0}`'dır: yalnızca
+  /// saklanan boyut denetlenir (`size_mismatch`), içerik okunmaz ve
+  /// kopyalanır.
   ///
   /// `POST /v1/uploads/{upload_id}/complete`
   Future<UploadView> completeUpload({

@@ -2518,7 +2518,10 @@ final class ChannelMessage {
     required this.id,
     required this.channelId,
     this.authorUserId,
+    required this.kind,
     this.body,
+    this.photoUploadId,
+    this.place,
     required this.deleted,
     this.restorable,
     required this.createdAt,
@@ -2534,9 +2537,20 @@ final class ChannelMessage {
       null => null,
       final Object v => _readString(v, 'ChannelMessage.author_user_id'),
     },
+    kind: ChannelMessageKind.fromWire(
+      _readString(json['kind'], 'ChannelMessage.kind'),
+    ),
     body: switch (json['body']) {
       null => null,
       final Object v => _readString(v, 'ChannelMessage.body'),
+    },
+    photoUploadId: switch (json['photo_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'ChannelMessage.photo_upload_id'),
+    },
+    place: switch (json['place']) {
+      null => null,
+      final Object v => Place.fromJson(_readObject(v, 'ChannelMessage.place')),
     },
     deleted: _readBool(json['deleted'], 'ChannelMessage.deleted'),
     restorable: switch (json['restorable']) {
@@ -2553,8 +2567,17 @@ final class ChannelMessage {
   /// Yazarın hesabı silindiyse yoktur ("Silinmiş kullanıcı").
   final String? authorUserId;
 
-  /// Silinmiş mesajda yoktur.
+  final ChannelMessageKind kind;
+
+  /// Yalnızca `text`; silinmiş mesajda yoktur.
   final String? body;
+
+  /// Yalnızca `photo`; silinmiş mesajda yoktur. Linkler
+  /// `POST /v1/media/urls` ile (yalnızca kanalın kitlesine).
+  final String? photoUploadId;
+
+  /// Yalnızca `place`; silinmiş mesajda yoktur.
+  final Place? place;
 
   final bool deleted;
 
@@ -2568,7 +2591,10 @@ final class ChannelMessage {
     'id': id,
     'channel_id': channelId,
     if (authorUserId case final value?) 'author_user_id': value,
+    'kind': kind.wire,
     if (body case final value?) 'body': value,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+    if (place case final value?) 'place': value.toJson(),
     'deleted': deleted,
     if (restorable case final value?) 'restorable': value,
     'created_at': createdAt.toUtc().toIso8601String(),
@@ -2581,7 +2607,10 @@ final class ChannelMessage {
           id == other.id &&
           channelId == other.channelId &&
           authorUserId == other.authorUserId &&
+          kind == other.kind &&
           body == other.body &&
+          photoUploadId == other.photoUploadId &&
+          place == other.place &&
           deleted == other.deleted &&
           restorable == other.restorable &&
           createdAt == other.createdAt;
@@ -2591,7 +2620,10 @@ final class ChannelMessage {
     id,
     channelId,
     authorUserId,
+    kind,
     body,
+    photoUploadId,
+    place,
     deleted,
     restorable,
     createdAt,
@@ -2600,7 +2632,10 @@ final class ChannelMessage {
 
 final class ChannelMessageCreateRequest {
   const ChannelMessageCreateRequest({
-    required this.body,
+    this.kind,
+    this.body,
+    this.photoUploadId,
+    this.place,
     required this.clientRequestId,
   });
 
@@ -2609,22 +2644,58 @@ final class ChannelMessageCreateRequest {
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory ChannelMessageCreateRequest.fromJson(Map<String, Object?> json) =>
       ChannelMessageCreateRequest(
-        body: _readString(json['body'], 'ChannelMessageCreateRequest.body'),
+        kind: switch (json['kind']) {
+          null => null,
+          final Object v => ChannelMessageCreateRequestKind.fromWire(
+            _readString(v, 'ChannelMessageCreateRequest.kind'),
+          ),
+        },
+        body: switch (json['body']) {
+          null => null,
+          final Object v => _readString(v, 'ChannelMessageCreateRequest.body'),
+        },
+        photoUploadId: switch (json['photo_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'ChannelMessageCreateRequest.photo_upload_id',
+          ),
+        },
+        place: switch (json['place']) {
+          null => null,
+          final Object v => Place.fromJson(
+            _readObject(v, 'ChannelMessageCreateRequest.place'),
+          ),
+        },
         clientRequestId: _readString(
           json['client_request_id'],
           'ChannelMessageCreateRequest.client_request_id',
         ),
       );
 
+  /// Verilmezse `text`.
+  final ChannelMessageCreateRequestKind? kind;
+
+  /// Yalnızca ve zorunlu olarak `text`.
+  ///
   /// Kısıtlar: minLength: 1; maxLength: 4000.
-  final String body;
+  final String? body;
+
+  /// Yalnızca ve zorunlu olarak `photo`; kendi hazır `chat_photo` yüklemeniz.
+  final String? photoUploadId;
+
+  /// Yalnızca ve zorunlu olarak `place`.
+  final Place? place;
 
   /// İstemcinin ürettiği tekrar gönderim anahtarı; mesaj kimliği sunucudadır.
   final String clientRequestId;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
-    'body': body,
+    if (kind case final value?) 'kind': value.wire,
+    if (body case final value?) 'body': value,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+    if (place case final value?) 'place': value.toJson(),
     'client_request_id': clientRequestId,
   };
 
@@ -2632,11 +2703,82 @@ final class ChannelMessageCreateRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ChannelMessageCreateRequest &&
+          kind == other.kind &&
           body == other.body &&
+          photoUploadId == other.photoUploadId &&
+          place == other.place &&
           clientRequestId == other.clientRequestId;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[body, clientRequestId]);
+  int get hashCode => Object.hashAll(<Object?>[
+    kind,
+    body,
+    photoUploadId,
+    place,
+    clientRequestId,
+  ]);
+}
+
+/// Verilmezse `text`.
+enum ChannelMessageCreateRequestKind {
+  text('text'),
+  photo('photo'),
+  place('place'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const ChannelMessageCreateRequestKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError(
+        'ChannelMessageCreateRequestKind.unknown gönderilemez',
+      ));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static ChannelMessageCreateRequestKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `unknown`: istemciden yeni bir sunucu değeri (#205).
+enum ChannelMessageKind {
+  text('text'),
+  photo('photo'),
+  place('place'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const ChannelMessageKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('ChannelMessageKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static ChannelMessageKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class ChannelMessageList {
@@ -4292,6 +4434,7 @@ final class DirectMessage {
     required this.deleted,
     this.encryption,
     required this.createdAt,
+    this.attachmentUploadId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -4315,6 +4458,10 @@ final class DirectMessage {
       ),
     },
     createdAt: _readDateTime(json['created_at'], 'DirectMessage.created_at'),
+    attachmentUploadId: switch (json['attachment_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'DirectMessage.attachment_upload_id'),
+    },
   );
 
   final String id;
@@ -4332,6 +4479,10 @@ final class DirectMessage {
 
   final DateTime createdAt;
 
+  /// Şifreli ekin yüklemesi (#205); yoksa ya da mesaj silindiyse
+  /// yoktur. Ne olduğu ve anahtarı zarfın içindedir.
+  final String? attachmentUploadId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -4340,6 +4491,7 @@ final class DirectMessage {
     'deleted': deleted,
     if (encryption case final value?) 'encryption': value.wire,
     'created_at': createdAt.toUtc().toIso8601String(),
+    if (attachmentUploadId case final value?) 'attachment_upload_id': value,
   };
 
   @override
@@ -4351,7 +4503,8 @@ final class DirectMessage {
           senderUserId == other.senderUserId &&
           deleted == other.deleted &&
           encryption == other.encryption &&
-          createdAt == other.createdAt;
+          createdAt == other.createdAt &&
+          attachmentUploadId == other.attachmentUploadId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -4361,6 +4514,7 @@ final class DirectMessage {
     deleted,
     encryption,
     createdAt,
+    attachmentUploadId,
   ]);
 }
 
@@ -4370,6 +4524,7 @@ final class DirectMessageCreateRequest {
     required this.recipientUserId,
     required this.envelopes,
     required this.clientRequestId,
+    this.attachmentUploadId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -4395,6 +4550,13 @@ final class DirectMessageCreateRequest {
           json['client_request_id'],
           'DirectMessageCreateRequest.client_request_id',
         ),
+        attachmentUploadId: switch (json['attachment_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'DirectMessageCreateRequest.attachment_upload_id',
+          ),
+        },
       );
 
   final String recipientUserId;
@@ -4405,11 +4567,15 @@ final class DirectMessageCreateRequest {
   /// İstemcinin ürettiği tekrar gönderim anahtarı.
   final String clientRequestId;
 
+  /// İsteğe bağlı şifreli ek; kendi hazır `dm_attachment` yüklemeniz (#205).
+  final String? attachmentUploadId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'recipient_user_id': recipientUserId,
     'envelopes': <Object?>[for (final e0 in envelopes) e0.toJson()],
     'client_request_id': clientRequestId,
+    if (attachmentUploadId case final value?) 'attachment_upload_id': value,
   };
 
   @override
@@ -4418,13 +4584,15 @@ final class DirectMessageCreateRequest {
       other is DirectMessageCreateRequest &&
           recipientUserId == other.recipientUserId &&
           _deepEquals(envelopes, other.envelopes) &&
-          clientRequestId == other.clientRequestId;
+          clientRequestId == other.clientRequestId &&
+          attachmentUploadId == other.attachmentUploadId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
     recipientUserId,
     _deepHash(envelopes),
     clientRequestId,
+    attachmentUploadId,
   ]);
 }
 
@@ -8673,6 +8841,87 @@ final class HikeStartRequest {
   int get hashCode => Object.hashAll(<Object?>[startedAt]);
 }
 
+final class InstantEvent {
+  const InstantEvent({required this.tayfa, required this.event});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory InstantEvent.fromJson(Map<String, Object?> json) => InstantEvent(
+    tayfa: Tayfa.fromJson(_readObject(json['tayfa'], 'InstantEvent.tayfa')),
+    event: Event.fromJson(_readObject(json['event'], 'InstantEvent.event')),
+  );
+
+  final Tayfa tayfa;
+
+  final Event event;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'tayfa': tayfa.toJson(),
+    'event': event.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InstantEvent && tayfa == other.tayfa && event == other.event;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[tayfa, event]);
+}
+
+final class InstantEventCreateRequest {
+  const InstantEventCreateRequest({required this.event, this.inviteeUserIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory InstantEventCreateRequest.fromJson(Map<String, Object?> json) =>
+      InstantEventCreateRequest(
+        event: EventCreateRequest.fromJson(
+          _readObject(json['event'], 'InstantEventCreateRequest.event'),
+        ),
+        inviteeUserIds: switch (json['invitee_user_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'InstantEventCreateRequest.invitee_user_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'InstantEventCreateRequest.invitee_user_ids'),
+            ),
+          ),
+        },
+      );
+
+  /// Etkinlik; kuralları tayfa etkinliğiyle aynı. `recurrence` ve
+  /// `cover_upload_id` verilemez, `discoverable` `true` olamaz. `client_request_id` isteğin tekrar
+  /// gönderim anahtarıdır.
+  final EventCreateRequest event;
+
+  /// Doğrudan davet edilecek arkadaşlarınız (en fazla 10, siz değil).
+  ///
+  /// Kısıtlar: maxItems: 10; uniqueItems: true.
+  final List<String>? inviteeUserIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'event': event.toJson(),
+    if (inviteeUserIds case final value?)
+      'invitee_user_ids': <Object?>[for (final e0 in value) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InstantEventCreateRequest &&
+          event == other.event &&
+          _deepEquals(inviteeUserIds, other.inviteeUserIds);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[event, _deepHash(inviteeUserIds)]);
+}
+
 final class Invitation {
   const Invitation({
     required this.tayfaId,
@@ -9425,8 +9674,8 @@ enum ListTayfaReportsStatus {
 final class MediaUrls {
   const MediaUrls({
     required this.uploadId,
-    required this.previewUrl,
-    required this.previewContentType,
+    this.previewUrl,
+    this.previewContentType,
     required this.fullUrl,
     required this.fullContentType,
     required this.width,
@@ -9439,13 +9688,16 @@ final class MediaUrls {
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory MediaUrls.fromJson(Map<String, Object?> json) => MediaUrls(
     uploadId: _readString(json['upload_id'], 'MediaUrls.upload_id'),
-    previewUrl: _readString(json['preview_url'], 'MediaUrls.preview_url'),
-    previewContentType: MediaUrlsPreviewContentType.fromWire(
-      _readString(
-        json['preview_content_type'],
-        'MediaUrls.preview_content_type',
+    previewUrl: switch (json['preview_url']) {
+      null => null,
+      final Object v => _readString(v, 'MediaUrls.preview_url'),
+    },
+    previewContentType: switch (json['preview_content_type']) {
+      null => null,
+      final Object v => MediaUrlsPreviewContentType.fromWire(
+        _readString(v, 'MediaUrls.preview_content_type'),
       ),
-    ),
+    },
     fullUrl: _readString(json['full_url'], 'MediaUrls.full_url'),
     fullContentType: MediaUrlsFullContentType.fromWire(
       _readString(json['full_content_type'], 'MediaUrls.full_content_type'),
@@ -9457,11 +9709,12 @@ final class MediaUrls {
 
   final String uploadId;
 
-  /// Taşıyıcı link; log'a yazılmaz.
-  final String previewUrl;
+  /// Taşıyıcı link; log'a yazılmaz. `dm_attachment`'ta yoktur.
+  final String? previewUrl;
 
-  final MediaUrlsPreviewContentType previewContentType;
+  final MediaUrlsPreviewContentType? previewContentType;
 
+  /// `dm_attachment`'ta şifreli blob.
   final String fullUrl;
 
   final MediaUrlsFullContentType fullContentType;
@@ -9477,8 +9730,9 @@ final class MediaUrls {
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'upload_id': uploadId,
-    'preview_url': previewUrl,
-    'preview_content_type': previewContentType.wire,
+    if (previewUrl case final value?) 'preview_url': value,
+    if (previewContentType case final value?)
+      'preview_content_type': value.wire,
     'full_url': fullUrl,
     'full_content_type': fullContentType.wire,
     'width': width,
@@ -9515,6 +9769,7 @@ final class MediaUrls {
 enum MediaUrlsFullContentType {
   imageJpeg('image/jpeg'),
   imageWebp('image/webp'),
+  applicationOctetStream('application/octet-stream'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -9803,6 +10058,7 @@ final class ModerationReport {
     this.handledByUserId,
     required this.createdAt,
     this.resolvedAt,
+    this.channelId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -9849,6 +10105,10 @@ final class ModerationReport {
       null => null,
       final Object v => _readDateTime(v, 'ModerationReport.resolved_at'),
     },
+    channelId: switch (json['channel_id']) {
+      null => null,
+      final Object v => _readString(v, 'ModerationReport.channel_id'),
+    },
   );
 
   final String id;
@@ -9880,6 +10140,11 @@ final class ModerationReport {
 
   final DateTime? resolvedAt;
 
+  /// Yalnızca `channel_message`: mesajın kanalı (mesajı açmak için).
+  /// Kanalı okuyamayan moderatör (içinde olmadığı etkinlik ya da seçili
+  /// kişi kanalı) mesajı açamaz ve gizleyemez.
+  final String? channelId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -9896,6 +10161,7 @@ final class ModerationReport {
     'created_at': createdAt.toUtc().toIso8601String(),
     if (resolvedAt case final value?)
       'resolved_at': value.toUtc().toIso8601String(),
+    if (channelId case final value?) 'channel_id': value,
   };
 
   @override
@@ -9914,7 +10180,8 @@ final class ModerationReport {
           resolution == other.resolution &&
           handledByUserId == other.handledByUserId &&
           createdAt == other.createdAt &&
-          resolvedAt == other.resolvedAt;
+          resolvedAt == other.resolvedAt &&
+          channelId == other.channelId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -9931,6 +10198,7 @@ final class ModerationReport {
     handledByUserId,
     createdAt,
     resolvedAt,
+    channelId,
   ]);
 }
 
@@ -10369,6 +10637,7 @@ final class MyTayfa {
   const MyTayfa({
     required this.tayfaId,
     required this.name,
+    required this.kind,
     required this.role,
     required this.status,
     this.tayfa,
@@ -10380,6 +10649,7 @@ final class MyTayfa {
   factory MyTayfa.fromJson(Map<String, Object?> json) => MyTayfa(
     tayfaId: _readString(json['tayfa_id'], 'MyTayfa.tayfa_id'),
     name: _readString(json['name'], 'MyTayfa.name'),
+    kind: TayfaKind.fromWire(_readString(json['kind'], 'MyTayfa.kind')),
     role: Role.fromWire(_readString(json['role'], 'MyTayfa.role')),
     status: MyTayfaStatus.fromWire(
       _readString(json['status'], 'MyTayfa.status'),
@@ -10394,6 +10664,8 @@ final class MyTayfa {
 
   final String name;
 
+  final TayfaKind kind;
+
   final Role role;
 
   final MyTayfaStatus status;
@@ -10405,6 +10677,7 @@ final class MyTayfa {
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa_id': tayfaId,
     'name': name,
+    'kind': kind.wire,
     'role': role.wire,
     'status': status.wire,
     if (tayfa case final value?) 'tayfa': value.toJson(),
@@ -10416,13 +10689,14 @@ final class MyTayfa {
       other is MyTayfa &&
           tayfaId == other.tayfaId &&
           name == other.name &&
+          kind == other.kind &&
           role == other.role &&
           status == other.status &&
           tayfa == other.tayfa;
 
   @override
   int get hashCode =>
-      Object.hashAll(<Object?>[tayfaId, name, role, status, tayfa]);
+      Object.hashAll(<Object?>[tayfaId, name, kind, role, status, tayfa]);
 }
 
 final class MyTayfaList {
@@ -11273,6 +11547,51 @@ enum OutgoingEnvelopeType {
     }
     return unknown;
   }
+}
+
+/// Kullanıcının haritadan seçip paylaştığı yer (ADR-0008: içerik,
+/// cihaz konumu değil). Log'a yazılmaz.
+final class Place {
+  const Place({required this.latitude, required this.longitude, this.name});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory Place.fromJson(Map<String, Object?> json) => Place(
+    latitude: _readDouble(json['latitude'], 'Place.latitude'),
+    longitude: _readDouble(json['longitude'], 'Place.longitude'),
+    name: switch (json['name']) {
+      null => null,
+      final Object v => _readString(v, 'Place.name'),
+    },
+  );
+
+  /// Kısıtlar: minimum: -90; maximum: 90.
+  final double latitude;
+
+  /// Kısıtlar: minimum: -180; maximum: 180.
+  final double longitude;
+
+  /// Kısıtlar: minLength: 1; maxLength: 120.
+  final String? name;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'latitude': latitude,
+    'longitude': longitude,
+    if (name case final value?) 'name': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Place &&
+          latitude == other.latitude &&
+          longitude == other.longitude &&
+          name == other.name;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[latitude, longitude, name]);
 }
 
 /// Yapılandırılmamış alan yoktur.
@@ -12562,6 +12881,7 @@ final class ReportCreateRequest {
     required this.reason,
     this.description,
     this.evidenceText,
+    this.evidenceUploadId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -12587,6 +12907,13 @@ final class ReportCreateRequest {
           null => null,
           final Object v => _readString(v, 'ReportCreateRequest.evidence_text'),
         },
+        evidenceUploadId: switch (json['evidence_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'ReportCreateRequest.evidence_upload_id',
+          ),
+        },
       );
 
   final ReportTargetType targetType;
@@ -12601,13 +12928,20 @@ final class ReportCreateRequest {
   /// Kısıtlar: maxLength: 1000.
   final String? description;
 
-  /// Yalnızca ve zorunlu olarak `dm_message` için (kullanıcı şikâyetinde
-  /// yoktur): şikâyet ettiğiniz
+  /// Yalnızca `dm_message` için (kullanıcı şikâyetinde yoktur;
+  /// `evidence_upload_id` yoksa zorunlu): şikâyet ettiğiniz
   /// mesajın kendi cihazınızdan paylaştığınız metni. Yalnızca platform
   /// okur; log'a ve olaylara yazılmaz, size geri dönmez.
   ///
   /// Kısıtlar: minLength: 1; maxLength: 2000.
   final String? evidenceText;
+
+  /// Yalnızca `dm_message` için (#205): şikâyet ettiğiniz fotoğrafı
+  /// kendi cihazınızdan `report_evidence` yüklemesi olarak (metadata'sız
+  /// iki varyant) yükleyip burada verirsiniz. Hazır, kendi ve
+  /// kullanılmamış olmalıdır (`upload-not-found`, `upload-not-ready`,
+  /// `upload-in-use`). Yalnızca platform paneli görür.
+  final String? evidenceUploadId;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
@@ -12616,6 +12950,7 @@ final class ReportCreateRequest {
     'reason': reason.wire,
     if (description case final value?) 'description': value,
     if (evidenceText case final value?) 'evidence_text': value,
+    if (evidenceUploadId case final value?) 'evidence_upload_id': value,
   };
 
   @override
@@ -12626,7 +12961,8 @@ final class ReportCreateRequest {
           targetId == other.targetId &&
           reason == other.reason &&
           description == other.description &&
-          evidenceText == other.evidenceText;
+          evidenceText == other.evidenceText &&
+          evidenceUploadId == other.evidenceUploadId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -12635,6 +12971,7 @@ final class ReportCreateRequest {
     reason,
     description,
     evidenceText,
+    evidenceUploadId,
   ]);
 }
 
@@ -12743,7 +13080,8 @@ enum ReportResolveRequestResolution {
 }
 
 /// `dm_message` (birebir mesaj) yalnızca `POST /v1/me/reports` ile;
-/// diğerleri yalnızca tayfa ucuyla. Kanal mesajları bu listede değildir.
+/// diğerleri yalnızca tayfa ucuyla. `channel_message` kanal mesajıdır
+/// (metin, fotoğraf ya da yer; #205).
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -12755,6 +13093,7 @@ enum ReportTargetType {
   fishingCatch('fishing_catch'),
   dmMessage('dm_message'),
   eventPhoto('event_photo'),
+  channelMessage('channel_message'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -13636,6 +13975,8 @@ final class Tayfa {
     this.coverUploadId,
     required this.id,
     required this.name,
+    required this.kind,
+    this.instantEventId,
     required this.description,
     required this.interests,
     required this.joinPolicy,
@@ -13661,6 +14002,11 @@ final class Tayfa {
     },
     id: _readString(json['id'], 'Tayfa.id'),
     name: _readString(json['name'], 'Tayfa.name'),
+    kind: TayfaKind.fromWire(_readString(json['kind'], 'Tayfa.kind')),
+    instantEventId: switch (json['instant_event_id']) {
+      null => null,
+      final Object v => _readString(v, 'Tayfa.instant_event_id'),
+    },
     description: _readString(json['description'], 'Tayfa.description'),
     interests: List<EventType>.unmodifiable(
       _readList(json['interests'], 'Tayfa.interests').map(
@@ -13704,7 +14050,13 @@ final class Tayfa {
 
   final String id;
 
+  /// 3–50 karakter; anlık tayfada etkinliğin başlığıdır (1–120).
   final String name;
+
+  final TayfaKind kind;
+
+  /// Yalnızca anlık tayfada; tayfanın tek etkinliği.
+  final String? instantEventId;
 
   final String description;
 
@@ -13749,6 +14101,8 @@ final class Tayfa {
     if (coverUploadId case final value?) 'cover_upload_id': value,
     'id': id,
     'name': name,
+    'kind': kind.wire,
+    if (instantEventId case final value?) 'instant_event_id': value,
     'description': description,
     'interests': <Object?>[for (final e0 in interests) e0.wire],
     'join_policy': joinPolicy.wire,
@@ -13774,6 +14128,8 @@ final class Tayfa {
           coverUploadId == other.coverUploadId &&
           id == other.id &&
           name == other.name &&
+          kind == other.kind &&
+          instantEventId == other.instantEventId &&
           description == other.description &&
           _deepEquals(interests, other.interests) &&
           joinPolicy == other.joinPolicy &&
@@ -13793,6 +14149,8 @@ final class Tayfa {
     coverUploadId,
     id,
     name,
+    kind,
+    instantEventId,
     description,
     _deepHash(interests),
     joinPolicy,
@@ -13806,6 +14164,83 @@ final class Tayfa {
     pendingJoinRequestCount,
     createdAt,
     updatedAt,
+  ]);
+}
+
+final class TayfaConvertRequest {
+  const TayfaConvertRequest({
+    required this.name,
+    this.description,
+    this.interests,
+    this.joinPolicy,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaConvertRequest.fromJson(Map<String, Object?> json) =>
+      TayfaConvertRequest(
+        name: _readString(json['name'], 'TayfaConvertRequest.name'),
+        description: switch (json['description']) {
+          null => null,
+          final Object v => _readString(v, 'TayfaConvertRequest.description'),
+        },
+        interests: switch (json['interests']) {
+          null => null,
+          final Object v => List<EventType>.unmodifiable(
+            _readList(v, 'TayfaConvertRequest.interests').map(
+              (Object? e0) => EventType.fromWire(
+                _readString(e0, 'TayfaConvertRequest.interests'),
+              ),
+            ),
+          ),
+        },
+        joinPolicy: switch (json['join_policy']) {
+          null => null,
+          final Object v => JoinPolicy.fromWire(
+            _readString(v, 'TayfaConvertRequest.join_policy'),
+          ),
+        },
+      );
+
+  /// Baştaki ve sondaki boşluklar atıldıktan sonra 3–50 karakter.
+  ///
+  /// Kısıtlar: minLength: 3; maxLength: 50.
+  final String name;
+
+  /// Kısıtlar: maxLength: 500.
+  final String? description;
+
+  /// Kısıtlar: maxItems: 7; uniqueItems: true.
+  final List<EventType>? interests;
+
+  /// Kısıtlar: varsayılan (sunucu): `approval`.
+  final JoinPolicy? joinPolicy;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'name': name,
+    if (description case final value?) 'description': value,
+    if (interests case final value?)
+      'interests': <Object?>[for (final e0 in value) e0.wire],
+    if (joinPolicy case final value?) 'join_policy': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaConvertRequest &&
+          name == other.name &&
+          description == other.description &&
+          _deepEquals(interests, other.interests) &&
+          joinPolicy == other.joinPolicy;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    name,
+    description,
+    _deepHash(interests),
+    joinPolicy,
   ]);
 }
 
@@ -13895,6 +14330,37 @@ final class TayfaCreateRequest {
     joinPolicy,
     clientRequestId,
   ]);
+}
+
+/// `standard`: tayfa. `instant`: anlık etkinliğin gizli, tek etkinlikli
+/// tayfası; Keşfet'e çıkmaz, etkinlik bitince 7 gün sonra arşivlenir
+/// (ADR-0032).
+enum TayfaKind {
+  standard('standard'),
+  instant('instant'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const TayfaKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('TayfaKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static TayfaKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 /// Her modülün açık olup olmadığı.
@@ -14271,12 +14737,14 @@ final class UploadCompleteRequest {
         height: _readInt(json['height'], 'UploadCompleteRequest.height'),
       );
 
-  /// Full varyantın genişliği (piksel).
+  /// Full varyantın genişliği (piksel); `dm_attachment`'ta 0.
   ///
-  /// Kısıtlar: minimum: 1; maximum: 1600.
+  /// Kısıtlar: minimum: 0; maximum: 1600.
   final int width;
 
-  /// Kısıtlar: minimum: 1; maximum: 1600.
+  /// `dm_attachment`'ta 0.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 1600.
   final int height;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -14331,12 +14799,12 @@ final class UploadCreateRequest {
 
   final UploadPurpose purpose;
 
-  /// Tam bir `preview` ve bir `full`.
+  /// Tam bir `preview` ve bir `full`; `dm_attachment`'ta yalnızca bir `blob`.
   ///
-  /// Kısıtlar: minItems: 2; maxItems: 2.
+  /// Kısıtlar: minItems: 1; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover`, `catch_photo` ve `event_photo` için zorunlu; `avatar`'da verilmez.
+  /// `cover`, `catch_photo`, `event_photo` ve `chat_photo` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -14410,12 +14878,17 @@ final class UploadCreated {
 
 /// `cover` tayfa ya da etkinlik kapağıdır. `event_photo` etkinlik
 /// albümünün fotoğrafıdır (`POST .../events/{event_id}/photos`); kapak
-/// olarak kullanılamaz.
+/// olarak kullanılamaz. `chat_photo` kanal mesajı fotoğrafı,
+/// `dm_attachment` birebir mesajın şifreli eki (tek `blob`),
+/// `report_evidence` birebir mesaj şikâyetinin kanıt fotoğrafıdır (#205).
 enum UploadPurpose {
   avatar('avatar'),
   catchPhoto('catch_photo'),
   cover('cover'),
   eventPhoto('event_photo'),
+  chatPhoto('chat_photo'),
+  dmAttachment('dm_attachment'),
+  reportEvidence('report_evidence'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -14585,6 +15058,7 @@ final class UploadTarget {
 enum UploadTargetKind {
   preview('preview'),
   full('full'),
+  blob('blob'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -14656,8 +15130,10 @@ final class UploadVariant {
     sizeBytes: _readInt(json['size_bytes'], 'UploadVariant.size_bytes'),
   );
 
+  /// `blob` yalnızca `dm_attachment`'ta.
   final UploadVariantKind kind;
 
+  /// `application/octet-stream` yalnızca `blob`'da.
   final UploadVariantContentType contentType;
 
   /// Dosyanın tam boyutu.
@@ -14684,9 +15160,11 @@ final class UploadVariant {
   int get hashCode => Object.hashAll(<Object?>[kind, contentType, sizeBytes]);
 }
 
+/// `application/octet-stream` yalnızca `blob`'da.
 enum UploadVariantContentType {
   imageJpeg('image/jpeg'),
   imageWebp('image/webp'),
+  applicationOctetStream('application/octet-stream'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -14713,9 +15191,11 @@ enum UploadVariantContentType {
   }
 }
 
+/// `blob` yalnızca `dm_attachment`'ta.
 enum UploadVariantKind {
   preview('preview'),
   full('full'),
+  blob('blob'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

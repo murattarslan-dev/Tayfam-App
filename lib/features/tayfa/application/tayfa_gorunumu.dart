@@ -69,7 +69,7 @@ Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
 /// yapılamayacağına sunucu karar verir (kesin kural 5).
 @immutable
 final class TayfaOzeti {
-  const TayfaOzeti({this.ad, this.tayfa, this.rol});
+  const TayfaOzeti({this.ad, this.tayfa, this.rol, this.tur});
 
   /// Tayfanın adı; bilinmiyorsa `null`.
   final String? ad;
@@ -79,6 +79,18 @@ final class TayfaOzeti {
 
   /// Kullanıcının bu tayfadaki rolü; bilinmiyorsa `null`.
   final Role? rol;
+
+  /// Tayfanın türü (`kind`); bilinmiyorsa `null`.
+  final TayfaKind? tur;
+
+  /// Anlık etkinliğin gizli tayfası mı (ADR-0026; Tayfam-Api ADR-0032):
+  /// ana sayfada kurulum kartı, "7 günde 3 üye" kuralı ve "Oluştur"
+  /// yerine anlık etkinlik kartı gösterilir. Arayüz sadeleştirmesidir;
+  /// izinleri sunucu verir (kesin kural 5).
+  bool get anlik => tur == TayfaKind.instant;
+
+  /// Anlık tayfanın tek etkinliği (`instant_event_id`).
+  String? get anlikEtkinlikId => tayfa?.instantEventId;
 
   /// Kullanıcı moderatör ya da yönetici: duyuru yazma, düzenleme,
   /// sabitleme ve silme düğmeleri gösterilir (ADR-0015 §2).
@@ -133,10 +145,12 @@ final tayfaOzetiProvider = Provider.autoDispose.family<TayfaOzeti, String>((
   final tayfa = gorunum?.tayfa ?? listedeki?.tayfa;
   final ad = tayfa?.name ?? listedeki?.name;
   final rol = gorunum?.callerRole ?? listedeki?.role;
+  final tur = tayfa?.kind ?? listedeki?.kind;
   return TayfaOzeti(
     ad: ad == null || ad.isEmpty ? null : ad,
     tayfa: tayfa,
     rol: rol == Role.unknown ? null : rol,
+    tur: tur == TayfaKind.unknown ? null : tur,
   );
 }, name: 'tayfaOzetiProvider');
 

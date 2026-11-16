@@ -37,6 +37,7 @@ enum ProblemType {
   muted('muted'),
   tayfaReadOnly('tayfa-read-only'),
   tayfaCreateLimit('tayfa-create-limit'),
+  instantEventLimit('instant-event-limit'),
   deletionAlreadyRequested('deletion-already-requested'),
   deletionNotRequested('deletion-not-requested'),
   invalidJoinCode('invalid-join-code'),

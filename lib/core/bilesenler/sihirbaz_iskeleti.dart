@@ -245,3 +245,49 @@ class IkiSutunluIzgara extends StatelessWidget {
     );
   }
 }
+
+/// Tint-brand bilgi kutusu (etkinlik sihirbazında seri notu ve tekrar
+/// özeti, anlık etkinlik önizlemesi; "Bu ekiple tayfa kur"un ilk adımı):
+/// ikon ve metin.
+class SihirbazBilgiKutusu extends StatelessWidget {
+  const SihirbazBilgiKutusu({
+    super.key,
+    required this.metin,
+    this.ikon = Icons.info_outline,
+  });
+
+  final String metin;
+  final IconData ikon;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = context.renkler;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: r.tintMarka,
+        borderRadius: TayfamRadii.secimKoseleri,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(TayfamSpacing.s12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: Icon(ikon, size: TayfamSizes.ikon, color: r.tintMarkaUstu),
+            ),
+            const SizedBox(width: TayfamSpacing.s8),
+            Expanded(
+              child: Semantics(
+                liveRegion: true,
+                child: Text(
+                  metin,
+                  style: context.yazi.bodyMedium?.copyWith(color: r.metin),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

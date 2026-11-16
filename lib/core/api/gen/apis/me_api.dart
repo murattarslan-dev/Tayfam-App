@@ -586,6 +586,15 @@ final class MeApi {
 
   /// Arkadaşlarınız (yalnızca size görünür)
   ///
+  /// Sıra: arkadaşlık puanına göre (ortak doğrulanmış katılım; ADR-0030
+  /// §12), eşitlikte ve puanı olmayanlarda kullanıcı kimliğine göre. Puan
+  /// hiçbir alanda ve `next_page_token`'da dönmez. Sizin ya da arkadaşın
+  /// profillemesi kapalıysa o arkadaşın puanı sıraya girmez; sizin
+  /// profillemeniz kapalıysa liste yalnızca kimliğe göredir. Sıra günlük
+  /// değişebildiği için sayfalar arasında bir kişi iki kez görünebilir;
+  /// istemci `user_id`'ye göre tekilleştirir. Tayfa davetinde kişi seçimi
+  /// bu listeyle yapılır.
+  ///
   /// `GET /v1/me/friends`
   ///
   /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.

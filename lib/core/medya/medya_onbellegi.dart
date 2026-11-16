@@ -165,7 +165,8 @@ final class MedyaOnbellegi {
   /// Sunucudan gelen linkleri doğrular; biri geçersizse dosya
   /// görülemiyor sayılır.
   static MedyaLinki? _cevir(MediaUrls m) {
-    final onizleme = Uri.tryParse(m.previewUrl);
+    // Önizleme yoksa (sözleşmede isteğe bağlı) tam boy kullanılır.
+    final onizleme = Uri.tryParse(m.previewUrl ?? m.fullUrl);
     final tam = Uri.tryParse(m.fullUrl);
     if (onizleme == null ||
         tam == null ||

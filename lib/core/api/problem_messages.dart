@@ -58,6 +58,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.muted => m.hata_muted,
   ProblemType.tayfaReadOnly => m.hata_tayfa_read_only,
   ProblemType.tayfaCreateLimit => m.hata_tayfa_create_limit,
+  ProblemType.instantEventLimit => m.hata_instant_event_limit,
   ProblemType.deletionAlreadyRequested => m.hata_deletion_already_requested,
   ProblemType.deletionNotRequested => m.hata_deletion_not_requested,
   ProblemType.invalidJoinCode => m.hata_invalid_join_code,

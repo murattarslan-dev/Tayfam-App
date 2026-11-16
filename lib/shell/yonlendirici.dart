@@ -15,6 +15,7 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
+import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/profil/profil.dart';
@@ -254,6 +255,14 @@ List<RouteBase> rotalariOlustur(
     GoRoute(
       path: Adresler.tayfaOlustur,
       builder: (context, state) => const OlusturmaEkrani(),
+    ),
+    // Anlık etkinlik sihirbazı ve "Bu ekiple tayfa kur" tam ekran açılır
+    // (ADR-0026).
+    anlikEtkinlikRotasi,
+    GoRoute(
+      path: '${Adresler.tayfaDonusturOneki}/:$tayfaIdParametresi',
+      builder: (context, state) =>
+          DonusturmeEkrani(tayfaId: state.pathParameters[tayfaIdParametresi]!),
     ),
     // Davet linkinin ekranı (ADR-0018 §6); adreste token yoktur.
     ...derinLinkRotalari(),

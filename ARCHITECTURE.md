@@ -47,5 +47,6 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | [0018](docs/adr/0018-faz1-kalan-moduller.md) | Faz 1 kalanı | Tayfa yönetimi, profil, bildirim, soru-cevap, anket, derin link, arkadaşlık, şikâyet, sohbet; sürüm hattı (push ve E2E 2026-11-11'de sürüme alındı: ADR-0019, ADR-0020) |
 | [0019](docs/adr/0019-push-bildirimleri.md) | Push | FCM (yalnızca core + messaging, analitik kapalı), token = oturum, izin ilk ihtiyaçta, metinler ARB'den strings.xml'e, google-services.json repoda |
 | [0020](docs/adr/0020-birebir-uctan-uca-sifreleme-istemci.md) | Birebir E2E (istemci) | Durumsuz Signal motoru, ayrı ad alanlı güvenli depo, cihaz = oturum, yaz sonra onayla, TOFU uyarısı; web'de E2E yok |
+| [0026](docs/adr/0026-anlik-etkinlik-istemci.md) | Anlık etkinlik | Etkinlik sihirbazının tayfasız kipi, arkadaş seçimi, panelde ayrı grup, "Bu ekiple tayfa kur" |
 
 Güvenlik ilkesi ve kesin kurallar: [CLAUDE.md](CLAUDE.md).
