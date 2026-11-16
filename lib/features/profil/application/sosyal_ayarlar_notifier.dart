@@ -19,7 +19,7 @@ final class SosyalAyarlarDurumu {
 }
 
 /// Profilleme ve "Beni önerme" (`GET` / `PATCH /v1/me/social-settings`;
-/// Tayfam-Api ADR-0030 §5; 2026-11-16 tasarım: 25-arkadas-onerisi,
+/// Tayfam-Api ADR-0030 §5; 2026-11-16 tasarım: 27-arkadas-onerisi,
 /// karar 5–8). Değişiklik hemen kaydedilir; durum her zaman sunucunun
 /// döndürdüğü ayarlardır, hata olursa eski değer kalır.
 ///

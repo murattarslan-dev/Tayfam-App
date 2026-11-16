@@ -30,7 +30,7 @@ const int _istekAvatarSayisi = 2;
 /// Arkadaşlar (`/profil/arkadaslar`; ADR-0018 §7; 2026-11-13 tasarım:
 /// Profil-Arkadaslar): üstte "Arkadaş ekle" (alttan sayfa) ve "Kodumu
 /// paylaş", bekleyen gelen istek varsa sayılı kart, varsa arkadaş
-/// önerileri (25-arkadas-onerisi), arkadaş listesi ve en altta
+/// önerileri (27-arkadas-onerisi), arkadaş listesi ve en altta
 /// "Engellenenler". Kişiye dokununca profili açılır; arkadaşlıktan
 /// çıkarma, şikâyet ve engelleme oradadır.
 ///

@@ -12,7 +12,7 @@ import 'package:tayfam/features/arkadas/data/arkadas_deposu.dart';
 typedef OneriEklemeSonucu = ({Object? hata, bool arkadas});
 
 /// Arkadaş önerileri (`GET /v1/me/friend-suggestions`; Tayfam-Api
-/// ADR-0030 §4; 2026-11-16 tasarım: 25-arkadas-onerisi). Liste sunucuda
+/// ADR-0030 §4; 2026-11-16 tasarım: 27-arkadas-onerisi). Liste sunucuda
 /// en çok 10 öneridir; sayfalama yoktur.
 ///
 /// Puan, ortak etkinlik sayısı ve önerinin gerekçesi sözleşmede yoktur;

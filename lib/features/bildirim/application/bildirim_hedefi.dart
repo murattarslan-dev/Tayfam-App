@@ -97,7 +97,7 @@ enum SatirIciIslem {
   /// Katılım isteği: "İncele" katılım istekleri ekranını açar.
   katilimIstegi,
 
-  /// Arkadaş önerisi: Kapat / Arkadaş ekle (25-arkadas-onerisi, karar 1).
+  /// Arkadaş önerisi: Kapat / Arkadaş ekle (27-arkadas-onerisi, karar 1).
   oneri,
 }
 
@@ -124,7 +124,7 @@ SatirIciIslem? satirIciIslem(Notification bildirim) {
 /// geçerliyse (`resolution: pending`) gösterilir (sözleşme; Tayfam-Api
 /// ADR-0030 §8). Durum yoksa (sunucu o an hesaplayamadı) da gösterilmez:
 /// geri çekilmiş bir öneri ("Beni önerme", engel, şikâyet) görünmesin diye
-/// güvenli taraf seçildi (25-arkadas-onerisi, karar 2). Öteki türler her
+/// güvenli taraf seçildi (27-arkadas-onerisi, karar 2). Öteki türler her
 /// zaman gösterilir.
 bool bildirimGorunurMu(Notification bildirim) => switch (bildirim.type) {
   NotificationType.friendSuggestion =>

@@ -10,7 +10,7 @@ import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Profil → Gizlilik kartının üstündeki "Profilleme" ve "Beni önerme"
-/// anahtarları (2026-11-16 tasarım: 25-arkadas-onerisi, karar 5–8;
+/// anahtarları (2026-11-16 tasarım: 27-arkadas-onerisi, karar 5–8;
 /// Tayfam-Api ADR-0030 §5). Tayfa ayarlarındaki modül anahtarlarının
 /// iskeleti: başlık, ne için kullanıldığını anlatan kısa açıklama ve
 /// sağda anahtar; satırın tamamı tek dokunma alanıdır.

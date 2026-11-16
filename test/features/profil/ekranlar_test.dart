@@ -363,7 +363,7 @@ void main() {
     });
   });
 
-  group('profilleme ve "Beni önerme" (25-arkadas-onerisi)', () {
+  group('profilleme ve "Beni önerme" (27-arkadas-onerisi)', () {
     Finder anahtar(String baslik) =>
         find.widgetWithText(SwitchListTile, arbMetni(baslik));
 

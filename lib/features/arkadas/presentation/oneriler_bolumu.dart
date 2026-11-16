@@ -13,7 +13,7 @@ import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Arkadaşlar ekranındaki "Önerilen kişiler" (2026-11-16 tasarım:
-/// 25-arkadas-onerisi, karar 3–4): başlık, özelliğin genel açıklaması ve
+/// 27-arkadas-onerisi, karar 3–4): başlık, özelliğin genel açıklaması ve
 /// her öneri için avatar, ad, altında Kapat / Arkadaş ekle.
 ///
 /// Liste boşken, yüklenirken ya da okunamazsa bölüm hiç görünmez; öneri

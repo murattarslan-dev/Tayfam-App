@@ -714,7 +714,7 @@ class _UygulamaBolumu extends ConsumerWidget {
   }
 }
 
-/// Gizlilik: profilleme ve "Beni önerme" anahtarları (25-arkadas-onerisi),
+/// Gizlilik: profilleme ve "Beni önerme" anahtarları (27-arkadas-onerisi),
 /// tanıtım bilgileri ve doğum günü görünürlüğü (issue #185, #186),
 /// verilerimi indir (ADR-0022), engellenenler ve hukuki metinler (dış
 /// bağlantı).

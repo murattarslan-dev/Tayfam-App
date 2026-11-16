@@ -20,7 +20,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// taşımaz).
 ///
 /// Arkadaşlık isteğinde Reddet / Kabul et, tayfa davetinde Reddet / Katıl,
-/// arkadaş önerisinde Kapat / Arkadaş ekle (25-arkadas-onerisi), katılım
+/// arkadaş önerisinde Kapat / Arkadaş ekle (27-arkadas-onerisi), katılım
 /// isteğinde "İncele" satırın içindedir; işlemden sonra düğmelerin
 /// yerinde sonuç görünür.
 ///

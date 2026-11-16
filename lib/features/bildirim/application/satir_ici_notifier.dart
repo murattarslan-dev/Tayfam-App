@@ -50,7 +50,7 @@ final class SatirIciDurumu {
 
 /// Bildirim satırındaki Reddet / Kabul et / Katıl (2026-11-13 tasarım:
 /// Bildirimler, karar 2) ve arkadaş önerisindeki Kapat / Arkadaş ekle
-/// (25-arkadas-onerisi, karar 1). İşlem arkadaşlık özelliğinin uçlarıyla
+/// (27-arkadas-onerisi, karar 1). İşlem arkadaşlık özelliğinin uçlarıyla
 /// yapılır ([bildirimYanitlariProvider]); başarıda bildirim okundu
 /// işaretlenir ve sonuç düğmelerin yerinde görünür.
 ///

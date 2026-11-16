@@ -192,7 +192,7 @@ void main() {
     });
   });
 
-  group('arkadaş önerileri (25-arkadas-onerisi)', () {
+  group('arkadaş önerileri (27-arkadas-onerisi)', () {
     SahteTayfaTasima oneriTasimasi([Map<String, TayfaYaniti>? ek]) =>
         arkadasTasimasi({
           'GET $onerilerYolu': yanit({
