@@ -59,8 +59,9 @@ Tayfa ana sayfası (anlık tayfa): "Anlık etkinlik" kartı
   seçim kartı aynen kalır. Altındaki davet linki ipucundan önce sade bir
   `MenuSatiri` (aynı metin ve ikon). Tayfası olmayan kullanıcı da
   arkadaşlarıyla buluşabilsin diye.
-- **Boşum rozeti** (Tayfam-App #203'ün alttan sayfası): "Bir şey yapalım"
-  birincil düğmesi. Sihirbaz o gün seçili (başlangıç o gün 19:00, geçmişse
+- **Boşum rozeti** (Tayfam-App #203'ün alttan sayfası, `docs/tasarim/26`):
+  gün listesinin altında, "Mesaj gönder"in üstünde "Bir şey yapalım"
+  birincil düğmesi (ilk boş gün); bir güne dokunmak da o gün için açar. Sihirbaz o gün seçili (başlangıç o gün 19:00, geçmişse
   bir saat sonrası; bitiş +2 saat) ve o arkadaş davetli seçili açılır.
   Adresteki gün ve kimlik girdi kabul edilir: gün bugünden önce ya da 30
   günden ileri ise, kimlik UUID değilse yok sayılır.

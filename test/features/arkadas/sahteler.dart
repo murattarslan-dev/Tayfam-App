@@ -30,18 +30,31 @@ const String davetimYolu = '/v1/me/invitations/{tayfa_id}';
 const String davetKabulYolu = '/v1/me/invitations/{tayfa_id}/acceptance';
 const String profilYolu = '/v1/users/{user_id}/profile';
 const String gecmisYolu = '/v1/users/{user_id}/activity';
+const String bosGunlerimYolu = '/v1/me/availability';
+const String bosGunumYolu = '/v1/me/availability/{date}';
+const String arkadasBosGunleriYolu = '/v1/users/{user_id}/availability';
 
 /// [id]'nin örnek görünen adı.
 String kisiAdi(String id) =>
     id == benimId ? 'Ben' : 'Kişi ${id.substring(id.length - 1)}';
 
 /// `Friend` JSON'u.
-Map<String, Object?> arkadasJson(String id, {String durum = 'friends'}) => {
+/// [bosGun] verilirse "Boşum" rozeti (`next_available`) vardır.
+Map<String, Object?> arkadasJson(
+  String id, {
+  String durum = 'friends',
+  String? bosGun,
+}) => {
   'user_id': id,
   'display_name': kisiAdi(id),
   'state': durum,
   'requested_at': '2026-11-10T09:00:00Z',
   if (durum == 'friends') 'accepted_at': '2026-11-10T10:00:00Z',
+  if (bosGun != null)
+    'next_available': {
+      'date': bosGun,
+      'slots': ['evening'],
+    },
 };
 
 /// `FriendList` JSON'u.
@@ -100,6 +113,18 @@ Map<String, Object?> kayitJson({bool uye = true, String mod = 'in_person'}) => {
   },
 };
 
+/// `AvailabilityDay` JSON'u.
+Map<String, Object?> bosGunJson(
+  String gun, {
+  List<String> dilimler = const ['evening'],
+  String? not,
+}) => {
+  'date': gun,
+  'slots': dilimler,
+  'note': ?not,
+  'updated_at': '2026-11-15T09:00:00Z',
+};
+
 /// Her istekte [deger]'i döndüren yanıt.
 TayfaYaniti yanit(Object? deger) =>
     (_) => deger;
@@ -117,6 +142,11 @@ SahteTayfaTasima arkadasTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       () => yanit({'invitations': <Object?>[]}),
     )
     ..putIfAbsent('GET $gecmisYolu', () => yanit({'records': <Object?>[]}))
+    ..putIfAbsent('GET $bosGunlerimYolu', () => yanit({'days': <Object?>[]}))
+    ..putIfAbsent(
+      'GET $arkadasBosGunleriYolu',
+      () => yanit({'days': <Object?>[]}),
+    )
     ..putIfAbsent(
       'GET $profilYolu',
       () =>

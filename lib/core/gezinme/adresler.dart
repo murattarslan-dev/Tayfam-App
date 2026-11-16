@@ -316,6 +316,19 @@ abstract final class Adresler {
   /// Engellenen kullanıcılar.
   static const engellenenler = '$arkadaslar/$engellenenlerYolu';
 
+  /// "Boşum" (kendi boş günlerin) ekranının arkadaşlar altındaki yolu
+  /// (Tayfam-Api ADR-0029; tasarım 26-bosum).
+  static const bosVakitYolu = 'bos-vakit';
+
+  /// Kendi boş günlerin.
+  static const bosVakit = '$arkadaslar/$bosVakitYolu';
+
+  /// Boş gün eklemenin "Boşum" altındaki yolu.
+  static const bosGunEkleYolu = 'ekle';
+
+  /// Boş gün ekleme.
+  static const bosGunEkle = '$bosVakit/$bosGunEkleYolu';
+
   /// Kendi katılım geçmişinin tamamının profil altındaki yolu (profil
   /// sekmesindeki "Tümünü gör"; 2026-11-13).
   static const katilimlarimYolu = 'katilimlarim';
