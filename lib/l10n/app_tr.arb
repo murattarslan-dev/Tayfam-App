@@ -5331,6 +5331,10 @@
   "@hata_event_ended": {
     "description": "Hata kodu `event-ended`. Bitmiş etkinlikte ya da katılım cevabında değişiklik denendiğinde görünen hata."
   },
+  "hata_album_closed": "Bu etkinliğin albümüne artık fotoğraf eklenemiyor.",
+  "@hata_album_closed": {
+    "description": "Hata kodu `album-closed`. Etkinlik albümünün yükleme süresi dışında fotoğraf eklenmek istendiğinde görünen hata."
+  },
   "hata_event_not_going": "Bunun için önce etkinlikte \"Geliyorum\" seç.",
   "@hata_event_not_going": {
     "description": "Hata kodu `event-not-going`. Konvoya araç ekleme ya da check-in gibi işlemler 'katılıyorum' cevabı olmadan denendiğinde görünen hata."
@@ -7893,6 +7897,10 @@
   "@sikayet_soru_av_kaydi": {
     "description": "Balık etkinliğindeki bir av kaydını şikâyet ederken sayfanın sorusu."
   },
+  "sikayet_soru_album_fotografi": "Bu fotoğrafı neden şikâyet ediyorsun?",
+  "@sikayet_soru_album_fotografi": {
+    "description": "Etkinlik albümündeki bir fotoğrafı şikâyet ederken sayfanın sorusu."
+  },
   "sikayet_soru_mesaj": "Bu mesajı neden şikâyet ediyorsun?",
   "@sikayet_soru_mesaj": {
     "description": "Birebir mesajı şikâyet ederken sayfanın sorusu."
@@ -8040,6 +8048,10 @@
   "sikayet_tur_av_kaydi": "Av kaydı",
   "@sikayet_tur_av_kaydi": {
     "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: balık etkinliğinin av kaydı."
+  },
+  "sikayet_tur_album_fotografi": "Albüm fotoğrafı",
+  "@sikayet_tur_album_fotografi": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: etkinlik albümündeki fotoğraf."
   },
   "sikayet_tur_mesaj": "Mesaj",
   "@sikayet_tur_mesaj": {

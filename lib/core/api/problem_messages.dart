@@ -77,6 +77,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.eventNotFound => m.hata_event_not_found,
   ProblemType.eventCancelled => m.hata_event_cancelled,
   ProblemType.eventEnded => m.hata_event_ended,
+  ProblemType.albumClosed => m.hata_album_closed,
   ProblemType.eventNotGoing => m.hata_event_not_going,
   ProblemType.eventItemTaken => m.hata_event_item_taken,
   ProblemType.eventItemNotFound => m.hata_event_item_not_found,

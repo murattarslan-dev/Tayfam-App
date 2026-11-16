@@ -558,4 +558,90 @@ final class EventsApi {
       authenticated: true,
     );
   }
+
+  /// Etkinlik albümü, eskiden yeniye
+  ///
+  /// Tayfanın her aktif üyesi okur (susturulmuşken ve iptal edilmiş
+  /// etkinlikte de). Yanıt link taşımaz: fotoğrafların linkleri
+  /// `POST /v1/media/urls` ile alınır (bir sayfa tek çağrıya sığar).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/photos`
+  ///
+  /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.
+  ///
+  /// [pageToken]: Önceki yanıtın `next_page_token` değeri; opak.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  Future<EventPhotoList> listEventPhotos({
+    required String tayfaId,
+    required String eventId,
+    int? pageSize,
+    String? pageToken,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/photos',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      query: {
+        if (pageSize != null) 'page_size': '$pageSize',
+        if (pageToken != null) 'page_token': pageToken,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventPhotoList.fromJson(jsonObject(response, 'listEventPhotos'));
+  }
+
+  /// Albüme fotoğraf ekler
+  ///
+  /// Önce `POST /v1/uploads` ile `event_photo` amaçlı, bu tayfa için
+  /// bir yükleme açılıp tamamlanır; burada albüme bağlanır. Katılımınız
+  /// doğrulanmış olmalıdır (`not-attended`). Albüm etkinliğin
+  /// başlangıcından bitişten sonraki yedi günün sonuna kadar açıktır
+  /// (`album-closed`); iptal edilmiş etkinlikte kapalıdır
+  /// (`event-cancelled`). Kişi başı 30, albüm başına 500 fotoğraf
+  /// (`event-limit`; silinenler sayılmaz). Aynı `client_request_id` ile
+  /// tekrar gönderim ilk fotoğrafı döndürür. Fotoğraf bildirim üretmez.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/photos`
+  Future<EventPhoto> addEventPhoto({
+    required String tayfaId,
+    required String eventId,
+    required EventPhotoCreateRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/photos',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventPhoto.fromJson(jsonObject(response, 'addEventPhoto'));
+  }
+
+  /// Albümden fotoğraf kaldırır
+  ///
+  /// Kendi fotoğrafınızı (susturulmuşken de); organizatör kendi
+  /// etkinliğinin, moderatör ve yönetici her etkinliğin her fotoğrafını.
+  /// Dosya 30 gün sonra kalıcı olarak silinir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/photos/{photo_id}`
+  Future<void> removeEventPhoto({
+    required String tayfaId,
+    required String eventId,
+    required String photoId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/photos/{photo_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'photo_id': photoId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
 }

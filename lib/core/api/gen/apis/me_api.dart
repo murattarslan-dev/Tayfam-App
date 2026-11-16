@@ -737,6 +737,69 @@ final class MeApi {
     );
   }
 
+  /// Boş günleriniz (bugünden itibaren, en fazla 31; sayfalanmaz)
+  ///
+  /// Gün, Europe/Istanbul takvimine göre bugünden başlar; geçmiş günler
+  /// dönmez ve günlük bir işle silinir.
+  ///
+  /// `GET /v1/me/availability`
+  Future<AvailabilityDayList> listMyAvailability() async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/me/availability',
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return AvailabilityDayList.fromJson(
+      jsonObject(response, 'listMyAvailability'),
+    );
+  }
+
+  /// Bu günü boş olarak işaretler ya da bütünüyle değiştirir
+  ///
+  /// Gün bugünden (Europe/Istanbul) en fazla 30 gün ileri olabilir.
+  /// Bildirim gitmez; tüm arkadaşlarınız görür, başka kimse görmez. Not
+  /// isteğe bağlıdır; boş ya da yalnızca boşluk ise not yoktur.
+  ///
+  /// `PUT /v1/me/availability/{date}`
+  ///
+  /// [date]: Takvim günü (YYYY-MM-DD), saat değil; "bugün" Europe/Istanbul tarihidir.
+  ///
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  Future<AvailabilityDay> setAvailability({
+    required String date,
+    required AvailabilityInput body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/me/availability/{date}',
+      pathParams: {'date': date},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return AvailabilityDay.fromJson(jsonObject(response, 'setAvailability'));
+  }
+
+  /// Bu günün boş vaktini siler
+  ///
+  /// Silinecek bir şey yoksa da başarılıdır.
+  ///
+  /// `DELETE /v1/me/availability/{date}`
+  ///
+  /// [date]: Takvim günü (YYYY-MM-DD), saat değil; "bugün" Europe/Istanbul tarihidir.
+  ///
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  Future<void> deleteAvailability({required String date}) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/me/availability/{date}',
+      pathParams: {'date': date},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
   /// Size gelen cevaplanmamış davetler, yeniden eskiye
   ///
   /// `GET /v1/me/invitations`
