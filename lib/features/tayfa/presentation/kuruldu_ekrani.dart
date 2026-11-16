@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/bilesenler/eylem_icerigi.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
@@ -140,7 +139,7 @@ class TayfaKurulduEkrani extends ConsumerWidget {
                             ),
                             const SizedBox(height: TayfamSpacing.s12),
                           ],
-                          _BeyazCerceveliEylem(
+                          BeyazCerceveliEylem(
                             etiket: m.kuruldu_tayfaya_git,
                             onPressed: () => _tayfayaGit(context),
                           ),
@@ -207,7 +206,7 @@ class _KodKarti extends ConsumerWidget {
                     letterSpacing: harfAraligi,
                   ),
                 ),
-                _BeyazCerceveliEylem(
+                BeyazCerceveliEylem(
                   etiket: m.kuruldu_kopyala,
                   ikon: Icons.copy_outlined,
                   onPressed: () =>
@@ -217,45 +216,6 @@ class _KodKarti extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Mor yüzeyde beyaz çerçeveli hap düğme ("Tayfaya git", "Kopyala").
-class _BeyazCerceveliEylem extends StatelessWidget {
-  const _BeyazCerceveliEylem({
-    required this.etiket,
-    required this.onPressed,
-    this.ikon,
-  });
-
-  final String etiket;
-  final VoidCallback? onPressed;
-  final IconData? ikon;
-
-  @override
-  Widget build(BuildContext context) {
-    final r = context.renkler;
-    return OdakCercevesi(
-      koseler: TayfamRadii.hapKoseleri,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: r.markaYuzeyUstu,
-          minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-          padding: const EdgeInsets.symmetric(
-            horizontal: TayfamSpacing.s16,
-            vertical: TayfamSpacing.s12,
-          ),
-          shape: const StadiumBorder(),
-          side: BorderSide(
-            color: r.markaYuzeyUstu,
-            width: TayfamSizes.vurguKenari,
-          ),
-          textStyle: context.yazi.labelLarge,
-        ),
-        child: EylemIcerigi(etiket: etiket, ikon: ikon),
       ),
     );
   }

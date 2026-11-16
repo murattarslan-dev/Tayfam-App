@@ -152,6 +152,44 @@ abstract final class Adresler {
   /// bir sayfadır; adresi yoktur.
   static const tayfaOlustur = '/tayfa-olustur';
 
+  /// Anlık (bireysel) etkinlik sihirbazı (ADR-0026). Kabuğun üstünde tam
+  /// ekran açılır; tayfa yoktur.
+  static const anlikEtkinlikYolu = '/anlik-etkinlik';
+
+  /// Anlık etkinlik sihirbazının açılış gününün sorgu parametresi
+  /// (`YYYY-MM-DD`, yerel takvim günü). Girdi kabul edilir ve doğrulanır.
+  static const anlikGunParametresi = 'gun';
+
+  /// Anlık etkinlikte önceden seçili arkadaşın sorgu parametresi (UUID).
+  static const anlikDavetliParametresi = 'davetli';
+
+  /// Anlık etkinlik sihirbazının adresi; "Boşum" rozetindeki "Bir şey
+  /// yapalım" [gun] ve [davetli] verir.
+  static String anlikEtkinlik({DateTime? gun, String? davetli}) {
+    final sorgu = <String, String>{
+      if (gun != null) anlikGunParametresi: _gunMetni(gun),
+      anlikDavetliParametresi: ?davetli,
+    };
+    return Uri(
+      path: anlikEtkinlikYolu,
+      queryParameters: sorgu.isEmpty ? null : sorgu,
+    ).toString();
+  }
+
+  static String _gunMetni(DateTime gun) {
+    String iki(int sayi) => sayi.toString().padLeft(2, '0');
+    return '${gun.year.toString().padLeft(4, '0')}-${iki(gun.month)}-'
+        '${iki(gun.day)}';
+  }
+
+  /// Anlık tayfayı kalıcı tayfaya dönüştürme sihirbazının yolu
+  /// ("Bu ekiple tayfa kur"; ADR-0026). Tam ekran; kimlik girdi kabul
+  /// edilir.
+  static const tayfaDonusturOneki = '/tayfa-donustur';
+
+  /// Dönüştürme sihirbazının adresi.
+  static String tayfaDonustur(String tayfaId) => '$tayfaDonusturOneki/$tayfaId';
+
   /// Etkinlik oluşturma sihirbazının etkinlik listesi altındaki yolu.
   static const etkinlikOlusturYolu = 'yeni';
 

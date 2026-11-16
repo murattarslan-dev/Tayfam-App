@@ -32,7 +32,8 @@ bool kurulumGosterilsin(
   required bool yeniOlusturuldu,
 }) {
   final tayfa = ozet.tayfa;
-  if (ozet.rol != Role.admin || tayfa == null) return false;
+  // Anlık tayfada kurulum adımları yoktur (Tayfam-Api ADR-0032 §6).
+  if (ozet.rol != Role.admin || tayfa == null || ozet.anlik) return false;
   return yeniOlusturuldu || kurulumDonemindeMi(tayfa, simdi);
 }
 
@@ -40,7 +41,8 @@ bool kurulumGosterilsin(
 /// döneminde ve üye sayısı eşiğin altındayken.
 bool kuralGosterilsin(TayfaOzeti ozet, {required DateTime simdi}) {
   final tayfa = ozet.tayfa;
-  if (ozet.rol != Role.admin || tayfa == null) return false;
+  // "7 günde 3 üye" anlık tayfaya uygulanmaz (Tayfam-Api ADR-0032 §6).
+  if (ozet.rol != Role.admin || tayfa == null || ozet.anlik) return false;
   return kurulumDonemindeMi(tayfa, simdi) &&
       tayfa.memberCount < kurulumUyeEsigi;
 }

@@ -17,7 +17,6 @@ import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
-import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 

@@ -15,6 +15,11 @@
 ///   görünürlük satırı kancasıdır (ikisini de profil paketi verir).
 library;
 
+// Anlık etkinlikte arkadaş seçimi (ADR-0026).
+export 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart'
+    show ArkadaslarNotifier, arkadaslarProvider;
+export 'package:tayfam/features/arkadas/data/arkadas_deposu.dart'
+    show ArkadasDeposu, arkadasDeposuProvider;
 export 'package:tayfam/features/arkadas/application/bildirim_yanitlari.dart'
     show BildirimYanitlari, DavetYaniti, bildirimYanitlariProvider;
 export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'

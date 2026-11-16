@@ -17,7 +17,22 @@ abstract final class SihirbazAdimi {
 
   /// "Her şey doğru mu?": doğrulanacak alanı yoktur; gönderim buradadır.
   static const int onizleme = 4;
+
+  /// Anlık etkinlikte (ADR-0026) ayrıntıdan sonra "Kimleri çağıralım?":
+  /// arkadaş seçimi; doğrulanacak alanı yoktur (en çok sayı arayüzde).
+  static const int davet = 4;
+
+  /// Anlık etkinlikte önizleme.
+  static const int anlikOnizleme = 5;
 }
+
+/// Anlık etkinlik sihirbazının adım sayısı (ADR-0026): tür, bilgi, yer,
+/// ayrıntı, davet, önizleme.
+const int anlikAdimSayisi = 6;
+
+/// Anlık etkinlikte doğrudan davet edilebilecek en çok arkadaş
+/// (`InstantEventCreateRequest.invitee_user_ids`, `maxItems: 10`).
+const int anlikDavetliEnCok = 10;
 
 /// Sözleşmedeki uzunluk ve sayı sınırları (`EventCreateRequest`,
 /// `*DetailsInput`).
@@ -304,6 +319,8 @@ final class EtkinlikTaslagi {
     this.gonderiliyor = false,
     this.hata,
     this.sonuc,
+    this.davetliler = const [],
+    this.anlikSonuc,
   });
 
   /// Sihirbaz açılınca bir kez üretilen `client_request_id`; aynı
@@ -350,6 +367,15 @@ final class EtkinlikTaslagi {
   /// Başarıda oluşturulan ya da düzenlenen etkinliğin kimliği.
   final String? sonuc;
 
+  /// Anlık etkinlikte doğrudan davet edilecek arkadaşların kimlikleri,
+  /// seçim sırasıyla (en çok [anlikDavetliEnCok]). Yalnızca bellektedir ve
+  /// yalnızca istek gövdesine gider; log'a yazılmaz.
+  final List<String> davetliler;
+
+  /// Anlık etkinliğin oluşturma yanıtı (tayfa ve etkinlik); "Etkinlik
+  /// açıldı" ekranı yalnızca bununla çizilir. Yalnızca bellektedir.
+  final InstantEvent? anlikSonuc;
+
   EtkinlikTaslagi kopya({
     int? adim,
     EventType? tur,
@@ -368,6 +394,8 @@ final class EtkinlikTaslagi {
     bool gonderiliyor = false,
     Object? hata,
     String? sonuc,
+    List<String>? davetliler,
+    InstantEvent? anlikSonuc,
   }) => EtkinlikTaslagi(
     istekKimligi: istekKimligi,
     adim: adim ?? this.adim,
@@ -387,6 +415,8 @@ final class EtkinlikTaslagi {
     gonderiliyor: gonderiliyor,
     hata: hata,
     sonuc: sonuc ?? this.sonuc,
+    davetliler: davetliler ?? this.davetliler,
+    anlikSonuc: anlikSonuc ?? this.anlikSonuc,
   );
 }
 
@@ -403,7 +433,8 @@ bool ayniGirdi(EtkinlikTaslagi a, EtkinlikTaslagi b) =>
     a.kontenjan == b.kontenjan &&
     a.tekrar == b.tekrar &&
     a.ayrinti == b.ayrinti &&
-    a.kapak == b.kapak;
+    a.kapak == b.kapak &&
+    listEquals(a.davetliler, b.davetliler);
 
 /// Düzenlenecek [etkinlik]'ten taslak: tür değişmez, ilk adım başlık ve
 /// zamandır; tekrar düzenlenmez.
@@ -719,6 +750,39 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     recurrence: tekrar == null ? null : tekrarKurali(tekrar),
     coverUploadId: t.kapak,
     clientRequestId: t.istekKimligi,
+  );
+}
+
+/// Geçerli [t]'den `POST /v1/instant-events` gövdesi (ADR-0026): etkinlik
+/// alanları tayfa etkinliğiyle aynı; tekrar ve kapak sözleşme gereği
+/// gönderilmez, `discoverable` hiç gönderilmez. Davetliler yinelenmeden,
+/// en çok [anlikDavetliEnCok] kişi.
+InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
+  final etkinlik = olusturmaIstegi(t);
+  final davetliler = t.davetliler.toSet().take(anlikDavetliEnCok).toList();
+  return InstantEventCreateRequest(
+    event: EventCreateRequest(
+      type: etkinlik.type,
+      mode: etkinlik.mode,
+      title: etkinlik.title,
+      description: etkinlik.description,
+      startsAt: etkinlik.startsAt,
+      endsAt: etkinlik.endsAt,
+      meetingPointName: etkinlik.meetingPointName,
+      meetingPoint: etkinlik.meetingPoint,
+      city: etkinlik.city,
+      district: etkinlik.district,
+      onlineUrl: etkinlik.onlineUrl,
+      capacity: etkinlik.capacity,
+      convoy: etkinlik.convoy,
+      camp: etkinlik.camp,
+      hike: etkinlik.hike,
+      fishing: etkinlik.fishing,
+      gaming: etkinlik.gaming,
+      sports: etkinlik.sports,
+      clientRequestId: etkinlik.clientRequestId,
+    ),
+    inviteeUserIds: davetliler.isEmpty ? null : davetliler,
   );
 }
 

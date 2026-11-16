@@ -2,7 +2,7 @@
 
 Tayfaya bağlı olmadan arkadaşlarla tek seferlik etkinlik (issue #198;
 Notion "Faz 2 (v2) — Medya ve Sosyal" §5; Tayfam-Api ADR-0032; istemci
-ADR-0025). Sunucu arka planda gizli, tek etkinlikli bir tayfa açar
+ADR-0026). Sunucu arka planda gizli, tek etkinlikli bir tayfa açar
 (`Tayfa.kind = instant`): organizatör yönetici, davetliler üye. Etkinlik
 sayfası, katılım, varış bildirimi, sohbet ve albüm mevcut ekranlarla
 çalışır; bu bölüm yalnızca yeni ve değişen yüzeyleri tanımlar.
@@ -155,15 +155,17 @@ gösterilmez (anlık tayfada kodla katılım yok).
 
 Etkin tayfalar iki grupta: önce kalıcı tayfalar, sonra `BolumEtiketi`
 **"Anlık etkinlikler"** altında anlık olanlar. Anlık satırında avatar
-yerine etkinlik ikonu kutusu (`bolt`, tint-brand) ve açıklamada
-"Anlık etkinlik · `n` kişi". Bekleyen katılım isteği anlık tayfaya aitse
+yerine aynı boyutta etkinlik ikonu kutusu (`bolt`, tint-brand zemin,
+`secimKoseleri`) ve açıklamada "Anlık etkinlik · `n` kişi". Panelin en
+altında, "Tayfa kur"un altında "Anlık etkinlik aç" satırı. Bekleyen katılım isteği anlık tayfaya aitse
 "Onay bekliyor" etiketinin yanında aynı "Anlık" etiketi bulunur. Renk tek
 başına bilgi taşımaz; grup başlığı ve metin vardır.
 
 ## 5. Anlık tayfanın ana sayfası
 
-Mor üst bölüm aynıdır (ad = etkinlik başlığı). Durum şeridinin yerine
-"Anlık etkinlik" `Etiket`i. Farklar:
+Mor üst bölüm aynıdır (ad = etkinlik başlığı); arşiv/askı durum şeridi
+mevcut kuralla gösterilir. Anlık olduğu, aşağıdaki kartın başlığında
+yazar. Farklar:
 
 - "Tayfanı birlikte kuralım" kurulum kartı ve "7 günde 3 üye" kural metni
   gösterilmez (ADR-0032 §6: bu kurallar anlık tayfaya uygulanmaz).
