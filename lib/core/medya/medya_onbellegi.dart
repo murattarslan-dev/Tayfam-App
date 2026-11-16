@@ -24,7 +24,8 @@ final class MedyaLinki {
     required this.gecerlilik,
   });
 
-  final Uri onizleme;
+  /// Önizleme linki; şifreli ekte (`blob`) yoktur.
+  final Uri? onizleme;
   final Uri tam;
 
   /// Tam varyantın ölçüleri.
@@ -34,7 +35,11 @@ final class MedyaLinki {
   /// Linklerin geçerliliğinin sonu (`expires_at`).
   final DateTime gecerlilik;
 
-  Uri adres(MedyaVaryanti v) => v == MedyaVaryanti.tam ? tam : onizleme;
+  /// Şifreli ek mi (tek `blob`, `application/octet-stream`).
+  bool get sifreliEk => onizleme == null;
+
+  Uri adres(MedyaVaryanti v) =>
+      v == MedyaVaryanti.tam ? tam : (onizleme ?? tam);
 
   @override
   String toString() => 'MedyaLinki';
@@ -165,12 +170,26 @@ final class MedyaOnbellegi {
   /// Sunucudan gelen linkleri doğrular; biri geçersizse dosya
   /// görülemiyor sayılır.
   static MedyaLinki? _cevir(MediaUrls m) {
-    final onizleme = Uri.tryParse(m.previewUrl);
     final tam = Uri.tryParse(m.fullUrl);
+    if (tam == null || !medyaLinkiGecerli(tam)) return null;
+    // Birebir mesajın şifreli eki (`dm_attachment`): tek `blob`, önizlemesi
+    // ve ölçüsü yok (Tayfam-Api ADR-0031 §3).
+    if (m.fullContentType == MediaUrlsFullContentType.applicationOctetStream) {
+      if (m.previewUrl != null) return null;
+      return MedyaLinki(
+        onizleme: null,
+        tam: tam,
+        genislik: 0,
+        yukseklik: 0,
+        gecerlilik: m.expiresAt,
+      );
+    }
+    final onizlemeAdresi = m.previewUrl;
+    final onizleme = onizlemeAdresi == null
+        ? null
+        : Uri.tryParse(onizlemeAdresi);
     if (onizleme == null ||
-        tam == null ||
         !medyaLinkiGecerli(onizleme) ||
-        !medyaLinkiGecerli(tam) ||
         m.width < 1 ||
         m.height < 1) {
       return null;

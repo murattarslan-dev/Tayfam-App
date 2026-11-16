@@ -405,6 +405,8 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.tayfaUnsuspended ||
   NotificationType.reportResolved ||
   NotificationType.dataExportReady ||
+  // Arkadaş önerisi (Tayfam-App #197) kendi görünümünü ekler.
+  NotificationType.friendSuggestion ||
   NotificationType.unknown => BildirimKategorisi.marka,
 };
 
@@ -441,6 +443,7 @@ String bildirimMetni(
   NotificationType.dmRequest => m.bildirim_mesaj_istegi,
   NotificationType.dmMessage => m.bildirim_mesaj,
   NotificationType.dataExportReady => m.bildirim_veri_hazir,
+  NotificationType.friendSuggestion ||
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -467,5 +470,6 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.dmRequest ||
   NotificationType.dmMessage => Icons.chat_bubble_outline,
   NotificationType.dataExportReady => Icons.download_outlined,
+  NotificationType.friendSuggestion ||
   NotificationType.unknown => Icons.notifications_outlined,
 };

@@ -44,6 +44,9 @@ String hedefTuruMetni(AppLocalizations m, ReportTargetType tur) =>
       ReportTargetType.poll => m.sikayet_tur_anket,
       ReportTargetType.fishingCatch => m.sikayet_tur_av_kaydi,
       ReportTargetType.dmMessage => m.sikayet_tur_mesaj,
+      ReportTargetType.channelMessage => m.sikayet_tur_kanal_mesaji,
+      // Albüm fotoğrafı (Tayfam-App #195) kendi metnini ekler.
+      ReportTargetType.eventPhoto ||
       ReportTargetType.unknown => m.sikayet_tur_bilinmiyor,
     };
 
@@ -58,6 +61,8 @@ String sikayetSorusu(AppLocalizations m, ReportTargetType tur) => switch (tur) {
   ReportTargetType.poll => m.sikayet_soru_anket,
   ReportTargetType.fishingCatch => m.sikayet_soru_av_kaydi,
   ReportTargetType.dmMessage => m.sikayet_soru_mesaj,
+  ReportTargetType.channelMessage => m.sikayet_soru_mesaj,
+  ReportTargetType.eventPhoto ||
   ReportTargetType.unknown => m.sikayet_soru_genel,
 };
 

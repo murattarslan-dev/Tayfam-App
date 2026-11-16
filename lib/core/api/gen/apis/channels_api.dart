@@ -170,8 +170,8 @@ final class ChannelsApi {
   /// doğru gider. `after_message_id` (elinizdeki son mesaj) verilirse
   /// ondan yeni mesajlar en eski önce gelir ve `next_page_token` yeniye
   /// doğru gider: yeniden bağlanınca eksikler böyle tamamlanır (ADR-0005).
-  /// Silinen mesaj yerinde `deleted: true` ve metinsiz durur ("Bu mesaj
-  /// silindi").
+  /// Silinen mesaj yerinde `deleted: true` ve metinsiz, fotoğrafsız,
+  /// yersiz durur ("Bu mesaj silindi").
   ///
   /// `GET /v1/tayfas/{tayfa_id}/channels/{channel_id}/messages`
   ///
@@ -206,8 +206,21 @@ final class ChannelsApi {
 
   /// Kanala mesaj yazar
   ///
-  /// Metin 1–4000 karakter, yalnız boşluk olamaz; sekme ve satır sonu
-  /// dışında kontrol karakteri içeremez. Aynı `client_request_id` ile
+  /// Mesajın türü `kind` (#205, ADR-0031): `text` (varsayılan), `photo`
+  /// ya da `place`; başka türün alanı gönderilirse `invalid-request`.
+  /// - `text`: `body` 1–4000 karakter, yalnız boşluk olamaz; sekme ve
+  ///   satır sonu dışında kontrol karakteri içeremez.
+  /// - `photo`: `photo_upload_id`, bu tayfa için açılmış, hazır (`ready`)
+  ///   ve başka mesajda kullanılmamış kendi `chat_photo` yüklemeniz
+  ///   (`POST /v1/uploads`). Alt yazı yoktur. Bilinmeyen, başkasının ya
+  ///   da başka amaçlı/tayfalı yükleme `upload-not-found` (404), hazır
+  ///   değilse `upload-not-ready`, başka mesajdaysa `upload-in-use`
+  ///   (409). Fotoğrafın linkini yalnızca kanalın kitlesi alır
+  ///   (`POST /v1/media/urls`).
+  /// - `place`: haritadan seçtiğiniz yer `{latitude, longitude, name?}`
+  ///   (enlem −90..90, boylam −180..180, ad 1–120 karakter). Paylaştığınız
+  ///   içeriktir, cihaz konumu değildir (ADR-0008); metin gibi sunucu
+  ///   anahtarıyla şifreli saklanır ve log'a yazılmaz. Aynı `client_request_id` ile
   /// tekrar gönderim ilk mesajı döndürür, yeni mesaj yazmaz (yavaş moda da
   /// takılmaz); başka kanalda kullanılmış değer `invalid-request`.
   /// Susturulmuşsanız `muted`, kanal arşivliyse `channel-archived`. Yavaş

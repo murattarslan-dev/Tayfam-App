@@ -32,7 +32,18 @@ final class ReportsApi {
   /// ikisi aynı şikâyettir.
   /// Birebir mesaj (`dm_message`) şikâyeti bir tayfaya ait olmadığı için
   /// bu uçta değil, `POST /v1/me/reports` ile yapılır (burada
-  /// `invalid-request`). Kanal mesajları henüz şikâyet edilemez.
+  /// `invalid-request`).
+  ///
+  /// **Kanal mesajı** (`channel_message`, #205, ADR-0031): `target_id`
+  /// mesajın kimliğidir; metin, fotoğraf ve yer mesajları şikâyet
+  /// edilebilir. Mesajın kanalını okuyabiliyor olmalısınız (kanalın
+  /// kitlesi dahil: yönetim, etkinlik ve seçili kişi kanallarında
+  /// kitlede değilseniz) ve mesaj silinmemiş olmalıdır; aksi
+  /// `report-target-not-found`. Kendi mesajınız `invalid-request`.
+  /// Mesaj şikâyet anındaki haliyle yalnızca platform için saklanır
+  /// (yazar sonradan silse de). Şikâyet tayfanın kuyruğuna düşer;
+  /// `content_removed` mesajın silinmiş ya da moderasyonla gizlenmiş
+  /// olmasını ister. Sohbet servisine ulaşılamazsa `503`.
   ///
   /// `POST /v1/tayfas/{tayfa_id}/reports`
   Future<MyReport> createReport({
@@ -98,7 +109,9 @@ final class ReportsApi {
   /// içeriğin ya da üyeliğin kendi uçlarıyla önceden yapılmış işleme
   /// bağlanır:
   /// - `content_removed`: içerik artık görünmüyor (silinmiş; etkinlikte
-  ///   iptal de sayılır). Üye ve tayfa şikâyetinde kullanılamaz.
+  ///   iptal de sayılır; kanal mesajında silinmiş ya da moderasyonla
+  ///   gizlenmiş). Üye ve tayfa şikâyetinde kullanılamaz. Kanal mesajında
+  ///   sohbet servisine ulaşılamazsa `503`.
   /// - `member_sanctioned`: şikâyet edilen kişi şu anda susturulmuş ya da
   ///   banlı.
   /// - `dismissed`: işlem yok.

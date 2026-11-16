@@ -5375,6 +5375,10 @@
   "@hata_not_attended": {
     "description": "Hata kodu `not-attended`. Av kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
   },
+  "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
+  "@hata_album_closed": {
+    "description": "Hata kodu `album-closed`. Etkinlik albümüne, etkinlik başlamadan ya da bitişten yedi gün sonra fotoğraf eklenmeye çalışıldığında görünen hata."
+  },
   "hata_event_series_not_found": "Bu etkinlik serisi bulunamadı.",
   "@hata_event_series_not_found": {
     "description": "Hata kodu `event-series-not-found`. Tekrarlayan etkinlik serisi bu tayfada yoksa görünen hata."
@@ -8044,6 +8048,10 @@
   "sikayet_tur_mesaj": "Mesaj",
   "@sikayet_tur_mesaj": {
     "description": "Şikâyet edilen şeyin türü: birebir mesaj."
+  },
+  "sikayet_tur_kanal_mesaji": "Kanal mesajı",
+  "@sikayet_tur_kanal_mesaji": {
+    "description": "Şikâyet edilen şeyin türü: tayfadaki bir kanalın mesajı (metin, fotoğraf ya da yer)."
   },
   "sikayet_tur_bilinmiyor": "Diğer",
   "@sikayet_tur_bilinmiyor": {
