@@ -66,7 +66,7 @@ dependencies:
   in_app_review: ^2.0.12
   intl: ^0.20.3
   # flutter_map'in koordinat türü (ADR-0015 Sonuçlar); saf Dart, izin yok.
-  latlong2: ^0.9.1
+  latlong2: ^0.10.1
   # Eşleştirme QR'ını üretmek için (ADR-0020); çizim CustomPainter ile.
   # Yayıncı kevmoo.com (doğrulanmış), BSD-3, saf Dart, izin gerektirmez.
   # Sürüm tam sabit.
