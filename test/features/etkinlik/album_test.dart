@@ -778,7 +778,7 @@ void main() {
       expect(_metin('sikayet_et'), findsNothing);
     });
 
-    testWidgets('organizatör kendi etkinliğinde siler ve şikâyet edebilir', (
+    testWidgets('organizatör kendi etkinliğinde siler, şikâyet etmez', (
       tester,
     ) async {
       ekranBoyutu(tester);
@@ -787,7 +787,7 @@ void main() {
       await tester.tap(find.byTooltip(arbMetni('album_islemler')));
       await tester.pumpAndSettle();
       expect(_metin('album_sil'), findsOneWidget);
-      expect(_metin('sikayet_et'), findsOneWidget);
+      expect(_metin('sikayet_et'), findsNothing);
     });
 
     testWidgets('silme hatası albüm metniyle gösterilir', (tester) async {

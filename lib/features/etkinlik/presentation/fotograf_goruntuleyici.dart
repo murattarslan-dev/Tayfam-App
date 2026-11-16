@@ -48,8 +48,9 @@ Future<void> fotografGoruntuleyiciAc(
 /// yakınlaştırma); altta yükleyen, zaman, açıklama ve Önceki / Sonraki.
 ///
 /// ⋯: "Fotoğrafı sil" kendi fotoğrafında, yönetimde ve organizatörde;
-/// "Şikâyet et" kendi fotoğrafı değilse ve yönetimde değilse (yönetim
-/// başkasının içeriğini şikâyet etmez, siler). Kolaylıktır; karar
+/// "Şikâyet et" kendi fotoğrafı değilse ve fotoğrafı silemiyorsa (silebilen
+/// — yönetim ya da organizatör — şikâyet etmez, siler; mimari oturumu
+/// kararı 2026-11-16). Kolaylıktır; karar
 /// sunucunundur (kesin kural 5).
 class FotografGoruntuleyici extends ConsumerStatefulWidget {
   const FotografGoruntuleyici({
@@ -296,7 +297,7 @@ class _MenuDugmesi extends ConsumerWidget {
     final organizatorum =
         organizator != null && ref.watch(kendisiMiProvider(organizator));
     final silebilir = benim || yonetimde || organizatorum;
-    final sikayetEdebilir = !benim && !yonetimde;
+    final sikayetEdebilir = !benim && !silebilir;
     if (!silebilir && !sikayetEdebilir) return const SizedBox.shrink();
     return IconButton(
       tooltip: m.album_islemler,

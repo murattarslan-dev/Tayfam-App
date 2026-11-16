@@ -1,6 +1,6 @@
 # ADR-0025: Etkinlik fotoğraf albümü (istemci)
 
-- **Durum:** Önerildi (ürün kararları platform sahibinindir; ekran akışı PR'da soruldu)
+- **Durum:** Kabul edildi (mimari oturumu, 2026-11-16; PR #202'deki sorular cevaplandı)
 - **Tarih:** 2026-11-16
 - **Karar veren:** Ürün kararları platform sahibinindir (2026-11-15, Notion
   "Faz 2 (v2) — Medya ve Sosyal" §2, §9; issue #195). Bu ADR onların
@@ -82,8 +82,9 @@ görüntüleyiciyi gerektirir.
   `[starts_at, ends_at + 7 gün)` içinde.
 - "Fotoğrafı sil": kendi fotoğrafı, yönetim (moderatör/yönetici) ya da
   etkinliğin organizatörü (`created_by_user_id` kendisi).
-- "Şikâyet et": kendi fotoğrafı değil ve yönetimde değil (yönetim
-  başkasının içeriğini şikâyet etmez, siler; ADR-0018 §8).
+- "Şikâyet et": kendi fotoğrafı değil ve fotoğrafı silemiyor. Silebilen
+  (yönetim ya da organizatör) şikâyet etmez, siler (ADR-0018 §8'in
+  albüme genişletilmesi; 2026-11-16).
 - Sunucunun reddi `type`'a göre çevrilir; albüme özel dört metin
   `albumHataMetni` ile, gerisi ortak eşlemeden.
 
@@ -94,6 +95,15 @@ görüntüleyiciyi gerektirir.
   token'larla yeniden kurulur). Önceki/Sonraki düğmeleri kaydırmanın
   alternatifidir; sona 3 fotoğraf kala sonraki sayfa okunur.
 - Açıklama düz metindir (bağlantı/markdown yorumlanmaz).
+
+### 6. İncelemede alınan kararlar (2026-11-16)
+
+PR #202'deki sorular cevaplandı: bölüm anketlerden sonra, Katılımcılar'dan
+önce ve önizlemede 6 fotoğraf; açıklama yalnızca tek fotoğrafta;
+görüntüleyici her temada koyu; dört alan hatası kuyruğu durdurur;
+silebilen (organizatör dahil) şikâyet etmez; uygulama kapanınca kuyruğun
+kaybolması kabul (ADR-0006); okunmamış sayfa varken yeni fotoğraf son
+sayfayla görünür.
 
 ## Gerekçe
 
