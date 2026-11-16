@@ -625,11 +625,15 @@ void main() {
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 3 / 5'), findsOneWidget);
         expect(find.text(arbMetni('etkinlik_nokta_sec')), findsOneWidget);
+        // Yüz yüzede "Halka açık yerde buluşur" var (ADR-0027).
+        expect(find.text(arbMetni('etkinlik_halka_acik')), findsOneWidget);
 
         await _gorunurDokun(
           tester,
           find.text(arbMetni('etkinlik_mod_cevrimici')),
         );
+        // Çevrim içinde yok.
+        expect(find.text(arbMetni('etkinlik_halka_acik')), findsNothing);
         await _yaz(tester, 'https://ornek.tayfam.app/oda');
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 4 / 5'), findsOneWidget);
