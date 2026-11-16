@@ -216,37 +216,41 @@ String fotografHataMetni(AppLocalizations m, Object hata) => switch (hata) {
 };
 
 /// Fotoğrafın kaynağını sorar (galeri ya da kamera); vazgeçilirse `null`.
+/// Büyük yazıda ve kısa ekranda içerik kayar, taşmaz.
 Future<FotografKaynagi?> fotografKaynagiSor(BuildContext context) {
   final m = AppLocalizations.of(context);
   return showModalBottomSheet<FotografKaynagi>(
     context: context,
     showDragHandle: true,
+    isScrollControlled: true,
     builder: (sayfa) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: TayfamSpacing.kenarMobil,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: TayfamSpacing.kenarMobil,
+              ),
+              child: Text(
+                m.medya_kaynak_baslik,
+                style: sayfa.yazi.titleMedium,
+                semanticsLabel: m.medya_kaynak_baslik,
+              ),
             ),
-            child: Text(
-              m.medya_kaynak_baslik,
-              style: sayfa.yazi.titleMedium,
-              semanticsLabel: m.medya_kaynak_baslik,
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(m.medya_kaynak_galeri),
+              onTap: () => Navigator.of(sayfa).pop(FotografKaynagi.galeri),
             ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.photo_library_outlined),
-            title: Text(m.medya_kaynak_galeri),
-            onTap: () => Navigator.of(sayfa).pop(FotografKaynagi.galeri),
-          ),
-          ListTile(
-            leading: const Icon(Icons.photo_camera_outlined),
-            title: Text(m.medya_kaynak_kamera),
-            onTap: () => Navigator.of(sayfa).pop(FotografKaynagi.kamera),
-          ),
-        ],
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(m.medya_kaynak_kamera),
+              onTap: () => Navigator.of(sayfa).pop(FotografKaynagi.kamera),
+            ),
+          ],
+        ),
       ),
     ),
   );

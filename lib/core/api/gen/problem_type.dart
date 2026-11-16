@@ -67,6 +67,7 @@ enum ProblemType {
   correctionClosed('correction-closed'),
   hikeNotStarted('hike-not-started'),
   notAttended('not-attended'),
+  albumClosed('album-closed'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),
