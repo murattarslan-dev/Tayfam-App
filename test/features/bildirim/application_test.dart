@@ -156,6 +156,102 @@ void main() {
     });
   });
 
+  group('gösterilmeyen öneri bildirimi (27-arkadas-onerisi)', () {
+    Map<String, Object?> oneri(
+      String id, {
+      String? cozum,
+      bool okundu = false,
+    }) => bildirimJson(
+      id,
+      tur: 'friend_suggestion',
+      tayfaId: null,
+      hedefTuru: 'user',
+      hedef: kisiId,
+      cozum: cozum,
+      okundu: okundu,
+    );
+
+    const gizli1 = 'dddddddd-0000-4000-8000-000000000001';
+    const gizli2 = 'dddddddd-0000-4000-8000-000000000002';
+    const okunmusGizli = 'dddddddd-0000-4000-8000-000000000003';
+    const bekleyen = 'dddddddd-0000-4000-8000-000000000004';
+
+    Map<String, TayfaYaniti> yanitlar({
+      required int Function() sayi,
+      Object? okunduHatasi,
+    }) => {
+      'GET $bildirimlerYolu': _yanit(
+        bildirimListesiJson([
+          oneri(gizli1, cozum: 'expired'),
+          oneri(gizli2), // durum yok
+          oneri(okunmusGizli, cozum: 'declined', okundu: true),
+          oneri(bekleyen, cozum: 'pending'),
+          bildirimJson(bildirimId1),
+        ]),
+      ),
+      'GET $okunmamisYolu': (_) => okunmamisJson(sayi()),
+      'PUT $okunduYolu': (_) => okunduHatasi,
+    };
+
+    Future<void> bosalt() async {
+      for (var i = 0; i < 5; i++) {
+        await Future<void>.delayed(Duration.zero);
+      }
+    }
+
+    test('okunmamış gizliler sessizce okundu işaretleniyor; görünenler '
+        've okunmuşlar dokunulmuyor; rozet yeniden okunuyor', () async {
+      var sayi = 4;
+      final k = _Kurulum(yanitlar(sayi: () => sayi));
+      expect(await k.rozet(), 4);
+      sayi = 2;
+      await k.liste();
+      await bosalt();
+
+      final giden = [
+        for (final i in k.tasima.giden('PUT', okunduYolu))
+          i.yolParametreleri['notification_id'],
+      ];
+      expect(giden, unorderedEquals([gizli1, gizli2]));
+      // Liste gizlileri okunmuş tutar; görünenler okunmamış kalır.
+      expect(k.okunduDurumlari, [true, true, true, false, false]);
+      expect(k.rozetDegeri, 2);
+    });
+
+    test('işaretleme başarısızsa hata yok, rozet yeniden okunmuyor; '
+        'sonraki okumada yeniden deneniyor', () async {
+      final k = _Kurulum(
+        yanitlar(sayi: () => 4, okunduHatasi: const ApiOffline()),
+      );
+      await k.rozet();
+      final liste = await k.liste();
+      await bosalt();
+
+      expect(k.tasima.giden('PUT', okunduYolu), hasLength(2));
+      expect(k.tasima.giden('GET', okunmamisYolu), hasLength(1));
+      expect(k.tasima.giden('GET', bildirimlerYolu), hasLength(1));
+
+      await liste.yenile();
+      await bosalt();
+      expect(k.tasima.giden('PUT', okunduYolu), hasLength(4));
+    });
+
+    test('gizli bildirim yoksa istek gitmiyor', () async {
+      final k = _Kurulum({
+        'GET $bildirimlerYolu': _yanit(
+          bildirimListesiJson([
+            oneri(bekleyen, cozum: 'pending'),
+            bildirimJson(bildirimId1),
+          ]),
+        ),
+        'GET $okunmamisYolu': _yanit(okunmamisJson(2)),
+      });
+      await k.liste();
+      await bosalt();
+      expect(k.tasima.giden('PUT', okunduYolu), isEmpty);
+    });
+  });
+
   group('okunmusHali', () {
     test('öneri durumu (resolution) ve öteki alanlar korunuyor', () {
       final b = Notification.fromJson(

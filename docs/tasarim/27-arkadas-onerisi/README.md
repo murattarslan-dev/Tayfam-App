@@ -32,6 +32,10 @@ Yeni bileşen yok: bütün parçalar mevcut ekranların bileşenleridir.
    olmayan öneri bildirimini göstermez." `resolution` yoksa (sunucu o an
    hesaplayamadı) da gösterilmez: geri çekilmiş bir öneri ("Beni önerme",
    engel, şikâyet) yanlışlıkla görünmesin diye güvenli taraf seçildi.
+   Gösterilmeyen okunmamış öneri bildirimi liste okunurken sessizce okundu
+   işaretlenir (mevcut okundu ucu; hata gösterilmez, sonraki okumada
+   yeniden denenir), böylece rozet görünmeyen bildirimi saymaz (platform
+   sahibi, 2026-11-16; sunucu değişikliği yok).
 3. **Arkadaşlar ekranı**: istek kartının altında, liste boş değilse
    "Önerilen kişiler" bölümü (`GET /v1/me/friend-suggestions`, en çok 10).
    Satır, gelen istek satırının iskeleti: avatar + ad, altında Kapat /
