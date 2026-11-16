@@ -88,6 +88,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.correctionClosed => m.hata_correction_closed,
   ProblemType.hikeNotStarted => m.hata_hike_not_started,
   ProblemType.notAttended => m.hata_not_attended,
+  ProblemType.albumClosed => m.hata_album_closed,
   ProblemType.eventSeriesNotFound => m.hata_event_series_not_found,
   ProblemType.eventSeriesEnded => m.hata_event_series_ended,
   ProblemType.questionNotFound => m.hata_question_not_found,
@@ -153,7 +154,6 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.e2ePairedDeviceExists => m.hata_e2e_paired_device_exists,
   ProblemType.e2eHistoryKeyStale => m.hata_e2e_history_key_stale,
   ProblemType.e2eLinkRequestNotFound => m.hata_e2e_link_request_not_found,
-  ProblemType.albumClosed => m.hata_album_closed,
   ProblemType.unknown => m.hata_genel,
 };
 

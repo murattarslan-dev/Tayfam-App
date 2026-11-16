@@ -10,12 +10,16 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/core/zaman/takvim_gunu.dart';
+import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
+import 'package:tayfam/features/arkadas/application/bos_vakit.dart';
 import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/arkadas/application/oneriler_notifier.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadas_ortak.dart';
+import 'package:tayfam/features/arkadas/presentation/bos_vakit_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/oneriler_bolumu.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -30,12 +34,14 @@ const int _istekAvatarSayisi = 2;
 /// Arkadaşlar (`/profil/arkadaslar`; ADR-0018 §7; 2026-11-13 tasarım:
 /// Profil-Arkadaslar): üstte "Arkadaş ekle" (alttan sayfa) ve "Kodumu
 /// paylaş", bekleyen gelen istek varsa sayılı kart, varsa arkadaş
-/// önerileri (27-arkadas-onerisi), arkadaş listesi ve en altta
-/// "Engellenenler". Kişiye dokununca profili açılır; arkadaşlıktan
-/// çıkarma, şikâyet ve engelleme oradadır.
+/// önerileri (27-arkadas-onerisi), "Boş vaktin" girişi (tasarım
+/// 26-bosum), arkadaş listesi ve en altta "Engellenenler". Kişiye
+/// dokununca profili açılır; arkadaşlıktan çıkarma, şikâyet ve
+/// engelleme oradadır.
 ///
 /// Satırlarda alt metin yoktur: sözleşmede arkadaşın ortak tayfası
-/// listede dönmez.
+/// listede dönmez. Arkadaşın önümüzdeki 7 günde boş günü varsa adın
+/// altında "Boşum" rozeti vardır (`next_available`).
 class ArkadaslarEkrani extends ConsumerWidget {
   const ArkadaslarEkrani({super.key});
 
@@ -58,7 +64,8 @@ class ArkadaslarEkrani extends ConsumerWidget {
             ..invalidate(arkadasOnerileriProvider)
             ..invalidate(
               arkadasIstekleriProvider(ListFriendRequestsDirection.incoming),
-            );
+            )
+            ..invalidate(bosVakitlerimProvider);
           await ref.read(arkadaslarProvider.notifier).yenile();
         },
         child: ListView(
@@ -93,6 +100,10 @@ class ArkadaslarEkrani extends ConsumerWidget {
               ),
             const _IstekKarti(),
             const OnerilerBolumu(),
+            const Padding(
+              padding: EdgeInsets.only(top: TayfamSpacing.s12),
+              child: ListeKarti(children: [BosVakitGirisi()]),
+            ),
             BolumEtiketi(baslik: m.arkadas_liste_baslik),
             ListeDurumu(
               deger: durum.value,
@@ -232,19 +243,24 @@ class _IstekKarti extends ConsumerWidget {
   }
 }
 
-class _ArkadasSatiri extends StatelessWidget {
+class _ArkadasSatiri extends ConsumerWidget {
   const _ArkadasSatiri({required this.arkadas});
 
   final Friend arkadas;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bugun = istanbulBugunu(ref.watch(simdiProvider)());
+    final bosGun = rozetGunu(arkadas, bugun);
     return MenuSatiri.kartta(
       baslik: arkadas.displayName,
       ikonKutusu: KullaniciAvatari(
         ad: arkadas.displayName,
         avatarUploadId: arkadas.avatarUploadId,
       ),
+      altOge: bosGun == null
+          ? null
+          : BosVakitRozeti(arkadas: arkadas, gun: bosGun, bugun: bugun),
       sag: const SatirOku(),
       onTap: () => kisiyiAc(context, arkadas.userId),
     );
@@ -254,7 +270,8 @@ class _ArkadasSatiri extends StatelessWidget {
 /// Profil sekmesindeki "Arkadaşlar" bölümü (ADR-0018 §7; 2026-11-13
 /// tasarım: Profil-Ana): başlıkta "Arkadaş ekle" (alttan sayfa); kartta
 /// "Arkadaşların" (ilk sayfadaki ilk üç arkadaşın avatarı, sayı yok),
-/// "Arkadaşlık istekleri" ve "Tayfa davetleri". Bekleyen istek ya da davet
+/// "Boş vaktin" (tasarım 26-bosum), "Arkadaşlık istekleri" ve "Tayfa
+/// davetleri". Bekleyen istek ya da davet
 /// varsa satırda nokta ve açıklama; sayı yalnızca ilgili ekranda.
 class ArkadaslikGirisleri extends ConsumerWidget {
   const ArkadaslikGirisleri({super.key});
@@ -306,6 +323,7 @@ class ArkadaslikGirisleri extends ConsumerWidget {
               ),
               onTap: () => unawaited(context.push(Adresler.arkadaslar)),
             ),
+            const BosVakitGirisi(),
             MenuSatiri.kartta(
               ikon: Icons.mark_email_unread_outlined,
               baslik: m.arkadas_istekler,

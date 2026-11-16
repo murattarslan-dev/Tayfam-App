@@ -22,6 +22,7 @@ export 'package:tayfam/core/bilesenler/odak_cercevesi.dart';
 export 'package:tayfam/core/bilesenler/sihirbaz_iskeleti.dart';
 export 'package:tayfam/core/bilesenler/sohbet_balonu.dart';
 export 'package:tayfam/core/bilesenler/sohbet_ogeleri.dart';
+export 'package:tayfam/core/bilesenler/tarih_kutusu.dart';
 export 'package:tayfam/core/bilesenler/tayfam_kart.dart';
 export 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 export 'package:tayfam/core/bilesenler/tayfam_yenile.dart';

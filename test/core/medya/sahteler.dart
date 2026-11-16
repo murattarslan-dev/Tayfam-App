@@ -144,6 +144,25 @@ final class SahteSecici implements FotografSecici {
     kaynaklar.add(kaynak);
     return sonuclar.isEmpty ? null : sonuclar.removeAt(0);
   }
+
+  /// Çoklu seçimde istenen en çok sayılar.
+  final List<int> cokluSinirlar = [];
+
+  /// Çoklu seçimde [sonuclar]'ın hepsini (en çok `enCok`) döndürür.
+  @override
+  Future<List<SecilenFotograf>> secCoklu(
+    FotografKaynagi kaynak,
+    int enCok,
+  ) async {
+    kaynaklar.add(kaynak);
+    cokluSinirlar.add(enCok);
+    final secilen = [
+      for (final b in sonuclar.take(enCok))
+        if (b != null) BellekteSecilenFotograf(b),
+    ];
+    sonuclar.clear();
+    return secilen;
+  }
 }
 
 /// Örnek hedef linki (sahte hesap; gerçek değil).

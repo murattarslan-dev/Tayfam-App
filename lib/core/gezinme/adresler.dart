@@ -178,6 +178,13 @@ abstract final class Adresler {
   static String etkinlikKatilimcilari(String tayfaId, String etkinlikId) =>
       '${etkinlik(tayfaId, etkinlikId)}/$etkinlikKatilimcilariYolu';
 
+  /// Albüm ekranının etkinlik detayı altındaki yolu (istemci ADR-0025).
+  static const etkinlikAlbumuYolu = 'album';
+
+  /// Etkinliğin fotoğraf albümü.
+  static String etkinlikAlbumu(String tayfaId, String etkinlikId) =>
+      '${etkinlik(tayfaId, etkinlikId)}/$etkinlikAlbumuYolu';
+
   /// Profil sekmesindeki oturumlar ekranının profil altındaki yolu
   /// (ADR-0018 §2).
   static const oturumlarYolu = 'oturumlar';
@@ -270,6 +277,19 @@ abstract final class Adresler {
 
   /// Engellenen kullanıcılar.
   static const engellenenler = '$arkadaslar/$engellenenlerYolu';
+
+  /// "Boşum" (kendi boş günlerin) ekranının arkadaşlar altındaki yolu
+  /// (Tayfam-Api ADR-0029; tasarım 26-bosum).
+  static const bosVakitYolu = 'bos-vakit';
+
+  /// Kendi boş günlerin.
+  static const bosVakit = '$arkadaslar/$bosVakitYolu';
+
+  /// Boş gün eklemenin "Boşum" altındaki yolu.
+  static const bosGunEkleYolu = 'ekle';
+
+  /// Boş gün ekleme.
+  static const bosGunEkle = '$bosVakit/$bosGunEkleYolu';
 
   /// Kendi katılım geçmişinin tamamının profil altındaki yolu (profil
   /// sekmesindeki "Tümünü gör"; 2026-11-13).

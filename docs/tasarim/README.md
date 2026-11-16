@@ -34,4 +34,6 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 | Etkinlik türü formları ve iptal | [`22-etkinlik-turu-formlari/`](22-etkinlik-turu-formlari/README.md) | 5 |
 | Hata ve bağlantı durumları | [`23-hata-ve-baglanti-durumlari/`](23-hata-ve-baglanti-durumlari/README.md) | 5 |
 | Çekip yenileme | [`24-cekip-yenileme/`](24-cekip-yenileme/README.md) | 4 |
+| Etkinlik fotoğraf albümü | [`25-etkinlik-albumu/`](25-etkinlik-albumu/README.md) | 9 |
+| "Boşum": boş vakit | [`26-bosum/`](26-bosum/README.md) | 10 |
 | Arkadaş önerisi ve profilleme | [`27-arkadas-onerisi/`](27-arkadas-onerisi/README.md) | 6 |

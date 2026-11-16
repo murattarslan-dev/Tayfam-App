@@ -5425,9 +5425,9 @@
   "@hata_not_attended": {
     "description": "Hata kodu `not-attended`. Av kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
   },
-  "hata_album_closed": "Bu etkinliğin albümüne artık fotoğraf eklenemiyor.",
+  "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
   "@hata_album_closed": {
-    "description": "Hata kodu `album-closed`. Etkinlik albümü (başlangıçtan bitişin 7 gün sonrasına kadar açık) kapandıktan sonra fotoğraf eklenmeye çalışılınca."
+    "description": "Hata kodu `album-closed`. Etkinlik albümüne, etkinlik başlamadan ya da bitişten yedi gün sonra fotoğraf eklenmeye çalışıldığında görünen hata."
   },
   "hata_event_series_not_found": "Bu etkinlik serisi bulunamadı.",
   "@hata_event_series_not_found": {
@@ -7963,6 +7963,10 @@
   "@sikayet_soru_av_kaydi": {
     "description": "Balık etkinliğindeki bir av kaydını şikâyet ederken sayfanın sorusu."
   },
+  "sikayet_soru_album_fotografi": "Bu fotoğrafı neden şikâyet ediyorsun?",
+  "@sikayet_soru_album_fotografi": {
+    "description": "Etkinlik albümündeki bir fotoğrafı şikâyet ederken sayfanın sorusu."
+  },
   "sikayet_soru_mesaj": "Bu mesajı neden şikâyet ediyorsun?",
   "@sikayet_soru_mesaj": {
     "description": "Birebir mesajı şikâyet ederken sayfanın sorusu."
@@ -8110,6 +8114,10 @@
   "sikayet_tur_av_kaydi": "Av kaydı",
   "@sikayet_tur_av_kaydi": {
     "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: balık etkinliğinin av kaydı."
+  },
+  "sikayet_tur_album_fotografi": "Albüm fotoğrafı",
+  "@sikayet_tur_album_fotografi": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: etkinlik albümündeki fotoğraf."
   },
   "sikayet_tur_mesaj": "Mesaj",
   "@sikayet_tur_mesaj": {
@@ -9260,5 +9268,386 @@
   "yonetim_ban_diger_gerekceler": "Diğer gerekçeleri göster",
   "@yonetim_ban_diger_gerekceler": {
     "description": "Ban penceresinde kısa gerekçe listesinin altındaki düğme; kapalı listenin geri kalanını açar."
+  },
+  "bosum_baslik": "Boş vaktin",
+  "@bosum_baslik": {
+    "description": "\"Boşum\" ekranının başlığı ve arkadaşlar ekranıyla profildeki giriş satırının başlığı. Kullanıcının arkadaşlarına görünen boş günleri."
+  },
+  "bosum_giris_sayi": "{sayi, plural, other{{sayi} gün boşsun · arkadaşların görür}}",
+  "@bosum_giris_sayi": {
+    "description": "\"Boş vaktin\" giriş satırının açıklaması; kullanıcının girdiği gelecek boş gün sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "bosum_giris_yok": "Boş günlerini arkadaşlarınla paylaş",
+  "@bosum_giris_yok": {
+    "description": "\"Boş vaktin\" giriş satırının açıklaması; henüz boş gün girilmemişken."
+  },
+  "bosum_aciklama": "Boş olduğun günleri gir; tüm arkadaşların görür. Kimseye bildirim gitmez, geçmiş günler kendiliğinden silinir.",
+  "@bosum_aciklama": {
+    "description": "\"Boş vaktin\" ekranının üstündeki gizlilik açıklaması: kim görür, bildirim yok, geçmiş günler silinir."
+  },
+  "bosum_ekle": "Boş gün ekle",
+  "@bosum_ekle": {
+    "description": "\"Boş vaktin\" ekranındaki birincil düğme ve gün ekleme ekranının başlığı."
+  },
+  "bosum_onumuzdeki": "Önümüzdeki günler",
+  "@bosum_onumuzdeki": {
+    "description": "\"Boş vaktin\" ekranında kendi boş günlerinin listesinin bölüm başlığı."
+  },
+  "bosum_liste_bos": "Henüz boş gün eklemedin. Eklediğin günler burada görünür.",
+  "@bosum_liste_bos": {
+    "description": "\"Boş vaktin\" ekranında hiç boş gün yokken listenin yerindeki metin."
+  },
+  "bosum_bugun": "Bugün",
+  "@bosum_bugun": {
+    "description": "Boş gün satırının başlığı ve gün çipi: gün bugünse."
+  },
+  "bosum_yarin": "Yarın",
+  "@bosum_yarin": {
+    "description": "Boş gün satırının başlığı ve gün çipi: gün yarınsa."
+  },
+  "bosum_dilim_sabah": "Sabah",
+  "@bosum_dilim_sabah": {
+    "description": "Günün dilimi: sabah. Saat değil, kaba bir bölüm."
+  },
+  "bosum_dilim_ogleden_sonra": "Öğleden sonra",
+  "@bosum_dilim_ogleden_sonra": {
+    "description": "Günün dilimi: öğleden sonra."
+  },
+  "bosum_dilim_aksam": "Akşam",
+  "@bosum_dilim_aksam": {
+    "description": "Günün dilimi: akşam."
+  },
+  "bosum_dilim_tum_gun": "Tüm gün",
+  "@bosum_dilim_tum_gun": {
+    "description": "Günün dilimi: tüm gün; diğer dilimlerle birlikte seçilmez."
+  },
+  "bosum_dilim_ayirici": " · ",
+  "@bosum_dilim_ayirici": {
+    "description": "Bir günün dilimleri arasındaki ayırıcı (\"Sabah · Akşam\"). Başında ve sonunda boşluk vardır."
+  },
+  "bosum_not_alinti": "“{not}”",
+  "@bosum_not_alinti": {
+    "description": "Boş gün satırında kullanıcının notu, tırnak içinde.",
+    "placeholders": {
+      "not": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_gunler_baslik": "Hangi günler?",
+  "@bosum_gunler_baslik": {
+    "description": "Gün ekleme ekranında gün çiplerinin başlığı."
+  },
+  "bosum_gunler_aciklama": "Önümüzdeki 30 gün içinden bir ya da birkaç gün seç. Zaten eklediğin günler listeden değiştirilir.",
+  "@bosum_gunler_aciklama": {
+    "description": "Gün ekleme ekranında gün çiplerinin açıklaması."
+  },
+  "bosum_gun_ekli": "{gun}, zaten ekli",
+  "@bosum_gun_ekli": {
+    "description": "Ekran okuyucu: gün ekleme ekranında daha önce eklenmiş (seçilemeyen) gün çipi.",
+    "placeholders": {
+      "gun": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_dilim_baslik": "Ne zaman?",
+  "@bosum_dilim_baslik": {
+    "description": "Gün ekleme ve düzenlemede dilim çiplerinin başlığı."
+  },
+  "bosum_dilim_kural": "“Tüm gün” diğerleriyle birlikte seçilmez.",
+  "@bosum_dilim_kural": {
+    "description": "Dilim çiplerinin altındaki kural açıklaması."
+  },
+  "bosum_not_etiketi": "Not (isteğe bağlı)",
+  "@bosum_not_etiketi": {
+    "description": "Boş güne eklenebilen kısa notun alan etiketi."
+  },
+  "bosum_not_ipucu": "Ör. Akşam yürüyüşe varım",
+  "@bosum_not_ipucu": {
+    "description": "Not alanı boşken gösterilen örnek; alan etiketi ayrıca görünür."
+  },
+  "bosum_not_sayac": "{sayi}/{enCok}",
+  "@bosum_not_sayac": {
+    "description": "Not alanının altındaki karakter sayacı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      },
+      "enCok": {
+        "type": "int"
+      }
+    }
+  },
+  "bosum_kaydet": "Kaydet",
+  "@bosum_kaydet": {
+    "description": "Boş gün düzenleme sayfasındaki kaydet düğmesi; gün ekleme ekranında gün seçilmemişken de bu metin görünür (devre dışı)."
+  },
+  "bosum_kaydet_sayi": "{sayi, plural, other{{sayi} günü kaydet}}",
+  "@bosum_kaydet_sayi": {
+    "description": "Gün ekleme ekranındaki kaydet düğmesi; seçilen gün sayısıyla.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "bosum_duzenle_aciklama": "Boş günü düzenle",
+  "@bosum_duzenle_aciklama": {
+    "description": "Boş gün düzenleme sayfasında günün altındaki açıklama."
+  },
+  "bosum_sil": "Bu günü sil",
+  "@bosum_sil": {
+    "description": "Boş gün düzenleme sayfasındaki yıkıcı düğme; günün boş vaktini siler."
+  },
+  "bosum_rozet_bugun": "Bugün boş",
+  "@bosum_rozet_bugun": {
+    "description": "Arkadaş listesindeki rozet: arkadaş bugün boş."
+  },
+  "bosum_rozet_yarin": "Yarın boş",
+  "@bosum_rozet_yarin": {
+    "description": "Arkadaş listesindeki rozet: arkadaş yarın boş."
+  },
+  "bosum_rozet_gun": "{gun} boş",
+  "@bosum_rozet_gun": {
+    "description": "Arkadaş listesindeki rozet: arkadaş önümüzdeki 7 gün içinde o gün boş (\"Cumartesi boş\").",
+    "placeholders": {
+      "gun": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_rozet_semantik": "{ad}: {durum}. Boş günlerini gör",
+  "@bosum_rozet_semantik": {
+    "description": "Ekran okuyucu: arkadaş satırındaki rozet düğmesi.",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      },
+      "durum": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_arkadas_alt": "Önümüzdeki 30 gündeki boş günleri",
+  "@bosum_arkadas_alt": {
+    "description": "Arkadaşın boş günleri alttan sayfasında adın altındaki açıklama."
+  },
+  "bosum_arkadas_bos": "Şu an görünen boş günü yok.",
+  "@bosum_arkadas_bos": {
+    "description": "Arkadaşın boş günleri alttan sayfasında gün yokken."
+  },
+  "bosum_yukleniyor": "Boş günler yükleniyor",
+  "@bosum_yukleniyor": {
+    "description": "Ekran okuyucu: boş günler yüklenirken."
+  },
+  "album_baslik": "Albüm",
+  "@album_baslik": {
+    "description": "Etkinlik detayındaki albüm bölümünün ve albüm ekranının başlığı (fotoğraf albümü)."
+  },
+  "album_tumu": "Tümü",
+  "@album_tumu": {
+    "description": "Albüm bölümü başlığının sağında, albüm ekranını açan bağlantı."
+  },
+  "album_ekle": "Fotoğraf ekle",
+  "@album_ekle": {
+    "description": "Albüme fotoğraf ekleme düğmesi (bölümde metinli, albüm ekranında simge düğmesinin ipucu)."
+  },
+  "album_bos": "Albümde henüz fotoğraf yok.",
+  "@album_bos": {
+    "description": "Albüm boşken gösterilen metin."
+  },
+  "album_baslamadi": "Albüm etkinlik başlayınca açılır.",
+  "@album_baslamadi": {
+    "description": "Etkinlik başlamadan albüm bölümünde gösterilen bilgi."
+  },
+  "album_katilim_yok": "Fotoğraf eklemek için önce varışını bildir.",
+  "@album_katilim_yok": {
+    "description": "Katılımı doğrulanmamış kullanıcıya albüm bölümünde gösterilen bilgi (\"Geldim\" ile varış bildirimi)."
+  },
+  "album_kapandi": "Albüm fotoğraf eklemeye kapandı.",
+  "@album_kapandi": {
+    "description": "Bitişten yedi gün sonra albüm bölümünde gösterilen bilgi."
+  },
+  "album_fotograf_etiketi": "Albüm fotoğrafı {sira}",
+  "@album_fotograf_etiketi": {
+    "description": "Albüm ızgarasındaki ve görüntüleyicideki bir fotoğrafın ekran okuyucu etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "album_fotograf_etiketi_aciklamali": "Albüm fotoğrafı {sira}: {aciklama}",
+  "@album_fotograf_etiketi_aciklamali": {
+    "description": "Açıklaması olan albüm fotoğrafının ekran okuyucu etiketi; açıklama kullanıcının yazdığı metindir.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      },
+      "aciklama": {
+        "type": "String",
+        "example": "Gün batımı"
+      }
+    }
+  },
+  "album_sayac": "{sira} / {toplam}",
+  "@album_sayac": {
+    "description": "Görüntüleyicinin üstünde kaçıncı fotoğrafta olunduğu (okunan fotoğraflara göre).",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "23"
+      }
+    }
+  },
+  "album_sayac_devami": "{sira} / {toplam}+",
+  "@album_sayac_devami": {
+    "description": "Görüntüleyicinin sayacı; albümün okunmamış sayfaları da var.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "4"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "60"
+      }
+    }
+  },
+  "album_ekle_baslik": "Albüme ekle",
+  "@album_ekle_baslik": {
+    "description": "Seçilen fotoğrafları albüme ekleme sayfasının başlığı."
+  },
+  "album_ekle_onay": "{sayi, plural, =1{Ekle} other{{sayi} fotoğraf ekle}}",
+  "@album_ekle_onay": {
+    "description": "Albüme ekle sayfasının onay düğmesi; hazırlanan fotoğraf sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "album_secildi": "{sayi, plural, other{{sayi} fotoğraf seçildi}}",
+  "@album_secildi": {
+    "description": "Albüme ekle sayfasında seçilen fotoğraf sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "album_hazirlaniyor": "Fotoğraflar hazırlanıyor",
+  "@album_hazirlaniyor": {
+    "description": "Albüme ekle sayfasında seçilen fotoğraflar okunup konum bilgisi silinirken gösterilen metin."
+  },
+  "album_aciklama": "Açıklama (isteğe bağlı)",
+  "@album_aciklama": {
+    "description": "Tek fotoğraf eklerken açıklama alanının etiketi (en çok 200 karakter)."
+  },
+  "album_gizlilik_notu": "Fotoğraflardaki konum ve cihaz bilgisi gönderilmeden silinir. Albümü tayfanın üyeleri görür.",
+  "@album_gizlilik_notu": {
+    "description": "Albüme ekle sayfasındaki gizlilik notu."
+  },
+  "album_yukleniyor": "Fotoğraflar yükleniyor: {tamam} / {toplam}",
+  "@album_yukleniyor": {
+    "description": "Albüm yükleme kartının başlığı; eklenen ve toplam fotoğraf sayısı.",
+    "placeholders": {
+      "tamam": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "album_yukleme_bekliyor": "Sırada",
+  "@album_yukleme_bekliyor": {
+    "description": "Yükleme kartında sırası bekleyen fotoğrafın ekran okuyucu durumu."
+  },
+  "album_yukleme_suruyor": "Yükleniyor",
+  "@album_yukleme_suruyor": {
+    "description": "Yükleme kartında yüklenen fotoğrafın ekran okuyucu durumu."
+  },
+  "album_kaldir": "Kaldır",
+  "@album_kaldir": {
+    "description": "Yükleme kartında hatalı fotoğrafı kuyruktan çıkaran düğme."
+  },
+  "album_islemler": "Fotoğraf işlemleri",
+  "@album_islemler": {
+    "description": "Görüntüleyicideki ⋯ düğmesinin ipucu."
+  },
+  "album_menu_baslik": "Fotoğraf",
+  "@album_menu_baslik": {
+    "description": "Görüntüleyicinin işlem sayfasının başlığı."
+  },
+  "album_sil": "Fotoğrafı sil",
+  "@album_sil": {
+    "description": "Görüntüleyicinin işlem sayfasında yıkıcı satır."
+  },
+  "album_sil_onay": "Fotoğraf albümden silinsin mi?",
+  "@album_sil_onay": {
+    "description": "Fotoğraf silme onay penceresinin başlığı."
+  },
+  "album_sil_eylem": "Sil",
+  "@album_sil_eylem": {
+    "description": "Fotoğraf silme onay penceresinin onay düğmesi."
+  },
+  "album_silindi": "Fotoğraf silindi.",
+  "@album_silindi": {
+    "description": "Fotoğraf silindikten sonra kısa bildirim."
+  },
+  "album_kapat": "Kapat",
+  "@album_kapat": {
+    "description": "Görüntüleyiciyi kapatan düğmenin ipucu."
+  },
+  "album_onceki": "Önceki fotoğraf",
+  "@album_onceki": {
+    "description": "Görüntüleyicide önceki fotoğrafa geçen düğmenin ipucu."
+  },
+  "album_sonraki": "Sonraki fotoğraf",
+  "@album_sonraki": {
+    "description": "Görüntüleyicide sonraki fotoğrafa geçen düğmenin ipucu."
+  },
+  "album_hata_kapali": "Albüm şu an fotoğraf eklemeye kapalı.",
+  "@album_hata_kapali": {
+    "description": "Albüme ekleme `album-closed` ile reddedildi (başlangıçtan önce ya da bitişten yedi gün sonra)."
+  },
+  "album_hata_katilim": "Fotoğraf eklemek için etkinliğe katıldığın doğrulanmış olmalı.",
+  "@album_hata_katilim": {
+    "description": "Albüme ekleme `not-attended` ile reddedildi."
+  },
+  "album_hata_sinir": "Fotoğraf sınırına ulaşıldı: kişi başı {kisi}, albüm başına {album}.",
+  "@album_hata_sinir": {
+    "description": "Albüme ekleme `event-limit` ile reddedildi.",
+    "placeholders": {
+      "kisi": {
+        "type": "int",
+        "example": "30"
+      },
+      "album": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
+  "album_hata_iptal": "Etkinlik iptal edildiği için albüme fotoğraf eklenemez.",
+  "@album_hata_iptal": {
+    "description": "Albüme ekleme `event-cancelled` ile reddedildi."
   }
 }
