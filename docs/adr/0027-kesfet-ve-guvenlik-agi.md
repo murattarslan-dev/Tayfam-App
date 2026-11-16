@@ -1,7 +1,13 @@
 # ADR-0027: Keşfet ilk aşama ve güvenlik ağı (istemci)
 
-- **Durum:** Önerildi (mimari oturumu cevaplayınca kabul; açık sorular
-  PR'da ve tasarım bölümünde)
+- **Durum:** Kabul edildi (2026-11-16; platform sahibi açık sorularda mimari
+  oturumunun önerisini uygulamaya yetki verdi. Cevaplar: (1) "Keşfet'te
+  arkadaşlarım görebilsin" bayraktan bağımsız görünür; (2) güvenlik kişisi
+  okuması bayraksız olsun diye Tayfam-Api'de ayrı iş açıldı, o gelene kadar
+  istemci davranışı aynı kalır; (3) arkadaş listesinin ilk 100'ü yeterli,
+  arama yok; (4) tayfa ana sayfasında Keşfet girişi yok; (5) "Halka açık
+  yerde buluşur" yalnızca sihirbaz/düzenlemede; (6) Topluluk Kuralları
+  maddesi platform sahibine kalır)
 - **Tarih:** 2026-11-16
 - **Karar veren:** Ürün kararları platform sahibinindir (2026-11-12
   "Keşfet tasarımı", 2026-11-16 ayrıntı kararları; Notion "Faz 2 (v2) —
