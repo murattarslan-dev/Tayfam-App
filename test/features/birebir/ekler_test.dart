@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/e2e/ek/ek_servisi.dart';
 import 'package:tayfam/core/e2e/ek/ek_sifreleme.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
@@ -245,6 +246,34 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('şifreli fotoğraf tam ekranda ortak görüntüleyicide; çözme '
+      '≤ 1600 px ve yalnızca bellekte (ADR-0028 §4, ADR-0006)', (tester) async {
+    ekranBoyutu(tester, yukseklik: 1400);
+    await _ac(tester);
+    final dokunulabilir = find.descendant(
+      of: find.byType(BirebirFotografi).last,
+      matching: find.byType(GestureDetector),
+    );
+    await tester.tap(dokunulabilir.first);
+    await tester.pumpAndSettle();
+    expect(find.byType(TamEkranFotograf), findsOneWidget);
+    final gorsel = tester.widget<Image>(
+      find.descendant(
+        of: find.byType(TamEkranFotograf),
+        matching: find.byType(Image),
+      ),
+    );
+    final resize = gorsel.image as ResizeImage;
+    expect(resize.imageProvider, isA<MemoryImage>());
+    expect(resize.width, tamUzunKenar);
+    expect(resize.height, tamUzunKenar);
+    expect(resize.allowUpscaling, isFalse);
+    expect(find.byType(InteractiveViewer), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.close));
+    await tester.pumpAndSettle();
+    expect(find.byType(TamEkranFotograf), findsNothing);
+  });
 
   testWidgets('ek görülemiyorsa (silinmiş, yetkisiz) metinle söylenir', (
     tester,

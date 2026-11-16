@@ -249,3 +249,12 @@ JSON, 160 bayt dolgu aynı):
 - **Kanal fotoğrafını mesajdan ayrı, önceden yükleyip sonra göndermek
   (form gibi):** kuyruk dışı bir adım olurdu; tek iş olarak kuyrukta
   tutmak çevrimdışı davranışı ve "Tekrar dene"yi tek yerde toplar.
+
+## Notlar
+
+- **2026-11-16 (issue #208; platform sahibi PR #206 açık sorusu 3'te
+  onayladı):** Sohbetin tam ekran görüntüleyicisi albümünküyle (ADR-0025
+  §5) birlikte `core/bilesenler/`'deki ortak `TamEkranFotograf`'ı
+  kullanır. Görsel çağırandan gelir: şifreli fotoğrafın `ResizeImage`
+  ile en çok 1600 px çözülmesi (§4) ve yalnızca bellekte gösterimi
+  (ADR-0006) aynen korunur; kaydet/paylaş yoktur. Davranış değişmedi.

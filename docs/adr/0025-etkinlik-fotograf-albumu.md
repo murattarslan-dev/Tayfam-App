@@ -133,3 +133,13 @@ sayfayla görünür.
   kullanılmaz.
 - **Görüntüleyiciyi adresle açmak:** fotoğraf kimliği adreste olurdu ve
   listenin dışından açılınca sayfalama bozulurdu; gerek görülmedi.
+
+## Notlar
+
+- **2026-11-16 (issue #208; platform sahibi PR #206 açık sorusu 3'te
+  onayladı):** §5'teki görüntüleyici iskeleti (koyu yüzey, ✕, ⋯ kancası,
+  `PageView` + `InteractiveViewer`, alt bilgi, Önceki/Sonraki, hareketi
+  azalt) sohbetinkiyle (ADR-0028) birlikte `core/bilesenler/`'deki ortak
+  `TamEkranFotograf`'a taşındı. Albüme özgü olanlar (sayaç, sil/şikâyet
+  menüsü, yükleyen ve açıklama, sona 3 kala okuma) etkinlik özelliğinde
+  kaldı. Davranış değişmedi; yeni karar yoktur.

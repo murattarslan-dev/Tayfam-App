@@ -23,36 +23,28 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Sona bu kadar fotoğraf kala albümün sonraki sayfası okunur.
 const int goruntuleyiciOnOkuma = 3;
 
-/// Görüntüleyicinin alt bilgisi ekran yüksekliğinin en çok bu kesri kadar
-/// yer kaplar (fazlası kayar).
-const double altBilgiOrani = 4;
-
-/// Görüntüleyicide en çok yakınlaştırma.
-const double goruntuleyiciEnCokOlcek = 4;
-
 /// Albüm fotoğrafının tam ekran görüntüleyicisini [sira]'dan açar
 /// (istemci ADR-0025 §5).
 Future<void> fotografGoruntuleyiciAc(
   BuildContext context,
   EtkinlikAnahtari anahtar,
   int sira,
-) => Navigator.of(context).push(
-  MaterialPageRoute<void>(
-    fullscreenDialog: true,
-    builder: (_) => FotografGoruntuleyici(anahtar: anahtar, ilkSira: sira),
-  ),
+) => tamEkranFotografAc(
+  context,
+  builder: (_) => FotografGoruntuleyici(anahtar: anahtar, ilkSira: sira),
 );
 
-/// Tam ekran görüntüleyici (tasarım: Album-Goruntuleyici): her temada koyu
-/// yüzey; üstte Kapat, sayaç ve ⋯; ortada tam varyant (iki parmakla
-/// yakınlaştırma); altta yükleyen, zaman, açıklama ve Önceki / Sonraki.
+/// Albümün tam ekran görüntüleyicisi (tasarım: Album-Goruntuleyici):
+/// ortak [TamEkranFotograf] (issue #208) üstünde albüm verisi — üstte
+/// sayaç ve ⋯, ortada tam varyant, altta yükleyen, zaman, açıklama ve
+/// Önceki / Sonraki. Sona [goruntuleyiciOnOkuma] kala sonraki sayfa okunur.
 ///
 /// ⋯: "Fotoğrafı sil" kendi fotoğrafında, yönetimde ve organizatörde;
 /// "Şikâyet et" kendi fotoğrafı değilse ve fotoğrafı silemiyorsa (silebilen
 /// — yönetim ya da organizatör — şikâyet etmez, siler; mimari oturumu
 /// kararı 2026-11-16). Kolaylıktır; karar
 /// sunucunundur (kesin kural 5).
-class FotografGoruntuleyici extends ConsumerStatefulWidget {
+class FotografGoruntuleyici extends ConsumerWidget {
   const FotografGoruntuleyici({
     super.key,
     required this.anahtar,
@@ -65,214 +57,80 @@ class FotografGoruntuleyici extends ConsumerStatefulWidget {
   final int ilkSira;
 
   @override
-  ConsumerState<FotografGoruntuleyici> createState() =>
-      _FotografGoruntuleyiciState();
-}
-
-class _FotografGoruntuleyiciState extends ConsumerState<FotografGoruntuleyici> {
-  late final PageController _sayfa = PageController(
-    initialPage: widget.ilkSira,
-  );
-  late int _sira = widget.ilkSira;
-
-  @override
-  void dispose() {
-    _sayfa.dispose();
-    super.dispose();
-  }
-
-  void _degisti(int sira, int okunan, bool dahaVar) {
-    setState(() => _sira = sira);
-    if (dahaVar && sira >= okunan - goruntuleyiciOnOkuma) {
-      unawaited(
-        ref.read(etkinlikAlbumuProvider(widget.anahtar).notifier).dahaFazla(),
-      );
-    }
-  }
-
-  /// [sira]'ya geçer; "hareketi azalt" açıksa animasyonsuz.
-  Future<void> _git(int sira) async {
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _sayfa.jumpToPage(sira);
-      return;
-    }
-    await _sayfa.animateToPage(
-      sira,
-      duration: TayfamMotion.orta,
-      curve: TayfamMotion.egri,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: TayfamTheme.koyu(),
-      child: Builder(builder: _govde),
-    );
-  }
-
-  Widget _govde(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    final liste = ref.watch(etkinlikAlbumuProvider(widget.anahtar)).value;
+    final liste = ref.watch(etkinlikAlbumuProvider(anahtar)).value;
     final fotolar = liste?.ogeler ?? const <EventPhoto>[];
     final dahaVar = liste?.dahaVar ?? false;
-    if (fotolar.isEmpty) {
-      return Scaffold(
-        backgroundColor: r.zemin,
-        appBar: AppBar(
-          backgroundColor: r.zemin,
-          leading: _KapatDugmesi(ipucu: m.album_kapat),
-        ),
-      );
-    }
-    final sira = _sira.clamp(0, fotolar.length - 1);
-    final foto = fotolar[sira];
-    return Scaffold(
-      backgroundColor: r.zemin,
-      appBar: AppBar(
-        backgroundColor: r.zemin,
-        leading: _KapatDugmesi(ipucu: m.album_kapat),
-        centerTitle: true,
-        title: Text(
-          dahaVar
-              ? m.album_sayac_devami(sira + 1, fotolar.length)
-              : m.album_sayac(sira + 1, fotolar.length),
-        ),
-        actions: [_MenuDugmesi(anahtar: widget.anahtar, foto: foto)],
+    return TamEkranFotograf(
+      sayi: fotolar.length,
+      ilkSira: ilkSira,
+      kapatIpucu: m.album_kapat,
+      baslikOrtada: true,
+      baslik: (context, sira) => Text(
+        dahaVar
+            ? m.album_sayac_devami(sira + 1, fotolar.length)
+            : m.album_sayac(sira + 1, fotolar.length),
       ),
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _sayfa,
-                itemCount: fotolar.length,
-                onPageChanged: (i) => _degisti(i, fotolar.length, dahaVar),
-                itemBuilder: (context, i) => InteractiveViewer(
-                  maxScale: goruntuleyiciEnCokOlcek,
-                  child: MedyaGorseli(
-                    key: ValueKey(fotolar[i].id),
-                    uploadId: fotolar[i].uploadId,
-                    varyant: MedyaVaryanti.tam,
-                    fit: BoxFit.contain,
-                    etiket: albumFotografEtiketi(m, i + 1, fotolar[i]),
-                    yerTutucu: const SizedBox.expand(),
-                  ),
-                ),
-              ),
-            ),
-            _AltBilgi(
-              foto: foto,
-              onceki: sira > 0 ? () => unawaited(_git(sira - 1)) : null,
-              sonraki: sira < fotolar.length - 1
-                  ? () => unawaited(_git(sira + 1))
-                  : null,
-            ),
-          ],
-        ),
+      eylemler: (context, sira) => [
+        _MenuDugmesi(anahtar: anahtar, foto: fotolar[sira]),
+      ],
+      etiket: (sira) => albumFotografEtiketi(m, sira + 1, fotolar[sira]),
+      gorsel: (context, sira) => MedyaGorseli(
+        key: ValueKey(fotolar[sira].id),
+        uploadId: fotolar[sira].uploadId,
+        varyant: MedyaVaryanti.tam,
+        fit: BoxFit.contain,
+        etiket: albumFotografEtiketi(m, sira + 1, fotolar[sira]),
+        yerTutucu: const SizedBox.expand(),
       ),
+      altBilgi: (context, sira) => _AltBilgi(foto: fotolar[sira]),
+      oncekiSonraki: (onceki: m.album_onceki, sonraki: m.album_sonraki),
+      sayfaDegisti: (sira) {
+        if (dahaVar && sira >= fotolar.length - goruntuleyiciOnOkuma) {
+          unawaited(
+            ref.read(etkinlikAlbumuProvider(anahtar).notifier).dahaFazla(),
+          );
+        }
+      },
     );
   }
 }
 
-class _KapatDugmesi extends StatelessWidget {
-  const _KapatDugmesi({required this.ipucu});
-
-  final String ipucu;
-
-  @override
-  Widget build(BuildContext context) => IconButton(
-    tooltip: ipucu,
-    icon: const Icon(Icons.close),
-    onPressed: () => Navigator.of(context).pop(),
-  );
-}
-
-/// Yükleyenin adı (dokununca profil), zaman, açıklama (düz metin) ve
-/// Önceki / Sonraki düğmeleri. Büyük yazıda kayar.
+/// Yükleyenin adı (dokununca profil), zaman ve açıklama (düz metin).
 class _AltBilgi extends StatelessWidget {
-  const _AltBilgi({
-    required this.foto,
-    required this.onceki,
-    required this.sonraki,
-  });
+  const _AltBilgi({required this.foto});
 
   final EventPhoto foto;
-  final VoidCallback? onceki;
-  final VoidCallback? sonraki;
 
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final aciklama = foto.caption?.trim();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        TayfamSpacing.kenarMobil,
-        TayfamSpacing.s12,
-        TayfamSpacing.kenarMobil,
-        TayfamSpacing.s8,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Bilgi büyük yazıda kayar; düğmeler hep görünür kalır.
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height / altBilgiOrani,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  KisiyeDokun(
-                    kullaniciId: foto.uploaderId,
-                    child: KullaniciAdiMetni(
-                      kullaniciId: foto.uploaderId,
-                      style: context.yazi.titleMedium,
-                    ),
-                  ),
-                  Text(
-                    etkinlikZamani(m, foto.createdAt),
-                    style: context.yazi.bodySmall?.copyWith(
-                      color: r.metinIkincil,
-                    ),
-                  ),
-                  if (aciklama != null && aciklama.isNotEmpty) ...[
-                    const SizedBox(height: TayfamSpacing.s4),
-                    // Düz metin: markdown ya da bağlantı yorumlanmaz.
-                    Text(
-                      aciklama,
-                      style: context.yazi.bodyLarge?.copyWith(
-                        color: r.metinGovde,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        KisiyeDokun(
+          kullaniciId: foto.uploaderId,
+          child: KullaniciAdiMetni(
+            kullaniciId: foto.uploaderId,
+            style: context.yazi.titleMedium,
           ),
+        ),
+        Text(
+          etkinlikZamani(m, foto.createdAt),
+          style: context.yazi.bodySmall?.copyWith(color: r.metinIkincil),
+        ),
+        if (aciklama != null && aciklama.isNotEmpty) ...[
           const SizedBox(height: TayfamSpacing.s4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AracIkonDugmesi(
-                ipucu: m.album_onceki,
-                ikon: Icons.chevron_left,
-                onPressed: onceki,
-              ),
-              AracIkonDugmesi(
-                ipucu: m.album_sonraki,
-                ikon: Icons.chevron_right,
-                onPressed: sonraki,
-              ),
-            ],
+          // Düz metin: markdown ya da bağlantı yorumlanmaz.
+          Text(
+            aciklama,
+            style: context.yazi.bodyLarge?.copyWith(color: r.metinGovde),
           ),
         ],
-      ),
+      ],
     );
   }
 }
