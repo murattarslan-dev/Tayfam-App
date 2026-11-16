@@ -37,6 +37,7 @@ olarak anar.
 | [0022](0022-kvkk-veri-disa-aktarma.md) | KVKK veri dışa aktarma (istemci) | Kabul edildi |
 | [0023](0023-uygulama-butunlugu-istemci.md) | Uygulama bütünlüğü (istemci): Android Play Integrity | Kabul edildi |
 | [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi |
+| [0025](0025-etkinlik-fotograf-albumu.md) | Etkinlik fotoğraf albümü (istemci): çoklu seçim, bellekte yükleme kuyruğu, görüntüleyici | Kabul edildi |
 | [0026](0026-sohbet-ekleri-fotograf-ve-yer.md) | Sohbet ekleri: fotoğraf (kanal ve uçtan uca birebir), yer, kanal mesajı şikâyeti | Önerildi |
 
 ## Şablon

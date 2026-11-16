@@ -6,6 +6,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart';
+import 'package:tayfam/features/etkinlik/presentation/album_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sihirbazi_ekrani.dart';
@@ -62,6 +63,13 @@ class EtkinlikModulu implements TayfaModule {
             GoRoute(
               path: Adresler.etkinlikKatilimcilariYolu,
               builder: (context, state) => KatilimcilarEkrani(
+                tayfaId: _tayfaId(state),
+                etkinlikId: _etkinlikId(state),
+              ),
+            ),
+            GoRoute(
+              path: Adresler.etkinlikAlbumuYolu,
+              builder: (context, state) => AlbumEkrani(
                 tayfaId: _tayfaId(state),
                 etkinlikId: _etkinlikId(state),
               ),

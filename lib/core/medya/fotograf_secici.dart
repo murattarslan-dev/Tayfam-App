@@ -13,6 +13,42 @@ enum FotografKaynagi { galeri, kamera }
 /// kullanıcı vazgeçerse `null` (ADR-0021 §1).
 abstract interface class FotografSecici {
   Future<Uint8List?> sec(FotografKaynagi kaynak);
+
+  /// Galeriden en çok [enCok] fotoğraf seçtirir (kamerada tek fotoğraf);
+  /// vazgeçilirse boş liste (istemci ADR-0025 §2). Baytlar hemen
+  /// okunmaz: her tutamaç [SecilenFotograf.oku] ile sırayla okunur, böylece
+  /// bellekte aynı anda tek ham fotoğraf bulunur.
+  Future<List<SecilenFotograf>> secCoklu(FotografKaynagi kaynak, int enCok);
+}
+
+/// Seçilmiş, henüz okunmamış bir fotoğraf (istemci ADR-0025 §2).
+///
+/// Seçicinin geçici kopyası [oku] ile belleğe alınır alınmaz ya da
+/// [birak] ile silinir (ADR-0006: diske içerik yok).
+abstract interface class SecilenFotograf {
+  /// Baytları okur ve geçici kopyayı siler. Bir kez çağrılır.
+  Future<Uint8List> oku();
+
+  /// Okunmayacaksa geçici kopyayı siler.
+  Future<void> birak();
+}
+
+/// Bellekteki baytlarla hazır bir seçim (kamera ve testler).
+final class BellekteSecilenFotograf implements SecilenFotograf {
+  BellekteSecilenFotograf(this._baytlar);
+
+  Uint8List? _baytlar;
+
+  @override
+  Future<Uint8List> oku() async {
+    final b = _baytlar;
+    _baytlar = null;
+    if (b == null) throw StateError('okundu');
+    return b;
+  }
+
+  @override
+  Future<void> birak() async => _baytlar = null;
 }
 
 /// `image_picker` ile:
@@ -52,6 +88,28 @@ final class PlatformFotografSecici implements FotografSecici {
     }
   }
 
+  @override
+  Future<List<SecilenFotograf>> secCoklu(
+    FotografKaynagi kaynak,
+    int enCok,
+  ) async {
+    if (kaynak == FotografKaynagi.kamera || enCok <= 1) {
+      final tek = await sec(kaynak);
+      return tek == null ? const [] : [BellekteSecilenFotograf(tek)];
+    }
+    final dosyalar = await _secici.pickMultiImage(
+      limit: enCok,
+      requestFullMetadata: false,
+    );
+    final secilen = [for (final d in dosyalar) _PlatformSecilen(d)];
+    // Sınırdan fazlası (eski Android seçicisi sınırı uygulamayabilir)
+    // okunmadan silinir.
+    for (final fazla in secilen.skip(enCok)) {
+      await fazla.birak();
+    }
+    return secilen.take(enCok).toList(growable: false);
+  }
+
   static Future<void> _geciciDosyayiSil(String yol) async {
     if (kIsWeb || yol.isEmpty) return;
     try {
@@ -68,3 +126,29 @@ final fotografSeciciProvider = Provider<FotografSecici>(
   (ref) => PlatformFotografSecici(),
   name: 'fotografSeciciProvider',
 );
+
+/// `image_picker`'ın geçici kopyası; okununca ya da bırakılınca silinir.
+final class _PlatformSecilen implements SecilenFotograf {
+  _PlatformSecilen(this._dosya);
+
+  final XFile _dosya;
+  bool _bitti = false;
+
+  @override
+  Future<Uint8List> oku() async {
+    if (_bitti) throw StateError('okundu');
+    _bitti = true;
+    try {
+      return await _dosya.readAsBytes();
+    } finally {
+      await PlatformFotografSecici._geciciDosyayiSil(_dosya.path);
+    }
+  }
+
+  @override
+  Future<void> birak() async {
+    if (_bitti) return;
+    _bitti = true;
+    await PlatformFotografSecici._geciciDosyayiSil(_dosya.path);
+  }
+}
