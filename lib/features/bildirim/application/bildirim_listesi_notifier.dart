@@ -80,6 +80,9 @@ Notification okunmusHali(Notification bildirim) => bildirim.read
         subjectUserId: bildirim.subjectUserId,
         warningReason: bildirim.warningReason,
         unreadCount: bildirim.unreadCount,
+        // Satır içi işlemi ve öneri görünürlüğü bu duruma bakar; düşerse
+        // arkadaş önerisi okundu işaretlenince listeden kaybolur.
+        resolution: bildirim.resolution,
         read: true,
         createdAt: bildirim.createdAt,
       );

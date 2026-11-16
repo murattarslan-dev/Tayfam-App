@@ -31,6 +31,7 @@ Map<String, Object?> bildirimJson(
   String? yuruyuscu,
   String? uyari,
   int? sayi,
+  String? cozum,
   bool okundu = false,
   String zaman = '2026-11-10T10:00:00Z',
 }) => {
@@ -44,6 +45,7 @@ Map<String, Object?> bildirimJson(
   'subject_user_id': ?yuruyuscu,
   'warning_reason': ?uyari,
   'unread_count': ?sayi,
+  'resolution': ?cozum,
   'read': okundu,
   'created_at': zaman,
 };

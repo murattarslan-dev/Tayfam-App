@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
 import 'package:tayfam/features/arkadas/application/islem.dart';
+import 'package:tayfam/features/arkadas/application/oneriler_notifier.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
 import 'package:tayfam/features/arkadas/data/arkadas_deposu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -43,6 +44,18 @@ final class BildirimYanitlari {
         await _depo.arkadasligiKaldir(kullaniciId);
         arkadaslikDegisti(_ref, arkadaslar: false);
       });
+
+  /// Arkadaş önerisine "Arkadaş ekle" (`POST /v1/me/friend-requests`;
+  /// Tayfam-Api ADR-0030 §4). Karşı tarafın isteği bekliyorsa arkadaşlık
+  /// hemen kurulur (`arkadas: true`).
+  Future<OneriEklemeSonucu> oneriyiEkle(String kullaniciId) =>
+      oneriyiArkadasEkle(_ref, kullaniciId);
+
+  /// Arkadaş önerisini kapatır
+  /// (`DELETE /v1/me/friend-suggestions/{user_id}`); karşı tarafa
+  /// bildirilmez. Başarıda `null`.
+  Future<Object?> oneriyiKapat(String kullaniciId) =>
+      arkadasOnerisiniKapat(_ref, kullaniciId);
 
   /// `POST /v1/me/invitations/{tayfa_id}/acceptance`.
   Future<DavetYaniti> davetiKabulEt(String tayfaId) async {

@@ -21,9 +21,11 @@ import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/profil/application/cikis_notifier.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
 import 'package:tayfam/features/profil/application/hukuki_baglantilar.dart';
+import 'package:tayfam/features/profil/application/sosyal_ayarlar_notifier.dart';
 import 'package:tayfam/features/profil/presentation/ad_duzenle_sayfasi.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/features/profil/presentation/profil_sayfalari.dart';
+import 'package:tayfam/features/profil/presentation/profilleme_ayarlari.dart';
 import 'package:tayfam/features/profil/presentation/tanitim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -31,8 +33,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Profil-Koyu): "Başkaları nasıl görüyor" (kendi kişi profilin), fotoğraf
 /// (ADR-0021) ve ad, mor referans kodu kartı, arkadaşlar (ADR-0018 §7),
 /// son katılımlar ve görünürlük çipi, Uygulama (bildirimler, tema,
-/// oturumlar), Gizlilik (verilerimi indir — ADR-0022, engellenenler,
-/// hukuki metinler), çıkış ve hesap silme.
+/// oturumlar), Gizlilik (profilleme ve "Beni önerme" — Tayfam-Api
+/// ADR-0030, verilerimi indir — ADR-0022, engellenenler, hukuki metinler),
+/// çıkış ve hesap silme.
 ///
 /// Hesap ayarları okunamazsa yalnızca üst bölüm hata gösterir; arkadaşlar,
 /// tema, çıkış ve öteki satırlar yine kullanılabilir.
@@ -711,9 +714,10 @@ class _UygulamaBolumu extends ConsumerWidget {
   }
 }
 
-/// Gizlilik: tanıtım bilgileri ve doğum günü görünürlüğü (issue #185,
-/// #186), verilerimi indir (ADR-0022), engellenenler ve hukuki metinler
-/// (dış bağlantı).
+/// Gizlilik: profilleme ve "Beni önerme" anahtarları (25-arkadas-onerisi),
+/// tanıtım bilgileri ve doğum günü görünürlüğü (issue #185, #186),
+/// verilerimi indir (ADR-0022), engellenenler ve hukuki metinler (dış
+/// bağlantı).
 class _GizlilikBolumu extends ConsumerWidget {
   const _GizlilikBolumu();
 
@@ -739,6 +743,9 @@ class _GizlilikBolumu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final hesap = ref.watch(hesapAyarlariProvider).value;
+    final profillemeOkundu = ref.watch(
+      sosyalAyarlarProvider.select((d) => d.hasValue || d.hasError),
+    );
     final disBaglanti = ExcludeSemantics(
       child: Icon(
         Icons.open_in_new,
@@ -752,6 +759,9 @@ class _GizlilikBolumu extends ConsumerWidget {
         BolumEtiketi(baslik: m.disa_aktarma_profil_bolum),
         ListeKarti(
           children: [
+            // Profilleme ve "Beni önerme" (Tayfam-Api ADR-0030 §5);
+            // okunurken görünmez.
+            if (profillemeOkundu) const ProfillemeAyarlari(),
             // Tanıtım bilgileri ve doğum günü görünürlüğü (issue #185,
             // #186); hesap okunana kadar görünmez.
             if (hesap != null) ...[

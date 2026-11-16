@@ -30,6 +30,17 @@ const String davetimYolu = '/v1/me/invitations/{tayfa_id}';
 const String davetKabulYolu = '/v1/me/invitations/{tayfa_id}/acceptance';
 const String profilYolu = '/v1/users/{user_id}/profile';
 const String gecmisYolu = '/v1/users/{user_id}/activity';
+const String onerilerYolu = '/v1/me/friend-suggestions';
+const String oneriYolu = '/v1/me/friend-suggestions/{user_id}';
+const String sosyalAyarlarYolu = '/v1/me/social-settings';
+
+/// `FriendSuggestion` JSON'u (puan, ortak etkinlik sayısı ve gerekçe
+/// sözleşmede yoktur).
+Map<String, Object?> oneriJson(String id) => {
+  'user_id': id,
+  'display_name': kisiAdi(id),
+  'suggested_at': '2026-11-12T09:00:00Z',
+};
 
 /// [id]'nin örnek görünen adı.
 String kisiAdi(String id) =>
@@ -117,6 +128,10 @@ SahteTayfaTasima arkadasTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       () => yanit({'invitations': <Object?>[]}),
     )
     ..putIfAbsent('GET $gecmisYolu', () => yanit({'records': <Object?>[]}))
+    ..putIfAbsent(
+      'GET $onerilerYolu',
+      () => yanit({'suggestions': <Object?>[]}),
+    )
     ..putIfAbsent(
       'GET $profilYolu',
       () =>

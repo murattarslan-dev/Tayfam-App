@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_listesi_notifier.dart';
 import 'package:tayfam/features/bildirim/application/okunmamis_bildirim_notifier.dart';
@@ -152,6 +153,25 @@ void main() {
       expect(await liste.hepsiniOkunduSay(), isA<ApiOffline>());
       expect(k.okunduDurumlari, [false, true, false]);
       expect(k.rozetDegeri, 2);
+    });
+  });
+
+  group('okunmusHali', () {
+    test('öneri durumu (resolution) ve öteki alanlar korunuyor', () {
+      final b = Notification.fromJson(
+        bildirimJson(
+          bildirimId1,
+          tur: 'friend_suggestion',
+          tayfaId: null,
+          hedefTuru: 'user',
+          hedef: kisiId,
+          cozum: 'pending',
+        ),
+      );
+      final okunmus = okunmusHali(b);
+      expect(okunmus.read, isTrue);
+      expect(okunmus.resolution, NotificationResolution.pending);
+      expect(okunmus.toJson()..remove('read'), b.toJson()..remove('read'));
     });
   });
 }

@@ -363,6 +363,146 @@ void main() {
     });
   });
 
+  group('profilleme ve "Beni önerme" (25-arkadas-onerisi)', () {
+    Finder anahtar(String baslik) =>
+        find.widgetWithText(SwitchListTile, arbMetni(baslik));
+
+    SwitchListTile anahtarDegeri(WidgetTester tester, String baslik) =>
+        tester.widget<SwitchListTile>(anahtar(baslik));
+
+    testWidgets('Gizlilik altında iki anahtar ve açıklamaları; varsayılanlar', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      await _Ortam().ac(tester, const ProfilEkrani());
+
+      expect(_metin('profil_profilleme_aciklama'), findsOneWidget);
+      expect(_metin('profil_beni_onerme_aciklama'), findsOneWidget);
+      expect(anahtarDegeri(tester, 'profil_profilleme').value, isTrue);
+      expect(anahtarDegeri(tester, 'profil_beni_onerme').value, isFalse);
+      expect(anahtarDegeri(tester, 'profil_beni_onerme').onChanged, isNotNull);
+    });
+
+    testWidgets('"Beni önerme" onaysız ve hemen kaydediliyor', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarDegistirYolu: () => sosyalAyarlarJson(gizle: true),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      await _kaydirVeDokun(tester, anahtar('profil_beni_onerme'));
+
+      expect(find.byType(AlertDialog), findsNothing);
+      final istek = o.tasima.istekler.last;
+      expect('${istek.method} ${istek.yol}', sosyalAyarlarDegistirYolu);
+      expect(istek.govde, {'hide_from_suggestions': true});
+      expect(anahtarDegeri(tester, 'profil_beni_onerme').value, isTrue);
+    });
+
+    testWidgets('profillemeyi kapatmak onay istiyor; vazgeçilirse istek yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarDegistirYolu: () => sosyalAyarlarJson(profilleme: false),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      await _kaydirVeDokun(tester, anahtar('profil_profilleme'));
+      expect(_metin('profil_profilleme_kapat_baslik'), findsOneWidget);
+      expect(_metin('profil_profilleme_kapat_aciklama'), findsOneWidget);
+      await tester.tap(_metin('profil_vazgec'));
+      await tester.pumpAndSettle();
+      expect(o.tasima.sayi('PATCH', '/v1/me/social-settings'), 0);
+      expect(anahtarDegeri(tester, 'profil_profilleme').value, isTrue);
+
+      await _kaydirVeDokun(tester, anahtar('profil_profilleme'));
+      await tester.tap(_metin('profil_profilleme_kapat_onay'));
+      await tester.pumpAndSettle();
+      expect(o.tasima.istekler.last.govde, {'profiling_enabled': false});
+      expect(anahtarDegeri(tester, 'profil_profilleme').value, isFalse);
+      // Profilleme kapalıyken "Beni önerme" pasif ve açıklaması değişir.
+      expect(anahtarDegeri(tester, 'profil_beni_onerme').onChanged, isNull);
+      expect(_metin('profil_beni_onerme_pasif'), findsOneWidget);
+    });
+
+    testWidgets('profillemeyi açmak onaysız', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarYolu: () => sosyalAyarlarJson(profilleme: false),
+        sosyalAyarlarDegistirYolu: sosyalAyarlarJson,
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      await _kaydirVeDokun(tester, anahtar('profil_profilleme'));
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(o.tasima.istekler.last.govde, {'profiling_enabled': true});
+      expect(anahtarDegeri(tester, 'profil_profilleme').value, isTrue);
+    });
+
+    testWidgets('kayıt başarısızsa eski değer kalır ve hata gösterilir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarDegistirYolu: () => problem(ProblemType.unavailable),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      await _kaydirVeDokun(tester, anahtar('profil_beni_onerme'));
+      expect(anahtarDegeri(tester, 'profil_beni_onerme').value, isFalse);
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+
+    testWidgets('okunamazsa hata satırı; "Tekrar dene" yeniden okuyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      var hata = true;
+      final o = _Ortam({
+        sosyalAyarlarYolu: () =>
+            hata ? problem(ProblemType.unavailable) : sosyalAyarlarJson(),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      expect(_metin('profil_sosyal_ayar_yuklenemedi'), findsOneWidget);
+      expect(anahtar('profil_profilleme'), findsNothing);
+      // Gizlilik kartının geri kalanı kullanılabilir.
+      expect(_metin('arkadas_engellenenler'), findsOneWidget);
+
+      hata = false;
+      await _kaydirVeDokun(
+        tester,
+        find.descendant(
+          of: find
+              .ancestor(
+                of: _metin('profil_sosyal_ayar_yuklenemedi'),
+                matching: find.byType(Column),
+              )
+              .first,
+          matching: _metin('yonetim_tekrar_dene'),
+        ),
+      );
+      expect(anahtar('profil_profilleme'), findsOneWidget);
+      expect(o.tasima.sayi('GET', '/v1/me/social-settings'), 2);
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${mod.name} temada 2× yazıda 320 dp taşmıyor; onay '
+          'penceresi dahil', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final o = _Ortam({
+          sosyalAyarlarYolu: () => sosyalAyarlarJson(profilleme: true),
+        });
+        await o.ac(tester, const ProfilEkrani(), themeMode: mod);
+        await _kaydirVeDokun(tester, anahtar('profil_profilleme'));
+        expect(tester.takeException(), isNull);
+        expect(_metin('profil_profilleme_kapat_baslik'), findsOneWidget);
+      });
+    }
+  });
+
   group('katılım geçmişin görünürlük satırı', () {
     const satir = Scaffold(body: Center(child: KatilimGorunurlukSatiri()));
 
