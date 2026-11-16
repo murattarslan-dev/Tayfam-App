@@ -91,11 +91,13 @@ Map<String, Object?> tayfaJson({
   int? bekleyen,
   String tur = 'standard',
   String? anlikEtkinlikId,
+  String? donusum,
 }) => {
   'id': id,
   'name': ad,
   'kind': tur,
   'instant_event_id': ?anlikEtkinlikId,
+  'converted_at': ?donusum,
   'description': '',
   'interests': tur == 'instant' ? <String>[] : ['convoy'],
   'join_policy': 'approval',
@@ -170,6 +172,7 @@ Map<String, Object?> gorunumJson(
   int? bekleyen,
   String tur = 'standard',
   String? anlikEtkinlikId,
+  String? donusum,
 }) => {
   'tayfa': tayfaJson(
     id: id,
@@ -182,6 +185,7 @@ Map<String, Object?> gorunumJson(
     bekleyen: bekleyen,
     tur: tur,
     anlikEtkinlikId: anlikEtkinlikId,
+    donusum: donusum,
   ),
   'caller_role': rol,
 };

@@ -14761,6 +14761,7 @@ final class Tayfa {
     required this.name,
     required this.kind,
     this.instantEventId,
+    this.convertedAt,
     required this.description,
     required this.interests,
     required this.joinPolicy,
@@ -14790,6 +14791,10 @@ final class Tayfa {
     instantEventId: switch (json['instant_event_id']) {
       null => null,
       final Object v => _readString(v, 'Tayfa.instant_event_id'),
+    },
+    convertedAt: switch (json['converted_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'Tayfa.converted_at'),
     },
     description: _readString(json['description'], 'Tayfa.description'),
     interests: List<EventType>.unmodifiable(
@@ -14842,6 +14847,10 @@ final class Tayfa {
   /// Yalnızca anlık tayfada; tayfanın tek etkinliği.
   final String? instantEventId;
 
+  /// Yalnızca anlık tayfadan "Bu ekiple tayfa kur" ile kalıcıya dönmüş
+  /// tayfada: dönüşüm anı (ADR-0032 §7). Kurulum dönemi bu andan sayılır.
+  final DateTime? convertedAt;
+
   final String description;
 
   final List<EventType> interests;
@@ -14887,6 +14896,8 @@ final class Tayfa {
     'name': name,
     'kind': kind.wire,
     if (instantEventId case final value?) 'instant_event_id': value,
+    if (convertedAt case final value?)
+      'converted_at': value.toUtc().toIso8601String(),
     'description': description,
     'interests': <Object?>[for (final e0 in interests) e0.wire],
     'join_policy': joinPolicy.wire,
@@ -14914,6 +14925,7 @@ final class Tayfa {
           name == other.name &&
           kind == other.kind &&
           instantEventId == other.instantEventId &&
+          convertedAt == other.convertedAt &&
           description == other.description &&
           _deepEquals(interests, other.interests) &&
           joinPolicy == other.joinPolicy &&
@@ -14935,6 +14947,7 @@ final class Tayfa {
     name,
     kind,
     instantEventId,
+    convertedAt,
     description,
     _deepHash(interests),
     joinPolicy,

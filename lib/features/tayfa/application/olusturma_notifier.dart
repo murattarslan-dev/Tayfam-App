@@ -265,8 +265,9 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
 /// (ad, ilgi alanları, katılım ve açıklama); gönderim
 /// `POST /v1/tayfas/{tayfa_id}/conversion`'dır.
 ///
-/// Başarıda tayfa listesi ve görünüm tazelenir, ana sayfada kurulum
-/// adımları gösterilir ("7 günde 3 üye" dönüşüm anından işler) ve
+/// Başarıda tayfa listesi ve görünüm tazelenir; ana sayfadaki kurulum
+/// dönemi ve "7 günde 3 üye" yanıttaki `converted_at`'ten sayılır (zorla
+/// gösterme yoktur; ADR-0026 Notlar 5) ve
 /// [OlusturmaDurumu.olusturulan] dolar; "Tayfa kuruldu" ekranı yoktur
 /// ([OlusturmaDurumu.kurulan] boş kalır), üyeler zaten vardır.
 class DonusturmeNotifier extends OlusturmaNotifier {
@@ -320,7 +321,6 @@ class DonusturmeNotifier extends OlusturmaNotifier {
       ),
     );
     ref.invalidate(tayfaGorunumuProvider(tayfaId));
-    ref.read(davetKisayoluProvider.notifier).goster(tayfa.id);
     unawaited(liste.yenile());
     state = mevcut._degistir(olusturulan: tayfa.id);
   }

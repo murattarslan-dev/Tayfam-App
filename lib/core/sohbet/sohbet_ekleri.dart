@@ -431,69 +431,27 @@ class SohbetYerKarti extends StatelessWidget {
   }
 }
 
-/// Fotoğrafı tam ekran açar (tasarım 28 `Fotograf-Goruntuleyici`): tema
-/// ne olursa olsun koyu temanın token'ları, iki parmakla yakınlaştırma,
-/// ✕ ve geri kapatır. Kaydet/paylaş yoktur (ADR-0006).
+/// Fotoğrafı tam ekran açar (tasarım 28 `Fotograf-Goruntuleyici`): ortak
+/// [TamEkranFotograf] (issue #208) — tema ne olursa olsun koyu, iki
+/// parmakla yakınlaştırma, ✕ ve geri kapatır. Kaydet/paylaş yoktur
+/// (ADR-0006); şifreli görselin çözme sınırı [gorsel]'dedir.
 Future<void> fotografGoruntuleyiciAc(
   BuildContext context, {
   required Widget gorsel,
   required String etiket,
   String? baslik,
-}) => Navigator.of(context, rootNavigator: true).push(
-  MaterialPageRoute<void>(
-    fullscreenDialog: true,
-    builder: (_) =>
-        _FotografGoruntuleyici(gorsel: gorsel, etiket: etiket, baslik: baslik),
+}) => tamEkranFotografAc(
+  context,
+  kokNavigator: true,
+  builder: (_) => TamEkranFotograf(
+    sayi: 1,
+    etiket: (_) => etiket,
+    gorsel: (_, _) => Center(child: gorsel),
+    baslik: baslik == null
+        ? null
+        : (context, _) => Text(baslik, style: context.yazi.titleMedium),
   ),
 );
-
-class _FotografGoruntuleyici extends StatelessWidget {
-  const _FotografGoruntuleyici({
-    required this.gorsel,
-    required this.etiket,
-    this.baslik,
-  });
-
-  final Widget gorsel;
-  final String etiket;
-  final String? baslik;
-
-  @override
-  Widget build(BuildContext context) {
-    final baslik = this.baslik;
-    return Theme(
-      data: TayfamTheme.koyu(),
-      child: Builder(
-        builder: (context) {
-          final r = context.renkler;
-          return Scaffold(
-            backgroundColor: r.zemin,
-            appBar: AppBar(
-              backgroundColor: r.zemin,
-              leading: IconButton(
-                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
-              title: baslik == null
-                  ? null
-                  : Text(baslik, style: context.yazi.titleMedium),
-            ),
-            body: Semantics(
-              image: true,
-              label: etiket,
-              excludeSemantics: true,
-              child: InteractiveViewer(
-                maxScale: TayfamSizes.fotografEnCokYakinlik,
-                child: Center(child: gorsel),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
 
 /// Paylaşılan yeri tam ekran haritada açar: iğne, ad, OSM atfı ve geri.
 Future<void> yerHaritasiAc(BuildContext context, PaylasilanYer yer) {

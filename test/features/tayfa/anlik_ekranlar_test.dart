@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -91,12 +92,13 @@ Future<void> _ac(
   SahteTayfaTasima t, {
   String? adres,
   ThemeMode tema = ThemeMode.light,
+  List<Override> ek = const [],
 }) async {
   await uygulamayiAc(
     tester,
     themeMode: tema,
     tayfa: tayfaOverridelari(tasima: t),
-    overrides: _overrides(t),
+    overrides: [..._overrides(t), ...ek],
   );
   yonlendiriciyiAl(tester).go(adres ?? Adresler.tayfa(_anlikId));
   await tester.pumpAndSettle();
@@ -218,15 +220,35 @@ void main() {
       (tester) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
-        final t = _tasima(
+        // 2026-11-01'de açılan anlık tayfa 2026-11-15'te dönüşür; dönüşüm
+        // sonrası görünüm `converted_at` taşır (issue #209).
+        const donusum = '2026-11-15T09:00:00Z';
+        late final SahteTayfaTasima t;
+        t = _tasima(
           ek: {
-            'POST $_donusumYolu': (i) => tayfaJson(
-              id: i.yolParametreleri['tayfa_id']!,
-              ad: 'Kahvaltıcılar',
-            ),
+            'POST $_donusumYolu': (i) {
+              final id = i.yolParametreleri['tayfa_id']!;
+              t.yanitlar['GET /v1/tayfas/{tayfa_id}'] = (_) => gorunumJson(
+                id,
+                ad: 'Kahvaltıcılar',
+                rol: 'admin',
+                uyeSayisi: 3,
+                donusum: donusum,
+              );
+              return tayfaJson(id: id, ad: 'Kahvaltıcılar', donusum: donusum);
+            },
           },
         );
-        await _ac(tester, t, tema: tema);
+        await _ac(
+          tester,
+          t,
+          tema: tema,
+          ek: [
+            tayfaSaatiProvider.overrideWithValue(
+              () => DateTime.utc(2026, 11, 16),
+            ),
+          ],
+        );
         await _dokun(tester, _metin('anlik_kart_donustur'));
         expect(_yol(tester), Adresler.tayfaDonustur(_anlikId));
         expect(_metin('donustur_baslik'), findsOneWidget);
@@ -246,6 +268,10 @@ void main() {
         expect(govde.containsKey('client_request_id'), isFalse);
         expect(_yol(tester), Adresler.tayfa(_anlikId));
         expect(_metin('donustur_tamam'), findsOneWidget);
+        // Kurulum kartı dönüşümden sayılan dönem sayesinde görünür; zorla
+        // gösterme (davet kısayolu bayrağı) yoktur (ADR-0026 Notlar 5).
+        expect(find.byType(TayfaKurulumKarti), findsOneWidget);
+        expect(tester.container().read(davetKisayoluProvider), isNull);
         expect(tester.takeException(), isNull);
       },
     );

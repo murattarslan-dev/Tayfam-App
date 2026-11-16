@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/core/konum/konum_servisi.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
@@ -228,6 +229,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byType(KanalFotografi));
     await tester.pumpAndSettle();
+    expect(find.byType(TamEkranFotograf), findsOneWidget);
     expect(find.byType(InteractiveViewer), findsOneWidget);
     await tester.tap(find.byIcon(Icons.close));
     await tester.pumpAndSettle();
