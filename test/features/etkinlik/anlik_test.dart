@@ -12,7 +12,6 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
-import '../../yardimcilar.dart';
 import '../arkadas/sahteler.dart' as ark;
 import '../tayfa/sahteler.dart';
 import 'sahteler.dart';
