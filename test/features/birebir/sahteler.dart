@@ -138,7 +138,7 @@ BirebirIcerikDurumu cozulmusIcerik(
         mesajId: id,
         konusmaId: konusma,
         gonderenKullaniciId: karsiId,
-        metin: metin,
+        icerik: MetinIcerigi(metin),
         olusturma: DateTime.utc(2026, 11, 10, 10),
         kaynak: CozulmusMesajKaynagi.zarf,
       ),
@@ -180,7 +180,7 @@ const OutgoingEnvelope sahteZarf = OutgoingEnvelope(
 SifreliGonderim sahteSifreliGonderim(Ref ref, ApiTransport tasima) =>
     ({
       required String aliciId,
-      required String metin,
+      required BirebirIcerik icerik,
       required String istekKimligi,
     }) async {
       final sonuc = await DirectMessagesApi(tasima).sendDirectMessage(
@@ -195,7 +195,7 @@ SifreliGonderim sahteSifreliGonderim(Ref ref, ApiTransport tasima) =>
           mesajId: sonuc.message.id,
           konusmaId: sonuc.message.conversationId,
           gonderenKullaniciId: benId,
-          metin: metin,
+          icerik: icerik,
           olusturma: sonuc.message.createdAt,
           kaynak: CozulmusMesajKaynagi.gonderildi,
         ),

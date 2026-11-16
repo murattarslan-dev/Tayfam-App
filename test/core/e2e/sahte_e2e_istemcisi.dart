@@ -99,7 +99,7 @@ final class SahteE2eIstemcisi {
     final no = (++_istekSayaci).toString().padLeft(12, '0');
     final (_, icerik) = await gonderici.gonder(
       aliciId: aliciId,
-      metin: metin,
+      icerik: MetinIcerigi(metin),
       istekKimligi: istek ?? '9a000000-0000-4000-8000-$no',
     );
     return icerik;

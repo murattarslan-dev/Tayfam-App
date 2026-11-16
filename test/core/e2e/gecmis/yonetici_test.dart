@@ -14,6 +14,7 @@ import 'package:tayfam/core/e2e/gecmis/bagimliliklar.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_api.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
+import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 
 import '../../../yardimcilar.dart';
 import '../signal/sahte_signal_motoru.dart';
@@ -146,7 +147,7 @@ void main() {
           konusmaId: konusmaId,
           gonderenId: kullaniciId,
           olusturma: DateTime.utc(2026),
-          govde: 'merhaba',
+          icerik: const MetinIcerigi('merhaba'),
         ),
       );
       await pumpEventQueue();

@@ -64,7 +64,7 @@ final BirebirIcerikDurumu _icerik = BirebirIcerikDurumu(
       mesajId: _sifreliGelen,
       konusmaId: konusmaId1,
       gonderenKullaniciId: karsiId,
-      metin: 'Şifreli selam',
+      icerik: const MetinIcerigi('Şifreli selam'),
       olusturma: DateTime.utc(2026, 11, 10, 11),
       kaynak: CozulmusMesajKaynagi.zarf,
     ),
@@ -286,7 +286,7 @@ void main() {
           .read(birebirGondericiProvider)
           .gonder(
             aliciId: karsiId,
-            metin: 'Şifreli merhaba',
+            icerik: const MetinIcerigi('Şifreli merhaba'),
             istekKimligi: '9c000000-0000-4000-8000-000000000001',
           );
       expect(sonuc.konusma.id, sonuc.mesaj.conversationId);
@@ -312,7 +312,7 @@ void main() {
             .read(birebirGondericiProvider)
             .gonder(
               aliciId: karsiId,
-              metin: 'Düz gitmemeli',
+              icerik: const MetinIcerigi('Düz gitmemeli'),
               istekKimligi: '9c000000-0000-4000-8000-000000000002',
             ),
         throwsA(
