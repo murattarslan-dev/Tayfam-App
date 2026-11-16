@@ -39,6 +39,36 @@ final class _Ortam {
 }
 
 void main() {
+  test('şifreli ek linki (dm_attachment): önizlemesiz, 0×0 kabul', () async {
+    final o = _Ortam(
+      yanit: (idler) => [
+        MediaUrls.fromJson({
+          'upload_id': idler.single,
+          'full_url': '$ornekR2/b/media/x/full?X-Amz-Signature=sahte',
+          'full_content_type': 'application/octet-stream',
+          'width': 0,
+          'height': 0,
+          'expires_at': '2026-11-11T21:00:00Z',
+        }),
+      ],
+    );
+    final link = await o.onbellek.link(_a);
+    expect(link, isNotNull);
+    expect(link!.sifreliEk, isTrue);
+    expect(link.onizleme, isNull);
+  });
+
+  test('görüntüde önizleme ya da ölçü yoksa link geçersiz', () async {
+    final o = _Ortam(
+      yanit: (idler) => [
+        MediaUrls.fromJson(
+          {...medyaLinkiJson(idler.single)}..remove('preview_url'),
+        ),
+      ],
+    );
+    expect(await o.onbellek.link(_a), isNull);
+  });
+
   test('aynı turda istenen linkler tek istekte birleşir', () async {
     final o = _Ortam();
     final sonuclar = await Future.wait([
