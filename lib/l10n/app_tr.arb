@@ -241,6 +241,20 @@
   "@bildirim_sonuc_reddedildi": {
     "description": "Bildirim satırında arkadaşlık isteği ya da tayfa daveti reddedilince düğmelerin yerinde görünen sonuç; karşı tarafa bildirilmez."
   },
+  "bildirim_sonuc_oneri_kapatildi": "Bir daha önerilmeyecek",
+  "@bildirim_sonuc_oneri_kapatildi": {
+    "description": "Bildirim satırında arkadaş önerisi kapatılınca düğmelerin yerinde görünen sonuç; karşı tarafa bildirilmez."
+  },
+  "bildirim_arkadas_onerisi": "Arkadaş önerisi: {kisi}",
+  "@bildirim_arkadas_onerisi": {
+    "description": "Arkadaş önerisi bildiriminin metni (friend_suggestion). Gerekçe, puan ya da ortak etkinlik sayısı yazılmaz.",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
   "bildirim_yoklamayi_ac": "Yoklamayı aç",
   "@bildirim_yoklamayi_ac": {
     "description": "Güvenlik uyarısı kartında (yürüyüşçü zamanında dönmedi) etkinliği açan bağlantı."
@@ -4157,6 +4171,42 @@
   "@profil_vazgec": {
     "description": "Profil ekranlarındaki onay pencerelerinde işlemi yapmadan kapatan düğme."
   },
+  "profil_profilleme": "Profilleme",
+  "@profil_profilleme": {
+    "description": "Profil → Gizlilik altındaki profilleme anahtarının başlığı."
+  },
+  "profil_profilleme_aciklama": "Birlikte katıldığın etkinliklerden arkadaş önerisi çıkarılır. Puan kimseye gösterilmez.",
+  "@profil_profilleme_aciklama": {
+    "description": "Profilleme anahtarının altındaki, ne için kullanıldığını anlatan kısa açıklama."
+  },
+  "profil_beni_onerme": "Beni önerme",
+  "@profil_beni_onerme": {
+    "description": "Profil → Gizlilik altındaki \"Beni önerme\" anahtarının başlığı."
+  },
+  "profil_beni_onerme_aciklama": "Açıkken kimseye önerilmezsin; sen öneri almaya devam edersin.",
+  "@profil_beni_onerme_aciklama": {
+    "description": "\"Beni önerme\" anahtarının altındaki kısa açıklama."
+  },
+  "profil_beni_onerme_pasif": "Profilleme kapalıyken zaten kimseye önerilmezsin.",
+  "@profil_beni_onerme_pasif": {
+    "description": "Profilleme kapalıyken pasif \"Beni önerme\" anahtarının açıklaması."
+  },
+  "profil_profilleme_kapat_baslik": "Profilleme kapatılsın mı?",
+  "@profil_profilleme_kapat_baslik": {
+    "description": "Profillemeyi kapatma onay penceresinin başlığı."
+  },
+  "profil_profilleme_kapat_aciklama": "Arkadaşlık puanların hemen silinir, açık öneriler geri çekilir ve artık öneri almazsın. Yeniden açarsan öneriler ertesi gün yeniden hesaplanır.",
+  "@profil_profilleme_kapat_aciklama": {
+    "description": "Profillemeyi kapatma onay penceresinin açıklaması."
+  },
+  "profil_profilleme_kapat_onay": "Kapat",
+  "@profil_profilleme_kapat_onay": {
+    "description": "Profillemeyi kapatma onay penceresindeki onay düğmesi."
+  },
+  "profil_sosyal_ayar_yuklenemedi": "Profilleme ayarların yüklenemedi.",
+  "@profil_sosyal_ayar_yuklenemedi": {
+    "description": "Profilleme ve \"Beni önerme\" ayarları okunamayınca görünen hata satırı."
+  },
   "profil_referans_baslik": "Referans kodun",
   "@profil_referans_baslik": {
     "description": "Profil sekmesindeki ilk bölümün başlığı; kullanıcının kendi referans kodu."
@@ -6808,6 +6858,22 @@
   "arkadas_istek_gonderildi": "Arkadaşlık isteği gönderildi.",
   "@arkadas_istek_gonderildi": {
     "description": "Arkadaşlık isteği gönderilince kısa süre görünen bildirim."
+  },
+  "arkadas_oneriler_baslik": "Önerilen kişiler",
+  "@arkadas_oneriler_baslik": {
+    "description": "Arkadaşlar ekranındaki arkadaş önerileri bölümünün başlığı."
+  },
+  "arkadas_oneriler_aciklama": "Birlikte katıldığınız etkinliklere göre önerilir; öneriyi yalnızca sen görürsün.",
+  "@arkadas_oneriler_aciklama": {
+    "description": "Arkadaş önerileri bölümünün altındaki genel açıklama. Kişi başına gerekçe değildir."
+  },
+  "arkadas_oneri_kapat": "Kapat",
+  "@arkadas_oneri_kapat": {
+    "description": "Arkadaş önerisini kapatan düğme; kişi bir daha önerilmez, karşı tarafa bildirilmez."
+  },
+  "arkadas_oneri_kapatildi": "Öneri kapatıldı. Bir daha önerilmeyecek.",
+  "@arkadas_oneri_kapatildi": {
+    "description": "Arkadaş önerisi kapatılınca kısa süre görünen bildirim."
   },
   "arkadas_artik_arkadassiniz": "Artık arkadaşsınız.",
   "@arkadas_artik_arkadassiniz": {

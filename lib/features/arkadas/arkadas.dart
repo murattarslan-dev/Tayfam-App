@@ -1,7 +1,7 @@
 /// Arkadaşlık özelliğinin dışa açık dosyası (ADR-0002, ADR-0018 §7):
 /// referans koduyla arkadaş bulma, istekler, arkadaş listesi, engelleme,
-/// doğrudan tayfa daveti ve gelen davetler, kişi profili ve katılım
-/// geçmişi.
+/// doğrudan tayfa daveti ve gelen davetler, kişi profili, katılım geçmişi
+/// ve arkadaş önerileri (Tayfam-Api ADR-0030).
 ///
 /// - [arkadasRotalari] `/profil` rotasının altına, [kisiProfiliRotasi]
 ///   üst düzeye eklenir.
@@ -27,6 +27,8 @@ export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'
         referansPaylasimiProvider;
 export 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart'
     show sonKatilimlarProvider;
+export 'package:tayfam/features/arkadas/application/oneriler_notifier.dart'
+    show OneriEklemeSonucu;
 export 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart'
     show arkadasEkleSayfasiniAc;
 export 'package:tayfam/features/arkadas/presentation/arkadas_rotalari.dart'

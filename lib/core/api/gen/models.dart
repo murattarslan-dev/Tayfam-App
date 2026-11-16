@@ -8316,6 +8316,107 @@ enum FriendState {
   }
 }
 
+/// Arkadaşlık puanı, ortak etkinlik sayısı ve gerekçe bilinçli olarak yoktur (ADR-0030).
+final class FriendSuggestion {
+  const FriendSuggestion({
+    required this.userId,
+    required this.displayName,
+    this.avatarUploadId,
+    required this.suggestedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory FriendSuggestion.fromJson(Map<String, Object?> json) =>
+      FriendSuggestion(
+        userId: _readString(json['user_id'], 'FriendSuggestion.user_id'),
+        displayName: _readString(
+          json['display_name'],
+          'FriendSuggestion.display_name',
+        ),
+        avatarUploadId: switch (json['avatar_upload_id']) {
+          null => null,
+          final Object v => _readString(v, 'FriendSuggestion.avatar_upload_id'),
+        },
+        suggestedAt: _readDateTime(
+          json['suggested_at'],
+          'FriendSuggestion.suggested_at',
+        ),
+      );
+
+  final String userId;
+
+  final String displayName;
+
+  final String? avatarUploadId;
+
+  final DateTime suggestedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'display_name': displayName,
+    if (avatarUploadId case final value?) 'avatar_upload_id': value,
+    'suggested_at': suggestedAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FriendSuggestion &&
+          userId == other.userId &&
+          displayName == other.displayName &&
+          avatarUploadId == other.avatarUploadId &&
+          suggestedAt == other.suggestedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    userId,
+    displayName,
+    avatarUploadId,
+    suggestedAt,
+  ]);
+}
+
+final class FriendSuggestionList {
+  const FriendSuggestionList({required this.suggestions});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory FriendSuggestionList.fromJson(Map<String, Object?> json) =>
+      FriendSuggestionList(
+        suggestions: List<FriendSuggestion>.unmodifiable(
+          _readList(
+            json['suggestions'],
+            'FriendSuggestionList.suggestions',
+          ).map(
+            (Object? e0) => FriendSuggestion.fromJson(
+              _readObject(e0, 'FriendSuggestionList.suggestions'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 10.
+  final List<FriendSuggestion> suggestions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'suggestions': <Object?>[for (final e0 in suggestions) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FriendSuggestionList &&
+          _deepEquals(suggestions, other.suggestions);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(suggestions)]);
+}
+
 final class GamingDetails {
   const GamingDetails({required this.game, required this.platform});
 
@@ -10487,6 +10588,9 @@ final class Notification {
   /// veri dışa aktarmanız 7 gün indirilebilir; hedef `data_export`,
   /// `tayfa_id` ve `actor_id` yoktur; push çeviri anahtarları
   /// `push_data_export_ready_title` ve `push_data_export_ready_body`).
+  /// `friend_suggestion` (arkadaş önerisi; `target_id` önerilen kişi,
+  /// `tayfa_id` ve `actor_id` yoktur; yalnızca uygulama içi, push
+  /// gitmez; açık öneriler `GET /v1/me/friend-suggestions`).
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -10531,6 +10635,13 @@ final class Notification {
   /// `expired` artık bilinmiyor. Liste alınırken core'dan hesaplanır,
   /// bildirime yazılmaz; yalnızca alıcıya döner, kimin geri çektiği
   /// söylenmez. O an hesaplanamazsa alan yoktur.
+  ///
+  /// `friend_suggestion` (issue #208, ADR-0030): `pending` öneri hâlâ
+  /// geçerli ("Arkadaş ekle" / "Kapat" gösterilir); `accepted`
+  /// arkadaş oldunuz ya da istek gönderildi; `declined` siz
+  /// kapattınız; `expired` öneri geri çekildi ya da artık geçerli
+  /// değil (neden söylenmez). İstemci `pending` olmayan öneri
+  /// bildirimini göstermez.
   final NotificationResolution? resolution;
 
   final bool read;
@@ -10890,6 +11001,13 @@ enum NotificationPreferenceScopeType {
 /// `expired` artık bilinmiyor. Liste alınırken core'dan hesaplanır,
 /// bildirime yazılmaz; yalnızca alıcıya döner, kimin geri çektiği
 /// söylenmez. O an hesaplanamazsa alan yoktur.
+///
+/// `friend_suggestion` (issue #208, ADR-0030): `pending` öneri hâlâ
+/// geçerli ("Arkadaş ekle" / "Kapat" gösterilir); `accepted`
+/// arkadaş oldunuz ya da istek gönderildi; `declined` siz
+/// kapattınız; `expired` öneri geri çekildi ya da artık geçerli
+/// değil (neden söylenmez). İstemci `pending` olmayan öneri
+/// bildirimini göstermez.
 enum NotificationResolution {
   pending('pending'),
   accepted('accepted'),
@@ -10987,6 +11105,9 @@ enum NotificationTargetType {
 /// veri dışa aktarmanız 7 gün indirilebilir; hedef `data_export`,
 /// `tayfa_id` ve `actor_id` yoktur; push çeviri anahtarları
 /// `push_data_export_ready_title` ve `push_data_export_ready_body`).
+/// `friend_suggestion` (arkadaş önerisi; `target_id` önerilen kişi,
+/// `tayfa_id` ve `actor_id` yoktur; yalnızca uygulama içi, push
+/// gitmez; açık öneriler `GET /v1/me/friend-suggestions`).
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -11010,6 +11131,7 @@ enum NotificationType {
   dmRequest('dm_request'),
   dmMessage('dm_message'),
   dataExportReady('data_export_ready'),
+  friendSuggestion('friend_suggestion'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -13155,6 +13277,97 @@ enum SocialAccountPlatform {
     }
     return unknown;
   }
+}
+
+final class SocialSettings {
+  const SocialSettings({
+    required this.profilingEnabled,
+    required this.hideFromSuggestions,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SocialSettings.fromJson(Map<String, Object?> json) => SocialSettings(
+    profilingEnabled: _readBool(
+      json['profiling_enabled'],
+      'SocialSettings.profiling_enabled',
+    ),
+    hideFromSuggestions: _readBool(
+      json['hide_from_suggestions'],
+      'SocialSettings.hide_from_suggestions',
+    ),
+  );
+
+  /// "Profilleme": ortak katılımdan arkadaşlık puanı hesaplanır ve öneri yapılır.
+  final bool profilingEnabled;
+
+  /// "Beni önerme": kimseye önerilmezsiniz.
+  final bool hideFromSuggestions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'profiling_enabled': profilingEnabled,
+    'hide_from_suggestions': hideFromSuggestions,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SocialSettings &&
+          profilingEnabled == other.profilingEnabled &&
+          hideFromSuggestions == other.hideFromSuggestions;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[profilingEnabled, hideFromSuggestions]);
+}
+
+/// Kısıtlar: minProperties: 1.
+final class SocialSettingsUpdate {
+  const SocialSettingsUpdate({this.profilingEnabled, this.hideFromSuggestions});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory SocialSettingsUpdate.fromJson(Map<String, Object?> json) =>
+      SocialSettingsUpdate(
+        profilingEnabled: switch (json['profiling_enabled']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'SocialSettingsUpdate.profiling_enabled',
+          ),
+        },
+        hideFromSuggestions: switch (json['hide_from_suggestions']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'SocialSettingsUpdate.hide_from_suggestions',
+          ),
+        },
+      );
+
+  final bool? profilingEnabled;
+
+  final bool? hideFromSuggestions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (profilingEnabled case final value?) 'profiling_enabled': value,
+    if (hideFromSuggestions case final value?) 'hide_from_suggestions': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SocialSettingsUpdate &&
+          profilingEnabled == other.profilingEnabled &&
+          hideFromSuggestions == other.hideFromSuggestions;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[profilingEnabled, hideFromSuggestions]);
 }
 
 final class SportsDetails {

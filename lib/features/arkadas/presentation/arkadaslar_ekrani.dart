@@ -15,10 +15,12 @@ import 'package:tayfam/core/zaman/zamanlayici.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
 import 'package:tayfam/features/arkadas/application/bos_vakit.dart';
 import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
+import 'package:tayfam/features/arkadas/application/oneriler_notifier.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadas_ortak.dart';
 import 'package:tayfam/features/arkadas/presentation/bos_vakit_ekrani.dart';
+import 'package:tayfam/features/arkadas/presentation/oneriler_bolumu.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -31,10 +33,11 @@ const int _istekAvatarSayisi = 2;
 
 /// Arkadaşlar (`/profil/arkadaslar`; ADR-0018 §7; 2026-11-13 tasarım:
 /// Profil-Arkadaslar): üstte "Arkadaş ekle" (alttan sayfa) ve "Kodumu
-/// paylaş", bekleyen gelen istek varsa sayılı kart, "Boş vaktin" girişi
-/// (tasarım 26-bosum), arkadaş listesi ve en altta "Engellenenler". Kişiye
-/// dokununca profili açılır; arkadaşlıktan çıkarma, şikâyet ve engelleme
-/// oradadır.
+/// paylaş", bekleyen gelen istek varsa sayılı kart, varsa arkadaş
+/// önerileri (27-arkadas-onerisi), "Boş vaktin" girişi (tasarım
+/// 26-bosum), arkadaş listesi ve en altta "Engellenenler". Kişiye
+/// dokununca profili açılır; arkadaşlıktan çıkarma, şikâyet ve
+/// engelleme oradadır.
 ///
 /// Satırlarda alt metin yoktur: sözleşmede arkadaşın ortak tayfası
 /// listede dönmez. Arkadaşın önümüzdeki 7 günde boş günü varsa adın
@@ -58,6 +61,7 @@ class ArkadaslarEkrani extends ConsumerWidget {
         onRefresh: () async {
           ref
             ..invalidate(gelenIstekVarProvider)
+            ..invalidate(arkadasOnerileriProvider)
             ..invalidate(
               arkadasIstekleriProvider(ListFriendRequestsDirection.incoming),
             )
@@ -95,6 +99,7 @@ class ArkadaslarEkrani extends ConsumerWidget {
                 ),
               ),
             const _IstekKarti(),
+            const OnerilerBolumu(),
             const Padding(
               padding: EdgeInsets.only(top: TayfamSpacing.s12),
               child: ListeKarti(children: [BosVakitGirisi()]),

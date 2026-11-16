@@ -20,7 +20,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// taşımaz).
 ///
 /// Arkadaşlık isteğinde Reddet / Kabul et, tayfa davetinde Reddet / Katıl,
-/// katılım isteğinde "İncele" satırın içindedir; işlemden sonra düğmelerin
+/// arkadaş önerisinde Kapat / Arkadaş ekle (27-arkadas-onerisi), katılım
+/// isteğinde "İncele" satırın içindedir; işlemden sonra düğmelerin
 /// yerinde sonuç görünür.
 ///
 /// Bildirimde içerik gösterilmez (kesin kural 7): metin yalnızca türden,
@@ -101,11 +102,17 @@ class BildirimSatiri extends ConsumerWidget {
                     onPressed: onIncele,
                   ),
                   SatirIciIslem.arkadaslik ||
-                  SatirIciIslem.davet => _SatirIciCevap(
+                  SatirIciIslem.davet ||
+                  SatirIciIslem.oneri => _SatirIciCevap(
                     bildirim: bildirim,
-                    kabulEtiketi: islem == SatirIciIslem.davet
-                        ? m.arkadas_davet_kabul
-                        : m.arkadas_kabul_et,
+                    reddetEtiketi: islem == SatirIciIslem.oneri
+                        ? m.arkadas_oneri_kapat
+                        : m.arkadas_reddet,
+                    kabulEtiketi: switch (islem) {
+                      SatirIciIslem.davet => m.arkadas_davet_kabul,
+                      SatirIciIslem.oneri => m.arkadas_ekle,
+                      _ => m.arkadas_kabul_et,
+                    },
                   ),
                 },
               ],
@@ -195,12 +202,18 @@ class _TayfaEtiketi extends StatelessWidget {
   }
 }
 
-/// Arkadaşlık isteği ve tayfa davetinin Reddet / Kabul et (Katıl)
-/// düğmeleri; işlemden sonra yerlerinde teal tik ve sonuç metni.
+/// Arkadaşlık isteği ve tayfa davetinin Reddet / Kabul et (Katıl),
+/// arkadaş önerisinin Kapat / Arkadaş ekle düğmeleri; işlemden sonra
+/// yerlerinde teal tik ve sonuç metni.
 class _SatirIciCevap extends ConsumerWidget {
-  const _SatirIciCevap({required this.bildirim, required this.kabulEtiketi});
+  const _SatirIciCevap({
+    required this.bildirim,
+    required this.reddetEtiketi,
+    required this.kabulEtiketi,
+  });
 
   final Notification bildirim;
+  final String reddetEtiketi;
   final String kabulEtiketi;
 
   @override
@@ -215,6 +228,7 @@ class _SatirIciCevap extends ConsumerWidget {
         SatirIciSonuc.katildin => m.bildirim_sonuc_katildin,
         SatirIciSonuc.istekGonderildi => m.bildirim_sonuc_istek_gonderildi,
         SatirIciSonuc.reddedildi => m.bildirim_sonuc_reddedildi,
+        SatirIciSonuc.oneriKapatildi => m.bildirim_sonuc_oneri_kapatildi,
       };
       return Semantics(
         liveRegion: true,
@@ -253,7 +267,7 @@ class _SatirIciCevap extends ConsumerWidget {
       runSpacing: TayfamSpacing.s8,
       children: [
         _HapDugme(
-          etiket: m.arkadas_reddet,
+          etiket: reddetEtiketi,
           tur: _HapTuru.notr,
           onPressed: isleniyor
               ? null
@@ -391,6 +405,7 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.dmMessage => BildirimKategorisi.mesaj,
   NotificationType.friendRequest ||
   NotificationType.friendAccepted ||
+  NotificationType.friendSuggestion ||
   NotificationType.tayfaInvitation => BildirimKategorisi.arkadaslik,
   NotificationType.eventCancelled ||
   NotificationType.hikeOverdue ||
@@ -437,6 +452,7 @@ String bildirimMetni(
   NotificationType.friendRequest => m.bildirim_arkadaslik_istegi(kisi),
   NotificationType.friendAccepted => m.bildirim_arkadaslik_kabul(kisi),
   NotificationType.tayfaInvitation => m.bildirim_tayfa_daveti(kisi),
+  NotificationType.friendSuggestion => m.bildirim_arkadas_onerisi(kisi),
   NotificationType.reportResolved => m.bildirim_sikayet_sonuclandi,
   NotificationType.dmRequest => m.bildirim_mesaj_istegi,
   NotificationType.dmMessage => m.bildirim_mesaj,
@@ -463,6 +479,7 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.friendRequest ||
   NotificationType.friendAccepted => Icons.people_outline,
   NotificationType.tayfaInvitation => Icons.mail_outline,
+  NotificationType.friendSuggestion => Icons.person_add_alt_outlined,
   NotificationType.reportResolved => Icons.flag_outlined,
   NotificationType.dmRequest ||
   NotificationType.dmMessage => Icons.chat_bubble_outline,

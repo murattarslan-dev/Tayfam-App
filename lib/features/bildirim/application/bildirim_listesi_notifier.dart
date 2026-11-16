@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
+import 'package:tayfam/features/bildirim/application/bildirim_hedefi.dart';
 import 'package:tayfam/features/bildirim/application/okunmamis_bildirim_notifier.dart';
 import 'package:tayfam/features/bildirim/data/bildirim_deposu.dart';
 
@@ -20,9 +23,50 @@ class BildirimListesiNotifier extends SayfaliListeNotifier<Notification> {
     return ilkSayfayiOku();
   }
 
+  /// Sayfayı okur. Listede gösterilmeyen okunmamış bildirimler
+  /// (`pending` olmayan arkadaş önerisi, [bildirimGorunurMu]) sessizce
+  /// okundu işaretlenir; yoksa sunucunun okunmamış sayısında kalır ve rozet
+  /// görünmeyen bir bildirimi sayar (27-arkadas-onerisi, platform sahibi
+  /// 2026-11-16). Sayfa bunları okunmuş haliyle döndürür.
   @override
-  Future<Sayfa<Notification>> sayfaGetir(String? sayfaToken) =>
-      ref.read(bildirimDeposuProvider).sayfa(sayfaToken: sayfaToken);
+  Future<Sayfa<Notification>> sayfaGetir(String? sayfaToken) async {
+    final sayfa = await ref
+        .read(bildirimDeposuProvider)
+        .sayfa(sayfaToken: sayfaToken);
+    final gizliler = {
+      for (final b in sayfa.ogeler)
+        if (!b.read && !bildirimGorunurMu(b)) b.id,
+    };
+    if (gizliler.isEmpty) return sayfa;
+    unawaited(_gizlileriOkunduSay(gizliler));
+    return (
+      ogeler: [
+        for (final b in sayfa.ogeler)
+          gizliler.contains(b.id) ? okunmusHali(b) : b,
+      ],
+      sonraki: sayfa.sonraki,
+    );
+  }
+
+  /// [kimlikler]'i okundu işaretler (`PUT …/read`, idempotent). Hata
+  /// gösterilmez ve yeniden denenmez: bildirim sunucuda okunmamış kalırsa
+  /// sonraki okumada yine işaretlenir. En az biri başarılıysa rozet
+  /// sunucudan yeniden okunur. Hata log'a yazılmaz.
+  Future<void> _gizlileriOkunduSay(Set<String> kimlikler) async {
+    final depo = ref.read(bildirimDeposuProvider);
+    var basarili = false;
+    for (final kimlik in kimlikler) {
+      try {
+        await depo.okunduIsaretle(kimlik);
+        basarili = true;
+      } on Exception {
+        // Sessiz: sonraki liste okumasında yeniden denenir.
+      }
+    }
+    if (basarili && ref.mounted) {
+      await ref.read(okunmamisBildirimProvider.notifier).yenile();
+    }
+  }
 
   @override
   String kimlik(Notification oge) => oge.id;
@@ -80,6 +124,9 @@ Notification okunmusHali(Notification bildirim) => bildirim.read
         subjectUserId: bildirim.subjectUserId,
         warningReason: bildirim.warningReason,
         unreadCount: bildirim.unreadCount,
+        // Satır içi işlemi ve öneri görünürlüğü bu duruma bakar; düşerse
+        // arkadaş önerisi okundu işaretlenince listeden kaybolur.
+        resolution: bildirim.resolution,
         read: true,
         createdAt: bildirim.createdAt,
       );

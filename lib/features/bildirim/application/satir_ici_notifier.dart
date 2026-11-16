@@ -23,6 +23,9 @@ enum SatirIciSonuc {
 
   /// İstek ya da davet reddedildi: "Reddedildi".
   reddedildi,
+
+  /// Arkadaş önerisi kapatıldı: "Bir daha önerilmeyecek".
+  oneriKapatildi,
 }
 
 /// Satır içi işlemlerin durumu: sonuçlanan bildirimler ve süren işlemler.
@@ -46,13 +49,16 @@ final class SatirIciDurumu {
 }
 
 /// Bildirim satırındaki Reddet / Kabul et / Katıl (2026-11-13 tasarım:
-/// Bildirimler, karar 2). İşlem arkadaşlık özelliğinin uçlarıyla yapılır
-/// ([bildirimYanitlariProvider]); başarıda bildirim okundu işaretlenir ve
-/// sonuç düğmelerin yerinde görünür.
+/// Bildirimler, karar 2) ve arkadaş önerisindeki Kapat / Arkadaş ekle
+/// (27-arkadas-onerisi, karar 1). İşlem arkadaşlık özelliğinin uçlarıyla
+/// yapılır ([bildirimYanitlariProvider]); başarıda bildirim okundu
+/// işaretlenir ve sonuç düğmelerin yerinde görünür.
 ///
-/// Sonuç yalnızca bellektedir ve ekranla birlikte bırakılır (ADR-0006);
-/// sözleşmede bildirimin işlem durumu yoktur, liste yeniden açılınca
-/// düğmeler yine görünür ve sunucu güncel durumu hata olarak bildirir.
+/// Sonuç yalnızca bellektedir ve ekranla birlikte bırakılır (ADR-0006).
+/// Arkadaşlık isteği ve davette liste yeniden açılınca düğmeler yine
+/// görünür ve sunucu güncel durumu hata olarak bildirir; arkadaş önerisi
+/// ise sunucunun `resolution` alanı `pending` olmaktan çıkınca listede hiç
+/// görünmez.
 class SatirIciNotifier extends Notifier<SatirIciDurumu> {
   @override
   SatirIciDurumu build() {
@@ -60,8 +66,9 @@ class SatirIciNotifier extends Notifier<SatirIciDurumu> {
     return const SatirIciDurumu();
   }
 
-  /// Arkadaşlık isteğini ya da tayfa davetini kabul eder. Başarıda
-  /// `null`, aksi halde gösterilecek hata.
+  /// Arkadaşlık isteğini ya da tayfa davetini kabul eder; arkadaş
+  /// önerisinde istek gönderir ("Arkadaş ekle"). Başarıda `null`, aksi
+  /// halde gösterilecek hata.
   Future<Object?> kabulEt(Notification bildirim) =>
       _calistir(bildirim, (yanitlar) async {
         final kisi = bildirimKisisi(bildirim);
@@ -70,6 +77,13 @@ class SatirIciNotifier extends Notifier<SatirIciDurumu> {
         if (islem == SatirIciIslem.arkadaslik && kisi != null) {
           final hata = await yanitlar.istegiKabulEt(kisi);
           return (hata, SatirIciSonuc.arkadasOldunuz);
+        }
+        if (islem == SatirIciIslem.oneri && kisi != null) {
+          final yanit = await yanitlar.oneriyiEkle(kisi);
+          final sonuc = yanit.arkadas
+              ? SatirIciSonuc.arkadasOldunuz
+              : SatirIciSonuc.istekGonderildi;
+          return (yanit.hata, sonuc);
         }
         if (islem == SatirIciIslem.davet && tayfa != null) {
           final yanit = await yanitlar.davetiKabulEt(tayfa);
@@ -81,13 +95,18 @@ class SatirIciNotifier extends Notifier<SatirIciDurumu> {
         return (null, null);
       });
 
-  /// Arkadaşlık isteğini ya da tayfa davetini reddeder (karşı tarafa
-  /// bildirilmez). Başarıda `null`, aksi halde gösterilecek hata.
+  /// Arkadaşlık isteğini ya da tayfa davetini reddeder, arkadaş önerisini
+  /// kapatır (karşı tarafa bildirilmez). Başarıda `null`, aksi halde
+  /// gösterilecek hata.
   Future<Object?> reddet(Notification bildirim) =>
       _calistir(bildirim, (yanitlar) async {
         final kisi = bildirimKisisi(bildirim);
         final tayfa = davetTayfasi(bildirim);
         final islem = satirIciIslem(bildirim);
+        if (islem == SatirIciIslem.oneri && kisi != null) {
+          final hata = await yanitlar.oneriyiKapat(kisi);
+          return (hata, SatirIciSonuc.oneriKapatildi);
+        }
         Object? hata;
         if (islem == SatirIciIslem.arkadaslik && kisi != null) {
           hata = await yanitlar.istegiReddet(kisi);

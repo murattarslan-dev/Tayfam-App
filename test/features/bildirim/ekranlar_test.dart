@@ -105,6 +105,19 @@ Map<String, Object?> _arkadaslikIstegi({bool okundu = false}) => bildirimJson(
   zaman: _zaman(DateTime(2026, 11, 13, 13, 10)),
 );
 
+Map<String, Object?> _oneri({
+  String id = 'bbbbbbbb-0000-4000-8000-000000000004',
+  String? cozum = 'pending',
+}) => bildirimJson(
+  id,
+  tur: 'friend_suggestion',
+  tayfaId: null,
+  hedefTuru: 'user',
+  hedef: kisiId,
+  cozum: cozum,
+  zaman: _zaman(DateTime(2026, 11, 13, 9, 12)),
+);
+
 Map<String, Object?> _tayfaDaveti() => bildirimJson(
   'bbbbbbbb-0000-4000-8000-000000000002',
   tur: 'tayfa_invitation',
@@ -370,6 +383,99 @@ void main() {
     });
   });
 
+  group('arkadaş önerisi', () {
+    testWidgets('bekleyen öneri: metin, Kapat / Arkadaş ekle; gerekçe yok', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      await _ekraniAc(tester, _liste([_oneri()], okunmamis: 1));
+
+      expect(find.text('Arkadaş önerisi: Ayşe'), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_oneri_kapat')), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_ekle')), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_reddet')), findsNothing);
+    });
+
+    testWidgets('"Arkadaş ekle" istek gönderir: "İsteğin gönderildi", okundu', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = _liste([_oneri()], okunmamis: 1)
+        ..yanitlar['POST ${arkadas.isteklerYolu}'] = _yanit(
+          arkadas.arkadasJson(kisiId, durum: 'outgoing'),
+        );
+      await _ekraniAc(tester, tasima);
+
+      await tester.tap(find.text(arbMetni('arkadas_ekle')));
+      await tester.pumpAndSettle();
+
+      final istek = tasima.giden('POST', arkadas.isteklerYolu).single;
+      expect(istek.govde, {'user_id': kisiId});
+      expect(
+        find.text(arbMetni('bildirim_sonuc_istek_gonderildi')),
+        findsOneWidget,
+      );
+      expect(find.text(arbMetni('arkadas_ekle')), findsNothing);
+      expect(tasima.giden('PUT', okunduYolu), hasLength(1));
+    });
+
+    testWidgets('karşı tarafın isteği bekliyorsa "Artık arkadaşsınız"', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = _liste([_oneri()], okunmamis: 1)
+        ..yanitlar['POST ${arkadas.isteklerYolu}'] = _yanit(
+          arkadas.arkadasJson(kisiId),
+        );
+      await _ekraniAc(tester, tasima);
+
+      await tester.tap(find.text(arbMetni('arkadas_ekle')));
+      await tester.pumpAndSettle();
+      expect(find.text(arbMetni('bildirim_sonuc_arkadas')), findsOneWidget);
+    });
+
+    testWidgets('"Kapat" öneriyi kapatır: "Bir daha önerilmeyecek"', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = _liste([_oneri()], okunmamis: 1)
+        ..yanitlar['DELETE ${arkadas.oneriYolu}'] = _yanit(null);
+      await _ekraniAc(tester, tasima);
+
+      await tester.tap(find.text(arbMetni('arkadas_oneri_kapat')));
+      await tester.pumpAndSettle();
+
+      final kapat = tasima.giden('DELETE', arkadas.oneriYolu).single;
+      expect(kapat.yolParametreleri['user_id'], kisiId);
+      expect(tasima.giden('POST', arkadas.isteklerYolu), isEmpty);
+      expect(
+        find.text(arbMetni('bildirim_sonuc_oneri_kapatildi')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('bekleyen olmayan ya da durumu bilinmeyen öneri gösterilmez', (
+      tester,
+    ) async {
+      final eskiler = [
+        for (final (sira, cozum) in [
+          'accepted',
+          'declined',
+          'expired',
+          null,
+        ].indexed)
+          _oneri(id: 'cccccccc-0000-4000-8000-00000000000$sira', cozum: cozum),
+      ];
+      final istenen = <String>[];
+      await _ekraniAc(tester, _liste(eskiler), istenenProfiller: istenen);
+
+      expect(find.byType(BildirimSatiri), findsNothing);
+      expect(find.byType(BosBildirimler), findsOneWidget);
+      // Gösterilmeyen önerinin kişisi için ad da istenmez.
+      expect(istenen, isEmpty);
+    });
+  });
+
   group('güvenlik uyarısı', () {
     testWidgets('okunmamış hike_overdue en üstte sabit kartta, etkinlik '
         'adıyla', (tester) async {
@@ -474,6 +580,7 @@ void main() {
           ..._karisik(),
           _arkadaslikIstegi(),
           _tayfaDaveti(),
+          _oneri(),
           _yuruyusUyarisi(),
           bildirimJson(
             'aaaaaaaa-0000-4000-8000-000000000009',
