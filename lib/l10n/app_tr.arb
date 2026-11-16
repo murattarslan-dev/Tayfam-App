@@ -7414,6 +7414,14 @@
   "@sohbet_mesaj_gosterilemiyor": {
     "description": "Kanal mesajının türü tanınmıyor ya da alanları geçersizse balonda görünen metin."
   },
+  "sohbet_sikayet_et": "Şikâyet et",
+  "@sohbet_sikayet_et": {
+    "description": "Kanal mesajına uzun basınca açılan işlemler sayfasında başkasının mesajını şikâyet etme satırı (yalnızca yönetimde olmayan üyeye)."
+  },
+  "sohbet_sikayet_aciklama": "Tayfanın yönetimi inceler",
+  "@sohbet_sikayet_aciklama": {
+    "description": "Kanal mesajı 'Şikâyet et' satırının açıklaması."
+  },
   "sohbet_mesaj_ipucu": "Mesaj yaz",
   "@sohbet_mesaj_ipucu": {
     "description": "Mesaj yazma alanının ipucu."
@@ -8046,6 +8054,32 @@
   "sikayet_mesaj_iletilecek": "Şikâyetle birlikte iletilecek mesaj",
   "@sikayet_mesaj_iletilecek": {
     "description": "Birebir mesaj şikâyetinde, kullanıcının cihazından Tayfam ekibine iletilecek mesaj metninin başlığı."
+  },
+  "sikayet_fotograf_iletilecek": "Şikâyetle birlikte iletilecek fotoğraf",
+  "@sikayet_fotograf_iletilecek": {
+    "description": "Birebir fotoğraf mesajı şikâyetinde önizlemenin başlığı; fotoğraf şikâyet edenin cihazından kanıt olarak yüklenir."
+  },
+  "sikayet_fotograf_aciklama": "Fotoğraf yalnızca Tayfam ekibine, senin cihazından iletilir.",
+  "@sikayet_fotograf_aciklama": {
+    "description": "Birebir fotoğraf şikâyetinde önizlemenin altındaki açıklama."
+  },
+  "sikayet_yer_kaniti": "Paylaşılan yer: {ad} ({enlem}, {boylam})",
+  "@sikayet_yer_kaniti": {
+    "description": "Birebir yer mesajı şikâyetinde platforma iletilecek ve önizlemede gösterilecek metin; yer kullanıcının paylaştığı içeriktir.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Sapanca Gölü otoparkı"
+      },
+      "enlem": {
+        "type": "String",
+        "example": "40.712345"
+      },
+      "boylam": {
+        "type": "String",
+        "example": "30.265432"
+      }
+    }
   },
   "sikayet_mesaj_bos": "Bu mesajın metni boş olduğu için şikâyet edilemez.",
   "@sikayet_mesaj_bos": {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,10 +9,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// birebir mesaj ekranı mesajın kimliğiyle birlikte ekrandaki açık
 /// metnini de verir; metin yalnızca şikâyet isteğinin gövdesine girer,
 /// hiçbir yere yazılmaz ve loglanmaz (kesin kural 3).
+///
+/// Fotoğraf mesajında [fotograf] cihazda çözülmüş görüntüdür; şikâyet eden
+/// onu kanıt olarak kendi cihazından yükler (`evidence_upload_id`;
+/// Tayfam-Api ADR-0031 §6, istemci ADR-0026 §6). [metin] ya da [fotograf]
+/// ten en az biri verilir. Yer mesajında metin, yerin adı ve
+/// koordinatıdır (kullanıcı ekranda görür).
 typedef BirebirMesajSikayeti = Future<void> Function(
   BuildContext context, {
   required String mesajId,
-  required String metin,
+  String? metin,
+  Uint8List? fotograf,
 });
 
 /// Uygulamaya kayıtlı birebir mesaj şikâyeti. Şikâyet özelliği

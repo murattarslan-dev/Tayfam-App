@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
+import 'package:tayfam/core/sohbet/giden_balon.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -29,9 +31,14 @@ class MesajOgesi extends StatelessWidget {
     this.grupBasi = true,
     this.saat,
     this.onIslemler,
+    this.medya,
   });
 
   final DirectMessage mesaj;
+
+  /// Fotoğraf ya da yer kartı (tasarım 28); varsa [metin] ekran okuyucu
+  /// etiketidir.
+  final Widget? medya;
 
   /// Balondaki metin; `null` ya da mesaj silinmişse "Bu mesaj silindi".
   final String? metin;
@@ -60,6 +67,7 @@ class MesajOgesi extends StatelessWidget {
     final silinmis = govde == null || mesaj.deleted;
     final balon = SohbetBalonu(
       metin: govde == null || mesaj.deleted ? m.birebir_mesaj_silindi : govde,
+      medya: silinmis ? null : medya,
       giden: giden,
       tur: silinmis ? BalonTuru.silinmis : BalonTuru.akis,
       kuyruk: kuyruk,
@@ -125,9 +133,8 @@ class GidenOgesi extends StatelessWidget {
           // Gönderilmeyi bekleyen mesaj soluk (Durum-Baglaniyor).
           Opacity(
             opacity: basarisiz ? 1 : TayfamSizes.bekleyenMesajSaydamligi,
-            child: SohbetBalonu(
-              metin: giden.metin,
-              giden: true,
+            child: GidenBalon(
+              icerik: giden.icerik,
               tur: basarisiz ? BalonTuru.gonderilemedi : BalonTuru.akis,
             ),
           ),
@@ -135,7 +142,7 @@ class GidenOgesi extends StatelessWidget {
             if (hata != null)
               Padding(
                 padding: const EdgeInsets.only(top: TayfamSpacing.s4),
-                child: HataSatiri.hatadan(hata),
+                child: HataSatiri(metin: fotografHataMetni(m, hata)),
               ),
             GonderilemediSatiri(
               durum: m.birebir_gonderilemedi,

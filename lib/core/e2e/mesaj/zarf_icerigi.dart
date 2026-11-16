@@ -194,7 +194,7 @@ final class EkAnahtari {
       return null;
     }
     return EkAnahtari(
-      uploadId: id.toLowerCase(),
+      uploadId: id,
       anahtar: a,
       ozet: o,
       boyut: boyut,
