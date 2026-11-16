@@ -13,6 +13,7 @@ api.Notification _bildirim({
   String hedef = hedefId,
   String? aktor,
   String? yuruyuscu,
+  String? cozum,
 }) => api.Notification.fromJson(
   bildirimJson(
     bildirimId1,
@@ -22,8 +23,18 @@ api.Notification _bildirim({
     hedef: hedef,
     aktor: aktor,
     yuruyuscu: yuruyuscu,
+    cozum: cozum,
   ),
 );
+
+api.Notification _oneri({String? cozum = 'pending', String hedef = kisiId}) =>
+    _bildirim(
+      tur: 'friend_suggestion',
+      tayfaId: null,
+      hedefTuru: 'user',
+      hedef: hedef,
+      cozum: cozum,
+    );
 
 void main() {
   group('bildirimAdresi', () {
@@ -172,6 +183,53 @@ void main() {
           reason: tur,
         );
       }
+    });
+  });
+
+  group('arkadaş önerisi (friend_suggestion)', () {
+    test('önerilen kişinin profilini açıyor; kişi target_id', () {
+      expect(bildirimAdresi(_oneri()), Adresler.kisi(kisiId));
+      expect(bildirimKisisi(_oneri()), kisiId);
+    });
+
+    test('yalnızca pending iken görünür ve satır içi işlemi var', () {
+      expect(bildirimGorunurMu(_oneri()), isTrue);
+      expect(satirIciIslem(_oneri()), SatirIciIslem.oneri);
+      for (final cozum in [
+        'accepted',
+        'declined',
+        'withdrawn',
+        'expired',
+        'gelecekte_eklenecek',
+        null,
+      ]) {
+        final bildirim = _oneri(cozum: cozum);
+        expect(bildirimGorunurMu(bildirim), isFalse, reason: '$cozum');
+        expect(satirIciIslem(bildirim), isNull, reason: '$cozum');
+      }
+    });
+
+    test('biçimsiz kimlikte işlem ve adres yok', () {
+      final bildirim = _oneri(hedef: 'kimlik-degil');
+      expect(bildirimKisisi(bildirim), isNull);
+      expect(satirIciIslem(bildirim), isNull);
+      expect(bildirimAdresi(bildirim), isNull);
+    });
+
+    test('öteki türler durumdan bağımsız görünür', () {
+      expect(bildirimGorunurMu(_bildirim()), isTrue);
+      expect(
+        bildirimGorunurMu(
+          _bildirim(
+            tur: 'friend_request',
+            tayfaId: null,
+            hedefTuru: 'user',
+            hedef: kisiId,
+            cozum: 'accepted',
+          ),
+        ),
+        isTrue,
+      );
     });
   });
 }

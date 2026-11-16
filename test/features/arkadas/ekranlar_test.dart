@@ -192,6 +192,132 @@ void main() {
     });
   });
 
+  group('arkadaş önerileri (27-arkadas-onerisi)', () {
+    SahteTayfaTasima oneriTasimasi([Map<String, TayfaYaniti>? ek]) =>
+        arkadasTasimasi({
+          'GET $onerilerYolu': yanit({
+            'suggestions': [oneriJson(kisiId1), oneriJson(kisiId2)],
+          }),
+          ...?ek,
+        });
+
+    Finder oneriDugmesi(String kisi, String anahtar) => find.descendant(
+      of: find
+          .ancestor(of: find.text(kisiAdi(kisi)), matching: find.byType(Column))
+          .first,
+      matching: find.text(arbMetni(anahtar)),
+    );
+
+    testWidgets('başlık, açıklama ve her öneride Kapat / Arkadaş ekle; '
+        'gerekçe yok', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      await _ac(tester, const ArkadaslarEkrani(), oneriTasimasi());
+      expect(find.text(arbMetni('arkadas_oneriler_baslik')), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_oneriler_aciklama')), findsOneWidget);
+      expect(find.text(kisiAdi(kisiId1)), findsOneWidget);
+      expect(find.text(kisiAdi(kisiId2)), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_oneri_kapat')), findsNWidgets(2));
+      // Üstteki "Arkadaş ekle" + her öneride bir tane.
+      expect(find.text(arbMetni('arkadas_ekle')), findsNWidgets(3));
+    });
+
+    testWidgets('öneri yoksa ya da okunamazsa bölüm görünmez', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const ArkadaslarEkrani(), arkadasTasimasi());
+      expect(find.text(arbMetni('arkadas_oneriler_baslik')), findsNothing);
+
+      await _ac(
+        tester,
+        const ArkadaslarEkrani(),
+        arkadasTasimasi({'GET $onerilerYolu': yanit(const ApiOffline())}),
+      );
+      expect(find.text(arbMetni('arkadas_oneriler_baslik')), findsNothing);
+      expect(find.text(arbMetni('arkadas_liste_bos')), findsOneWidget);
+    });
+
+    testWidgets('"Arkadaş ekle": istek gider, öneri düşer, bildirim', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      final tasima = oneriTasimasi({
+        'POST $isteklerYolu': yanit(arkadasJson(kisiId1, durum: 'outgoing')),
+      });
+      await _ac(tester, const ArkadaslarEkrani(), tasima);
+
+      await _dokun(tester, oneriDugmesi(kisiId1, 'arkadas_ekle'));
+
+      expect(tasima.giden('POST', isteklerYolu).single.govde, {
+        'user_id': kisiId1,
+      });
+      expect(find.text(kisiAdi(kisiId1)), findsNothing);
+      expect(find.text(kisiAdi(kisiId2)), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_istek_gonderildi')), findsOneWidget);
+    });
+
+    testWidgets('"Kapat": öneri kapatılır ve düşer; istek gitmez', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      final tasima = oneriTasimasi({'DELETE $oneriYolu': yanit(null)});
+      await _ac(tester, const ArkadaslarEkrani(), tasima);
+
+      await _dokun(tester, oneriDugmesi(kisiId2, 'arkadas_oneri_kapat'));
+
+      final kapat = tasima.giden('DELETE', oneriYolu).single;
+      expect(kapat.yolParametreleri['user_id'], kisiId2);
+      expect(tasima.giden('POST', isteklerYolu), isEmpty);
+      expect(find.text(kisiAdi(kisiId2)), findsNothing);
+      expect(find.text(arbMetni('arkadas_oneri_kapatildi')), findsOneWidget);
+    });
+
+    testWidgets('son öneri kapatılınca bölüm kalkar', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      final tasima = arkadasTasimasi({
+        'GET $onerilerYolu': yanit({
+          'suggestions': [oneriJson(kisiId1)],
+        }),
+        'DELETE $oneriYolu': yanit(null),
+      });
+      await _ac(tester, const ArkadaslarEkrani(), tasima);
+      await _dokun(tester, find.text(arbMetni('arkadas_oneri_kapat')));
+      expect(find.text(arbMetni('arkadas_oneriler_baslik')), findsNothing);
+    });
+
+    testWidgets('işlem başarısızsa öneri kalır ve hata gösterilir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1000);
+      final tasima = oneriTasimasi({
+        'DELETE $oneriYolu': yanit(const ApiOffline()),
+      });
+      await _ac(tester, const ArkadaslarEkrani(), tasima);
+      await _dokun(tester, oneriDugmesi(kisiId1, 'arkadas_oneri_kapat'));
+      expect(find.text(kisiAdi(kisiId1)), findsOneWidget);
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.text(arbMetni('arkadas_oneri_kapatildi')), findsNothing);
+    });
+
+    for (final tema in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${tema.name} temada 2× yazıda 320 dp taşmaz', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          const ArkadaslarEkrani(),
+          oneriTasimasi(),
+          themeMode: tema,
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text(arbMetni('arkadas_oneriler_baslik')), findsOneWidget);
+        await tester.drag(find.byType(ListView), const Offset(0, -3000));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      });
+    }
+  });
+
   group('arkadaş bulma', () {
     testWidgets('kodla bulur ve istek gönderir', (tester) async {
       ekranBoyutu(tester);

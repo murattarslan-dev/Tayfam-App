@@ -17,6 +17,8 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - Arkadaşlık (ADR-0018 §7): `friend_request` ve `friend_accepted` kişinin
 ///   profilini (`target_id`), `tayfa_invitation` gelen tayfa davetlerini
 ///   açar (davet edilen henüz üye olmadığı için tayfa sayfası açılmaz).
+/// - Arkadaş önerisi (`friend_suggestion`, Tayfam-Api ADR-0030): önerilen
+///   kişinin profili (`target_id`).
 /// - `data_export` (veri dışa aktarma hazır): "Verilerimi indir" ekranı.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
@@ -27,7 +29,9 @@ String? bildirimAdresi(Notification bildirim) {
   final hedefId = _gecerli(bildirim.targetId);
   final arkadaslik = switch ((bildirim.type, bildirim.targetType, hedefId)) {
     (
-      NotificationType.friendRequest || NotificationType.friendAccepted,
+      NotificationType.friendRequest ||
+          NotificationType.friendAccepted ||
+          NotificationType.friendSuggestion,
       NotificationTargetType.user,
       final kisi?,
     ) =>
@@ -60,7 +64,8 @@ String? bildirimKisisi(Notification bildirim) {
   final kimlik = switch (bildirim.type) {
     NotificationType.joinRequest ||
     NotificationType.friendRequest ||
-    NotificationType.friendAccepted => bildirim.targetId,
+    NotificationType.friendAccepted ||
+    NotificationType.friendSuggestion => bildirim.targetId,
     NotificationType.hikeOverdue => bildirim.subjectUserId,
     NotificationType.tayfaInvitation => bildirim.actorId,
     _ => null,
@@ -91,6 +96,9 @@ enum SatirIciIslem {
 
   /// Katılım isteği: "İncele" katılım istekleri ekranını açar.
   katilimIstegi,
+
+  /// Arkadaş önerisi: Kapat / Arkadaş ekle (27-arkadas-onerisi, karar 1).
+  oneri,
 }
 
 /// [bildirim]'in satır içi işlemi; yoksa ya da gereken kimlik
@@ -105,9 +113,24 @@ SatirIciIslem? satirIciIslem(Notification bildirim) {
       SatirIciIslem.davet,
     NotificationType.joinRequest when tayfa != null =>
       SatirIciIslem.katilimIstegi,
+    NotificationType.friendSuggestion
+        when bildirimKisisi(bildirim) != null && bildirimGorunurMu(bildirim) =>
+      SatirIciIslem.oneri,
     _ => null,
   };
 }
+
+/// [bildirim] listede gösterilir mi. Arkadaş önerisi yalnızca hâlâ
+/// geçerliyse (`resolution: pending`) gösterilir (sözleşme; Tayfam-Api
+/// ADR-0030 §8). Durum yoksa (sunucu o an hesaplayamadı) da gösterilmez:
+/// geri çekilmiş bir öneri ("Beni önerme", engel, şikâyet) görünmesin diye
+/// güvenli taraf seçildi (27-arkadas-onerisi, karar 2). Öteki türler her
+/// zaman gösterilir.
+bool bildirimGorunurMu(Notification bildirim) => switch (bildirim.type) {
+  NotificationType.friendSuggestion =>
+    bildirim.resolution == NotificationResolution.pending,
+  _ => true,
+};
 
 /// Katılım isteği bildiriminde "İncele"nin açtığı katılım istekleri
 /// ekranı; tayfa doğrulanamazsa `null`.

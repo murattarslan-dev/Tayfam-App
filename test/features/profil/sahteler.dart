@@ -30,6 +30,15 @@ const String profilYolu = 'GET /v1/users/{user_id}/profile';
 const String hesapSilYolu = 'DELETE /v1/me';
 const String girisYolu = 'POST /v1/auth/sign-in';
 const String onaylarYolu = 'GET /v1/me/consents';
+const String sosyalAyarlarYolu = 'GET /v1/me/social-settings';
+const String sosyalAyarlarDegistirYolu = 'PATCH /v1/me/social-settings';
+
+/// `SocialSettings` JSON'u; varsayılanlar sözleşmedeki gibi (profilleme
+/// açık, "Beni önerme" kapalı).
+Map<String, Object?> sosyalAyarlarJson({
+  bool profilleme = true,
+  bool gizle = false,
+}) => {'profiling_enabled': profilleme, 'hide_from_suggestions': gizle};
 
 /// Testlerde kullanılan, biçimi geçerli örnek oturum kimlikleri.
 const String buOturumId = '5e6f7a8b-0000-4000-8000-000000000001';
@@ -110,6 +119,7 @@ Map<String, Object? Function()> profilYanitlari([
   hesapSilYolu: () => null,
   girisYolu: () => oturum(n: 3).toJson(),
   onaylarYolu: surumGovdesi,
+  sosyalAyarlarYolu: sosyalAyarlarJson,
   ...ek,
 };
 
