@@ -34,3 +34,4 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 | Etkinlik türü formları ve iptal | [`22-etkinlik-turu-formlari/`](22-etkinlik-turu-formlari/README.md) | 5 |
 | Hata ve bağlantı durumları | [`23-hata-ve-baglanti-durumlari/`](23-hata-ve-baglanti-durumlari/README.md) | 5 |
 | Çekip yenileme | [`24-cekip-yenileme/`](24-cekip-yenileme/README.md) | 4 |
+| Anlık (bireysel) etkinlik | [`29-anlik-etkinlik/`](29-anlik-etkinlik/README.md) | — (yalnızca metin; mevcut iskelet) |
