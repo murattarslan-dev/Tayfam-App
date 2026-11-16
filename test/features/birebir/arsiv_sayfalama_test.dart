@@ -72,7 +72,7 @@ Future<Map<String, Object?>> _kayit(String mesajId, String govde) async => {
       duz: ArsivDuzMetni(
         gonderenId: karsiId,
         olusturma: DateTime.utc(2026, 11, 10, 10),
-        govde: govde,
+        icerik: MetinIcerigi(govde),
       ),
     ),
   ),
@@ -242,7 +242,7 @@ void main() {
       mesajId: id,
       gonderenId: karsiId,
       olusturma: DateTime.utc(2026, 11, 10),
-      govde: 'g',
+      icerik: const MetinIcerigi('g'),
     );
 
     test('message_id ile birleştirir; aynı kayıt iki kez sayılmaz', () {

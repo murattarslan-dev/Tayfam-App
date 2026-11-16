@@ -23,8 +23,8 @@ import 'package:tayfam/features/etkinlik/presentation/anlik/anlik_acildi_ekrani.
 import 'package:tayfam/features/etkinlik/presentation/anlik/arkadas_secimi.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
-import 'package:tayfam/features/etkinlik/presentation/harita_secici_ekrani.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';

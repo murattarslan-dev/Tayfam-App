@@ -305,6 +305,22 @@ final class KanalSignalMotoru implements SignalMotoru {
   }
 
   @override
+  Future<Uint8List> aes256GcmSifrele({
+    required Uint8List anahtar,
+    required Uint8List nonce,
+    required Uint8List duz,
+    required Uint8List aad,
+  }) async {
+    final m = await _cagir('aes256GcmSifrele', {
+      'anahtar': anahtar,
+      'nonce': nonce,
+      'duz': duz,
+      'aad': aad,
+    });
+    return _bayt(m, 'sifreliVeEtiket');
+  }
+
+  @override
   Future<Uint8List?> aes256GcmCoz({
     required Uint8List anahtar,
     required Uint8List nonce,

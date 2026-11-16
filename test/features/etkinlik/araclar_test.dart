@@ -7,8 +7,8 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
-import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 
 import '../../yardimcilar.dart';

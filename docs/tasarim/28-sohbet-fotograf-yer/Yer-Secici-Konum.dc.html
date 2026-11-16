@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yer seç · Bulunduğum yer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: #FAF8FF; font-family: 'Bricolage Grotesque', system-ui, sans-serif; color: #1B1036">
+<div role="img" aria-label="Haritada işaretli yer" style="position: relative;  height: 844px; background: linear-gradient(135deg,#DCE9D5 0 55%,#C9DCF0 55% 100%); overflow: hidden">
+<span aria-hidden="true" style="position: absolute; left: -10px; right: -10px; top: 45%; height: 6px; background: #FFFFFF; opacity: .7; transform: rotate(-8deg)"></span>
+<span aria-hidden="true" style="position: absolute; top: -10px; bottom: -10px; left: 62%; width: 5px; background: #FFFFFF; opacity: .7; transform: rotate(12deg)"></span>
+<span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-90%)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#B0123A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21 C12 21 5 14.5 5 9.5 A7 7 0 0 1 19 9.5 C19 14.5 12 21 12 21 Z"></path><circle cx="12" cy="9.5" r="2.4"></circle></svg></span>
+<span style="position: absolute; right: 4px; bottom: 4px; background: #FFFFFF; color: #1B1036; border-radius: 999px; padding: 1px 6px; font-size: 10px">© OpenStreetMap</span>
+</div>
+<div style="position: absolute; left: 12px; right: 12px; top: 56px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; gap: 8px; align-items: center"><button type="button" aria-label="Geri" style="width: 48px; height: 48px; border-radius: 999px; border: 1px solid #E6E1F5; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B1036" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 L8 12 L15 19"></path></svg></button><div style="flex: 1; height: 56px; border-radius: 12px; background: #FFFFFF; border: 1px solid #5A5275; display: flex; align-items: center; justify-content: space-between; padding: 0 8px 0 14px; font-size: 16px; color: #5A5275">Yer adı ara<span style="color: #5B2BE0; font-weight: 700; padding: 0 10px">Ara</span></div></div>
+<div style="background: #FFFFFF; border: 1px solid #E6E1F5; border-radius: 16px; padding: 12px; font-size: 14px; color: #1B1036">Haritaya dokunarak bir nokta bırak ya da yer adı ara.</div></div>
+<button type="button" aria-label="Bulunduğum yer" style="position: absolute; right: 16px; bottom: 132px; height: 48px; padding: 0 16px; border-radius: 999px; border: 1px solid #E6E1F5; background: #FFFFFF; color: #1B1036; font-family: inherit; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B2BE0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2 V5"></path><path d="M12 19 V22"></path><path d="M2 12 H5"></path><path d="M19 12 H22"></path></svg>Bulunduğum yer</button>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FAF8FF; border-top: 1px solid #E6E1F5; padding: 16px 16px 34px; display: flex; flex-direction: column"><button type="button" style="min-height: 52px; border: none; border-radius: 999px; background: #5B2BE0; color: #FFFFFF; font-family: inherit; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21 C12 21 5 14.5 5 9.5 A7 7 0 0 1 19 9.5 C19 14.5 12 21 12 21 Z"></path><circle cx="12" cy="9.5" r="2.4"></circle></svg>Bu yeri seç</button></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

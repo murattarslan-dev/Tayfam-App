@@ -3212,6 +3212,34 @@
   "@etkinlik_harita_atif": {
     "description": "Haritanın köşesinde her zaman görünen OpenStreetMap atfı (lisans gereği). \"OpenStreetMap\" çevrilmez."
   },
+  "harita_ipucu_konumlu": "Haritaya dokunarak iğne bırak, yer adıyla ara ya da bulunduğun yeri kullan.",
+  "@harita_ipucu_konumlu": {
+    "description": "Sohbette yer paylaşırken harita seçicisinin üstündeki ipucu. Konum izni yalnızca 'Bulunduğum yer' düğmesine basınca istenir."
+  },
+  "harita_bulundugum_yer": "Bulunduğum yer",
+  "@harita_bulundugum_yer": {
+    "description": "Sohbetteki harita seçicisinde haritayı ve iğneyi cihazın o anki konumuna taşıyan düğme. Konum izni yalnızca bu düğmeye basınca istenir."
+  },
+  "harita_konum_izni_yok": "Konum izni verilmedi. Haritaya dokunarak ya da arayarak yer seçebilirsin.",
+  "@harita_konum_izni_yok": {
+    "description": "'Bulunduğum yer'e basıldı ama konum izni verilmedi; seçici elle kullanılmaya devam eder."
+  },
+  "harita_konum_kapali": "Cihazının konumu kapalı. Haritaya dokunarak ya da arayarak yer seçebilirsin.",
+  "@harita_konum_kapali": {
+    "description": "'Bulunduğum yer'e basıldı ama cihazın konum servisi kapalı."
+  },
+  "harita_konum_alinamadi": "Konumun alınamadı. Haritaya dokunarak ya da arayarak yer seçebilirsin.",
+  "@harita_konum_alinamadi": {
+    "description": "'Bulunduğum yer'e basıldı ama konum okunamadı (zaman aşımı, platform hatası)."
+  },
+  "harita_ayarlari_ac": "Ayarları aç",
+  "@harita_ayarlari_ac": {
+    "description": "Konum izni kalıcı olarak reddedildiyse uygulamanın sistem ayarlarını açan düğme."
+  },
+  "harita_konum_ayarlari": "Konum ayarları",
+  "@harita_konum_ayarlari": {
+    "description": "Cihazın konum servisi kapalıysa konum ayarlarını açan düğme."
+  },
   "karsilama_turler_etiketi": "Tayfam'da buluşabileceğin etkinlikler",
   "@karsilama_turler_etiketi": {
     "description": "Karşılama ekranındaki etkinlik türü şeridinin görünen başlığı ve ekran okuyucu grup etiketi."
@@ -7350,6 +7378,116 @@
   "@sohbet_mesaj_silindi": {
     "description": "Silinmiş mesajın yerinde gösterilen metin."
   },
+  "sohbet_ek_ekle": "Fotoğraf ya da yer ekle",
+  "@sohbet_ek_ekle": {
+    "description": "Mesaj yazma çubuğunun solundaki ⊕ düğmesinin ipucu ve ekran okuyucu etiketi; ek menüsünü açar."
+  },
+  "sohbet_ek_baslik": "Ekle",
+  "@sohbet_ek_baslik": {
+    "description": "⊕'ya basınca açılan alttan sayfanın başlığı."
+  },
+  "sohbet_ek_galeri": "Galeriden fotoğraf",
+  "@sohbet_ek_galeri": {
+    "description": "Ek menüsünde galeriden fotoğraf seçme satırı."
+  },
+  "sohbet_ek_kamera": "Kamerayla çek",
+  "@sohbet_ek_kamera": {
+    "description": "Ek menüsünde kamerayla fotoğraf çekme satırı."
+  },
+  "sohbet_ek_yer": "Yer paylaş",
+  "@sohbet_ek_yer": {
+    "description": "Ek menüsünde haritadan yer seçip paylaşma satırı."
+  },
+  "sohbet_ek_yer_aciklama": "Haritadan bir nokta seç",
+  "@sohbet_ek_yer_aciklama": {
+    "description": "Ek menüsündeki 'Yer paylaş' satırının açıklaması."
+  },
+  "sohbet_fotograf_etiketi": "Fotoğraf",
+  "@sohbet_fotograf_etiketi": {
+    "description": "Sohbet mesajındaki fotoğrafın ekran okuyucu etiketi."
+  },
+  "sohbet_fotografi_ac": "Fotoğrafı tam ekran aç",
+  "@sohbet_fotografi_ac": {
+    "description": "Sohbetteki fotoğrafa dokununca ne olacağını söyleyen ekran okuyucu ipucu."
+  },
+  "sohbet_fotograf_gonder_baslik": "Fotoğrafı gönder",
+  "@sohbet_fotograf_gonder_baslik": {
+    "description": "Seçilen fotoğrafın gönderme onayı ekranının başlığı."
+  },
+  "sohbet_fotograf_gizlilik_kanal": "Konum ve cihaz bilgileri fotoğraftan silindi. Fotoğrafı yalnızca bu kanalı görenler görür.",
+  "@sohbet_fotograf_gizlilik_kanal": {
+    "description": "Kanalda fotoğraf gönderme onayındaki gizlilik notu."
+  },
+  "sohbet_fotograf_gizlilik_birebir": "Konum ve cihaz bilgileri fotoğraftan silindi. Fotoğraf uçtan uca şifrelenir; yalnızca sen ve konuştuğun kişi görebilir.",
+  "@sohbet_fotograf_gizlilik_birebir": {
+    "description": "Birebir mesajda fotoğraf gönderme onayındaki gizlilik notu."
+  },
+  "sohbet_fotograf_aciliyor": "Fotoğraf açılıyor…",
+  "@sohbet_fotograf_aciliyor": {
+    "description": "Birebir mesajdaki şifreli fotoğraf indirilip çözülürken balonda görünen metin."
+  },
+  "sohbet_fotograf_acilamadi": "Fotoğraf açılamadı.",
+  "@sohbet_fotograf_acilamadi": {
+    "description": "Birebir mesajdaki şifreli fotoğraf bağlantı hatası yüzünden indirilemediğinde; yanında 'Tekrar dene' vardır."
+  },
+  "sohbet_fotograf_dogrulanamadi": "Fotoğraf doğrulanamadı; gösterilmiyor.",
+  "@sohbet_fotograf_dogrulanamadi": {
+    "description": "Birebir mesajdaki şifreli fotoğrafın özeti ya da şifresi doğrulanamadığında (bozuk ya da değiştirilmiş içerik). Tekrar deneme sunulmaz."
+  },
+  "sohbet_fotograf_gorulemiyor": "Fotoğraf artık görüntülenemiyor.",
+  "@sohbet_fotograf_gorulemiyor": {
+    "description": "Birebir mesajdaki fotoğraf sunucuda görülemiyorsa (silinmiş, bulunamadı)."
+  },
+  "sohbet_mesaj_fotograf": "Fotoğraf",
+  "@sohbet_mesaj_fotograf": {
+    "description": "Mesaj işlemleri sayfasında fotoğraf mesajının kısa alıntısı."
+  },
+  "sohbet_yer_adsiz": "Paylaşılan yer",
+  "@sohbet_yer_adsiz": {
+    "description": "Adı verilmemiş paylaşılan yerin kartındaki ve tam ekran haritadaki başlık."
+  },
+  "sohbet_yer_etiketi": "Paylaşılan yer: {ad}",
+  "@sohbet_yer_etiketi": {
+    "description": "Sohbetteki yer kartının ekran okuyucu etiketi.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Sapanca Gölü otoparkı"
+      }
+    }
+  },
+  "sohbet_yer_ac": "Haritada aç",
+  "@sohbet_yer_ac": {
+    "description": "Sohbetteki yer kartına dokununca ne olacağını söyleyen ekran okuyucu ipucu."
+  },
+  "sohbet_yer_sec": "Bu yeri seç",
+  "@sohbet_yer_sec": {
+    "description": "Sohbette yer paylaşırken harita seçicisinin alt düğmesi."
+  },
+  "sohbet_yer_gonder_baslik": "Yeri gönder",
+  "@sohbet_yer_gonder_baslik": {
+    "description": "Seçilen yerin gönderme onayı alttan sayfasının başlığı."
+  },
+  "sohbet_yer_adi_etiketi": "Yerin adı (isteğe bağlı)",
+  "@sohbet_yer_adi_etiketi": {
+    "description": "Yer gönderme onayındaki ad alanının etiketi."
+  },
+  "sohbet_yer_onay_aciklama": "Haritada gördüğün nokta gönderilir; canlı konumun paylaşılmaz.",
+  "@sohbet_yer_onay_aciklama": {
+    "description": "Yer gönderme onayındaki açıklama."
+  },
+  "sohbet_mesaj_gosterilemiyor": "Bu mesaj bu sürümde gösterilemiyor.",
+  "@sohbet_mesaj_gosterilemiyor": {
+    "description": "Kanal mesajının türü tanınmıyor ya da alanları geçersizse balonda görünen metin."
+  },
+  "sohbet_sikayet_et": "Şikâyet et",
+  "@sohbet_sikayet_et": {
+    "description": "Kanal mesajına uzun basınca açılan işlemler sayfasında başkasının mesajını şikâyet etme satırı (yalnızca yönetimde olmayan üyeye)."
+  },
+  "sohbet_sikayet_aciklama": "Tayfanın yönetimi inceler",
+  "@sohbet_sikayet_aciklama": {
+    "description": "Kanal mesajı 'Şikâyet et' satırının açıklaması."
+  },
   "sohbet_mesaj_ipucu": "Mesaj yaz",
   "@sohbet_mesaj_ipucu": {
     "description": "Mesaj yazma alanının ipucu."
@@ -7987,6 +8125,32 @@
   "@sikayet_mesaj_iletilecek": {
     "description": "Birebir mesaj şikâyetinde, kullanıcının cihazından Tayfam ekibine iletilecek mesaj metninin başlığı."
   },
+  "sikayet_fotograf_iletilecek": "Şikâyetle birlikte iletilecek fotoğraf",
+  "@sikayet_fotograf_iletilecek": {
+    "description": "Birebir fotoğraf mesajı şikâyetinde önizlemenin başlığı; fotoğraf şikâyet edenin cihazından kanıt olarak yüklenir."
+  },
+  "sikayet_fotograf_aciklama": "Fotoğraf yalnızca Tayfam ekibine, senin cihazından iletilir.",
+  "@sikayet_fotograf_aciklama": {
+    "description": "Birebir fotoğraf şikâyetinde önizlemenin altındaki açıklama."
+  },
+  "sikayet_yer_kaniti": "Paylaşılan yer: {ad} ({enlem}, {boylam})",
+  "@sikayet_yer_kaniti": {
+    "description": "Birebir yer mesajı şikâyetinde platforma iletilecek ve önizlemede gösterilecek metin; yer kullanıcının paylaştığı içeriktir.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Sapanca Gölü otoparkı"
+      },
+      "enlem": {
+        "type": "String",
+        "example": "40.712345"
+      },
+      "boylam": {
+        "type": "String",
+        "example": "30.265432"
+      }
+    }
+  },
   "sikayet_mesaj_bos": "Bu mesajın metni boş olduğu için şikâyet edilemez.",
   "@sikayet_mesaj_bos": {
     "description": "Birebir mesaj şikâyetinde mesaj metni boşsa gösterilen hata."
@@ -8122,6 +8286,10 @@
   "sikayet_tur_mesaj": "Mesaj",
   "@sikayet_tur_mesaj": {
     "description": "Şikâyet edilen şeyin türü: birebir mesaj."
+  },
+  "sikayet_tur_kanal_mesaji": "Kanal mesajı",
+  "@sikayet_tur_kanal_mesaji": {
+    "description": "Şikâyet edilen şeyin türü: tayfadaki bir kanalın mesajı (metin, fotoğraf ya da yer)."
   },
   "sikayet_tur_bilinmiyor": "Diğer",
   "@sikayet_tur_bilinmiyor": {

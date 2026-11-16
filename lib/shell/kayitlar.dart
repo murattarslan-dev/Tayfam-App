@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
@@ -105,5 +106,11 @@ Widget _etkinlikSohbeti(BuildContext context, Event etkinlik, Widget baslik) =>
 Future<void> _birebirMesajSikayeti(
   BuildContext context, {
   required String mesajId,
-  required String metin,
-}) => birebirMesajiSikayetEt(context, mesajId: mesajId, mesajMetni: metin);
+  String? metin,
+  Uint8List? fotograf,
+}) => birebirMesajiSikayetEt(
+  context,
+  mesajId: mesajId,
+  mesajMetni: metin,
+  fotograf: fotograf,
+);

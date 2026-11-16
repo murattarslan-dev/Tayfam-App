@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
 
 /// Seçicinin varsayılan merkezi: Türkiye (ADR-0015 §4: cihaz konumu
 /// istenmez; harita ülke düzeyinde bir varsayılanla açılır).
@@ -26,6 +27,8 @@ final class HaritaSecimi {
     this.arandi = false,
     this.hata = false,
     this.odak = 0,
+    this.konumAraniyor = false,
+    this.konumEngeli,
   });
 
   /// Bırakılan iğnenin yeri; yoksa `null`.
@@ -44,8 +47,39 @@ final class HaritaSecimi {
   /// Son arama başarısız oldu.
   final bool hata;
 
-  /// Bir arama sonucu seçildikçe artar; harita o noktadan yeniden açılır.
+  /// Bir arama sonucu seçildikçe ya da "Bulunduğum yer" okununca artar;
+  /// harita o noktadan yeniden açılır.
   final int odak;
+
+  /// "Bulunduğum yer" için konum okunuyor.
+  final bool konumAraniyor;
+
+  /// Son "Bulunduğum yer" denemesi neden konum vermedi (izin yok, servis
+  /// kapalı, okunamadı); yoksa `null`.
+  final KonumSonucu? konumEngeli;
+
+  HaritaSecimi _ile({
+    LatLng? nokta,
+    YerSonucu? oneri,
+    bool oneriSil = false,
+    List<YerSonucu>? sonuclar,
+    bool? araniyor,
+    bool? arandi,
+    bool? hata,
+    int? odak,
+    bool konumAraniyor = false,
+    KonumSonucu? konumEngeli,
+  }) => HaritaSecimi(
+    nokta: nokta ?? this.nokta,
+    oneri: oneriSil ? null : (oneri ?? this.oneri),
+    sonuclar: sonuclar ?? this.sonuclar,
+    araniyor: araniyor ?? this.araniyor,
+    arandi: arandi ?? this.arandi,
+    hata: hata ?? this.hata,
+    odak: odak ?? this.odak,
+    konumAraniyor: konumAraniyor,
+    konumEngeli: konumEngeli,
+  );
 }
 
 /// Harita seçicisi (ADR-0015 §4): haritada iğne bırakma ve "Ara" ile ad
@@ -82,6 +116,41 @@ class HaritaSecimiNotifier extends Notifier<HaritaSecimi> {
       arandi: state.arandi,
       odak: state.odak + 1,
     );
+  }
+
+  /// "Bulunduğum yer" (yalnızca sohbetteki seçici; istemci ADR-0028 §5):
+  /// konum izni **yalnızca burada** istenir ve konum bir kez okunur
+  /// (yaklaşık konum da kabul). Okunursa iğne oraya bırakılır ve harita
+  /// oraya gider; okunmazsa neden [HaritaSecimi.konumEngeli]'nde durur.
+  /// Konum bu durumun dışında hiçbir yere yazılmaz ve loglanmaz.
+  Future<void> konumaGit() async {
+    if (state.konumAraniyor) return;
+    state = state._ile(konumAraniyor: true);
+    final sonuc = await ref
+        .read(konumServisiProvider)
+        .tekSeferlikKonum(hassas: false);
+    if (!ref.mounted) return;
+    switch (sonuc) {
+      case KonumAlindi(:final nokta):
+        state = HaritaSecimi(
+          nokta: LatLng(
+            lat: double.parse(nokta.lat.toStringAsFixed(6)),
+            lng: double.parse(nokta.lng.toStringAsFixed(6)),
+          ),
+          arandi: state.arandi,
+          odak: state.odak + 1,
+        );
+      default:
+        state = state._ile(konumEngeli: sonuc);
+    }
+  }
+
+  /// İzin ya da konum ayarlarını açar ([konumaGit]'in engeline göre).
+  Future<bool> ayarlariAc() {
+    final servis = ref.read(konumServisiProvider);
+    return state.konumEngeli is KonumServisiKapali
+        ? servis.konumAyarlariniAc()
+        : servis.uygulamaAyarlariniAc();
   }
 
   /// [metin]'i arar. Boş metin ya da süren arama varken bir şey yapmaz.

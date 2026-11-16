@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/e2e/gecmis/arsiv_bicimi.dart';
 import 'package:tayfam/core/e2e/mesaj/dolgu.dart';
+import 'package:tayfam/core/e2e/mesaj/zarf_icerigi.dart';
 
 import '../signal/sahte_signal_motoru.dart';
 import 'sahteler.dart';
@@ -12,7 +13,7 @@ import 'sahteler.dart';
 final ArsivDuzMetni _duz = ArsivDuzMetni(
   gonderenId: karsiKullanici,
   olusturma: DateTime.utc(2026, 11, 11, 18, 30),
-  govde: 'Yarın 9\'da buluşalım mı? 🚐',
+  icerik: const MetinIcerigi('Yarın 9\'da buluşalım mı? 🚐'),
 );
 
 void main() {
@@ -101,7 +102,7 @@ void main() {
       expect(icerik[0], arsivBicimSurumu);
       final cozulen = await coz(icerik);
       expect(cozulen, isNotNull);
-      expect(cozulen!.govde, _duz.govde);
+      expect(cozulen!.icerik, _duz.icerik);
       expect(cozulen.gonderenId, karsiKullanici);
       expect(cozulen.olusturma, _duz.olusturma);
     });
@@ -128,7 +129,7 @@ void main() {
         duz: ArsivDuzMetni(
           gonderenId: karsiKullanici,
           olusturma: _duz.olusturma,
-          govde: 'x',
+          icerik: const MetinIcerigi('x'),
         ),
       );
       const ek = 1 + arsivNonceUzunlugu + arsivEtiketUzunlugu;
@@ -182,7 +183,7 @@ void main() {
         'gonderen': karsiKullanici,
         'created_at': '2026-11-11T18:30:00.000Z',
         't': 'metin',
-        'govde': _duz.govde,
+        'govde': _duz.icerik.metin,
       });
       expect(_duz.toString(), isNot(contains('buluşalım')));
       expect(ArsivDuzMetni.coz(dolguEkle(utf8.encode('{"v":2}'))), isNull);

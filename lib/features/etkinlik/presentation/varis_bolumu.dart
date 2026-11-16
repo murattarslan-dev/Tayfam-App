@@ -9,7 +9,7 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/varis_bildirimi.dart';
-import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 

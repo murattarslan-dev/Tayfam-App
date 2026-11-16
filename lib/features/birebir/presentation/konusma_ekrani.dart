@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,15 +8,20 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/baglanti/baglanti_bandi.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/e2e/gecmis/arsiv_okuyucu.dart';
 import 'package:tayfam/core/e2e/gecmis/gecmis_yoneticisi.dart';
+import 'package:tayfam/core/e2e/ek/ek_servisi.dart';
 import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
+import 'package:tayfam/core/medya/fotograf_secici.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/sohbet/akis_duzeni.dart';
+import 'package:tayfam/core/sohbet/ek_akislari.dart';
+import 'package:tayfam/core/sohbet/sohbet_ekleri.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/features/birebir/application/giden_mesaj.dart';
@@ -308,11 +314,40 @@ class _Akis extends ConsumerWidget {
                 ),
                 child: E2eCihazUyarisi(),
               ),
-            MesajYazmaAlani(onGonder: notifier.gonder),
+            MesajYazmaAlani(
+              onGonder: notifier.gonder,
+              onEk: () => unawaited(_ekEkle(context, ref)),
+            ),
           ],
         ],
       ],
     );
+  }
+
+  /// ⊕: ek menüsü → fotoğraf (seç, cihazda hazırla, onayla; gönderimde
+  /// uçtan uca şifrelenir) ya da yer (seç, onayla). Vazgeçilirse hiçbir
+  /// şey gönderilmez (tasarım 28; istemci ADR-0028 §4).
+  Future<void> _ekEkle(BuildContext context, WidgetRef ref) async {
+    final secim = await ekMenusuAc(context);
+    if (secim == null || !context.mounted) return;
+    final notifier = ref.read(konusmaProvider(konusmaId).notifier);
+    switch (secim) {
+      case EkSecimi.galeri || EkSecimi.kamera:
+        final goruntu = await sohbetFotografiSec(
+          context,
+          ref,
+          secim == EkSecimi.kamera
+              ? FotografKaynagi.kamera
+              : FotografKaynagi.galeri,
+          sifreli: true,
+        );
+        if (goruntu == null || !context.mounted) return;
+        notifier.fotografGonder(goruntu);
+      case EkSecimi.yer:
+        final yer = await yerSecVeOnayla(context);
+        if (yer == null || !context.mounted) return;
+        notifier.yerGonder(yer);
+    }
   }
 
   /// Konuşmanın başındaki bant: gelen istek, giden istek ya da silinmiş
@@ -343,18 +378,68 @@ class _Akis extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final e2e = ref.watch(e2eEtkinProvider);
     final giden = durum.gidenMi(mesaj);
-    // Her birebir mesaj uçtan uca şifrelidir (Tayfam-Api #151); metin
-    // yalnızca bellekte çözülmüş içerikten gelir.
-    final govde = icerik.mesajlar[mesaj.id]?.metin;
-    final metin = govde ?? (e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj);
+    // Her birebir mesaj uçtan uca şifrelidir (Tayfam-Api #151); içerik
+    // yalnızca bellekte çözülmüş zarftan gelir (metin, fotoğraf, yer;
+    // istemci ADR-0028 §3).
+    final cozulmus = icerik.mesajlar[mesaj.id]?.icerik;
+    final yedek = e2e ? m.e2e_mesaj_okunamiyor : m.e2e_sifreli_mesaj;
+    final (String metin, Widget? medya) = switch (cozulmus) {
+      null => (yedek, null),
+      MetinIcerigi(:final govde) => (govde, null),
+      FotografIcerigi(:final ek) => (
+        m.sohbet_fotograf_etiketi,
+        BirebirFotografi(
+          ek: ek,
+          etiket: m.sohbet_fotograf_etiketi,
+          // Zarftaki ek, mesajın sunucudaki ekiyle aynı olmalı.
+          kimlikTutmuyor: !ayniKimlik(
+            mesaj.attachmentUploadId ?? '',
+            ek.uploadId,
+          ),
+        ),
+      ),
+      YerIcerigi(:final yer) => (
+        m.sohbet_yer_etiketi(yer.ad ?? m.sohbet_yer_adsiz),
+        SohbetYerKarti(yer: yer, giden: giden),
+      ),
+    };
+    // Şikâyette iletilecek kanıt: metin, yer metni ya da cihazda çözülmüş
+    // fotoğraf (Tayfam-Api ADR-0031 §6).
+    final govde = switch (cozulmus) {
+      MetinIcerigi(:final govde) => govde,
+      YerIcerigi(:final yer) => m.sikayet_yer_kaniti(
+        yer.ad ?? m.sohbet_yer_adsiz,
+        yer.enlem.toStringAsFixed(6),
+        yer.boylam.toStringAsFixed(6),
+      ),
+      _ => null,
+    };
+    // Zarftaki ek mesajın ekiyle aynı değilse indirilmez, çözülmez ve
+    // şikâyete kanıt olarak eklenmez.
+    final fotograf = switch (cozulmus) {
+      FotografIcerigi(:final ek)
+          when ayniKimlik(mesaj.attachmentUploadId ?? '', ek.uploadId) =>
+        ref.watch(birebirEkProvider(ek)).value,
+      _ => null,
+    };
     final sikayet = ref.watch(birebirMesajSikayetiProvider);
     final silinebilir = giden && !mesaj.deleted;
     final sikayetEdilebilir =
-        !giden && !mesaj.deleted && govde != null && sikayet != null;
+        !giden &&
+        !mesaj.deleted &&
+        (govde != null || fotograf != null) &&
+        sikayet != null;
+    final alinti = switch (cozulmus) {
+      MetinIcerigi(:final govde) => govde,
+      FotografIcerigi() => m.sohbet_mesaj_fotograf,
+      YerIcerigi(:final yer) => yer.ad ?? m.sohbet_yer_adsiz,
+      null => null,
+    };
     return MesajOgesi(
       key: ValueKey(mesaj.id),
       mesaj: mesaj,
       metin: metin,
+      medya: medya,
       giden: giden,
       goruldu: goruldu,
       kuyruk: konum.grupSonu,
@@ -366,7 +451,9 @@ class _Akis extends ConsumerWidget {
                 context,
                 ref,
                 mesaj,
+                alinti: alinti,
                 govde: govde,
+                fotograf: fotograf,
                 silinebilir: silinebilir,
                 sikayet: sikayetEdilebilir ? sikayet : null,
               ),
@@ -382,7 +469,9 @@ class _Akis extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     DirectMessage mesaj, {
+    required String? alinti,
     required String? govde,
+    required Uint8List? fotograf,
     required bool silinebilir,
     required BirebirMesajSikayeti? sikayet,
   }) async {
@@ -392,7 +481,7 @@ class _Akis extends ConsumerWidget {
       builder: (sayfa) => AltSayfaIcerigi(
         baslik: m.birebir_mesaj_islemleri,
         children: [
-          if (govde != null)
+          if (alinti != null)
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 TayfamSpacing.s8,
@@ -401,7 +490,7 @@ class _Akis extends ConsumerWidget {
                 TayfamSpacing.s8,
               ),
               child: Text(
-                m.sohbet_mesaj_alinti(govde),
+                m.sohbet_mesaj_alinti(alinti),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: sayfa.yazi.bodySmall?.copyWith(
@@ -431,10 +520,16 @@ class _Akis extends ConsumerWidget {
       case _MesajIslemi.sil:
         await _sil(context, ref, mesaj.id);
       case _MesajIslemi.sikayet:
-        if (sikayet == null || govde == null) return;
-        // Şikâyet eden mesajın açık metnini kendi cihazından iletir
-        // (ADR-0018 §8); metin yalnızca şikâyet isteğine girer.
-        await sikayet(context, mesajId: mesaj.id, metin: govde);
+        if (sikayet == null || (govde == null && fotograf == null)) return;
+        // Şikâyet eden mesajın açık metnini ya da fotoğrafını kendi
+        // cihazından iletir (ADR-0018 §8, Tayfam-Api ADR-0031 §6); içerik
+        // yalnızca şikâyet isteğine ve kanıt yüklemesine girer.
+        await sikayet(
+          context,
+          mesajId: mesaj.id,
+          metin: fotograf == null ? govde : null,
+          fotograf: fotograf,
+        );
       case null:
         return;
     }

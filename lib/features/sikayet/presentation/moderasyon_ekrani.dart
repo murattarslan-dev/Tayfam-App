@@ -417,6 +417,10 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
     final adres = switch (s.targetType) {
       ReportTargetType.announcement => Adresler.duyuru(tayfaId, s.targetId),
       ReportTargetType.event => Adresler.etkinlik(tayfaId, s.targetId),
+      ReportTargetType.channelMessage => switch (s.channelId) {
+        final kanal? => Adresler.kanal(tayfaId, kanal),
+        null => null,
+      },
       _ => null,
     };
     if (adres != null) unawaited(context.push(adres));
@@ -464,6 +468,7 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
     final tur = s.targetType;
     final geriAlinabilir =
         geriAlinabilirTurler.contains(tur) &&
+        icerigeErisilebilir(s) &&
         (s.resolution == ModerationReportResolution.contentRemoved ||
             (onizleme?.gorunmuyor ?? false));
     return [
@@ -508,8 +513,11 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
     final konu = s.subjectUserId;
     final uye = tur == ReportTargetType.user;
     final uyeIslemleri = ref.watch(uyeIslemleriProvider);
+    final erisilebilir = icerigeErisilebilir(s);
     final acilabilir =
-        tur == ReportTargetType.announcement || tur == ReportTargetType.event;
+        tur == ReportTargetType.announcement ||
+        tur == ReportTargetType.event ||
+        (tur == ReportTargetType.channelMessage && erisilebilir);
     final simdi = ref.watch(simdiProvider)();
     // Önizleme: üyede adı, içerikte başlığı ya da "İçerik artık
     // görünmüyor"; başlığı olmayan türde (cevap, av kaydı) kutu yok.
@@ -618,7 +626,7 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
               etiket: m.sikayet_icerigi_ac,
               onPressed: _mesgul ? null : _icerigiAc,
             ),
-          if (kaldirilabilirTurler.contains(tur))
+          if (kaldirilabilirTurler.contains(tur) && erisilebilir)
             YikiciEylem(
               etiket: m.sikayet_kaldir,
               onPressed: _mesgul ? null : () => unawaited(_kaldir()),

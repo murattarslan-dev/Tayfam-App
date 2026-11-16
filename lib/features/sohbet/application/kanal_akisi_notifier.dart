@@ -5,8 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kuyruk/cevrimdisi_kuyruk.dart';
+import 'package:tayfam/core/medya/goruntu_hazirlama.dart';
+import 'package:tayfam/core/medya/medya_onbellegi.dart';
+import 'package:tayfam/core/medya/yukleyici.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
+import 'package:tayfam/core/sohbet/giden_icerik.dart';
+import 'package:tayfam/core/sohbet/paylasilan_yer.dart';
 import 'package:tayfam/features/sohbet/application/kanallar_notifier.dart';
 import 'package:tayfam/features/sohbet/data/kanal_deposu.dart';
 import 'package:tayfam/features/sohbet/data/kanal_mesaj_isi.dart';
@@ -121,19 +126,43 @@ class KanalAkisiNotifier extends AsyncNotifier<KanalAkisi> {
   /// [mesajEnUzun]'dan uzun metin gönderilmez; `false` döner.
   bool gonder(String metin) {
     if (metin.trim().isEmpty || metin.length > mesajEnUzun) return false;
+    _kuyruga(GidenMetin(metin));
+    return true;
+  }
+
+  /// Cihazda hazırlanmış (metadata'sı silinmiş; ADR-0021) fotoğrafı
+  /// kuyruğa koyar; gönderimde `chat_photo` olarak yüklenip mesaj olur.
+  /// Alt yazı yoktur (istemci ADR-0028 §1).
+  void fotografGonder(HazirGoruntu goruntu) => _kuyruga(
+    GidenFotograf(
+      goruntu: goruntu,
+      yuklemeKimligi: ref.read(istekKimligiUreticisiProvider)(),
+    ),
+  );
+
+  /// Kullanıcının haritada görüp onayladığı yeri kuyruğa koyar. Değerler
+  /// sınır dışıysa `false`.
+  bool yerGonder(PaylasilanYer yer) {
+    if (!yer.gecerliMi) return false;
+    _kuyruga(GidenYer(yer));
+    return true;
+  }
+
+  void _kuyruga(GidenIcerik icerik) {
     ref
         .read(cevrimdisiKuyrukProvider.notifier)
         .ekle(
           KanalMesajIsi(
             tayfaId: kanal.tayfaId,
             kanalId: kanal.kanalId,
-            metin: metin,
+            icerik: icerik,
             istekKimligi: ref.read(istekKimligiUreticisiProvider)(),
             realtime: ref.read(realtimeIstemcisiProvider),
             depo: ref.read(kanalDeposuProvider),
+            yukleyici: ref.read(medyaYukleyiciProvider),
+            medya: ref.read(medyaOnbellegiProvider),
           ),
         );
-    return true;
   }
 
   /// Mesajı siler (kendi mesajı ya da yönetimin moderasyonu; kararı sunucu

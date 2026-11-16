@@ -434,4 +434,29 @@ abstract final class TayfamSizes {
 
   /// Örnek cevabın başındaki alıntı çizgisi (3 px).
   static const double alintiCizgisi = 3;
+
+  /// Sohbet balonundaki fotoğraf ve yer kartının en fazla genişliği
+  /// (tasarım 28: 236 px; balonun en fazla oranıyla birlikte uygulanır).
+  static const double sohbetEkGenisligi = 236;
+
+  /// Sohbet balonundaki fotoğrafın en fazla yüksekliği (dikey fotoğraf
+  /// akışı kaplamasın).
+  static const double sohbetFotografEnYuksek = 300;
+
+  /// Fotoğrafın oranı bilinmezken yer tutucunun oranı (4:3).
+  static const double sohbetFotografVarsayilanOran = 4 / 3;
+
+  /// Balondaki fotoğraf oranının alt ve üst sınırı (çok dar ya da çok
+  /// geniş görüntü kırpılır).
+  static const double sohbetFotografEnDarOran = .6;
+  static const double sohbetFotografEnGenisOran = 2;
+
+  /// Sohbet yer kartındaki haritanın yüksekliği (tasarım 28: 110 px).
+  static const double sohbetYerHaritasi = 110;
+
+  /// "Yeri gönder" onay sayfasındaki haritanın yüksekliği (170 px).
+  static const double yerOnayHaritasi = 170;
+
+  /// Tam ekran fotoğrafta en çok yakınlaştırma.
+  static const double fotografEnCokYakinlik = 4;
 }

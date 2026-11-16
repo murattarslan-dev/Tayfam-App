@@ -6,11 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
-import 'package:tayfam/features/etkinlik/presentation/harita_secici_ekrani.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 
 import '../../yardimcilar.dart';
-import 'sahteler.dart';
+import '../../features/etkinlik/sahteler.dart';
 
 const YerSonucu _abant = YerSonucu(
   ad: 'Abant Gölü, Bolu, Türkiye',
@@ -86,6 +86,9 @@ void main() {
       expect(find.byType(HaritaSeciciEkrani), findsOneWidget);
       expect(find.text(arbMetni('etkinlik_harita_atif')), findsOneWidget);
       expect(find.text(arbMetni('etkinlik_harita_ipucu')), findsOneWidget);
+      // Etkinlik seçicisinde cihaz konumu istenmez (ADR-0015 §4); "Bulunduğum
+      // yer" yalnızca sohbette (ADR-0028 §5).
+      expect(find.text(arbMetni('harita_bulundugum_yer')), findsNothing);
 
       final secButonu = tester.widget<FilledButton>(
         find.ancestor(

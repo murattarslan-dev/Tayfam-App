@@ -13,9 +13,9 @@ import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
-import 'package:tayfam/features/etkinlik/data/konum_servisi.dart';
+import 'package:tayfam/core/konum/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
-import 'package:tayfam/features/etkinlik/presentation/osm_harita.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/sikayet/data/sikayet_deposu.dart';
 
 import '../../yardimcilar.dart';
@@ -295,7 +295,7 @@ final class SahteKonumServisi implements KonumServisi {
   int konumAyarlari = 0;
 
   @override
-  Future<KonumSonucu> tekSeferlikKonum() async {
+  Future<KonumSonucu> tekSeferlikKonum({bool hassas = true}) async {
     okuma++;
     return sonuc;
   }

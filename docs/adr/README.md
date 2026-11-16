@@ -39,6 +39,7 @@ olarak anar.
 | [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi |
 | [0025](0025-etkinlik-fotograf-albumu.md) | Etkinlik fotoğraf albümü (istemci): çoklu seçim, bellekte yükleme kuyruğu, görüntüleyici | Kabul edildi |
 | [0026](0026-anlik-etkinlik-istemci.md) | Anlık (bireysel) etkinlik (istemci) | Kabul edildi |
+| [0028](0028-sohbet-ekleri-fotograf-ve-yer.md) | Sohbet ekleri: fotoğraf (kanal ve uçtan uca birebir), yer, kanal mesajı şikâyeti | Kabul edildi |
 
 ## Şablon
 

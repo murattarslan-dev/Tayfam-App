@@ -37,4 +37,5 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 | Etkinlik fotoğraf albümü | [`25-etkinlik-albumu/`](25-etkinlik-albumu/README.md) | 9 |
 | "Boşum": boş vakit | [`26-bosum/`](26-bosum/README.md) | 10 |
 | Arkadaş önerisi ve profilleme | [`27-arkadas-onerisi/`](27-arkadas-onerisi/README.md) | 6 |
+| Sohbette fotoğraf ve yer | [`28-sohbet-fotograf-yer/`](28-sohbet-fotograf-yer/README.md) | 11 |
 | Anlık (bireysel) etkinlik | [`29-anlik-etkinlik/`](29-anlik-etkinlik/README.md) | — (yalnızca metin; mevcut iskelet) |

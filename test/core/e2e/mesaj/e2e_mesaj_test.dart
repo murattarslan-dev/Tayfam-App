@@ -46,7 +46,10 @@ void main() {
     });
 
     test('zarf içeriği: v1 metin; bozuk biçim null', () {
-      expect(zarfIcerigiCoz(zarfIcerigiKodla('Selam 👋')), 'Selam 👋');
+      expect(
+        zarfIcerigiCoz(zarfIcerigiKodla(const MetinIcerigi('Selam 👋'))),
+        const MetinIcerigi('Selam 👋'),
+      );
       expect(zarfIcerigiCoz(Uint8List.fromList([1, 2, 3])), isNull);
       final baska = dolguEkle(
         Uint8List.fromList(utf8.encode('{"v":2,"t":"metin","govde":"x"}')),

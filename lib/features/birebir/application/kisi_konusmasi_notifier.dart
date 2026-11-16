@@ -13,6 +13,8 @@ import 'package:tayfam/features/birebir/application/konusma_listesi_notifier.dar
 import 'package:tayfam/features/birebir/application/mesaj_kurallari.dart';
 import 'package:tayfam/features/birebir/data/birebir_deposu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
+import 'package:tayfam/core/e2e/mesaj/e2e_mesaj.dart' show MetinIcerigi;
+import 'package:tayfam/core/sohbet/giden_icerik.dart';
 
 /// Kişiyle konuşmayı ararken okunan en çok sayfa (sayfa başına 100
 /// konuşma). Sözleşmede kişiye göre konuşma bulan bir uç yoktur.
@@ -108,7 +110,7 @@ class YeniMesajNotifier extends Notifier<YeniMesajDurumu> {
     if (!birebirMetniGecerli(metin)) return false;
     final giden = GidenMesaj(
       istekKimligi: ref.read(istekKimligiUreticisiProvider)(),
-      metin: metin,
+      icerik: GidenMetin(metin),
     );
     state = YeniMesajDurumu(giden: giden);
     unawaited(_gonder(giden));
@@ -134,12 +136,14 @@ class YeniMesajNotifier extends Notifier<YeniMesajDurumu> {
 
   Future<void> _gonder(GidenMesaj giden) async {
     final BirebirGonderimi sonuc;
+    final icerik = giden.icerik;
+    if (icerik is! GidenMetin) return;
     try {
       sonuc = await ref
           .read(birebirGondericiProvider)
           .gonder(
             aliciId: kullaniciId,
-            metin: giden.metin,
+            icerik: MetinIcerigi(icerik.metin),
             istekKimligi: giden.istekKimligi,
           );
     } on OturumYok catch (hata) {

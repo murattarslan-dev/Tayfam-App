@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -74,14 +76,17 @@ SahteTayfaTasima _konusmaTasimasi({
 
 /// Şikâyet kancasına verilenler.
 final class _SikayetKaydi {
-  final List<(String, String)> cagrilar = [];
+  final List<(String, String?)> cagrilar = [];
+  final List<Uint8List?> fotograflar = [];
 
   Override get override => birebirMesajSikayetiProvider.overrideWithValue((
     context, {
     required mesajId,
-    required metin,
+    metin,
+    fotograf,
   }) async {
     cagrilar.add((mesajId, metin));
+    fotograflar.add(fotograf);
   });
 }
 
