@@ -6,7 +6,9 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/features/arkadas/application/arkadas_bulma_notifier.dart';
 import 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart';
+import 'package:tayfam/features/arkadas/application/bildirim_yanitlari.dart';
 import 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart';
+import 'package:tayfam/features/arkadas/application/oneriler_notifier.dart';
 import 'package:tayfam/features/arkadas/application/tayfa_davetleri_notifier.dart';
 
 import '../../yardimcilar.dart';
@@ -351,6 +353,79 @@ void main() {
         isNull,
       );
       expect(tasima.giden('DELETE', davetimYolu), hasLength(1));
+    });
+  });
+
+  group('arkadaş önerileri', () {
+    SahteTayfaTasima tasima0([Map<String, TayfaYaniti>? ek]) =>
+        arkadasTasimasi({
+          'GET $onerilerYolu': yanit({
+            'suggestions': [oneriJson(kisiId1), oneriJson(kisiId2)],
+          }),
+          ...?ek,
+        });
+
+    Future<ProviderContainer> acikListe(SahteTayfaTasima tasima) async {
+      final kap = _kap(tasima);
+      final d = kap.listen(arkadasOnerileriProvider, (_, _) {});
+      addTearDown(d.close);
+      await kap.read(arkadasOnerileriProvider.future);
+      return kap;
+    }
+
+    List<String> kimlikler(ProviderContainer kap) => [
+      for (final o in kap.read(arkadasOnerileriProvider).value!) o.userId,
+    ];
+
+    test('liste okunuyor; modelde puan ya da gerekçe alanı yok', () async {
+      final kap = await acikListe(tasima0());
+      expect(kimlikler(kap), [kisiId1, kisiId2]);
+      expect(
+        kap.read(arkadasOnerileriProvider).value!.first.toJson().keys,
+        unorderedEquals(['user_id', 'display_name', 'suggested_at']),
+      );
+    });
+
+    test('bildirimden "Kapat" açık listeden de düşürüyor', () async {
+      final tasima = tasima0({'DELETE $oneriYolu': yanit(null)});
+      final kap = await acikListe(tasima);
+      final hata = await kap
+          .read(bildirimYanitlariProvider)
+          .oneriyiKapat(kisiId1);
+      expect(hata, isNull);
+      expect(
+        tasima.giden('DELETE', oneriYolu).single.yolParametreleri['user_id'],
+        kisiId1,
+      );
+      expect(kimlikler(kap), [kisiId2]);
+    });
+
+    test('bildirimden "Arkadaş ekle": istek gövdesinde kimlik; arkadaşlık '
+        'hemen kurulduysa arkadas true', () async {
+      final tasima = tasima0({
+        'POST $isteklerYolu': yanit(arkadasJson(kisiId2)),
+      });
+      final kap = await acikListe(tasima);
+      final sonuc = await kap
+          .read(bildirimYanitlariProvider)
+          .oneriyiEkle(kisiId2);
+      expect(sonuc.hata, isNull);
+      expect(sonuc.arkadas, isTrue);
+      expect(tasima.giden('POST', isteklerYolu).single.govde, {
+        'user_id': kisiId2,
+      });
+      expect(kimlikler(kap), [kisiId1]);
+    });
+
+    test('hata olursa liste değişmiyor', () async {
+      final tasima = tasima0({'POST $isteklerYolu': yanit(const ApiOffline())});
+      final kap = await acikListe(tasima);
+      final sonuc = await kap
+          .read(arkadasOnerileriProvider.notifier)
+          .ekle(kisiId1);
+      expect(sonuc.hata, isA<ApiOffline>());
+      expect(sonuc.arkadas, isFalse);
+      expect(kimlikler(kap), [kisiId1, kisiId2]);
     });
   });
 }

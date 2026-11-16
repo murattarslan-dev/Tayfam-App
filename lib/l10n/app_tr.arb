@@ -241,6 +241,20 @@
   "@bildirim_sonuc_reddedildi": {
     "description": "Bildirim satırında arkadaşlık isteği ya da tayfa daveti reddedilince düğmelerin yerinde görünen sonuç; karşı tarafa bildirilmez."
   },
+  "bildirim_sonuc_oneri_kapatildi": "Bir daha önerilmeyecek",
+  "@bildirim_sonuc_oneri_kapatildi": {
+    "description": "Bildirim satırında arkadaş önerisi kapatılınca düğmelerin yerinde görünen sonuç; karşı tarafa bildirilmez."
+  },
+  "bildirim_arkadas_onerisi": "Arkadaş önerisi: {kisi}",
+  "@bildirim_arkadas_onerisi": {
+    "description": "Arkadaş önerisi bildiriminin metni (friend_suggestion). Gerekçe, puan ya da ortak etkinlik sayısı yazılmaz.",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
   "bildirim_yoklamayi_ac": "Yoklamayı aç",
   "@bildirim_yoklamayi_ac": {
     "description": "Güvenlik uyarısı kartında (yürüyüşçü zamanında dönmedi) etkinliği açan bağlantı."
@@ -4185,6 +4199,42 @@
   "@profil_vazgec": {
     "description": "Profil ekranlarındaki onay pencerelerinde işlemi yapmadan kapatan düğme."
   },
+  "profil_profilleme": "Profilleme",
+  "@profil_profilleme": {
+    "description": "Profil → Gizlilik altındaki profilleme anahtarının başlığı."
+  },
+  "profil_profilleme_aciklama": "Birlikte katıldığın etkinliklerden arkadaş önerisi çıkarılır. Puan kimseye gösterilmez.",
+  "@profil_profilleme_aciklama": {
+    "description": "Profilleme anahtarının altındaki, ne için kullanıldığını anlatan kısa açıklama."
+  },
+  "profil_beni_onerme": "Beni önerme",
+  "@profil_beni_onerme": {
+    "description": "Profil → Gizlilik altındaki \"Beni önerme\" anahtarının başlığı."
+  },
+  "profil_beni_onerme_aciklama": "Açıkken kimseye önerilmezsin; sen öneri almaya devam edersin.",
+  "@profil_beni_onerme_aciklama": {
+    "description": "\"Beni önerme\" anahtarının altındaki kısa açıklama."
+  },
+  "profil_beni_onerme_pasif": "Profilleme kapalıyken zaten kimseye önerilmezsin.",
+  "@profil_beni_onerme_pasif": {
+    "description": "Profilleme kapalıyken pasif \"Beni önerme\" anahtarının açıklaması."
+  },
+  "profil_profilleme_kapat_baslik": "Profilleme kapatılsın mı?",
+  "@profil_profilleme_kapat_baslik": {
+    "description": "Profillemeyi kapatma onay penceresinin başlığı."
+  },
+  "profil_profilleme_kapat_aciklama": "Arkadaşlık puanların hemen silinir, açık öneriler geri çekilir ve artık öneri almazsın. Yeniden açarsan öneriler ertesi gün yeniden hesaplanır.",
+  "@profil_profilleme_kapat_aciklama": {
+    "description": "Profillemeyi kapatma onay penceresinin açıklaması."
+  },
+  "profil_profilleme_kapat_onay": "Kapat",
+  "@profil_profilleme_kapat_onay": {
+    "description": "Profillemeyi kapatma onay penceresindeki onay düğmesi."
+  },
+  "profil_sosyal_ayar_yuklenemedi": "Profilleme ayarların yüklenemedi.",
+  "@profil_sosyal_ayar_yuklenemedi": {
+    "description": "Profilleme ve \"Beni önerme\" ayarları okunamayınca görünen hata satırı."
+  },
   "profil_referans_baslik": "Referans kodun",
   "@profil_referans_baslik": {
     "description": "Profil sekmesindeki ilk bölümün başlığı; kullanıcının kendi referans kodu."
@@ -6837,6 +6887,22 @@
   "@arkadas_istek_gonderildi": {
     "description": "Arkadaşlık isteği gönderilince kısa süre görünen bildirim."
   },
+  "arkadas_oneriler_baslik": "Önerilen kişiler",
+  "@arkadas_oneriler_baslik": {
+    "description": "Arkadaşlar ekranındaki arkadaş önerileri bölümünün başlığı."
+  },
+  "arkadas_oneriler_aciklama": "Birlikte katıldığınız etkinliklere göre önerilir; öneriyi yalnızca sen görürsün.",
+  "@arkadas_oneriler_aciklama": {
+    "description": "Arkadaş önerileri bölümünün altındaki genel açıklama. Kişi başına gerekçe değildir."
+  },
+  "arkadas_oneri_kapat": "Kapat",
+  "@arkadas_oneri_kapat": {
+    "description": "Arkadaş önerisini kapatan düğme; kişi bir daha önerilmez, karşı tarafa bildirilmez."
+  },
+  "arkadas_oneri_kapatildi": "Öneri kapatıldı. Bir daha önerilmeyecek.",
+  "@arkadas_oneri_kapatildi": {
+    "description": "Arkadaş önerisi kapatılınca kısa süre görünen bildirim."
+  },
   "arkadas_artik_arkadassiniz": "Artık arkadaşsınız.",
   "@arkadas_artik_arkadassiniz": {
     "description": "Arkadaşlık kurulunca (istek kabul edilince) kısa süre görünen bildirim."
@@ -9370,6 +9436,183 @@
   "yonetim_ban_diger_gerekceler": "Diğer gerekçeleri göster",
   "@yonetim_ban_diger_gerekceler": {
     "description": "Ban penceresinde kısa gerekçe listesinin altındaki düğme; kapalı listenin geri kalanını açar."
+  },
+  "bosum_baslik": "Boş vaktin",
+  "@bosum_baslik": {
+    "description": "\"Boşum\" ekranının başlığı ve arkadaşlar ekranıyla profildeki giriş satırının başlığı. Kullanıcının arkadaşlarına görünen boş günleri."
+  },
+  "bosum_giris_sayi": "{sayi, plural, other{{sayi} gün boşsun · arkadaşların görür}}",
+  "@bosum_giris_sayi": {
+    "description": "\"Boş vaktin\" giriş satırının açıklaması; kullanıcının girdiği gelecek boş gün sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "bosum_giris_yok": "Boş günlerini arkadaşlarınla paylaş",
+  "@bosum_giris_yok": {
+    "description": "\"Boş vaktin\" giriş satırının açıklaması; henüz boş gün girilmemişken."
+  },
+  "bosum_aciklama": "Boş olduğun günleri gir; tüm arkadaşların görür. Kimseye bildirim gitmez, geçmiş günler kendiliğinden silinir.",
+  "@bosum_aciklama": {
+    "description": "\"Boş vaktin\" ekranının üstündeki gizlilik açıklaması: kim görür, bildirim yok, geçmiş günler silinir."
+  },
+  "bosum_ekle": "Boş gün ekle",
+  "@bosum_ekle": {
+    "description": "\"Boş vaktin\" ekranındaki birincil düğme ve gün ekleme ekranının başlığı."
+  },
+  "bosum_onumuzdeki": "Önümüzdeki günler",
+  "@bosum_onumuzdeki": {
+    "description": "\"Boş vaktin\" ekranında kendi boş günlerinin listesinin bölüm başlığı."
+  },
+  "bosum_liste_bos": "Henüz boş gün eklemedin. Eklediğin günler burada görünür.",
+  "@bosum_liste_bos": {
+    "description": "\"Boş vaktin\" ekranında hiç boş gün yokken listenin yerindeki metin."
+  },
+  "bosum_bugun": "Bugün",
+  "@bosum_bugun": {
+    "description": "Boş gün satırının başlığı ve gün çipi: gün bugünse."
+  },
+  "bosum_yarin": "Yarın",
+  "@bosum_yarin": {
+    "description": "Boş gün satırının başlığı ve gün çipi: gün yarınsa."
+  },
+  "bosum_dilim_sabah": "Sabah",
+  "@bosum_dilim_sabah": {
+    "description": "Günün dilimi: sabah. Saat değil, kaba bir bölüm."
+  },
+  "bosum_dilim_ogleden_sonra": "Öğleden sonra",
+  "@bosum_dilim_ogleden_sonra": {
+    "description": "Günün dilimi: öğleden sonra."
+  },
+  "bosum_dilim_aksam": "Akşam",
+  "@bosum_dilim_aksam": {
+    "description": "Günün dilimi: akşam."
+  },
+  "bosum_dilim_tum_gun": "Tüm gün",
+  "@bosum_dilim_tum_gun": {
+    "description": "Günün dilimi: tüm gün; diğer dilimlerle birlikte seçilmez."
+  },
+  "bosum_dilim_ayirici": " · ",
+  "@bosum_dilim_ayirici": {
+    "description": "Bir günün dilimleri arasındaki ayırıcı (\"Sabah · Akşam\"). Başında ve sonunda boşluk vardır."
+  },
+  "bosum_not_alinti": "“{not}”",
+  "@bosum_not_alinti": {
+    "description": "Boş gün satırında kullanıcının notu, tırnak içinde.",
+    "placeholders": {
+      "not": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_gunler_baslik": "Hangi günler?",
+  "@bosum_gunler_baslik": {
+    "description": "Gün ekleme ekranında gün çiplerinin başlığı."
+  },
+  "bosum_gunler_aciklama": "Önümüzdeki 30 gün içinden bir ya da birkaç gün seç. Zaten eklediğin günler listeden değiştirilir.",
+  "@bosum_gunler_aciklama": {
+    "description": "Gün ekleme ekranında gün çiplerinin açıklaması."
+  },
+  "bosum_gun_ekli": "{gun}, zaten ekli",
+  "@bosum_gun_ekli": {
+    "description": "Ekran okuyucu: gün ekleme ekranında daha önce eklenmiş (seçilemeyen) gün çipi.",
+    "placeholders": {
+      "gun": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_dilim_baslik": "Ne zaman?",
+  "@bosum_dilim_baslik": {
+    "description": "Gün ekleme ve düzenlemede dilim çiplerinin başlığı."
+  },
+  "bosum_dilim_kural": "“Tüm gün” diğerleriyle birlikte seçilmez.",
+  "@bosum_dilim_kural": {
+    "description": "Dilim çiplerinin altındaki kural açıklaması."
+  },
+  "bosum_not_etiketi": "Not (isteğe bağlı)",
+  "@bosum_not_etiketi": {
+    "description": "Boş güne eklenebilen kısa notun alan etiketi."
+  },
+  "bosum_not_ipucu": "Ör. Akşam yürüyüşe varım",
+  "@bosum_not_ipucu": {
+    "description": "Not alanı boşken gösterilen örnek; alan etiketi ayrıca görünür."
+  },
+  "bosum_not_sayac": "{sayi}/{enCok}",
+  "@bosum_not_sayac": {
+    "description": "Not alanının altındaki karakter sayacı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      },
+      "enCok": {
+        "type": "int"
+      }
+    }
+  },
+  "bosum_kaydet": "Kaydet",
+  "@bosum_kaydet": {
+    "description": "Boş gün düzenleme sayfasındaki kaydet düğmesi; gün ekleme ekranında gün seçilmemişken de bu metin görünür (devre dışı)."
+  },
+  "bosum_kaydet_sayi": "{sayi, plural, other{{sayi} günü kaydet}}",
+  "@bosum_kaydet_sayi": {
+    "description": "Gün ekleme ekranındaki kaydet düğmesi; seçilen gün sayısıyla.",
+    "placeholders": {
+      "sayi": {
+        "type": "int"
+      }
+    }
+  },
+  "bosum_duzenle_aciklama": "Boş günü düzenle",
+  "@bosum_duzenle_aciklama": {
+    "description": "Boş gün düzenleme sayfasında günün altındaki açıklama."
+  },
+  "bosum_sil": "Bu günü sil",
+  "@bosum_sil": {
+    "description": "Boş gün düzenleme sayfasındaki yıkıcı düğme; günün boş vaktini siler."
+  },
+  "bosum_rozet_bugun": "Bugün boş",
+  "@bosum_rozet_bugun": {
+    "description": "Arkadaş listesindeki rozet: arkadaş bugün boş."
+  },
+  "bosum_rozet_yarin": "Yarın boş",
+  "@bosum_rozet_yarin": {
+    "description": "Arkadaş listesindeki rozet: arkadaş yarın boş."
+  },
+  "bosum_rozet_gun": "{gun} boş",
+  "@bosum_rozet_gun": {
+    "description": "Arkadaş listesindeki rozet: arkadaş önümüzdeki 7 gün içinde o gün boş (\"Cumartesi boş\").",
+    "placeholders": {
+      "gun": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_rozet_semantik": "{ad}: {durum}. Boş günlerini gör",
+  "@bosum_rozet_semantik": {
+    "description": "Ekran okuyucu: arkadaş satırındaki rozet düğmesi.",
+    "placeholders": {
+      "ad": {
+        "type": "String"
+      },
+      "durum": {
+        "type": "String"
+      }
+    }
+  },
+  "bosum_arkadas_alt": "Önümüzdeki 30 gündeki boş günleri",
+  "@bosum_arkadas_alt": {
+    "description": "Arkadaşın boş günleri alttan sayfasında adın altındaki açıklama."
+  },
+  "bosum_arkadas_bos": "Şu an görünen boş günü yok.",
+  "@bosum_arkadas_bos": {
+    "description": "Arkadaşın boş günleri alttan sayfasında gün yokken."
+  },
+  "bosum_yukleniyor": "Boş günler yükleniyor",
+  "@bosum_yukleniyor": {
+    "description": "Ekran okuyucu: boş günler yüklenirken."
   },
   "album_baslik": "Albüm",
   "@album_baslik": {

@@ -62,6 +62,15 @@ final class ProfilDeposu {
   Future<bool> kendisiMi(String kullaniciId) async =>
       (await _me.getAccount()).userId == kullaniciId;
 
+  /// `GET /v1/me/social-settings`: "Profilleme" ve "Beni önerme"
+  /// (Tayfam-Api ADR-0030 §5); hiç değiştirilmediyse varsayılanlar.
+  Future<SocialSettings> sosyalAyarlar() => _me.getSocialSettings();
+
+  /// `PATCH /v1/me/social-settings`: verilen alanlar değişir; güncel
+  /// ayarlar döner.
+  Future<SocialSettings> sosyalAyarlariDegistir(SocialSettingsUpdate d) =>
+      _me.updateSocialSettings(body: d);
+
   /// `DELETE /v1/me` (204). Son 10 dakikada Google ile giriş yapılmamışsa
   /// `reauthentication-required`.
   Future<void> hesabiSil() => _me.deleteAccount();

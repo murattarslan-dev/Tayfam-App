@@ -50,17 +50,16 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     final sayi = ref.watch(okunmamisBildirimProvider).value ?? 0;
     final liste = durum.value;
     final hata = durum.error;
-    final okunmamisVar =
-        sayi > 0 || (liste?.ogeler.any((b) => !b.read) ?? false);
+    // Geçerliliğini yitirmiş arkadaş önerisi gösterilmez (sözleşme).
+    final gorunenler = [...?liste?.ogeler.where(bildirimGorunurMu)];
+    final okunmamisVar = sayi > 0 || gorunenler.any((b) => !b.read);
     final simdi = ref.watch(simdiProvider)();
     final izinKarti = _izinKartiGosterilsin();
-    final uyarilar = [...?liste?.ogeler.where(sabitUyariMi)];
-    final gruplar = liste == null
-        ? const <(BildirimGrubu, List<Notification>)>[]
-        : bildirimleriGrupla(
-            liste.ogeler.where((b) => !sabitUyariMi(b)),
-            simdi,
-          );
+    final uyarilar = [...gorunenler.where(sabitUyariMi)];
+    final gruplar = bildirimleriGrupla(
+      gorunenler.where((b) => !sabitUyariMi(b)),
+      simdi,
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -117,7 +116,7 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
                         ),
                       ),
                     )
-                  else if (liste.ogeler.isEmpty)
+                  else if (gorunenler.isEmpty && !liste.dahaVar)
                     const BosBildirimler()
                   else ...[
                     for (final (grup, bildirimler) in gruplar) ...[
