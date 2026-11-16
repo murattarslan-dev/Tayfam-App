@@ -40,7 +40,10 @@ dokununca 30 günün tamamı ve birebir mesaj. "Bir şey yapalım" (anlık etkin
 bu bölümde yok; anlık etkinlik istemci işi (#198) alttan sayfanın eylem
 satırına ekler.
 
-Bu bölümün arayüz kararları (mevcut bileşenlerle):
+Bu bölümün arayüz kararları (mevcut bileşenlerle). PR #203 incelemesinde
+(2026-11-16) kabul edildi: iki giriş noktası kalır, rozet ayrı düğmedir
+(kişi profiline "Boş günleri" bölümü şimdilik yok), ekli günler devre
+dışıdır, silme ayrı onay istemez.
 
 1. **Giriş iki yerde, aynı satır.** Arkadaşlar ekranında üstteki düğmelerin
    ve istek kartının altında tek satırlık kart ("Boş vaktin", açıklama "N gün

@@ -20,7 +20,7 @@ import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-// "Boşum" ekranları (Tayfam-Api ADR-0029; tasarım 25-bosum). Gün takvim
+// "Boşum" ekranları (Tayfam-Api ADR-0029; tasarım 26-bosum). Gün takvim
 // günüdür, saat değildir; "bugün" Europe/Istanbul tarihidir. Günler, dilimler
 // ve not log'a yazılmaz (kesin kural 3).
 

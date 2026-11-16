@@ -7,7 +7,7 @@ import 'package:tayfam/core/zaman/takvim_gunu.dart';
 import 'package:tayfam/features/arkadas/application/islem.dart';
 import 'package:tayfam/features/arkadas/data/arkadas_deposu.dart';
 
-/// "Boşum" (Tayfam-Api ADR-0029; tasarım 25-bosum). Boş vakit kişinin
+/// "Boşum" (Tayfam-Api ADR-0029; tasarım 26-bosum). Boş vakit kişinin
 /// kendi girdiği gün ve dilimlerdir; tüm arkadaşları görür, bildirim
 /// gitmez. Günler ve not yalnızca bellektedir (ADR-0006), log'a yazılmaz
 /// (kesin kural 3: kişinin programıdır).

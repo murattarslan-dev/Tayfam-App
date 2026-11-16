@@ -32,7 +32,7 @@ const int _istekAvatarSayisi = 2;
 /// Arkadaşlar (`/profil/arkadaslar`; ADR-0018 §7; 2026-11-13 tasarım:
 /// Profil-Arkadaslar): üstte "Arkadaş ekle" (alttan sayfa) ve "Kodumu
 /// paylaş", bekleyen gelen istek varsa sayılı kart, "Boş vaktin" girişi
-/// (tasarım 25-bosum), arkadaş listesi ve en altta "Engellenenler". Kişiye
+/// (tasarım 26-bosum), arkadaş listesi ve en altta "Engellenenler". Kişiye
 /// dokununca profili açılır; arkadaşlıktan çıkarma, şikâyet ve engelleme
 /// oradadır.
 ///
@@ -265,7 +265,7 @@ class _ArkadasSatiri extends ConsumerWidget {
 /// Profil sekmesindeki "Arkadaşlar" bölümü (ADR-0018 §7; 2026-11-13
 /// tasarım: Profil-Ana): başlıkta "Arkadaş ekle" (alttan sayfa); kartta
 /// "Arkadaşların" (ilk sayfadaki ilk üç arkadaşın avatarı, sayı yok),
-/// "Boş vaktin" (tasarım 25-bosum), "Arkadaşlık istekleri" ve "Tayfa
+/// "Boş vaktin" (tasarım 26-bosum), "Arkadaşlık istekleri" ve "Tayfa
 /// davetleri". Bekleyen istek ya da davet
 /// varsa satırda nokta ve açıklama; sayı yalnızca ilgili ekranda.
 class ArkadaslikGirisleri extends ConsumerWidget {

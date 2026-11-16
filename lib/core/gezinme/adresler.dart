@@ -272,7 +272,7 @@ abstract final class Adresler {
   static const engellenenler = '$arkadaslar/$engellenenlerYolu';
 
   /// "Boşum" (kendi boş günlerin) ekranının arkadaşlar altındaki yolu
-  /// (Tayfam-Api ADR-0029; tasarım 25-bosum).
+  /// (Tayfam-Api ADR-0029; tasarım 26-bosum).
   static const bosVakitYolu = 'bos-vakit';
 
   /// Kendi boş günlerin.
