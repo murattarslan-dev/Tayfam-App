@@ -140,7 +140,7 @@ kart iskeletini kullanır (ADR-0015 §5).
     "Anlatmak istersen tayfayı şikâyet edebilirsin; şikâyet yalnızca
     Tayfam'a gider. Acil bir tehlike varsa 112'yi ara." → "Tayfayı
     şikâyet et" (mevcut şikâyet sayfası, hedef `tayfa`; tayfa
-    yöneticileri görmez) / "Şimdi değil". Etkinlik şikâyeti seçilmedi:
+    yöneticileri görmez) / "Vazgeç" (ortak onay penceresi). Etkinlik şikâyeti seçilmedi:
     o tayfanın moderasyon kuyruğuna düşer ve şikâyet edeni yöneticiye
     gösterirdi.
 

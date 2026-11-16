@@ -147,6 +147,16 @@
       }
     }
   },
+  "bildirim_guvenlik_donmedi": "{kisi} henüz \"Döndüm\" demedi",
+  "@bildirim_guvenlik_donmedi": {
+    "description": "Bildirim metni (güvenlik, `safety_alert`): kullanıcıyı güvenlik kişisi seçen kişi, etkinliğin bitişi ve toleransı geçtiği halde \"Döndüm\" demedi. Tayfa, etkinlik ve yer yazılmaz.",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
   "bildirim_arkadaslik_istegi": "{kisi} sana arkadaşlık isteği gönderdi",
   "@bildirim_arkadaslik_istegi": {
     "description": "Bildirim metni: kullanıcıya arkadaşlık isteği geldi (`friend_request`).",
@@ -258,6 +268,10 @@
   "bildirim_yoklamayi_ac": "Yoklamayı aç",
   "@bildirim_yoklamayi_ac": {
     "description": "Güvenlik uyarısı kartında (yürüyüşçü zamanında dönmedi) etkinliği açan bağlantı."
+  },
+  "bildirim_guvenlik_durumu_gor": "Durumu gör",
+  "@bildirim_guvenlik_durumu_gor": {
+    "description": "Okunmamış `safety_alert` kartında güvenlik kişisi olduğun etkinlikler ekranını açan bağlantı."
   },
   "bildirim_uyari_ayrinti": "{etkinlik} · {tayfa} · {zaman}",
   "@bildirim_uyari_ayrinti": {
@@ -4191,6 +4205,368 @@
   "@profil_beni_onerme_pasif": {
     "description": "Profilleme kapalıyken pasif \"Beni önerme\" anahtarının açıklaması."
   },
+  "profil_kesfet_gorunurluk": "Keşfet'te arkadaşlarım görebilsin",
+  "@profil_kesfet_gorunurluk": {
+    "description": "Profil → Gizlilik: arkadaşın katılımının Keşfet'te gösterilmesi ayarının başlığı (`discover_visible_to_friends`, varsayılan açık)."
+  },
+  "profil_kesfet_gorunurluk_aciklama": "Açıkken gideceğin ya da katıldığın etkinlikler arkadaşlarına Keşfet'te gösterilebilir. Katılım geçmişin gizliyse gösterilmez.",
+  "@profil_kesfet_gorunurluk_aciklama": {
+    "description": "Keşfet görünürlük ayarının açıklaması."
+  },
+  "kesfet_baslik": "Keşfet",
+  "@kesfet_baslik": {
+    "description": "Keşfet ekranının ve girişinin başlığı."
+  },
+  "kesfet_giris_aciklama": "Arkadaşlarının gittiği etkinlikler",
+  "@kesfet_giris_aciklama": {
+    "description": "Tayfa değiştirme panelindeki ve karşılama ekranındaki Keşfet satırının açıklaması."
+  },
+  "kesfet_aciklama": "Arkadaşlarının gideceği, Keşfet'e açık tayfaların etkinlikleri. Kartlardaki sayılar tayfanın geçmişinden gelir. Tayfam tayfalara kefil olmaz; katılmadan önce arkadaşına sorabilirsin.",
+  "@kesfet_aciklama": {
+    "description": "Keşfet ekranının üstündeki açıklama. İlke: Keşfet güven vermez, bilgi verir; \"güvenilir/onaylı\" denmez."
+  },
+  "kesfet_arkadas_tek": "{ad} bu etkinlikte",
+  "@kesfet_arkadas_tek": {
+    "description": "Keşfet kartı: etkinliğe giden tek görünür arkadaş.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "kesfet_arkadas_cok": "{ad} ve {sayi, plural, other{{sayi} arkadaşın}} bu etkinlikte",
+  "@kesfet_arkadas_cok": {
+    "description": "Keşfet kartı: bir arkadaş ve etkinliğe giden diğer görünür arkadaşların sayısı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      },
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "kesfet_olgu_kurulus": "Kuruluş: {tarih}",
+  "@kesfet_olgu_kurulus": {
+    "description": "Keşfet kartında tayfanın olgusu: kuruluş ayı ve yılı (ör. \"Mart 2024\").",
+    "placeholders": {
+      "tarih": {
+        "type": "String",
+        "example": "Mart 2024"
+      }
+    }
+  },
+  "kesfet_olgu_etkinlik": "{sayi, plural, other{{sayi} etkinlik}}",
+  "@kesfet_olgu_etkinlik": {
+    "description": "Keşfet kartında tayfanın olgusu: bitmiş, iptal edilmemiş etkinlik sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "kesfet_olgu_katilim": "{sayi, plural, other{{sayi} doğrulanmış katılım}}",
+  "@kesfet_olgu_katilim": {
+    "description": "Keşfet kartında tayfanın olgusu: bu etkinliklerdeki varış bildirimiyle doğrulanmış katılım sayısı. Tayfaya dair bir onay değildir.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "87"
+      }
+    }
+  },
+  "kesfet_katil": "Katılım isteği gönder",
+  "@kesfet_katil": {
+    "description": "Keşfet kartındaki düğme."
+  },
+  "kesfet_katil_baslik": "Katılım isteği gönderilsin mi?",
+  "@kesfet_katil_baslik": {
+    "description": "Keşfet'ten katılım onayının başlığı."
+  },
+  "kesfet_katil_aciklama": "{tayfa} yöneticileri isteğini görür; onaylarlarsa katılırsın. Buluşma yeri ve ayrıntılar katılınca görünür.",
+  "@kesfet_katil_aciklama": {
+    "description": "Keşfet'ten katılım onayının açıklaması.",
+    "placeholders": {
+      "tayfa": {
+        "type": "String",
+        "example": "Pazar Yürüyüşçüleri"
+      }
+    }
+  },
+  "kesfet_katil_onay": "İstek gönder",
+  "@kesfet_katil_onay": {
+    "description": "Keşfet'ten katılım onayının düğmesi."
+  },
+  "kesfet_istek_gonderildi": "İsteğin gönderildi. Yöneticiler onaylayınca katılırsın.",
+  "@kesfet_istek_gonderildi": {
+    "description": "Keşfet kartında katılım isteği gönderildikten sonra düğmenin yerindeki metin."
+  },
+  "kesfet_zaten_uye": "Bu tayfanın zaten üyesisin.",
+  "@kesfet_zaten_uye": {
+    "description": "Keşfet'ten katılımda `already-member`."
+  },
+  "kesfet_artik_yok": "Bu etkinlik artık Keşfet'te değil.",
+  "@kesfet_artik_yok": {
+    "description": "Keşfet'ten katılımda `tayfa-not-found`: tayfa akıştan çıktı."
+  },
+  "kesfet_bos_baslik": "Şimdilik burada bir şey yok",
+  "@kesfet_bos_baslik": {
+    "description": "Keşfet akışı boş."
+  },
+  "kesfet_bos_aciklama": "Arkadaşların Keşfet'e açık bir tayfanın etkinliğine gidince burada görürsün.",
+  "@kesfet_bos_aciklama": {
+    "description": "Keşfet akışı boşken açıklama."
+  },
+  "kesfet_kapali_baslik": "Keşfet şu an kullanılamıyor",
+  "@kesfet_kapali_baslik": {
+    "description": "Keşfet ekranı açıkken sunucu özelliği kapattıysa."
+  },
+  "kesfet_kapali_aciklama": "Daha sonra tekrar bakabilirsin.",
+  "@kesfet_kapali_aciklama": {
+    "description": "Keşfet kapalıyken açıklama."
+  },
+  "kesfet_yukleniyor": "Keşfet yükleniyor",
+  "@kesfet_yukleniyor": {
+    "description": "Keşfet yüklenirken ekran okuyucu etiketi."
+  },
+  "guvenlik_kisisi_baslik": "Güvenlik kişisi",
+  "@guvenlik_kisisi_baslik": {
+    "description": "Etkinlik detayındaki güvenlik kişisi kartının başlığı."
+  },
+  "guvenlik_kisisi_aciklama": "Bir arkadaşını seç: etkinlik bitince belirlediğin süre içinde \"Döndüm\" demezsen ona haber verilir. Yalnızca adını, gün ve saat aralığını ve döndüğünü görür; tayfayı, etkinliği ve buluşma yerini görmez.",
+  "@guvenlik_kisisi_aciklama": {
+    "description": "Güvenlik kişisi seçilmemişken kartın açıklaması."
+  },
+  "guvenlik_kisisi_sec": "Güvenlik kişisi seç",
+  "@guvenlik_kisisi_sec": {
+    "description": "Güvenlik kişisi seçme düğmesi."
+  },
+  "guvenlik_kisin": "Güvenlik kişin: {ad}",
+  "@guvenlik_kisin": {
+    "description": "Güvenlik kişisi seçilmişken kartın başlığı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "guvenlik_kisin_aciklama": "Bitişten {sure} sonra \"Döndüm\" demezsen güvenlik kişine haber verilir. Şimdi ona bir şey gönderilmez.",
+  "@guvenlik_kisin_aciklama": {
+    "description": "Güvenlik kişisi seçilmişken açıklama. sure: guvenlik_sure_* metinlerinden biri.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "1 saat"
+      }
+    }
+  },
+  "guvenlik_dondum": "Döndüm",
+  "@guvenlik_dondum": {
+    "description": "Güvenlik alarmını durduran düğme."
+  },
+  "guvenlik_degistir": "Değiştir",
+  "@guvenlik_degistir": {
+    "description": "Güvenlik kişisini değiştirme bağlantısı."
+  },
+  "guvenlik_kaldir": "Kaldır",
+  "@guvenlik_kaldir": {
+    "description": "Güvenlik kişisini kaldırma bağlantısı."
+  },
+  "guvenlik_kaldir_baslik": "Güvenlik kişisi kaldırılsın mı?",
+  "@guvenlik_kaldir_baslik": {
+    "description": "Güvenlik kişisini kaldırma onayının başlığı."
+  },
+  "guvenlik_kaldir_aciklama": "Etkinlik bitince kimseye haber verilmez.",
+  "@guvenlik_kaldir_aciklama": {
+    "description": "Güvenlik kişisini kaldırma onayının açıklaması."
+  },
+  "guvenlik_kaldirildi": "Güvenlik kişisi kaldırıldı.",
+  "@guvenlik_kaldirildi": {
+    "description": "Kaldırma sonrası kısa bildirim."
+  },
+  "guvenlik_kaydedildi": "Güvenlik kişisi kaydedildi.",
+  "@guvenlik_kaydedildi": {
+    "description": "Seçme sonrası kısa bildirim."
+  },
+  "guvenlik_dondum_kaydedildi": "Döndüğün kaydedildi.",
+  "@guvenlik_dondum_kaydedildi": {
+    "description": "\"Döndüm\" sonrası kısa bildirim."
+  },
+  "guvenlik_dondun": "Döndüğünü işaretledin · {saat}",
+  "@guvenlik_dondun": {
+    "description": "Güvenlik kartında \"Döndüm\" denmişken durum.",
+    "placeholders": {
+      "saat": {
+        "type": "String",
+        "example": "22:14"
+      }
+    }
+  },
+  "guvenlik_haber_verildi": "Güvenlik kişine haber verildi · {saat}",
+  "@guvenlik_haber_verildi": {
+    "description": "Güvenlik kartında alarm gitmiş, \"Döndüm\" denmemişken durum.",
+    "placeholders": {
+      "saat": {
+        "type": "String",
+        "example": "23:00"
+      }
+    }
+  },
+  "guvenlik_sec_aciklama": "Seçtiğin kişi yalnızca adını, gün ve saat aralığını ve döndüğünü görür.",
+  "@guvenlik_sec_aciklama": {
+    "description": "Güvenlik kişisi seçme sayfasının açıklaması."
+  },
+  "guvenlik_secili": "Seçili",
+  "@guvenlik_secili": {
+    "description": "Seçme sayfasında seçili arkadaşın ekran okuyucu durumu."
+  },
+  "guvenlik_sure_baslik": "Ne kadar beklensin?",
+  "@guvenlik_sure_baslik": {
+    "description": "Seçme sayfasında tolerans seçiminin başlığı."
+  },
+  "guvenlik_sure_aciklama": "Etkinlik bittikten sonra bu süre içinde \"Döndüm\" demezsen haber verilir.",
+  "@guvenlik_sure_aciklama": {
+    "description": "Tolerans seçiminin açıklaması."
+  },
+  "guvenlik_sure_dakika": "{sayi} dk",
+  "@guvenlik_sure_dakika": {
+    "description": "Tolerans: dakika.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "guvenlik_sure_saat": "{sayi} saat",
+  "@guvenlik_sure_saat": {
+    "description": "Tolerans: saat.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "guvenlik_kaydet": "Kaydet",
+  "@guvenlik_kaydet": {
+    "description": "Seçme sayfasının düğmesi."
+  },
+  "guvenlik_arkadas_yok": "Güvenlik kişisi seçmek için önce bir arkadaş eklemelisin.",
+  "@guvenlik_arkadas_yok": {
+    "description": "Seçme sayfasında arkadaş yokken."
+  },
+  "guvenlik_paylasim_baslik": "Güvenlik kişisi olduğun etkinlikler",
+  "@guvenlik_paylasim_baslik": {
+    "description": "Profildeki giriş ve ekranın başlığı: kullanıcıyı güvenlik kişisi seçenlerin paylaşımları."
+  },
+  "guvenlik_paylasim_ozet": "{sayi, plural, other{{sayi} kişi}}",
+  "@guvenlik_paylasim_ozet": {
+    "description": "Profildeki girişin altındaki sayı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "guvenlik_paylasim_aciklama": "Seni güvenlik kişisi seçenler. Yalnızca kim olduğunu, gün ve saat aralığını ve döndüğünü görürsün.",
+  "@guvenlik_paylasim_aciklama": {
+    "description": "Paylaşımlar ekranının açıklaması."
+  },
+  "guvenlik_paylasim_donmedi": "Dönmedi",
+  "@guvenlik_paylasim_donmedi": {
+    "description": "Paylaşım durumu `not_returned`: henüz \"Döndüm\" yok, alarm gitmedi."
+  },
+  "guvenlik_paylasim_dondu": "Döndü · {saat}",
+  "@guvenlik_paylasim_dondu": {
+    "description": "Paylaşım durumu `returned`.",
+    "placeholders": {
+      "saat": {
+        "type": "String",
+        "example": "23:50"
+      }
+    }
+  },
+  "guvenlik_paylasim_dondu_saatsiz": "Döndü",
+  "@guvenlik_paylasim_dondu_saatsiz": {
+    "description": "Paylaşım durumu `returned`, zaman yoksa."
+  },
+  "guvenlik_paylasim_haber": "Haber verildi · {saat}",
+  "@guvenlik_paylasim_haber": {
+    "description": "Paylaşım durumu `alert_sent`: alarm gitti, \"Döndüm\" yok.",
+    "placeholders": {
+      "saat": {
+        "type": "String",
+        "example": "23:00"
+      }
+    }
+  },
+  "guvenlik_paylasim_haber_saatsiz": "Haber verildi",
+  "@guvenlik_paylasim_haber_saatsiz": {
+    "description": "Paylaşım durumu `alert_sent`, zaman yoksa."
+  },
+  "guvenlik_paylasim_ulas": "Ona ulaşmayı dene. Acil bir tehlike düşünüyorsan 112'yi ara.",
+  "@guvenlik_paylasim_ulas": {
+    "description": "Alarm gitmiş paylaşımın altındaki yönlendirme."
+  },
+  "guvenlik_paylasim_bos_baslik": "Şimdilik kimse yok",
+  "@guvenlik_paylasim_bos_baslik": {
+    "description": "Paylaşımlar ekranı boş."
+  },
+  "guvenlik_paylasim_bos": "Seni güvenlik kişisi seçen olunca burada görürsün.",
+  "@guvenlik_paylasim_bos": {
+    "description": "Paylaşımlar ekranı boşken açıklama."
+  },
+  "geri_bildirim_soru": "Her şey yolunda mıydı?",
+  "@geri_bildirim_soru": {
+    "description": "Keşfet etkinliği sonrası geri bildirim kartının başlığı."
+  },
+  "geri_bildirim_aciklama": "Cevabını yalnızca sen görürsün; tayfaya söylenmez.",
+  "@geri_bildirim_aciklama": {
+    "description": "Geri bildirim kartının açıklaması."
+  },
+  "geri_bildirim_ok": "Evet, yolundaydı",
+  "@geri_bildirim_ok": {
+    "description": "Geri bildirim seçeneği `ok`."
+  },
+  "geri_bildirim_not_ok": "Pek değildi",
+  "@geri_bildirim_not_ok": {
+    "description": "Geri bildirim seçeneği `not_ok`."
+  },
+  "geri_bildirim_serious": "Ciddi bir sorun vardı",
+  "@geri_bildirim_serious": {
+    "description": "Geri bildirim seçeneği `serious`."
+  },
+  "geri_bildirim_kaydedildi": "Cevabın kaydedildi.",
+  "@geri_bildirim_kaydedildi": {
+    "description": "Geri bildirim kaydedildikten sonra kısa bildirim."
+  },
+  "geri_bildirim_sikayet_baslik": "Anlatmak ister misin?",
+  "@geri_bildirim_sikayet_baslik": {
+    "description": "`serious` seçilince açılan pencerenin başlığı."
+  },
+  "geri_bildirim_sikayet_aciklama": "Tayfayı şikâyet edebilirsin; şikâyet yalnızca Tayfam'a gider, tayfanın yöneticileri görmez. Acil bir tehlike varsa 112'yi ara.",
+  "@geri_bildirim_sikayet_aciklama": {
+    "description": "`serious` seçilince açılan pencerenin açıklaması."
+  },
+  "geri_bildirim_sikayet_et": "Tayfayı şikâyet et",
+  "@geri_bildirim_sikayet_et": {
+    "description": "`serious` penceresinde şikâyet sayfasını açan düğme."
+  },
+  "etkinlik_halka_acik": "Halka açık yerde buluşur",
+  "@etkinlik_halka_acik": {
+    "description": "Etkinlik sihirbazında yüz yüze etkinliğin `discoverable` işareti."
+  },
+  "etkinlik_halka_acik_aciklama": "Kafe, park, meydan gibi herkese açık bir yerse işaretle. Tayfa Keşfet'teyse etkinlik, arkadaşları gidenlere gösterilebilir. Ev gibi özel yerlerde işaretleme.",
+  "@etkinlik_halka_acik_aciklama": {
+    "description": "`discoverable` anahtarının açıklaması."
+  },
   "profil_profilleme_kapat_baslik": "Profilleme kapatılsın mı?",
   "@profil_profilleme_kapat_baslik": {
     "description": "Profillemeyi kapatma onay penceresinin başlığı."
@@ -5305,6 +5681,10 @@
   "@hata_tayfa_create_limit": {
     "description": "Hata kodu `tayfa-create-limit`. Kullanıcı 24 saat içinde ikinci tayfayı açmaya çalıştığında görünen hata (kullanıcı başına günde bir tayfa)."
   },
+  "hata_instant_event_limit": "Aynı anda en çok 3 açık anlık etkinliğin olabilir; bir günde en çok 5 anlık etkinlik açabilirsin.",
+  "@hata_instant_event_limit": {
+    "description": "Hata kodu `instant-event-limit`. Anlık etkinlik sınırı aşıldığında görünen hata (sözleşme: Tayfam-Api ADR-0032)."
+  },
   "hata_deletion_already_requested": "Bu tayfa için silme isteği zaten var.",
   "@hata_deletion_already_requested": {
     "description": "Hata kodu `deletion-already-requested`. Silinmeyi bekleyen tayfa için yeniden silme istendiğinde görünen hata."
@@ -5428,6 +5808,26 @@
   "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
   "@hata_album_closed": {
     "description": "Hata kodu `album-closed`. Etkinlik albümüne, etkinlik başlamadan ya da bitişten yedi gün sonra fotoğraf eklenmeye çalışıldığında görünen hata."
+  },
+  "hata_feature_disabled": "Bu özellik şu an kullanılamıyor.",
+  "@hata_feature_disabled": {
+    "description": "Hata kodu `feature-disabled`. Sunucuda kapalı bir özelliğin (Keşfet, güvenlik kişisi) ucu çağrıldığında görünen genel hata; istemci çoğu yerde bu durumda girişi gizler (ADR-0027 §2)."
+  },
+  "hata_discover_too_few_members": "Keşfet'e açmak için tayfada en az 5 üye olmalı.",
+  "@hata_discover_too_few_members": {
+    "description": "Hata kodu `discover-too-few-members`. Yönetici 5 üyeden az tayfayı Keşfet'e açmaya çalıştığında."
+  },
+  "hata_feedback_closed": "Bu etkinlik için geri bildirim süresi kapandı.",
+  "@hata_feedback_closed": {
+    "description": "Hata kodu `feedback-closed`. \"Her şey yolunda mıydı?\" penceresi (bitiş + 7 gün) dışında ya da uygun olmayan etkinlikte."
+  },
+  "hata_safety_contact_closed": "Güvenlik kişisi artık değiştirilemiyor: etkinlik bitti, iptal edildi ya da haber verildi.",
+  "@hata_safety_contact_closed": {
+    "description": "Hata kodu `safety-contact-closed`. Bitmiş, iptal edilmiş, çevrim içi etkinlikte ya da alarmı gitmiş kayıtta güvenlik kişisi değiştirilmek istendiğinde."
+  },
+  "hata_safety_contact_not_found": "Bu etkinlik için güvenlik kişisi seçilmemiş.",
+  "@hata_safety_contact_not_found": {
+    "description": "Hata kodu `safety-contact-not-found`. Güvenlik kişisi seçilmeden \"Döndüm\" denince."
   },
   "hata_event_series_not_found": "Bu etkinlik serisi bulunamadı.",
   "@hata_event_series_not_found": {
@@ -6269,6 +6669,74 @@
   "yonetim_susturuldu": "Susturuldu",
   "@yonetim_susturuldu": {
     "description": "Üye satırında, üye susturulmuşken rolün yanında görünen metin."
+  },
+  "yonetim_uye_kesfetten": "Keşfet'ten",
+  "@yonetim_uye_kesfetten": {
+    "description": "Üye listesinde etiket: kişi tayfaya Keşfet'ten katılım isteğiyle geldi (`joined_via_discover`). Yalnızca moderatör ve yöneticiye görünür."
+  },
+  "yonetim_kesfet_bolum": "Keşfet",
+  "@yonetim_kesfet_bolum": {
+    "description": "Tayfa ayarlarında yalnızca yöneticinin gördüğü Keşfet bölümünün başlığı."
+  },
+  "yonetim_kesfet_goster": "Keşfet'te göster",
+  "@yonetim_kesfet_goster": {
+    "description": "Tayfa ayarlarında tayfayı Keşfet'e açan anahtarın başlığı."
+  },
+  "yonetim_kesfet_off": "Kapalı. Açarsan arkadaşları etkinliğine gidenler tayfanı Keşfet'te görebilir. En az 5 üye gerekir; tayfanın adı, açıklaması ve ili incelenir.",
+  "@yonetim_kesfet_off": {
+    "description": "Keşfet anahtarının altındaki açıklama, durum `off`."
+  },
+  "yonetim_kesfet_pending_etiket": "İnceleniyor",
+  "@yonetim_kesfet_pending_etiket": {
+    "description": "Keşfet durum etiketi `pending`: başvuru platform incelemesinde. \"Onay\" kelimesi kullanılmaz."
+  },
+  "yonetim_kesfet_pending": "Sonuç bildirilmez; durum burada görünür.",
+  "@yonetim_kesfet_pending": {
+    "description": "Keşfet durum açıklaması `pending`."
+  },
+  "yonetim_kesfet_listed_etiket": "Keşfet'te",
+  "@yonetim_kesfet_listed_etiket": {
+    "description": "Keşfet durum etiketi `listed`: tayfa Keşfet'te görünebilir. \"Onaylı\" denmez (ilke: Keşfet güven vermez)."
+  },
+  "yonetim_kesfet_listed": "Yalnızca \"halka açık yerde buluşur\" işaretli etkinlikler gösterilir.",
+  "@yonetim_kesfet_listed": {
+    "description": "Keşfet durum açıklaması `listed`."
+  },
+  "yonetim_kesfet_under_review_etiket": "Yeniden inceleniyor",
+  "@yonetim_kesfet_under_review_etiket": {
+    "description": "Keşfet durum etiketi `under_review`: platform tayfayı Keşfet'ten çıkardı; neden söylenmez."
+  },
+  "yonetim_kesfet_under_review": "Tayfa şimdilik Keşfet'te görünmüyor.",
+  "@yonetim_kesfet_under_review": {
+    "description": "Keşfet durum açıklaması `under_review`. Neden söylenmez (sözleşme)."
+  },
+  "yonetim_kesfet_rejected_etiket": "Kabul edilmedi",
+  "@yonetim_kesfet_rejected_etiket": {
+    "description": "Keşfet durum etiketi `rejected`."
+  },
+  "yonetim_kesfet_rejected": "Yeniden açarsan tekrar incelenir.",
+  "@yonetim_kesfet_rejected": {
+    "description": "Keşfet durum açıklaması `rejected`."
+  },
+  "yonetim_kesfet_ac_baslik": "Tayfa Keşfet'e açılsın mı?",
+  "@yonetim_kesfet_ac_baslik": {
+    "description": "Keşfet'e açma onayının başlığı."
+  },
+  "yonetim_kesfet_ac_aciklama": "Tayfanın adı, açıklaması ve ili incelenir. Keşfet'ten gelen katılım istekleri her zaman onayını bekler ve bu üyeler listede \"Keşfet'ten\" etiketiyle görünür.",
+  "@yonetim_kesfet_ac_aciklama": {
+    "description": "Keşfet'e açma onayının açıklaması."
+  },
+  "yonetim_kesfet_ac_onay": "Keşfet'e aç",
+  "@yonetim_kesfet_ac_onay": {
+    "description": "Keşfet'e açma onayının düğmesi."
+  },
+  "yonetim_kesfet_acildi": "Tayfa incelemeye gönderildi.",
+  "@yonetim_kesfet_acildi": {
+    "description": "Keşfet'e açıldıktan sonraki kısa bildirim."
+  },
+  "yonetim_kesfet_kapandi": "Tayfa Keşfet'ten kaldırıldı.",
+  "@yonetim_kesfet_kapandi": {
+    "description": "Keşfet kapatıldıktan sonraki kısa bildirim."
   },
   "yonetim_rol_yap_admin": "Yönetici yap",
   "@yonetim_rol_yap_admin": {
@@ -8480,6 +8948,14 @@
   "push_hike_overdue_body": "Bir yürüyüşçü zamanında dönmedi. Hemen kontrol et.",
   "@push_hike_overdue_body": {
     "description": "Push bildirimi gövdesi (`hike_overdue`, Android body_loc_key): güvenlik uyarısı: yürüyüşçü zamanında dönmedi; yürüyüşçünün adı yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_safety_alert_title": "Güvenlik uyarısı",
+  "@push_safety_alert_title": {
+    "description": "Push bildirimi başlığı (`safety_alert`, Android title_loc_key): kullanıcıyı güvenlik kişisi seçen biri zamanında \"Döndüm\" demedi. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_safety_alert_body": "Seni güvenlik kişisi seçen biri zamanında \"Döndüm\" demedi. Hemen kontrol et.",
+  "@push_safety_alert_body": {
+    "description": "Push bildirimi gövdesi (`safety_alert`, Android body_loc_key): kullanıcıyı güvenlik kişisi seçen biri zamanında \"Döndüm\" demedi. İçerik, isim, konum yazılmaz; argüman yoktur."
   },
   "push_friend_request_title": "Yeni arkadaşlık isteği",
   "@push_friend_request_title": {

@@ -385,4 +385,33 @@ void main() {
       });
     });
   });
+
+  group('"Halka açık yerde buluşur" (discoverable; ADR-0027)', () {
+    test('düzenlemede işaret yalnızca değişince ve yüz yüzede gider', () {
+      final eski = ornekEtkinlik();
+      final t = duzenlemeTaslagi(eski, sahteEtkinlikIstekKimligi);
+      expect(t.yer.halkaAcik, isFalse);
+      final isaretli = t.kopya(yer: t.yer.kopya(halkaAcik: true));
+      expect(duzenlemeIstegi(isaretli, eski)?.toJson(), {'discoverable': true});
+      expect(duzenlemeIstegi(t, eski), isNull);
+      // Çevrim içine geçince işaret anlamsızdır; değişmediyse gönderilmez.
+      final cevrimici = isaretli.kopya(
+        yer: isaretli.yer.kopya(
+          mod: EventMode.online,
+          baglanti: 'https://ornek.tayfam.app/oda',
+        ),
+      );
+      expect(
+        duzenlemeIstegi(cevrimici, eski)?.toJson().containsKey('discoverable'),
+        isFalse,
+      );
+    });
+
+    test('oluşturmada yalnızca işaretliyse gönderilir', () {
+      final t = duzenlemeTaslagi(ornekEtkinlik(), sahteEtkinlikIstekKimligi);
+      expect(olusturmaIstegi(t).toJson().containsKey('discoverable'), isFalse);
+      final isaretli = t.kopya(yer: t.yer.kopya(halkaAcik: true));
+      expect(olusturmaIstegi(isaretli).toJson()['discoverable'], isTrue);
+    });
+  });
 }

@@ -494,6 +494,27 @@ void main() {
     // İşlem sayfası yalnızca yapılabilecek işlemi olan üyede açılır.
     final Finder islemSayfasi = find.byType(BottomSheet);
 
+    testWidgets('Keşfet\'ten gelen üye etiketli (alan yalnızca yönetime)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1200);
+      final tasima = yonetimTasimasi(
+        yanitlar: {
+          'GET $uyelerYolu': (_) => uyeListesiJson([
+            uyeJson(benimId, rol: 'admin'),
+            uyeJson(uyeId1, kesfetten: true),
+            uyeJson(uyeId2, kesfetten: false),
+          ]),
+        },
+      );
+      await _ac(tester, const UyelerEkrani(tayfaId: ornekTayfaId), tasima);
+      // İkonlu etiket (Text.rich): metin ikonun yer tutucusuyla başlar.
+      expect(
+        find.textContaining(arbMetni('yonetim_uye_kesfetten')),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('kendine işlem yok; filtreler', (tester) async {
       ekranBoyutu(tester, yukseklik: 1200);
       final tasima = uyeTasimasi();

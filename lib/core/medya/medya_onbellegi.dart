@@ -165,7 +165,11 @@ final class MedyaOnbellegi {
   /// Sunucudan gelen linkleri doğrular; biri geçersizse dosya
   /// görülemiyor sayılır.
   static MedyaLinki? _cevir(MediaUrls m) {
-    final onizleme = Uri.tryParse(m.previewUrl);
+    // `preview_url` yalnızca birebir ekte yoktur (sözleşme); burada
+    // önizlemesiz link görülemiyor sayılır.
+    final onizlemeAdresi = m.previewUrl;
+    if (onizlemeAdresi == null) return null;
+    final onizleme = Uri.tryParse(onizlemeAdresi);
     final tam = Uri.tryParse(m.fullUrl);
     if (onizleme == null ||
         tam == null ||

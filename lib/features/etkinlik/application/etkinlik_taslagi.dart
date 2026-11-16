@@ -117,6 +117,7 @@ final class YerBilgisi {
     this.il = '',
     this.ilce = '',
     this.baglanti = '',
+    this.halkaAcik = false,
   });
 
   final EventMode mod;
@@ -126,6 +127,11 @@ final class YerBilgisi {
   final String ilce;
   final String baglanti;
 
+  /// "Halka açık yerde buluşur" (`discoverable`; Tayfam-Api ADR-0033 §2):
+  /// organizatörün işareti. Yalnızca yüz yüze etkinlikte gönderilir;
+  /// varsayılan kapalı (30-kesfet-ve-guvenlik, karar 25).
+  final bool halkaAcik;
+
   YerBilgisi kopya({
     EventMode? mod,
     LatLng? nokta,
@@ -133,6 +139,7 @@ final class YerBilgisi {
     String? il,
     String? ilce,
     String? baglanti,
+    bool? halkaAcik,
   }) => YerBilgisi(
     mod: mod ?? this.mod,
     nokta: nokta ?? this.nokta,
@@ -140,6 +147,7 @@ final class YerBilgisi {
     il: il ?? this.il,
     ilce: ilce ?? this.ilce,
     baglanti: baglanti ?? this.baglanti,
+    halkaAcik: halkaAcik ?? this.halkaAcik,
   );
 
   @override
@@ -150,10 +158,12 @@ final class YerBilgisi {
       other.noktaAdi == noktaAdi &&
       other.il == il &&
       other.ilce == ilce &&
-      other.baglanti == baglanti;
+      other.baglanti == baglanti &&
+      other.halkaAcik == halkaAcik;
 
   @override
-  int get hashCode => Object.hash(mod, nokta, noktaAdi, il, ilce, baglanti);
+  int get hashCode =>
+      Object.hash(mod, nokta, noktaAdi, il, ilce, baglanti, halkaAcik);
 }
 
 /// Türe özel alanlar (sözleşmedeki `*DetailsInput`). Sayılar metin olarak
@@ -427,6 +437,7 @@ EtkinlikTaslagi duzenlemeTaslagi(Event etkinlik, String istekKimligi) {
       il: etkinlik.city ?? '',
       ilce: etkinlik.district ?? '',
       baglanti: etkinlik.onlineUrl ?? '',
+      halkaAcik: etkinlik.discoverable,
     ),
     kontenjan: etkinlik.capacity > 0 ? '${etkinlik.capacity}' : '',
     kapak: etkinlik.coverUploadId,
@@ -709,6 +720,8 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     city: yuzYuze ? t.yer.il.trim() : null,
     district: yuzYuze ? t.yer.ilce.trim() : null,
     onlineUrl: yuzYuze ? null : t.yer.baglanti.trim(),
+    // Yalnızca işaretliyse gönderilir; çevrim içinde anlamı yoktur.
+    discoverable: yuzYuze && t.yer.halkaAcik ? true : null,
     capacity: kontenjanSayisi(t.kontenjan),
     convoy: ayrinti.convoy,
     camp: ayrinti.camp,
@@ -752,6 +765,7 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
       il != eski.city ||
       ilce != eski.district ||
       baglanti != eski.onlineUrl;
+  final halkaAcik = yuzYuze && t.yer.halkaAcik;
   final kontenjan = kontenjanSayisi(t.kontenjan) ?? 0;
   final ayrinti = t.ayrintiDegisti
       ? turAyrintisi(t.tur, t.ayrinti)
@@ -781,6 +795,7 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
     city: yerDegisti ? il : null,
     district: yerDegisti ? ilce : null,
     onlineUrl: yerDegisti ? baglanti : null,
+    discoverable: halkaAcik == eski.discoverable ? null : halkaAcik,
     capacity: kontenjan == eski.capacity ? null : kontenjan,
     convoy: rotaSilindi ? const ConvoyDetailsInput(route: []) : ayrinti.convoy,
     camp: ayrinti.camp,

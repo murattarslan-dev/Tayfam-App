@@ -10,11 +10,13 @@ import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/arkadas/data/arkadas_deposu.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/kesfet/data/kesfet_deposu.dart';
 import 'package:tayfam/features/profil/data/profil_deposu.dart';
 
 import '../../yardimcilar.dart';
 import '../arkadas/sahteler.dart' show arkadasTasimasi;
 import '../hesap/sahteler.dart';
+import '../kesfet/sahteler.dart' show kesfetTasimasi;
 
 export '../hesap/sahteler.dart';
 export '../tayfa/sahteler.dart' show SahtePaylasici, tayfaOverridelari;
@@ -34,11 +36,16 @@ const String sosyalAyarlarYolu = 'GET /v1/me/social-settings';
 const String sosyalAyarlarDegistirYolu = 'PATCH /v1/me/social-settings';
 
 /// `SocialSettings` JSON'u; varsayılanlar sözleşmedeki gibi (profilleme
-/// açık, "Beni önerme" kapalı).
+/// açık, "Beni önerme" kapalı, "Keşfet'te arkadaşlarım görebilsin" açık).
 Map<String, Object?> sosyalAyarlarJson({
   bool profilleme = true,
   bool gizle = false,
-}) => {'profiling_enabled': profilleme, 'hide_from_suggestions': gizle};
+  bool kesfet = true,
+}) => {
+  'profiling_enabled': profilleme,
+  'hide_from_suggestions': gizle,
+  'discover_visible_to_friends': kesfet,
+};
 
 /// Testlerde kullanılan, biçimi geçerli örnek oturum kimlikleri.
 const String buOturumId = '5e6f7a8b-0000-4000-8000-000000000001';
@@ -136,6 +143,8 @@ List<Override> profilOverridelari({
   profilDeposuProvider.overrideWithValue(ProfilDeposu(tasima)),
   // Profildeki arkadaşlar bölümü ve son katılımlar: boş listeler.
   arkadasDeposuProvider.overrideWithValue(ArkadasDeposu(arkadasTasimasi())),
+  // "Güvenlik kişisi olduğun etkinlikler" girişi: boş liste (görünmez).
+  kesfetDeposuProvider.overrideWithValue(KesfetDeposu(kesfetTasimasi())),
   hesapDeposuProvider.overrideWithValue(HesapDeposu(tasima)),
   hesapPlatformuProvider.overrideWithValue('android'),
   sessionStoreProvider.overrideWithValue(oturum.store),

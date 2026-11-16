@@ -643,6 +643,22 @@ class _EtkinlikSihirbaziEkraniState
               ),
             ),
           ),
+          // "Halka açık yerde buluşur" (ADR-0027; 30-kesfet-ve-guvenlik,
+          // karar 25): tayfa ayarlarındaki anahtarların iskeleti.
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(m.etkinlik_halka_acik, style: context.yazi.titleMedium),
+            subtitle: Text(
+              m.etkinlik_halka_acik_aciklama,
+              style: context.yazi.bodySmall?.copyWith(
+                color: context.renkler.metinIkincil,
+              ),
+            ),
+            value: yer.halkaAcik,
+            onChanged: kapali
+                ? null
+                : (acik) => _yer((y) => y.kopya(halkaAcik: acik)),
+          ),
         ],
       ],
     );

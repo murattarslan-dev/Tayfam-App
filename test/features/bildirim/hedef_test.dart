@@ -232,4 +232,29 @@ void main() {
       );
     });
   });
+
+  group('güvenlik kişisi alarmı (safety_alert)', () {
+    api.Notification alarm({bool okundu = false}) => api.Notification.fromJson(
+      bildirimJson(
+        bildirimId1,
+        tur: 'safety_alert',
+        tayfaId: null,
+        hedefTuru: 'user',
+        hedef: kisiId,
+        okundu: okundu,
+      ),
+    );
+
+    test('paylaşımlar ekranını açıyor; kişi target_id', () {
+      expect(bildirimAdresi(alarm()), Adresler.guvenlikPaylasimlari);
+      expect(bildirimKisisi(alarm()), kisiId);
+    });
+
+    test('okunmamışken sabit uyarı; okununca listedeki yerine döner', () {
+      expect(sabitUyariMi(alarm()), isTrue);
+      expect(sabitUyariMi(alarm(okundu: true)), isFalse);
+      // Etkinlik bilgisi yoktur (güvenlik kişisi etkinliği görmez).
+      expect(uyariEtkinligi(alarm()), isNull);
+    });
+  });
 }

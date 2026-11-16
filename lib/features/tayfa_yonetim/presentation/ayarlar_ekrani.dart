@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/application/davetler_notifier.dart';
@@ -65,6 +66,7 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
     final davetler = ref.watch(davetlerProvider(tayfaId)).value;
     final tayfa = ozet.tayfa;
     final yazi = context.yazi;
+    final ekBolum = ref.watch(tayfaAyarEkBolumuProvider);
     final bekleyenSatirlari = <Widget>[
       if (bekleyen != null)
         _BekleyenSatiri(
@@ -207,6 +209,8 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
                 child: Text(m.yonetim_moduller_aciklama, style: yazi.bodySmall),
               ),
               _ModullerKarti(tayfaId: tayfaId, tayfa: tayfa),
+              // Keşfet'te göster (ADR-0027; yalnızca yönetici).
+              if (ekBolum != null) ekBolum(context, tayfaId),
               const SizedBox(height: TayfamSpacing.s32),
               _SilmeKarti(tayfaId: tayfaId, ad: ozet.ad, tayfa: tayfa),
             ],

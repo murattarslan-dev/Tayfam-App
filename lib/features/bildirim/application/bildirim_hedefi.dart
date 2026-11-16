@@ -20,6 +20,8 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - Arkadaş önerisi (`friend_suggestion`, Tayfam-Api ADR-0030): önerilen
 ///   kişinin profili (`target_id`).
 /// - `data_export` (veri dışa aktarma hazır): "Verilerimi indir" ekranı.
+/// - `safety_alert` (güvenlik kişisi alarmı): güvenlik kişisi olduğun
+///   etkinlikler ekranı.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını
@@ -37,6 +39,9 @@ String? bildirimAdresi(Notification bildirim) {
     ) =>
       Adresler.kisi(kisi),
     (NotificationType.tayfaInvitation, _, _) => Adresler.tayfaDavetleri,
+    // Güvenlik kişisi alarmı (Tayfam-Api ADR-0033 §10): etkinlik ve tayfa
+    // bildirimde yoktur; durum paylaşımlar ekranından okunur.
+    (NotificationType.safetyAlert, _, _) => Adresler.guvenlikPaylasimlari,
     // KVKK veri dışa aktarma hazır (ADR-0022): talep listesi açılır.
     (_, NotificationTargetType.dataExport, _?) => Adresler.veriDisaAktarma,
     _ => null,
@@ -65,7 +70,8 @@ String? bildirimKisisi(Notification bildirim) {
     NotificationType.joinRequest ||
     NotificationType.friendRequest ||
     NotificationType.friendAccepted ||
-    NotificationType.friendSuggestion => bildirim.targetId,
+    NotificationType.friendSuggestion ||
+    NotificationType.safetyAlert => bildirim.targetId,
     NotificationType.hikeOverdue => bildirim.subjectUserId,
     NotificationType.tayfaInvitation => bildirim.actorId,
     _ => null,
@@ -141,9 +147,12 @@ String? katilimIstekleriAdresi(Notification bildirim) {
 }
 
 /// Listenin üstünde sabit duran güvenlik uyarısı mı (karar 3): okunmamış
-/// `hike_overdue`. Okununca listedeki yerine döner.
+/// `hike_overdue` ya da `safety_alert` (30-kesfet-ve-guvenlik, karar 22).
+/// Okununca listedeki yerine döner.
 bool sabitUyariMi(Notification bildirim) =>
-    bildirim.type == NotificationType.hikeOverdue && !bildirim.read;
+    (bildirim.type == NotificationType.hikeOverdue ||
+        bildirim.type == NotificationType.safetyAlert) &&
+    !bildirim.read;
 
 /// Güvenlik uyarısının etkinliği (tayfa ve etkinlik kimliği); hedef
 /// etkinlik değilse ya da kimlik doğrulanamazsa `null`.

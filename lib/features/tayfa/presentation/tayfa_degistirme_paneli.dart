@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
@@ -50,6 +51,10 @@ Future<void> tayfaDegistirmePaneliniAc(
           // kuruldu" ekranı kaybolurdu (ADR-0014 Notlar 2026-11-13).
           context.go(Adresler.tayfaOlustur);
         },
+        onKesfet: () {
+          kapat();
+          unawaited(context.push(Adresler.kesfet));
+        },
       );
     },
   );
@@ -68,6 +73,7 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
     required this.onTayfaSec,
     required this.onKodlaKatil,
     required this.onTayfaOlustur,
+    this.onKesfet,
   });
 
   /// Etkin bir tayfa seçildiğinde (aktif tayfa zaten değişmiştir).
@@ -78,6 +84,10 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
 
   /// "Tayfa oluştur" seçildiğinde.
   final VoidCallback onTayfaOlustur;
+
+  /// "Keşfet" seçildiğinde (ADR-0027). Satır yalnızca Keşfet açıksa
+  /// görünür ([kesfetGorunurProvider]).
+  final VoidCallback? onKesfet;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -91,6 +101,8 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
         ? const <MyTayfa>[]
         : bekleyenTayfalar(liste);
     final hata = durum.error;
+    final onKesfet = this.onKesfet;
+    final kesfet = onKesfet != null && ref.watch(kesfetGorunurProvider);
 
     return AltSayfaIcerigi(
       baslik: metinler.tayfa_tayfalarim,
@@ -167,6 +179,14 @@ class TayfaDegistirmePaneli extends ConsumerWidget {
           baslik: metinler.tayfa_olustur,
           onTap: onTayfaOlustur,
         ),
+        if (kesfet)
+          MenuSatiri(
+            ikon: Icons.explore_outlined,
+            tur: MenuSatiriTuru.sade,
+            baslik: metinler.kesfet_baslik,
+            aciklama: metinler.kesfet_giris_aciklama,
+            onTap: onKesfet,
+          ),
       ],
     );
   }

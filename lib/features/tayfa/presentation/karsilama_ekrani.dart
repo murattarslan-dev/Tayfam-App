@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
@@ -115,6 +116,17 @@ class KarsilamaEkrani extends ConsumerWidget {
                     // Yığına itilmez (bkz. tayfa değiştirme paneli).
                     onTap: () => context.go(Adresler.tayfaOlustur),
                   ),
+                  // Keşfet açıksa (ADR-0027): arkadaşlarının gittiği
+                  // etkinlikler; kapalıyken kart yok.
+                  if (ref.watch(kesfetGorunurProvider)) ...[
+                    const SizedBox(height: TayfamSpacing.s16),
+                    SecimKarti(
+                      ikon: Icons.explore_outlined,
+                      baslik: metinler.kesfet_baslik,
+                      aciklama: metinler.kesfet_giris_aciklama,
+                      onTap: () => unawaited(context.push(Adresler.kesfet)),
+                    ),
+                  ],
                   const SizedBox(height: TayfamSpacing.s16),
                   Padding(
                     padding: const EdgeInsets.symmetric(

@@ -51,6 +51,16 @@ final class DirectMessagesApi {
   /// Gönderim yalnızca REST'tedir (WebSocket çerçevesi 64 KB).
   /// Gövde en fazla 1,5 MiB.
   ///
+  /// **Fotoğraf ve yer (#205, ADR-0031):** mesajın türü zarfın
+  /// içindedir; sunucu bilmez. Fotoğrafı istemci rastgele bir anahtarla
+  /// AES-256-GCM ile şifreler ve `dm_attachment` yüklemesi olarak (tek
+  /// `blob`) yükler; anahtar ve özet (SHA-256) zarfın içinde gider,
+  /// sunucuya hiç gelmez. `attachment_upload_id` hazır, kendi ve başka
+  /// mesajda kullanılmamış yüklemeniz olmalıdır (mesaj başına en çok
+  /// bir): `upload-not-found` (404), `upload-not-ready`,
+  /// `upload-in-use` (409). Eki yalnızca konuşmanın iki tarafı indirir
+  /// (`POST /v1/media/urls`). Yer tamamen zarfın içindedir.
+  ///
   /// `POST /v1/direct-messages`
   Future<DirectMessageSent> sendDirectMessage({
     required DirectMessageCreateRequest body,

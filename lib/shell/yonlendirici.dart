@@ -17,6 +17,7 @@ import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
@@ -199,6 +200,8 @@ List<RouteBase> rotalariOlustur(
                 ...arkadasRotalari,
                 // QR ile cihaz eşleştirme (ADR-0020).
                 ...cihazlarRotalari,
+                // Güvenlik kişisi olduğun etkinlikler (ADR-0027).
+                ...guvenlikPaylasimlariRotalari,
               ],
             ),
           ],
@@ -255,6 +258,8 @@ List<RouteBase> rotalariOlustur(
       path: Adresler.tayfaOlustur,
       builder: (context, state) => const OlusturmaEkrani(),
     ),
+    // Keşfet akışı kabuğun üstünde tam ekran açılır (ADR-0027 §1).
+    kesfetRotasi,
     // Davet linkinin ekranı (ADR-0018 §6); adreste token yoktur.
     ...derinLinkRotalari(),
     // Kişi profili her sekmeden açılır; sekmelerin üstündedir

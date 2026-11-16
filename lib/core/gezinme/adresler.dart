@@ -148,6 +148,16 @@ abstract final class Adresler {
     return Uri(path: hosGeldin, queryParameters: sorgu).toString();
   }
 
+  /// Keşfet akışı (ADR-0027 §1): kabuğun üstünde tam ekran.
+  static const kesfet = '/kesfet';
+
+  /// Güvenlik kişisi olduğun etkinliklerin `/profil` altındaki yolu
+  /// (ADR-0027 §1).
+  static const guvenlikPaylasimlariYolu = 'guvenlik';
+
+  /// Güvenlik kişisi olduğun etkinlikler (`safety_alert` buraya açılır).
+  static const guvenlikPaylasimlari = '$profil/$guvenlikPaylasimlariYolu';
+
   /// Tayfa oluşturma sihirbazı (ADR-0014 §4). Kodla katılım alttan açılan
   /// bir sayfadır; adresi yoktur.
   static const tayfaOlustur = '/tayfa-olustur';

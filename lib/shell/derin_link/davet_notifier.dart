@@ -106,6 +106,8 @@ class DavetNotifier extends AsyncNotifier<DavetDurumu> {
         MyTayfa(
           tayfaId: uyelik.tayfaId,
           name: mevcut.onizleme.name,
+          // Tür bir sonraki yenilemede gelir; katılım standart tayfaya.
+          kind: TayfaKind.standard,
           role: uyelik.role,
           status: etkin ? MyTayfaStatus.active : MyTayfaStatus.pending,
         ),

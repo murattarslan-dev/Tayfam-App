@@ -111,6 +111,8 @@ class KatilimNotifier extends Notifier<KatilimDurumu> {
         MyTayfa(
           tayfaId: uyelik.tayfaId,
           name: '',
+          // Tür bir sonraki yenilemede gelir; katılım standart tayfaya.
+          kind: TayfaKind.standard,
           role: uyelik.role,
           status: etkin ? MyTayfaStatus.active : MyTayfaStatus.pending,
         ),

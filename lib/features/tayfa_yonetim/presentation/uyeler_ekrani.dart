@@ -245,6 +245,14 @@ class _UyeSatiri extends ConsumerWidget {
                   Etiket(metin: m.yonetim_rol_moderator, ton: EtiketTonu.teal),
                 if (susturulmus(uye, simdi))
                   Etiket(metin: m.yonetim_susturuldu, ton: EtiketTonu.mango),
+                // Keşfet'ten gelen üye (ADR-0027 §6): alan yalnızca
+                // moderatör ve yöneticiye döner; diğer üyeler görmez.
+                if (uye.joinedViaDiscover ?? false)
+                  Etiket(
+                    metin: m.yonetim_uye_kesfetten,
+                    ton: EtiketTonu.notr,
+                    ikon: Icons.explore_outlined,
+                  ),
               ],
             ),
           ),

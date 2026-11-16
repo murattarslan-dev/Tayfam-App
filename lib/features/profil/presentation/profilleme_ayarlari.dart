@@ -9,8 +9,8 @@ import 'package:tayfam/features/profil/application/sosyal_ayarlar_notifier.dart'
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Profil → Gizlilik kartının üstündeki "Profilleme" ve "Beni önerme"
-/// anahtarları (2026-11-16 tasarım: 27-arkadas-onerisi, karar 5–8;
+/// Profil → Gizlilik kartının üstündeki "Profilleme", "Beni önerme" ve
+/// "Keşfet'te arkadaşlarım görebilsin" anahtarları (2026-11-16 tasarım: 27-arkadas-onerisi, karar 5–8;
 /// Tayfam-Api ADR-0030 §5). Tayfa ayarlarındaki modül anahtarlarının
 /// iskeleti: başlık, ne için kullanıldığını anlatan kısa açıklama ve
 /// sağda anahtar; satırın tamamı tek dokunma alanıdır.
@@ -89,6 +89,22 @@ class ProfillemeAyarlari extends ConsumerWidget {
               ? null
               : (acik) => unawaited(_beniOnermeAyarla(context, ref, acik)),
         ),
+        Divider(
+          height: TayfamSizes.kenar,
+          thickness: TayfamSizes.kenar,
+          color: r.cizgi,
+        ),
+        // Keşfet bayrağından bağımsız gösterilir: kişi özellik açılmadan
+        // önce de kapatabilsin (30-kesfet-ve-guvenlik, karar 3 ve açık
+        // soru 1).
+        _AnahtarSatiri(
+          baslik: m.profil_kesfet_gorunurluk,
+          aciklama: m.profil_kesfet_gorunurluk_aciklama,
+          deger: ayarlar.discoverVisibleToFriends,
+          onChanged: mesgul
+              ? null
+              : (acik) => unawaited(_kesfetAyarla(context, ref, acik)),
+        ),
       ],
     );
   }
@@ -125,6 +141,19 @@ class ProfillemeAyarlari extends ConsumerWidget {
     final hata = await ref
         .read(sosyalAyarlarProvider.notifier)
         .beniOnermeAyarla(acik: acik);
+    if (hata != null) profilBildirimi(bildirim, profilHatasiMetni(m, hata));
+  }
+
+  Future<void> _kesfetAyarla(
+    BuildContext context,
+    WidgetRef ref,
+    bool acik,
+  ) async {
+    final m = AppLocalizations.of(context);
+    final bildirim = ScaffoldMessenger.of(context);
+    final hata = await ref
+        .read(sosyalAyarlarProvider.notifier)
+        .kesfetGorunurlukAyarla(acik: acik);
     if (hata != null) profilBildirimi(bildirim, profilHatasiMetni(m, hata));
   }
 }

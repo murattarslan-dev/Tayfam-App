@@ -21,6 +21,7 @@ import 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/arkadas_ortak.dart';
 import 'package:tayfam/features/arkadas/presentation/bos_vakit_ekrani.dart';
 import 'package:tayfam/features/arkadas/presentation/oneriler_bolumu.dart';
+import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -324,6 +325,9 @@ class ArkadaslikGirisleri extends ConsumerWidget {
               onTap: () => unawaited(context.push(Adresler.arkadaslar)),
             ),
             const BosVakitGirisi(),
+            // Güvenlik kişisi olduğun etkinlikler; liste boşsa yok
+            // (ADR-0027).
+            const GuvenlikPaylasimlariGirisi(),
             MenuSatiri.kartta(
               ikon: Icons.mark_email_unread_outlined,
               baslik: m.arkadas_istekler,

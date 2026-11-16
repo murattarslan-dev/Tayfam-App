@@ -32,6 +32,8 @@
     <string name="push_report_resolved_title">Şikâyetin sonuçlandı</string>
     <string name="push_rsvp_promoted_body">Bekleme listesinden katılımcılara geçtin.</string>
     <string name="push_rsvp_promoted_title">Yerin kesinleşti</string>
+    <string name="push_safety_alert_body">Seni güvenlik kişisi seçen biri zamanında \"Döndüm\" demedi. Hemen kontrol et.</string>
+    <string name="push_safety_alert_title">Güvenlik uyarısı</string>
     <string name="push_tayfa_archived_body">Üyesi olduğun bir tayfa arşivlendi.</string>
     <string name="push_tayfa_archived_title">Tayfa arşivlendi</string>
     <string name="push_tayfa_deletion_requested_body">Yönettiğin bir tayfa için silme talebi açıldı.</string>

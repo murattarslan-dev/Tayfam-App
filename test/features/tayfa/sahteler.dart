@@ -93,6 +93,7 @@ Map<String, Object?> tayfaJson({
   'id': id,
   'name': ad,
   'description': '',
+  'kind': 'standard',
   'interests': ['convoy'],
   'join_policy': 'approval',
   'modules': {'announcements': true, 'events': true, 'qa': true, 'polls': true},
@@ -117,6 +118,7 @@ Map<String, Object?> etkinJson(
 }) => {
   'tayfa_id': id,
   'name': ad,
+  'kind': 'standard',
   'role': rol,
   'status': 'active',
   'tayfa': tayfaJson(id: id, ad: ad, kod: kod, bekleyen: bekleyen),
@@ -126,6 +128,7 @@ Map<String, Object?> etkinJson(
 Map<String, Object?> bekleyenJson(String id, {String ad = 'Kampçılar'}) => {
   'tayfa_id': id,
   'name': ad,
+  'kind': 'standard',
   'role': 'member',
   'status': 'pending',
 };
