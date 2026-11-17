@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:tayfam/core/push/push_kaydi.dart';
 import 'package:tayfam/core/push/push_platformu.dart';
 
-/// Testlerde kullanılan sahte FCM token'ı (gerçek değil).
-const String sahteToken = 'sahte-fcm-token:0001';
+/// Testlerde kullanılan sahte Firebase Installation ID (gerçek değil).
+const String sahteToken = 'sahteFid0001';
 
 /// Firebase'siz sahte push platformu; çağrıları kaydeder.
 final class SahtePushPlatformu implements PushPlatformu {
   SahtePushPlatformu({
     this.izinDurumu = BildirimIzni.verildi,
     this.istekSonucu = BildirimIzni.verildi,
-    this.mevcutToken = sahteToken,
+    this.mevcutKimlik = sahteToken,
     this.baslar = true,
     this.ilk,
   });
@@ -21,17 +21,21 @@ final class SahtePushPlatformu implements PushPlatformu {
   /// [izinIste]'nin döndüreceği sonuç; izin durumu da buna geçer.
   BildirimIzni istekSonucu;
 
-  String? mevcutToken;
+  /// [kaydol]'da `onRegistered` gibi yayınlanan kimlik; `null` ise kayıt
+  /// tamamlanmaz (kimlik gelmez).
+  String? mevcutKimlik;
   final bool baslar;
   final PushVerisi? ilk;
 
   int baslatma = 0;
   int izinIstegi = 0;
-  int tokenSilme = 0;
+  int kayitIstegi = 0;
+  int kayitSilme = 0;
   int ayarAcma = 0;
   final List<List<BildirimKanali>> kurulanKanallar = [];
 
-  final StreamController<String> yenileme = StreamController.broadcast();
+  /// `onRegistered`'ın karşılığı; testler doğrudan da yayınlayabilir.
+  final StreamController<String> kayitlar = StreamController.broadcast();
   final StreamController<PushVerisi> dokunma = StreamController.broadcast();
   final StreamController<PushVerisi> onPlan = StreamController.broadcast();
 
@@ -55,15 +59,19 @@ final class SahtePushPlatformu implements PushPlatformu {
   }
 
   @override
-  Future<String?> token() async => mevcutToken;
-
-  @override
-  Future<void> tokenSil() async {
-    tokenSilme++;
+  Future<void> kaydol() async {
+    kayitIstegi++;
+    final kimlik = mevcutKimlik;
+    if (kimlik != null) kayitlar.add(kimlik);
   }
 
   @override
-  Stream<String> get tokenYenilendi => yenileme.stream;
+  Future<void> kaydiSil() async {
+    kayitSilme++;
+  }
+
+  @override
+  Stream<String> get kimlikKaydedildi => kayitlar.stream;
 
   @override
   Future<PushVerisi?> ilkDokunulan() async => ilk;
@@ -86,7 +94,7 @@ final class SahtePushPlatformu implements PushPlatformu {
   }
 }
 
-/// Sahte push token uçları; gerçek ağ yok.
+/// Sahte push kaydı uçları; gerçek ağ yok.
 final class SahtePushTokenDeposu implements PushTokenDeposu {
   SahtePushTokenDeposu({this.hata});
 
@@ -97,10 +105,10 @@ final class SahtePushTokenDeposu implements PushTokenDeposu {
   int silme = 0;
 
   @override
-  Future<void> kaydet(String token) async {
+  Future<void> kaydet(String kimlik) async {
     final h = hata;
     if (h != null) throw h;
-    kaydedilen.add(token);
+    kaydedilen.add(kimlik);
   }
 
   @override

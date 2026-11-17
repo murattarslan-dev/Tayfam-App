@@ -25,17 +25,21 @@ ADR-0018 push'u v0.1.0'ın dışında bırakmıştı. Platform sahibi
 ### 1. Paketler ve yapılandırma
 
 - `firebase_core` ve `firebase_messaging` (yayıncı firebase.google.com).
-  `firebase_messaging` 16.7 hattı: 17.x registration token API'lerini
-  (`getToken`, `onTokenRefresh`, `deleteToken`) FID kaydına bırakıp
-  deprecated yaptı; sunucu registration token ile gönderir (Tayfam-Api
-  ADR-0019 §1). Sunucu FID'e geçerse yükseltilir.
+  `firebase_messaging` 17.x hattı (2026-11-17'ye kadar 16.7; bkz. Notlar):
+  push kimliği **Firebase Installation ID (FID)**'dir ve `register()` /
+  `onRegistered` / `unregister()` ile yönetilir. Kullanımdan kalkan kayıt
+  token'ı API'si (`getToken`, `onTokenRefresh`, `deleteToken`) Firebase'in
+  uyarısına uygun olarak hiç çağrılmaz; sunucu FID'e `message.fid` ile
+  gönderir (Tayfam-Api ADR-0036).
+- Android `minSdk` açıkça **26**'dır (Android 8.0; platform sahibi kararı,
+  2026-11-17). firebase_messaging 17 / Firebase BoM 35 en az 24 ister.
 - **Firebase Analytics, Crashlytics ve başka Firebase ürünü eklenmez.**
   Manifestte `firebase_analytics_collection_deactivated=true`,
   `google_analytics_adid_collection_enabled=false`,
   `delivery_metrics_exported_to_big_query_enabled=false`.
-- **Otomatik token üretimi kapalıdır** (`firebase_messaging_auto_init_enabled
-  =false`): token yalnızca oturum açık ve izin verilmişken üretilir;
-  üretilince otomatik yenileme açılır, çıkışta yeniden kapanır.
+- **Otomatik FCM kaydı kapalıdır** (`firebase_messaging_auto_init_enabled
+  =false`): kayıt yalnızca oturum açık ve izin verilmişken yapılır;
+  kayıt istenince otomatik kayıt açılır, çıkışta yeniden kapanır.
 - `android/app/google-services.json` **repodadır** (platform sahibi,
   sohbette). İçindeki değerler (proje kimliği, uygulama kimliği, `AIza…`
   API anahtarı) her APK'da açıkça bulunan istemci tanımlayıcılarıdır
@@ -52,20 +56,29 @@ ADR-0018 push'u v0.1.0'ın dışında bırakmıştı. Platform sahibi
   `main.dart` onu mobilde verir. Web geliştirme derlemesinde ve testlerde
   push kapalıdır (`KapaliPushPlatformu`; ADR-0011).
 
-### 2. Token = oturum
+### 2. Push kimliği = oturum
 
+- Açılışta altyapı başlatılınca `onRegistered` dinlenmeye başlar
+  (Firebase: `register()`'dan önce abone ol).
 - Oturum açık olunca (giriş, kayıt/onay sonrası ve her açılış) ve izin
-  verilmişse `getToken()` → `PUT /v1/me/push-token` (`platform: android`).
-  `onTokenRefresh` → `PUT`.
+  verilmişse `register()` çağrılır. FID dönüşte değil `onRegistered`
+  akışından gelir; gelen FID, oturum açık ve izin verilmişse
+  `PUT /v1/me/push-token` (`platform: android`, `token_type: fid`) ile
+  kaydedilir. FID değişince ya da her `register()`'da yeniden
+  yayınlanınca aynı yol işler; aynı oturumda zaten kaydedilmiş FID
+  tekrar gönderilmez (yalnızca bellekte tutulur). 16.x'ten yükselen
+  cihazda sunucudaki eski kayıt token'ı satırı aynı oturumun `PUT`'uyla
+  FID'e döner (Tayfam-Api ADR-0036 §1).
 - **Çıkışta** önce `DELETE /v1/me/push-token`, sonra cihazda
-  `deleteToken()`; ardından `POST /v1/auth/sign-out`. Sunucuya
-  ulaşılamasa da devam edilir (oturum kapanınca sunucu siler).
+  `unregister()` (otomatik kayıt da kapanır); ardından
+  `POST /v1/auth/sign-out`. Sunucuya ulaşılamasa da devam edilir (oturum
+  kapanınca sunucu siler).
 - **Oturum başka yoldan kapanırsa** (sunucu kapattı, yenileme reddedildi,
-  hesap silindi) cihazda `deleteToken()` yapılır; sunucudaki kaydı oturum
+  hesap silindi) cihazda `unregister()` yapılır; sunucudaki kaydı oturum
   bitişi siler (Tayfam-Api ADR-0019 §1). Hesap silmede ayrıca `DELETE`
-  çağrılmaz: yeniden girişle açılan oturumun token'ı yoktur ve
-  `user.deleted` bütün token'ları siler.
-- İşler sırayla yürür, hata fırlatmaz. **Token loglanmaz** ve uygulamanın
+  çağrılmaz: yeniden girişle açılan oturumun kaydı yoktur ve
+  `user.deleted` bütün kayıtları siler.
+- İşler sırayla yürür, hata fırlatmaz. **FID loglanmaz** ve uygulamanın
   hiçbir deposuna yazılmaz; yalnızca FCM SDK'sının kendi deposunda durur.
 
 ### 3. İzin: ilk gerçek ihtiyaçta
@@ -164,8 +177,12 @@ iznidir.
 - **İzni açılışta istemek:** bağlamsız istek reddedilme olasılığını artırır.
 - **`google-services.json`'ı CI secret'ı yapmak:** değerler public; secret
   yönetimi ve fork PR'larında kırılan derleme kazancı aşar.
-- **firebase_messaging 17.x ve FID kaydı:** sunucu sözleşmesi registration
-  token bekliyor; FID ile gönderim Tayfam-Api'de ayrı bir karar olur.
+- **16.7 hattında kalmak:** kayıt token'ı API'si kullanımdan kalktı ve
+  kaldırılacak; Dependabot güncellemeleri birikir. Sunucu FID'i
+  desteklediği için (Tayfam-Api ADR-0036) gerekçesi kalmadı.
+- **17.x'te deprecated `getToken`'ı kullanmaya devam etmek:** Firebase iki
+  API'yi birlikte kullanmamayı söylüyor ve eski API kaldırılacak; analiz
+  uyarısını susturmak sorunu erteler.
 
 ## Notlar
 
@@ -175,3 +192,10 @@ iznidir.
   üretir). Kaynak adı ve manifestteki `default_notification_icon` /
   `default_notification_color` değişmedi. Uyarlanabilir uygulama ikonuna
   Android 13+ temalı ikon için tek renk (monochrome) katman eklendi.
+- **2026-11-17 (platform sahibi; issue #212, Tayfam-Api #230 / ADR-0036):**
+  `firebase_core` 4 → 5.2, `firebase_messaging` 16.7 → 17.1. Push kimliği
+  kayıt token'ından FID'e geçti (§1, §2); seçenek "önce sunucu": sunucu
+  sözleşmesi (`token_type`) ve `message.fid` gönderimi önce birleşti.
+  **Platform sahibi kararı, 2026-11-17:** Android `minSdk` açıkça 26
+  (Android 8.0); 17.x en az 24 ister. Firebase iOS SDK 13'ün istediği iOS
+  15 zaten hedefti. Yeni izin eklenmedi.

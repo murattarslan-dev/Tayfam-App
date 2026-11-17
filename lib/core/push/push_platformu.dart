@@ -66,7 +66,8 @@ typedef PushVerisi = Map<String, String>;
 /// `FirebasePushPlatformu` dokunur; testler ve web derlemesi
 /// [KapaliPushPlatformu] ya da sahte bir uygulama kullanır.
 ///
-/// Token hiçbir zaman loglanmaz ve diske yazılmaz (kesin kural 3).
+/// Push kimliği (FID) hiçbir zaman loglanmaz ve diske yazılmaz (kesin
+/// kural 3).
 abstract interface class PushPlatformu {
   /// Bu derlemede push var mı. `false` ise hiçbir çağrı bir şey yapmaz.
   bool get etkin;
@@ -81,14 +82,20 @@ abstract interface class PushPlatformu {
   /// Sistem izin penceresini gösterir (gerekiyorsa) ve sonucu döndürür.
   Future<BildirimIzni> izinIste();
 
-  /// Bu cihazın FCM kayıt token'ı; alınamazsa `null`.
-  Future<String?> token();
+  /// Uygulama örneğini FCM'e kaydeder (firebase_messaging 17+
+  /// `register()`). Kimlik (FID) dönüşte değil, [kimlikKaydedildi]
+  /// akışından gelir; her çağrıda (zaten kayıtlıysa da) yeniden yayınlanır.
+  /// Hata fırlatmaz.
+  Future<void> kaydol();
 
-  /// FCM token'ını cihazda geçersiz kılar; sonraki [token] yenisini verir.
-  Future<void> tokenSil();
+  /// Uygulama örneğinin FCM kaydını kaldırır (`unregister()`) ve otomatik
+  /// kaydı kapatır; sonraki [kaydol] yeniden kaydeder. Hata fırlatmaz.
+  Future<void> kaydiSil();
 
-  /// FCM token'ı yenilenince yeni değer.
-  Stream<String> get tokenYenilendi;
+  /// FCM kaydı tamamlanınca (ilk kayıt, her [kaydol], kimlik değişince)
+  /// Firebase Installation ID (`onRegistered`). Bu değer sunucuya
+  /// `token_type: fid` ile kaydedilir (Tayfam-Api ADR-0036).
+  Stream<String> get kimlikKaydedildi;
 
   /// Uygulama kapalıyken dokunulup açılan bildirimin verisi (bir kez).
   Future<PushVerisi?> ilkDokunulan();
@@ -125,13 +132,13 @@ final class KapaliPushPlatformu implements PushPlatformu {
   Future<BildirimIzni> izinIste() async => BildirimIzni.reddedildi;
 
   @override
-  Future<String?> token() async => null;
+  Future<void> kaydol() async {}
 
   @override
-  Future<void> tokenSil() async {}
+  Future<void> kaydiSil() async {}
 
   @override
-  Stream<String> get tokenYenilendi => const Stream.empty();
+  Stream<String> get kimlikKaydedildi => const Stream.empty();
 
   @override
   Future<PushVerisi?> ilkDokunulan() async => null;
