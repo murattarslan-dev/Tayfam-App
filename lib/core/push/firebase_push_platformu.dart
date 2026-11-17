@@ -15,12 +15,16 @@ const MethodChannel bildirimKanali = MethodChannel('tayfam/bildirim');
 /// FCM ile push (istemci ADR-0019). Firebase'e dokunan tek sınıftır.
 ///
 /// - Firebase yapılandırması `android/app/google-services.json`'dan gelir
-///   (değerler public; kesin kural 6). Analitik ve otomatik token üretimi
-///   manifestte kapalıdır: token yalnızca [token] çağrılınca, yani oturum
-///   açık ve izin verilmişken üretilir.
+///   (değerler public; kesin kural 6). Analitik ve otomatik FCM kaydı
+///   manifestte kapalıdır: FCM kaydı yalnızca [kaydol] çağrılınca, yani
+///   oturum açık ve izin verilmişken yapılır.
+/// - firebase_messaging 17'nin FID API'si (`register` / `unregister` /
+///   `onRegistered`) kullanılır; kullanımdan kalkan kayıt token'ı API'si
+///   (`getToken` / `deleteToken` / `onTokenRefresh`) Firebase'in uyarısına
+///   uygun olarak hiç çağrılmaz (Tayfam-Api ADR-0036).
 /// - Başlatma başarısız olursa (ör. iOS'ta yapılandırma yok) push o
 ///   çalışmada kapalıdır; hiçbir çağrı hata fırlatmaz.
-/// - Token, mesaj verisi ve bildirim içeriği loglanmaz.
+/// - Kimlik (FID), mesaj verisi ve bildirim içeriği loglanmaz.
 final class FirebasePushPlatformu implements PushPlatformu {
   FirebasePushPlatformu({this._kanal = bildirimKanali});
 
@@ -71,35 +75,36 @@ final class FirebasePushPlatformu implements PushPlatformu {
   }
 
   @override
-  Future<String?> token() async {
+  Future<void> kaydol() async {
     final fcm = await _hazir();
-    if (fcm == null) return null;
+    if (fcm == null) return;
     try {
-      // Manifestte kapalı olan otomatik yenileme, token istenince açılır;
-      // çıkışta yeniden kapanır ([tokenSil]).
+      // Manifestte kapalı olan otomatik kayıt, kayıt istenince açılır;
+      // çıkışta yeniden kapanır ([kaydiSil]). Kimlik [kimlikKaydedildi]
+      // akışından gelir (firebase_messaging 17; Tayfam-Api ADR-0036).
       await fcm.setAutoInitEnabled(true);
-      return await fcm.getToken();
+      await fcm.register();
     } on Exception {
-      return null;
+      // Kayıt olmadı; bir sonraki açılışta ya da izin verilince yeniden.
     }
   }
 
   @override
-  Future<void> tokenSil() async {
+  Future<void> kaydiSil() async {
     final fcm = await _hazir();
     if (fcm == null) return;
     try {
       await fcm.setAutoInitEnabled(false);
-      await fcm.deleteToken();
+      await fcm.unregister();
     } on Exception {
-      // Token zaten yok ya da ağ yok; sunucu oturum bitince kendisi siler.
+      // Kayıt zaten yok ya da ağ yok; sunucu oturum bitince kendisi siler.
     }
   }
 
   @override
-  Stream<String> get tokenYenilendi {
+  Stream<String> get kimlikKaydedildi {
     final fcm = _fcm;
-    return fcm == null ? const Stream.empty() : fcm.onTokenRefresh;
+    return fcm == null ? const Stream.empty() : fcm.onRegistered;
   }
 
   @override

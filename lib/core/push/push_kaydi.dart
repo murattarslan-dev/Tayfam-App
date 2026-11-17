@@ -6,23 +6,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/gen/apis/me_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/push/push_platformu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Sunucuya push token'ı kaydeden ve silen uçlar (Tayfam-Api ADR-0019 §1).
+/// Sunucuya push kimliğini kaydeden ve silen uçlar (Tayfam-Api ADR-0019
+/// §1, ADR-0036).
 abstract interface class PushTokenDeposu {
-  /// `PUT /v1/me/push-token`: bu oturumun token'ını kaydeder ya da yeniler.
-  Future<void> kaydet(String token);
+  /// `PUT /v1/me/push-token`: bu oturumun push kimliğini (FID) kaydeder ya
+  /// da yeniler.
+  Future<void> kaydet(String kimlik);
 
-  /// `DELETE /v1/me/push-token`: bu oturumun token'ını siler.
+  /// `DELETE /v1/me/push-token`: bu oturumun push kaydını siler.
   Future<void> sil();
 }
 
 /// Üretilmiş uç sınıfıyla, tek `ApiClient` üzerinden (ADR-0005).
 final class ApiPushTokenDeposu implements PushTokenDeposu {
-  ApiPushTokenDeposu(ApiClient istemci, {required this.platform})
+  ApiPushTokenDeposu(ApiTransport istemci, {required this.platform})
     : _me = MeApi(istemci);
 
   final MeApi _me;
@@ -30,9 +33,16 @@ final class ApiPushTokenDeposu implements PushTokenDeposu {
   /// Sözleşmedeki platform (yalnızca mobil; ADR-0011).
   final PushTokenRegistrationPlatform platform;
 
+  /// firebase_messaging 17+ `onRegistered` FID verir; sunucu onu
+  /// `message.fid` ile hedefler (Tayfam-Api ADR-0036). Kayıt token'ı
+  /// (varsayılan tür) bu istemciden artık gönderilmez.
   @override
-  Future<void> kaydet(String token) => _me.putPushToken(
-    body: PushTokenRegistration(token: token, platform: platform),
+  Future<void> kaydet(String kimlik) => _me.putPushToken(
+    body: PushTokenRegistration(
+      token: kimlik,
+      platform: platform,
+      tokenType: PushTokenRegistrationTokenType.fid,
+    ),
   );
 
   @override
@@ -72,17 +82,20 @@ List<BildirimKanali> bildirimKanallari(AppLocalizations m) => [
   ),
 ];
 
-/// Push token'ının sunucudaki kaydını oturumla eşit tutar (istemci
+/// Push kimliğinin (FID) sunucudaki kaydını oturumla eşit tutar (istemci
 /// ADR-0019 §2).
 ///
-/// - Uygulama açılınca altyapı başlatılır ve kanallar kurulur.
-/// - Oturum açık olunca (giriş, her açılış) ve izin verilmişse token alınır
-///   ve `PUT` edilir; FCM token'ı yenilenince yenisi `PUT` edilir.
-/// - Çıkışta [cikisOncesi] sunucudaki kaydı siler (`DELETE`) ve cihazdaki
-///   FCM token'ını geçersiz kılar. Oturum başka bir yoldan kapanırsa
-///   (sunucu kapattı, yenileme reddedildi, hesap silindi) cihazdaki token
-///   yine silinir; sunucu kendi kaydını oturumla birlikte siler.
-/// - İşler sırayla yürür; hata fırlatmaz. Token loglanmaz ve diske
+/// - Uygulama açılınca altyapı başlatılır, kanallar kurulur ve
+///   `onRegistered` dinlenmeye başlar (Firebase: `register()`'dan önce).
+/// - Oturum açık olunca (giriş, her açılış) ve izin verilmişse FCM'e
+///   kaydolunur; gelen FID `PUT` edilir. FID değişince (ya da her
+///   `register()`'da yeniden yayınlanınca) yine `PUT` edilir; aynı oturumda
+///   zaten gönderilmiş kimlik tekrar gönderilmez.
+/// - Çıkışta [cikisOncesi] sunucudaki kaydı siler (`DELETE`) ve cihazın
+///   FCM kaydını kaldırır (`unregister`). Oturum başka bir yoldan kapanırsa
+///   (sunucu kapattı, yenileme reddedildi, hesap silindi) cihazın kaydı
+///   yine kaldırılır; sunucu kendi kaydını oturumla birlikte siler.
+/// - İşler sırayla yürür; hata fırlatmaz. Kimlik loglanmaz ve diske
 ///   yazılmaz; yalnızca platformun kendi deposunda durur.
 final class PushKaydi {
   PushKaydi({
@@ -100,27 +113,30 @@ final class PushKaydi {
   final ApiGunlugu _gunluk;
 
   Future<void> _sira = Future<void>.value();
-  StreamSubscription<String>? _yenileme;
+  StreamSubscription<String>? _kayitlar;
   bool _kapandi = false;
 
-  /// Altyapıyı başlatır, kanalları kurar ve token yenilemesini dinler.
+  /// Bu oturumda sunucuya kaydedilmiş son kimlik (yalnızca bellekte).
+  String? _gonderilen;
+
+  /// Altyapıyı başlatır, kanalları kurar ve kimlik kaydını dinler.
   Future<void> baslat() => _sirala(() async {
     if (!_platform.etkin || !await _platform.baslat()) return;
     await _platform.kanallariKur(bildirimKanallari(_metinler));
     if (_kapandi) return;
-    _yenileme = _platform.tokenYenilendi.listen(_tokenYenilendi);
+    _kayitlar = _platform.kimlikKaydedildi.listen(_kimlikKaydedildi);
   });
 
-  /// Oturum açıksa ve izin verilmişse token'ı sunucuya kaydeder.
+  /// Oturum açıksa ve izin verilmişse FCM'e kaydolur; kimlik
+  /// [PushPlatformu.kimlikKaydedildi]'den gelince sunucuya kaydedilir.
   Future<void> esitle() => _sirala(() async {
     if (!_platform.etkin || !_oturumAcik()) return;
     if (await _platform.izin() != BildirimIzni.verildi) return;
-    final token = await _platform.token();
-    if (token == null || !_oturumAcik()) return;
-    await _kaydet(token);
+    await _platform.kaydol();
   });
 
-  /// Çıkıştan hemen önce: sunucudaki kaydı ve cihazdaki token'ı siler.
+  /// Çıkıştan hemen önce: sunucudaki kaydı siler ve cihazın FCM kaydını
+  /// kaldırır.
   /// Sunucuya ulaşılamazsa da devam eder (oturum kapanınca sunucu siler).
   Future<void> cikisOncesi() => _sirala(() async {
     if (!_platform.etkin) return;
@@ -129,35 +145,38 @@ final class PushKaydi {
     } on Exception {
       _gunluk('push: token sunucudan silinemedi');
     }
-    await _platform.tokenSil();
+    _gonderilen = null;
+    await _platform.kaydiSil();
   });
 
-  /// Oturum kapandı: cihazdaki token geçersiz kılınır; bir sonraki
-  /// oturum yeni token alır.
+  /// Oturum kapandı: cihazın FCM kaydı kaldırılır; bir sonraki oturum
+  /// yeniden kaydolur.
   Future<void> oturumKapandi() => _sirala(() async {
     if (!_platform.etkin) return;
-    await _platform.tokenSil();
+    _gonderilen = null;
+    await _platform.kaydiSil();
   });
 
   /// Dinlemeyi bırakır.
   void dispose() {
     _kapandi = true;
-    unawaited(_yenileme?.cancel());
+    unawaited(_kayitlar?.cancel());
   }
 
-  void _tokenYenilendi(String token) {
+  void _kimlikKaydedildi(String kimlik) {
     unawaited(
       _sirala(() async {
-        if (!_oturumAcik()) return;
+        if (!_oturumAcik() || kimlik == _gonderilen) return;
         if (await _platform.izin() != BildirimIzni.verildi) return;
-        await _kaydet(token);
+        await _kaydet(kimlik);
       }),
     );
   }
 
-  Future<void> _kaydet(String token) async {
+  Future<void> _kaydet(String kimlik) async {
     try {
-      await _depo.kaydet(token);
+      await _depo.kaydet(kimlik);
+      _gonderilen = kimlik;
     } on Exception {
       // Bir sonraki açılışta ya da yenilemede yeniden denenir.
       _gunluk('push: token kaydedilemedi');
@@ -178,7 +197,7 @@ final class PushKaydi {
 }
 
 /// Uygulama boyunca tek [PushKaydi] (kalıcı; ADR-0001 kural 4). Oturum
-/// durumunu izler: açılınca eşitler, kapanınca cihazdaki token'ı siler.
+/// durumunu izler: açılınca eşitler, kapanınca cihazın FCM kaydını kaldırır.
 final pushKaydiProvider = Provider<PushKaydi>((ref) {
   final kayit = PushKaydi(
     platform: ref.watch(pushPlatformuProvider),

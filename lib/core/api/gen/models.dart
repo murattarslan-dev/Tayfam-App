@@ -4773,12 +4773,15 @@ final class DiscoverItem {
   /// doğrulanmış katılımlar.
   final DiscoverItemTayfa tayfa;
 
+  /// En çok 3 görünür arkadaş; yoksa boş dizi.
+  ///
   /// Kısıtlar: maxItems: 3.
   final List<DiscoverPerson> friends;
 
-  /// Görünür arkadaşların tamamı (`friends` dahil).
+  /// Görünür arkadaşların tamamı (`friends` dahil); yoksa 0
+  /// (ADR-0035; önceden en az 1'di).
   ///
-  /// Kısıtlar: minimum: 1.
+  /// Kısıtlar: minimum: 0.
   final int friendCount;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -12694,7 +12697,11 @@ enum ProfileField {
 }
 
 final class PushTokenRegistration {
-  const PushTokenRegistration({required this.token, required this.platform});
+  const PushTokenRegistration({
+    required this.token,
+    required this.platform,
+    this.tokenType,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -12705,19 +12712,37 @@ final class PushTokenRegistration {
         platform: PushTokenRegistrationPlatform.fromWire(
           _readString(json['platform'], 'PushTokenRegistration.platform'),
         ),
+        tokenType: switch (json['token_type']) {
+          null => null,
+          final Object v => PushTokenRegistrationTokenType.fromWire(
+            _readString(v, 'PushTokenRegistration.token_type'),
+          ),
+        },
       );
 
-  /// FCM kayıt token'ı. Log'a yazılmaz.
+  /// `token_type`'a göre FCM kayıt token'ı (`getToken`) ya da Firebase
+  /// Installation ID (FID; firebase_messaging 17+ `register()` /
+  /// `onRegistered`). Log'a yazılmaz.
   ///
   /// Kısıtlar: minLength: 1; maxLength: 1024; pattern: `^[A-Za-z0-9:_.-]+$`.
   final String token;
 
   final PushTokenRegistrationPlatform platform;
 
+  /// `token`'ın türü (ADR-0036). Gönderilmezse `registration_token`
+  /// sayılır (eski istemciler). firebase_messaging 17+ istemcileri
+  /// `onRegistered`'ın verdiği FID'i `fid` ile kaydeder. Oturumun
+  /// kaydı türüyle birlikte yenilenir: aynı oturumda token'dan FID'e
+  /// geçmek için yeniden `PUT` yeterlidir.
+  ///
+  /// Kısıtlar: varsayılan (sunucu): `registration_token`.
+  final PushTokenRegistrationTokenType? tokenType;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'token': token,
     'platform': platform.wire,
+    if (tokenType case final value?) 'token_type': value.wire,
   };
 
   @override
@@ -12725,10 +12750,11 @@ final class PushTokenRegistration {
       identical(this, other) ||
       other is PushTokenRegistration &&
           token == other.token &&
-          platform == other.platform;
+          platform == other.platform &&
+          tokenType == other.tokenType;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[token, platform]);
+  int get hashCode => Object.hashAll(<Object?>[token, platform, tokenType]);
 }
 
 enum PushTokenRegistrationPlatform {
@@ -12751,6 +12777,42 @@ enum PushTokenRegistrationPlatform {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static PushTokenRegistrationPlatform fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `token`'ın türü (ADR-0036). Gönderilmezse `registration_token`
+/// sayılır (eski istemciler). firebase_messaging 17+ istemcileri
+/// `onRegistered`'ın verdiği FID'i `fid` ile kaydeder. Oturumun
+/// kaydı türüyle birlikte yenilenir: aynı oturumda token'dan FID'e
+/// geçmek için yeniden `PUT` yeterlidir.
+///
+/// Kısıtlar: varsayılan (sunucu): `registration_token`.
+enum PushTokenRegistrationTokenType {
+  registrationToken('registration_token'),
+  fid('fid'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const PushTokenRegistrationTokenType(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('PushTokenRegistrationTokenType.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static PushTokenRegistrationTokenType fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;

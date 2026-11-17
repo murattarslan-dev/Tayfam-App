@@ -21,10 +21,12 @@ dependencies:
   # firebase.google.com (FlutterFire, Google). Yalnızca firebase_core ve
   # firebase_messaging; Analytics/Crashlytics yok, otomatik veri toplama
   # manifestte kapalı. Android'de POST_NOTIFICATIONS, WAKE_LOCK,
-  # ACCESS_NETWORK_STATE ve c2dm RECEIVE izinlerini getirir. 17.x'in
-  # registration token API'leri deprecated olduğu için 16.7 hattı.
-  firebase_core: ^4.15.1
-  firebase_messaging: ^16.7.1
+  # ACCESS_NETWORK_STATE ve c2dm RECEIVE izinlerini getirir. 17.x hattı:
+  # push kimliği FID'dir (register / onRegistered); kullanımdan kalkan
+  # kayıt token'ı API'si çağrılmaz (istemci ADR-0019, Tayfam-Api ADR-0036).
+  # 17.x Android'de minSdk 24 ister; uygulama minSdk 26.
+  firebase_core: ^5.2.0
+  firebase_messaging: ^17.1.0
   # Fotoğrafı cihazda çözme (HEIC dahil), EXIF yönünü uygulama, küçültme ve
   # JPEG kodlama (ADR-0021 §2): platform kodlayıcıları (Android Bitmap,
   # iOS UIImage/ImageIO). Yayıncı fluttercandies.com, MIT; izin eklemez.
