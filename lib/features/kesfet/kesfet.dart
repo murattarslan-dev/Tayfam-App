@@ -1,7 +1,8 @@
 /// Keşfet ve güvenlik ağı özelliğinin dışa açık dosyası (ADR-0002;
 /// istemci ADR-0027; Tayfam-Api ADR-0033):
 ///
-/// - [kesfetRotasi] üst düzeye (`/kesfet`, kabuğun üstünde tam ekran),
+/// - [kesfetRotasi] kabuğun Keşfet sekmesine (`/kesfet`; istemci
+///   ADR-0030),
 ///   [guvenlikPaylasimlariRotalari] `/profil` rotasının altına eklenir.
 /// - Yuvalara verilenler (`shell/kayitlar.dart`): etkinlik detayındaki
 ///   güvenlik kişisi ve "Her şey yolunda mıydı?" kartları
@@ -30,7 +31,7 @@ export 'package:tayfam/features/kesfet/presentation/guvenlik_paylasimlari_ekrani
 export 'package:tayfam/features/kesfet/presentation/kesfet_girisleri.dart'
     show TayfaKesfetBolumu;
 
-/// Keşfet akışının rotası (`/kesfet`).
+/// Keşfet sekmesinin rotası (`/kesfet`; istemci ADR-0030).
 final GoRoute kesfetRotasi = GoRoute(
   path: Adresler.kesfet,
   builder: (context, state) => const KesfetEkrani(),

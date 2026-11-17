@@ -255,13 +255,13 @@ void main() {
     await tester.tap(
       find.descendant(
         of: find.byType(NavigationRail),
-        matching: find.text(arbMetni('gezinme_sekme_bildirimler')),
+        matching: find.text(arbMetni('gezinme_sekme_kesfet')),
       ),
     );
     await tester.pumpAndSettle();
     expect(
       yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path,
-      '/bildirimler',
+      '/kesfet',
     );
   });
 
@@ -277,12 +277,24 @@ void main() {
       ],
     );
 
+    // Sohbet sekmesinde ve Tayfa sekmesinin üstündeki zilde (ADR-0030).
     expect(find.byType(Badge), findsNWidgets(2));
     expect(find.text('3'), findsOneWidget);
     expect(find.text(arbMetni('gezinme_rozet_cok')), findsOneWidget);
     // Rozetteki sayı yerine ekran okuyucuya açıklayıcı etiket verilir.
     expect(_semantikEtiketi('3 okunmamış mesaj'), findsOneWidget);
-    expect(_semantikEtiketi('150 okunmamış bildirim'), findsOneWidget);
+    expect(
+      _semantikEtiketi('Bildirimler, 150 okunmamış bildirim'),
+      findsOneWidget,
+    );
+    // Bildirimler artık sekme değil.
+    expect(
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.text(arbMetni('bildirimler_baslik')),
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets('okunmamış yokken rozet gösterilmiyor', (tester) async {
@@ -343,7 +355,7 @@ void main() {
 
       for (final anahtar in [
         'gezinme_sekme_sohbet',
-        'gezinme_sekme_bildirimler',
+        'gezinme_sekme_kesfet',
         'gezinme_sekme_profil',
       ]) {
         await tester.tap(_sekme(anahtar));
