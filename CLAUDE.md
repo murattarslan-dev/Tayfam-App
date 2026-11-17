@@ -250,9 +250,22 @@ Ayrıntı ADR-0009'da. Özet:
 - Commit mesajları Conventional Commits biçimindedir (`feat:`, `fix:`,
   `docs:`, `refactor:`, `test:`, `chore:`).
 - PR şablonundaki her başlık doldurulur.
-- **`main`'e doğrudan push yapılmaz.** `main` bir kural setiyle korunur
-  (Tayfam-Api ADR-0010 ile aynı model: PR zorunlu, squash, CI geçmeden
-  birleştirme yok, onay zorunluluğu yok).
+- **Dallar (ADR-0029):** iş PR'ları **`dev`'e** açılır ve squash ile
+  birleşir; `dev`'e birleşmede hiçbir dağıtım yoktur, yalnızca CI. `main`
+  prod'dur: yalnızca `dev` → `main` sürüm PR'ıyla, **merge commit** ile
+  ilerler; `main`'e her birleşme Play kapalı test kanalına ve (site
+  değiştiyse) tayfam.app'e gider, `vX.Y.Z` etiketi otomatik atılır.
+  `dev` varsayılan daldır.
+- **`dev`'e ve `main`'e doğrudan push yapılmaz.** İkisi de kural setiyle
+  korunur (Tayfam-Api ADR-0010 ile aynı model: PR zorunlu, CI geçmeden
+  birleştirme yok, force push ve silme yok, bypass yok, onay zorunluluğu
+  yok). `main`'e `dev` dışından PR açılmaz; CI'daki `kaynak-dal` kontrolü
+  düşer.
+- **Sürüm PR'ı:** önce `dev`'de `pubspec.yaml` `X.Y.Z` artırılır (CI'daki
+  `surum-numarasi` denetler), sonra `dev` → `main` PR'ı açılır. Mimari
+  oturumu, platform sahibinin sohbetteki onayıyla birleştirir ve PR
+  açıklamasına "Sohbette onaylandı" yazar. Adımlar:
+  `docs/runbooks/surum-cikarma.md`. Etiket elle atılmaz.
 - **CI geçmeden hiçbir PR birleştirilmez.**
 - **Platform sahibinin işi en aza indirilir.** Yalnızca platform sahibinin
   yapabileceği işler (mağaza ve Firebase konsolu, imzalama anahtarı, hesap

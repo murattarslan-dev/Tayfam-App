@@ -2,6 +2,12 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-10: "GitHub Actions ile devam et")
 - **Tarih:** 2026-11-09
+- **Revizyon:** 2026-11-16: Dal modeli değişti
+  ([ADR-0029](0029-dal-modeli-dev-main-ve-surum.md)). CI artık `dev`'e ve
+  `main`'e push'ta da çalışır; kural seti `dev` ve `main` için ayrıdır;
+  zorunlu kontrollere `kaynak-dal` ve `surum-numarasi` eklendi; Dependabot
+  `dev`'e PR açar. Aşağıda "`main`" geçen kural seti ve CI maddeleri bu
+  revizyonla okunur.
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0002](0002-modul-yapisi.md), [ADR-0004](0004-tema-ve-bilesen-dili.md), [ADR-0005](0005-api-istemcisi.md), [ADR-0008](0008-ceviri-ve-yerel-ayar.md); Tayfam-Api ADR-0010, ADR-0011
 
@@ -35,7 +41,8 @@ Developer hesabı yok.
 
 ### CI (GitHub Actions)
 
-- Yalnızca `pull_request` ve `main`'e `push` olaylarında çalışır;
+- Yalnızca `pull_request` ve `main`/`dev`'e `push` olaylarında çalışır
+  (revizyon 2026-11-16);
   `pull_request_target` ve self-hosted runner kullanılmaz; fork PR'ları
   secret görmez (Tayfam-Api ADR-0010 ile aynı).
 - Action'lar commit SHA'sıyla, Flutter sürümü dosyada sabit bir sürümle
@@ -53,6 +60,8 @@ Developer hesabı yok.
   7. Android debug derlemesi (`flutter build apk --debug`) ve geliştirme
      için web derlemesinin bozulmadığını görmek üzere `flutter build web`
      (yayınlanmaz, ADR-0011)
+  8. (2026-11-16, ADR-0029) `kaynak-dal`: `main`'e PR yalnızca `dev`'den;
+     `surum-numarasi`: `main`'e PR'da `vX.Y.Z` yeni ve öncekinden büyük
 - Dependabot: `pub` ve `github-actions` için haftalık. Dependabot'un
   açtığı dallar `dependabot/…` adını taşır; CLAUDE.md'deki
   `<tür>/<kısa-açıklama>` dal adı kuralının tek istisnasıdır (platform
@@ -74,6 +83,10 @@ Developer hesabı yok.
 CI eklendikten sonra `main` kural setine yukarıdaki zorunlu kontroller
 eklenir (platform sahibinin GitHub ayarı). O zamana kadar PR'lar platform
 sahibi tarafından birleştirilir.
+
+**Revizyon 2026-11-16:** `dev` ve `main` için ayrı kural setleri; ikisinde
+de yukarıdaki zorunlu kontroller. `main`'de ayrıca yalnızca merge commit ve
+`kaynak-dal`, `surum-numarasi` (ADR-0029).
 
 ## Gerekçe
 
