@@ -18,15 +18,21 @@ import 'package:tayfam/features/bildirim/application/bildirim_listesi_notifier.d
 import 'package:tayfam/features/bildirim/application/okunmamis_bildirim_notifier.dart';
 import 'package:tayfam/features/bildirim/application/sekme_durumu.dart';
 import 'package:tayfam/features/bildirim/presentation/bildirim_satiri.dart';
+import 'package:tayfam/features/bildirim/presentation/bildirim_yenileyici.dart';
 import 'package:tayfam/features/bildirim/presentation/sekme_kartlari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Bildirimler sekmesi (`/bildirimler`; ADR-0018 §3, 2026-11-13 tasarım:
+/// Bildirimler ekranı (`/bildirimler`; ADR-0018 §3, 2026-11-13 tasarım:
 /// Bildirimler, Bildirimler-Koyu, Bildirimler-Bos): bütün tayfaların
 /// bildirimleri tek listede, en yeni önce, sayfalı; zamana göre gruplu
 /// (Bugün / Dün / Bu hafta / Daha eski). Aşağı çekince yenilenir.
 ///
-/// - Başlıkta, okunmamış varken "Hepsini okundu say".
+/// Sekme değildir (istemci ADR-0030): Tayfa ve Keşfet sekmelerinin üst
+/// çubuğundaki zilden sekmelerin üstünde açılır; üst çubukta geri düğmesi
+/// ve "Bildirimler" başlığı vardır. Açılınca okunmamış sayısı ve liste
+/// yenilenir (sekmenin açılıştaki yenilemesinin yerine).
+///
+/// - Okunmamış varken listenin üstünde "Hepsini okundu say".
 /// - Bildirim izni verilmemişse listenin üstünde mor izin kartı.
 /// - Okunmamış güvenlik uyarıları (`hike_overdue`) okunana kadar en üstte
 ///   sabit nar kartta.
@@ -42,6 +48,13 @@ class BildirimlerEkrani extends ConsumerStatefulWidget {
 
 class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
   bool _hepsiIsleniyor = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Zil rozeti eski kalmış olabilir; ekran açılınca sunucudan okunur.
+    bildirimleriYenile(ref);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +75,9 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     );
 
     return Scaffold(
+      appBar: AppBar(title: Text(m.bildirimler_baslik)),
       body: SafeArea(
+        top: false,
         bottom: false,
         child: TayfamYenile(
           onRefresh: _yenile,
@@ -81,12 +96,14 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
                   TayfamSpacing.s24,
                 ),
                 children: [
-                  _Baslik(
-                    goster: liste != null && okunmamisVar,
-                    hepsiniOkunduSay: _hepsiIsleniyor
-                        ? null
-                        : _hepsiniOkunduSay,
-                  ),
+                  if (liste != null && okunmamisVar)
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: BaglantiEylemi(
+                        etiket: m.bildirim_hepsini_okundu_say,
+                        onPressed: _hepsiIsleniyor ? null : _hepsiniOkunduSay,
+                      ),
+                    ),
                   if (izinKarti) ...[
                     const SizedBox(height: TayfamSpacing.s8),
                     const IzinKarti(),
@@ -205,7 +222,8 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
   void _git(String? adres) {
     if (adres == null) return;
     // Kişi profili sekmelerin üstünde açılır; geri tuşu bildirimlere döner.
-    if (adres.startsWith('${Adresler.kisiOneki}/')) {
+    // Sekme adresinde `go` Bildirimler'i kapatır ve sekmeye geçer.
+    if (Adresler.sekmelerinUstundeMi(adres)) {
       unawaited(context.push(adres));
     } else {
       context.go(adres);
@@ -240,43 +258,6 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
         tekrarDene: () => unawaited(_yenile()),
       );
     }
-  }
-}
-
-/// Sekme başlığı (tasarım: 26 px "Bildirimler") ve okunmamış varken
-/// sağında "Hepsini okundu say". Dar ekranda ve büyük yazıda düğme alt
-/// satıra iner.
-class _Baslik extends StatelessWidget {
-  const _Baslik({required this.goster, required this.hepsiniOkunduSay});
-
-  final bool goster;
-  final VoidCallback? hepsiniOkunduSay;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    return Wrap(
-      alignment: WrapAlignment.spaceBetween,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: TayfamSpacing.s8,
-      children: [
-        Padding(
-          padding: const EdgeInsetsDirectional.only(start: TayfamSpacing.s4),
-          child: Semantics(
-            header: true,
-            child: Text(
-              m.gezinme_sekme_bildirimler,
-              style: context.yazi.headlineMedium,
-            ),
-          ),
-        ),
-        if (goster)
-          BaglantiEylemi(
-            etiket: m.bildirim_hepsini_okundu_say,
-            onPressed: hepsiniOkunduSay,
-          ),
-      ],
-    );
   }
 }
 

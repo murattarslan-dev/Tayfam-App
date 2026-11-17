@@ -231,3 +231,12 @@ kart iskeletini kullanır (ADR-0015 §5).
    sekmesinin başka bir yerinde (ör. ana sayfa) de olmalı mı?
 5. Etkinlik detayında "halka açık yerde buluşur" işareti üyelere de
    gösterilsin mi (şu an yalnızca düzenlemede)?
+
+## 2026-11-17 değişikliği (platform sahibi; istemci ADR-0030)
+
+Keşfet herkese açık (Tayfam-Api ADR-0035) ve alt çubukta üçüncü sekme
+(Tayfa, Sohbet, Keşfet, Profil). Arkadaş şartı yok: "Ayşe ve 2 arkadaşın
+bu etkinlikte" satırı ve altındaki çizgi yalnızca görünür arkadaş varsa
+gösterilir; arkadaşsız kart etkinlik türüyle başlar. Arkadaşı olmayan da
+katılım isteği gönderir. Üst çubukta başlık ve bildirim zili. Panel ve
+karşılamadaki giriş satırları Keşfet sekmesine geçer.

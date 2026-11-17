@@ -9,21 +9,27 @@ final class DiscoverApi {
 
   final ApiTransport _transport;
 
-  /// Arkadaşlarınızın gittiği, Keşfet'e açık tayfaların etkinlikleri (en fazla 50; sayfalanmaz)
+  /// Keşfet'e açık tayfaların etkinlikleri, gidecek arkadaşlarınızla (en fazla 50; sayfalanmaz)
   ///
   /// Bitmemiş ve 30 gün içinde başlayan, organizatörün "halka açık yerde
   /// buluşur" diye işaretlediği (`discoverable`) yüz yüze etkinlikler;
   /// yalnızca Keşfet'e açık ve platform incelemesinden geçmiş, en az 5
   /// aktif üyeli tayfalardan ve üyesi olmadığınız tayfalardan.
   ///
-  /// Bir etkinlik yalnızca en az bir **görünür arkadaşınız** varsa
-  /// listelenir: kabul edilmiş arkadaş, iki yönden engel yok, tayfanın
-  /// aktif üyesi, etkinliğe `going` demiş ya da katılımı doğrulanmış ve
-  /// katılım geçmişi görünürlüğü `private` değil. `friend_count` yalnızca
-  /// görünür arkadaşları sayar.
+  /// Keşfet herkese açıktır (ADR-0035): arkadaş gerekmez. Etkinlikte
+  /// **görünür arkadaşınız** yoksa `friends` boş, `friend_count` 0 döner.
+  /// Görünür arkadaş: kabul edilmiş arkadaş, iki yönden engel yok,
+  /// tayfanın aktif üyesi, etkinliğe `going` demiş ya da katılımı
+  /// doğrulanmış, katılım geçmişi görünürlüğü `private` değil ve
+  /// "Keşfet'te arkadaşlarım görebilsin" ayarı açık. `friend_count`
+  /// yalnızca görünür arkadaşları sayar. Tayfanın herhangi bir aktif
+  /// üyesiyle aranızda (iki yönden) engel varsa tayfanın etkinlikleri
+  /// listelenmez.
   ///
-  /// Sıra gizli sinyallerden gelir (arkadaşlık puanı; profillemesi
-  /// kapalı kişide kullanılmaz); puan ya da sıra numarası dönmez.
+  /// Sıra: görünür arkadaşı olan öğeler önce (gizli sinyaller, sonra
+  /// arkadaş sayısı); diğerleri başlangıç zamanına ve kimliğe göre.
+  /// Arkadaşlık puanı profillemesi kapalı kişide kullanılmaz; puan ya da
+  /// sıra numarası dönmez.
   /// Açıklama, buluşma noktası ve koordinat dönmez; tayfaya katılınca
   /// mevcut uçlardan okunur.
   ///
@@ -38,13 +44,14 @@ final class DiscoverApi {
     return DiscoverFeed.fromJson(jsonObject(response, 'listDiscoverFeed'));
   }
 
-  /// Akışınızdaki bir tayfaya katılım isteği (her zaman onay bekler)
+  /// Keşfet'te gördüğünüz bir tayfaya katılım isteği (her zaman onay bekler)
   ///
-  /// Tayfa şu anda akışınızda değilse (ya da orada banlıysanız) cevap
-  /// `tayfa-not-found`'dur: Keşfet'teki tayfalar yabancılara açık
-  /// listelenmez. İstek, tayfa açık katılımlı olsa da yöneticilerin
-  /// onayına düşer ve onlara "Keşfet'ten" etiketiyle görünür. Saatte en
-  /// fazla 10 deneme.
+  /// Tayfanın Keşfet'te size görünen bir etkinliği yoksa (tayfanın bir
+  /// aktif üyesiyle aranızda engel varsa ya da orada banlıysanız da)
+  /// cevap `tayfa-not-found`'dur. Arkadaş gerekmez (ADR-0035). İstek,
+  /// tayfa açık katılımlı olsa da yöneticilerin onayına düşer ve onlara
+  /// "Keşfet'ten" etiketiyle görünür; yöneticilere yaşınız ya da "18 yaş
+  /// altı" gibi bir işaret gösterilmez. Saatte en fazla 10 deneme.
   ///
   /// `POST /v1/discover/tayfas/{tayfa_id}/join`
   Future<Membership> joinFromDiscover({required String tayfaId}) async {

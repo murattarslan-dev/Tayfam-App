@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/gezinme/bildirim_zili.dart';
+import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/kesfet/presentation/guvenlik_paylasimlari_ekrani.dart';
@@ -54,6 +57,20 @@ void main() {
         () => const KesfetEkrani(),
         () => kesfetTasimasi({
           'GET $akisYolu': yanit({'items': <Object?>[]}),
+        }),
+      ),
+      'Keşfet arkadaşsız': (
+        () => const KesfetEkrani(),
+        () => kesfetTasimasi({
+          'GET $akisYolu': yanit({
+            'items': [kesfetOgesiJson(arkadasSayisi: 0)],
+          }),
+        }),
+      ),
+      'Keşfet yükleme hatası': (
+        () => const KesfetEkrani(),
+        () => kesfetTasimasi({
+          'GET $akisYolu': yanit(problem(ProblemType.internal, status: 500)),
         }),
       ),
       'Keşfet kapalı': (
@@ -166,6 +183,98 @@ void main() {
       expect(tasima.giden('POST', kesfetKatilYolu), hasLength(1));
       expect(find.text(arbMetni('kesfet_istek_gonderildi')), findsOneWidget);
       expect(find.text(arbMetni('kesfet_katil')), findsNothing);
+    });
+
+    testWidgets('arkadaşsız öğe: arkadaş satırı yok, istek gönderilebilir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = kesfetTasimasi({
+        'GET $akisYolu': yanit({
+          'items': [kesfetOgesiJson(arkadasSayisi: 0)],
+        }),
+        'POST $kesfetKatilYolu': yanit({
+          'tayfa_id': kesfetTayfaId,
+          'user_id': ayseId,
+          'role': 'member',
+          'status': 'pending',
+        }),
+      });
+      await _ac(tester, const KesfetEkrani(), tasima);
+      expect(find.textContaining('bu etkinlikte'), findsNothing);
+      expect(find.text(arbMetni('bildirim_kisi_bilinmiyor')), findsNothing);
+      expect(find.byType(KullaniciAvatari), findsNothing);
+      expect(find.text('Belgrad Ormanı sabah yürüyüşü'), findsOneWidget);
+
+      await _dokun(tester, find.text(arbMetni('kesfet_katil')));
+      await _dokun(tester, find.text(arbMetni('kesfet_katil_onay')));
+      expect(tasima.giden('POST', kesfetKatilYolu), hasLength(1));
+      expect(find.text(arbMetni('kesfet_istek_gonderildi')), findsOneWidget);
+    });
+
+    testWidgets('sıra sunucudandır: arkadaşlı ve arkadaşsız öğeler', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      await _ac(
+        tester,
+        const KesfetEkrani(),
+        kesfetTasimasi({
+          'GET $akisYolu': yanit({
+            'items': [
+              kesfetOgesiJson(arkadasSayisi: 2),
+              kesfetOgesiJson(
+                tayfaId: '7b6a5c4d-3e2f-4a1b-8c0d-9e8f7a6b5c4e',
+                etkinlikId: '1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5e',
+                arkadasSayisi: 0,
+              ),
+            ],
+          }),
+        }),
+      );
+      expect(find.byType(KesfetKarti), findsNWidgets(2));
+      expect(find.text('Ayşe ve 1 arkadaşın bu etkinlikte'), findsOneWidget);
+      final kartlar = tester.widgetList<KesfetKarti>(find.byType(KesfetKarti));
+      expect([for (final k in kartlar) k.oge.friendCount], [2, 0]);
+    });
+
+    testWidgets('yükleme hatası: hata ve "Tekrar dene"', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KesfetEkrani(),
+        kesfetTasimasi({
+          'GET $akisYolu': yanit(problem(ProblemType.internal, status: 500)),
+        }),
+      );
+      expect(find.byType(YuklemeHatasi), findsOneWidget);
+      expect(find.byType(KesfetKarti), findsNothing);
+    });
+
+    testWidgets('boş akış: arkadaştan söz etmeyen boş durum', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KesfetEkrani(),
+        kesfetTasimasi({
+          'GET $akisYolu': yanit({'items': <Object?>[]}),
+        }),
+      );
+      expect(find.text(arbMetni('kesfet_bos_baslik')), findsOneWidget);
+      expect(find.text(arbMetni('kesfet_bos_aciklama')), findsOneWidget);
+      expect(find.textContaining('Arkadaşların'), findsNothing);
+    });
+
+    testWidgets('üst çubukta bildirim zili', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const KesfetEkrani(), kesfetTasimasi());
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(BildirimZili),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('bayrak kapalı: orta durum, kart yok', (tester) async {
