@@ -693,7 +693,12 @@ final class EventsApi {
 
   /// Bu etkinlik için güvenlik kişiniz
   ///
-  /// Seçilmemişse `contact` yoktur.
+  /// Seçilmemişse `contact` yoktur. Seçilmiş bir kaydınız varsa sunucu
+  /// bayrağı (`SAFETY_CONTACT_ENABLED`) kapalıyken, tayfadan ayrıldıktan
+  /// sonra ya da etkinlik modülü kapalıyken de döner, böylece "Döndüm"
+  /// her zaman gösterilebilir; yalnızca kendi kaydınızı döndürür. Kaydınız
+  /// yokken bayrak kapalıysa 404 `feature-disabled` (yeni kayıt
+  /// oluşturulamaz).
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/safety-contact`
   Future<SafetyContact> getSafetyContact({

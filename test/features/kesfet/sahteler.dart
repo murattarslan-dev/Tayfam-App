@@ -74,7 +74,7 @@ Map<String, Object?> kesfetOgesiJson({
     'attendance_count': katilimSayisi,
   },
   'friends': [
-    kisiJson(ayseId, 'Ayşe'),
+    if (arkadasSayisi > 0) kisiJson(ayseId, 'Ayşe'),
     if (arkadasSayisi > 1) kisiJson(mehmetId, 'Mehmet'),
     if (arkadasSayisi > 2) kisiJson(elifId, 'Elif'),
   ],

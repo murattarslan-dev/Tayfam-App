@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/kesfet/application/kesfet_akisi.dart';
@@ -14,8 +15,14 @@ import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Keşfet akışı (`/kesfet`; 30-kesfet-ve-guvenlik, karar 4–7; istemci
-/// ADR-0027). Kabuğun üstünde tam ekran açılır.
+/// Keşfet sekmesi (`/kesfet`; 30-kesfet-ve-guvenlik, karar 4–7; istemci
+/// ADR-0027, ADR-0030). Dört sekmeden biridir; üst çubukta başlık ve
+/// bildirim zili vardır.
+///
+/// Keşfet herkese açıktır (Tayfam-Api ADR-0035): Keşfet'e açık tayfaların
+/// halka açık yerde buluşan etkinlikleri listelenir, arkadaş gerekmez.
+/// Arkadaş varsa kartın üstünde "Ayşe ve 2 arkadaşın bu etkinlikte"
+/// satırı görünür; sıra sunucudandır.
 ///
 /// Üstte ne gösterildiğini ve **olgu notunu** ("Tayfam tayfalara kefil
 /// olmaz") anlatan paragraf, altında kartlar. Kart dokunulamaz; içinde tek
@@ -35,7 +42,13 @@ class KesfetEkrani extends ConsumerWidget {
     final hata = durum.error;
     final kapali = ozellikKapali(hata);
     return Scaffold(
-      appBar: AppBar(title: Text(m.kesfet_baslik)),
+      appBar: AppBar(
+        title: Text(m.kesfet_baslik),
+        actions: const [
+          BildirimZili(),
+          SizedBox(width: TayfamSpacing.s4),
+        ],
+      ),
       body: TayfamYenile(
         onRefresh: () => ref.read(kesfetAkisiProvider.notifier).yenile(),
         child: ListView(
@@ -110,8 +123,10 @@ class KesfetEkrani extends ConsumerWidget {
   }
 }
 
-/// Akıştaki bir öğe: arkadaşlar, etkinlik ve tayfanın olguları (karar 5).
-/// Açıklama, buluşma yeri ve harita sözleşmede yoktur; katılınca görünür.
+/// Akıştaki bir öğe: arkadaşlar (varsa), etkinlik ve tayfanın olguları
+/// (karar 5). Görünür arkadaş yoksa (`friend_count` 0) arkadaş satırı ve
+/// altındaki çizgi gösterilmez (Tayfam-Api ADR-0035). Açıklama, buluşma
+/// yeri ve harita sözleşmede yoktur; katılınca görünür.
 class KesfetKarti extends ConsumerWidget {
   const KesfetKarti({super.key, required this.oge});
 
@@ -130,6 +145,7 @@ class KesfetKarti extends ConsumerWidget {
     ].join(kesfetAyraci);
     final aciklama = _dolu(tayfa.description);
     final il = _dolu(tayfa.city);
+    final arkadasVar = kesfetArkadasVarMi(oge);
     final asama = ref.watch(
       kesfetKatilimProvider.select((istekler) => istekler[tayfa.id]),
     );
@@ -137,15 +153,17 @@ class KesfetKarti extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Arkadaslar(oge: oge),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s12),
-            child: Divider(
-              height: TayfamSizes.kenar,
-              thickness: TayfamSizes.kenar,
-              color: r.cizgi,
+          if (arkadasVar) ...[
+            _Arkadaslar(oge: oge),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s12),
+              child: Divider(
+                height: TayfamSizes.kenar,
+                thickness: TayfamSizes.kenar,
+                color: r.cizgi,
+              ),
             ),
-          ),
+          ],
           EtkinlikTuruCipi(tur: etkinlik.type),
           const SizedBox(height: TayfamSpacing.s8),
           Text(etkinlik.title, style: yazi.titleLarge),
@@ -319,7 +337,14 @@ class _Gonderildi extends StatelessWidget {
   }
 }
 
-/// "Ayşe bu etkinlikte" / "Ayşe ve 2 arkadaşın bu etkinlikte".
+/// Öğede gösterilecek görünür arkadaş var mı. Keşfet herkese açık
+/// olduğundan (Tayfam-Api ADR-0035) `friends` boş, `friend_count` 0
+/// olabilir; o zaman arkadaş satırı yoktur.
+bool kesfetArkadasVarMi(DiscoverItem oge) =>
+    oge.friendCount > 0 && oge.friends.isNotEmpty;
+
+/// "Ayşe bu etkinlikte" / "Ayşe ve 2 arkadaşın bu etkinlikte". Yalnızca
+/// [kesfetArkadasVarMi] doğruyken kullanılır.
 String kesfetArkadasMetni(AppLocalizations m, DiscoverItem oge) {
   final ilk = oge.friends.isEmpty ? null : oge.friends.first.displayName;
   final ad = (ilk == null || ilk.trim().isEmpty)
