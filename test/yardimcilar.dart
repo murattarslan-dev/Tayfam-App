@@ -10,13 +10,16 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/app.dart';
 import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
+import 'package:tayfam/features/kesfet/data/kesfet_deposu.dart';
 import 'package:tayfam/features/arkadas/presentation/kisi_profili_ekrani.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
+import 'package:tayfam/shell/okunmamis.dart';
 import 'package:tayfam/shell/yonlendirici.dart';
 
 import 'features/bildirim/sahteler.dart';
@@ -109,6 +112,7 @@ Future<void> uygulamayiAc(
   List<Override>? tayfa,
   List<Override>? bildirim,
   List<Override>? birebir,
+  KesfetDeposu? kesfet,
   TanitimDurumu? tanitim = TanitimDurumu.gosterildi,
   CihazAyarlariDeposu? cihazAyarlari,
 }) async {
@@ -127,6 +131,19 @@ Future<void> uygulamayiAc(
         ),
         surumDenetleyiciProvider.overrideWithValue(
           surumDenetleyici ?? SahteSurumDenetleyici(),
+        ),
+        // Keşfet sekmesi (ADR-0030): boş akış; gerçek ağ yok.
+        kesfetDeposuProvider.overrideWithValue(
+          kesfet ??
+              KesfetDeposu(
+                SahteTayfaTasima({
+                  'GET /v1/discover/events': (_) => {'items': <Object?>[]},
+                }),
+              ),
+        ),
+        // Bildirim zilinin rozeti (`shell/kayitlar.dart` ile aynı; ADR-0030).
+        okunmamisBildirimYuvasiProvider.overrideWith(
+          (ref) => ref.watch(okunmamisBildirimSayisiProvider),
         ),
         ...overrides,
       ],

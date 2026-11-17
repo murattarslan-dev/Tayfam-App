@@ -15,7 +15,7 @@ olarak anar.
 |----|--------|-------|
 | [0001](0001-durum-yonetimi-riverpod.md) | Durum yönetimi ve bağımlılık enjeksiyonu: Riverpod | Kabul edildi |
 | [0002](0002-modul-yapisi.md) | Modül yapısı, klasör düzeni ve modül kayıtları | Kabul edildi |
-| [0003](0003-gezinme-iskeleti.md) | Gezinme iskeleti ve yönlendirme | Kabul edildi |
+| [0003](0003-gezinme-iskeleti.md) | Gezinme iskeleti ve yönlendirme | Kabul edildi (sekme listesi: ADR-0030) |
 | [0004](0004-tema-ve-bilesen-dili.md) | Tema, token'lar ve bileşen dili | Kabul edildi |
 | [0005](0005-api-istemcisi.md) | API istemcisi, kod üretimi, token yenileme ve hata eşlemesi | Kabul edildi |
 | [0006](0006-onbellek-ve-cevrimdisi-kuyruk.md) | Önbellek ve çevrimdışı kuyruk: yalnızca bellekte | Kabul edildi |
@@ -39,9 +39,10 @@ olarak anar.
 | [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi |
 | [0025](0025-etkinlik-fotograf-albumu.md) | Etkinlik fotoğraf albümü (istemci): çoklu seçim, bellekte yükleme kuyruğu, görüntüleyici | Kabul edildi |
 | [0026](0026-anlik-etkinlik-istemci.md) | Anlık (bireysel) etkinlik (istemci) | Kabul edildi |
-| [0027](0027-kesfet-ve-guvenlik-agi.md) | Keşfet ilk aşama ve güvenlik ağı (istemci): yuvalar, cevaba bakan bayrak, güvenlik kişisi, geri bildirim | Kabul edildi |
+| [0027](0027-kesfet-ve-guvenlik-agi.md) | Keşfet ilk aşama ve güvenlik ağı (istemci): yuvalar, cevaba bakan bayrak, güvenlik kişisi, geri bildirim | Kabul edildi (`/kesfet` sekme: ADR-0030) |
 | [0028](0028-sohbet-ekleri-fotograf-ve-yer.md) | Sohbet ekleri: fotoğraf (kanal ve uçtan uca birebir), yer, kanal mesajı şikâyeti | Kabul edildi |
 | [0029](0029-dal-modeli-dev-main-ve-surum.md) | Dal modeli (`dev` / `main`), sürüm numarası ve otomatik etiket | Önerildi |
+| [0030](0030-kesfet-sekmesi-ve-bildirim-zili.md) | Keşfet sekmesi, bildirim zili ve herkese açık Keşfet akışı | Kabul edildi |
 
 ## Şablon
 

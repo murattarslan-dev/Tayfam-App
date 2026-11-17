@@ -29,7 +29,7 @@ gateway ──gRPC──▶ identity · core · chat      (Tayfam-Api)
 | --- | --- | --- |
 | [0001](docs/adr/0001-durum-yonetimi-riverpod.md) | Durum ve DI | Riverpod 3, kod üretimi yok, tayfa kapsamı `family` + `autoDispose` |
 | [0002](docs/adr/0002-modul-yapisi.md) | Modüller | Tek paket; `core/`, `shell/`, `features/`; iki kayıt (tayfa modülleri, etkinlik türleri) |
-| [0003](docs/adr/0003-gezinme-iskeleti.md) | Gezinme | Tayfa merkezli, 4 sabit sekme, `go_router` |
+| [0003](docs/adr/0003-gezinme-iskeleti.md) | Gezinme | Tayfa merkezli, 4 sabit sekme (Tayfa, Sohbet, Keşfet, Profil; ADR-0030), `go_router` |
 | [0004](docs/adr/0004-tema-ve-bilesen-dili.md) | Tema | Token'lar, gömülü font, açık ve koyu tema, mor tayfa üst bölümü |
 | [0005](docs/adr/0005-api-istemcisi.md) | API istemcisi | Repodaki üretici, tek `ApiClient`, tek uçuşlu token yenileme |
 | [0006](docs/adr/0006-onbellek-ve-cevrimdisi-kuyruk.md) | Önbellek | Diske içerik yazılmaz; önbellek ve kuyruk bellekte |

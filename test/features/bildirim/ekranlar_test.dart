@@ -635,13 +635,11 @@ void main() {
       }),
     );
 
-    Finder sekme() => find.descendant(
-      of: find.byType(NavigationBar),
-      matching: find.text(arbMetni('gezinme_sekme_bildirimler')),
-    );
+    /// Tayfa sekmesinin üst çubuğundaki bildirim zili (ADR-0030).
+    Finder sekme() => find.byKey(const ValueKey('bildirim-zili'));
 
-    String yol(WidgetTester tester) =>
-        yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri.path;
+    /// En üstteki ekranın yolu (`push` ile açılan Bildirimler dahil).
+    String yol(WidgetTester tester) => yonlendiriciyiAl(tester).state.uri.path;
 
     testWidgets('rozet sunucudaki okunmamış sayısını gösteriyor', (
       tester,
@@ -655,7 +653,7 @@ void main() {
       expect(find.text('4'), findsOneWidget);
     });
 
-    testWidgets('sekme açılınca ve ön plana dönünce rozet yenileniyor', (
+    testWidgets('zilden açılınca ve ön plana dönünce rozet yenileniyor', (
       tester,
     ) async {
       ekranBoyutu(tester);

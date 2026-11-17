@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -19,7 +20,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// (ADR-0003, ADR-0014 §2–3; tasarım: 16-karsilama-ve-davet/Karsilama,
 /// Karsilama-Bekleyen): logo, başlık, iki büyük seçim kartı ("Tayfa kodum
 /// var" birincil mor, "Tayfa kur"), davet linki ipucu ve etkinlik türleri
-/// şeridi (ADR-0004 §2a). Diğer sekmeler çalışmaya devam eder.
+/// şeridi (ADR-0004 §2a). Sağ üstte bildirim zili (istemci ADR-0030).
+/// Diğer sekmeler çalışmaya devam eder.
 ///
 /// Onay bekleyen katılma isteği varsa her biri için üstte bir durum kartı
 /// ve onaylı "İsteği geri çek" gösterilir; bekleyen tayfanın yalnızca adı
@@ -56,9 +58,13 @@ class KarsilamaEkrani extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TayfamLogo(boyut: TayfamSizes.ikonKutusu),
+                  // Logo ve bildirim zili (istemci ADR-0030).
+                  const Row(
+                    children: [
+                      TayfamLogo(boyut: TayfamSizes.ikonKutusu),
+                      Spacer(),
+                      BildirimZili(),
+                    ],
                   ),
                   const SizedBox(height: TayfamSpacing.s20),
                   Semantics(
@@ -126,15 +132,15 @@ class KarsilamaEkrani extends ConsumerWidget {
                     aciklama: metinler.anlik_ac_aciklama,
                     onTap: () => context.go(Adresler.anlikEtkinlik()),
                   ),
-                  // Keşfet açıksa (ADR-0027): arkadaşlarının gittiği
-                  // etkinlikler; kapalıyken satır yok.
+                  // Keşfet açıksa (ADR-0027): Keşfet sekmesine geçer
+                  // (istemci ADR-0030); kapalıyken satır yok.
                   if (ref.watch(kesfetGorunurProvider))
                     MenuSatiri(
                       ikon: Icons.explore_outlined,
                       tur: MenuSatiriTuru.sade,
                       baslik: metinler.kesfet_baslik,
                       aciklama: metinler.kesfet_giris_aciklama,
-                      onTap: () => unawaited(context.push(Adresler.kesfet)),
+                      onTap: () => context.go(Adresler.kesfet),
                     ),
                   const SizedBox(height: TayfamSpacing.s8),
                   Padding(

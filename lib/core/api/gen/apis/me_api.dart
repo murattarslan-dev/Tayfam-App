@@ -126,7 +126,8 @@ final class MeApi {
 
   /// Bu oturumun push (FCM) token'ını kaydeder ya da yeniler
   ///
-  /// Uygulama her açılışta ve FCM token'ı yenilediğinde çağırır; 60 gün
+  /// Uygulama her açılışta ve FCM kimliği değiştiğinde (`onRegistered`;
+  /// eski istemcide `onTokenRefresh`) çağırır; 60 gün
   /// yenilenmeyen token silinir. Oturum başına bir token: yeni değer
   /// eskisinin yerine geçer. Aynı token başka bir oturumda kayıtlıysa
   /// (cihazda başka hesapla giriş) oraya bağlı kayıt silinir. Hesap

@@ -2,8 +2,9 @@
 # `#` ile başlayan satırlar gitmez. Her main birleşmesinde bu dosyadaki metin
 # yeni sürümle birlikte gönderilir; kullanıcıya yönelik bir değişiklik olunca
 # güncelleyin. Kişisel veri, iç adres ya da teknik ayrıntı yazmayın.
-• Uygulamanın ilk test sürümü: tayfalar, etkinlikler, duyurular, soru-cevap, anketler ve sohbet. Birebir mesajlar uçtan uca şifreli.
-• Arayüz baştan yenilendi: hoş geldin, karşılama ve davet, tayfa kurma, ana sayfa, etkinlikler, duyurular, anketler, soru-cevap, sohbet, bildirimler ve profil.
-• Bildirimlerde arkadaşlık isteği ve tayfa davetini doğrudan yanıtlayabilirsin.
-• QR ile cihaz bağlama yenilendi.
-• Bir kişiyi profilinden şikâyet edebilirsin.
+• Yeni Keşfet sekmesi: Keşfet'e açık tayfaların herkese açık etkinliklerini gör, katılım isteği gönder. Bildirimler artık üstteki zilde.
+• Etkinlik albümü: katılanlar fotoğraf paylaşabilir.
+• Boşum: boş günlerini arkadaşlarına göster.
+• Arkadaş önerileri ve tek dokunuşla anlık etkinlik.
+• Sohbette fotoğraf ve yer paylaşımı.
+• Bildirim altyapısı güncellendi (Android 8.0 ve üstü).
