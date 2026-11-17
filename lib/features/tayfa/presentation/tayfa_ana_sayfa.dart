@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -201,7 +202,8 @@ class TayfaAnaSayfa extends ConsumerWidget {
 /// Tayfa ana sayfasının mor üst bölümü (ADR-0004 §2a, ADR-0014 §6;
 /// tasarım: Ana-Ilk-Ekran): `brand` zemin üzerinde tayfa avatarı, beyaz
 /// tayfa adı (dokununca alttan tayfa değiştirme paneli açılır) ve üye
-/// sayısı; sağda davet (kişi+) ve tayfa menüsü (⋯); altta durum şeridi.
+/// sayısı; sağda bildirim zili (istemci ADR-0030), davet (kişi+) ve tayfa
+/// menüsü (⋯); altta durum şeridi.
 /// İki temada da aynıdır; odak çerçevesi mor yüzeyde mangodur.
 class TayfaUstBolumu extends StatelessWidget {
   const TayfaUstBolumu({
@@ -274,6 +276,8 @@ class TayfaUstBolumu extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // Bildirimler (istemci ADR-0030).
+                  const BildirimZili(markaYuzeyinde: true),
                   if (onDavet != null)
                     IconButton(
                       onPressed: onDavet,

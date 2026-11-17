@@ -56,9 +56,10 @@ Future<void> tayfaDegistirmePaneliniAc(
           kapat();
           context.go(Adresler.anlikEtkinlik());
         },
+        // Keşfet bir sekmedir (istemci ADR-0030); sekmeye geçilir.
         onKesfet: () {
           kapat();
-          unawaited(context.push(Adresler.kesfet));
+          context.go(Adresler.kesfet);
         },
       );
     },

@@ -1,23 +1,27 @@
 name: CI
 
-# ADR-0009 (önerildi), issue #9. Tüm Actions commit SHA'sıyla sabitlenmiştir
-# (CLAUDE.md kesin kural 8); yorumdaki sürüm yalnızca okunabilirlik içindir.
-# pull_request_target ve self-hosted runner kullanılmaz; fork PR'ları secret
-# görmez (Tayfam-Api ADR-0010 ile aynı).
+# ADR-0009, ADR-0029 (dal modeli), issue #9. Tüm Actions commit SHA'sıyla
+# sabitlenmiştir (CLAUDE.md kesin kural 8); yorumdaki sürüm yalnızca
+# okunabilirlik içindir. pull_request_target ve self-hosted runner
+# kullanılmaz; fork PR'ları secret görmez (Tayfam-Api ADR-0010 ile aynı).
+#
+# Dal modeli (ADR-0029): iş PR'ları `dev`'e, sürüm PR'ı `dev` → `main`.
+# Bu iş akışı hiçbir şey dağıtmaz; yayın yalnızca `main`'e push'ta
+# play-dahili.yml ve site-yayin.yml ile olur.
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, dev]
 
 permissions:
   contents: read
 
-# Aynı daldaki yeni push eski çalışmayı iptal eder. main'de iptal edilmez:
-# main'deki her commit'in kendi sonucu olsun.
+# PR'da yeni push eski çalışmayı iptal eder. main ve dev'e push'ta iptal
+# edilmez: o dallardaki her commit'in kendi sonucu olsun.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'push' || github.ref != 'refs/heads/main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   # Flutter sürümü yalnızca burada (ADR-0009). Yükseltme bu satır ve
@@ -25,6 +29,89 @@ env:
   FLUTTER_VERSION: 3.47.9
 
 jobs:
+  kaynak-dal:
+    name: kaynak-dal
+    # ADR-0029 §3: main'e gelen PR yalnızca bu repodaki `dev` dalından
+    # olabilir. Diğer PR'larda ve push'ta geçer; her olayda sonuç ürettiği
+    # için kural setinde zorunlu kontrol yapılabilir. Kod indirmez, secret
+    # ve token kullanmaz.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: main'e yalnızca dev'den
+        env:
+          OLAY: ${{ github.event_name }}
+          TABAN: ${{ github.base_ref }}
+          BAS: ${{ github.head_ref }}
+          BAS_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "$OLAY" != "pull_request" ] || [ "$TABAN" != "main" ]; then
+            echo "main'e açılmış bir PR değil; denetlenecek bir şey yok."
+            exit 0
+          fi
+          if [ "$BAS" = "dev" ] && [ "$BAS_REPO" = "$REPO" ]; then
+            echo "Sürüm PR'ı: $REPO:dev → main."
+            exit 0
+          fi
+          # Geçiş (ADR-0029 §8): dal modelini kuran PR, `dev` dalı daha
+          # yokken main'e açılır. `dev` oluşturulduktan sonra bu dal
+          # kullanılamaz; `dev` kural setiyle silinemez.
+          if [ "$BAS_REPO" = "$REPO" ] && \
+             ! git ls-remote --exit-code --heads "https://github.com/$REPO.git" dev > /dev/null; then
+            echo "::warning title=dev dalı yok::Dal modeli henüz kurulmadı (dev yok); bu PR'a izin verildi. dev oluşturulunca main'e yalnızca dev'den PR açılabilir."
+            exit 0
+          fi
+          echo "::error title=Yanlış kaynak dal::main'e yalnızca $REPO:dev dalından PR açılır (ADR-0029). Bu PR $BAS_REPO:$BAS dalından. İş PR'larını dev'e aç."
+          exit 1
+
+  surum-numarasi:
+    name: surum-numarasi
+    # ADR-0029 §4: main'e her birleşme yeni bir vX.Y.Z etiketi olur. main'e
+    # açılan PR'da pubspec.yaml'daki X.Y.Z, var olan en büyük v* etiketinden
+    # büyük olmalı (aynı etiket ikinci kez atılamaz). Diğer PR'larda ve
+    # push'ta biçimi denetler.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: pubspec.yaml
+          sparse-checkout-cone-mode: false
+      - name: pubspec sürümü ve etiketler
+        env:
+          OLAY: ${{ github.event_name }}
+          TABAN: ${{ github.base_ref }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          surum=$(sed -n 's/^version: *//p' pubspec.yaml)
+          if [[ ! "$surum" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\+[0-9]+)?$ ]]; then
+            echo "::error title=pubspec sürümü::pubspec.yaml version X.Y.Z ya da X.Y.Z+N biçiminde olmalı (şu an: $surum)."
+            exit 1
+          fi
+          ad="${surum%%+*}"
+          echo "pubspec sürümü: $ad"
+          if [ "$OLAY" != "pull_request" ] || [ "$TABAN" != "main" ]; then
+            exit 0
+          fi
+          etiketler=$(git ls-remote --tags --refs "https://github.com/$REPO.git" 'refs/tags/v*' \
+            | sed -n 's|^[0-9a-f]*[[:space:]]*refs/tags/v||p' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' || true)
+          if printf '%s\n' "$etiketler" | grep -qx "$ad"; then
+            echo "::error title=Etiket zaten var::v$ad etiketi var. Sürüm PR'ından önce dev'de pubspec.yaml version'ını artır (docs/runbooks/surum-cikarma.md)."
+            exit 1
+          fi
+          son=$(printf '%s\n' "$etiketler" | sed '/^$/d' | sort -V | tail -n 1)
+          if [ -n "$son" ] && [ "$(printf '%s\n%s\n' "$son" "$ad" | sort -V | tail -n 1)" != "$ad" ]; then
+            echo "::error title=Sürüm geri gidiyor::pubspec.yaml $ad, son etiket v$son'dan küçük."
+            exit 1
+          fi
+          echo "Bu sürüm PR'ı birleşince v$ad etiketi atılacak (önceki: ${son:+v}${son:-yok})."
+
   analiz:
     name: analiz
     runs-on: ubuntu-24.04
@@ -428,7 +515,7 @@ jobs:
   bagimliliklar:
     name: bagimliliklar
     # Bağımlılık ve lisans raporu (ADR-0009 zorunlu kontrol 5). PR'da taban
-    # dalın, main'e push'ta bir önceki commit'in pubspec.lock'uyla
+    # dalın, main/dev'e push'ta birinci ebeveynin pubspec.lock'uyla
     # karşılaştırır; rapor iş özetine yazılır, PR'a yorum yazılmaz. İzin
     # verici olmayan lisans uyarıdır; iş yalnızca dosyalar okunamazsa kırılır.
     runs-on: ubuntu-24.04

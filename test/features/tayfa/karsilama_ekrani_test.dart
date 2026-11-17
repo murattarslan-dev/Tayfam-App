@@ -154,6 +154,8 @@ void main() {
       ekranBoyutu(tester);
       await widgetAc(tester, const KarsilamaEkrani(), themeMode: mod);
 
+      // İlk odak sağ üstteki bildirim zilidir (ADR-0030); ikincisi kart.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pump();
 

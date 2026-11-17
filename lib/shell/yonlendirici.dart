@@ -131,7 +131,8 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
 
 /// Uygulamanın rota ağacı.
 ///
-/// Dört sekme `StatefulShellRoute.indexedStack` ile kurulur; her sekmenin
+/// Dört sekme (Tayfa, Sohbet, Keşfet, Profil; istemci ADR-0030)
+/// `StatefulShellRoute.indexedStack` ile kurulur; her sekmenin
 /// kendi gezinme yığını vardır, sekme değişince geçmiş ve kaydırma durumu
 /// korunur, Android geri tuşu önce açık sekmenin yığınında geri gider.
 ///
@@ -182,14 +183,8 @@ List<RouteBase> rotalariOlustur(
         StatefulShellBranch(
           routes: [sohbetRotasi(ekRotalar: birebirRotalari())],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Adresler.bildirimler,
-              builder: (context, state) => const BildirimlerEkrani(),
-            ),
-          ],
-        ),
+        // Keşfet sekmesi (istemci ADR-0030; akış ADR-0027).
+        StatefulShellBranch(routes: [kesfetRotasi]),
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -267,13 +262,17 @@ List<RouteBase> rotalariOlustur(
       builder: (context, state) =>
           DonusturmeEkrani(tayfaId: state.pathParameters[tayfaIdParametresi]!),
     ),
-    // Keşfet akışı kabuğun üstünde tam ekran açılır (ADR-0027 §1).
-    kesfetRotasi,
     // Davet linkinin ekranı (ADR-0018 §6); adreste token yoktur.
     ...derinLinkRotalari(),
     // Kişi profili her sekmeden açılır; sekmelerin üstündedir
     // (ADR-0018 §7).
     kisiProfiliRotasi,
+    // Bildirimler sekme değildir; Tayfa ve Keşfet'in üst çubuğundaki
+    // zilden sekmelerin üstünde açılır (istemci ADR-0030).
+    GoRoute(
+      path: Adresler.bildirimler,
+      builder: (context, state) => const BildirimlerEkrani(),
+    ),
     // Girişten sonra açılan profil tamamlama formu (issue #186).
     profilTamamlamaRotasi,
   ];

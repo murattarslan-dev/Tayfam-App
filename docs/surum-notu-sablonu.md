@@ -7,12 +7,10 @@ teknik ayrıntı içermez.
 
 ## Sürüm hazırlığı
 
-1. `pubspec.yaml` `version`'ını artır: `X.Y.Z+N`. `N` (Play `versionCode`)
-   her yüklemede bir artar ve hiç geri gitmez.
-2. Sürüm PR'ı birleşince `main`'de etiketi at: `git tag vX.Y.Z` ve
-   `git push origin vX.Y.Z`. Etiket `version`'la eşleşmezse iş akışı durur.
-3. "Sürüm" iş akışının artefaktındaki `.aab`'ı Play Console'a yükle ve
-   aşağıdaki şablonla notu yaz.
+Adımlar [`docs/runbooks/surum-cikarma.md`](runbooks/surum-cikarma.md)'dedir
+(ADR-0029). Not, `play/surum-notu.tr-TR.txt`'ye yazılır ve sürüm numarası
+PR'ıyla `dev`'e girer; `main`'e birleşmede Play'e otomatik gider, etiket
+otomatik atılır, `versionCode` CI'da hesaplanır.
 
 ## Şablon
 

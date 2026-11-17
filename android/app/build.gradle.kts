@@ -33,7 +33,7 @@ val gelistirmeAnahtari: File? =
 // Sürüm (mağaza) imzası (#13, ADR-0018 §10): Play App Signing kullanılır;
 // sürüm derlemesi yalnızca yükleme anahtarıyla (upload key) imzalanır.
 // Kaynak sırası:
-//   1. Ortam değişkenleri (CI, surum.yml): TAYFAM_UPLOAD_KEYSTORE (anahtar
+//   1. Ortam değişkenleri (CI, play-dahili.yml): TAYFAM_UPLOAD_KEYSTORE (anahtar
 //      dosyasının yolu), TAYFAM_UPLOAD_KEYSTORE_PASSWORD,
 //      TAYFAM_UPLOAD_KEY_ALIAS, TAYFAM_UPLOAD_KEY_PASSWORD.
 //   2. android/key.properties (yerel; .gitignore'da): storeFile,

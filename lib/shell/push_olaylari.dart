@@ -60,8 +60,12 @@ class _PushOlaylariState extends ConsumerState<PushOlaylari> {
     if (!mounted) return;
     final adres = pushaDokunuldu(ref, veri);
     final yonlendirici = GoRouter.of(context);
-    // Kişi profili sekmelerin üstünde açılır; geri tuşu önceki ekrana döner.
-    if (adres.startsWith('${Adresler.kisiOneki}/')) {
+    // Kişi profili ve Bildirimler sekmelerin üstünde açılır; geri tuşu
+    // önceki ekrana döner, kabuk yığında kalır (istemci ADR-0030). Ekran
+    // zaten açıksa ikinci kez itilmez.
+    if (Adresler.sekmelerinUstundeMi(adres)) {
+      final acik = yonlendirici.state.uri;
+      if (acik.toString() == adres) return;
       unawaited(yonlendirici.push(adres));
     } else {
       yonlendirici.go(adres);

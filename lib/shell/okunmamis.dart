@@ -15,7 +15,8 @@ final okunmamisSohbetSayisiProvider = Provider<int>(
   name: 'okunmamisSohbetSayisiProvider',
 );
 
-/// Bildirimler sekmesinin okunmamış sayısı (rozet; ADR-0018 §3). Sayı
+/// Bildirim zilinin okunmamış sayısı (rozet; ADR-0018 §3, istemci
+/// ADR-0030; `kayitlar.dart` zilin yuvasına verir). Sayı
 /// bildirim özelliğinden gelir; okunamadıysa ya da henüz bilinmiyorsa 0'dır
 /// ve 0 iken rozet gösterilmez.
 final okunmamisBildirimSayisiProvider = Provider<int>(

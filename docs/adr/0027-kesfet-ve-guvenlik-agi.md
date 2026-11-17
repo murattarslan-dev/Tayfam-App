@@ -150,3 +150,14 @@ bayraksız). Tayfanın Keşfet ayarı, etkinliğin `discoverable` işareti ve
 - **Akışı her girişte yeniden okumak:** giriş satırı her çizimde istek
   atardı; oturum boyunca bellekte tutup ekranda aşağı çekerek yenilemek
   yeterli.
+
+## Notlar
+
+- **2026-11-17 (platform sahibi, sohbette; issue #214):** Keşfet herkese
+  açık (Tayfam-Api ADR-0035): arkadaş şartı yok, `friend_count` 0
+  olabilir; "Ayşe ve 2 arkadaşın" satırı yalnızca arkadaş varken. `/kesfet`
+  artık kabuğun üstünde tam ekran değil, dört sekmeden biridir; panel ve
+  karşılamadaki giriş satırları sekmeye geçer (`go`). §2'deki bayrak
+  davranışı aynıdır; sekme her zaman görünür, kapalıyken ekran orta
+  durumu gösterir. Ayrıntı:
+  [ADR-0030](0030-kesfet-sekmesi-ve-bildirim-zili.md).

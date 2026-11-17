@@ -4773,12 +4773,15 @@ final class DiscoverItem {
   /// doğrulanmış katılımlar.
   final DiscoverItemTayfa tayfa;
 
+  /// En çok 3 görünür arkadaş; yoksa boş dizi.
+  ///
   /// Kısıtlar: maxItems: 3.
   final List<DiscoverPerson> friends;
 
-  /// Görünür arkadaşların tamamı (`friends` dahil).
+  /// Görünür arkadaşların tamamı (`friends` dahil); yoksa 0
+  /// (ADR-0035; önceden en az 1'di).
   ///
-  /// Kısıtlar: minimum: 1.
+  /// Kısıtlar: minimum: 0.
   final int friendCount;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.

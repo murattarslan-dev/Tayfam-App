@@ -1,6 +1,8 @@
 # ADR-0003: Gezinme iskeleti ve yönlendirme
 
-- **Durum:** Kabul edildi
+- **Durum:** Kabul edildi; sekme listesi ve rozet satırı
+  [ADR-0030](0030-kesfet-sekmesi-ve-bildirim-zili.md) ile değişti
+  (Bildirimler → Keşfet, 2026-11-17)
 - **Tarih:** 2026-11-09
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0002](0002-modul-yapisi.md); Notion: Proje Planı §4 Kullanıcı Akışı, Tasarım Standartları
@@ -87,6 +89,15 @@ mesajlar ve bildirimler tayfadan bağımsızdır.
 - **Navigator 2.0'ı elle kullanmak:** daha çok kod, aynı sonuç.
 
 ## Notlar
+
+- **2026-11-17 (platform sahibi, sohbette; issue #214):** Sekmeler
+  **Tayfa, Sohbet, Keşfet, Profil**. Bildirimler sekme değildir; Tayfa
+  sekmesinin (ana sayfa ve karşılama) ve Keşfet'in üst çubuğundaki
+  zilden sekmelerin üstünde açılır (`push`). Okunmamış rozeti sekmelerde
+  yalnızca Sohbet'te, ayrıca zilde. Ayrıntı:
+  [ADR-0030](0030-kesfet-sekmesi-ve-bildirim-zili.md). Yukarıdaki
+  "Bildirimler" sekmesi ve "Faz 2'de ayrı bir sekme yerine" önerisi bu
+  kararla geçersizdir.
 
 - **2026-11-14 (platform sahibi, sohbette; issue #185): kişiye dokununca
   kişi profili.** Bir kullanıcının avatarı ya da adı nerede görünüyorsa

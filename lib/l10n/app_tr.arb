@@ -12,9 +12,13 @@
   "@gezinme_sekme_sohbet": {
     "description": "Gezinme çubuğundaki ikinci sekmenin etiketi; tayfa kanalları ve birebir mesajlar. Sekme yer tutucu sayfasının başlığı olarak da görünür."
   },
-  "gezinme_sekme_bildirimler": "Bildirimler",
-  "@gezinme_sekme_bildirimler": {
-    "description": "Gezinme çubuğundaki üçüncü sekmenin etiketi; tüm tayfaların bildirimleri. Sekme yer tutucu sayfasının başlığı olarak da görünür."
+  "gezinme_sekme_kesfet": "Keşfet",
+  "@gezinme_sekme_kesfet": {
+    "description": "Gezinme çubuğundaki üçüncü sekmenin etiketi; Keşfet'e açık tayfaların herkese açık etkinlikleri."
+  },
+  "bildirimler_baslik": "Bildirimler",
+  "@bildirimler_baslik": {
+    "description": "Bildirimler ekranının üst çubuktaki başlığı ve bildirim ziline uzun basınca görünen ipucu; tüm tayfaların bildirimleri."
   },
   "gezinme_sekme_profil": "Profil",
   "@gezinme_sekme_profil": {
@@ -22,7 +26,7 @@
   },
   "gezinme_rozet_sayi": "{sayi}",
   "@gezinme_rozet_sayi": {
-    "description": "Sohbet ve Bildirimler sekmesinin ikonundaki okunmamış rozetinde görünen sayı (1–99).",
+    "description": "Sohbet sekmesinin ve bildirim zilinin ikonundaki okunmamış rozetinde görünen sayı (1–99).",
     "placeholders": {
       "sayi": {
         "type": "int"
@@ -31,7 +35,7 @@
   },
   "gezinme_rozet_cok": "99+",
   "@gezinme_rozet_cok": {
-    "description": "Okunmamış sayısı 99'u geçtiğinde sekme rozetinde görünen kısa metin."
+    "description": "Okunmamış sayısı 99'u geçtiğinde sekme ya da zil rozetinde görünen kısa metin."
   },
   "gezinme_sohbet_okunmamis": "{sayi, plural, other{{sayi} okunmamış mesaj}}",
   "@gezinme_sohbet_okunmamis": {
@@ -42,9 +46,9 @@
       }
     }
   },
-  "gezinme_bildirim_okunmamis": "{sayi, plural, other{{sayi} okunmamış bildirim}}",
-  "@gezinme_bildirim_okunmamis": {
-    "description": "Bildirimler sekmesindeki okunmamış rozetinin ekran okuyucu etiketi; rozet görünürken okunur.",
+  "bildirim_zili_okunmamis": "{sayi, plural, other{Bildirimler, {sayi} okunmamış bildirim}}",
+  "@bildirim_zili_okunmamis": {
+    "description": "Tayfa ve Keşfet üst çubuğundaki bildirim zilinin, okunmamış varken ekran okuyucu etiketi. Okunmamış yokken yalnızca \"Bildirimler\" okunur.",
     "placeholders": {
       "sayi": {
         "type": "int"
@@ -4243,13 +4247,13 @@
   },
   "kesfet_baslik": "Keşfet",
   "@kesfet_baslik": {
-    "description": "Keşfet ekranının ve girişinin başlığı."
+    "description": "Keşfet sekmesinin üst çubuktaki başlığı ve karşılama ile tayfa panelindeki Keşfet satırının başlığı."
   },
-  "kesfet_giris_aciklama": "Arkadaşlarının gittiği etkinlikler",
+  "kesfet_giris_aciklama": "Tayfaların herkese açık etkinlikleri",
   "@kesfet_giris_aciklama": {
-    "description": "Tayfa değiştirme panelindeki ve karşılama ekranındaki Keşfet satırının açıklaması."
+    "description": "Tayfa değiştirme panelindeki ve karşılama ekranındaki Keşfet satırının açıklaması; satır Keşfet sekmesine geçer."
   },
-  "kesfet_aciklama": "Arkadaşlarının gideceği, Keşfet'e açık tayfaların etkinlikleri. Kartlardaki sayılar tayfanın geçmişinden gelir. Tayfam tayfalara kefil olmaz; katılmadan önce arkadaşına sorabilirsin.",
+  "kesfet_aciklama": "Keşfet'e açık tayfaların, halka açık yerde buluşan etkinlikleri. Kartlardaki sayılar tayfanın geçmişinden gelir. Tayfam tayfalara kefil olmaz; etkinliğe giden bir arkadaşın varsa katılmadan önce ona sorabilirsin.",
   "@kesfet_aciklama": {
     "description": "Keşfet ekranının üstündeki açıklama. İlke: Keşfet güven vermez, bilgi verir; \"güvenilir/onaylı\" denmez."
   },
@@ -4345,7 +4349,7 @@
   "@kesfet_bos_baslik": {
     "description": "Keşfet akışı boş."
   },
-  "kesfet_bos_aciklama": "Arkadaşların Keşfet'e açık bir tayfanın etkinliğine gidince burada görürsün.",
+  "kesfet_bos_aciklama": "Keşfet'e açık tayfalar halka açık bir etkinlik planlayınca burada görürsün.",
   "@kesfet_bos_aciklama": {
     "description": "Keşfet akışı boşken açıklama."
   },

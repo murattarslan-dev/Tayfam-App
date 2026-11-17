@@ -108,7 +108,8 @@ abstract final class Adresler {
   /// Reddedilen mesaj istekleri.
   static const reddedilenler = '$mesajIstekleri/$reddedilenlerYolu';
 
-  /// Bildirimler sekmesi.
+  /// Bildirimler ekranı (istemci ADR-0030): sekme değildir; Tayfa ve
+  /// Keşfet sekmelerinin üst çubuğundaki zilden sekmelerin üstünde açılır.
   static const bildirimler = '/bildirimler';
 
   /// Profil sekmesi.
@@ -148,7 +149,7 @@ abstract final class Adresler {
     return Uri(path: hosGeldin, queryParameters: sorgu).toString();
   }
 
-  /// Keşfet akışı (ADR-0027 §1): kabuğun üstünde tam ekran.
+  /// Keşfet sekmesi (istemci ADR-0030; akış ADR-0027).
   static const kesfet = '/kesfet';
 
   /// Güvenlik kişisi olduğun etkinliklerin `/profil` altındaki yolu
@@ -361,4 +362,13 @@ abstract final class Adresler {
 
   /// [kullaniciId]'nin profili (ad, ortak tayfalar, katılım geçmişi).
   static String kisi(String kullaniciId) => '$kisiOneki/$kullaniciId';
+
+  /// [adres] sekmelerin üstünde açılan bir ekran mı (kişi profili,
+  /// Bildirimler). Bu adreslere `push` ile gidilir: geri tuşu önceki
+  /// ekrana döner ve kabuk (WebSocket, push dinleyicisi) yığında kalır.
+  /// Sekme adreslerine `go` ile gidilir.
+  static bool sekmelerinUstundeMi(String adres) {
+    final yol = Uri.tryParse(adres)?.path ?? adres;
+    return yol == bildirimler || yol.startsWith('$kisiOneki/');
+  }
 }

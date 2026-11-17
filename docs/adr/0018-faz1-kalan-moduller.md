@@ -191,6 +191,13 @@ eklenir. Bugün `Account` yalnızca referans kodu ve görünürlük taşıyor.
 - **Sürüm numarası:** `pubspec.yaml` `version`'ından alınır;
   `versionCode` her yüklemede artar.
 
+> **2026-11-16:** Sürüm hattı [ADR-0029](0029-dal-modeli-dev-main-ve-surum.md)
+> ile değişti: yalnızca `dev` → `main` sürüm PR'ı yayına çıkar; versionCode
+> `main`'in birinci ebeveyn commit sayısı + 1000; `vX.Y.Z` etiketi yüklemeden
+> sonra otomatik atılır; `surum.yml` ve `play-yayin` ortamı kaldırıldı.
+> Aşağıdaki "versionCode kuralı" ve "`surum.yml`'nin rolü" maddeleri tarihsel
+> kayıttır.
+
 #### Notlar (2026-11-11, platform sahibi, sohbette)
 
 Play'e otomatik yükleme (issue #95, `.github/workflows/play-dahili.yml`):

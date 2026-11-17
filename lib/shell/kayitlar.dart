@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/kabuk_katmanlari.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
@@ -22,6 +23,7 @@ import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/shell/derin_link/kayit_davet.dart';
+import 'package:tayfam/shell/okunmamis.dart';
 
 /// Uygulamanın tayfa modülleri (ADR-0002). Koddaki sabit listedir;
 /// çalışma zamanında dışarıdan modül yüklenmez. Modüller kendi
@@ -86,6 +88,10 @@ final List<Override> kayitOverridelari = [
   // ayarlarındaki bölüm ve etkinlik detayındaki kartlar.
   kesfetGorunurProvider.overrideWith((ref) => ref.watch(kesfetAcikProvider)),
   tayfaAyarEkBolumuProvider.overrideWithValue(_tayfaKesfetBolumu),
+  // Tayfa ve Keşfet üst çubuğundaki bildirim zilinin rozeti (ADR-0030).
+  okunmamisBildirimYuvasiProvider.overrideWith(
+    (ref) => ref.watch(okunmamisBildirimSayisiProvider),
+  ),
   etkinlikGuvenlikYuvasiProvider.overrideWithValue(_etkinlikGuvenlikKartlari),
 ];
 
