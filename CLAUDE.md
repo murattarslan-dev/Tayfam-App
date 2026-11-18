@@ -116,7 +116,10 @@ Bunların ihlali PR'ın reddedilmesi için yeterlidir.
 9. **Derin linkler doğrulanır.** Davet linki `https://tayfam.app/davet#<token>`
    biçimindedir: token fragment'tadır, sunucuya URL ile gitmez; istemci onu
    yalnızca istek gövdesinde API'ye iletir ve hiçbir yere yazmaz. Referans linki
-   `tayfam.app/r/<KOD>`'dur. Yalnızca beklenen alan adı ve yol kabul edilir.
+   `tayfam.app/r/<KOD>`'dur. Şimdi başlat QR katılım linki
+   `https://tayfam.app/q#<token>`'dır (ADR-0032): davet linkiyle aynı kural,
+   token yalnızca istek gövdesinde gider; kısa ömürlüdür, önbelleğe alınmaz.
+   Yalnızca beklenen alan adı ve yol kabul edilir.
 
 ## API ile konuşma
 
