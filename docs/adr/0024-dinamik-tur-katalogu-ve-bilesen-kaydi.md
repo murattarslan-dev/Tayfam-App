@@ -2,6 +2,8 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-15)
 - **Tarih:** 2026-11-15
+- **Revizyon:** 2026-11-18 ([ADR-0033](0033-v3-moduller-rozetler-ve-gecis.md)):
+  geçiş dönemi yok; `EventType` ve `turler/` doğrudan kaldırılır.
 - **Revizyon:** 2026-11-18 (platform sahibi, sohbette;
   [ADR-0031](0031-katalog-bilesen-ekleri.md)): sihirbazda `optional` ve
   `organizer_choice` seçimleri, kronometre, yazbozda masa ve misafir, tayfa
