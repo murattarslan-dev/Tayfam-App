@@ -36,7 +36,7 @@ olarak anar.
 | [0021](0021-fotograf-yukleme-ve-goruntuleme.md) | Fotoğraf yükleme ve görüntüleme | Kabul edildi |
 | [0022](0022-kvkk-veri-disa-aktarma.md) | KVKK veri dışa aktarma (istemci) | Kabul edildi |
 | [0023](0023-uygulama-butunlugu-istemci.md) | Uygulama bütünlüğü (istemci): Android Play Integrity | Kabul edildi |
-| [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi; kısmen 0031 |
+| [0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md) | Dinamik tür kataloğu, bileşen kaydı ve ana sayfa bileşenleri (v3) | Kabul edildi; kısmen 0031, 0033 |
 | [0025](0025-etkinlik-fotograf-albumu.md) | Etkinlik fotoğraf albümü (istemci): çoklu seçim, bellekte yükleme kuyruğu, görüntüleyici | Kabul edildi |
 | [0026](0026-anlik-etkinlik-istemci.md) | Anlık (bireysel) etkinlik (istemci) | Kabul edildi; kısmen 0032 |
 | [0027](0027-kesfet-ve-guvenlik-agi.md) | Keşfet ilk aşama ve güvenlik ağı (istemci): yuvalar, cevaba bakan bayrak, güvenlik kişisi, geri bildirim | Kabul edildi (`/kesfet` sekme: ADR-0030) |
@@ -45,6 +45,7 @@ olarak anar.
 | [0030](0030-kesfet-sekmesi-ve-bildirim-zili.md) | Keşfet sekmesi, bildirim zili ve herkese açık Keşfet akışı | Kabul edildi |
 | [0031](0031-katalog-bilesen-ekleri.md) | Katalog bileşen ekleri: kronometre, masa, misafir, sözlük ve seçimler (v3) | Kabul edildi |
 | [0032](0032-simdi-baslat-istemci.md) | Şimdi başlat (istemci, v3) | Kabul edildi |
+| [0033](0033-v3-moduller-rozetler-ve-gecis.md) | v3 modülleri, rozetler ve tek seferde geçiş (istemci) | Kabul edildi |
 
 ## Şablon
 
