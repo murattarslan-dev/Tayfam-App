@@ -30,6 +30,10 @@ abstract interface class ApiTransport {
   /// - [pathParams]: şablondaki adlar → ham değerler; uygulama her değeri
   ///   yüzde kodlamasıyla (`Uri.encodeComponent`) yerleştirir.
   /// - [query]: yalnızca verilen sorgu parametreleri, dize olarak.
+  /// - [headers]: sözleşmenin o işleme özel başlıkları (`If-None-Match`).
+  ///   Uygulamanın her isteğe kendisinin eklediği başlıklar burada
+  ///   verilemez. `If-None-Match` verilen istekte sunucu `304` dönerse
+  ///   gövde yoktur ve sonuç `null`'dır.
   /// - [body]: JSON'a çevrilecek gövde; `null` ise gövde gönderilmez.
   /// - [authenticated]: sözleşmedeki geçerli `security`'den gelir;
   ///   `false` (`security: []`) ise uygulama `Authorization` eklemez ve
@@ -42,6 +46,7 @@ abstract interface class ApiTransport {
     required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   });

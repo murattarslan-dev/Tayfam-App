@@ -216,9 +216,7 @@ final class HttpTasima implements ApiTransport {
   /// `ETag` değeri: tırnak içinde, boşluksuz yazdırılabilir ASCII
   /// (isteğe bağlı `W/` önekiyle). Başlığa satır sonu ya da başka bir
   /// başlık sızamaz.
-  static final RegExp _etagBicimi = RegExp(
-    r'^(W/)?"[\x21\x23-\x7E]{1,126}"$',
-  );
+  static final RegExp _etagBicimi = RegExp(r'^(W/)?"[\x21\x23-\x7E]{1,126}"$');
 
   /// [basliklar]'ı doğrular. Hata mesajında değer yoktur, yalnızca şablon
   /// vardır.

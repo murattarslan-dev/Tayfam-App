@@ -74,6 +74,7 @@ enum ProblemType {
   feedbackClosed('feedback-closed'),
   safetyContactClosed('safety-contact-closed'),
   safetyContactNotFound('safety-contact-not-found'),
+  catalogTypeNotFound('catalog-type-not-found'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),

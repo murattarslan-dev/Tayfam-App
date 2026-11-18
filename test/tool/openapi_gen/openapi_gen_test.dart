@@ -986,7 +986,9 @@ void main() {
       expect(code, contains('sunucu `304` dönerse'));
       expect(
         code,
-        contains("return Catalog.fromJson(jsonObject(response, 'getCatalog'));"),
+        contains(
+          "return Catalog.fromJson(jsonObject(response, 'getCatalog'));",
+        ),
       );
     });
 
