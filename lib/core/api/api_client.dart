@@ -53,6 +53,7 @@ final class ApiClient implements ApiTransport {
     required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
@@ -63,6 +64,7 @@ final class ApiClient implements ApiTransport {
           pathTemplate: pathTemplate,
           pathParams: pathParams,
           query: query,
+          headers: headers,
           body: body,
           expect: expect,
           erisimTokeni: token,

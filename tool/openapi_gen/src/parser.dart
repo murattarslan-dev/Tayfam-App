@@ -16,6 +16,20 @@ const String _responseRefPrefix = '#/components/responses/';
 
 const List<String> _methods = ['get', 'put', 'post', 'delete', 'patch'];
 
+/// Her istekte `ApiClient`'ın eklediği başlıklar (küçük harfle): işlem
+/// parametresi olmazlar.
+const Set<String> transportHeaders = {
+  'authorization',
+  'x-tayfam-client',
+  'x-tayfam-client-version',
+};
+
+/// Koşullu GET başlığı (küçük harfle). Bu parametreyi taşıyan işlemde
+/// sunucu `304` dönebilir; üretilen metod o zaman `null` döner.
+const String conditionalHeader = 'if-none-match';
+
+final RegExp _headerName = RegExp(r'^[A-Za-z][A-Za-z0-9]*(-[A-Za-z0-9]+)*$');
+
 /// Şemada tipi belirleyen anahtarlar.
 const Set<String> _structuralKeys = {
   r'$ref',
@@ -142,6 +156,8 @@ final class _Parser {
   final Map<String, EnumDef> enums = {};
   final Map<String, ClassDef> classes = {};
   final Set<String> _typeNames = {};
+  final Map<String, TypeRef> _aliases = {};
+  final Set<String> _aliasesInProgress = {};
   late final Map<String, Object?> _schemas;
   late final Map<String, Object?> _parameters;
   late final Map<String, Object?> _responses;
@@ -232,6 +248,11 @@ final class _Parser {
   void _topLevelSchema(String name, Object? raw) {
     final at = 'components.schemas.$name';
     final schema = _asMap(raw, at);
+    if (_isAlias(schema)) {
+      // Anahtarları _type denetler.
+      _alias(name, at);
+      return;
+    }
     _checkKeys(schema, at);
     if (schema.containsKey('enum')) {
       enums[name] = _enumDef(name, schema, at);
@@ -242,14 +263,47 @@ final class _Parser {
       classes[name] = _classDef(name, _mergeAllOf(schema, at, {name}), at);
       return;
     }
-    if (schema['type'] == 'object' &&
-        schema['additionalProperties'] is! Map<String, Object?>) {
+    if (schema['type'] == 'object') {
       classes[name] = _classDef(name, schema, at);
       return;
     }
     throw GenException(
-      '$at: üst düzey şema yalnızca nesne ya da string enum olabilir',
+      '$at: üst düzey şema nesne, string enum ya da takma ad olmalı',
     );
+  }
+
+  /// Üst düzey şema bir **takma ad** mı: kendi sınıfı ya da enum'u
+  /// üretilmez, ona `$ref` veren yerde doğrudan tipi kullanılır.
+  ///
+  /// - enum'suz ilkel (`type: string` + `pattern`; ör. katalog anahtarı),
+  /// - dizi,
+  /// - harita (`additionalProperties: <şema>`),
+  /// - serbest nesne (`additionalProperties: true`).
+  static bool _isAlias(Map<String, Object?> schema) {
+    if (schema.containsKey('enum') ||
+        schema.containsKey('allOf') ||
+        schema.containsKey(r'$ref')) {
+      return false;
+    }
+    final type = schema['type'];
+    if (type is! String) return false;
+    if (type != 'object') return true;
+    final additional = schema['additionalProperties'];
+    return additional is Map<String, Object?> || additional == true;
+  }
+
+  /// [name] takma adının tipi. Bir kez çözülür: satır içi tipleri (ör.
+  /// haritanın değer nesnesi) iki kez üretilmesin.
+  TypeRef _alias(String name, String at) {
+    final cached = _aliases[name];
+    if (cached != null) return cached;
+    if (!_aliasesInProgress.add(name)) {
+      throw GenException('$at: döngüsel takma ad: $name');
+    }
+    final target = 'components.schemas.$name';
+    final type = _type(_asMap(_schemas[name], target), target, name);
+    _aliasesInProgress.remove(name);
+    return _aliases[name] = type;
   }
 
   /// Üst düzey `allOf`: her parça bir nesne şemasına `$ref` ya da satır içi
@@ -292,6 +346,7 @@ final class _Parser {
       _checkKeys(part, partAt);
       if (part['type'] != 'object' ||
           part['additionalProperties'] is Map<String, Object?> ||
+          part['additionalProperties'] == true ||
           part.containsKey('allOf')) {
         throw GenException('$partAt: allOf parçası nesne şeması olmalı');
       }
@@ -479,6 +534,15 @@ final class _Parser {
           final valueAt = '$at.additionalProperties';
           return MapRef(_type(additional, valueAt, '${nameHint}Value'));
         }
+        if (additional == true) {
+          if (schema.containsKey('properties')) {
+            throw GenException(
+              '$at: properties ile additionalProperties: true birlikte '
+              'desteklenmiyor',
+            );
+          }
+          return const JsonObjectRef();
+        }
         _reserveTypeName(nameHint, at);
         classes[nameHint] = _classDef(nameHint, schema, at);
         return ClassRef(nameHint);
@@ -514,8 +578,12 @@ final class _Parser {
     if (schema == null) {
       throw GenException('$at: tanımsız şema: $name');
     }
-    if (_asMap(schema, 'components.schemas.$name').containsKey('enum')) {
+    final target = _asMap(schema, 'components.schemas.$name');
+    if (target.containsKey('enum')) {
       return EnumRef(name);
+    }
+    if (_isAlias(target)) {
+      return _alias(name, at);
     }
     return ClassRef(name);
   }
@@ -582,6 +650,25 @@ final class _Parser {
       throw GenException('$at: parametre adları çakışıyor');
     }
 
+    final conditional = params.any(
+      (p) =>
+          p.location == ParamLocation.header &&
+          p.jsonName.toLowerCase() == conditionalHeader,
+    );
+    if (conditional && method != 'get') {
+      throw GenException(
+        '$at: If-None-Match yalnızca GET işleminde desteklenir',
+      );
+    }
+    final response = _response(
+      _asMap(op['responses'], '$at.responses'),
+      at,
+      conditional: conditional,
+    );
+    if (conditional && response is NoContentResponse) {
+      throw GenException('$at: koşullu işlemin başarılı yanıtı gövdeli olmalı');
+    }
+
     return OperationDef(
       operationId: id,
       method: method.toUpperCase(),
@@ -591,8 +678,9 @@ final class _Parser {
       description: op['description'] as String?,
       params: params,
       body: body,
-      response: _response(_asMap(op['responses'], '$at.responses'), at),
+      response: response,
       authenticated: _authenticated(op['security'], at),
+      conditional: conditional,
     );
   }
 
@@ -686,8 +774,10 @@ final class _Parser {
           '$paramAt: desteklenmeyen parametre anahtarı "$key"',
         );
       }
-      if (location == 'header') {
-        // Başlıkları ApiClient ekler (ADR-0005); metoda girmez.
+      if (location == 'header' &&
+          transportHeaders.contains(name.toLowerCase())) {
+        // Bu başlıkları her istekte ApiClient ekler (ADR-0005); metoda
+        // girmez.
         continue;
       }
       final ParamLocation where;
@@ -696,6 +786,11 @@ final class _Parser {
           where = ParamLocation.path;
         case 'query':
           where = ParamLocation.query;
+        case 'header':
+          where = ParamLocation.header;
+          if (!_headerName.hasMatch(name)) {
+            throw GenException('$paramAt: başlık adı desteklenmiyor');
+          }
         default:
           throw GenException('$paramAt: desteklenmeyen konum: $location');
       }
@@ -717,6 +812,10 @@ final class _Parser {
                   type.kind == Primitive.boolean));
       if (!supported) {
         throw GenException('$paramAt: desteklenmeyen parametre tipi');
+      }
+      if (where == ParamLocation.header &&
+          !(type is PrimitiveRef && type.kind == Primitive.string)) {
+        throw GenException('$paramAt: başlık parametresi string olmalı');
       }
       result.add(
         ParamDef(
@@ -761,13 +860,36 @@ final class _Parser {
     return BodyDef(type: type, isRequired: requestBody['required'] == true);
   }
 
-  ResponseShape _response(Map<String, Object?> responses, String at) {
+  ResponseShape _response(
+    Map<String, Object?> responses,
+    String at, {
+    required bool conditional,
+  }) {
     final shapes = <ResponseShape>{};
     for (final entry in responses.entries) {
       final code = entry.key;
       final responseAt = '$at.responses.$code';
       if (code == 'default' || code.startsWith('4') || code.startsWith('5')) {
         // Hata yanıtları tipli dönmez; taşıma katmanı ApiProblem fırlatır.
+        continue;
+      }
+      if (code == '304') {
+        // Değişmedi: gövdesiz; yalnızca koşullu (If-None-Match) işlemde.
+        if (!conditional) {
+          throw GenException(
+            '$responseAt: 304 yalnızca If-None-Match parametreli işlemde '
+            'desteklenir',
+          );
+        }
+        final notModified = _resolve(
+          entry.value,
+          _responseRefPrefix,
+          _responses,
+          responseAt,
+        );
+        if (notModified['content'] != null) {
+          throw GenException('$responseAt: 304 yanıtı gövdesiz olmalı');
+        }
         continue;
       }
       if (!RegExp(r'^2[0-9][0-9]$').hasMatch(code)) {

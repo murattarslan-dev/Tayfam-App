@@ -60,6 +60,75 @@ final class _Kurulum {
 }
 
 void main() {
+  group('koşullu istek (If-None-Match)', () {
+    test('başlık gönderilir; 304 null döner ve hata değildir', () async {
+      final k = _Kurulum((_) async => http.Response('', 304));
+      final yanit = await k.tasima.gonder(
+        method: 'GET',
+        pathTemplate: '/v1/catalog',
+        headers: {'If-None-Match': '"7"'},
+        erisimTokeni: 'erisim-1',
+      );
+
+      expect(yanit, isNull);
+      final istek = k.istekler.single;
+      expect(istek.headers['If-None-Match'], '"7"');
+      expect(istek.headers['Authorization'], 'Bearer erisim-1');
+      expect(k.gunluk.single, 'GET /v1/catalog → 304');
+    });
+
+    test('değiştiyse gövde döner', () async {
+      final k = _Kurulum((_) async => _json({'catalog_version': 8}));
+      final yanit = await k.tasima.gonder(
+        method: 'GET',
+        pathTemplate: '/v1/catalog',
+        headers: {'If-None-Match': '"7"'},
+      );
+      expect(yanit, {'catalog_version': 8});
+    });
+
+    test('başlıksız istekte 304 hatadır', () async {
+      final k = _Kurulum((_) async => http.Response('', 304));
+      await expectLater(
+        k.tasima.gonder(method: 'GET', pathTemplate: '/v1/catalog'),
+        throwsA(isA<ApiProblem>().having((p) => p.status, 'status', 304)),
+      );
+    });
+
+    test('başka başlık ya da geçersiz değer gönderilmez', () async {
+      final k = _Kurulum((_) async => _json({}));
+      for (final basliklar in [
+        {'Authorization': '"7"'},
+        {'X-Tayfam-Client': '"7"'},
+        {'If-None-Match': '7'},
+        {'If-None-Match': '"7"\r\nX-Ek: 1'},
+        {'If-None-Match': '""'},
+      ]) {
+        await expectLater(
+          k.tasima.gonder(
+            method: 'GET',
+            pathTemplate: '/v1/catalog',
+            headers: basliklar,
+          ),
+          throwsArgumentError,
+        );
+      }
+      expect(k.istekler, isEmpty);
+    });
+
+    test('ortak başlıklar işlem başlığını ezemez', () async {
+      final k = _Kurulum((_) async => _json({}));
+      await k.tasima.gonder(
+        method: 'GET',
+        pathTemplate: '/v1/catalog',
+        headers: {'If-None-Match': 'W/"abc"'},
+      );
+      final basliklar = k.istekler.single.headers;
+      expect(basliklar['If-None-Match'], 'W/"abc"');
+      expect(basliklar['Accept'], contains('application/json'));
+    });
+  });
+
   group('adres ve başlıklar', () {
     test('yol parametresi parça parça kodlanır, sorgu eklenir', () async {
       final k = _Kurulum((_) async => _json({'tamam': true}));

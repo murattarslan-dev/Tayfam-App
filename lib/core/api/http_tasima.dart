@@ -98,6 +98,7 @@ final class HttpTasima implements ApiTransport {
     required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) {
@@ -110,6 +111,7 @@ final class HttpTasima implements ApiTransport {
       pathTemplate: pathTemplate,
       pathParams: pathParams,
       query: query,
+      headers: headers,
       body: body,
       expect: expect,
     );
@@ -118,6 +120,11 @@ final class HttpTasima implements ApiTransport {
   /// İsteği gönderir. [erisimTokeni] verilirse `Authorization: Bearer`
   /// eklenir; yalnızca `ApiClient` verir.
   ///
+  /// [headers] sözleşmenin o işleme özel başlıklarıdır (şimdilik yalnızca
+  /// `If-None-Match`; [islemBasliklari]); başka başlık [ArgumentError]
+  /// fırlatır. `If-None-Match` gönderilen istekte `304` hata değildir:
+  /// gövde yoktur ve sonuç `null`'dır.
+  ///
   /// Hata yanıtında [ApiProblem], bağlantı hatasında [ApiOffline], süre
   /// aşımında [ApiTimeout] fırlatır.
   Future<Object?> gonder({
@@ -125,13 +132,17 @@ final class HttpTasima implements ApiTransport {
     required String pathTemplate,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
     String? erisimTokeni,
   }) async {
     final adres = _adres(pathTemplate, pathParams, query);
+    final ozel = _islemBasliklari(pathTemplate, headers);
+    final kosullu = ozel.containsKey(_kosulBasligi);
     final istek = http.Request(method, adres)
       ..followRedirects = false
+      ..headers.addAll(ozel)
       ..headers.addAll(_basliklar(method, expect, erisimTokeni));
     if (body != null) {
       istek
@@ -154,6 +165,11 @@ final class HttpTasima implements ApiTransport {
     }
 
     final durum = yanit.statusCode;
+    if (kosullu && durum == 304) {
+      // Değişmedi: gövde yok, çağıran elindekini kullanır.
+      _gunluk('$method $pathTemplate → $durum');
+      return null;
+    }
     if (durum < 200 || durum > 299) {
       final problem = _problem(yanit);
       _gunluk('$method $pathTemplate → $durum ${problem.type.name}');
@@ -189,6 +205,34 @@ final class HttpTasima implements ApiTransport {
     'X-Tayfam-Client-Version': ?_surumBasligi,
     if (erisimTokeni != null) 'Authorization': 'Bearer $erisimTokeni',
   };
+
+  /// İşleme özel başlıklardan izin verilenler, sözleşmedeki yazımıyla.
+  /// Ortak başlıklar (`Authorization`, `Accept`, `X-Tayfam-Client` …)
+  /// buradan verilemez; onları yalnızca [_basliklar] yazar.
+  static const Set<String> islemBasliklari = {_kosulBasligi};
+
+  static const String _kosulBasligi = 'If-None-Match';
+
+  /// `ETag` değeri: tırnak içinde, boşluksuz yazdırılabilir ASCII
+  /// (isteğe bağlı `W/` önekiyle). Başlığa satır sonu ya da başka bir
+  /// başlık sızamaz.
+  static final RegExp _etagBicimi = RegExp(
+    r'^(W/)?"[\x21\x23-\x7E]{1,126}"$',
+  );
+
+  /// [basliklar]'ı doğrular. Hata mesajında değer yoktur, yalnızca şablon
+  /// vardır.
+  static Map<String, String> _islemBasliklari(
+    String sablon,
+    Map<String, String> basliklar,
+  ) {
+    for (final MapEntry(key: ad, value: deger) in basliklar.entries) {
+      if (!islemBasliklari.contains(ad) || !_etagBicimi.hasMatch(deger)) {
+        throw ArgumentError('$sablon: desteklenmeyen ya da geçersiz başlık');
+      }
+    }
+    return basliklar;
+  }
 
   /// Şablondaki `{ad}` yer tutucularını [parametreler]'deki ham değerlerle
   /// doldurur; her parça ayrı ayrı yüzde kodlanır. Hata mesajında değer
