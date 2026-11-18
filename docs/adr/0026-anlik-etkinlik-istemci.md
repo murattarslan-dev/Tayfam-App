@@ -4,6 +4,9 @@
   istemci seçimleri 2026-11-16'da mimari oturumu aracılığıyla, platform
   sahibinin yetkisiyle onaylandı)
 - **Tarih:** 2026-11-16
+- **Revizyon:** 2026-11-18 (platform sahibi, sohbette;
+  [ADR-0032](0032-simdi-baslat-istemci.md)): tek ekranlı Şimdi başlat
+  akışı, QR ile katılım, arkadaşlara şimdi bildirimi.
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0002](0002-modul-yapisi.md), [ADR-0003](0003-gezinme-iskeleti.md),
   [ADR-0005](0005-api-istemcisi.md), [ADR-0014](0014-tayfa-listesi-katilim-ve-olusturma.md),

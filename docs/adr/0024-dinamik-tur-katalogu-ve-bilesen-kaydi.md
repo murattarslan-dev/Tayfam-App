@@ -2,6 +2,10 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-15)
 - **Tarih:** 2026-11-15
+- **Revizyon:** 2026-11-18 (platform sahibi, sohbette;
+  [ADR-0031](0031-katalog-bilesen-ekleri.md)): sihirbazda `optional` ve
+  `organizer_choice` seçimleri, kronometre, yazbozda masa ve misafir, tayfa
+  sözlüğü, tür bayrakları.
 - **Karar veren:** Ürün kararları platform sahibinindir (2026-11-15, Notion
   "Faz 3 (v3) — Dinamik Etkinlik Kataloğu ve Bileşenler"). Bu ADR onların
   istemci mimarisine taşınmasıdır.
