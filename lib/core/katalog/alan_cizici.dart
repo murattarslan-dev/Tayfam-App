@@ -141,6 +141,9 @@ String? katalogAlanDegeriMetni(
 /// - Değerler [degerler]'dedir ([AlanDegerleri]); her değişiklikte
 ///   [onDegisti] yeni haritayla çağrılır. [onDegisti] `null` ise alanlar
 ///   kapalıdır (gönderim sürerken).
+/// - Tayfa sözlüğüne bağlı `text` alanı (`vocabulary`) [sozlukAlani]
+///   verildiyse onunla çizilir (otomatik tamamlama, App ADR-0031 §5);
+///   değeri çağıran tutar. Verilmezse düz metin alanıdır.
 class KatalogAlanlari extends StatefulWidget {
   const KatalogAlanlari({
     super.key,
@@ -148,12 +151,22 @@ class KatalogAlanlari extends StatefulWidget {
     required this.degerler,
     required this.onDegisti,
     this.hatalar = const {},
+    this.sozlukAlani,
   });
 
   final List<CatalogField> alanlar;
   final AlanDegerleri degerler;
   final ValueChanged<AlanDegerleri>? onDegisti;
   final Map<String, AlanHatasi> hatalar;
+
+  /// Sözlüğe bağlı alanın çizicisi: alan, etiketi, hata metni ve stili.
+  final Widget Function(
+    CatalogField alan,
+    String etiket,
+    String? hataMetni,
+    TextStyle? hataStili,
+  )?
+  sozlukAlani;
 
   @override
   State<KatalogAlanlari> createState() => _KatalogAlanlariState();
@@ -239,6 +252,15 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
           ? null
           : katalogAlanHataMetni(m, alan, hata);
       final deger = widget.degerler[alan.key];
+      final sozlukAlani = widget.sozlukAlani;
+      if (tur == AlanTuru.metin &&
+          alan.vocabulary != null &&
+          sozlukAlani != null) {
+        cocuklar
+          ..add(const SizedBox(height: TayfamSpacing.s20))
+          ..add(sozlukAlani(alan, etiket, hataMetni, hataStili));
+        continue;
+      }
       switch (tur) {
         case AlanTuru.metin || AlanTuru.uzunMetin:
           final uzun = tur == AlanTuru.uzunMetin;

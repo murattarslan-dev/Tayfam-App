@@ -175,7 +175,9 @@ List<RouteBase> rotalariOlustur(
                 for (final modul in moduller) ...modul.rotalar,
                 // Tayfa yönetimi modül değildir; her tayfada vardır
                 // (ADR-0002, ADR-0018 §1).
-                ...tayfaYonetimRotalari(ekRotalar: moderasyonRotalari),
+                ...tayfaYonetimRotalari(
+                  ekRotalar: [...moderasyonRotalari, ...sozlukRotalari],
+                ),
               ],
             ),
           ],

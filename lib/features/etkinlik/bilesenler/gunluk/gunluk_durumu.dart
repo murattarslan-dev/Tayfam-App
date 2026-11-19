@@ -52,6 +52,11 @@ enum GunlukHatasi {
 /// Yer yalnızca [yer] seçildiyse gider: kişinin haritada bilerek
 /// işaretlediği noktadır, cihazın konumu değildir (ADR-0008); görünürlük
 /// yalnızca yerle gönderilir.
+///
+/// Tayfa sözlüğüne bağlı alanda (`vocabulary`) sözlükten seçilen değer
+/// ([sozlukKimlikleri]: alan anahtarı → değerin kimliği) `vocabulary_ids`
+/// ile gider ve o alan `values`'ta verilmez; seçilmemiş metin `values`'ta
+/// yeni değer olarak gider (Tayfam-Api #244, App ADR-0031 §5).
 ({
   EventLogEntryCreateRequest? istek,
   Map<String, AlanHatasi> alanHatalari,
@@ -63,6 +68,7 @@ gunlukIstegi({
   LatLng? yer,
   LogLocationVisibility? gorunurluk,
   String? fotograf,
+  Map<String, String> sozlukKimlikleri = const {},
   required String istekKimligi,
 }) {
   final alanHatasi = alanHatalari(alanlar, degerler);
@@ -77,9 +83,24 @@ gunlukIstegi({
       hatalar: const {GunlukHatasi.bos},
     );
   }
+  final metinler = {...govde};
+  final kimlikler = <String, String>{};
+  for (final alan in alanlar) {
+    final kimlik = sozlukKimlikleri[alan.key];
+    if (kimlik == null ||
+        alan.vocabulary == null ||
+        !metinler.containsKey(alan.key)) {
+      continue;
+    }
+    metinler.remove(alan.key);
+    kimlikler[alan.key] = kimlik;
+  }
   return (
     istek: EventLogEntryCreateRequest(
-      values: govde,
+      values: Map<String, Object?>.unmodifiable(metinler),
+      vocabularyIds: kimlikler.isEmpty
+          ? null
+          : Map<String, String>.unmodifiable(kimlikler),
       location: yer,
       locationVisibility: yer == null ? null : gorunurluk,
       photoUploadId: fotograf,

@@ -1184,7 +1184,11 @@ final class EventsApi {
   /// fazla bileşenin `max_entries` kadar (yoksa 100) kayıt
   /// (`event-limit`). Değerler tanıma göre doğrulanır
   /// (`invalid-request`, alan `values.<anahtar>`); zorunlu alanlar
-  /// verilir, tanımda olmayan alan gönderilmez. Konum yalnızca `location`
+  /// verilir, tanımda olmayan alan gönderilmez. Tayfa sözlüğüne bağlı
+  /// alan (`CatalogVocabulary`) için ya `values`'ta metin ya
+  /// `vocabulary_ids`'te tayfanın o ad alanındaki bir değerin kimliği
+  /// gönderilir, ikisi birden değil (`vocabulary_ids.<anahtar>`); yeni
+  /// metin sözlüğe eklenir. Konum yalnızca `location`
   /// parametresi açık günlükte verilir. Aynı `client_request_id` ile
   /// tekrar gönderim ilk kaydı döndürür. Bitişten 7 gün sonra donar
   /// (`component-frozen`); iptal edilmiş etkinliğe yazılmaz. Bileşen

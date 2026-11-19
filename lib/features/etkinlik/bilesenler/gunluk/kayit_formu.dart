@@ -8,10 +8,12 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
 import 'package:tayfam/core/katalog/alan_cizici.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/gunluk/gunluk_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/sozluk/sozluk_deposu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -24,6 +26,10 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Yer, kişinin haritada bilerek işaretlediği noktadır (içerik); cihazın
 /// anlık konumu kullanılmaz (kesin kural 3). Görünürlüğün varsayılanı
 /// günlüğün `location_default`'udur (yoksa "Yalnızca ben").
+///
+/// Tayfa sözlüğüne bağlı metin alanı otomatik tamamlamalıdır
+/// ([SozlukGirisi]; App ADR-0031 §5): seçilen değer kimliğiyle, yeni metin
+/// metin olarak gider. Öneriler yalnızca form açıkken bellektedir.
 ///
 /// `client_request_id` form açılınca bir kez üretilir; gönderim başarısız
 /// olursa form açık kalır, hatayı gösterir ve tekrar denemede aynı id
@@ -71,6 +77,9 @@ const List<LogLocationVisibility> _gorunurlukler = [
 class _KayitFormuState extends ConsumerState<KayitFormu> {
   late final String _istekKimligi = ref.read(etkinlikIstekKimligiProvider)();
   AlanDegerleri _degerler = const {};
+
+  /// Sözlükten seçilen değerler: alan anahtarı → değerin kimliği.
+  Map<String, String> _sozlukKimlikleri = const {};
   LatLng? _yer;
   late LogLocationVisibility _gorunurluk =
       _gorunurlukler.contains(widget.varsayilanGorunurluk)
@@ -99,6 +108,7 @@ class _KayitFormuState extends ConsumerState<KayitFormu> {
       yer: widget.konumAcik ? _yer : null,
       gorunurluk: _gorunurluk,
       fotograf: _fotograf,
+      sozlukKimlikleri: _sozlukKimlikleri,
       istekKimligi: _istekKimligi,
     );
     final istek = sonuc.istek;
@@ -127,6 +137,54 @@ class _KayitFormuState extends ConsumerState<KayitFormu> {
     }
   }
 
+  void _sozlukDegisti(String anahtar, String metin, String? kimlik) {
+    setState(() {
+      final degerler = {..._degerler};
+      if (metin.isEmpty) {
+        degerler.remove(anahtar);
+      } else {
+        degerler[anahtar] = metin;
+      }
+      _degerler = Map.unmodifiable(degerler);
+      final kimlikler = {..._sozlukKimlikleri};
+      if (kimlik == null) {
+        kimlikler.remove(anahtar);
+      } else {
+        kimlikler[anahtar] = kimlik;
+      }
+      _sozlukKimlikleri = Map.unmodifiable(kimlikler);
+      _bos = false;
+    });
+  }
+
+  Widget _sozlukAlani(
+    CatalogField alan,
+    String etiket,
+    String? hataMetni,
+    TextStyle? hataStili,
+  ) {
+    final deger = _degerler[alan.key];
+    final adAlani = alan.vocabulary!.namespace;
+    return SozlukGirisi(
+      key: ValueKey('katalog-alan-${alan.key}'),
+      etiket: etiket,
+      metin: deger is String ? deger : '',
+      kimlik: _sozlukKimlikleri[alan.key],
+      enCokUzunluk: alanMetinSiniri(alan),
+      hataMetni: hataMetni,
+      hataStili: hataStili,
+      // Ad alanı katalogdan gelen girdidir; biçimi bozuksa öneri yok.
+      ara: (arama) => katalogAnahtariMi(adAlani)
+          ? ref
+                .read(sozlukDeposuProvider)
+                .oneriler(widget.tayfaId, adAlani, arama)
+          : Future.value(const <SozlukOnerisi>[]),
+      onDegisti: _mesgul
+          ? null
+          : (metin, kimlik) => _sozlukDegisti(alan.key, metin, kimlik),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
@@ -141,6 +199,7 @@ class _KayitFormuState extends ConsumerState<KayitFormu> {
           alanlar: widget.alanlar,
           degerler: _degerler,
           hatalar: _alanHatalari,
+          sozlukAlani: _sozlukAlani,
           onDegisti: _mesgul
               ? null
               : (yeni) => setState(() {

@@ -24,6 +24,7 @@ export 'package:tayfam/core/bilesenler/sihirbaz_iskeleti.dart';
 export 'package:tayfam/core/bilesenler/sinir_kutusu.dart';
 export 'package:tayfam/core/bilesenler/sohbet_balonu.dart';
 export 'package:tayfam/core/bilesenler/sohbet_ogeleri.dart';
+export 'package:tayfam/core/bilesenler/sozluk_girisi.dart';
 export 'package:tayfam/core/bilesenler/tam_ekran_fotograf.dart';
 export 'package:tayfam/core/bilesenler/tarih_kutusu.dart';
 export 'package:tayfam/core/bilesenler/tayfam_kart.dart';

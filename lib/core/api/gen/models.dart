@@ -8587,6 +8587,7 @@ final class EventLogEntry {
     this.photoUploadId,
     required this.createdAt,
     required this.callerCanRemove,
+    this.vocabularyIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -8617,6 +8618,15 @@ final class EventLogEntry {
       json['caller_can_remove'],
       'EventLogEntry.caller_can_remove',
     ),
+    vocabularyIds: switch (json['vocabulary_ids']) {
+      null => null,
+      final Object v => Map<String, String>.unmodifiable(
+        _readObject(v, 'EventLogEntry.vocabulary_ids').map(
+          (String k0, Object? e0) =>
+              MapEntry(k0, _readString(e0, 'EventLogEntry.vocabulary_ids')),
+        ),
+      ),
+    },
   );
 
   final String id;
@@ -8641,6 +8651,10 @@ final class EventLogEntry {
   /// Kaydı şu an çıkarabilirsiniz.
   final bool callerCanRemove;
 
+  /// Tayfa sözlüğüne bağlı alanların değerleri (birleştirme hedefine
+  /// çözülmüş); metinleri `values`'ta. Böyle alan yoksa yoktur.
+  final Map<String, String>? vocabularyIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -8651,6 +8665,10 @@ final class EventLogEntry {
     if (photoUploadId case final value?) 'photo_upload_id': value,
     'created_at': createdAt.toUtc().toIso8601String(),
     'caller_can_remove': callerCanRemove,
+    if (vocabularyIds case final value?)
+      'vocabulary_ids': <String, Object?>{
+        for (final e0 in value.entries) e0.key: e0.value,
+      },
   };
 
   @override
@@ -8664,7 +8682,8 @@ final class EventLogEntry {
           locationVisibility == other.locationVisibility &&
           photoUploadId == other.photoUploadId &&
           createdAt == other.createdAt &&
-          callerCanRemove == other.callerCanRemove;
+          callerCanRemove == other.callerCanRemove &&
+          _deepEquals(vocabularyIds, other.vocabularyIds);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -8676,6 +8695,7 @@ final class EventLogEntry {
     photoUploadId,
     createdAt,
     callerCanRemove,
+    _deepHash(vocabularyIds),
   ]);
 }
 
@@ -8686,6 +8706,7 @@ final class EventLogEntryCreateRequest {
     this.locationVisibility,
     this.photoUploadId,
     required this.clientRequestId,
+    this.vocabularyIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -8720,6 +8741,17 @@ final class EventLogEntryCreateRequest {
           json['client_request_id'],
           'EventLogEntryCreateRequest.client_request_id',
         ),
+        vocabularyIds: switch (json['vocabulary_ids']) {
+          null => null,
+          final Object v => Map<String, String>.unmodifiable(
+            _readObject(v, 'EventLogEntryCreateRequest.vocabulary_ids').map(
+              (String k0, Object? e0) => MapEntry(
+                k0,
+                _readString(e0, 'EventLogEntryCreateRequest.vocabulary_ids'),
+              ),
+            ),
+          ),
+        },
       );
 
   /// Kaydın alan değerleri (en fazla 8); zorunlu alanlar verilir.
@@ -8738,6 +8770,10 @@ final class EventLogEntryCreateRequest {
 
   final String clientRequestId;
 
+  /// Tayfa sözlüğüne bağlı alanlar için var olan değerler (en fazla
+  /// 8); aynı alan `values`'ta da verilmez.
+  final Map<String, String>? vocabularyIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'values': values,
@@ -8745,6 +8781,10 @@ final class EventLogEntryCreateRequest {
     if (locationVisibility case final value?) 'location_visibility': value.wire,
     if (photoUploadId case final value?) 'photo_upload_id': value,
     'client_request_id': clientRequestId,
+    if (vocabularyIds case final value?)
+      'vocabulary_ids': <String, Object?>{
+        for (final e0 in value.entries) e0.key: e0.value,
+      },
   };
 
   @override
@@ -8755,7 +8795,8 @@ final class EventLogEntryCreateRequest {
           location == other.location &&
           locationVisibility == other.locationVisibility &&
           photoUploadId == other.photoUploadId &&
-          clientRequestId == other.clientRequestId;
+          clientRequestId == other.clientRequestId &&
+          _deepEquals(vocabularyIds, other.vocabularyIds);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -8764,6 +8805,7 @@ final class EventLogEntryCreateRequest {
     locationVisibility,
     photoUploadId,
     clientRequestId,
+    _deepHash(vocabularyIds),
   ]);
 }
 
@@ -16686,6 +16728,148 @@ final class TayfaView {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[tayfa, callerRole]);
+}
+
+final class TayfaVocabularyList {
+  const TayfaVocabularyList({
+    required this.values,
+    required this.callerCanMerge,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaVocabularyList.fromJson(Map<String, Object?> json) =>
+      TayfaVocabularyList(
+        values: List<TayfaVocabularyValue>.unmodifiable(
+          _readList(json['values'], 'TayfaVocabularyList.values').map(
+            (Object? e0) => TayfaVocabularyValue.fromJson(
+              _readObject(e0, 'TayfaVocabularyList.values'),
+            ),
+          ),
+        ),
+        callerCanMerge: _readBool(
+          json['caller_can_merge'],
+          'TayfaVocabularyList.caller_can_merge',
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 20.
+  final List<TayfaVocabularyValue> values;
+
+  /// Şu an değerleri birleştirebilir ve geri alabilirsiniz.
+  final bool callerCanMerge;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'values': <Object?>[for (final e0 in values) e0.toJson()],
+    'caller_can_merge': callerCanMerge,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaVocabularyList &&
+          _deepEquals(values, other.values) &&
+          callerCanMerge == other.callerCanMerge;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(values), callerCanMerge]);
+}
+
+final class TayfaVocabularyMergeRequest {
+  const TayfaVocabularyMergeRequest({required this.targetId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaVocabularyMergeRequest.fromJson(Map<String, Object?> json) =>
+      TayfaVocabularyMergeRequest(
+        targetId: _readString(
+          json['target_id'],
+          'TayfaVocabularyMergeRequest.target_id',
+        ),
+      );
+
+  /// Birleştirilmemiş hedef değer.
+  final String targetId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'target_id': targetId};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaVocabularyMergeRequest && targetId == other.targetId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[targetId]);
+}
+
+/// Tayfa sözlüğünde bir değer (#244).
+final class TayfaVocabularyValue {
+  const TayfaVocabularyValue({
+    required this.id,
+    required this.value,
+    this.mergedIntoId,
+    this.mergedIntoValue,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaVocabularyValue.fromJson(Map<String, Object?> json) =>
+      TayfaVocabularyValue(
+        id: _readString(json['id'], 'TayfaVocabularyValue.id'),
+        value: _readString(json['value'], 'TayfaVocabularyValue.value'),
+        mergedIntoId: switch (json['merged_into_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'TayfaVocabularyValue.merged_into_id',
+          ),
+        },
+        mergedIntoValue: switch (json['merged_into_value']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'TayfaVocabularyValue.merged_into_value',
+          ),
+        },
+      );
+
+  final String id;
+
+  /// Kısıtlar: minLength: 1; maxLength: 60.
+  final String value;
+
+  /// Yalnızca birleştirilmiş değerde, gösterildiği değer.
+  final String? mergedIntoId;
+
+  /// Yalnızca birleştirilmiş değerde, hedefin metni.
+  final String? mergedIntoValue;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'value': value,
+    if (mergedIntoId case final value?) 'merged_into_id': value,
+    if (mergedIntoValue case final value?) 'merged_into_value': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaVocabularyValue &&
+          id == other.id &&
+          value == other.value &&
+          mergedIntoId == other.mergedIntoId &&
+          mergedIntoValue == other.mergedIntoValue;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, value, mergedIntoId, mergedIntoValue]);
 }
 
 final class UnreadNotificationCount {

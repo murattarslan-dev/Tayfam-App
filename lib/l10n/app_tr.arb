@@ -10873,5 +10873,161 @@
   "bilesen_secim_kilitli": "Bu seçimler yalnızca etkinlik başlamadan önce değiştirilebilir; artık kilitli.",
   "@bilesen_secim_kilitli": {
     "description": "Etkinlik düzenleme sihirbazında, bileşen seçimleri (aç/kapa satırları, biçim seçimi) kilitliyken seçimlerin üstünde görünen not."
+  },
+  "hata_vocabulary_not_found": "Bu değer artık sözlükte yok.",
+  "@hata_vocabulary_not_found": {
+    "description": "Hata kodu `vocabulary-not-found`. Tayfa sözlüğünde bilinmeyen değer."
+  },
+  "hata_vocabulary_merged": "Bu değer başka bir değere birleştirilmiş; birleştirilmiş değer hedef olamaz.",
+  "@hata_vocabulary_merged": {
+    "description": "Hata kodu `vocabulary-merged`. Değer ya da hedef zaten birleştirilmişken birleştirme."
+  },
+  "hata_vocabulary_not_merged": "Bu değer birleştirilmemiş.",
+  "@hata_vocabulary_not_merged": {
+    "description": "Hata kodu `vocabulary-not-merged`. Birleştirilmemiş değerde geri alma."
+  },
+  "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
+  "@bilesen_vocab_sozlukten": {
+    "description": "Sözlüğe bağlı günlük alanında, yazılan metin sözlükteki bir değerse alanın altındaki ipucu."
+  },
+  "bilesen_vocab_yeni_deger": "Yeni değer; tayfanın sözlüğüne eklenir.",
+  "@bilesen_vocab_yeni_deger": {
+    "description": "Sözlüğe bağlı günlük alanında, yazılan metin sözlükte yoksa alanın altındaki ipucu."
+  },
+  "bilesen_vocab_oneriler": "Öneriler",
+  "@bilesen_vocab_oneriler": {
+    "description": "Sözlüğe bağlı alanın altındaki öneri listesinin ekran okuyucu etiketi."
+  },
+  "bilesen_vocab_baslik": "Sözlükler",
+  "@bilesen_vocab_baslik": {
+    "description": "Tayfa ayarlarındaki giriş ve sözlükler ekranının başlığı."
+  },
+  "bilesen_vocab_aciklama": "Günlüklerde yazılan adlar tayfanın sözlüğünde toplanır. Aynı şeyin farklı yazımlarını birleştirerek istatistiği düzeltebilirsin.",
+  "@bilesen_vocab_aciklama": {
+    "description": "Sözlükler ekranının üstündeki açıklama."
+  },
+  "bilesen_vocab_sozluk_yok": "Sözlük kullanan bir günlük alanı yok.",
+  "@bilesen_vocab_sozluk_yok": {
+    "description": "Katalogda sözlüğe bağlı alan yokken sözlükler ekranındaki metin."
+  },
+  "bilesen_vocab_gecersiz": "Bu sözlük bulunamadı.",
+  "@bilesen_vocab_gecersiz": {
+    "description": "Adresteki sözlük adı geçersizken sözlük ekranındaki metin."
+  },
+  "bilesen_vocab_degerler": "Değerler",
+  "@bilesen_vocab_degerler": {
+    "description": "Sözlük ekranındaki seçici: birleştirilmemiş değerler."
+  },
+  "bilesen_vocab_birlesenler": "Birleştirilenler",
+  "@bilesen_vocab_birlesenler": {
+    "description": "Sözlük ekranındaki seçici: başka bir değere birleştirilmiş değerler."
+  },
+  "bilesen_vocab_ara": "Ara",
+  "@bilesen_vocab_ara": {
+    "description": "Sözlük ekranındaki ve hedef seçimindeki arama alanının etiketi."
+  },
+  "bilesen_vocab_yukleniyor": "Sözlük yükleniyor",
+  "@bilesen_vocab_yukleniyor": {
+    "description": "Sözlük listesi yüklenirken ekran okuyucu etiketi."
+  },
+  "bilesen_vocab_deger_yok": "Değer yok.",
+  "@bilesen_vocab_deger_yok": {
+    "description": "Sözlükte (ya da aramada) değer yokken gösterilen metin."
+  },
+  "bilesen_vocab_birlesen_yok": "Birleştirilmiş değer yok.",
+  "@bilesen_vocab_birlesen_yok": {
+    "description": "Birleştirilenler boşken gösterilen metin."
+  },
+  "bilesen_vocab_yetki_yok": "Değerleri yalnızca moderatörler ve yöneticiler birleştirebilir.",
+  "@bilesen_vocab_yetki_yok": {
+    "description": "Birleştirme yetkisi olmayan kişiye sözlük ekranındaki bilgi."
+  },
+  "bilesen_vocab_birlestir": "Birleştir",
+  "@bilesen_vocab_birlestir": {
+    "description": "Sözlük değerinin satırındaki ve onay penceresindeki birleştirme düğmesi."
+  },
+  "bilesen_vocab_birlestir_etiketi": "{deger} değerini birleştir",
+  "@bilesen_vocab_birlestir_etiketi": {
+    "description": "Birleştir düğmesinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "levrek"
+      }
+    }
+  },
+  "bilesen_vocab_hedef_baslik": "{deger} şununla birleştirilsin",
+  "@bilesen_vocab_hedef_baslik": {
+    "description": "Birleştirme hedefi seçimi alttan sayfasının başlığı.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "levrek"
+      }
+    }
+  },
+  "bilesen_vocab_onay_baslik": "Değerler birleştirilsin mi?",
+  "@bilesen_vocab_onay_baslik": {
+    "description": "Birleştirme onay penceresinin başlığı."
+  },
+  "bilesen_vocab_onay_aciklama": "“{kaynak}” yazılan kayıtlar artık “{hedef}” olarak görünür ve istatistik yeniden hesaplanır. Birleştirilenler'den geri alabilirsin.",
+  "@bilesen_vocab_onay_aciklama": {
+    "description": "Birleştirme onay penceresinin açıklaması.",
+    "placeholders": {
+      "kaynak": {
+        "type": "String",
+        "example": "levrek"
+      },
+      "hedef": {
+        "type": "String",
+        "example": "Levrek"
+      }
+    }
+  },
+  "bilesen_vocab_birlestirildi": "Değerler birleştirildi.",
+  "@bilesen_vocab_birlestirildi": {
+    "description": "Birleştirme başarılı olunca kısa bildirim."
+  },
+  "bilesen_vocab_hedefi": "“{hedef}” olarak görünüyor",
+  "@bilesen_vocab_hedefi": {
+    "description": "Birleştirilmiş değerin satırında hedefi.",
+    "placeholders": {
+      "hedef": {
+        "type": "String",
+        "example": "Levrek"
+      }
+    }
+  },
+  "bilesen_vocab_geri_al": "Geri al",
+  "@bilesen_vocab_geri_al": {
+    "description": "Birleştirilmiş değerin satırındaki ve onay penceresindeki geri alma düğmesi."
+  },
+  "bilesen_vocab_geri_al_etiketi": "{deger} birleştirmesini geri al",
+  "@bilesen_vocab_geri_al_etiketi": {
+    "description": "Geri al düğmesinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "levrek"
+      }
+    }
+  },
+  "bilesen_vocab_geri_al_onay_baslik": "Birleştirme geri alınsın mı?",
+  "@bilesen_vocab_geri_al_onay_baslik": {
+    "description": "Geri alma onay penceresinin başlığı."
+  },
+  "bilesen_vocab_geri_al_onay_aciklama": "“{kaynak}” yazılan kayıtlar yine kendi adıyla görünür ve istatistik yeniden hesaplanır.",
+  "@bilesen_vocab_geri_al_onay_aciklama": {
+    "description": "Geri alma onay penceresinin açıklaması.",
+    "placeholders": {
+      "kaynak": {
+        "type": "String",
+        "example": "levrek"
+      }
+    }
+  },
+  "bilesen_vocab_geri_alindi": "Birleştirme geri alındı.",
+  "@bilesen_vocab_geri_alindi": {
+    "description": "Geri alma başarılı olunca kısa bildirim."
   }
 }
