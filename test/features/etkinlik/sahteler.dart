@@ -13,6 +13,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_formu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/sozluk/sozluk_deposu.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/core/konum/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
@@ -55,6 +56,10 @@ const String listeYolu = '$bilesenYolu/items';
 const String yoklamaYolu = '$bilesenYolu/roll-call';
 const String gunlukYolu = '$bilesenYolu/entries';
 const String gunlukKaydiYolu = '$gunlukYolu/{entry_id}';
+
+/// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
+const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
+const String sozlukBirlestirmeYolu = '$sozlukYolu/{vocabulary_id}/merge';
 const String hakemlerYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/referees';
 const String duzeltmeYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance';
@@ -199,6 +204,27 @@ Map<String, Object?> gunlukJson({
   'max_entries': enCok,
   'caller_can_add': ekleyebilir,
 };
+
+/// Örnek `TayfaVocabularyValue` JSON'u; [hedefId] ve [hedef] verilirse
+/// birleştirilmiş değer.
+Map<String, Object?> sozlukDegeriJson(
+  String id,
+  String deger, {
+  String? hedefId,
+  String? hedef,
+}) => {
+  'id': id,
+  'value': deger,
+  'merged_into_id': ?hedefId,
+  'merged_into_value': ?hedef,
+};
+
+/// Örnek `TayfaVocabularyList` JSON'u: varsayılanı boş, birleştiremeyen
+/// üye gözüyle.
+Map<String, Object?> sozlukJson({
+  List<Map<String, Object?>> degerler = const [],
+  bool birlestirebilir = false,
+}) => {'values': degerler, 'caller_can_merge': birlestirebilir};
 
 /// Örnek `EventComponentList` JSON'u.
 Map<String, Object?> bilesenlerJson({
@@ -390,6 +416,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
           (_) => gunlukJson(),
     )
     ..putIfAbsent(
+      'GET $sozlukYolu',
+      () =>
+          (_) => sozlukJson(),
+    )
+    ..putIfAbsent(
       'GET $profilYolu',
       () =>
           (i) => profilJson(
@@ -518,6 +549,7 @@ List<Override> etkinlikOverridelari({
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
+  sozlukDeposuProvider.overrideWithValue(SozlukDeposu(tasima)),
   sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {
     final profil = await UsersApi(tasima).getUserProfile(userId: id);

@@ -139,6 +139,12 @@ const List<YonetimEkGirisi> yonetimEkGirisleri = [
     bekleyenMetni: moderasyonBekleyenMetni,
     bekleyenEtiketi: moderasyonBekleyenEtiketi,
   ),
+  // Tayfa sözlükleri: birleştirme ve geri alma (#232, App ADR-0031 §5).
+  YonetimEkGirisi(
+    ikon: sozlukGirisIkonu,
+    etiket: sozlukGirisEtiketi,
+    adres: sozluklerAdresi,
+  ),
 ];
 
 Widget _birebirBolumu(BuildContext context) => const BirebirSekmesi();

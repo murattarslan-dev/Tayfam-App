@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/sozluk_girisi.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
@@ -22,6 +23,7 @@ const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
 const String _levrekId = '1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e';
 const String _cipuraId = '2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f';
 const String _yeniId = '5f6a7b8c-9d0e-4f1a-8b2c-4d5e6f7a8b9c';
+const String _levrekSozlukId = '6a7b8c9d-0e1f-4a2b-9c3d-5e6f7a8b9c0d';
 
 const List<EtkinlikBileseni> _kayit = [
   TemelBilesen('meeting_point'),
@@ -197,6 +199,31 @@ void main() {
       });
     });
 
+    test('sözlükten seçilen değer kimliğiyle; yeni metin metin olarak', () {
+      final secili = gunlukIstegi(
+        alanlar: _avAlanlari(),
+        degerler: {'species': 'Levrek', 'count': '2'},
+        // Sözlüğe bağlı olmayan alanın kimliği gönderilmez.
+        sozlukKimlikleri: {'species': _levrekSozlukId, 'count': _yeniId},
+        istekKimligi: sahteEtkinlikIstekKimligi,
+      );
+      expect(secili.istek!.toJson(), {
+        'values': {'count': 2},
+        'client_request_id': sahteEtkinlikIstekKimligi,
+        'vocabulary_ids': {'species': _levrekSozlukId},
+      });
+
+      final yeni = gunlukIstegi(
+        alanlar: _avAlanlari(),
+        degerler: {'species': 'Kofana'},
+        istekKimligi: sahteEtkinlikIstekKimligi,
+      );
+      expect(yeni.istek!.toJson(), {
+        'values': {'species': 'Kofana'},
+        'client_request_id': sahteEtkinlikIstekKimligi,
+      });
+    });
+
     test('zorunlu alan ve aralık hataları alana göre döner', () {
       final sonuc = gunlukIstegi(
         alanlar: _avAlanlari(),
@@ -296,6 +323,57 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('sözlüğe bağlı alan önerir; seçilen değer kimliğiyle gider', (
+      tester,
+    ) async {
+      final tasima = _tasima({
+        'GET $gunlukYolu': (_) => gunlukJson(ekleyebilir: true),
+        'GET $sozlukYolu': (_) => sozlukJson(
+          degerler: [sozlukDegeriJson(_levrekSozlukId, 'Levrek')],
+        ),
+        'POST $gunlukYolu': (_) => {
+          'id': _yeniId,
+          'user_id': katilimciId,
+          'values': {'species': 'Levrek'},
+          'vocabulary_ids': {'species': _levrekSozlukId},
+          'created_at': '2026-11-11T09:00:00Z',
+          'caller_can_remove': true,
+        },
+      });
+      await _detayiAc(tester, tasima);
+      final ekle = find.text(arbMetni('bilesen_log_ekle'));
+      await _gorunurYap(tester, ekle);
+      await _dokun(tester, ekle);
+
+      final tur = _formda(find.byType(TextField)).first;
+      await tester.enterText(tur, 'L');
+      await tester.pump(const Duration(seconds: 1));
+      expect(tasima.giden('GET', sozlukYolu), isEmpty);
+      await tester.enterText(tur, 'le');
+      await tester.pump(sozlukAramaGecikmesi);
+      await tester.pumpAndSettle();
+      final arama = tasima.giden('GET', sozlukYolu).single;
+      expect(arama.yolParametreleri, {
+        'tayfa_id': ornekTayfaId,
+        'namespace': 'fish_species',
+      });
+      expect(arama.sorgu, {'q': 'le'});
+
+      await _dokun(tester, _formda(find.text('Levrek')));
+      expect(
+        _formda(find.text(arbMetni('bilesen_vocab_sozlukten'))),
+        findsOneWidget,
+      );
+      await _dokun(tester, _formda(find.text(arbMetni('etkinlik_ekle'))));
+      expect(tasima.giden('POST', gunlukYolu).single.govde, {
+        'values': <String, Object?>{},
+        'client_request_id': sahteEtkinlikIstekKimligi,
+        'vocabulary_ids': {'species': _levrekSozlukId},
+      });
+      expect(find.byType(KayitFormu), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
 
     testWidgets('katılım doğrulanmadıysa ekleme yerine bilgi', (tester) async {
       ekranBoyutu(tester);

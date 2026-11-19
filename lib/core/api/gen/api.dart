@@ -40,6 +40,7 @@ export 'package:tayfam/core/api/gen/apis/tayfa_joins_api.dart';
 export 'package:tayfam/core/api/gen/apis/tayfas_api.dart';
 export 'package:tayfam/core/api/gen/apis/uploads_api.dart';
 export 'package:tayfam/core/api/gen/apis/users_api.dart';
+export 'package:tayfam/core/api/gen/apis/vocabulary_api.dart';
 export 'package:tayfam/core/api/gen/models.dart';
 export 'package:tayfam/core/api/gen/problem_type.dart';
 export 'package:tayfam/core/api/gen/transport.dart'
