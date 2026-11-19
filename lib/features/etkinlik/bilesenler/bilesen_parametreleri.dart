@@ -77,9 +77,7 @@ List<SecimliParametre> secimliParametreler(CatalogComponent bilesen) {
   final params = bilesen.params;
   if (params == null) return const [];
   final adlar = params.keys.toList()..sort();
-  return [
-    for (final ad in adlar) ?_secimli(ad, params[ad]),
-  ];
+  return [for (final ad in adlar) ?_secimli(ad, params[ad])];
 }
 
 /// Bir bileşenin tanımdaki parametrelerini güvenle okur (ADR-0024 §3:
