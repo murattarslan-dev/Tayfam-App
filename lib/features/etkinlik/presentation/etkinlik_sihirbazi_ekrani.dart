@@ -22,6 +22,10 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_bolumleri.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_formu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/etkinlik/presentation/anlik/anlik_acildi_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/anlik/arkadas_secimi.dart';
@@ -352,6 +356,28 @@ class _EtkinlikSihirbaziEkraniState
       if (tanim != null && tanim.version == eski.typeVersion) {
         final n = _n;
         unawaited(Future<void>.microtask(() => n.tanimGeldi(tanim)));
+      }
+    }
+    // Düzenlemede bileşen seçimleri etkinliğin sunucudaki halinden
+    // doldurulur (ADR-0031 §1); yalnızca çizilecek bileşen varsa okunur.
+    if (_anahtar.duzenlenen case final eski?
+        when !t.bilesenlerOkundu && t.turTanimi != null) {
+      final kayit = ref.watch(etkinlikBilesenKaydiProvider);
+      if (bilesenPlani(t.turTanimi, kayit).any((p) => p.bilesen != null)) {
+        final durum = ref
+            .watch(
+              etkinlikBilesenleriProvider((
+                tayfaId: eski.tayfaId,
+                etkinlikId: eski.id,
+              )),
+            )
+            .value;
+        if (durum != null) {
+          final n = _n;
+          unawaited(
+            Future<void>.microtask(() => n.bilesenDurumuGeldi(durum)),
+          );
+        }
       }
     }
     if (t.anlikSonuc case final sonuc?) {
@@ -863,6 +889,19 @@ class _EtkinlikSihirbaziEkraniState
           onDegisti: t.gonderiliyor ? null : _n.alanlariAyarla,
         ),
       ..._eskiTurAlanlari(context, t),
+      // Bileşenler: `optional` aç/kapa satırları ve organizatöre bırakılan
+      // seçimler (ADR-0031 §1). Düzenlemede durum okunana kadar çizilmez.
+      if (t.bilesenlerOkundu)
+        BilesenFormBolumleri(
+          tanim: t.turTanimi,
+          secimler: t.bilesenler,
+          tayfaId: widget.tayfaId,
+          etkinlik: _anahtar.duzenlenen,
+          kilitli: t.bilesenlerKilitli,
+          etkin: !t.gonderiliyor,
+          onAcKapa: (bilesen, acik) => _n.bilesenAcKapat(bilesen, acik: acik),
+          onSecim: _n.bilesenSec,
+        ),
     ];
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 
 /// Sihirbazın adım sayısı (ADR-0015 §3 ve Notlar 2026-11-13): tür;
@@ -266,6 +267,9 @@ final class EtkinlikTaslagi {
     this.turTanimi,
     this.alanlar = const {},
     this.alanlarDegisti = false,
+    this.bilesenler = const {},
+    this.bilesenlerOkundu = true,
+    this.bilesenlerKilitli = false,
     this.baslik = '',
     this.aciklama = '',
     this.baslangic,
@@ -307,6 +311,20 @@ final class EtkinlikTaslagi {
   /// Katalog alanlarından biri değişti (düzenlemede `fields` yalnızca o
   /// zaman gönderilir; sunucu değerlerin tamamını değiştirir).
   final bool alanlarDegisti;
+
+  /// Organizatörün bileşen seçimleri (ADR-0031 §1): `optional`
+  /// bileşenlerin açık/kapalı hali ve organizatöre bırakılan parametreler.
+  /// Oluşturmada yalnızca dokunulanlar; düzenlemede etkinliğin sunucudaki
+  /// haliyle başlar.
+  final BilesenSecimleri bilesenler;
+
+  /// Düzenlemede etkinliğin bileşen durumu okundu mu; okunana kadar
+  /// seçimler çizilmez. Oluşturmada hep `true`.
+  final bool bilesenlerOkundu;
+
+  /// Seçimler artık değişmez (etkinlik başladı ya da iptal edildi, tayfa
+  /// salt okunur ya da çağıran yönetemiyor): salt okunur gösterilir.
+  final bool bilesenlerKilitli;
 
   final String baslik;
   final String aciklama;
@@ -359,6 +377,9 @@ final class EtkinlikTaslagi {
     Object? turTanimi = _ayni,
     AlanDegerleri? alanlar,
     bool? alanlarDegisti,
+    BilesenSecimleri? bilesenler,
+    bool? bilesenlerOkundu,
+    bool? bilesenlerKilitli,
     String? baslik,
     String? aciklama,
     DateTime? baslangic,
@@ -385,6 +406,9 @@ final class EtkinlikTaslagi {
         : turTanimi as CatalogEventType?,
     alanlar: alanlar ?? this.alanlar,
     alanlarDegisti: alanlarDegisti ?? this.alanlarDegisti,
+    bilesenler: bilesenler ?? this.bilesenler,
+    bilesenlerOkundu: bilesenlerOkundu ?? this.bilesenlerOkundu,
+    bilesenlerKilitli: bilesenlerKilitli ?? this.bilesenlerKilitli,
     baslik: baslik ?? this.baslik,
     aciklama: aciklama ?? this.aciklama,
     baslangic: baslangic ?? this.baslangic,
@@ -411,6 +435,7 @@ final class EtkinlikTaslagi {
 bool ayniGirdi(EtkinlikTaslagi a, EtkinlikTaslagi b) =>
     a.tur == b.tur &&
     ayniAlanDegerleri(a.alanlar, b.alanlar) &&
+    ayniBilesenSecimleri(a.bilesenler, b.bilesenler) &&
     a.baslik == b.baslik &&
     a.aciklama == b.aciklama &&
     a.baslangic == b.baslangic &&
@@ -440,6 +465,8 @@ EtkinlikTaslagi duzenlemeTaslagi(
     alanlar: tanim == null
         ? const {}
         : alanDegerleriOku(turAlanlari(tanim), etkinlik.fields),
+    // Bileşen seçimleri sunucudaki durumdan sonradan doldurulur.
+    bilesenlerOkundu: false,
     baslik: etkinlik.title,
     aciklama: etkinlik.description,
     baslangic: etkinlik.startsAt.toUtc(),
@@ -711,6 +738,7 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
   return EventCreateRequest(
     type: t.tur!,
     fields: _alanGovdesi(t),
+    components: bilesenSecimGovdesi(t.turTanimi, t.bilesenler),
     mode: yuzYuze ? EventMode.inPerson : EventMode.online,
     title: t.baslik.trim(),
     description: _doluysa(t.aciklama),
@@ -745,6 +773,7 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
     event: EventCreateRequest(
       type: etkinlik.type,
       fields: etkinlik.fields,
+      components: etkinlik.components,
       mode: etkinlik.mode,
       title: etkinlik.title,
       description: etkinlik.description,

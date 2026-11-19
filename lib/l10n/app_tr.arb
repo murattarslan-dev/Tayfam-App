@@ -5689,6 +5689,22 @@
   "@hata_event_limit": {
     "description": "Hata kodu `event-limit`. Etkinliğin listesi (kamp malzemesi, av kaydı) sınırına ulaştığında görünen hata."
   },
+  "hata_component_not_found": "Bu özellik bu etkinlikte yok.",
+  "@hata_component_not_found": {
+    "description": "Hata kodu `component-not-found`. Etkinliğin türünde o bileşen (araç) yoksa görünen hata."
+  },
+  "hata_component_disabled": "Organizatör bu özelliği bu etkinlikte kapatmış.",
+  "@hata_component_disabled": {
+    "description": "Hata kodu `component-disabled`. Organizatörün kapattığı isteğe bağlı bileşenin bir ucu çağrıldığında görünen hata."
+  },
+  "hata_component_locked": "Etkinlik başladığı için bu seçimler artık değiştirilemiyor.",
+  "@hata_component_locked": {
+    "description": "Hata kodu `component-locked`. Etkinlik başladıktan sonra bileşen seçimleri (aç/kapa, biçim) değiştirilmek istendiğinde görünen hata."
+  },
+  "hata_component_frozen": "Etkinlik biteli 7 günü geçtiği için burada artık değişiklik yapılamıyor.",
+  "@hata_component_frozen": {
+    "description": "Hata kodu `component-frozen`. Etkinliğin bitiminden 7 gün sonra bileşen verisi donduğunda, değişiklik denenince görünen hata."
+  },
   "hata_event_type_mismatch": "Bu işlem bu etkinlik türünde yapılamıyor.",
   "@hata_event_type_mismatch": {
     "description": "Hata kodu `event-type-mismatch`. Bir etkinlik türüne özgü işlem (kamp malzemesi, konvoy aracı, yürüyüş) başka türdeki etkinlikte denendiğinde görünen hata."
@@ -10691,5 +10707,27 @@
   "katalog_birim_net": "net",
   "@katalog_birim_net": {
     "description": "Katalogdaki `net` biriminin kısa adı (net (deneme sınavı)); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "bilesen_guncelle_baslik": "{sayi, plural, =1{Bu özelliği görmek için uygulamayı güncelle} other{Bu {sayi} özelliği görmek için uygulamayı güncelle}}",
+  "@bilesen_guncelle_baslik": {
+    "description": "Etkinlik detayında, uygulamanın bu sürümünün tanımadığı bileşenlerin (araçların) yerinde gösterilen kartın başlığı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_guncelle_aciklama": "Etkinliğin geri kalanını kullanmaya devam edebilirsin.",
+  "@bilesen_guncelle_aciklama": {
+    "description": "\"Uygulamayı güncelle\" kartında başlığın altındaki açıklama."
+  },
+  "bilesen_guncelle_magaza": "Google Play'de güncelle",
+  "@bilesen_guncelle_magaza": {
+    "description": "\"Uygulamayı güncelle\" kartında uygulamanın Google Play sayfasını açan bağlantı (yalnızca Android)."
+  },
+  "bilesen_secim_kilitli": "Bu seçimler yalnızca etkinlik başlamadan önce değiştirilebilir; artık kilitli.",
+  "@bilesen_secim_kilitli": {
+    "description": "Etkinlik düzenleme sihirbazında, bileşen seçimleri (aç/kapa satırları, biçim seçimi) kilitliyken seçimlerin üstünde görünen not."
   }
 }

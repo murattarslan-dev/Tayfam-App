@@ -48,11 +48,43 @@ const List<EtkinlikTuru> etkinlikTuruKaydi = [
   BalikTuru(),
 ];
 
+/// Uygulamanın etkinlik bileşenleri (ADR-0024 §3). Koddaki sabit listedir;
+/// tür tanımı sunucudan gelir ama istemci yalnızca buradaki bileşenleri
+/// çizer (kayıtta olmayan bileşen için "Uygulamayı güncelle" kartı).
+///
+/// Her bileşen `features/etkinlik/bilesenler/<bileşen>/` altındadır ve bu
+/// listeye, kendi `kind` yorumunun hemen altına **tek satırla** eklenir
+/// (yorum satırları yerinde kalır: paralel iş kayıtları çakışmasın). Sıra
+/// çizim sırası değildir; bölümler tür tanımındaki sırayla çizilir.
+const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
+  // meeting_point: buluşma noktası etkinliğin temel alanıdır.
+  TemelBilesen('meeting_point'),
+  // route (#227)
+  // vehicles (#228)
+  // checklist (#229)
+  // roll_call (#230)
+  // log (#231)
+  // measure (#233)
+  // goal (#234)
+  // schedule (#235)
+  // teams (#236)
+  // draw (#237)
+  // scoreboard (#238)
+  // bracket (#239)
+  // ranking (#241)
+  // vote (#242)
+  // celebration (#243)
+  // questions (#244)
+  // timer (#245)
+  // pool_link (#256)
+];
+
 /// Kayıt listelerini `core/` ve özelliklerdeki provider'lara veren
 /// override'lar; uygulamanın kökündeki `ProviderScope`'a verilir.
 final List<Override> kayitOverridelari = [
   tayfaModulleriProvider.overrideWithValue(tayfaModulKaydi),
   etkinlikTurleriProvider.overrideWithValue(etkinlikTuruKaydi),
+  etkinlikBilesenKaydiProvider.overrideWithValue(etkinlikBilesenKaydi),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Ana sayfadan davet linki ve "Silmeyi iptal et" (2026-11-13).
