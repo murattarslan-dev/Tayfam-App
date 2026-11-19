@@ -4357,207 +4357,6 @@ enum ConversationStatus {
   }
 }
 
-/// Rota burada değildir: `route` bileşeni (`GET …/components/{component_key}/route`, #239).
-final class ConvoyDetails {
-  const ConvoyDetails({this.vehicles});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory ConvoyDetails.fromJson(Map<String, Object?> json) => ConvoyDetails(
-    vehicles: switch (json['vehicles']) {
-      null => null,
-      final Object v => List<ConvoyVehicle>.unmodifiable(
-        _readList(v, 'ConvoyDetails.vehicles').map(
-          (Object? e0) =>
-              ConvoyVehicle.fromJson(_readObject(e0, 'ConvoyDetails.vehicles')),
-        ),
-      ),
-    },
-  );
-
-  /// Yalnızca tek etkinlik yanıtında.
-  final List<ConvoyVehicle>? vehicles;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (vehicles case final value?)
-      'vehicles': <Object?>[for (final e0 in value) e0.toJson()],
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ConvoyDetails && _deepEquals(vehicles, other.vehicles);
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[_deepHash(vehicles)]);
-}
-
-final class ConvoyVehicle {
-  const ConvoyVehicle({
-    required this.id,
-    required this.userId,
-    required this.make,
-    this.model,
-    this.modelYear,
-    this.color,
-    this.plate,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory ConvoyVehicle.fromJson(Map<String, Object?> json) => ConvoyVehicle(
-    id: _readString(json['id'], 'ConvoyVehicle.id'),
-    userId: _readString(json['user_id'], 'ConvoyVehicle.user_id'),
-    make: _readString(json['make'], 'ConvoyVehicle.make'),
-    model: switch (json['model']) {
-      null => null,
-      final Object v => _readString(v, 'ConvoyVehicle.model'),
-    },
-    modelYear: switch (json['model_year']) {
-      null => null,
-      final Object v => _readInt(v, 'ConvoyVehicle.model_year'),
-    },
-    color: switch (json['color']) {
-      null => null,
-      final Object v => _readString(v, 'ConvoyVehicle.color'),
-    },
-    plate: switch (json['plate']) {
-      null => null,
-      final Object v => _readString(v, 'ConvoyVehicle.plate'),
-    },
-  );
-
-  final String id;
-
-  final String userId;
-
-  final String make;
-
-  final String? model;
-
-  /// Verilmemişse yoktur.
-  final int? modelYear;
-
-  final String? color;
-
-  /// Yalnızca katılımcılara (`going`) ve organizatöre döner.
-  final String? plate;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
-    'user_id': userId,
-    'make': make,
-    if (model case final value?) 'model': value,
-    if (modelYear case final value?) 'model_year': value,
-    if (color case final value?) 'color': value,
-    if (plate case final value?) 'plate': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ConvoyVehicle &&
-          id == other.id &&
-          userId == other.userId &&
-          make == other.make &&
-          model == other.model &&
-          modelYear == other.modelYear &&
-          color == other.color &&
-          plate == other.plate;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[
-    id,
-    userId,
-    make,
-    model,
-    modelYear,
-    color,
-    plate,
-  ]);
-}
-
-final class ConvoyVehicleCreateRequest {
-  const ConvoyVehicleCreateRequest({
-    required this.make,
-    this.model,
-    this.modelYear,
-    this.color,
-    this.plate,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory ConvoyVehicleCreateRequest.fromJson(Map<String, Object?> json) =>
-      ConvoyVehicleCreateRequest(
-        make: _readString(json['make'], 'ConvoyVehicleCreateRequest.make'),
-        model: switch (json['model']) {
-          null => null,
-          final Object v => _readString(v, 'ConvoyVehicleCreateRequest.model'),
-        },
-        modelYear: switch (json['model_year']) {
-          null => null,
-          final Object v => _readInt(
-            v,
-            'ConvoyVehicleCreateRequest.model_year',
-          ),
-        },
-        color: switch (json['color']) {
-          null => null,
-          final Object v => _readString(v, 'ConvoyVehicleCreateRequest.color'),
-        },
-        plate: switch (json['plate']) {
-          null => null,
-          final Object v => _readString(v, 'ConvoyVehicleCreateRequest.plate'),
-        },
-      );
-
-  /// Kısıtlar: minLength: 1; maxLength: 40.
-  final String make;
-
-  /// Kısıtlar: maxLength: 40.
-  final String? model;
-
-  /// 0 ya da 1900 – gelecek yıl.
-  final int? modelYear;
-
-  /// Kısıtlar: maxLength: 30.
-  final String? color;
-
-  /// İsteğe bağlı, kişisel veri. Harf, rakam ve tek boşluk; 2–16 karakter.
-  ///
-  /// Kısıtlar: maxLength: 16.
-  final String? plate;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'make': make,
-    if (model case final value?) 'model': value,
-    if (modelYear case final value?) 'model_year': value,
-    if (color case final value?) 'color': value,
-    if (plate case final value?) 'plate': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ConvoyVehicleCreateRequest &&
-          make == other.make &&
-          model == other.model &&
-          modelYear == other.modelYear &&
-          color == other.color &&
-          plate == other.plate;
-
-  @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[make, model, modelYear, color, plate]);
-}
-
 final class CreatedInvite {
   const CreatedInvite({required this.invite, required this.token});
 
@@ -7752,9 +7551,10 @@ final class E2ESignedPreKey {
 /// etkinlik oluşturulduğu tür sürümüne (`type_version`) bağlıdır ve o
 /// sürümün tanımıyla gösterilir (güncel katalogda yoksa
 /// `GET /v1/catalog/event-types/{key}/versions/{version}`). `fields`
-/// ve Faz 1'den kalan türe özel ayrıntı (`convoy`, `camp`, `hike`,
-/// `fishing`; bileşenlere taşınana kadar) yalnızca tek etkinlik
-/// yanıtında gelir; ayrıntılardan en fazla biri doludur.
+/// ve Faz 1'den kalan türe özel ayrıntı (`camp`, `hike`, `fishing`;
+/// bileşenlere taşınana kadar) yalnızca tek etkinlik yanıtında gelir;
+/// ayrıntılardan en fazla biri doludur. Konvoyun rotası ve araçları
+/// bileşenlerindedir (`route`, `vehicles`).
 final class Event {
   const Event({
     this.coverUploadId,
@@ -7789,7 +7589,6 @@ final class Event {
     required this.seriesOverride,
     required this.createdAt,
     required this.updatedAt,
-    this.convoy,
     this.camp,
     this.hike,
     this.fishing,
@@ -7877,10 +7676,6 @@ final class Event {
     seriesOverride: _readBool(json['series_override'], 'Event.series_override'),
     createdAt: _readDateTime(json['created_at'], 'Event.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Event.updated_at'),
-    convoy: switch (json['convoy']) {
-      null => null,
-      final Object v => ConvoyDetails.fromJson(_readObject(v, 'Event.convoy')),
-    },
     camp: switch (json['camp']) {
       null => null,
       final Object v => CampDetails.fromJson(_readObject(v, 'Event.camp')),
@@ -7976,8 +7771,6 @@ final class Event {
 
   final DateTime updatedAt;
 
-  final ConvoyDetails? convoy;
-
   final CampDetails? camp;
 
   final HikeDetails? hike;
@@ -8019,7 +7812,6 @@ final class Event {
     'series_override': seriesOverride,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
-    if (convoy case final value?) 'convoy': value.toJson(),
     if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
@@ -8061,7 +7853,6 @@ final class Event {
           seriesOverride == other.seriesOverride &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
-          convoy == other.convoy &&
           camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing;
@@ -8100,7 +7891,6 @@ final class Event {
     seriesOverride,
     createdAt,
     updatedAt,
-    convoy,
     camp,
     hike,
     fishing,
@@ -9710,6 +9500,301 @@ final class EventUpdateRequest {
     hike,
     fishing,
     applyToSeries,
+  ]);
+}
+
+/// Bir katılımcının etkinliğe yazdığı araç (#240).
+final class EventVehicle {
+  const EventVehicle({
+    required this.id,
+    required this.userId,
+    required this.make,
+    this.model,
+    this.modelYear,
+    this.color,
+    this.plate,
+    required this.seats,
+    required this.riderUserIds,
+    required this.pendingUserIds,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVehicle.fromJson(Map<String, Object?> json) => EventVehicle(
+    id: _readString(json['id'], 'EventVehicle.id'),
+    userId: _readString(json['user_id'], 'EventVehicle.user_id'),
+    make: _readString(json['make'], 'EventVehicle.make'),
+    model: switch (json['model']) {
+      null => null,
+      final Object v => _readString(v, 'EventVehicle.model'),
+    },
+    modelYear: switch (json['model_year']) {
+      null => null,
+      final Object v => _readInt(v, 'EventVehicle.model_year'),
+    },
+    color: switch (json['color']) {
+      null => null,
+      final Object v => _readString(v, 'EventVehicle.color'),
+    },
+    plate: switch (json['plate']) {
+      null => null,
+      final Object v => _readString(v, 'EventVehicle.plate'),
+    },
+    seats: _readInt(json['seats'], 'EventVehicle.seats'),
+    riderUserIds: List<String>.unmodifiable(
+      _readList(
+        json['rider_user_ids'],
+        'EventVehicle.rider_user_ids',
+      ).map((Object? e0) => _readString(e0, 'EventVehicle.rider_user_ids')),
+    ),
+    pendingUserIds: List<String>.unmodifiable(
+      _readList(
+        json['pending_user_ids'],
+        'EventVehicle.pending_user_ids',
+      ).map((Object? e0) => _readString(e0, 'EventVehicle.pending_user_ids')),
+    ),
+  );
+
+  final String id;
+
+  /// Aracın sahibi.
+  final String userId;
+
+  final String make;
+
+  final String? model;
+
+  /// Verilmemişse yoktur.
+  final int? modelYear;
+
+  final String? color;
+
+  /// Kişisel veri. Yalnızca katılımcılara (`going`), organizatöre ve aracın sahibine döner.
+  final String? plate;
+
+  /// Araç sahibinin yazdığı boş koltuk sayısı; bileşenin `seats` parametresi kapalıysa hep 0.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 8.
+  final int seats;
+
+  /// Koltuk isteği onaylanan kişiler, istek sırasıyla.
+  final List<String> riderUserIds;
+
+  /// Onay bekleyen kişiler. Aracın sahibi hepsini, başkası yalnızca kendisini görür.
+  final List<String> pendingUserIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'user_id': userId,
+    'make': make,
+    if (model case final value?) 'model': value,
+    if (modelYear case final value?) 'model_year': value,
+    if (color case final value?) 'color': value,
+    if (plate case final value?) 'plate': value,
+    'seats': seats,
+    'rider_user_ids': <Object?>[for (final e0 in riderUserIds) e0],
+    'pending_user_ids': <Object?>[for (final e0 in pendingUserIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVehicle &&
+          id == other.id &&
+          userId == other.userId &&
+          make == other.make &&
+          model == other.model &&
+          modelYear == other.modelYear &&
+          color == other.color &&
+          plate == other.plate &&
+          seats == other.seats &&
+          _deepEquals(riderUserIds, other.riderUserIds) &&
+          _deepEquals(pendingUserIds, other.pendingUserIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    userId,
+    make,
+    model,
+    modelYear,
+    color,
+    plate,
+    seats,
+    _deepHash(riderUserIds),
+    _deepHash(pendingUserIds),
+  ]);
+}
+
+final class EventVehicleRequest {
+  const EventVehicleRequest({
+    required this.make,
+    this.model,
+    this.modelYear,
+    this.color,
+    this.plate,
+    this.seats,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVehicleRequest.fromJson(Map<String, Object?> json) =>
+      EventVehicleRequest(
+        make: _readString(json['make'], 'EventVehicleRequest.make'),
+        model: switch (json['model']) {
+          null => null,
+          final Object v => _readString(v, 'EventVehicleRequest.model'),
+        },
+        modelYear: switch (json['model_year']) {
+          null => null,
+          final Object v => _readInt(v, 'EventVehicleRequest.model_year'),
+        },
+        color: switch (json['color']) {
+          null => null,
+          final Object v => _readString(v, 'EventVehicleRequest.color'),
+        },
+        plate: switch (json['plate']) {
+          null => null,
+          final Object v => _readString(v, 'EventVehicleRequest.plate'),
+        },
+        seats: switch (json['seats']) {
+          null => null,
+          final Object v => _readInt(v, 'EventVehicleRequest.seats'),
+        },
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 40.
+  final String make;
+
+  /// Kısıtlar: maxLength: 40.
+  final String? model;
+
+  /// 0 ya da 1900 – gelecek yıl.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int? modelYear;
+
+  /// Kısıtlar: maxLength: 30.
+  final String? color;
+
+  /// İsteğe bağlı, kişisel veri; yalnızca `plate_enabled` ise. Harf, rakam ve tek boşluk; 2–16 karakter.
+  ///
+  /// Kısıtlar: maxLength: 16.
+  final String? plate;
+
+  /// Boş koltuk sayısı; verilmezse 0. Sıfırdan büyük değer yalnızca `seats_enabled` ise.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 8.
+  final int? seats;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'make': make,
+    if (model case final value?) 'model': value,
+    if (modelYear case final value?) 'model_year': value,
+    if (color case final value?) 'color': value,
+    if (plate case final value?) 'plate': value,
+    if (seats case final value?) 'seats': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVehicleRequest &&
+          make == other.make &&
+          model == other.model &&
+          modelYear == other.modelYear &&
+          color == other.color &&
+          plate == other.plate &&
+          seats == other.seats;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[make, model, modelYear, color, plate, seats]);
+}
+
+/// Bir etkinliğin araçlar bileşeninin araçları, isteği yapanın gördüğü haliyle (#240).
+final class EventVehicles {
+  const EventVehicles({
+    required this.vehicles,
+    required this.plateEnabled,
+    required this.seatsEnabled,
+    required this.callerCanParticipate,
+    required this.callerCanManage,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVehicles.fromJson(Map<String, Object?> json) => EventVehicles(
+    vehicles: List<EventVehicle>.unmodifiable(
+      _readList(json['vehicles'], 'EventVehicles.vehicles').map(
+        (Object? e0) =>
+            EventVehicle.fromJson(_readObject(e0, 'EventVehicles.vehicles')),
+      ),
+    ),
+    plateEnabled: _readBool(
+      json['plate_enabled'],
+      'EventVehicles.plate_enabled',
+    ),
+    seatsEnabled: _readBool(
+      json['seats_enabled'],
+      'EventVehicles.seats_enabled',
+    ),
+    callerCanParticipate: _readBool(
+      json['caller_can_participate'],
+      'EventVehicles.caller_can_participate',
+    ),
+    callerCanManage: _readBool(
+      json['caller_can_manage'],
+      'EventVehicles.caller_can_manage',
+    ),
+  );
+
+  /// Eklenme sırasıyla.
+  final List<EventVehicle> vehicles;
+
+  /// Bileşenin `plate` parametresi; kapalıysa plaka yazılamaz.
+  final bool plateEnabled;
+
+  /// Bileşenin `seats` parametresi; kapalıysa koltuk paylaşımı yoktur.
+  final bool seatsEnabled;
+
+  /// Şu an araç yazabilir ve koltuk isteyebilirsiniz (`going`, susturulmamış; etkinlik bitmemiş, iptal değil, tayfa salt okunur değil).
+  final bool callerCanParticipate;
+
+  /// Şu an başkasının aracını ve koltuk isteğini kaldırabilirsiniz (organizatör yetkisi; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanManage;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'vehicles': <Object?>[for (final e0 in vehicles) e0.toJson()],
+    'plate_enabled': plateEnabled,
+    'seats_enabled': seatsEnabled,
+    'caller_can_participate': callerCanParticipate,
+    'caller_can_manage': callerCanManage,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVehicles &&
+          _deepEquals(vehicles, other.vehicles) &&
+          plateEnabled == other.plateEnabled &&
+          seatsEnabled == other.seatsEnabled &&
+          callerCanParticipate == other.callerCanParticipate &&
+          callerCanManage == other.callerCanManage;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(vehicles),
+    plateEnabled,
+    seatsEnabled,
+    callerCanParticipate,
+    callerCanManage,
   ]);
 }
 

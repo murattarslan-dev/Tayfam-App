@@ -260,3 +260,14 @@ kapalıdır.
     etkinlik listesi yanıtı bileşen verisi ya da seçim taşımıyor; kart
     başına istek atmak doğru değil. Gerekirse sözleşmeyle birlikte ele
     alınır (platform sahibinin kararı).
+- **2026-11-19 (issue #228, uygulama; sözleşme Tayfam-Api #240):**
+  - **Araçlar.** `vehicles` bileşeni `bilesenler/araclar/`'dadır; Faz 1'deki
+    konvoy araç bölümü (`turler/konvoy/`, `KonvoyTuru`) ve `Event.convoy`
+    kalktı. Konvoy artık yalnızca katalogdaki tanımdır.
+  - **Kaynak.** Plaka ve koltuk alanlarının görünürlüğü bileşenin
+    `params`'ından değil, yanıtın `plate_enabled` / `seats_enabled`
+    alanlarından okunur; düğmeler `caller_can_participate` /
+    `caller_can_manage` ile sadeleşir (karar sunucunundur). "Geliyorum"
+    cevabı değişince liste yeniden okunur (plaka ve koltuk ona bağlıdır).
+  - **Sihirbaz.** Araç etkinlik oluşturulurken yazılmadığı için form bölümü
+    yoktur. Plaka yalnızca bellekte tutulur, loglanmaz.

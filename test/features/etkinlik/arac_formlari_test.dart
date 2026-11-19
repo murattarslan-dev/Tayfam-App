@@ -27,54 +27,6 @@ Event _etkinlik({
 );
 
 void main() {
-  group('araç formu', () {
-    test('yalnızca marka zorunlu; boş alanlar gönderilmez', () {
-      final sonuc = aracIstegi(marka: ' Anadol ', buYil: 2026);
-      expect(sonuc.hatalar, isEmpty);
-      expect(sonuc.istek!.toJson(), {'make': 'Anadol'});
-    });
-
-    test('tüm alanlar; plaka harf, rakam ve tek boşluk', () {
-      final sonuc = aracIstegi(
-        marka: 'Anadol',
-        model: 'A1',
-        yil: '1972',
-        renk: 'Turuncu',
-        plaka: '34 AB 1972',
-        buYil: 2026,
-      );
-      expect(sonuc.istek!.toJson(), {
-        'make': 'Anadol',
-        'model': 'A1',
-        'model_year': 1972,
-        'color': 'Turuncu',
-        'plate': '34 AB 1972',
-      });
-    });
-
-    test('hatalar: marka, yıl ve plaka', () {
-      expect(aracIstegi(marka: '  ', buYil: 2026).hatalar, {AracHatasi.marka});
-      expect(aracIstegi(marka: 'A' * 41, buYil: 2026).hatalar, {
-        AracHatasi.marka,
-      });
-      for (final yil in ['1899', '2028', 'yetmiş']) {
-        expect(aracIstegi(marka: 'Anadol', yil: yil, buYil: 2026).hatalar, {
-          AracHatasi.yil,
-        }, reason: yil);
-      }
-      expect(
-        aracIstegi(marka: 'Anadol', yil: '2027', buYil: 2026).hatalar,
-        isEmpty,
-        reason: 'gelecek yıl olabilir',
-      );
-      for (final plaka in ['3', '34  AB 12', '34-AB-12', 'A' * 17]) {
-        expect(aracIstegi(marka: 'Anadol', plaka: plaka, buYil: 2026).hatalar, {
-          AracHatasi.plaka,
-        }, reason: plaka);
-      }
-    });
-  });
-
   group('kamp malzemesi formu', () {
     test('ad zorunlu; adet boşsa gönderilmez', () {
       expect(malzemeIstegi(ad: ' Çadır ').istek!.toJson(), {'name': 'Çadır'});
@@ -217,27 +169,11 @@ void main() {
       final e = _etkinlik(katilim: 'attended');
       expect(avEklenebilir(e, e.endsAt.add(avEklemeSuresi)), isFalse);
     });
-
-    test('araç ekleme: "Geliyorum" ve bitmemiş etkinlik', () {
-      final yakin = _etkinlik(baslangic: yakinBaslangic, cevap: 'going');
-      expect(aracEklenebilir(yakin, sabitSimdi), isTrue);
-      expect(
-        aracEklenebilir(
-          _etkinlik(baslangic: yakinBaslangic, cevap: 'maybe'),
-          sabitSimdi,
-        ),
-        isFalse,
-      );
-      expect(
-        aracEklenebilir(_etkinlik(cevap: 'going'), sabitSimdi),
-        isFalse,
-        reason: 'bitmiş',
-      );
-    });
   });
 
   group('konvoy', () {
-    test('rota etkinlik isteklerinde gitmez (route bileşeni, #227)', () {
+    test('rota ve araçlar etkinlik isteklerinde gitmez (bileşenler, '
+        '#227, #228)', () {
       final taslak = EtkinlikTaslagi(
         istekKimligi: sahteEtkinlikIstekKimligi,
         tur: 'convoy',
@@ -248,9 +184,7 @@ void main() {
       );
       expect(olusturmaIstegi(taslak).toJson().containsKey('convoy'), isFalse);
 
-      final eski = Event.fromJson(
-        etkinlikJson(tur: 'convoy', ayrinti: {'vehicles': const <Object?>[]}),
-      );
+      final eski = Event.fromJson(etkinlikJson(tur: 'convoy'));
       final t = duzenlemeTaslagi(eski, sahteEtkinlikIstekKimligi);
       expect(duzenlemeIstegi(t, eski), isNull, reason: 'değişiklik yok');
       expect(

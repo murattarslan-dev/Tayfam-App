@@ -14,8 +14,6 @@ import 'sahteler.dart';
 
 const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
 
-const String _aracId = '7f6e5d4c-3b2a-4f1e-8d0c-9b8a7f6e5d4c';
-const String _digerAracId = '8a7f6e5d-4c3b-4a2f-9e1d-0c9b8a7f6e5d';
 const String _malzemeId = '1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e';
 const String _avId = '2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f';
 const String _digerAvId = '3d4e5f6a-7b8c-4d9e-8f0a-2b3c4d5e6f7a';
@@ -226,139 +224,6 @@ void main() {
       );
       expect(find.text(arbMetni('etkinlik_varis_geldim')), findsNothing);
       expect(find.text(arbMetni('etkinlik_varis_soru')), findsNothing);
-    });
-  });
-
-  group('konvoy', () {
-    Map<String, Object?> konvoy({List<Map<String, Object?>>? araclar}) =>
-        etkinlikJson(
-          tur: 'convoy',
-          cevap: 'going',
-          baslangic: yakinBaslangic,
-          ayrinti: {
-            'route': [
-              {'lat': 40.6, 'lng': 31.28},
-              {'lat': 40.7, 'lng': 31.4},
-            ],
-            'vehicles':
-                araclar ??
-                [
-                  {
-                    'id': _aracId,
-                    'user_id': katilimciId,
-                    'make': 'Anadol',
-                    'model': 'A1',
-                    'model_year': 1972,
-                    'color': 'Turuncu',
-                    'plate': '34 AB 1972',
-                  },
-                  {
-                    'id': _digerAracId,
-                    'user_id': organizatorId,
-                    'make': 'Murat',
-                    'model': '124',
-                  },
-                ],
-          },
-        );
-
-    for (final tema in _temalar) {
-      testWidgets('liste: kendi aracında değiştir ve çıkar (${tema.name})', (
-        tester,
-      ) async {
-        ekranBoyutu(tester, genislik: 320);
-        ikiKatYazi(tester);
-        await _detayiAc(
-          tester,
-          etkinlikTasimasi({'GET $etkinlikYolu': (_) => konvoy()}),
-          themeMode: tema,
-        );
-        await _gorunurYap(tester, find.text('Murat 124'));
-        expect(find.text('Anadol A1'), findsOneWidget);
-        expect(find.text('1972, Turuncu'), findsOneWidget);
-        expect(
-          find.byTooltip(arbMetni('etkinlik_konvoy_arac_cikar')),
-          findsOneWidget,
-        );
-        expect(
-          find.byTooltip(arbMetni('etkinlik_konvoy_arac_degistir')),
-          findsOneWidget,
-        );
-        expect(find.text(arbMetni('etkinlik_konvoy_arac_ekle')), findsNothing);
-        expect(tester.takeException(), isNull);
-      });
-    }
-
-    testWidgets('araç sahibinin adı kişi profilini açar (#185)', (
-      tester,
-    ) async {
-      ekranBoyutu(tester);
-      await _detayiAc(
-        tester,
-        etkinlikTasimasi({'GET $etkinlikYolu': (_) => konvoy()}),
-      );
-      await _profilAcilir(tester, find.text('Mert'), katilimciId);
-    });
-
-    testWidgets('aracını ekler: plaka isteğe bağlı', (tester) async {
-      ekranBoyutu(tester);
-      const arac = {'id': _aracId, 'user_id': katilimciId, 'make': 'Anadol'};
-      var eklendi = false;
-      final tasima = etkinlikTasimasi({
-        'GET $etkinlikYolu': (_) => konvoy(araclar: [if (eklendi) arac]),
-        'POST $araclarYolu': (_) {
-          eklendi = true;
-          return arac;
-        },
-      });
-      await _detayiAc(tester, tasima);
-      await _gorunurYap(
-        tester,
-        find.text(arbMetni('etkinlik_konvoy_arac_yok')),
-      );
-
-      await _gorunurDokun(
-        tester,
-        find.text(arbMetni('etkinlik_konvoy_arac_ekle')),
-      );
-      expect(
-        find.text(arbMetni('etkinlik_arac_gizlilik_notu')),
-        findsOneWidget,
-      );
-      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
-      expect(find.text(arbMetni('etkinlik_arac_marka_hata')), findsOneWidget);
-      expect(tasima.giden('POST', araclarYolu), isEmpty);
-
-      await tester.enterText(find.byType(TextField).first, 'Anadol');
-      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
-      expect(tasima.giden('POST', araclarYolu).single.govde, {
-        'make': 'Anadol',
-      });
-      expect(find.text('Anadol'), findsOneWidget);
-    });
-
-    testWidgets('yönetici başkasının aracını çıkarır', (tester) async {
-      ekranBoyutu(tester);
-      final tasima = etkinlikTasimasi({
-        'GET $etkinlikYolu': (_) => {...konvoy(), 'caller_can_manage': true},
-        'DELETE $aracYolu': (_) => null,
-      });
-      await _detayiAc(tester, tasima);
-      final cikar = find.byTooltip(arbMetni('etkinlik_konvoy_arac_cikar'));
-      await _gorunurYap(tester, find.text('Murat 124'));
-      await tester.ensureVisible(cikar.last);
-      await tester.pumpAndSettle();
-      expect(cikar, findsNWidgets(2));
-
-      await tester.tap(cikar.last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(arbMetni('etkinlik_cikar')));
-      await tester.pumpAndSettle();
-      expect(tasima.giden('DELETE', aracYolu).single.yolParametreleri, {
-        'tayfa_id': ornekTayfaId,
-        'event_id': ornekEtkinlikId,
-        'vehicle_id': _digerAracId,
-      });
     });
   });
 
@@ -935,15 +800,6 @@ void main() {
           ayrinti: {'site_name': 'Göl', 'items': const <Object?>[]},
         ),
         'etkinlik_kamp_malzeme_ekle',
-      ),
-      'araç': (
-        () => etkinlikJson(
-          tur: 'convoy',
-          cevap: 'going',
-          baslangic: yakinBaslangic,
-          ayrinti: {'route': const <Object?>[], 'vehicles': const <Object?>[]},
-        ),
-        'etkinlik_konvoy_arac_ekle',
       ),
     };
     for (final tema in _temalar) {

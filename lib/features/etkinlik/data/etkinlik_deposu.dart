@@ -244,22 +244,91 @@ final class EtkinlikDeposu {
     itemId: malzemeId,
   );
 
-  /// `POST .../convoy-vehicles`: kendi aracını ekler; önceki aracının
-  /// yerini alır.
-  Future<ConvoyVehicle> aracEkle(
+  /// `GET .../components/{component_key}/vehicles`: araçlar bileşeninin
+  /// araçları (#228), çağıranın gördüğü haliyle.
+  Future<EventVehicles> araclar(
     String tayfaId,
     String etkinlikId,
-    ConvoyVehicleCreateRequest istek,
-  ) =>
-      _api.addConvoyVehicle(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
+    String bilesenAnahtari,
+  ) => _api.listEventVehicles(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
 
-  /// `DELETE .../convoy-vehicles/{vehicle_id}`.
-  Future<void> aracCikar(String tayfaId, String etkinlikId, String aracId) =>
-      _api.removeConvoyVehicle(
-        tayfaId: tayfaId,
-        eventId: etkinlikId,
-        vehicleId: aracId,
-      );
+  /// `PUT .../vehicles/mine`: kendi aracını yazar; önceki aracının yerini
+  /// alır.
+  Future<EventVehicles> aracYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventVehicleRequest istek,
+  ) => _api.setEventVehicle(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `DELETE .../vehicles/{vehicle_id}`: aracı koltuk istekleriyle
+  /// birlikte çıkarır.
+  Future<EventVehicles> aracCikar(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String aracId,
+  ) => _api.removeEventVehicle(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    vehicleId: aracId,
+  );
+
+  /// `PUT .../vehicles/{vehicle_id}/seat-requests/mine`: bu araçta koltuk
+  /// ister; araç sahibinin onayını bekler.
+  Future<EventVehicles> koltukIste(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String aracId,
+  ) => _api.requestEventVehicleSeat(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    vehicleId: aracId,
+  );
+
+  /// `PUT .../seat-requests/{user_id}/approval`: araç sahibi isteği
+  /// onaylar.
+  Future<EventVehicles> koltukOnayla(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String aracId,
+    String kullaniciId,
+  ) => _api.approveEventVehicleSeat(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    vehicleId: aracId,
+    userId: kullaniciId,
+  );
+
+  /// `DELETE .../seat-requests/{user_id}`: bekleyen ya da onaylanmış
+  /// koltuk isteğini kaldırır (geri çekme, reddetme, yolcuyu çıkarma).
+  Future<EventVehicles> koltukBirak(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String aracId,
+    String kullaniciId,
+  ) => _api.releaseEventVehicleSeat(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    vehicleId: aracId,
+    userId: kullaniciId,
+  );
 
   /// `GET .../fishing-catches`: av günlüğünün bir sayfası, eskiden yeniye.
   Future<Sayfa<FishingCatch>> avlar(

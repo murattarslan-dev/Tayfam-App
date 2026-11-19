@@ -42,7 +42,6 @@ const List<TayfaModule> tayfaModulKaydi = [
 /// kayıtlıdır (ADR-0015 §6); oyun, spor ve genel yalnızca bilgi alanları
 /// gösterir.
 const List<EtkinlikTuru> etkinlikTuruKaydi = [
-  KonvoyTuru(),
   KampTuru(),
   YuruyusTuru(),
   BalikTuru(),
@@ -62,6 +61,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // route (#227)
   RotaBileseni(),
   // vehicles (#228)
+  AraclarBileseni(),
   // checklist (#229)
   // roll_call (#230)
   // log (#231)

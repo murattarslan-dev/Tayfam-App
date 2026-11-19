@@ -1962,54 +1962,6 @@
       }
     }
   },
-  "etkinlik_konvoy_araclar": "Araçlar",
-  "@etkinlik_konvoy_araclar": {
-    "description": "Konvoy bölümünde araç listesinin başlığı."
-  },
-  "etkinlik_konvoy_arac_sayisi": "{sayi, plural, other{{sayi} araç}}",
-  "@etkinlik_konvoy_arac_sayisi": {
-    "description": "Etkinlik detayında \"Araçlar\" başlığının yanındaki araç sayısı.",
-    "placeholders": {
-      "sayi": {
-        "type": "int",
-        "example": "12"
-      }
-    }
-  },
-  "etkinlik_konvoy_arac_yok": "Henüz araç eklenmedi.",
-  "@etkinlik_konvoy_arac_yok": {
-    "description": "Konvoyda araç yokken görünen boş durum."
-  },
-  "etkinlik_konvoy_arac_ekle": "Aracını ekle",
-  "@etkinlik_konvoy_arac_ekle": {
-    "description": "Konvoya kendi aracını ekleyen düğme."
-  },
-  "etkinlik_konvoy_arac_degistir": "Aracını değiştir",
-  "@etkinlik_konvoy_arac_degistir": {
-    "description": "Konvoydaki kendi aracını değiştiren düğme ve formun başlığı."
-  },
-  "etkinlik_konvoy_arac_cikar": "Aracı çıkar",
-  "@etkinlik_konvoy_arac_cikar": {
-    "description": "Konvoydan aracı çıkaran düğmenin ipucu ve onaydaki düğme."
-  },
-  "etkinlik_konvoy_arac_cikar_onay": "Araç konvoydan çıkarılsın mı?",
-  "@etkinlik_konvoy_arac_cikar_onay": {
-    "description": "Aracı çıkarmadan önce sorulan onay."
-  },
-  "etkinlik_konvoy_ekle_bilgi": "Aracını eklemek için “Geliyorum” seç.",
-  "@etkinlik_konvoy_ekle_bilgi": {
-    "description": "Cevabı \"Geliyorum\" olmayan kullanıcıya konvoy bölümünde görünen bilgi."
-  },
-  "etkinlik_konvoy_plaka": "Plaka: {plaka}",
-  "@etkinlik_konvoy_plaka": {
-    "description": "Konvoy listesinde aracın plakası.",
-    "placeholders": {
-      "plaka": {
-        "type": "String",
-        "example": "34 ABC 123"
-      }
-    }
-  },
   "etkinlik_arac_marka": "Marka",
   "@etkinlik_arac_marka": {
     "description": "Araç formundaki marka alanı (zorunlu)."
@@ -2379,6 +2331,150 @@
         "example": "12"
       }
     }
+  },
+  "bilesen_vehicles_ad": "Araçlar",
+  "@bilesen_vehicles_ad": {
+    "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
+  },
+  "bilesen_vehicles_arac_sayisi": "{sayi, plural, other{{sayi} araç}}",
+  "@bilesen_vehicles_arac_sayisi": {
+    "description": "Araçlar başlığının yanındaki araç sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "bilesen_vehicles_yok": "Henüz araç eklenmedi.",
+  "@bilesen_vehicles_yok": {
+    "description": "Araç yokken görünen boş durum."
+  },
+  "bilesen_vehicles_ekle": "Aracını ekle",
+  "@bilesen_vehicles_ekle": {
+    "description": "Kendi aracını ekleyen düğme ve formun başlığı."
+  },
+  "bilesen_vehicles_degistir": "Aracını değiştir",
+  "@bilesen_vehicles_degistir": {
+    "description": "Kendi aracını değiştiren düğmenin ipucu ve formun başlığı."
+  },
+  "bilesen_vehicles_cikar": "Aracı çıkar",
+  "@bilesen_vehicles_cikar": {
+    "description": "Aracı listeden çıkaran düğmenin ipucu."
+  },
+  "bilesen_vehicles_cikar_onay": "Araç listeden çıkarılsın mı?",
+  "@bilesen_vehicles_cikar_onay": {
+    "description": "Aracı çıkarmadan önce sorulan onayın başlığı."
+  },
+  "bilesen_vehicles_cikar_metni": "Bu araca yazılmış koltuk istekleri de kalkar.",
+  "@bilesen_vehicles_cikar_metni": {
+    "description": "Aracı çıkarma onayındaki açıklama."
+  },
+  "bilesen_vehicles_ekle_bilgi": "Araç eklemek ya da koltuk istemek için “Geliyorum” seç.",
+  "@bilesen_vehicles_ekle_bilgi": {
+    "description": "Cevabı \"Geliyorum\" olmayan kullanıcıya araçlar bölümünde görünen bilgi."
+  },
+  "bilesen_vehicles_plaka": "Plaka: {plaka}",
+  "@bilesen_vehicles_plaka": {
+    "description": "Araç kartında aracın plakası (kişisel veri; yalnızca sunucu döndürdüyse).",
+    "placeholders": {
+      "plaka": {
+        "type": "String",
+        "example": "34 ABC 123"
+      }
+    }
+  },
+  "bilesen_vehicles_koltuk_alani": "Boş koltuk (isteğe bağlı)",
+  "@bilesen_vehicles_koltuk_alani": {
+    "description": "Araç formunda yanına alabileceği kişi sayısı alanı."
+  },
+  "bilesen_vehicles_koltuk_yardim": "Yanına alabileceğin kişi sayısı; boşsa 0.",
+  "@bilesen_vehicles_koltuk_yardim": {
+    "description": "Araç formundaki boş koltuk alanının yardım metni."
+  },
+  "bilesen_vehicles_koltuk_hata": "0 ile {enCok} arasında bir sayı yaz.",
+  "@bilesen_vehicles_koltuk_hata": {
+    "description": "Araç formunda boş koltuk sayısı geçersizse görünen hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "bilesen_vehicles_bos_koltuk": "{sayi, plural, =0{Boş koltuk yok} other{{sayi} boş koltuk}}",
+  "@bilesen_vehicles_bos_koltuk": {
+    "description": "Araç kartında kalan boş koltuk sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_vehicles_koltuk_iste": "Bu araçla gel",
+  "@bilesen_vehicles_koltuk_iste": {
+    "description": "Araç kartında koltuk isteyen düğme."
+  },
+  "bilesen_vehicles_koltuk_degistir_onay": "Koltuk isteğin değişsin mi?",
+  "@bilesen_vehicles_koltuk_degistir_onay": {
+    "description": "Başka araçta isteği ya da koltuğu olan kişi yeni araçta koltuk isterken sorulan onayın başlığı."
+  },
+  "bilesen_vehicles_koltuk_degistir_metni": "Diğer araçtaki isteğin ya da koltuğun kalkar.",
+  "@bilesen_vehicles_koltuk_degistir_metni": {
+    "description": "Koltuk isteği değiştirme onayındaki açıklama."
+  },
+  "bilesen_vehicles_istek_gonderildi": "İsteğin araç sahibine iletildi.",
+  "@bilesen_vehicles_istek_gonderildi": {
+    "description": "Koltuk isteği gönderilince görünen kısa bildirim."
+  },
+  "bilesen_vehicles_bekliyor": "Onay bekliyor",
+  "@bilesen_vehicles_bekliyor": {
+    "description": "Araç kartında onay bekleyen koltuk isteğinin durumu."
+  },
+  "bilesen_vehicles_onayla": "İsteği onayla",
+  "@bilesen_vehicles_onayla": {
+    "description": "Araç sahibinin koltuk isteğini onaylayan düğmenin ipucu."
+  },
+  "bilesen_vehicles_reddet": "İsteği reddet",
+  "@bilesen_vehicles_reddet": {
+    "description": "Bekleyen koltuk isteğini reddeden düğmenin ipucu."
+  },
+  "bilesen_vehicles_reddet_onay": "Koltuk isteği reddedilsin mi?",
+  "@bilesen_vehicles_reddet_onay": {
+    "description": "Koltuk isteğini reddetmeden önce sorulan onay."
+  },
+  "bilesen_vehicles_reddet_eylem": "Reddet",
+  "@bilesen_vehicles_reddet_eylem": {
+    "description": "Koltuk isteğini reddetme onayındaki düğme."
+  },
+  "bilesen_vehicles_geri_cek": "İsteği geri çek",
+  "@bilesen_vehicles_geri_cek": {
+    "description": "Kendi bekleyen koltuk isteğini geri çeken düğmenin ipucu."
+  },
+  "bilesen_vehicles_geri_cek_onay": "Koltuk isteğin geri çekilsin mi?",
+  "@bilesen_vehicles_geri_cek_onay": {
+    "description": "Kendi koltuk isteğini geri çekmeden önce sorulan onay."
+  },
+  "bilesen_vehicles_geri_cek_eylem": "Geri çek",
+  "@bilesen_vehicles_geri_cek_eylem": {
+    "description": "Koltuk isteğini geri çekme onayındaki düğme."
+  },
+  "bilesen_vehicles_birak": "Koltuğu bırak",
+  "@bilesen_vehicles_birak": {
+    "description": "Onaylanmış kendi koltuğunu bırakan düğmenin ipucu ve onaydaki düğme."
+  },
+  "bilesen_vehicles_birak_onay": "Bu araçtaki koltuğunu bırakmak istiyor musun?",
+  "@bilesen_vehicles_birak_onay": {
+    "description": "Kendi koltuğunu bırakmadan önce sorulan onay."
+  },
+  "bilesen_vehicles_yolcu_cikar": "Yolcuyu çıkar",
+  "@bilesen_vehicles_yolcu_cikar": {
+    "description": "Araç sahibinin ya da organizatörün yolcuyu araçtan çıkaran düğmesinin ipucu."
+  },
+  "bilesen_vehicles_yolcu_cikar_onay": "Yolcu araçtan çıkarılsın mı?",
+  "@bilesen_vehicles_yolcu_cikar_onay": {
+    "description": "Yolcuyu çıkarmadan önce sorulan onay."
   },
   "etkinlik_kamp_yeri": "Kamp yeri",
   "@etkinlik_kamp_yeri": {
@@ -5710,6 +5806,18 @@
   "hata_component_frozen": "Etkinlik biteli 7 günü geçtiği için burada artık değişiklik yapılamıyor.",
   "@hata_component_frozen": {
     "description": "Hata kodu `component-frozen`. Etkinliğin bitiminden 7 gün sonra bileşen verisi donduğunda, değişiklik denenince görünen hata."
+  },
+  "hata_vehicle_full": "Bu araçta boş koltuk kalmadı.",
+  "@hata_vehicle_full": {
+    "description": "Hata kodu `vehicle-full`. Boş koltuğu kalmamış (ya da koltuk paylaşımı kapalı) araçta koltuk istenince veya onaylanınca görünen hata."
+  },
+  "hata_vehicle_seats_taken": "Boş koltuk sayısı onaylanmış yolcu sayısından az olamaz.",
+  "@hata_vehicle_seats_taken": {
+    "description": "Hata kodu `vehicle-seats-taken`. Araç sahibi koltuk sayısını yolcu sayısının altına indirmek isteyince görünen hata."
+  },
+  "hata_seat_request_driver": "Kendi aracın varken başka bir araçta koltuk isteyemezsin.",
+  "@hata_seat_request_driver": {
+    "description": "Hata kodu `seat-request-driver`. Aracı olan kişi koltuk isteyince görünen hata."
   },
   "hata_event_type_mismatch": "Bu işlem bu etkinlik türünde yapılamıyor.",
   "@hata_event_type_mismatch": {
