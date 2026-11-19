@@ -153,7 +153,7 @@ class KatilimGecmisiNotifier extends SayfaliListeNotifier<ActivityRecord> {
   String kimlik(ActivityRecord oge) => [
     oge.eventId ?? '',
     oge.tayfaId ?? '',
-    oge.eventType.name,
+    oge.eventType,
     oge.startedAt.toUtc().toIso8601String(),
   ].join('|');
 }

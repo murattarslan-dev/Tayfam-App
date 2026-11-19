@@ -15,6 +15,7 @@ import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
+import '../../core/katalog/sahte_katalog.dart';
 import 'sahteler.dart';
 
 const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
@@ -598,12 +599,17 @@ void main() {
         );
         expect(find.byType(EtkinlikSihirbaziEkrani), findsOneWidget);
         expect(find.text('Adım 1 / 5'), findsOneWidget);
+        // Türler test kataloğundan: tayfanın ilgi alanındaki tür önde,
+        // hepsi "Tüm türler"de.
         expect(
-          find.text(arbMetni('etkinlik_tur_aciklama_hike')),
+          find.text(arbMetni('etkinlik_tur_ilgi_alanlari')),
           findsOneWidget,
         );
+        expect(find.text(arbMetni('katalog_tum_turler')), findsOneWidget);
+        expect(find.text('Konvoy'), findsNWidgets(2));
+        expect(find.text('Eski tür'), findsNothing);
 
-        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_turu_hike')));
+        await _gorunurDokun(tester, find.text('Doğa yürüyüşü'));
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 2 / 5'), findsOneWidget);
 
@@ -687,7 +693,7 @@ void main() {
         Adresler.etkinlikOlustur(ornekTayfaId),
       );
       final kapat = find.byIcon(Icons.close);
-      await _gorunurDokun(tester, find.text(arbMetni('etkinlik_turu_camp')));
+      await _gorunurDokun(tester, find.text('Kamp'));
       await tester.tap(kapat);
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('etkinlik_vazgec_baslik')), findsOneWidget);
@@ -714,7 +720,7 @@ void main() {
             .notifier,
       );
       n
-        ..turSec(EventType.general)
+        ..turSec(testTuru('general'))
         ..ileri()
         ..baslikAyarla('Buluşma')
         ..baslangicAyarla(ornekBaslangic)

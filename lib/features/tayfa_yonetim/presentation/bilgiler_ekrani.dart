@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/katalog/ilgi_alani_secimi.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -69,9 +70,7 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
   late final TextEditingController _aciklama = TextEditingController(
     text: widget.tayfa.description,
   );
-  late final Set<EventType> _ilgi = widget.tayfa.interests
-      .where(ilgiAlanlari.contains)
-      .toSet();
+  late final Set<String> _ilgi = widget.tayfa.interests.toSet();
   late JoinPolicy _katilim = widget.tayfa.joinPolicy == JoinPolicy.unknown
       ? JoinPolicy.approval
       : widget.tayfa.joinPolicy;
@@ -217,21 +216,14 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
         const SizedBox(height: TayfamSpacing.s16),
         BolumBasligi(baslik: m.yonetim_ilgi_baslik),
         const SizedBox(height: TayfamSpacing.s8),
-        Wrap(
-          spacing: TayfamSpacing.s8,
-          runSpacing: TayfamSpacing.s8,
-          children: [
-            for (final tur in ilgiAlanlari)
-              IlgiCipi(
-                tur: tur,
-                secili: _ilgi.contains(tur),
-                onDegisti: mesgul
-                    ? null
-                    : () => setState(() {
-                        if (!_ilgi.remove(tur)) _ilgi.add(tur);
-                      }),
-              ),
-          ],
+        // İlgi alanları katalogdan gelir (ADR-0024 §2).
+        IlgiAlaniSecimi(
+          secili: _ilgi,
+          onDegisti: mesgul
+              ? null
+              : (anahtar) => setState(() {
+                  if (!_ilgi.remove(anahtar)) _ilgi.add(anahtar);
+                }),
         ),
         const SizedBox(height: TayfamSpacing.s24),
         BolumBasligi(baslik: m.yonetim_katilim_baslik),

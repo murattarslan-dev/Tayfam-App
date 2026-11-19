@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/istek_kimligi.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/katalog/alanlar.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
@@ -90,10 +92,52 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
 
   bool get _kilitli => state.gonderiliyor || state.sonuc != null;
 
-  /// Türü seçer (yalnızca oluşturmada).
-  void turSec(EventType tur) {
-    if (_kilitli || duzenleme || tur == EventType.unknown) return;
-    _ayarla(state.kopya(tur: tur));
+  /// Türü katalogdaki [tanim]'ıyla seçer (yalnızca oluşturmada). Emekli
+  /// tür ve alan türü tanınmayan tür seçilemez (ADR-0024 §3, §4). Tür
+  /// değişince önceki türün alan değerleri bırakılır ve mod, yeni türün
+  /// izin verdiği modlardan biri değilse ilk izin verilene çekilir.
+  void turSec(CatalogEventType tanim) {
+    if (_kilitli ||
+        duzenleme ||
+        tanim.status != CatalogStatus.active ||
+        !katalogAnahtariMi(tanim.key) ||
+        !alanlarTaniniyor(turAlanlari(tanim))) {
+      return;
+    }
+    if (state.turTanimi == tanim) return;
+    final modlar = turModlari(tanim);
+    final yer = state.yer;
+    _ayarla(
+      state.kopya(
+        tur: tanim.key,
+        turTanimi: tanim,
+        alanlar: state.tur == tanim.key ? null : const {},
+        yer: modlar.contains(yer.mod) ? null : yer.kopya(mod: modlar.first),
+      ),
+    );
+  }
+
+  /// Düzenlemede etkinliğin tür sürümünün tanımı sonradan okundu: katalog
+  /// alanlarının değerleri etkinlikten doldurulur. Kullanıcının girdisi
+  /// sayılmaz (vazgeç onayı sorulmaz).
+  void tanimGeldi(CatalogEventType tanim) {
+    final eski = anahtar.duzenlenen;
+    if (_kilitli || eski == null || state.turTanimi != null) return;
+    if (tanim.key != eski.type || tanim.version != eski.typeVersion) return;
+    final alanlar = alanDegerleriOku(turAlanlari(tanim), eski.fields);
+    _ilk = _ilk.kopya(turTanimi: tanim, alanlar: alanlar);
+    state = state.kopya(
+      turTanimi: tanim,
+      alanlar: alanlar,
+      hata: state.hata,
+      gonderiliyor: state.gonderiliyor,
+    );
+  }
+
+  /// Katalogdaki tür alanlarının değerleri.
+  void alanlariAyarla(AlanDegerleri alanlar) {
+    if (_kilitli) return;
+    _ayarla(state.kopya(alanlar: alanlar, alanlarDegisti: true));
   }
 
   void baslikAyarla(String baslik) {

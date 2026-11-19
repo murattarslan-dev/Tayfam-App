@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/katalog/ilgi_alani_secimi.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/kullanici/sosyal_medya.dart';
 import 'package:tayfam/core/metin/diller.dart';
 import 'package:tayfam/core/metin/turkce.dart';
@@ -15,7 +17,6 @@ import 'package:tayfam/features/profil/application/profil_tamamlama.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/features/profil/presentation/profil_sayfalari.dart';
 import 'package:tayfam/features/profil/presentation/tanitim_ortak.dart';
-import 'package:tayfam/features/tayfa/tayfa.dart' show IlgiCipi, ilgiAlanlari;
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Profil tamamlama formu (issue #186; tasarım: Profil-Tamamla*).
@@ -539,12 +540,12 @@ class _IlgiAdimi extends ConsumerStatefulWidget {
 
 class _IlgiAdimiState extends ConsumerState<_IlgiAdimi>
     with _Kaydedici<_IlgiAdimi> {
-  late final Set<EventType> _secili = {...widget.ortak.hesap.interests};
+  late final Set<String> _secili = {...widget.ortak.hesap.interests};
 
-  List<EventType> _sirali(Iterable<EventType> turler) => [
-    for (final t in ilgiAlanlari)
-      if (turler.contains(t)) t,
-  ];
+  /// Kataloğun sırasıyla (katalog eldeyse); karşılaştırma ve gönderim
+  /// aynı sırayı kullanır.
+  List<String> _sirali(Iterable<String> ilgiler) =>
+      ilgiAlanlariniSirala(ref.read(katalogProvider).value, ilgiler);
 
   void _ileri() {
     final yeni = _sirali(_secili);
@@ -571,21 +572,13 @@ class _IlgiAdimiState extends ConsumerState<_IlgiAdimi>
         Semantics(
           label: m.profil_alan_ilgiler,
           container: true,
-          child: Wrap(
-            spacing: TayfamSpacing.s8,
-            runSpacing: TayfamSpacing.s8,
-            children: [
-              for (final tur in ilgiAlanlari)
-                IlgiCipi(
-                  tur: tur,
-                  secili: _secili.contains(tur),
-                  onDegisti: mesgul
-                      ? null
-                      : () => setState(() {
-                          if (!_secili.remove(tur)) _secili.add(tur);
-                        }),
-                ),
-            ],
+          child: IlgiAlaniSecimi(
+            secili: _secili,
+            onDegisti: mesgul
+                ? null
+                : (anahtar) => setState(() {
+                    if (!_secili.remove(anahtar)) _secili.add(anahtar);
+                  }),
           ),
         ),
       ],

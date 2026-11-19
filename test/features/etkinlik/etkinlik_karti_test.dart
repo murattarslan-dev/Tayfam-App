@@ -64,8 +64,9 @@ void main() {
     await _ac(tester, etkinlik);
 
     final cip = tester.widget<EtkinlikTuruCipi>(find.byType(EtkinlikTuruCipi));
-    expect(cip.tur, EventType.convoy);
-    expect(find.text(arbMetni('etkinlik_turu_convoy')), findsOneWidget);
+    expect(cip.tur, 'convoy');
+    // Tür adı test kataloğundan (ADR-0024 §2).
+    expect(find.text('Konvoy'), findsOneWidget);
     expect(find.text('Sabah konvoyu'), findsOneWidget);
     final m = _metinler(tester);
     expect(find.text(etkinlikZamani(m, etkinlik.startsAt)), findsOneWidget);
@@ -139,7 +140,7 @@ void main() {
     await _ac(tester, _etkinlik(mod: 'online', yer: null, tur: 'gaming'));
 
     expect(find.text(arbMetni('etkinlik_karti_cevrimici')), findsOneWidget);
-    expect(find.text(arbMetni('etkinlik_turu_gaming')), findsOneWidget);
+    expect(find.text('Video oyunu'), findsOneWidget);
   });
 
   for (final mod in [ThemeMode.light, ThemeMode.dark]) {

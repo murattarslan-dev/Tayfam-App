@@ -9,6 +9,10 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/katalog/alan_cizici.dart';
+import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
@@ -16,7 +20,6 @@ import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/features/anket/anket.dart';
@@ -173,13 +176,25 @@ class _Detay extends ConsumerWidget {
     final gerekce = etkinlik.cancelReason?.trim();
     final aciklama = etkinlik.description.trim();
     final turler = ref.watch(etkinlikTurleriProvider);
-    final arac = etkinlik.type == EventType.unknown
-        ? null
-        : etkinlikTuruBul(
-            turler,
-            etkinlik.type.wire,
-          )?.aracBolumu(context, etkinlik);
-    final ayrintilar = _ayrintiSatirlari(m, etkinlik);
+    final arac = etkinlikTuruBul(
+      turler,
+      etkinlik.type,
+    )?.aracBolumu(context, etkinlik);
+    // Etkinlik, oluşturulduğu tür sürümünün tanımıyla gösterilir
+    // (ADR-0024 §1). Tanım gelmeden katalog alanları gösterilmez.
+    final tanim = turTaniminiIzle(
+      ref,
+      etkinlik.type,
+      surum: etkinlik.typeVersion,
+    );
+    final ayrintilar = [
+      ..._alanSatirlari(
+        context,
+        tanim?.version == etkinlik.typeVersion ? tanim : null,
+        etkinlik,
+      ),
+      ..._ayrintiSatirlari(m, etkinlik),
+    ];
     final cevrimici = etkinlik.mode == EventMode.online;
     final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
     final guvenlik = ref.watch(etkinlikGuvenlikYuvasiProvider);
@@ -235,7 +250,7 @@ class _Detay extends ConsumerWidget {
                 ],
                 if (ayrintilar.isNotEmpty) ...[
                   AracBasligi(
-                    metin: etkinlik.type == EventType.camp
+                    metin: etkinlik.type == 'camp'
                         ? m.etkinlik_kamp_yeri
                         : m.etkinlik_tur_bilgileri,
                   ),
@@ -292,8 +307,18 @@ class _UstBolum extends ConsumerWidget {
     final r = context.renkler;
     final tema = Theme.of(context);
     final iptal = iptalEdildi(etkinlik);
-    final girdi = etkinlikTuruGirdisi(etkinlik.type);
-    final cift = context.turRenkleri.cift(girdi.renk);
+    final gorunum = turGorunumu(
+      etkinlik.type,
+      turTaniminiIzle(
+        ref,
+        etkinlik.type,
+        surum: etkinlik.typeVersion,
+        guncelYeter: true,
+      ),
+      ref.watch(katalogProvider).value,
+      katalogDili(context),
+    );
+    final cift = context.turRenkleri.cift(gorunum.renk);
     final yukleme = etkinlik.coverUploadId;
     final kapak = !iptal && yukleme != null && yukleme.isNotEmpty
         ? yukleme
@@ -370,8 +395,8 @@ class _UstBolum extends ConsumerWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       _UstCip(
-                        ikon: girdi.ikon,
-                        metin: girdi.ad(m),
+                        ikon: gorunum.ikon,
+                        metin: gorunum.ad ?? m.katalog_tur_bilinmiyor,
                         zemin: r.markaYuzeyKutusu,
                         renk: r.markaYuzeyUstu,
                       ),
@@ -1212,17 +1237,26 @@ List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
       ),
     );
   }
-  final gaming = e.gaming;
-  if (gaming != null) {
-    ekle(m.etkinlik_oyun, gaming.game);
-    ekle(m.etkinlik_oyun_platform, platformAdi(m, gaming.platform));
-  }
-  final sports = e.sports;
-  if (sports != null) {
-    ekle(m.etkinlik_spor, sporAdi(m, sports.sport));
-    ekle(m.etkinlik_spor_saha, sports.venueName);
-  }
   return satirlar;
+}
+
+/// Katalogdaki tür alanlarının değerleri (ADR-0024 §3): alan adı katalog
+/// metni, değer etkinliğin `fields` nesnesinden. Tanınmayan türdeki alan
+/// ve türüne uymayan değer atlanır.
+List<(String, String)> _alanSatirlari(
+  BuildContext context,
+  CatalogEventType? tanim,
+  Event e,
+) {
+  final degerler = e.fields;
+  if (tanim == null || degerler == null) return const [];
+  final dil = katalogDili(context);
+  return [
+    for (final alan in tanim.definition.fields ?? const <CatalogField>[])
+      if (katalogAlanDegeriMetni(context, alan, degerler[alan.key])
+          case final deger?)
+        (katalogAlanAdi(alan, dil), deger),
+  ];
 }
 
 // --- Katılımcı özeti ---------------------------------------------------------

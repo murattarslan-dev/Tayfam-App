@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/katalog/tanitim_turleri.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -110,7 +110,7 @@ class EtkinlikGorseli extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const EtkinlikTuruCipi(tur: EventType.hike),
+          const TanitimTurCipi(tur: TanitimTuru.yuruyus),
           const SizedBox(height: TayfamSpacing.s8),
           Text(m.hosgeldin_ornek_etkinlik_basligi, style: yazi.titleMedium),
           Text(m.hosgeldin_ornek_etkinlik_zamani, style: yazi.bodySmall),

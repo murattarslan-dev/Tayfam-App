@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/bilesenler/odak_cercevesi.dart';
@@ -35,6 +37,7 @@ Future<void> bileseniAc(
   required ThemeMode mod,
   double yaziOlcegi = 2,
   bool hareketiAzalt = false,
+  List<Override> overrides = const [],
 }) async {
   tester.view
     ..physicalSize = const Size(960, 1920)
@@ -49,15 +52,23 @@ Future<void> bileseniAc(
   }
 
   await tester.pumpWidget(
-    MaterialApp(
-      locale: const Locale('tr', 'TR'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: TayfamTheme.acik(),
-      darkTheme: TayfamTheme.koyu(),
-      themeMode: mod,
-      home: Scaffold(
-        body: ListView(padding: const EdgeInsets.all(16), children: [bilesen]),
+    // Katalogdan beslenen bileşenler (tür çipi) provider okur; [overrides]
+    // ile test kataloğu verilir.
+    ProviderScope(
+      overrides: overrides,
+      child: MaterialApp(
+        locale: const Locale('tr', 'TR'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: TayfamTheme.acik(),
+        darkTheme: TayfamTheme.koyu(),
+        themeMode: mod,
+        home: Scaffold(
+          body: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [bilesen],
+          ),
+        ),
       ),
     ),
   );
@@ -86,15 +97,28 @@ void dokunmaAlaniEnAz44(WidgetTester tester, Finder bulucu) {
 
 /// Her iki temada, 320 dp genişlikte ve 2× yazı ölçeğinde taşma olmadığını
 /// ve dokunma/etiket/kontrast kurallarını denetleyen testleri kaydeder.
-void ortakTestler(Widget Function() kur) {
+void ortakTestler(
+  Widget Function() kur, {
+  List<Override> Function()? overrides,
+}) {
   for (final mod in temalar) {
     testWidgets('${mod.name}: 2× yazı ölçeğinde taşma yok', (tester) async {
-      await bileseniAc(tester, kur(), mod: mod);
+      await bileseniAc(
+        tester,
+        kur(),
+        mod: mod,
+        overrides: overrides?.call() ?? const [],
+      );
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('${mod.name}: erişilebilirlik kuralları', (tester) async {
-      await bileseniAc(tester, kur(), mod: mod);
+      await bileseniAc(
+        tester,
+        kur(),
+        mod: mod,
+        overrides: overrides?.call() ?? const [],
+      );
       await erisilebilirlikDenetle(tester);
     });
   }

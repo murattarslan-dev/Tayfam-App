@@ -422,8 +422,8 @@ void main() {
 
       n.adAyarla('Klasikçiler');
       n.ileri();
-      n.ilgiDegistir(EventType.hike);
-      n.ilgiDegistir(EventType.convoy);
+      n.ilgiDegistir('nature');
+      n.ilgiDegistir('automotive');
       n.ileri();
       n.katilimAyarla(JoinPolicy.open);
       n.aciklamaAyarla('Hafta sonu turları');
@@ -434,13 +434,13 @@ void main() {
       final durum = k.kap.read(olusturmaProvider);
       expect(durum.adim, 0);
       expect(durum.ad, 'Klasikçiler');
-      // Sözleşmenin tür sırasıyla.
-      expect(durum.ilgiler, [EventType.convoy, EventType.hike]);
+      // Seçim sırasıyla (katalog anahtarları).
+      expect(durum.ilgiler, ['nature', 'automotive']);
       expect(durum.katilim, JoinPolicy.open);
       expect(durum.aciklama, 'Hafta sonu turları');
 
-      n.ilgiDegistir(EventType.convoy);
-      expect(k.kap.read(olusturmaProvider).ilgiler, [EventType.hike]);
+      n.ilgiDegistir('automotive');
+      expect(k.kap.read(olusturmaProvider).ilgiler, ['nature']);
     });
 
     test('girilen bir şey var mı (vazgeç onayı)', () async {
@@ -453,9 +453,9 @@ void main() {
       n.adAyarla('K');
       expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
       n.adAyarla('');
-      n.ilgiDegistir(EventType.camp);
+      n.ilgiDegistir('nature');
       expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
-      n.ilgiDegistir(EventType.camp);
+      n.ilgiDegistir('nature');
       n.katilimAyarla(JoinPolicy.open);
       expect(k.kap.read(olusturmaProvider).girdiVar, isTrue);
       n.katilimAyarla(JoinPolicy.approval);
@@ -494,7 +494,7 @@ void main() {
       final n = k.kap.read(olusturmaProvider.notifier);
       n.adAyarla('Klasikçiler');
       n.ileri();
-      n.ilgiDegistir(EventType.camp);
+      n.ilgiDegistir('nature');
       n.ileri();
       n.aciklamaAyarla(' Kamp tayfası ');
 
@@ -510,7 +510,7 @@ void main() {
       for (final istek in istekler) {
         final govde = istek.govde! as Map<String, Object?>;
         expect(govde['client_request_id'], sahteIstekKimligi);
-        expect(govde['interests'], ['camp']);
+        expect(govde['interests'], ['nature']);
         expect(govde['description'], 'Kamp tayfası');
       }
       expect(k.kap.read(olusturmaProvider).olusturulan, _yeniId);

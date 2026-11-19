@@ -32,7 +32,7 @@ bool katilimDogrulandi(Event etkinlik) =>
 ///
 /// Yürüyüşte katılım "Çıktım" ile doğrulanır; düğme yürüyüş aracındadır.
 bool varisDugmesiGorunur(Event etkinlik, DateTime simdi) =>
-    etkinlik.type != EventType.hike &&
+    etkinlik.type != 'hike' &&
     etkinlik.callerRsvp == RsvpStatus.going &&
     !katilimDogrulandi(etkinlik) &&
     varisPenceresiAcik(etkinlik, simdi);

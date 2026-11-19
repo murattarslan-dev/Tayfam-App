@@ -10,6 +10,8 @@ import 'package:tayfam/features/tayfa/application/olusturma_notifier.dart';
 import 'package:tayfam/features/tayfa/data/paylasim.dart';
 import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
 
+import '../../core/katalog/sahte_katalog.dart';
+
 /// Sahte istek kimliği (UUID v4 biçiminde).
 const String sahteIstekKimligi = '7d0f3c2a-9b1e-4f6a-8c5d-2e4b6a8c0d1f';
 
@@ -100,7 +102,7 @@ Map<String, Object?> tayfaJson({
   'instant_event_id': ?anlikEtkinlikId,
   'converted_at': ?donusum,
   'description': '',
-  'interests': tur == 'instant' ? <String>[] : ['convoy'],
+  'interests': tur == 'instant' ? <String>[] : ['automotive'],
   'join_policy': 'approval',
   'modules': tur == 'instant'
       ? {'announcements': false, 'events': true, 'qa': false, 'polls': false}
@@ -217,11 +219,13 @@ final class SahtePaylasici implements Paylasici {
 
 /// Tayfa özelliğinin sahte bağımlılıkları için override'lar. Yanıt
 /// verilmezse `GET /v1/tayfas` boş, `GET /v1/tayfas/{tayfa_id}` istenen
-/// kimlikle örnek bir tayfa döner.
+/// kimlikle örnek bir tayfa döner. Katalog test kataloğuyla hazır gelir;
+/// başka bir katalog durumu [katalog] ile verilir.
 List<Override> tayfaOverridelari({
   SahteTayfaTasima? tasima,
   SonTayfaDeposu? sonTayfa,
   Paylasici? paylasici,
+  Override? katalog,
 }) {
   final t = tasima ?? SahteTayfaTasima();
   t.yanitlar
@@ -242,6 +246,8 @@ List<Override> tayfaOverridelari({
     ),
     paylasiciProvider.overrideWithValue(paylasici ?? SahtePaylasici()),
     istekKimligiUreticisiProvider.overrideWithValue(() => sahteIstekKimligi),
+    // Tür ve ilgi alanı adları test kataloğundan (ADR-0024 §7).
+    katalog ?? katalogOverride(),
   ];
 }
 

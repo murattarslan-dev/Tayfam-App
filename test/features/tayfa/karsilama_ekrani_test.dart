@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/tanitim_turleri.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
 import 'package:tayfam/core/tema/tayfam_radii.dart';
@@ -113,15 +113,7 @@ void main() {
         }
       }
       expect(zeminler, [
-        for (final tur in [
-          EventType.convoy,
-          EventType.camp,
-          EventType.hike,
-          EventType.fishing,
-          EventType.gaming,
-          EventType.sports,
-        ])
-          t.cift(etkinlikTuruGirdisi(tur).renk).dolgu,
+        for (final tur in TanitimTuru.values) t.cift(tur.renk).dolgu,
       ]);
       // Renk tek başına bilgi taşımaz: her hapta türün ikonu var.
       expect(

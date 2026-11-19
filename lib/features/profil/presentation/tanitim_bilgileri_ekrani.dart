@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
 import 'package:tayfam/features/profil/application/profil_tamamlama.dart';
@@ -99,7 +101,13 @@ class _Icerik extends ConsumerWidget {
                 MenuSatiri.kartta(
                   key: ValueKey('tanitim-${adim.yol}'),
                   baslik: adimAdi(m, adim),
-                  aciklama: alanOzeti(m, hesap, alan),
+                  aciklama: alanOzeti(
+                    m,
+                    hesap,
+                    alan,
+                    katalog: ref.watch(katalogProvider).value,
+                    dil: katalogDili(context),
+                  ),
                   sag: const SatirOku(),
                   onTap: () =>
                       unawaited(context.push(Adresler.tanitimAdimi(adim.yol))),

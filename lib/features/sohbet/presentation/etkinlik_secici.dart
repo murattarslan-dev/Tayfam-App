@@ -199,10 +199,8 @@ class _EtkinlikSecenegi extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (etkinlik.type != EventType.unknown) ...[
-          EtkinlikTuruCipi(tur: etkinlik.type),
-          const SizedBox(height: TayfamSpacing.s4),
-        ],
+        EtkinlikTuruCipi(tur: etkinlik.type, surum: etkinlik.typeVersion),
+        const SizedBox(height: TayfamSpacing.s4),
         Text(etkinlik.title),
       ],
     );

@@ -209,9 +209,12 @@ class _KanalFormuState extends ConsumerState<KanalFormu> {
       case KanalKitlesi.etkinlik:
         final etkinlik = _etkinlik;
         return _SecimSatiri(
-          on: etkinlik == null || etkinlik.type == EventType.unknown
+          on: etkinlik == null
               ? null
-              : EtkinlikTuruCipi(tur: etkinlik.type),
+              : EtkinlikTuruCipi(
+                  tur: etkinlik.type,
+                  surum: etkinlik.typeVersion,
+                ),
           metin: etkinlik?.title ?? m.sohbet_kitle_etkinlik_sec,
           eylem: etkinlik == null ? null : m.sohbet_kitle_degistir,
           onTap: _gonderiliyor ? null : () => unawaited(_etkinlikSec()),

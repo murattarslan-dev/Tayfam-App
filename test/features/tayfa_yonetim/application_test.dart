@@ -178,7 +178,7 @@ void main() {
           tayfa,
           ad: ' Klasikçiler ',
           aciklama: '',
-          ilgi: {EventType.convoy},
+          ilgi: {'automotive'},
           katilim: JoinPolicy.approval,
           uyeEtkinlikAcar: false,
         ),
@@ -191,13 +191,13 @@ void main() {
         tayfa,
         ad: 'Klasikçiler',
         aciklama: ' Pazar buluşmaları ',
-        ilgi: {EventType.hike, EventType.convoy},
+        ilgi: {'nature', 'automotive'},
         katilim: JoinPolicy.open,
         uyeEtkinlikAcar: false,
       );
       expect(istek!.toJson(), {
         'description': 'Pazar buluşmaları',
-        'interests': ['convoy', 'hike'],
+        'interests': ['nature', 'automotive'],
         'join_policy': 'open',
       });
     });

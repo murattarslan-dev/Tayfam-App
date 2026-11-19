@@ -95,6 +95,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.feedbackClosed => m.hata_feedback_closed,
   ProblemType.safetyContactClosed => m.hata_safety_contact_closed,
   ProblemType.safetyContactNotFound => m.hata_safety_contact_not_found,
+  ProblemType.catalogTypeNotFound => m.hata_catalog_type_not_found,
   ProblemType.eventSeriesNotFound => m.hata_event_series_not_found,
   ProblemType.eventSeriesEnded => m.hata_event_series_ended,
   ProblemType.questionNotFound => m.hata_question_not_found,

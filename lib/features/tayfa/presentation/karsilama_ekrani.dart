@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/tanitim_turleri.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
 import 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart';
@@ -354,9 +353,9 @@ class BekleyenIstekKarti extends StatelessWidget {
 /// renginde daire ve ikonu, yanında adı. Görünen başlığı ekranda
 /// `BolumEtiketi`'dir.
 ///
-/// Her hap etkinlik türü kaydından gelir: türün kendi rengi, ikonu ve adı
-/// (ADR-0004 Notlar, 2026-11-10). "Genel" gösterilmez. Renk tek başına
-/// bilgi taşımaz.
+/// Haplar örnek türlerdir ([TanitimTuru]): türün kendi rengi, ikonu ve
+/// adı (ADR-0004 Notlar, 2026-11-10); gerçek türler katalogdan gelir.
+/// Renk tek başına bilgi taşımaz.
 class TurVurgusu extends StatelessWidget {
   const TurVurgusu({super.key});
 
@@ -368,8 +367,7 @@ class TurVurgusu extends StatelessWidget {
         spacing: TayfamSpacing.s8,
         runSpacing: TayfamSpacing.s8,
         children: [
-          for (final girdi in bilinenEtkinlikTurleri)
-            if (girdi.tur != EventType.general) _TurHapi(girdi: girdi),
+          for (final tur in TanitimTuru.values) _TurHapi(tur: tur),
         ],
       ),
     );
@@ -377,14 +375,14 @@ class TurVurgusu extends StatelessWidget {
 }
 
 class _TurHapi extends StatelessWidget {
-  const _TurHapi({required this.girdi});
+  const _TurHapi({required this.tur});
 
-  final EtkinlikTuruGirdisi girdi;
+  final TanitimTuru tur;
 
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
-    final cift = context.turRenkleri.cift(girdi.renk);
+    final cift = context.turRenkleri.cift(tur.renk);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: r.kart,
@@ -412,7 +410,7 @@ class _TurHapi extends StatelessWidget {
                   child: SizedBox.square(
                     dimension: TayfamSizes.turHapiDairesi,
                     child: Icon(
-                      girdi.ikon,
+                      tur.ikon,
                       size: TayfamSizes.turHapiIkonu,
                       color: cift.ustu,
                     ),
@@ -422,7 +420,7 @@ class _TurHapi extends StatelessWidget {
               const SizedBox(width: TayfamSpacing.s8),
               Flexible(
                 child: Text(
-                  girdi.ad(AppLocalizations.of(context)),
+                  tur.ad(AppLocalizations.of(context)),
                   style: context.yazi.labelMedium?.copyWith(color: r.metin),
                 ),
               ),

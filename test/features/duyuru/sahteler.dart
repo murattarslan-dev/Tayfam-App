@@ -73,6 +73,7 @@ Map<String, Object?> etkinlikJson(
   'id': id,
   'tayfa_id': ornekTayfaId,
   'type': tur,
+  'type_version': 1,
   'mode': mod,
   'title': baslik,
   'description': '',

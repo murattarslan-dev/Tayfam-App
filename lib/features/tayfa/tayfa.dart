@@ -10,7 +10,7 @@ library;
 export 'package:tayfam/features/tayfa/application/kurulum.dart'
     show kuralGosterilsin, kurulumGosterilsin, tayfaSaatiProvider;
 export 'package:tayfam/features/tayfa/application/olusturma_notifier.dart'
-    show ilgiAlanlari, istekKimligiUreticisiProvider;
+    show istekKimligiUreticisiProvider;
 export 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart'
     show TayfaOzeti, tayfaGorunumuProvider, tayfaOzetiProvider;
 export 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart'
@@ -28,7 +28,7 @@ export 'package:tayfam/features/tayfa/presentation/karsilama_ekrani.dart';
 export 'package:tayfam/features/tayfa/presentation/kodla_katilma_sayfasi.dart'
     show kodlaKatilmaSayfasiniAc;
 export 'package:tayfam/features/tayfa/presentation/olusturma_ekrani.dart'
-    show DonusturmeEkrani, IlgiCipi, OlusturmaEkrani;
+    show DonusturmeEkrani, OlusturmaEkrani;
 export 'package:tayfam/features/tayfa/presentation/tayfa_ana_sayfa.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_avatari.dart';
 export 'package:tayfam/features/tayfa/presentation/tayfa_degistirme_paneli.dart';

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 /// Etkinlik türlerinin renk anahtarı (ADR-0004 Notlar, 2026-11-10). Her
 /// tür kendi rengini taşır; yeni bir tür yeni bir anahtar ve iki temada
-/// birer dolgu/metin çifti ister. Türün hangi anahtarı kullandığına
-/// etkinlik türü kaydı (`core/moduller/etkinlik_turu_kaydi.dart`) karar
-/// verir.
+/// birer dolgu/metin çifti ister. Katalogdaki türün ve ilgi alanının hangi
+/// anahtarı kullandığına `core/katalog/katalog_renkleri.dart` karar verir.
 enum TurRengi { konvoy, kamp, yuruyus, balik, oyun, spor, genel }
 
 /// Bir türün dolgu rengi ve üzerindeki metin/ikon rengi.

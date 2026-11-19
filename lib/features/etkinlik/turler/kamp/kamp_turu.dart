@@ -30,7 +30,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// gizlemek kolaylıktır; yetkiyi sunucu verir, hatası her durumda
 /// gösterilir.
 final class KampTuru extends KayitliEtkinlikTuru {
-  const KampTuru() : super(EventType.camp);
+  const KampTuru() : super('camp');
 
   @override
   Widget? aracBolumu(BuildContext context, Event etkinlik) =>
