@@ -126,9 +126,8 @@ class GunlukNotifier extends SayfaliListeNotifier<EventLogEntry> {
     final etkinlik = (tayfaId: bilesen.tayfaId, etkinlikId: bilesen.etkinlikId);
     bilesenDegisiminiIzle(ref, etkinlik, bilesen.anahtar);
     ref.watch(
-      etkinlikDetayProvider(
-        etkinlik,
-      ).select((d) => (d.value?.callerAttendance, d.value?.status)),
+      etkinlikDetayProvider(etkinlik)
+          .select((d) => (d.value?.callerAttendance, d.value?.status)),
     );
     return ilkSayfayiOku();
   }
@@ -156,7 +155,12 @@ class GunlukNotifier extends SayfaliListeNotifier<EventLogEntry> {
   Future<Object?> ekle(EventLogEntryCreateRequest istek) => _yaz(() async {
     final kayit = await ref
         .read(etkinlikDeposuProvider)
-        .gunlugeEkle(bilesen.tayfaId, bilesen.etkinlikId, bilesen.anahtar, istek);
+        .gunlugeEkle(
+          bilesen.tayfaId,
+          bilesen.etkinlikId,
+          bilesen.anahtar,
+          istek,
+        );
     if (!ref.mounted) return;
     ogeleriDegistir(
       (kayitlar) => [

@@ -31,11 +31,7 @@ const List<EtkinlikBileseni> _kayit = [
 /// Organizatör "Ayşe", katılımcı "Mert".
 Map<String, Object?> _profil(TayfaIstegi i, String ben) {
   final id = i.yolParametreleri['user_id']!;
-  return profilJson(
-    id,
-    id == organizatorId ? 'Ayşe' : 'Mert',
-    ben: id == ben,
-  );
+  return profilJson(id, id == organizatorId ? 'Ayşe' : 'Mert', ben: id == ben);
 }
 
 /// Mert'in konumlu, kendi görebildiği av kaydı.
@@ -122,17 +118,16 @@ Finder _formda(Finder bulucu) =>
 /// Fikstürdeki balıkçılık günlüğünün alanları.
 List<CatalogField> _avAlanlari() => gunlukAlanlari(
   BilesenParametreleri(
-    turBilesenleri(
-      testTuru('fishing'),
-    ).singleWhere((b) => b.kind == 'log').params,
+    turBilesenleri(testTuru('fishing'))
+        .singleWhere((b) => b.kind == 'log')
+        .params,
   ),
 );
 
 void main() {
   test('katalog fikstüründe günlük bileşenini kullanan tür var', () {
-    final gunluk = turBilesenleri(
-      testTuru('fishing'),
-    ).singleWhere((b) => b.kind == 'log');
+    final gunluk = turBilesenleri(testTuru('fishing'))
+        .singleWhere((b) => b.kind == 'log');
     expect(bilesenAnahtari(gunluk), 'catches');
     expect(_avAlanlari().map((a) => a.key), [
       'species',
@@ -339,10 +334,8 @@ void main() {
       ekranBoyutu(tester);
       final tasima = _tasima({
         'GET $gunlukYolu': (_) => gunlukJson(kayitlar: [_levrek]),
-        'DELETE $gunlukKaydiYolu': (_) => const ApiProblem(
-          type: ProblemType.componentFrozen,
-          status: 409,
-        ),
+        'DELETE $gunlukKaydiYolu': (_) =>
+            const ApiProblem(type: ProblemType.componentFrozen, status: 409),
       });
       await _detayiAc(tester, tasima);
       final cikar = find.byTooltip(arbMetni('bilesen_log_cikar'));
