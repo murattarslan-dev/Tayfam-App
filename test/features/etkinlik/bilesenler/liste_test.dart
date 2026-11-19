@@ -46,12 +46,7 @@ Map<String, Object?> _madde(
   String ad, {
   int adet = 1,
   String? ustlenen,
-}) => {
-  'id': id,
-  'name': ad,
-  'quantity': adet,
-  'assigned_user_id': ?ustlenen,
-};
+}) => {'id': id, 'name': ad, 'quantity': adet, 'assigned_user_id': ?ustlenen};
 
 Map<String, Object?> get _ocak => _madde(_ocakId, 'Ocak', adet: 2);
 Map<String, Object?> get _cadir => _madde(_cadirId, 'Çadır');
@@ -157,14 +152,15 @@ void main() {
 
     test('üstlenen assigned_user_id olur; "Henüz kimse"de alan yok', () {
       expect(
-        maddeIstegi(ad: 'Ocak', adet: '1', ustlenen: katilimciId).istek!
-            .toJson(),
+        maddeIstegi(
+          ad: 'Ocak',
+          adet: '1',
+          ustlenen: katilimciId,
+        ).istek!.toJson(),
         {'name': 'Ocak', 'quantity': 1, 'assigned_user_id': katilimciId},
       );
       expect(
-        maddeIstegi(ad: 'Ocak').istek!.toJson().containsKey(
-          'assigned_user_id',
-        ),
+        maddeIstegi(ad: 'Ocak').istek!.toJson().containsKey('assigned_user_id'),
         isFalse,
       );
     });
@@ -245,19 +241,15 @@ void main() {
           ),
         });
         await _detayiAc(tester, tasima, themeMode: tema);
-        await _gorunurYap(
-          tester,
-          find.text(arbMetni('bilesen_checklist_yok')),
-        );
+        await _gorunurYap(tester, find.text(arbMetni('bilesen_checklist_yok')));
 
         await _dokun(tester, find.text('Malzeme ekle'));
         expect(find.byType(MaddeFormu), findsOneWidget);
         expect(_formda(find.text('Kim getirecek?')), findsOneWidget);
         expect(tester.takeException(), isNull);
         await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
-        final adHatasi = arbMetni(
-          'bilesen_checklist_ad_hata',
-        ).replaceAll('{enCok}', '60');
+        final adHatasi = arbMetni('bilesen_checklist_ad_hata')
+            .replaceAll('{enCok}', '60');
         expect(find.text(adHatasi), findsOneWidget);
         expect(tasima.giden('POST', listeYolu), isEmpty);
 
@@ -351,10 +343,7 @@ void main() {
       tester,
     ) async {
       ekranBoyutu(tester);
-      var maddeler = [
-        _madde(_ocakId, 'Ocak', ustlenen: katilimciId),
-        _cadir,
-      ];
+      var maddeler = [_madde(_ocakId, 'Ocak', ustlenen: katilimciId), _cadir];
       Map<String, Object?> liste() =>
           kontrolListesiJson(maddeler: maddeler, yonetebilir: true);
       final tasima = _tasima(ben: organizatorId, yonetebilir: true, {
@@ -530,9 +519,8 @@ void main() {
       ekranBoyutu(tester);
       var bagli = false;
       final tasima = _tasima({
-        'GET $listeYolu': (_) => bagli
-            ? kontrolListesiJson(maddeler: [_cadir])
-            : const ApiOffline(),
+        'GET $listeYolu': (_) =>
+            bagli ? kontrolListesiJson(maddeler: [_cadir]) : const ApiOffline(),
       });
       await _detayiAc(tester, tasima);
       expect(find.byType(MaddeSatiri), findsNothing);

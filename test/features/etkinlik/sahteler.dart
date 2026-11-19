@@ -497,10 +497,7 @@ List<Override> etkinlikOverridelari({
   ),
   tayfaModulleriProvider.overrideWithValue(const [EtkinlikModulu()]),
   konumServisiProvider.overrideWithValue(konum ?? SahteKonumServisi()),
-  etkinlikTurleriProvider.overrideWithValue(const [
-    YuruyusTuru(),
-    BalikTuru(),
-  ]),
+  etkinlikTurleriProvider.overrideWithValue(const [YuruyusTuru(), BalikTuru()]),
   etkinlikBilesenKaydiProvider.overrideWithValue(bilesenler),
   magazaDegerlendirmesiProvider.overrideWithValue(
     magaza ?? SahteMagazaDegerlendirmesi(kullanilabilir: false),

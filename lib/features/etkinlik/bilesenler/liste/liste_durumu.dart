@@ -112,8 +112,12 @@ class ListeNotifier extends AsyncNotifier<Checklist> {
 
   /// Maddeyi listeden çıkarır.
   Future<Object?> cikar(String maddeId) => _yaz(
-    (d) =>
-        d.maddeCikar(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, maddeId),
+    (d) => d.maddeCikar(
+      kimlik.tayfaId,
+      kimlik.etkinlikId,
+      kimlik.anahtar,
+      maddeId,
+    ),
   );
 
   /// Maddeyi [kullaniciId]'ye atar ("Ben getiririm"); `null` ise atamayı

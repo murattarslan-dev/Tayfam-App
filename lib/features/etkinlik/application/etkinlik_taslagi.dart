@@ -202,14 +202,8 @@ final class TurAyrintisi {
       other.balikGizliligi == balikGizliligi;
 
   @override
-  int get hashCode => Object.hash(
-    zorluk,
-    mesafe,
-    yukselti,
-    donus,
-    tolerans,
-    balikGizliligi,
-  );
+  int get hashCode =>
+      Object.hash(zorluk, mesafe, yukselti, donus, tolerans, balikGizliligi);
 }
 
 /// Oluşturma ya da düzenleme sihirbazının durumu. Girilenler adımlar
@@ -620,8 +614,10 @@ Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
 
 /// Faz 1'den kalan türe özel ayrıntı (sözleşme: yalnızca kendi türünde, en
 /// fazla bir tane). Boş kalan isteğe bağlı ayrıntı gönderilmez.
-({HikeDetails? hike, FishingDetails? fishing})
-turAyrintisi(String? tur, TurAyrintisi a) {
+({HikeDetails? hike, FishingDetails? fishing}) turAyrintisi(
+  String? tur,
+  TurAyrintisi a,
+) {
   HikeDetails? hike;
   FishingDetails? fishing;
   switch (tur) {
