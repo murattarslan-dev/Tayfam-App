@@ -233,9 +233,9 @@ void main() {
       tester,
     ) async {
       ekranBoyutu(tester);
-      // Yürüyüş hâlâ Faz 1 türü (`YuruyusTuru`); `roll_call` kayıtta yok.
+      // Balık hâlâ Faz 1 türü (`BalikTuru`); `log` kayıtta yok.
       final tasima = etkinlikTasimasi({
-        'GET $etkinlikYolu': (_) => etkinlikJson(tur: 'hike'),
+        'GET $etkinlikYolu': (_) => etkinlikJson(tur: 'fishing'),
       });
       await _git(
         tester,
