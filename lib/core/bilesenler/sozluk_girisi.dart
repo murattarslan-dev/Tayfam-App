@@ -32,10 +32,7 @@ String sozlukAnahtari(String metin) =>
 
 /// [metin] [oneriler]'den birinin aynısı mı (sözlük anahtarına göre);
 /// öyleyse o öneri.
-SozlukOnerisi? sozlukEslesmesi(
-  String metin,
-  Iterable<SozlukOnerisi> oneriler,
-) {
+SozlukOnerisi? sozlukEslesmesi(String metin, Iterable<SozlukOnerisi> oneriler) {
   final anahtar = sozlukAnahtari(metin);
   if (anahtar.isEmpty) return null;
   for (final oneri in oneriler) {
@@ -269,39 +266,39 @@ class _OneriListesi extends StatelessWidget {
                     child: Semantics(
                       button: true,
                       child: InkWell(
-                    onTap: () => onSec(oneri),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minHeight: TayfamSizes.dokunmaMin,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: TayfamSpacing.s12,
-                          vertical: TayfamSpacing.s8,
-                        ),
-                        child: Row(
-                          children: [
-                            ExcludeSemantics(
-                              child: Icon(
-                                Icons.history,
-                                size: TayfamSizes.ikon,
-                                color: r.metinIkincil,
-                              ),
+                        onTap: () => onSec(oneri),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: TayfamSizes.dokunmaMin,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: TayfamSpacing.s12,
+                              vertical: TayfamSpacing.s8,
                             ),
-                            const SizedBox(width: TayfamSpacing.s12),
-                            Expanded(
-                              child: Text(
-                                oneri.metin,
-                                style: context.yazi.bodyLarge?.copyWith(
-                                  color: r.metin,
+                            child: Row(
+                              children: [
+                                ExcludeSemantics(
+                                  child: Icon(
+                                    Icons.history,
+                                    size: TayfamSizes.ikon,
+                                    color: r.metinIkincil,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: TayfamSpacing.s12),
+                                Expanded(
+                                  child: Text(
+                                    oneri.metin,
+                                    style: context.yazi.bodyLarge?.copyWith(
+                                      color: r.metin,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
                     ),
                   ),
                 ),

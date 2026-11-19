@@ -110,18 +110,12 @@ void main() {
         expect(kayit.last, ('Levrek', _levrekId));
         // Seçimden sonra öneri listesi kapanır.
         expect(find.text('Lüfer'), findsNothing);
-        expect(
-          find.text(arbMetni('bilesen_vocab_sozlukten')),
-          findsOneWidget,
-        );
+        expect(find.text(arbMetni('bilesen_vocab_sozlukten')), findsOneWidget);
 
         // Metin değişince kimlik düşer: yeni değer olarak gider.
         await _yaz(tester, 'Levrekler');
         expect(kayit.last.$2, isNull);
-        expect(
-          find.text(arbMetni('bilesen_vocab_yeni_deger')),
-          findsOneWidget,
-        );
+        expect(find.text(arbMetni('bilesen_vocab_yeni_deger')), findsOneWidget);
       });
     });
   }
@@ -178,10 +172,7 @@ void main() {
     final kayit = <(String, String?)>[];
     await bileseniAc(
       tester,
-      _Kap(
-        ara: (_) async => throw const FormatException('ağ'),
-        kayit: kayit,
-      ),
+      _Kap(ara: (_) async => throw const FormatException('ağ'), kayit: kayit),
       mod: ThemeMode.light,
     );
     await _yaz(tester, 'Levrek');

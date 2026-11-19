@@ -26,11 +26,7 @@ export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
 export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
     show RotaBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/sozluk/sozluk_ekranlari.dart'
-    show
-        sozlukGirisEtiketi,
-        sozlukGirisIkonu,
-        sozlukRotalari,
-        sozluklerAdresi;
+    show sozlukGirisEtiketi, sozlukGirisIkonu, sozlukRotalari, sozluklerAdresi;
 export 'package:tayfam/features/etkinlik/bilesenler/yoklama/yoklama_bileseni.dart'
     show YoklamaBileseni;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'

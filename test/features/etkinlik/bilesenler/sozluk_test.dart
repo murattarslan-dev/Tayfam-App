@@ -18,32 +18,27 @@ const String _kucukId = '3d4e5f6a-7b8c-4d9e-8f0a-2b3c4d5e6f7a';
 const String _levrekId = '1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e';
 
 /// "levrek" (kopya) ve "Levrek"; birleştirilenlerde "levrek" → "Levrek".
-SahteTayfaTasima _tasima({bool birlestirebilir = true}) =>
-    etkinlikTasimasi({
-      'GET $sozlukYolu': (i) => sozlukJson(
-        birlestirebilir: birlestirebilir,
-        degerler: i.sorgu['merged'] == 'true'
-            ? [
-                sozlukDegeriJson(
-                  _kucukId,
-                  'levrek',
-                  hedefId: _levrekId,
-                  hedef: 'Levrek',
-                ),
-              ]
-            : [
-                sozlukDegeriJson(_kucukId, 'levrek'),
-                sozlukDegeriJson(_levrekId, 'Levrek'),
-              ],
-      ),
-      'POST $sozlukBirlestirmeYolu': (_) => sozlukDegeriJson(
-        _kucukId,
-        'levrek',
-        hedefId: _levrekId,
-        hedef: 'Levrek',
-      ),
-      'DELETE $sozlukBirlestirmeYolu': (_) => null,
-    });
+SahteTayfaTasima _tasima({bool birlestirebilir = true}) => etkinlikTasimasi({
+  'GET $sozlukYolu': (i) => sozlukJson(
+    birlestirebilir: birlestirebilir,
+    degerler: i.sorgu['merged'] == 'true'
+        ? [
+            sozlukDegeriJson(
+              _kucukId,
+              'levrek',
+              hedefId: _levrekId,
+              hedef: 'Levrek',
+            ),
+          ]
+        : [
+            sozlukDegeriJson(_kucukId, 'levrek'),
+            sozlukDegeriJson(_levrekId, 'Levrek'),
+          ],
+  ),
+  'POST $sozlukBirlestirmeYolu': (_) =>
+      sozlukDegeriJson(_kucukId, 'levrek', hedefId: _levrekId, hedef: 'Levrek'),
+  'DELETE $sozlukBirlestirmeYolu': (_) => null,
+});
 
 Future<void> _sozluguAc(
   WidgetTester tester,
@@ -97,8 +92,15 @@ void main() {
           tayfa: etkinlikOverridelari(tasima: _tasima()),
         );
         expect(find.text(arbMetni('bilesen_vocab_baslik')), findsOneWidget);
-        expect(find.text('Tür'), findsNWidgets(2));
-        expect(find.text('Balıkçılık'), findsOneWidget);
+        // Büyük yazıda açıklama uzun; satırlar aşağıda.
+        await tester.scrollUntilVisible(
+          find.text('Örnek bileşenler'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Tür', skipOffstage: false), findsNWidgets(2));
+        expect(find.text('Balıkçılık', skipOffstage: false), findsOneWidget);
         expect(find.text('Örnek bileşenler'), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
@@ -180,10 +182,7 @@ void main() {
         await _sozluguAc(tester, tasima, themeMode: tema);
 
         await _dokun(tester, find.text(arbMetni('bilesen_vocab_birlesenler')));
-        expect(
-          tasima.giden('GET', sozlukYolu).last.sorgu,
-          {'merged': 'true'},
-        );
+        expect(tasima.giden('GET', sozlukYolu).last.sorgu, {'merged': 'true'});
         expect(find.text('levrek'), findsOneWidget);
         expect(find.text('“Levrek” olarak görünüyor'), findsOneWidget);
         expect(tester.takeException(), isNull);

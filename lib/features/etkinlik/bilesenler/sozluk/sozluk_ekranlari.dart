@@ -104,8 +104,7 @@ class SozluklerEkrani extends StatelessWidget {
                         for (final t in a.turler)
                           katalogAdi(t.labels, dil) ?? t.key,
                       ].join(', '),
-                      onTap: () =>
-                          context.go(sozlukAdresi(tayfaId, a.adAlani)),
+                      onTap: () => context.go(sozlukAdresi(tayfaId, a.adAlani)),
                     ),
                 ],
               );
@@ -347,7 +346,8 @@ class _Liste extends StatelessWidget {
     final liste = durum.value;
     final hata = durum.error;
     if (liste == null) {
-      if (hata != null) return YuklemeHatasi(hata: hata, onTekrarDene: onTekrar);
+      if (hata != null)
+        return YuklemeHatasi(hata: hata, onTekrarDene: onTekrar);
       return Center(
         child: TayfamYukleniyor(etiket: m.bilesen_vocab_yukleniyor),
       );
@@ -365,10 +365,13 @@ class _Liste extends StatelessWidget {
         ],
         if (degerler.isEmpty)
           _BosMetin(
-            birlesmis ? m.bilesen_vocab_birlesen_yok : m.bilesen_vocab_deger_yok,
+            birlesmis
+                ? m.bilesen_vocab_birlesen_yok
+                : m.bilesen_vocab_deger_yok,
           ),
         for (final (sira, d) in degerler.indexed) ...[
-          if (sira > 0) Divider(height: TayfamSizes.kenar, color: context.renkler.cizgi),
+          if (sira > 0)
+            Divider(height: TayfamSizes.kenar, color: context.renkler.cizgi),
           _DegerSatiri(
             deger: d,
             eylem: !liste.callerCanMerge
@@ -409,28 +412,31 @@ class _DegerSatiri extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: TayfamSpacing.s8),
-        child: Row(
+        // Büyük yazıda düğme metnin altına iner (320 dp, 2× yazı).
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: TayfamSpacing.s8,
+          runSpacing: TayfamSpacing.s4,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  deger.value,
+                  style: context.yazi.bodyLarge?.copyWith(color: r.metin),
+                ),
+                if (hedef != null)
                   Text(
-                    deger.value,
-                    style: context.yazi.bodyLarge?.copyWith(color: r.metin),
-                  ),
-                  if (hedef != null)
-                    Text(
-                      m.bilesen_vocab_hedefi(hedef),
-                      style: context.yazi.bodyMedium?.copyWith(
-                        color: r.metinGovde,
-                      ),
+                    m.bilesen_vocab_hedefi(hedef),
+                    style: context.yazi.bodyMedium?.copyWith(
+                      color: r.metinGovde,
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-            if (eylem != null) ...[
-              const SizedBox(width: TayfamSpacing.s8),
+            if (eylem != null)
               TextButton(
                 onPressed: eylem.$3,
                 style: TextButton.styleFrom(
@@ -438,7 +444,6 @@ class _DegerSatiri extends StatelessWidget {
                 ),
                 child: Text(eylem.$1, semanticsLabel: eylem.$2),
               ),
-            ],
           ],
         ),
       ),
@@ -517,7 +522,8 @@ class _HedefSeciciState extends ConsumerState<HedefSecici> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (final (sira, d) in hedefler.indexed) ...[
-                  if (sira > 0) Divider(height: TayfamSizes.kenar, color: r.cizgi),
+                  if (sira > 0)
+                    Divider(height: TayfamSizes.kenar, color: r.cizgi),
                   MergeSemantics(
                     child: Semantics(
                       button: true,

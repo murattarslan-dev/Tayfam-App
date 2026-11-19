@@ -329,9 +329,8 @@ void main() {
     ) async {
       final tasima = _tasima({
         'GET $gunlukYolu': (_) => gunlukJson(ekleyebilir: true),
-        'GET $sozlukYolu': (_) => sozlukJson(
-          degerler: [sozlukDegeriJson(_levrekSozlukId, 'Levrek')],
-        ),
+        'GET $sozlukYolu': (_) =>
+            sozlukJson(degerler: [sozlukDegeriJson(_levrekSozlukId, 'Levrek')]),
         'POST $gunlukYolu': (_) => {
           'id': _yeniId,
           'user_id': katilimciId,
