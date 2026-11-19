@@ -12,8 +12,8 @@ final class EventsApi {
   /// Bitmemiş etkinlikler, başlangıç zamanına göre
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur). İptal edilenler
-  /// de listededir. Türe özel ayrıntılar (`hike`, `fishing`) listede
-  /// dolmaz; tek etkinlik ucunu kullanın.
+  /// de listededir. Türe özel ayrıntı (`fishing`) listede dolmaz; tek
+  /// etkinlik ucunu kullanın.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events`
   ///
@@ -97,10 +97,12 @@ final class EventsApi {
   /// - Yer: `mode`, `meeting_point_name`, `meeting_point`, `city`,
   ///   `district`, `online_url` birlikte değişir; bunlardan biri
   ///   gönderilirse `mode` zorunludur ve gönderilmeyenler boşalır.
-  /// - Türe özel ayrıntı (`hike`, `fishing`) tamamen değişir. Konvoyun
+  /// - Türe özel ayrıntı (`fishing`) tamamen değişir. Konvoyun
   ///   rotası `route` bileşenindedir
-  ///   (`PUT …/components/{component_key}/route`); kampın ayrıntıları
-  ///   `fields`'tadır.
+  ///   (`PUT …/components/{component_key}/route`); kampın ve yürüyüşün
+  ///   ayrıntıları `fields`'tadır, yürüyüşün beklenen dönüşü `roll_call`
+  ///   bileşenindedir
+  ///   (`PUT …/components/{component_key}/roll-call/expected-return`).
   ///
   /// Kapasiteyi artırmak bekleme listesindekileri sırayla `going` yapar.
   /// Seriye ait bir etkinlikte `apply_to_series` `false` (varsayılan) ise
@@ -312,50 +314,6 @@ final class EventsApi {
       authenticated: true,
     );
     return CheckIn.fromJson(jsonObject(response, 'checkInToEvent'));
-  }
-
-  /// Yürüyüşe çıktığınızı kaydeder; katılım sayılır
-  ///
-  /// Yalnızca yürüyüş etkinliğinde (`event-type-mismatch`). Check-in ile
-  /// aynı pencere ve `going` kuralı. Tekrar gönderim ilk çıkışı döndürür.
-  ///
-  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/hike-start`
-  Future<HikeCheckin> startHike({
-    required String tayfaId,
-    required String eventId,
-    required HikeStartRequest body,
-  }) async {
-    final response = await _transport.send(
-      method: 'POST',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/hike-start',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
-      body: body.toJson(),
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return HikeCheckin.fromJson(jsonObject(response, 'startHike'));
-  }
-
-  /// Yürüyüşten döndüğünüzü kaydeder
-  ///
-  /// Bitişten sonra ve iptal edilmiş etkinlikte de çalışır. Önce çıkış
-  /// gerekir (`hike-not-started`). Tekrar gönderim ilk dönüşü döndürür.
-  ///
-  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/hike-return`
-  Future<HikeCheckin> finishHike({
-    required String tayfaId,
-    required String eventId,
-    required HikeReturnRequest body,
-  }) async {
-    final response = await _transport.send(
-      method: 'POST',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/hike-return',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
-      body: body.toJson(),
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return HikeCheckin.fromJson(jsonObject(response, 'finishHike'));
   }
 
   /// Av günlüğü, eskiden yeniye
@@ -1115,6 +1073,144 @@ final class EventsApi {
       authenticated: true,
     );
     return Checklist.fromJson(jsonObject(response, 'assignChecklistItem'));
+  }
+
+  /// Etkinliğin yoklaması
+  ///
+  /// Plan (beklenen dönüş), kendi kaydınız ve organizatör yetkisi
+  /// olanlara herkesin kaydı. Her etkin üyeye açıktır (susturulmuş üye
+  /// de okur); iptal edilmiş ve donmuş etkinlikte de okunur. Bileşen
+  /// uçlarının ortak kuralları geçerlidir (`component-not-found`,
+  /// `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRollCall> getEventRollCall({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRollCall.fromJson(jsonObject(response, 'getEventRollCall'));
+  }
+
+  /// Beklenen dönüşü yazar ya da kaldırır (organizatör, moderatör, yönetici)
+  ///
+  /// `expected_return_at` etkinliğin başlangıcından sonra olmalıdır
+  /// (`invalid-request`); alan yoksa ya da `null` ise plan kaldırılır
+  /// (alarm kurulmaz). Olmayan
+  /// planı kaldırmak hata değildir. Etkinlik başladıktan ve bittikten
+  /// sonra da değişir; bitişten 7 gün sonra donar (`component-frozen`).
+  /// Seriye ait etkinlikte yalnızca bu etkinlik değişir; serinin yeni
+  /// örnekleri şablonun beklenen dönüşünü kendi başlangıçlarına göre
+  /// kaydırarak alır. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call/expected-return`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRollCall> setEventRollCallExpectedReturn({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required RollCallPlanRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call/expected-return',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRollCall.fromJson(
+      jsonObject(response, 'setEventRollCallExpectedReturn'),
+    );
+  }
+
+  /// Çıktığınızı kaydeder; katılım sayılır
+  ///
+  /// Katılım `hike_start` yöntemiyle doğrulanır. `going` cevabı gerekir
+  /// (`event-not-going`); başlangıçtan 30 dakika önceden bitişe kadar
+  /// (`check-in-closed`). Susturulmuş üye de çıkabilir (güvenlik
+  /// sinyali). Tekrar gönderim ilk çıkışı döndürür. Bileşen uçlarının
+  /// ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call/start`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRollCall> startEventRollCall({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required RollCallStartRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call/start',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRollCall.fromJson(jsonObject(response, 'startEventRollCall'));
+  }
+
+  /// Döndüğünüzü kaydeder
+  ///
+  /// Güvenlik sinyalidir: bitişten sonra, bileşen donduktan sonra,
+  /// iptal edilmiş etkinlikte ve susturulmuşken de çalışır; yalnızca
+  /// salt okunur tayfa reddeder (`tayfa-read-only`). Önce çıkış gerekir
+  /// (`hike-not-started`). Tekrar gönderim ilk dönüşü döndürür.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call/return`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRollCall> returnEventRollCall({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required RollCallReturnRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/roll-call/return',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRollCall.fromJson(jsonObject(response, 'returnEventRollCall'));
   }
 
   /// "Her şey yolunda mıydı?" cevabınız

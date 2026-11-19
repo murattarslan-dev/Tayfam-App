@@ -323,44 +323,20 @@ void main() {
     expect(t().yer.mod, EventMode.inPerson);
   });
 
-  test('yürüyüş alanları: ondalık virgül, aralıklar', () {
-    final t = EtkinlikTaslagi(
+  test('Faz 1 ayrıntısı yalnızca balıkta gider; yürüyüşte yok', () {
+    const a = TurAyrintisi(
+      balikGizliligi: FishingDetailsSpotVisibility.participants,
+    );
+    expect(turAyrintisi('fishing', a)?.toJson(), {
+      'spot_visibility': 'participants',
+    });
+    expect(turAyrintisi('hike', a), isNull);
+    final yuruyus = EtkinlikTaslagi(
       istekKimligi: sahteEtkinlikIstekKimligi,
       tur: 'hike',
       baslangic: ornekBaslangic,
-      ayrinti: TurAyrintisi(
-        zorluk: 3,
-        mesafe: '12,5',
-        yukselti: '850',
-        tolerans: '45',
-        donus: ornekBaslangic.add(const Duration(hours: 6)),
-      ),
     );
-    expect(adimHatalari(3, t, simdi: sabitSimdi), isEmpty);
-    expect(turAyrintisi('hike', t.ayrinti).hike?.toJson(), {
-      'difficulty': 3,
-      'distance_km': 12.5,
-      'elevation_m': 850,
-      'expected_return_at': '2026-11-14T12:00:00.000Z',
-      'return_grace_minutes': 45,
-    });
-    final hatali = EtkinlikTaslagi(
-      istekKimligi: sahteEtkinlikIstekKimligi,
-      tur: 'hike',
-      baslangic: ornekBaslangic,
-      ayrinti: TurAyrintisi(
-        mesafe: '1001',
-        yukselti: '-1',
-        tolerans: 'x',
-        donus: ornekBaslangic,
-      ),
-    );
-    expect(adimHatalari(3, hatali, simdi: sabitSimdi), {
-      TaslakHatasi.mesafe,
-      TaslakHatasi.yukselti,
-      TaslakHatasi.tolerans,
-      TaslakHatasi.donus,
-    });
+    expect(adimHatalari(3, yuruyus, simdi: sabitSimdi), isEmpty);
   });
 
   group('düzenleme', () {

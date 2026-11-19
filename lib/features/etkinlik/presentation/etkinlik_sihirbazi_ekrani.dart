@@ -177,9 +177,6 @@ class _EtkinlikSihirbaziEkraniState
   late final TextEditingController _ilce;
   late final TextEditingController _baglanti;
   late final TextEditingController _kontenjan;
-  late final TextEditingController _mesafe;
-  late final TextEditingController _yukselti;
-  late final TextEditingController _tolerans;
 
   /// "Sınırsız" kapatılınca kontenjanın başladığı değer.
   static const int _varsayilanKontenjan = 10;
@@ -195,9 +192,6 @@ class _EtkinlikSihirbaziEkraniState
     _ilce = TextEditingController(text: t.yer.ilce);
     _baglanti = TextEditingController(text: t.yer.baglanti);
     _kontenjan = TextEditingController(text: t.kontenjan);
-    _mesafe = TextEditingController(text: t.ayrinti.mesafe);
-    _yukselti = TextEditingController(text: t.ayrinti.yukselti);
-    _tolerans = TextEditingController(text: t.ayrinti.tolerans);
   }
 
   @override
@@ -210,9 +204,6 @@ class _EtkinlikSihirbaziEkraniState
       _ilce,
       _baglanti,
       _kontenjan,
-      _mesafe,
-      _yukselti,
-      _tolerans,
     ]) {
       d.dispose();
     }
@@ -884,91 +875,9 @@ class _EtkinlikSihirbaziEkraniState
 
   List<Widget> _eskiTurAlanlari(BuildContext context, EtkinlikTaslagi t) {
     final m = AppLocalizations.of(context);
-    final h = t.hatalar;
     final a = t.ayrinti;
     final kapali = t.gonderiliyor;
-    String? sayi(TaslakHatasi hata, int enCok) =>
-        h.contains(hata) ? m.etkinlik_sayi_hata(enCok) : null;
     switch (t.tur) {
-      case EskiTur.yuruyus:
-        final donus = a.donus;
-        return [
-          BolumEtiketi(baslik: m.etkinlik_yuruyus_zorluk),
-          SecimCipleri<int>(
-            secenekler: [
-              for (var z = 1; z <= etkinlikZorlukEnCok; z++) (z, '$z'),
-            ],
-            secili: a.zorluk,
-            // Seçili zorluğa yeniden dokunmak seçimi kaldırır.
-            onSecildi: kapali
-                ? null
-                : (z) =>
-                      _ayrinti((a) => a.kopya(zorluk: a.zorluk == z ? 0 : z)),
-          ),
-          const SizedBox(height: TayfamSpacing.s20),
-          YanYana(
-            sol: TextField(
-              controller: _mesafe,
-              enabled: !kapali,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              onChanged: (v) => _ayrinti((a) => a.kopya(mesafe: v)),
-              decoration: InputDecoration(
-                labelText: m.etkinlik_mesafe_etiketi,
-                errorText: sayi(
-                  TaslakHatasi.mesafe,
-                  etkinlikMesafeEnCok.toInt(),
-                ),
-                errorMaxLines: 3,
-              ),
-            ),
-            sag: TextField(
-              controller: _yukselti,
-              enabled: !kapali,
-              keyboardType: TextInputType.number,
-              onChanged: (v) => _ayrinti((a) => a.kopya(yukselti: v)),
-              decoration: InputDecoration(
-                labelText: m.etkinlik_yukselti_etiketi,
-                errorText: sayi(TaslakHatasi.yukselti, etkinlikYukseltiEnCok),
-                errorMaxLines: 3,
-              ),
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          _ZamanAlani(
-            etiket: m.etkinlik_yuruyus_donus,
-            deger: donus == null ? null : etkinlikTarihSaat(m, donus),
-            hata: h.contains(TaslakHatasi.donus) ? m.etkinlik_donus_hata : null,
-            onPressed: kapali
-                ? null
-                : () async {
-                    final secilen = await _tarihSaatSec(
-                      donus ?? t.bitis ?? t.baslangic,
-                    );
-                    if (secilen != null) {
-                      _ayrinti((a) => a.kopya(donus: secilen));
-                    }
-                  },
-            onTemizle: donus == null || kapali
-                ? null
-                : () => _ayrinti((a) => a.kopya(donus: null)),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          TextField(
-            controller: _tolerans,
-            enabled: !kapali,
-            keyboardType: TextInputType.number,
-            onChanged: (v) => _ayrinti((a) => a.kopya(tolerans: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_tolerans_etiketi,
-              errorText: sayi(TaslakHatasi.tolerans, etkinlikToleransEnCok),
-              errorMaxLines: 3,
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(m.etkinlik_yuruyus_donus_notu, style: context.yazi.bodySmall),
-        ];
       case EskiTur.balik:
         return [
           BolumEtiketi(baslik: m.etkinlik_balik_gizlilik),
@@ -1413,61 +1322,6 @@ class _OnizlemeSatiri extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Tarih ve saat alanı (yürüyüşte beklenen dönüş): etiket, seçilen değer
-/// (yoksa "Seç") ve hata. Dokununca seçici açılır; [onTemizle] verilirse
-/// değer silinebilir.
-class _ZamanAlani extends StatelessWidget {
-  const _ZamanAlani({
-    required this.etiket,
-    required this.deger,
-    required this.hata,
-    required this.onPressed,
-    this.onTemizle,
-  });
-
-  final String etiket;
-  final String? deger;
-  final String? hata;
-  final VoidCallback? onPressed;
-  final VoidCallback? onTemizle;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final hata = this.hata;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          etiket,
-          style: context.yazi.labelLarge?.copyWith(
-            color: context.renkler.metinIkincil,
-          ),
-        ),
-        const SizedBox(height: TayfamSpacing.s4),
-        Wrap(
-          spacing: TayfamSpacing.s8,
-          runSpacing: TayfamSpacing.s8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            CerceveliHapEylem(
-              etiket: deger ?? m.etkinlik_zaman_sec,
-              ikon: Icons.schedule,
-              onPressed: onPressed,
-            ),
-            if (onTemizle != null)
-              BaglantiEylemi(etiket: m.etkinlik_temizle, onPressed: onTemizle),
-          ],
-        ),
-        if (hata != null) ...[
-          const SizedBox(height: TayfamSpacing.s4),
-          HataSatiri(metin: hata),
-        ],
-      ],
     );
   }
 }

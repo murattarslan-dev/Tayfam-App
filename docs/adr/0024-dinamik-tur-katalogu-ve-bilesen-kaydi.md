@@ -285,3 +285,23 @@ kapalıdır.
     `caller_can_manage`; "Ben getiririm" / "Vazgeç" `caller_can_take` ile
     sadeleşir. Bitmiş etkinlikte liste kapalıdır ve bu yazılır.
     `event-item-taken` gibi bayat liste hatalarında liste yeniden okunur.
+- **2026-11-19 (issue #230, uygulama; sözleşme Tayfam-Api #242, PR #285):**
+  - **Yoklama.** `roll_call` bileşeni `bilesenler/yoklama/`'dadır; Faz 1
+    yürüyüş aracı (`turler/yuruyus/`, `YuruyusTuru`), `Event.hike` ve
+    sihirbazdaki yürüyüş alanları kalktı. Zorluk, planlanan mesafe ve
+    irtifa katalog alanlarıyla (`fields`) gelir; kalan Faz 1 türü yalnızca
+    balık.
+  - **Çıkış ve dönüş.** "Çıktım" varış penceresinde ve "Geliyorum"
+    cevabıyla görünür, katılım sayılır (detay ve katılımcılar yeniden
+    okunur). "Döndüm" güvenlik sinyalidir: çıkılmışsa bitişten sonra,
+    iptal edilmiş etkinlikte ve susturulmuşken de görünür. İkisi de konum
+    göndermez; zaman sunucunundur.
+  - **Plan ve alarm.** Beklenen dönüşü `caller_can_edit` yazar ya da
+    kaldırır (kaldırma onaylı: alarm kurulmaz); seçilen an başlangıçtan
+    sonra değilse gönderilmez. Alarmın durumu (`alarm`, plan, tolerans)
+    kartta yazılır; alarmı sunucu çalar. Yönetene (`caller_can_manage`)
+    herkesin kaydı listelenir; dönmemiş ve beklenen dönüş + tolerans
+    geçmiş kişi metinle ("Dönmedi") işaretlenir.
+  - **Varış.** Yürüyüşte "Geldim" düğmesi gösterilmez (`hike` tür
+    denetimi `varis_bildirimi.dart`'ta durur); yoklamayı isteğe bağlı
+    kullanan diğer türlerde varış bildirimi de açıktır.

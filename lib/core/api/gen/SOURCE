@@ -1,4 +1,4 @@
 # ÜRETİLMİŞ — elle düzenleme; tool/openapi_gen yazar (ADR-0005).
 repo: murattarslan-dev/tayfam-api
-commit: c1e11e2ef8f54aa46bd084b27f5566a1dc09e181
+commit: 7fbc0296c22869aaad4c646402430aa2b3453198
 path: api/openapi/gateway.yaml

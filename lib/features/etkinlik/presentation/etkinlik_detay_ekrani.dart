@@ -33,7 +33,6 @@ import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
-import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
@@ -1202,35 +1201,6 @@ List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
     }
   }
 
-  final hike = e.hike;
-  if (hike != null) {
-    final zorluk = hike.difficulty;
-    if (zorluk != null && zorluk > 0) {
-      ekle(m.etkinlik_yuruyus_zorluk, m.etkinlik_zorluk_degeri(zorluk));
-    }
-    final mesafe = hike.distanceKm;
-    if (mesafe != null && mesafe > 0) {
-      ekle(m.etkinlik_yuruyus_mesafe, m.etkinlik_km(etkinlikSayi(m, mesafe)));
-    }
-    final yukselti = hike.elevationM;
-    if (yukselti != null && yukselti > 0) {
-      ekle(
-        m.etkinlik_yuruyus_yukselti,
-        m.etkinlik_metre(etkinlikSayi(m, yukselti)),
-      );
-    }
-    final donus = hike.expectedReturnAt;
-    if (donus != null) {
-      ekle(m.etkinlik_yuruyus_donus, etkinlikZamani(m, donus));
-    }
-    final tolerans = hike.returnGraceMinutes;
-    if (tolerans != null && tolerans > 0) {
-      ekle(
-        m.etkinlik_yuruyus_tolerans,
-        m.etkinlik_dakika(etkinlikSayi(m, tolerans)),
-      );
-    }
-  }
   final fishing = e.fishing;
   if (fishing != null) {
     ekle(

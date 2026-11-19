@@ -22,6 +22,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
     show ListeBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
     show RotaBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/yoklama/yoklama_bileseni.dart'
+    show YoklamaBileseni;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'
     show EtkinlikDeposu, etkinlikDeposuProvider;
 export 'package:tayfam/features/etkinlik/presentation/anlik/anlik_davet_sayfasi.dart'
@@ -36,5 +38,3 @@ export 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
 export 'package:tayfam/features/etkinlik/turler/balik/balik_turu.dart'
     show BalikTuru;
 export 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
-export 'package:tayfam/features/etkinlik/turler/yuruyus/yuruyus_turu.dart'
-    show YuruyusTuru;

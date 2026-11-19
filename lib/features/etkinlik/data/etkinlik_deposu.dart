@@ -194,23 +194,58 @@ final class EtkinlikDeposu {
     body: CheckInRequest(location: konum),
   );
 
-  /// `POST .../hike-start`: "Çıktım". Zaman sunucunundur; tekrar gönderim
-  /// ilk çıkışı döndürür.
-  Future<HikeCheckin> yuruyuseCik(String tayfaId, String etkinlikId) =>
-      _api.startHike(
-        tayfaId: tayfaId,
-        eventId: etkinlikId,
-        body: const HikeStartRequest(),
-      );
+  /// `GET .../components/{component_key}/roll-call`: yoklama bileşeni
+  /// (#230), çağıranın gördüğü haliyle.
+  Future<EventRollCall> yoklama(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventRollCall(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
 
-  /// `POST .../hike-return`: "Döndüm". Tekrar gönderim ilk dönüşü
-  /// döndürür.
-  Future<HikeCheckin> yuruyustenDon(String tayfaId, String etkinlikId) =>
-      _api.finishHike(
-        tayfaId: tayfaId,
-        eventId: etkinlikId,
-        body: const HikeReturnRequest(),
-      );
+  /// `PUT .../roll-call/expected-return`: beklenen dönüşü [donus] yapar;
+  /// `null` ise planı kaldırır (gövdede alan yok).
+  Future<EventRollCall> beklenenDonusYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    DateTime? donus,
+  ) => _api.setEventRollCallExpectedReturn(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: RollCallPlanRequest(expectedReturnAt: donus?.toUtc()),
+  );
+
+  /// `POST .../roll-call/start`: "Çıktım"; katılım sayılır. Zaman
+  /// sunucunundur; tekrar gönderim ilk çıkışı döndürür. Konum gönderilmez.
+  Future<EventRollCall> yoklamadaCik(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.startEventRollCall(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: const RollCallStartRequest(),
+  );
+
+  /// `POST .../roll-call/return`: "Döndüm". Güvenlik sinyalidir: bitişten
+  /// sonra ve iptal edilmiş etkinlikte de çalışır. Tekrar gönderim ilk
+  /// dönüşü döndürür.
+  Future<EventRollCall> yoklamadanDon(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.returnEventRollCall(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: const RollCallReturnRequest(),
+  );
 
   /// `GET .../components/{component_key}/items`: liste bileşeninin
   /// maddeleri (#229), çağıranın gördüğü haliyle.

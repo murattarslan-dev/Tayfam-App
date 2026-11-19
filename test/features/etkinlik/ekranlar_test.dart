@@ -641,7 +641,6 @@ void main() {
         await _yaz(tester, 'https://ornek.tayfam.app/oda');
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 4 / 5'), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_mesafe_etiketi')), findsOneWidget);
 
         // Tekrar ayrı ekranda; "Tamam" 4. adıma döner.
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_tekrar_yok')));
