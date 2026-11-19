@@ -15,18 +15,11 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
-import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
-import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
-/// Detaydaki rota önizlemesinin yüksekliği.
-const double rotaOnizlemeYuksekligi = 180;
-
-/// Rota önizlemesinin yakınlığı (ilk noktadan).
-const double rotaOnizlemeYakinligi = 10;
-
-/// Konvoy (ADR-0015 §6): rota önizlemesi ve araç listesi. Herkes kendi
+/// Konvoy (ADR-0015 §6): araç listesi (rota `route` bileşenindedir,
+/// #227). Herkes kendi
 /// aracını ekler ve değiştirir (plaka isteğe bağlı); kendi aracını ve,
 /// yönetebiliyorsa, başkasının aracını çıkarır.
 final class KonvoyTuru extends KayitliEtkinlikTuru {
@@ -49,46 +42,15 @@ class KonvoyBolumu extends ConsumerWidget {
     final anahtar = (tayfaId: etkinlik.tayfaId, etkinlikId: etkinlik.id);
     final mesgul = ref.watch(aracEylemProvider(anahtar));
     final simdi = ref.watch(etkinlikSaatiProvider)();
-    final rota = etkinlik.convoy?.route ?? const <LatLng>[];
     final araclar = etkinlik.convoy?.vehicles ?? const <ConvoyVehicle>[];
     ConvoyVehicle? benimki;
     for (final arac in araclar) {
       if (ref.watch(kendisiMiProvider(arac.userId))) benimki = arac;
     }
     final eklenebilir = aracEklenebilir(etkinlik, simdi);
-    final r = context.renkler;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (rota.length > 1) ...[
-          AracBasligi(
-            metin: m.etkinlik_konvoy_rota,
-            sag: AracBasligiNotu(
-              metin: m.etkinlik_konvoy_rota_noktalari(
-                etkinlikSayi(m, rota.length),
-              ),
-            ),
-          ),
-          DecoratedBox(
-            position: DecorationPosition.foreground,
-            decoration: BoxDecoration(
-              borderRadius: TayfamRadii.kartKoseleri,
-              border: Border.all(color: r.cizgi, width: TayfamSizes.kenar),
-            ),
-            child: ClipRRect(
-              borderRadius: TayfamRadii.kartKoseleri,
-              child: SizedBox(
-                height: rotaOnizlemeYuksekligi,
-                child: OsmHarita(
-                  merkez: rota.first,
-                  yakinlik: rotaOnizlemeYakinligi,
-                  rota: rota,
-                  etkilesimli: false,
-                ),
-              ),
-            ),
-          ),
-        ],
         AracBasligi(
           metin: m.etkinlik_konvoy_araclar,
           sag: araclar.isEmpty

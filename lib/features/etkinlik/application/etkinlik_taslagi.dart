@@ -51,16 +51,11 @@ const double etkinlikMesafeEnCok = 1000;
 const int etkinlikYukseltiEnCok = 9000;
 const int etkinlikToleransEnCok = 1440;
 
-/// Konvoy rotası: boş ya da en az 2, en çok 500 nokta
-/// (`ConvoyDetailsInput.route`).
-const int rotaEnAzNokta = 2;
-const int rotaEnCokNokta = 500;
-
 /// Faz 1'den kalan, türe özel ayrıntısı sözleşmede ayrı nesne olan türlerin
-/// katalog anahtarları (`Event.convoy`, `camp`, `hike`, `fishing`);
-/// bileşenlere taşınana kadar sihirbazda kendi alanlarıyla çizilirler.
+/// katalog anahtarları (`camp`, `hike`, `fishing`); bileşenlere taşınana
+/// kadar sihirbazda kendi alanlarıyla çizilirler. Konvoyun rotası `route`
+/// bileşenindedir (#227).
 abstract final class EskiTur {
-  static const String konvoy = 'convoy';
   static const String kamp = 'camp';
   static const String yuruyus = 'hike';
   static const String balik = 'fishing';
@@ -93,7 +88,6 @@ enum TaslakHatasi {
   tekrarAralik,
   tekrarSayi,
   tekrarTarih,
-  rota,
 }
 
 const Object _ayni = Object();
@@ -176,11 +170,7 @@ final class TurAyrintisi {
     this.donus,
     this.tolerans = '',
     this.balikGizliligi = FishingDetailsSpotVisibility.tayfa,
-    this.rota = const [],
   });
-
-  /// Konvoy: rota noktaları, sırasıyla.
-  final List<LatLng> rota;
 
   /// Kamp: yer adı, su ve tuvalet (bilinmiyorsa `null`), not.
   final String kampYeri;
@@ -210,7 +200,6 @@ final class TurAyrintisi {
     Object? donus = _ayni,
     String? tolerans,
     FishingDetailsSpotVisibility? balikGizliligi,
-    List<LatLng>? rota,
   }) => TurAyrintisi(
     kampYeri: kampYeri ?? this.kampYeri,
     su: identical(su, _ayni) ? this.su : su as bool?,
@@ -222,7 +211,6 @@ final class TurAyrintisi {
     donus: identical(donus, _ayni) ? this.donus : donus as DateTime?,
     tolerans: tolerans ?? this.tolerans,
     balikGizliligi: balikGizliligi ?? this.balikGizliligi,
-    rota: rota == null ? this.rota : List.unmodifiable(rota),
   );
 
   @override
@@ -237,8 +225,7 @@ final class TurAyrintisi {
       other.yukselti == yukselti &&
       other.donus == donus &&
       other.tolerans == tolerans &&
-      other.balikGizliligi == balikGizliligi &&
-      listEquals(other.rota, rota);
+      other.balikGizliligi == balikGizliligi;
 
   @override
   int get hashCode => Object.hash(
@@ -252,7 +239,6 @@ final class TurAyrintisi {
     donus,
     tolerans,
     balikGizliligi,
-    Object.hashAll(rota),
   );
 }
 
@@ -499,7 +485,6 @@ EtkinlikTaslagi duzenlemeTaslagi(
               FishingDetailsSpotVisibility.participants
           ? FishingDetailsSpotVisibility.participants
           : FishingDetailsSpotVisibility.tayfa,
-      rota: List.unmodifiable(etkinlik.convoy?.route ?? const <LatLng>[]),
     ),
   );
 }
@@ -671,27 +656,18 @@ Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
       if (donus != null && baslangic != null && !donus.isAfter(baslangic)) {
         hatalar.add(TaslakHatasi.donus);
       }
-    case EskiTur.konvoy:
-      if (rotaHatali(a.rota)) hatalar.add(TaslakHatasi.rota);
   }
   return hatalar;
 }
 
-/// Rotanın nokta sayısı geçersiz mi (boş ya da 2–500 olmalı).
-bool rotaHatali(List<LatLng> rota) =>
-    rota.isNotEmpty &&
-    (rota.length < rotaEnAzNokta || rota.length > rotaEnCokNokta);
-
 /// Faz 1'den kalan türe özel ayrıntı (sözleşme: yalnızca kendi türünde, en
 /// fazla bir tane). Boş kalan isteğe bağlı ayrıntı gönderilmez.
 ({
-  ConvoyDetailsInput? convoy,
   CampDetailsInput? camp,
   HikeDetails? hike,
   FishingDetails? fishing,
 })
 turAyrintisi(String? tur, TurAyrintisi a) {
-  ConvoyDetailsInput? convoy;
   CampDetailsInput? camp;
   HikeDetails? hike;
   FishingDetails? fishing;
@@ -716,10 +692,8 @@ turAyrintisi(String? tur, TurAyrintisi a) {
       if (girdi.toJson().isNotEmpty) hike = girdi;
     case EskiTur.balik:
       fishing = FishingDetails(spotVisibility: a.balikGizliligi);
-    case EskiTur.konvoy:
-      if (a.rota.isNotEmpty) convoy = ConvoyDetailsInput(route: a.rota);
   }
-  return (convoy: convoy, camp: camp, hike: hike, fishing: fishing);
+  return (camp: camp, hike: hike, fishing: fishing);
 }
 
 /// Taslaktaki katalog alanlarının `fields` gövdesi; türün alanı yoksa ya
@@ -752,7 +726,6 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     // Yalnızca işaretliyse gönderilir; çevrim içinde anlamı yoktur.
     discoverable: yuzYuze && t.yer.halkaAcik ? true : null,
     capacity: kontenjanSayisi(t.kontenjan),
-    convoy: ayrinti.convoy,
     camp: ayrinti.camp,
     hike: ayrinti.hike,
     fishing: ayrinti.fishing,
@@ -785,7 +758,6 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
       district: etkinlik.district,
       onlineUrl: etkinlik.onlineUrl,
       capacity: etkinlik.capacity,
-      convoy: etkinlik.convoy,
       camp: etkinlik.camp,
       hike: etkinlik.hike,
       fishing: etkinlik.fishing,
@@ -799,8 +771,7 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
 /// [eski]'ye göre değişen alan grupları (sözleşme: zaman ikisi birlikte,
 /// yer alanları mod ile birlikte). Değişiklik yoksa `null`.
 ///
-/// Türe özel ayrıntı yalnızca alanlarına dokunulduysa gönderilir; konvoyda
-/// silinen rota boş listeyle gönderilir. Seriye
+/// Türe özel ayrıntı yalnızca alanlarına dokunulduysa gönderilir. Seriye
 /// ait etkinlikte `apply_to_series` gönderilmez: yalnızca bu etkinlik
 /// değişir (ADR-0015 §3).
 EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
@@ -829,17 +800,12 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
   final kontenjan = kontenjanSayisi(t.kontenjan) ?? 0;
   final ayrinti = t.ayrintiDegisti
       ? turAyrintisi(t.tur, t.ayrinti)
-      : (convoy: null, camp: null, hike: null, fishing: null);
+      : (camp: null, hike: null, fishing: null);
   // `fields` verilirse değerlerin tamamı yerine geçer; boş nesne bütün
   // değerleri kaldırır (sözleşme). Tanım bilinmiyorsa gönderilmez.
   final alanlar = t.alanlarDegisti && t.turTanimi != null
       ? alanGovdesi(turAlanlari(t.turTanimi), t.alanlar)
       : null;
-  final rotaSilindi =
-      t.ayrintiDegisti &&
-      t.tur == EskiTur.konvoy &&
-      t.ayrinti.rota.isEmpty &&
-      (eski.convoy?.route?.isNotEmpty ?? false);
   final istek = EventUpdateRequest(
     fields: alanlar,
     // Kaldırılan kapak "" ile gönderilir (sözleşme).
@@ -856,7 +822,6 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
     onlineUrl: yerDegisti ? baglanti : null,
     discoverable: halkaAcik == eski.discoverable ? null : halkaAcik,
     capacity: kontenjan == eski.capacity ? null : kontenjan,
-    convoy: rotaSilindi ? const ConvoyDetailsInput(route: []) : ayrinti.convoy,
     camp: ayrinti.camp,
     hike: ayrinti.hike,
     fishing: ayrinti.fishing,

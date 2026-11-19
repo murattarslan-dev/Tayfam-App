@@ -8,7 +8,6 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'sahteler.dart';
 
 const LatLng _a = LatLng(lat: 40.1, lng: 29.1);
-const LatLng _b = LatLng(lat: 40.2, lng: 29.2);
 
 Event _etkinlik({
   DateTime? baslangic,
@@ -237,64 +236,28 @@ void main() {
     });
   });
 
-  group('konvoy rotası', () {
-    EtkinlikTaslagi taslak(List<LatLng> rota) => EtkinlikTaslagi(
-      istekKimligi: sahteEtkinlikIstekKimligi,
-      tur: 'convoy',
-      baslik: 'Sapanca turu',
-      baslangic: ornekBaslangic,
-      bitis: ornekBaslangic.add(const Duration(hours: 4)),
-      yer: const YerBilgisi(nokta: _a, il: 'Sakarya', ilce: 'Sapanca'),
-      ayrinti: TurAyrintisi(rota: rota),
-    );
-
-    test('boş ya da 2–500 nokta', () {
-      expect(rotaHatali(const []), isFalse);
-      expect(rotaHatali(const [_a]), isTrue);
-      expect(rotaHatali(const [_a, _b]), isFalse);
-      expect(rotaHatali(List.filled(rotaEnCokNokta + 1, _a)), isTrue);
-      expect(
-        adimHatalari(3, taslak(const [_a]), simdi: sabitSimdi),
-        contains(TaslakHatasi.rota),
+  group('konvoy', () {
+    test('rota etkinlik isteklerinde gitmez (route bileşeni, #227)', () {
+      final taslak = EtkinlikTaslagi(
+        istekKimligi: sahteEtkinlikIstekKimligi,
+        tur: 'convoy',
+        baslik: 'Sapanca turu',
+        baslangic: ornekBaslangic,
+        bitis: ornekBaslangic.add(const Duration(hours: 4)),
+        yer: const YerBilgisi(nokta: _a, il: 'Sakarya', ilce: 'Sapanca'),
       );
-    });
+      expect(olusturmaIstegi(taslak).toJson().containsKey('convoy'), isFalse);
 
-    test('oluşturmada rota gider; boş rota gönderilmez', () {
-      expect(olusturmaIstegi(taslak(const [_a, _b])).toJson()['convoy'], {
-        'route': [
-          {'lat': 40.1, 'lng': 29.1},
-          {'lat': 40.2, 'lng': 29.2},
-        ],
-      });
-      expect(
-        olusturmaIstegi(taslak(const [])).toJson().containsKey('convoy'),
-        isFalse,
-      );
-    });
-
-    test('düzenlemede rota okunur; silinen rota boş listeyle gider', () {
       final eski = Event.fromJson(
-        etkinlikJson(
-          tur: 'convoy',
-          ayrinti: {
-            'route': [
-              {'lat': 40.1, 'lng': 29.1},
-              {'lat': 40.2, 'lng': 29.2},
-            ],
-          },
-        ),
+        etkinlikJson(tur: 'convoy', ayrinti: {'vehicles': const <Object?>[]}),
       );
       final t = duzenlemeTaslagi(eski, sahteEtkinlikIstekKimligi);
-      expect(t.ayrinti.rota, const [_a, _b]);
       expect(duzenlemeIstegi(t, eski), isNull, reason: 'değişiklik yok');
-
-      final silinmis = t.kopya(
-        ayrinti: t.ayrinti.kopya(rota: const []),
-        ayrintiDegisti: true,
+      expect(
+        duzenlemeIstegi(t.kopya(ayrintiDegisti: true), eski),
+        isNull,
+        reason: 'konvoyun türe özel ayrıntısı yok',
       );
-      expect(duzenlemeIstegi(silinmis, eski)!.toJson()['convoy'], {
-        'route': const <Object?>[],
-      });
     });
   });
 }

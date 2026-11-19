@@ -70,6 +70,32 @@ final class EtkinlikDeposu {
     body: istek,
   );
 
+  /// `GET .../components/{component_key}/route`: rota bileşeninin
+  /// güzergâhı (#227); rota yoksa `points` boştur.
+  Future<EventRoute> rota(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventRoute(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../components/{component_key}/route`: rotanın tamamını yazar;
+  /// boş [noktalar] rotayı kaldırır.
+  Future<EventRoute> rotaYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    List<LatLng> noktalar,
+  ) => _api.setEventRoute(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventRouteRequest(points: noktalar),
+  );
+
   /// `GET .../events/{event_id}/referees`: hakem atamaları.
   Future<List<EventReferee>> hakemler(String tayfaId, String etkinlikId) async {
     final liste = await _api.listEventReferees(

@@ -16,6 +16,8 @@ export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
         etkinlikSirala;
 export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
     show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
+export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
+    show RotaBileseni;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'
     show EtkinlikDeposu, etkinlikDeposuProvider;
 export 'package:tayfam/features/etkinlik/presentation/anlik/anlik_davet_sayfasi.dart'

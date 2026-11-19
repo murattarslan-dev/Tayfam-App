@@ -1952,13 +1952,9 @@
   "@etkinlik_ayarlar_acilamadi": {
     "description": "Sistem ayarları açılamadığında kısa bildirim."
   },
-  "etkinlik_konvoy_rota": "Rota",
-  "@etkinlik_konvoy_rota": {
-    "description": "Konvoy bölümünde rota önizlemesinin başlığı."
-  },
-  "etkinlik_konvoy_rota_noktalari": "{sayi} noktalı rota",
-  "@etkinlik_konvoy_rota_noktalari": {
-    "description": "Konvoy rotasının nokta sayısı.",
+  "bilesen_route_noktalari": "{sayi} noktalı rota",
+  "@bilesen_route_noktalari": {
+    "description": "Rotanın nokta sayısı.",
     "placeholders": {
       "sayi": {
         "type": "String",
@@ -2320,48 +2316,44 @@
   "@etkinlik_duzeltme_tamam": {
     "description": "Organizatör düzeltmesi başarılı olunca kısa bildirim."
   },
-  "etkinlik_rota_baslik": "Konvoy rotası (isteğe bağlı)",
-  "@etkinlik_rota_baslik": {
-    "description": "Sihirbazda konvoy rotası alanının başlığı."
+  "bilesen_route_yok": "Rota çizilmedi.",
+  "@bilesen_route_yok": {
+    "description": "Rota yokken görünen metin (bileşen bölümü ve rota çizme ekranı)."
   },
-  "etkinlik_rota_yok": "Rota çizilmedi.",
-  "@etkinlik_rota_yok": {
-    "description": "Sihirbazda rota yokken görünen metin."
+  "bilesen_route_ciz": "Rota çiz",
+  "@bilesen_route_ciz": {
+    "description": "Rota yokken rota çizme ekranını açan düğme."
   },
-  "etkinlik_rota_ciz": "Rota çiz",
-  "@etkinlik_rota_ciz": {
-    "description": "Sihirbazda rota seçicisini açan düğme (rota yokken)."
+  "bilesen_route_duzenle": "Rotayı düzenle",
+  "@bilesen_route_duzenle": {
+    "description": "Rota varken rota çizme ekranını açan düğme."
   },
-  "etkinlik_rota_duzenle": "Rotayı düzenle",
-  "@etkinlik_rota_duzenle": {
-    "description": "Sihirbazda rota seçicisini açan düğme (rota varken)."
-  },
-  "etkinlik_rota_hata": "Rota en az 2, en çok 500 noktadan oluşmalı.",
-  "@etkinlik_rota_hata": {
+  "bilesen_route_hata": "Rota en az 2, en çok 500 noktadan oluşmalı.",
+  "@bilesen_route_hata": {
     "description": "Rotanın nokta sayısı geçersizse görünen hata."
   },
-  "etkinlik_rota_secici_baslik": "Konvoy rotası",
-  "@etkinlik_rota_secici_baslik": {
-    "description": "Rota seçici ekranının başlığı."
+  "bilesen_route_secici_baslik": "Rotayı çiz",
+  "@bilesen_route_secici_baslik": {
+    "description": "Rota çizme ekranının başlığı."
   },
-  "etkinlik_rota_ipucu": "Haritaya dokunarak rota noktalarını sırayla ekle (en az 2).",
-  "@etkinlik_rota_ipucu": {
-    "description": "Rota seçicideki ipucu."
+  "bilesen_route_ipucu": "Haritaya dokunarak rota noktalarını sırayla ekle (en az 2).",
+  "@bilesen_route_ipucu": {
+    "description": "Rota çizme ekranındaki ipucu."
   },
-  "etkinlik_rota_son_noktayi_sil": "Son noktayı sil",
-  "@etkinlik_rota_son_noktayi_sil": {
-    "description": "Rota seçicide son eklenen noktayı silen düğme."
+  "bilesen_route_son_noktayi_sil": "Son noktayı sil",
+  "@bilesen_route_son_noktayi_sil": {
+    "description": "Rota çizme ekranında son eklenen noktayı silen düğme."
   },
-  "etkinlik_rota_temizle": "Temizle",
-  "@etkinlik_rota_temizle": {
-    "description": "Rota seçicide bütün noktaları silen düğme."
+  "bilesen_route_temizle": "Temizle",
+  "@bilesen_route_temizle": {
+    "description": "Rota çizme ekranında bütün noktaları silen düğme."
   },
-  "etkinlik_rota_temizle_onay": "Rotadaki bütün noktalar silinsin mi?",
-  "@etkinlik_rota_temizle_onay": {
+  "bilesen_route_temizle_onay": "Rotadaki bütün noktalar silinsin mi?",
+  "@bilesen_route_temizle_onay": {
     "description": "Rota çizme ekranında \"Temizle\" onayının başlığı."
   },
-  "etkinlik_rota_en_cok": "En çok {sayi} nokta",
-  "@etkinlik_rota_en_cok": {
+  "bilesen_route_en_cok": "En çok {sayi} nokta",
+  "@bilesen_route_en_cok": {
     "description": "Rota çizme ekranının alt panelinde nokta sınırı.",
     "placeholders": {
       "sayi": {
@@ -2370,9 +2362,23 @@
       }
     }
   },
-  "etkinlik_rota_kaydet": "Rotayı kaydet",
-  "@etkinlik_rota_kaydet": {
-    "description": "Rota seçicide rotayı sihirbaza aktaran düğme."
+  "bilesen_route_kaydet": "Rotayı kaydet",
+  "@bilesen_route_kaydet": {
+    "description": "Rota çizme ekranında rotayı kaydeden düğme; boş rota kaydedilirse rota kaldırılır."
+  },
+  "bilesen_route_ad": "Rota",
+  "@bilesen_route_ad": {
+    "description": "Rota bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
+  },
+  "bilesen_route_harita_anlam": "Rota haritası, {sayi} nokta",
+  "@bilesen_route_harita_anlam": {
+    "description": "Rota önizleme haritasının ekran okuyucu metni.",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "12"
+      }
+    }
   },
   "etkinlik_kamp_yeri": "Kamp yeri",
   "@etkinlik_kamp_yeri": {

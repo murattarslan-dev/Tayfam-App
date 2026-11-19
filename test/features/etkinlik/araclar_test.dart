@@ -4,12 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
-import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/konum/konum_servisi.dart';
-import 'package:tayfam/core/harita/osm_harita.dart';
-import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -1084,61 +1081,5 @@ void main() {
       expect(find.byTooltip(arbMetni('etkinlik_duzeltme')), findsNothing);
       expect(find.text(arbMetni('etkinlik_duzeltme_bilgi')), findsNothing);
     });
-  });
-
-  group('rota seçici', () {
-    for (final tema in _temalar) {
-      testWidgets('nokta ekleme, silme ve kaydetme (${tema.name}, 2× yazı)', (
-        tester,
-      ) async {
-        ekranBoyutu(tester, genislik: 320);
-        ikiKatYazi(tester);
-        final sonuclar = <List<LatLng>?>[];
-        await widgetAc(
-          tester,
-          Builder(
-            builder: (context) => Scaffold(
-              body: Center(
-                child: TextButton(
-                  onPressed: () async => sonuclar.add(
-                    await rotaSeciciAc(
-                      context,
-                      baslangic: const [LatLng(lat: 40.6, lng: 31.28)],
-                    ),
-                  ),
-                  child: Text(arbMetni('etkinlik_rota_ciz')),
-                ),
-              ),
-            ),
-          ),
-          themeMode: tema,
-          tayfa: etkinlikOverridelari(tasima: etkinlikTasimasi()),
-        );
-        await tester.tap(find.text(arbMetni('etkinlik_rota_ciz')));
-        await tester.pumpAndSettle();
-        expect(find.byType(RotaSeciciEkrani), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_rota_hata')), findsOneWidget);
-        expect(_dugme(tester, arbMetni('etkinlik_rota_kaydet')), isNull);
-
-        tester.widget<OsmHarita>(find.byType(OsmHarita)).onTap!(
-          const LatLng(lat: 40.7, lng: 31.4),
-        );
-        await tester.pumpAndSettle();
-        expect(find.text(arbMetni('etkinlik_rota_hata')), findsNothing);
-        expect(
-          tester.widget<OsmHarita>(find.byType(OsmHarita)).rota,
-          hasLength(2),
-        );
-
-        final sil = find.text(arbMetni('etkinlik_rota_son_noktayi_sil'));
-        await _dokun(tester, sil);
-        await _dokun(tester, sil);
-        expect(find.text(arbMetni('etkinlik_rota_yok')), findsOneWidget);
-
-        await _dokun(tester, find.text(arbMetni('etkinlik_rota_kaydet')));
-        expect(sonuclar.single, isEmpty);
-        expect(tester.takeException(), isNull);
-      });
-    }
   });
 }

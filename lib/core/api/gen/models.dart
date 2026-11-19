@@ -4357,22 +4357,14 @@ enum ConversationStatus {
   }
 }
 
+/// Rota burada değildir: `route` bileşeni (`GET …/components/{component_key}/route`, #239).
 final class ConvoyDetails {
-  const ConvoyDetails({this.route, this.vehicles});
+  const ConvoyDetails({this.vehicles});
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory ConvoyDetails.fromJson(Map<String, Object?> json) => ConvoyDetails(
-    route: switch (json['route']) {
-      null => null,
-      final Object v => List<LatLng>.unmodifiable(
-        _readList(v, 'ConvoyDetails.route').map(
-          (Object? e0) =>
-              LatLng.fromJson(_readObject(e0, 'ConvoyDetails.route')),
-        ),
-      ),
-    },
     vehicles: switch (json['vehicles']) {
       null => null,
       final Object v => List<ConvoyVehicle>.unmodifiable(
@@ -4384,16 +4376,11 @@ final class ConvoyDetails {
     },
   );
 
-  /// Boş ya da 2–500 nokta.
-  final List<LatLng>? route;
-
   /// Yalnızca tek etkinlik yanıtında.
   final List<ConvoyVehicle>? vehicles;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
-    if (route case final value?)
-      'route': <Object?>[for (final e0 in value) e0.toJson()],
     if (vehicles case final value?)
       'vehicles': <Object?>[for (final e0 in value) e0.toJson()],
   };
@@ -4401,52 +4388,10 @@ final class ConvoyDetails {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ConvoyDetails &&
-          _deepEquals(route, other.route) &&
-          _deepEquals(vehicles, other.vehicles);
+      other is ConvoyDetails && _deepEquals(vehicles, other.vehicles);
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[_deepHash(route), _deepHash(vehicles)]);
-}
-
-final class ConvoyDetailsInput {
-  const ConvoyDetailsInput({this.route});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory ConvoyDetailsInput.fromJson(Map<String, Object?> json) =>
-      ConvoyDetailsInput(
-        route: switch (json['route']) {
-          null => null,
-          final Object v => List<LatLng>.unmodifiable(
-            _readList(v, 'ConvoyDetailsInput.route').map(
-              (Object? e0) =>
-                  LatLng.fromJson(_readObject(e0, 'ConvoyDetailsInput.route')),
-            ),
-          ),
-        },
-      );
-
-  /// Boş ya da 2–500 nokta.
-  ///
-  /// Kısıtlar: maxItems: 500.
-  final List<LatLng>? route;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (route case final value?)
-      'route': <Object?>[for (final e0 in value) e0.toJson()],
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ConvoyDetailsInput && _deepEquals(route, other.route);
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[_deepHash(route)]);
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(vehicles)]);
 }
 
 final class ConvoyVehicle {
@@ -8488,8 +8433,9 @@ final class EventComponentState {
 /// biri olmalıdır. `fields` türün tanımına göre doğrulanır: zorunlu
 /// alanlar verilir, tanımda olmayan alan gönderilmez (ör. `gaming`:
 /// `game`, `platform`; `sports`: `sport`, `venue_name`). Faz 1'den
-/// kalan ayrıntılar (`convoy`, `camp`, `hike`, `fishing`) yalnızca kendi
-/// türlerinde, en fazla bir tane verilir.
+/// kalan ayrıntılar (`camp`, `hike`, `fishing`) yalnızca kendi
+/// türlerinde, en fazla bir tane verilir. Rota etkinlik oluşturulduktan
+/// sonra `route` bileşeninden yazılır.
 final class EventCreateRequest {
   const EventCreateRequest({
     this.coverUploadId,
@@ -8508,7 +8454,6 @@ final class EventCreateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.convoy,
     this.camp,
     this.hike,
     this.fishing,
@@ -8580,12 +8525,6 @@ final class EventCreateRequest {
     discoverable: switch (json['discoverable']) {
       null => null,
       final Object v => _readBool(v, 'EventCreateRequest.discoverable'),
-    },
-    convoy: switch (json['convoy']) {
-      null => null,
-      final Object v => ConvoyDetailsInput.fromJson(
-        _readObject(v, 'EventCreateRequest.convoy'),
-      ),
     },
     camp: switch (json['camp']) {
       null => null,
@@ -8675,8 +8614,6 @@ final class EventCreateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final ConvoyDetailsInput? convoy;
-
   final CampDetailsInput? camp;
 
   final HikeDetails? hike;
@@ -8707,7 +8644,6 @@ final class EventCreateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (convoy case final value?) 'convoy': value.toJson(),
     if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
@@ -8735,7 +8671,6 @@ final class EventCreateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          convoy == other.convoy &&
           camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing &&
@@ -8760,7 +8695,6 @@ final class EventCreateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    convoy,
     camp,
     hike,
     fishing,
@@ -9282,6 +9216,100 @@ final class EventRefereeList {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(referees)]);
 }
 
+/// Bir etkinliğin rota bileşeninin güzergâhı (#239).
+final class EventRoute {
+  const EventRoute({
+    required this.points,
+    this.updatedAt,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRoute.fromJson(Map<String, Object?> json) => EventRoute(
+    points: List<LatLng>.unmodifiable(
+      _readList(json['points'], 'EventRoute.points').map(
+        (Object? e0) => LatLng.fromJson(_readObject(e0, 'EventRoute.points')),
+      ),
+    ),
+    updatedAt: switch (json['updated_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventRoute.updated_at'),
+    },
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventRoute.caller_can_edit',
+    ),
+  );
+
+  /// Sırayla; rota yoksa boş, varsa 2–500 nokta.
+  ///
+  /// Kısıtlar: maxItems: 500.
+  final List<LatLng> points;
+
+  /// Rotanın son yazıldığı an; rota yoksa yoktur.
+  final DateTime? updatedAt;
+
+  /// Rotayı şu an değiştirebilirsiniz (organizatör yetkisi; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'points': <Object?>[for (final e0 in points) e0.toJson()],
+    if (updatedAt case final value?)
+      'updated_at': value.toUtc().toIso8601String(),
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRoute &&
+          _deepEquals(points, other.points) &&
+          updatedAt == other.updatedAt &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(points), updatedAt, callerCanEdit]);
+}
+
+final class EventRouteRequest {
+  const EventRouteRequest({required this.points});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRouteRequest.fromJson(Map<String, Object?> json) =>
+      EventRouteRequest(
+        points: List<LatLng>.unmodifiable(
+          _readList(json['points'], 'EventRouteRequest.points').map(
+            (Object? e0) =>
+                LatLng.fromJson(_readObject(e0, 'EventRouteRequest.points')),
+          ),
+        ),
+      );
+
+  /// Boş (rotayı kaldırır) ya da 2–500 nokta.
+  ///
+  /// Kısıtlar: maxItems: 500.
+  final List<LatLng> points;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'points': <Object?>[for (final e0 in points) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRouteRequest && _deepEquals(points, other.points);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(points)]);
+}
+
 final class EventSeries {
   const EventSeries({
     required this.id,
@@ -9471,7 +9499,6 @@ final class EventUpdateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.convoy,
     this.camp,
     this.hike,
     this.fishing,
@@ -9544,12 +9571,6 @@ final class EventUpdateRequest {
       null => null,
       final Object v => _readBool(v, 'EventUpdateRequest.discoverable'),
     },
-    convoy: switch (json['convoy']) {
-      null => null,
-      final Object v => ConvoyDetailsInput.fromJson(
-        _readObject(v, 'EventUpdateRequest.convoy'),
-      ),
-    },
     camp: switch (json['camp']) {
       null => null,
       final Object v => CampDetailsInput.fromJson(
@@ -9614,8 +9635,6 @@ final class EventUpdateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final ConvoyDetailsInput? convoy;
-
   final CampDetailsInput? camp;
 
   final HikeDetails? hike;
@@ -9642,7 +9661,6 @@ final class EventUpdateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (convoy case final value?) 'convoy': value.toJson(),
     if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
@@ -9667,7 +9685,6 @@ final class EventUpdateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          convoy == other.convoy &&
           camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing &&
@@ -9689,7 +9706,6 @@ final class EventUpdateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    convoy,
     camp,
     hike,
     fishing,

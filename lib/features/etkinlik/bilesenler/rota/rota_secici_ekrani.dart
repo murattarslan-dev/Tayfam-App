@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
-import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/core/harita/harita_secimi.dart';
+import 'package:tayfam/core/harita/osm_harita.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/rota/rota_durumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
-import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Rota seçicisinin açılış yakınlığı (buluşma noktası ya da rota varsa).
@@ -19,8 +19,8 @@ const double rotaSeciciYakinligi = 11;
 /// içinde kayar, harita görünür kalır.
 const double rotaPaneliOrani = .5;
 
-/// Konvoy rotası seçicisini açar; vazgeçilirse `null`, kaydedilirse
-/// (boş olabilir) noktalar döner.
+/// Rota çizme ekranını açar; vazgeçilirse `null`, kaydedilirse (boş
+/// olabilir: rota kaldırılır) noktalar döner.
 Future<List<LatLng>?> rotaSeciciAc(
   BuildContext context, {
   List<LatLng> baslangic = const [],
@@ -31,8 +31,9 @@ Future<List<LatLng>?> rotaSeciciAc(
   ),
 );
 
-/// Konvoy rotası seçici (ADR-0015 Notlar 4; 2026-11-13 tasarım:
-/// Sihirbaz-Rota): tam ekran harita; üstte geri, "Konvoy rotası" başlığı ve
+/// Rota çizme ekranı (ADR-0015 Notlar 4; 2026-11-13 tasarım: Sihirbaz-Rota;
+/// #227'den beri `route` bileşeninin): tam ekran harita; üstte geri,
+/// "Rotayı çiz" başlığı ve
 /// ipucu. Haritaya her dokunuş numaralı bir nokta ekler, noktalar mor
 /// çizgiyle sırayla bağlanır (başlangıç ve bitiş büyük, bitiş koyu). Altta
 /// panel: nokta sayısı, "En çok 500 nokta", "Son noktayı sil", onaylı
@@ -43,7 +44,7 @@ Future<List<LatLng>?> rotaSeciciAc(
 class RotaSeciciEkrani extends StatefulWidget {
   const RotaSeciciEkrani({super.key, this.baslangic = const [], this.merkez});
 
-  /// Taslaktaki rota.
+  /// Etkinliğin şimdiki rotası.
   final List<LatLng> baslangic;
 
   /// Rota yoksa haritanın açılacağı nokta (buluşma noktası).
@@ -54,8 +55,8 @@ class RotaSeciciEkrani extends StatefulWidget {
 }
 
 class _RotaSeciciEkraniState extends State<RotaSeciciEkrani> {
-  // Seçim yalnızca bu ekranda, bellekte tutulur; kaydedilince taslağa
-  // geçer.
+  // Seçim yalnızca bu ekranda, bellekte tutulur; kaydedilince bileşen
+  // sunucuya yazar.
   late List<LatLng> _noktalar = List.of(widget.baslangic);
 
   void _ekle(LatLng nokta) {
@@ -72,8 +73,8 @@ class _RotaSeciciEkraniState extends State<RotaSeciciEkrani> {
     final m = AppLocalizations.of(context);
     final onay = await cikarmaOnayi(
       context,
-      baslik: m.etkinlik_rota_temizle_onay,
-      eylem: m.etkinlik_rota_temizle,
+      baslik: m.bilesen_route_temizle_onay,
+      eylem: m.bilesen_route_temizle,
     );
     if (!onay || !mounted) return;
     setState(() => _noktalar = []);
@@ -135,7 +136,7 @@ class _RotaSeciciEkraniState extends State<RotaSeciciEkrani> {
                                     child: Semantics(
                                       header: true,
                                       child: Text(
-                                        m.etkinlik_rota_secici_baslik,
+                                        m.bilesen_route_secici_baslik,
                                         style: context.yazi.titleSmall,
                                       ),
                                     ),
@@ -146,7 +147,7 @@ class _RotaSeciciEkraniState extends State<RotaSeciciEkrani> {
                             const SizedBox(height: TayfamSpacing.s8),
                             _Hap(
                               child: Text(
-                                m.etkinlik_rota_ipucu,
+                                m.bilesen_route_ipucu,
                                 style: context.yazi.bodySmall?.copyWith(
                                   color: r.metin,
                                 ),
@@ -225,7 +226,7 @@ class _GeriDugmesi extends StatelessWidget {
   }
 }
 
-/// Rota ekranının alt paneli (tasarım: Sihirbaz-Rota).
+/// Rota çizme ekranının alt paneli (tasarım: Sihirbaz-Rota).
 class _AltPanel extends StatelessWidget {
   const _AltPanel({
     required this.sayi,
@@ -274,22 +275,22 @@ class _AltPanel extends StatelessWidget {
                     liveRegion: true,
                     child: Text(
                       sayi == 0
-                          ? m.etkinlik_rota_yok
-                          : m.etkinlik_konvoy_rota_noktalari(
+                          ? m.bilesen_route_yok
+                          : m.bilesen_route_noktalari(
                               etkinlikSayi(m, sayi),
                             ),
                       style: context.yazi.titleMedium,
                     ),
                   ),
                   Text(
-                    m.etkinlik_rota_en_cok(etkinlikSayi(m, rotaEnCokNokta)),
+                    m.bilesen_route_en_cok(etkinlikSayi(m, rotaEnCokNokta)),
                     style: context.yazi.bodySmall,
                   ),
                 ],
               ),
               if (hatali) ...[
                 const SizedBox(height: TayfamSpacing.s8),
-                HataSatiri(metin: m.etkinlik_rota_hata),
+                HataSatiri(metin: m.bilesen_route_hata),
               ],
               const SizedBox(height: TayfamSpacing.s12),
               Wrap(
@@ -297,19 +298,19 @@ class _AltPanel extends StatelessWidget {
                 runSpacing: TayfamSpacing.s8,
                 children: [
                   CerceveliHapEylem(
-                    etiket: m.etkinlik_rota_son_noktayi_sil,
+                    etiket: m.bilesen_route_son_noktayi_sil,
                     ikon: Icons.undo,
                     onPressed: onSonuSil,
                   ),
                   YikiciEylem(
-                    etiket: m.etkinlik_rota_temizle,
+                    etiket: m.bilesen_route_temizle,
                     onPressed: onTemizle,
                   ),
                 ],
               ),
               const SizedBox(height: TayfamSpacing.s12),
               BirincilEylem(
-                etiket: m.etkinlik_rota_kaydet,
+                etiket: m.bilesen_route_kaydet,
                 onPressed: onKaydet,
               ),
             ],
