@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
-import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/etkinlik/application/av_gunlugu.dart';
@@ -39,9 +37,9 @@ bool avEklenebilir(Event etkinlik, DateTime simdi) =>
     katilimDogrulandi(etkinlik) &&
     simdi.isBefore(etkinlik.endsAt.add(avEklemeSuresi));
 
-/// Türe özel araçların detay ekranındaki işlemleri (ADR-0015 §6): kamp
-/// malzemeleri, av günlüğü ve organizatör düzeltmesi. Konvoy araçları
-/// `vehicles` bileşenine taşındı (#228).
+/// Türe özel araçların detay ekranındaki işlemleri (ADR-0015 §6): av
+/// günlüğü ve organizatör düzeltmesi. Konvoy araçları `vehicles` (#228),
+/// kamp malzemeleri `checklist` bileşenine (#229) taşındı.
 ///
 /// Durum, bir işlemin sürüp sürmediğidir; aynı anda tek işlem yapılır. Her
 /// işlem hatayı döndürür (başarıda `null`); ekran onu `hataBildir` ile
@@ -59,85 +57,6 @@ class AracEylemNotifier extends Notifier<bool> {
 
   EtkinlikDetayNotifier get _detay =>
       ref.read(etkinlikDetayProvider(anahtar).notifier);
-
-  Event? get _etkinlik => ref.read(etkinlikDetayProvider(anahtar)).value;
-
-  /// Kamp listesine malzeme ekler.
-  Future<Object?> malzemeEkle(CampItemCreateRequest istek) =>
-      _calistir(() async {
-        final malzeme = await _depo.kampMalzemesiEkle(
-          anahtar.tayfaId,
-          anahtar.etkinlikId,
-          istek,
-        );
-        final etkinlik = _etkinlik;
-        if (!ref.mounted || etkinlik == null) return;
-        _detay.guncelle(
-          etkinlikKopyasi(
-            etkinlik,
-            camp: _kampKopyasi(etkinlik.camp, [
-              ...?etkinlik.camp?.items,
-              malzeme,
-            ]),
-          ),
-        );
-      });
-
-  /// Kamp listesinden malzeme çıkarır.
-  Future<Object?> malzemeCikar(String malzemeId) => _calistir(() async {
-    await _depo.kampMalzemesiCikar(
-      anahtar.tayfaId,
-      anahtar.etkinlikId,
-      malzemeId,
-    );
-    final etkinlik = _etkinlik;
-    if (!ref.mounted || etkinlik == null) return;
-    _detay.guncelle(
-      etkinlikKopyasi(
-        etkinlik,
-        camp: _kampKopyasi(etkinlik.camp, [
-          for (final m in etkinlik.camp?.items ?? const <CampItem>[])
-            if (m.id != malzemeId) m,
-        ]),
-      ),
-    );
-  });
-
-  /// Kamp malzemesini [kullaniciId]'ye atar ("Ben getiririm"); `null` ise
-  /// atamayı kaldırır ("Vazgeç"; gövdede alan yok). Yetki sunucudadır
-  /// (sözleşme: `assignCampItem`).
-  ///
-  /// Hata, listenin bayatladığını gösteriyorsa (başkası üstlendi:
-  /// `event-item-taken`; malzeme silindi, etkinlik iptal edildi ya da
-  /// bitti, cevap değişti) etkinlik yeniden okunur; hata yine döner ve
-  /// ekran onu gösterir.
-  Future<Object?> malzemeAta(String malzemeId, String? kullaniciId) async {
-    final hata = await _calistir(() async {
-      final malzeme = await _depo.kampMalzemesiAta(
-        anahtar.tayfaId,
-        anahtar.etkinlikId,
-        malzemeId,
-        kullaniciId,
-      );
-      final etkinlik = _etkinlik;
-      if (!ref.mounted || etkinlik == null) return;
-      _detay.guncelle(
-        etkinlikKopyasi(
-          etkinlik,
-          camp: _kampKopyasi(etkinlik.camp, [
-            for (final m in etkinlik.camp?.items ?? const <CampItem>[])
-              m.id == malzeme.id ? malzeme : m,
-          ]),
-        ),
-      );
-    });
-    if (hata is ApiProblem &&
-        _bayatListeHatalari.contains(hata.type) &&
-        ref.mounted) {
-      unawaited(_detay.sessizceYenile());
-    }
-    return hata;
-  }
 
   /// Av günlüğüne av ekler. Tekrar denemede aynı `client_request_id`
   /// gönderilir (form açılınca bir kez üretilir).
@@ -193,24 +112,6 @@ class AracEylemNotifier extends Notifier<bool> {
     }
   }
 }
-
-/// Malzeme atamasında etkinliğin yeniden okunmasını gerektiren hatalar.
-const Set<ProblemType> _bayatListeHatalari = {
-  ProblemType.eventItemTaken,
-  ProblemType.eventItemNotFound,
-  ProblemType.eventNotGoing,
-  ProblemType.eventCancelled,
-  ProblemType.eventEnded,
-};
-
-CampDetails _kampKopyasi(CampDetails? kamp, List<CampItem> malzemeler) =>
-    CampDetails(
-      siteName: kamp?.siteName,
-      hasWater: kamp?.hasWater,
-      hasToilet: kamp?.hasToilet,
-      notes: kamp?.notes,
-      items: malzemeler,
-    );
 
 /// Türe özel araçların işlemleri; detay ekranı kapanınca bırakılır.
 final aracEylemProvider = NotifierProvider.autoDispose

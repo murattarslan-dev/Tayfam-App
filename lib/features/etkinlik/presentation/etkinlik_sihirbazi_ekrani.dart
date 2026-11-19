@@ -177,8 +177,6 @@ class _EtkinlikSihirbaziEkraniState
   late final TextEditingController _ilce;
   late final TextEditingController _baglanti;
   late final TextEditingController _kontenjan;
-  late final TextEditingController _kampYeri;
-  late final TextEditingController _kampNotu;
   late final TextEditingController _mesafe;
   late final TextEditingController _yukselti;
   late final TextEditingController _tolerans;
@@ -197,8 +195,6 @@ class _EtkinlikSihirbaziEkraniState
     _ilce = TextEditingController(text: t.yer.ilce);
     _baglanti = TextEditingController(text: t.yer.baglanti);
     _kontenjan = TextEditingController(text: t.kontenjan);
-    _kampYeri = TextEditingController(text: t.ayrinti.kampYeri);
-    _kampNotu = TextEditingController(text: t.ayrinti.kampNotu);
     _mesafe = TextEditingController(text: t.ayrinti.mesafe);
     _yukselti = TextEditingController(text: t.ayrinti.yukselti);
     _tolerans = TextEditingController(text: t.ayrinti.tolerans);
@@ -214,8 +210,6 @@ class _EtkinlikSihirbaziEkraniState
       _ilce,
       _baglanti,
       _kontenjan,
-      _kampYeri,
-      _kampNotu,
       _mesafe,
       _yukselti,
       _tolerans,
@@ -893,58 +887,9 @@ class _EtkinlikSihirbaziEkraniState
     final h = t.hatalar;
     final a = t.ayrinti;
     final kapali = t.gonderiliyor;
-    String? uzunluk(TaslakHatasi hata, int enCok) =>
-        h.contains(hata) ? m.etkinlik_uzunluk_hata(enCok) : null;
     String? sayi(TaslakHatasi hata, int enCok) =>
         h.contains(hata) ? m.etkinlik_sayi_hata(enCok) : null;
-    List<(bool?, String)> ucDurum() => [
-      (true, m.etkinlik_var),
-      (false, m.etkinlik_yok),
-      (null, m.etkinlik_bilinmiyor),
-    ];
     switch (t.tur) {
-      case EskiTur.kamp:
-        return [
-          const SizedBox(height: TayfamSpacing.s20),
-          TextField(
-            controller: _kampYeri,
-            enabled: !kapali,
-            maxLength: etkinlikKampYeriEnCok,
-            onChanged: (v) => _ayrinti((a) => a.kopya(kampYeri: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_kamp_yeri_etiketi,
-              errorText: uzunluk(TaslakHatasi.kampYeri, etkinlikKampYeriEnCok),
-            ),
-          ),
-          BolumEtiketi(baslik: m.etkinlik_kamp_su),
-          SecimCipleri<bool?>(
-            secenekler: ucDurum(),
-            secili: a.su,
-            onSecildi: kapali ? null : (v) => _ayrinti((a) => a.kopya(su: v)),
-          ),
-          BolumEtiketi(baslik: m.etkinlik_kamp_tuvalet),
-          SecimCipleri<bool?>(
-            secenekler: ucDurum(),
-            secili: a.tuvalet,
-            onSecildi: kapali
-                ? null
-                : (v) => _ayrinti((a) => a.kopya(tuvalet: v)),
-          ),
-          const SizedBox(height: TayfamSpacing.s20),
-          TextField(
-            controller: _kampNotu,
-            enabled: !kapali,
-            maxLength: etkinlikKampNotuEnCok,
-            minLines: 2,
-            maxLines: 5,
-            onChanged: (v) => _ayrinti((a) => a.kopya(kampNotu: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_kamp_notu_etiketi,
-              alignLabelWithHint: true,
-              errorText: uzunluk(TaslakHatasi.kampNotu, etkinlikKampNotuEnCok),
-            ),
-          ),
-        ];
       case EskiTur.yuruyus:
         final donus = a.donus;
         return [

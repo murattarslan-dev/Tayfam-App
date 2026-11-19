@@ -194,7 +194,6 @@ void main() {
       final c = _kapsayici(tasima);
       final n = _doldur(c)
         ..kontenjanAyarla('12')
-        ..ayrintiAyarla(const TurAyrintisi(kampYeri: 'Göl kenarı', su: true))
         ..tekrarAyarla(const TekrarSecimi(aralik: 2));
       EtkinlikTaslagi t() => c.read(etkinlikSihirbaziProvider(_olusturma));
       expect(t().adim, 3);
@@ -222,7 +221,6 @@ void main() {
         'city': 'Bolu',
         'district': 'Merkez',
         'capacity': 12,
-        'camp': {'site_name': 'Göl kenarı', 'has_water': true},
         'recurrence': {
           'rrule': 'FREQ=WEEKLY;INTERVAL=2',
           'time_zone': 'Europe/Istanbul',

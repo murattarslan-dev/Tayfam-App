@@ -84,13 +84,6 @@ String katilimciSekmesi(AppLocalizations m, ListEventAttendeesStatus durum) =>
       ListEventAttendeesStatus.unknown => m.etkinlik_katilimci_waitlist,
     };
 
-/// Var / yok / bilinmiyor.
-String varYok(AppLocalizations m, bool? deger) => switch (deger) {
-  true => m.etkinlik_var,
-  false => m.etkinlik_yok,
-  null => m.etkinlik_bilinmiyor,
-};
-
 /// Balık noktasının görünürlüğü.
 String balikGizliligiAdi(
   AppLocalizations m,

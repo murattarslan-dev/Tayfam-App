@@ -219,7 +219,6 @@ void main() {
             kontenjan: 3,
             yonetebilir: true,
             seri: ikinciEtkinlikId,
-            ayrinti: {'site_name': 'Göl kenarı', 'has_water': true},
           ),
         });
         await _git(
@@ -238,7 +237,6 @@ void main() {
           '3/3 kişi geliyor · 1 belki',
           arbMetni('etkinlik_kontenjan_dolu'),
           arbMetni('etkinlik_harita_atif'),
-          'Göl kenarı',
           '3 kişi geliyor',
           arbMetni('etkinlik_seri_notu'),
         ]) {

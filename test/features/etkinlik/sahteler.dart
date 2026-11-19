@@ -49,10 +49,6 @@ const String profilYolu = '/v1/users/{user_id}/profile';
 const String varisYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/check-in';
 const String cikisYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/hike-start';
 const String donusYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/hike-return';
-const String malzemelerYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items';
-const String malzemeYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}';
 const String avlarYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches';
 const String avYolu =
@@ -61,6 +57,7 @@ const String bilesenlerYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/components';
 const String bilesenYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}';
+const String listeYolu = '$bilesenYolu/items';
 const String hakemlerYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/referees';
 const String duzeltmeYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance';
@@ -147,6 +144,24 @@ Map<String, Object?> bilesenDurumuJson(
         in secimler.entries)
       {'param': param, 'value': deger, 'options': secenekler},
   ],
+};
+
+/// Örnek `Checklist` JSON'u (liste bileşeni, #229): varsayılanı kampın
+/// boş malzeme listesi, üye gözüyle.
+Map<String, Object?> kontrolListesiJson({
+  List<Map<String, Object?>> maddeler = const [],
+  String etiket = 'gear',
+  bool atama = true,
+  bool adet = true,
+  bool yonetebilir = false,
+  bool ustlenebilir = false,
+}) => {
+  'items': maddeler,
+  'label': etiket,
+  'assignment_enabled': atama,
+  'quantity_enabled': adet,
+  'caller_can_manage': yonetebilir,
+  'caller_can_take': ustlenebilir,
 };
 
 /// Örnek `EventComponentList` JSON'u.
@@ -324,6 +339,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
           (_) => hakemlerJson(),
     )
     ..putIfAbsent(
+      'GET $listeYolu',
+      () =>
+          (_) => kontrolListesiJson(),
+    )
+    ..putIfAbsent(
       'GET $avlarYolu',
       () =>
           (_) => {'catches': const <Object?>[]},
@@ -448,7 +468,10 @@ List<Override> etkinlikOverridelari({
   SonTayfaDeposu? sonTayfa,
   MagazaDegerlendirmesi? magaza,
   Override? katalog,
-  List<EtkinlikBileseni> bilesenler = const [TemelBilesen('meeting_point')],
+  List<EtkinlikBileseni> bilesenler = const [
+    TemelBilesen('meeting_point'),
+    ListeBileseni(),
+  ],
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
@@ -474,11 +497,7 @@ List<Override> etkinlikOverridelari({
   ),
   tayfaModulleriProvider.overrideWithValue(const [EtkinlikModulu()]),
   konumServisiProvider.overrideWithValue(konum ?? SahteKonumServisi()),
-  etkinlikTurleriProvider.overrideWithValue(const [
-    KampTuru(),
-    YuruyusTuru(),
-    BalikTuru(),
-  ]),
+  etkinlikTurleriProvider.overrideWithValue(const [YuruyusTuru(), BalikTuru()]),
   etkinlikBilesenKaydiProvider.overrideWithValue(bilesenler),
   magazaDegerlendirmesiProvider.overrideWithValue(
     magaza ?? SahteMagazaDegerlendirmesi(kullanilabilir: false),

@@ -27,44 +27,6 @@ Event _etkinlik({
 );
 
 void main() {
-  group('kamp malzemesi formu', () {
-    test('ad zorunlu; adet boşsa gönderilmez', () {
-      expect(malzemeIstegi(ad: ' Çadır ').istek!.toJson(), {'name': 'Çadır'});
-      expect(malzemeIstegi(ad: 'Ocak', adet: '2').istek!.toJson(), {
-        'name': 'Ocak',
-        'quantity': 2,
-      });
-      expect(malzemeIstegi(ad: '').hatalar, {MalzemeHatasi.ad});
-      expect(malzemeIstegi(ad: 'Ocak', adet: '1000').hatalar, {
-        MalzemeHatasi.adet,
-      });
-    });
-
-    test('adet 1–999 (issue #187)', () {
-      expect(malzemeIstegi(ad: 'Ocak', adet: '0').hatalar, {
-        MalzemeHatasi.adet,
-      });
-      expect(malzemeIstegi(ad: 'Ocak', adet: '1').istek!.quantity, 1);
-      expect(malzemeIstegi(ad: 'Ocak', adet: '999').istek!.quantity, 999);
-    });
-
-    test('"Kim getirecek?": seçilen kişi assigned_user_id olur, "Henüz '
-        'kimse"de alan yok', () {
-      const kisi = '0d1e2f3a-4b5c-4d6e-8f7a-8b9c0d1e2f3a';
-      expect(
-        malzemeIstegi(ad: 'Ocak', adet: '1', getiren: kisi).istek!.toJson(),
-        {'name': 'Ocak', 'quantity': 1, 'assigned_user_id': kisi},
-      );
-      expect(
-        malzemeIstegi(
-          ad: 'Ocak',
-          adet: '1',
-        ).istek!.toJson().containsKey('assigned_user_id'),
-        isFalse,
-      );
-    });
-  });
-
   group('av formu', () {
     test('varsayılan görünürlük "Yalnızca ben" (self); yer seçilmeden yer '
         've görünürlük gönderilmez (issue #187)', () {
