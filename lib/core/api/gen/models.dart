@@ -1092,7 +1092,7 @@ final class AnswerUpdateRequest {
 }
 
 /// `location`: buluşma noktasına 300 m içinde check-in. `online`:
-/// çevrimiçi etkinlikte "Katıldım". `hike_start`: yürüyüşe çıkış.
+/// çevrimiçi etkinlikte "Katıldım". `hike_start`: yoklamada çıkış (`roll_call`).
 /// `organizer`: organizatör düzeltmesi.
 enum AttendanceMethod {
   location('location'),
@@ -7530,12 +7530,14 @@ final class E2ESignedPreKey {
 /// etkinlik oluşturulduğu tür sürümüne (`type_version`) bağlıdır ve o
 /// sürümün tanımıyla gösterilir (güncel katalogda yoksa
 /// `GET /v1/catalog/event-types/{key}/versions/{version}`). `fields`
-/// ve Faz 1'den kalan türe özel ayrıntı (`hike`, `fishing`;
-/// bileşenlere taşınana kadar) yalnızca tek etkinlik yanıtında gelir;
-/// ayrıntılardan en fazla biri doludur. Konvoyun rotası ve araçları
-/// bileşenlerindedir (`route`, `vehicles`); kampın listesi `checklist`
-/// bileşenindedir, kamp yeri, su, tuvalet ve notlar `fields`'tadır
-/// (`site_name`, `has_water`, `has_toilet`, `notes`; #241).
+/// ve Faz 1'den kalan türe özel ayrıntı (`fishing`; bileşene taşınana
+/// kadar) yalnızca tek etkinlik yanıtında gelir. Konvoyun rotası ve
+/// araçları bileşenlerindedir (`route`, `vehicles`); kampın listesi
+/// `checklist` bileşenindedir, kamp yeri, su, tuvalet ve notlar
+/// `fields`'tadır (`site_name`, `has_water`, `has_toilet`, `notes`;
+/// #241). Yürüyüşün yoklaması ve beklenen dönüşü `roll_call`
+/// bileşenindedir; zorluk, planlanan mesafe ve irtifa `fields`'tadır
+/// (`difficulty`, `planned_distance`, `planned_elevation`; #242).
 final class Event {
   const Event({
     this.coverUploadId,
@@ -7570,7 +7572,6 @@ final class Event {
     required this.seriesOverride,
     required this.createdAt,
     required this.updatedAt,
-    this.hike,
     this.fishing,
   });
 
@@ -7656,10 +7657,6 @@ final class Event {
     seriesOverride: _readBool(json['series_override'], 'Event.series_override'),
     createdAt: _readDateTime(json['created_at'], 'Event.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Event.updated_at'),
-    hike: switch (json['hike']) {
-      null => null,
-      final Object v => HikeDetails.fromJson(_readObject(v, 'Event.hike')),
-    },
     fishing: switch (json['fishing']) {
       null => null,
       final Object v => FishingDetails.fromJson(
@@ -7747,8 +7744,6 @@ final class Event {
 
   final DateTime updatedAt;
 
-  final HikeDetails? hike;
-
   final FishingDetails? fishing;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -7786,7 +7781,6 @@ final class Event {
     'series_override': seriesOverride,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
-    if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
   };
 
@@ -7826,7 +7820,6 @@ final class Event {
           seriesOverride == other.seriesOverride &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
-          hike == other.hike &&
           fishing == other.fishing;
 
   @override
@@ -7863,7 +7856,6 @@ final class Event {
     seriesOverride,
     createdAt,
     updatedAt,
-    hike,
     fishing,
   ]);
 }
@@ -8194,10 +8186,11 @@ final class EventComponentState {
 /// biri olmalıdır. `fields` türün tanımına göre doğrulanır: zorunlu
 /// alanlar verilir, tanımda olmayan alan gönderilmez (ör. `gaming`:
 /// `game`, `platform`; `sports`: `sport`, `venue_name`; `camp`:
-/// `site_name`, `has_water`, `has_toilet`, `notes`). Faz 1'den kalan
-/// ayrıntılar (`hike`, `fishing`) yalnızca kendi türlerinde, en fazla
-/// bir tane verilir. Rota etkinlik oluşturulduktan
-/// sonra `route` bileşeninden yazılır.
+/// `site_name`, `has_water`, `has_toilet`, `notes`; `hike`:
+/// `difficulty`, `planned_distance`, `planned_elevation`). Faz 1'den
+/// kalan ayrıntı (`fishing`) yalnızca kendi türünde verilir. Rota ve
+/// yürüyüşün beklenen dönüşü etkinlik oluşturulduktan sonra
+/// bileşenlerinden (`route`, `roll_call`) yazılır.
 final class EventCreateRequest {
   const EventCreateRequest({
     this.coverUploadId,
@@ -8216,7 +8209,6 @@ final class EventCreateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.hike,
     this.fishing,
     this.recurrence,
     required this.clientRequestId,
@@ -8286,12 +8278,6 @@ final class EventCreateRequest {
     discoverable: switch (json['discoverable']) {
       null => null,
       final Object v => _readBool(v, 'EventCreateRequest.discoverable'),
-    },
-    hike: switch (json['hike']) {
-      null => null,
-      final Object v => HikeDetails.fromJson(
-        _readObject(v, 'EventCreateRequest.hike'),
-      ),
     },
     fishing: switch (json['fishing']) {
       null => null,
@@ -8369,8 +8355,6 @@ final class EventCreateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final HikeDetails? hike;
-
   final FishingDetails? fishing;
 
   final Recurrence? recurrence;
@@ -8397,7 +8381,6 @@ final class EventCreateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
     if (recurrence case final value?) 'recurrence': value.toJson(),
     'client_request_id': clientRequestId,
@@ -8423,7 +8406,6 @@ final class EventCreateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          hike == other.hike &&
           fishing == other.fishing &&
           recurrence == other.recurrence &&
           clientRequestId == other.clientRequestId;
@@ -8446,7 +8428,6 @@ final class EventCreateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    hike,
     fishing,
     recurrence,
     clientRequestId,
@@ -8966,6 +8947,114 @@ final class EventRefereeList {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(referees)]);
 }
 
+/// Bir etkinliğin bir yoklama bileşeni, isteği yapanın gördüğü haliyle (#242).
+final class EventRollCall {
+  const EventRollCall({
+    required this.alarm,
+    required this.returnGraceMinutes,
+    this.expectedReturnAt,
+    this.mine,
+    required this.entries,
+    required this.callerCanManage,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRollCall.fromJson(Map<String, Object?> json) => EventRollCall(
+    alarm: _readBool(json['alarm'], 'EventRollCall.alarm'),
+    returnGraceMinutes: _readInt(
+      json['return_grace_minutes'],
+      'EventRollCall.return_grace_minutes',
+    ),
+    expectedReturnAt: switch (json['expected_return_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventRollCall.expected_return_at'),
+    },
+    mine: switch (json['mine']) {
+      null => null,
+      final Object v => RollCallEntry.fromJson(
+        _readObject(v, 'EventRollCall.mine'),
+      ),
+    },
+    entries: List<RollCallEntry>.unmodifiable(
+      _readList(json['entries'], 'EventRollCall.entries').map(
+        (Object? e0) =>
+            RollCallEntry.fromJson(_readObject(e0, 'EventRollCall.entries')),
+      ),
+    ),
+    callerCanManage: _readBool(
+      json['caller_can_manage'],
+      'EventRollCall.caller_can_manage',
+    ),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventRollCall.caller_can_edit',
+    ),
+  );
+
+  /// Bileşenin `alarm` parametresi; kapalıysa dönmeme alarmı kurulmaz.
+  final bool alarm;
+
+  /// Beklenen dönüşten sonraki tolerans (dakika); tanım vermezse 30.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 1440.
+  final int returnGraceMinutes;
+
+  /// Beklenen dönüş; plan yoksa yoktur (alarm kurulmaz).
+  final DateTime? expectedReturnAt;
+
+  /// Kendi kaydınız; çıkmadıysanız yoktur.
+  final RollCallEntry? mine;
+
+  /// Herkesin kaydı, önce dışarıdakiler; yalnızca `caller_can_manage` ise dolu, değilse boş.
+  ///
+  /// Kısıtlar: maxItems: 1000.
+  final List<RollCallEntry> entries;
+
+  /// Etkinliğin bileşenlerini yönetirsiniz (organizatör yetkisi, susturulmamış).
+  final bool callerCanManage;
+
+  /// Beklenen dönüşü şu an değiştirebilirsiniz (organizatör yetkisi; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'alarm': alarm,
+    'return_grace_minutes': returnGraceMinutes,
+    if (expectedReturnAt case final value?)
+      'expected_return_at': value.toUtc().toIso8601String(),
+    if (mine case final value?) 'mine': value.toJson(),
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+    'caller_can_manage': callerCanManage,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRollCall &&
+          alarm == other.alarm &&
+          returnGraceMinutes == other.returnGraceMinutes &&
+          expectedReturnAt == other.expectedReturnAt &&
+          mine == other.mine &&
+          _deepEquals(entries, other.entries) &&
+          callerCanManage == other.callerCanManage &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    alarm,
+    returnGraceMinutes,
+    expectedReturnAt,
+    mine,
+    _deepHash(entries),
+    callerCanManage,
+    callerCanEdit,
+  ]);
+}
+
 /// Bir etkinliğin rota bileşeninin güzergâhı (#239).
 final class EventRoute {
   const EventRoute({
@@ -9249,7 +9338,6 @@ final class EventUpdateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.hike,
     this.fishing,
     this.applyToSeries,
   });
@@ -9320,12 +9408,6 @@ final class EventUpdateRequest {
       null => null,
       final Object v => _readBool(v, 'EventUpdateRequest.discoverable'),
     },
-    hike: switch (json['hike']) {
-      null => null,
-      final Object v => HikeDetails.fromJson(
-        _readObject(v, 'EventUpdateRequest.hike'),
-      ),
-    },
     fishing: switch (json['fishing']) {
       null => null,
       final Object v => FishingDetails.fromJson(
@@ -9378,8 +9460,6 @@ final class EventUpdateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final HikeDetails? hike;
-
   final FishingDetails? fishing;
 
   /// `true` yalnızca seriye ait etkinlikte geçerlidir; yoksa `false`.
@@ -9402,7 +9482,6 @@ final class EventUpdateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
     if (applyToSeries case final value?) 'apply_to_series': value,
   };
@@ -9425,7 +9504,6 @@ final class EventUpdateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          hike == other.hike &&
           fishing == other.fishing &&
           applyToSeries == other.applyToSeries;
 
@@ -9445,7 +9523,6 @@ final class EventUpdateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    hike,
     fishing,
     applyToSeries,
   ]);
@@ -10370,195 +10447,6 @@ final class FriendSuggestionList {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[_deepHash(suggestions)]);
-}
-
-final class HikeCheckin {
-  const HikeCheckin({required this.startedAt, this.returnedAt});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory HikeCheckin.fromJson(Map<String, Object?> json) => HikeCheckin(
-    startedAt: _readDateTime(json['started_at'], 'HikeCheckin.started_at'),
-    returnedAt: switch (json['returned_at']) {
-      null => null,
-      final Object v => _readDateTime(v, 'HikeCheckin.returned_at'),
-    },
-  );
-
-  final DateTime startedAt;
-
-  /// Dönülmediyse yoktur.
-  final DateTime? returnedAt;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'started_at': startedAt.toUtc().toIso8601String(),
-    if (returnedAt case final value?)
-      'returned_at': value.toUtc().toIso8601String(),
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HikeCheckin &&
-          startedAt == other.startedAt &&
-          returnedAt == other.returnedAt;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[startedAt, returnedAt]);
-}
-
-final class HikeDetails {
-  const HikeDetails({
-    this.difficulty,
-    this.distanceKm,
-    this.elevationM,
-    this.expectedReturnAt,
-    this.returnGraceMinutes,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory HikeDetails.fromJson(Map<String, Object?> json) => HikeDetails(
-    difficulty: switch (json['difficulty']) {
-      null => null,
-      final Object v => _readInt(v, 'HikeDetails.difficulty'),
-    },
-    distanceKm: switch (json['distance_km']) {
-      null => null,
-      final Object v => _readDouble(v, 'HikeDetails.distance_km'),
-    },
-    elevationM: switch (json['elevation_m']) {
-      null => null,
-      final Object v => _readInt(v, 'HikeDetails.elevation_m'),
-    },
-    expectedReturnAt: switch (json['expected_return_at']) {
-      null => null,
-      final Object v => _readDateTime(v, 'HikeDetails.expected_return_at'),
-    },
-    returnGraceMinutes: switch (json['return_grace_minutes']) {
-      null => null,
-      final Object v => _readInt(v, 'HikeDetails.return_grace_minutes'),
-    },
-  );
-
-  /// 0: verilmemiş.
-  ///
-  /// Kısıtlar: minimum: 0; maximum: 5.
-  final int? difficulty;
-
-  /// 0: verilmemiş; iki ondalık.
-  ///
-  /// Kısıtlar: minimum: 0; maximum: 1000.
-  final double? distanceKm;
-
-  /// 0: verilmemiş.
-  ///
-  /// Kısıtlar: minimum: 0; maximum: 9000.
-  final int? elevationM;
-
-  /// Başlangıçtan sonra.
-  final DateTime? expectedReturnAt;
-
-  /// 0: varsayılan 30.
-  ///
-  /// Kısıtlar: minimum: 0; maximum: 1440.
-  final int? returnGraceMinutes;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (difficulty case final value?) 'difficulty': value,
-    if (distanceKm case final value?) 'distance_km': value,
-    if (elevationM case final value?) 'elevation_m': value,
-    if (expectedReturnAt case final value?)
-      'expected_return_at': value.toUtc().toIso8601String(),
-    if (returnGraceMinutes case final value?) 'return_grace_minutes': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HikeDetails &&
-          difficulty == other.difficulty &&
-          distanceKm == other.distanceKm &&
-          elevationM == other.elevationM &&
-          expectedReturnAt == other.expectedReturnAt &&
-          returnGraceMinutes == other.returnGraceMinutes;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[
-    difficulty,
-    distanceKm,
-    elevationM,
-    expectedReturnAt,
-    returnGraceMinutes,
-  ]);
-}
-
-final class HikeReturnRequest {
-  const HikeReturnRequest({this.returnedAt});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory HikeReturnRequest.fromJson(Map<String, Object?> json) =>
-      HikeReturnRequest(
-        returnedAt: switch (json['returned_at']) {
-          null => null,
-          final Object v => _readDateTime(v, 'HikeReturnRequest.returned_at'),
-        },
-      );
-
-  /// İstemcinin dönüş zamanı; yoksa şimdi. Çıkıştan önce olamaz.
-  final DateTime? returnedAt;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (returnedAt case final value?)
-      'returned_at': value.toUtc().toIso8601String(),
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HikeReturnRequest && returnedAt == other.returnedAt;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[returnedAt]);
-}
-
-final class HikeStartRequest {
-  const HikeStartRequest({this.startedAt});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory HikeStartRequest.fromJson(Map<String, Object?> json) =>
-      HikeStartRequest(
-        startedAt: switch (json['started_at']) {
-          null => null,
-          final Object v => _readDateTime(v, 'HikeStartRequest.started_at'),
-        },
-      );
-
-  /// İstemcinin çıkış zamanı; yoksa şimdi. Gelecekte değil, en fazla 48 saat önce.
-  final DateTime? startedAt;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (startedAt case final value?)
-      'started_at': value.toUtc().toIso8601String(),
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HikeStartRequest && startedAt == other.startedAt;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[startedAt]);
 }
 
 final class InstantEvent {
@@ -15001,6 +14889,156 @@ final class RoleUpdate {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[role]);
+}
+
+final class RollCallEntry {
+  const RollCallEntry({
+    required this.userId,
+    required this.startedAt,
+    this.returnedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory RollCallEntry.fromJson(Map<String, Object?> json) => RollCallEntry(
+    userId: _readString(json['user_id'], 'RollCallEntry.user_id'),
+    startedAt: _readDateTime(json['started_at'], 'RollCallEntry.started_at'),
+    returnedAt: switch (json['returned_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'RollCallEntry.returned_at'),
+    },
+  );
+
+  final String userId;
+
+  /// İstemcinin bildirdiği çıkış anı.
+  final DateTime startedAt;
+
+  /// İstemcinin bildirdiği dönüş anı; dışarıdayken yoktur.
+  final DateTime? returnedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'started_at': startedAt.toUtc().toIso8601String(),
+    if (returnedAt case final value?)
+      'returned_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RollCallEntry &&
+          userId == other.userId &&
+          startedAt == other.startedAt &&
+          returnedAt == other.returnedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, startedAt, returnedAt]);
+}
+
+final class RollCallPlanRequest {
+  const RollCallPlanRequest({this.expectedReturnAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory RollCallPlanRequest.fromJson(Map<String, Object?> json) =>
+      RollCallPlanRequest(
+        expectedReturnAt: switch (json['expected_return_at']) {
+          null => null,
+          final Object v => _readDateTime(
+            v,
+            'RollCallPlanRequest.expected_return_at',
+          ),
+        },
+      );
+
+  /// Etkinliğin başlangıcından sonra. Yoksa (ya da `null`) plan kaldırılır.
+  final DateTime? expectedReturnAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (expectedReturnAt case final value?)
+      'expected_return_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RollCallPlanRequest &&
+          expectedReturnAt == other.expectedReturnAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[expectedReturnAt]);
+}
+
+final class RollCallReturnRequest {
+  const RollCallReturnRequest({this.returnedAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory RollCallReturnRequest.fromJson(Map<String, Object?> json) =>
+      RollCallReturnRequest(
+        returnedAt: switch (json['returned_at']) {
+          null => null,
+          final Object v => _readDateTime(
+            v,
+            'RollCallReturnRequest.returned_at',
+          ),
+        },
+      );
+
+  /// İstemcinin dönüş zamanı; yoksa şimdi. Çıkıştan önce olamaz.
+  final DateTime? returnedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (returnedAt case final value?)
+      'returned_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RollCallReturnRequest && returnedAt == other.returnedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[returnedAt]);
+}
+
+final class RollCallStartRequest {
+  const RollCallStartRequest({this.startedAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory RollCallStartRequest.fromJson(Map<String, Object?> json) =>
+      RollCallStartRequest(
+        startedAt: switch (json['started_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'RollCallStartRequest.started_at'),
+        },
+      );
+
+  /// İstemcinin çıkış zamanı; yoksa şimdi. Gelecekte değil, en fazla 48 saat önce.
+  final DateTime? startedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (startedAt case final value?)
+      'started_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RollCallStartRequest && startedAt == other.startedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[startedAt]);
 }
 
 final class Rsvp {
