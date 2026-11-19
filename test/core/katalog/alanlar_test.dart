@@ -7,8 +7,6 @@ import 'sahte_katalog.dart';
 
 void main() {
   final alanlar = testTuru('ornek_alanlar').definition.fields!;
-  CatalogField alan(String anahtar) =>
-      alanlar.firstWhere((a) => a.key == anahtar);
 
   /// Bütün alanları geçerli değerlerle dolu form.
   const dolu = <String, Object?>{

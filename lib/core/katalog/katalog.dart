@@ -24,9 +24,14 @@ const String genelTurAnahtari = 'general';
 final class Katalog {
   Katalog(Catalog ham)
     : surum = ham.catalogVersion,
-      ilgiAlanlari = List.unmodifiable(_tekil(ham.interests, (i) => i.key)),
+      ilgiAlanlari = List.unmodifiable(
+        _tekil<CatalogInterest>(ham.interests, (i) => i.key),
+      ),
       turler = List.unmodifiable(
-        _tekil(ham.eventTypes.where((t) => t.version >= 1), (t) => t.key),
+        _tekil<CatalogEventType>(
+          ham.eventTypes.where((t) => t.version >= 1),
+          (t) => t.key,
+        ),
       );
 
   /// Kataloğun bütününün sürümü (`catalog_version`).

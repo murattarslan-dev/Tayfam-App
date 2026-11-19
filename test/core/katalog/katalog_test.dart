@@ -115,7 +115,7 @@ void main() {
     test('düz metin: tek satır, görünmeyen karakterler atılır', () {
       expect(katalogDuzMetni('  Doğa \n yürüyüşü\t '), 'Doğa yürüyüşü');
       // Çift yönlü metin işareti ve sıfır genişlikli boşluk.
-      expect(katalogDuzMetni('Ka‮mp​'), 'Kamp');
+      expect(katalogDuzMetni('Ka\u202Emp\u200B'), 'Kamp');
       // Biçim ve bağlantı yorumlanmaz: olduğu gibi kalır.
       expect(
         katalogDuzMetni('<b>Kamp</b> [x](https://ornek.test)'),
