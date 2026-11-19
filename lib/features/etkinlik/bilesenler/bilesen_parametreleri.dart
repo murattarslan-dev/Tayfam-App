@@ -78,8 +78,7 @@ List<SecimliParametre> secimliParametreler(CatalogComponent bilesen) {
   if (params == null) return const [];
   final adlar = params.keys.toList()..sort();
   return [
-    for (final ad in adlar)
-      if (_secimli(ad, params[ad]) case final secimli?) secimli,
+    for (final ad in adlar) ?_secimli(ad, params[ad]),
   ];
 }
 

@@ -129,6 +129,15 @@ void main() {
 
         expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
         expect(tester.takeException(), isNull);
+        // Büyük yazıda bölümler ekranın altında kalır; liste oraya kadar
+        // kaydırılınca çizilir.
+        await tester.scrollUntilVisible(
+          find.textContaining('bileşen teams'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
         // Kayıttaki bileşen: rolü ve organizatörün seçimiyle. Kapalı
         // (optional, organizatör kapatmış) yoklama çizilmez.
         final cizilenler = tester
