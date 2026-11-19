@@ -12,7 +12,7 @@ final class EventsApi {
   /// Bitmemiş etkinlikler, başlangıç zamanına göre
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur). İptal edilenler
-  /// de listededir. Türe özel ayrıntı (`fishing`) listede dolmaz; tek
+  /// de listededir. Türün alan değerleri (`fields`) listede dolmaz; tek
   /// etkinlik ucunu kullanın.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events`
@@ -67,8 +67,8 @@ final class EventsApi {
 
   /// Tek etkinlik, türe özel ayrıntılarıyla
   ///
-  /// Katılımcılara özel balık noktasında (`spot_visibility=participants`)
-  /// katılmayan üye `meeting_point` ve `meeting_point_name` almaz. Araçlar
+  /// Balık etkinliğinin av günlüğü ve mera gizliliği `log` bileşenindedir
+  /// (`GET …/components/{component_key}/entries`, #243). Araçlar
   /// (ve plakalar) burada değildir; `vehicles` bileşenindedir
   /// (`GET …/components/{component_key}/vehicles`, #240). Kamp listesi
   /// `checklist` bileşenindedir (`GET …/components/{component_key}/items`,
@@ -97,12 +97,13 @@ final class EventsApi {
   /// - Yer: `mode`, `meeting_point_name`, `meeting_point`, `city`,
   ///   `district`, `online_url` birlikte değişir; bunlardan biri
   ///   gönderilirse `mode` zorunludur ve gönderilmeyenler boşalır.
-  /// - Türe özel ayrıntı (`fishing`) tamamen değişir. Konvoyun
+  /// - Türe özel ayrıntı yoktur (#243). Konvoyun
   ///   rotası `route` bileşenindedir
   ///   (`PUT …/components/{component_key}/route`); kampın ve yürüyüşün
   ///   ayrıntıları `fields`'tadır, yürüyüşün beklenen dönüşü `roll_call`
   ///   bileşenindedir
-  ///   (`PUT …/components/{component_key}/roll-call/expected-return`).
+  ///   (`PUT …/components/{component_key}/roll-call/expected-return`);
+  ///   balık etkinliğinin av günlüğü `log` bileşenindedir.
   ///
   /// Kapasiteyi artırmak bekleme listesindekileri sırayla `going` yapar.
   /// Seriye ait bir etkinlikte `apply_to_series` `false` (varsayılan) ise
@@ -314,88 +315,6 @@ final class EventsApi {
       authenticated: true,
     );
     return CheckIn.fromJson(jsonObject(response, 'checkInToEvent'));
-  }
-
-  /// Av günlüğü, eskiden yeniye
-  ///
-  /// Yalnızca balık etkinliğinde. Bir avın konumu avcıya, `tayfa`
-  /// görünürlüğünde noktayı görebilen herkese döner; diğerlerinde yoktur.
-  ///
-  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches`
-  ///
-  /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.
-  ///
-  /// [pageToken]: Önceki yanıtın `next_page_token` değeri; opak.
-  ///
-  /// Kısıtlar: maxLength: 1024.
-  Future<FishingCatchList> listFishingCatches({
-    required String tayfaId,
-    required String eventId,
-    int? pageSize,
-    String? pageToken,
-  }) async {
-    final response = await _transport.send(
-      method: 'GET',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
-      query: {
-        if (pageSize != null) 'page_size': '$pageSize',
-        if (pageToken != null) 'page_token': pageToken,
-      },
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return FishingCatchList.fromJson(
-      jsonObject(response, 'listFishingCatches'),
-    );
-  }
-
-  /// Av günlüğüne av ekler
-  ///
-  /// Katılımınız doğrulanmış olmalıdır (`not-attended`); bitişten sonraki
-  /// yedi güne kadar (`event-ended`). Avcı ve etkinlik başına en fazla 100
-  /// (`event-limit`). Aynı `client_request_id` ile tekrar gönderim ilk
-  /// avı döndürür. Konum isteğe bağlıdır; log'a yazılmaz.
-  ///
-  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches`
-  Future<FishingCatch> addFishingCatch({
-    required String tayfaId,
-    required String eventId,
-    required FishingCatchCreateRequest body,
-  }) async {
-    final response = await _transport.send(
-      method: 'POST',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
-      body: body.toJson(),
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return FishingCatch.fromJson(jsonObject(response, 'addFishingCatch'));
-  }
-
-  /// Av günlüğünden av çıkarır
-  ///
-  /// Kendi avınızı; moderatör ve yönetici herkesinkini.
-  ///
-  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches/{catch_id}`
-  Future<void> removeFishingCatch({
-    required String tayfaId,
-    required String eventId,
-    required String catchId,
-  }) async {
-    await _transport.send(
-      method: 'DELETE',
-      pathTemplate:
-          '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches/{catch_id}',
-      pathParams: {
-        'tayfa_id': tayfaId,
-        'event_id': eventId,
-        'catch_id': catchId,
-      },
-      expect: ResponseKind.none,
-      authenticated: true,
-    );
   }
 
   /// Etkinlik albümü, eskiden yeniye
@@ -1211,6 +1130,122 @@ final class EventsApi {
       authenticated: true,
     );
     return EventRollCall.fromJson(jsonObject(response, 'returnEventRollCall'));
+  }
+
+  /// Günlüğün kayıtları, eskiden yeniye
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Kayıtları herkes görür; bir kaydın
+  /// konumu kaydı girene, diğerlerine `location_visibility`'nin izin
+  /// verdiği kadar döner. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/entries`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.
+  ///
+  /// [pageToken]: Önceki yanıtın `next_page_token` değeri; opak.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  Future<EventLogEntryList> listEventLogEntries({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    int? pageSize,
+    String? pageToken,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/entries',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      query: {
+        if (pageSize != null) 'page_size': '$pageSize',
+        if (pageToken != null) 'page_token': pageToken,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventLogEntryList.fromJson(
+      jsonObject(response, 'listEventLogEntries'),
+    );
+  }
+
+  /// Günlüğe kayıt ekler
+  ///
+  /// Katılımınız doğrulanmış olmalıdır (`not-attended`). Kişi başına en
+  /// fazla bileşenin `max_entries` kadar (yoksa 100) kayıt
+  /// (`event-limit`). Değerler tanıma göre doğrulanır
+  /// (`invalid-request`, alan `values.<anahtar>`); zorunlu alanlar
+  /// verilir, tanımda olmayan alan gönderilmez. Konum yalnızca `location`
+  /// parametresi açık günlükte verilir. Aynı `client_request_id` ile
+  /// tekrar gönderim ilk kaydı döndürür. Bitişten 7 gün sonra donar
+  /// (`component-frozen`); iptal edilmiş etkinliğe yazılmaz. Bileşen
+  /// uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/entries`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventLogEntry> addEventLogEntry({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventLogEntryCreateRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/entries',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventLogEntry.fromJson(jsonObject(response, 'addEventLogEntry'));
+  }
+
+  /// Günlükten kayıt çıkarır
+  ///
+  /// Kendi kaydınızı yazma penceresi içinde (`component-frozen`);
+  /// moderatör ve yönetici herkesinkini her zaman (iptal edilmiş ve
+  /// donmuş etkinlikte de). Kayıt 30 gün sonra fotoğrafıyla kalıcı
+  /// silinir. Bilinmeyen kayıt `event-item-not-found`.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/entries/{entry_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<void> removeEventLogEntry({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String entryId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/entries/{entry_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'entry_id': entryId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
   }
 
   /// "Her şey yolunda mıydı?" cevabınız

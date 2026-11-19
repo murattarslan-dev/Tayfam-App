@@ -101,5 +101,4 @@ Event etkinlikKopyasi(
   seriesOverride: etkinlik.seriesOverride,
   createdAt: etkinlik.createdAt,
   updatedAt: etkinlik.updatedAt,
-  fishing: etkinlik.fishing,
 );

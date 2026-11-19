@@ -1,7 +1,8 @@
 /// Etkinlik özelliğinin dışa açık dosyası (ADR-0002): bileşen kaydı
-/// (ADR-0024 §3; her bileşen buraya kendi `export` satırını ekler), etkinlik
-/// türü kaydı ve türe özel araçları olan türler, etkinlik modülü, yaklaşan
-/// etkinlikler listesi ve etkinlik kartı (ADR-0015 §1, §3, §6). Detaydaki
+/// (ADR-0024 §3; her bileşen buraya kendi `export` satırını ekler),
+/// etkinlik modülü, yaklaşan etkinlikler listesi ve etkinlik kartı
+/// (ADR-0015 §1, §3). Faz 1 tür kaydı kalktı: türe özel araçlar
+/// bileşenlerdedir (#231). Detaydaki
 /// sohbet bölümünün yuvası kabukta doldurulur (Tayfam-Api #183).
 ///
 /// Anlık (bireysel) etkinlik (ADR-0026): [anlikEtkinlikRotasi] üst düzeye
@@ -18,6 +19,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/araclar/araclar_bileseni.dar
     show AraclarBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
     show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
+export 'package:tayfam/features/etkinlik/bilesenler/gunluk/gunluk_bileseni.dart'
+    show GunlukBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
     show ListeBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
@@ -35,6 +38,3 @@ export 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_modulu.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
-export 'package:tayfam/features/etkinlik/turler/balik/balik_turu.dart'
-    show BalikTuru;
-export 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';

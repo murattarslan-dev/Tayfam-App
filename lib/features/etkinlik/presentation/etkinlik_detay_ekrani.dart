@@ -39,7 +39,6 @@ import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
-import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -183,11 +182,6 @@ class _Detay extends ConsumerWidget {
     final iptal = iptalEdildi(etkinlik);
     final gerekce = etkinlik.cancelReason?.trim();
     final aciklama = etkinlik.description.trim();
-    final turler = ref.watch(etkinlikTurleriProvider);
-    final arac = etkinlikTuruBul(
-      turler,
-      etkinlik.type,
-    )?.aracBolumu(context, etkinlik);
     // Etkinlik, oluşturulduğu tür sürümünün tanımıyla gösterilir
     // (ADR-0024 §1). Tanım gelmeden katalog alanları gösterilmez.
     final tanim = turTaniminiIzle(
@@ -195,14 +189,11 @@ class _Detay extends ConsumerWidget {
       etkinlik.type,
       surum: etkinlik.typeVersion,
     );
-    final ayrintilar = [
-      ..._alanSatirlari(
-        context,
-        tanim?.version == etkinlik.typeVersion ? tanim : null,
-        etkinlik,
-      ),
-      ..._ayrintiSatirlari(m, etkinlik),
-    ];
+    final ayrintilar = _alanSatirlari(
+      context,
+      tanim?.version == etkinlik.typeVersion ? tanim : null,
+      etkinlik,
+    );
     final cevrimici = etkinlik.mode == EventMode.online;
     final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
     final guvenlik = ref.watch(etkinlikGuvenlikYuvasiProvider);
@@ -260,7 +251,6 @@ class _Detay extends ConsumerWidget {
                   AracBasligi(metin: m.etkinlik_tur_bilgileri),
                   BilgiIzgarasi(bilgiler: ayrintilar),
                 ],
-                ?arac,
                 // Bileşenler, tür tanımındaki sırayla (ADR-0024 §3).
                 EtkinlikBilesenBolumleri(
                   anahtar: anahtar,
@@ -1190,29 +1180,6 @@ class _CevrimiciBolumu extends ConsumerWidget {
 }
 
 // --- Türe özel bilgiler ------------------------------------------------------
-
-/// Türe özel bilgiler (yalnızca okunur; ADR-0015 §3). Bilgi ızgarasında
-/// gösterilir (tasarım: Etkinlik-Turler).
-List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
-  final satirlar = <(String, String)>[];
-  void ekle(String etiket, String? deger) {
-    if (deger != null && deger.trim().isNotEmpty) {
-      satirlar.add((etiket, deger.trim()));
-    }
-  }
-
-  final fishing = e.fishing;
-  if (fishing != null) {
-    ekle(
-      m.etkinlik_balik_gizlilik,
-      balikGizliligiAdi(
-        m,
-        fishing.spotVisibility ?? FishingDetailsSpotVisibility.tayfa,
-      ),
-    );
-  }
-  return satirlar;
-}
 
 /// Katalogdaki tür alanlarının değerleri (ADR-0024 §3): alan adı katalog
 /// metni, değer etkinliğin `fields` nesnesinden. Tanınmayan türdeki alan

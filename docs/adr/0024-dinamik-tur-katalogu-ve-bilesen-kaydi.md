@@ -305,3 +305,25 @@ kapalıdır.
   - **Varış.** Yürüyüşte "Geldim" düğmesi gösterilmez (`hike` tür
     denetimi `varis_bildirimi.dart`'ta durur); yoklamayı isteğe bağlı
     kullanan diğer türlerde varış bildirimi de açıktır.
+- **2026-11-19 (issue #231, uygulama; sözleşme Tayfam-Api #243, PR #286):**
+  - **Günlük.** `log` bileşeni `bilesenler/gunluk/`'dedir; son Faz 1 türü
+    balığın aracı (`turler/balik/`, `BalikTuru`), `Event.fishing`,
+    sihirbazdaki mera gizliliği ve Faz 1 tür kaydı (`EtkinlikTuru`,
+    `etkinlikTurleriProvider`, `EskiTur`, `TurAyrintisi`) kalktı. Balığın
+    av günlüğü `catches` anahtarlı günlüktür; bir etkinlikte birden çok
+    günlük olabileceği için durum `{component_key}` ile ayrılır.
+  - **Alanlar.** Kaydın alanları bileşenin `fields` parametresinden
+    (`CatalogField`) okunur ve tek alan çiziciyle çizilir; biçimi bozuk
+    alan atlanır. Alanlardan biri tanınmıyorsa ekleme kapanır ve
+    "uygulamayı güncelle" yazılır. Satırda ilk dolu alan başlıktır,
+    diğerleri "Ad: değer" olarak yazılır.
+  - **Konum.** Konumun açık olup olmadığı ve varsayılan görünürlük
+    yanıtın `location_enabled` / `location_default` alanlarından okunur.
+    Yer, kişinin haritada işaretlediği noktadır (içerik; Tayfam-Api
+    ADR-0008); cihazın anlık konumu kullanılmaz. Görünürlük
+    (`self` / `participants` / `tayfa`) kayıt başınadır ve yalnızca yerle
+    gönderilir; bir kaydın yeri yalnızca sunucu döndürdüyse gösterilir.
+  - **Yetki.** Ekleme `caller_can_add`, çıkarma kayıt başına
+    `caller_can_remove` ile sadeleşir. Donmuş, kapatılmış ya da iptal
+    edilmiş günlük ve silinmiş kayıt hatalarında günlük yeniden okunur.
+    Fotoğraf mevcut medya akışıyla `log_photo` amacıyla yüklenir.
