@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/ana_sayfa_katilim.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart';
@@ -118,20 +120,33 @@ class EtkinlikBolumu extends ConsumerWidget {
 /// Yaklaşan bölümündeki ve etkinlik listesindeki kısa etkinlik satırı
 /// (tasarım: Ana-Ilk-Ekran, Etkinlikler). İptal edilen etkinliğin başlığı
 /// ikincil renkte ve üstü çizilidir; sağda "İptal edildi" etiketi.
-class YaklasanSatiri extends StatelessWidget {
+class YaklasanSatiri extends ConsumerWidget {
   const YaklasanSatiri({super.key, required this.etkinlik, this.onTap});
 
   final Event etkinlik;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final yazi = context.yazi;
     final iptal = iptalEdildi(etkinlik);
     final yerel = etkinlik.startsAt.toLocal();
-    final tur = etkinlikTuruGirdisi(etkinlik.type).ad(m);
+    // Tür adı katalogdan; katalog gelmediyse "Etkinlik" (ADR-0024 §1).
+    final tur =
+        turGorunumu(
+          etkinlik.type,
+          turTaniminiIzle(
+            ref,
+            etkinlik.type,
+            surum: etkinlik.typeVersion,
+            guncelYeter: true,
+          ),
+          ref.watch(katalogProvider).value,
+          katalogDili(context),
+        ).ad ??
+        m.katalog_tur_bilinmiyor;
     final zaman = m.etkinlik_satir_zaman(yerel, yerel);
     final yer = etkinlikYeri(m, etkinlik);
     final ozet = yer == null

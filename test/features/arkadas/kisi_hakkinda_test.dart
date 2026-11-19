@@ -23,7 +23,7 @@ Map<String, Object?> _doluProfil(
 }) => {
   ...kisiProfiliJson(id, durum: id == benimId ? null : 'friends'),
   'birthday': dogumGunu,
-  'interests': ['convoy', 'camp'],
+  'interests': ['automotive', 'nature'],
   'about': 'Hafta sonları yola çıkarım.',
   'occupation': 'Makine mühendisi',
   'team': 'Örnekspor',
@@ -77,7 +77,7 @@ void main() {
       final acici = await _ac(tester, _doluProfil(kisiId1));
 
       expect(find.text('Hafta sonları yola çıkarım.'), findsOneWidget);
-      expect(find.byType(EtkinlikTuruCipi), findsNWidgets(2));
+      expect(find.byType(IlgiAlaniCipi), findsNWidgets(2));
       expect(find.text('14 Mart'), findsOneWidget);
       expect(find.text('Makine mühendisi'), findsOneWidget);
       expect(find.text('Örnekspor'), findsOneWidget);

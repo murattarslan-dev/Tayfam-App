@@ -35,6 +35,7 @@ final class _SahteTasima implements ApiTransport {
     required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
@@ -47,6 +48,7 @@ final class _SahteTasima implements ApiTransport {
         body,
         expect,
         authenticated,
+        headers,
       ),
     );
     return yanit;
@@ -62,6 +64,7 @@ final class _Istek {
     this.body,
     this.expect,
     this.authenticated,
+    this.headers,
   );
 
   final String method;
@@ -71,9 +74,92 @@ final class _Istek {
   final Object? body;
   final ResponseKind expect;
   final bool authenticated;
+  final Map<String, String> headers;
 }
 
 void main() {
+  group('katalog (koşullu GET, serbest nesne)', () {
+    Map<String, Object?> katalogJson() => {
+      'catalog_version': 7,
+      'interests': const <Object?>[],
+      'event_types': [
+        {
+          'key': 'hike',
+          'interest_keys': ['nature'],
+          'labels': {'tr': 'Doğa yürüyüşü'},
+          'icon': 'hiking',
+          'modes': ['in_person'],
+          'status': 'active',
+          'version': 3,
+          'definition': {
+            'components': [
+              {
+                'kind': 'roll_call',
+                'params': {'alarm': true, 'return_grace_minutes': 30},
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    test('If-None-Match başlık olarak gider; 304 null döner', () async {
+      final tasima = _SahteTasima();
+      expect(await CatalogApi(tasima).getCatalog(ifNoneMatch: '"7"'), isNull);
+      final istek = tasima.istekler.single;
+      expect(istek.method, 'GET');
+      expect(istek.pathTemplate, '/v1/catalog');
+      expect(istek.headers, {'If-None-Match': '"7"'});
+      expect(istek.authenticated, isTrue);
+    });
+
+    test('başlıksız okuma başlık göndermez ve kataloğu çözer', () async {
+      final tasima = _SahteTasima(katalogJson());
+      final katalog = await CatalogApi(tasima).getCatalog();
+      expect(tasima.istekler.single.headers, isEmpty);
+      expect(katalog!.catalogVersion, 7);
+      final tur = katalog.eventTypes.single;
+      expect(tur.labels, {'tr': 'Doğa yürüyüşü'});
+      expect(tur.modes, [EventMode.inPerson]);
+      // Serbest nesne (`params`) çözülmüş JSON olarak gelir ve aynen yazılır.
+      final bilesen = tur.definition.components!.single;
+      expect(bilesen.params, {'alarm': true, 'return_grace_minutes': 30});
+      expect(Catalog.fromJson(katalog.toJson()), katalog);
+      expect(() => bilesen.params!['x'] = 1, throwsUnsupportedError);
+    });
+
+    test('tür sürümü yol parametreleriyle istenir', () async {
+      final tasima = _SahteTasima(
+        (katalogJson()['event_types']! as List<Object?>).single,
+      );
+      final tur = await CatalogApi(tasima)
+          .getCatalogEventTypeVersion(key: 'hike', version: 3);
+      expect(tur.version, 3);
+      expect(tasima.istekler.single.pathParams, {
+        'key': 'hike',
+        'version': '3',
+      });
+    });
+
+    test('etkinliğin fields alanı serbest nesnedir', () {
+      const istek = EventUpdateRequest(
+        fields: {
+          'game': 'Valorant',
+          'tags': ['a', 'b'],
+        },
+      );
+      expect(istek.toJson(), {
+        'fields': {
+          'game': 'Valorant',
+          'tags': ['a', 'b'],
+        },
+      });
+      expect(const EventUpdateRequest(fields: {}).toJson(), {
+        'fields': <String, Object?>{},
+      });
+    });
+  });
+
   group('modeller', () {
     test('fromJson → toJson → fromJson aynı modeli verir', () {
       final tayfa = Tayfa.fromJson(_tayfaJson());
@@ -83,7 +169,8 @@ void main() {
 
     test('alanlar tiplerine çevrilir; zamanlar UTC', () {
       final tayfa = Tayfa.fromJson(_tayfaJson());
-      expect(tayfa.interests, [EventType.convoy, EventType.camp]);
+      // İlgi alanı katalog anahtarıdır (takma ad: String), enum değil.
+      expect(tayfa.interests, ['convoy', 'camp']);
       expect(tayfa.joinPolicy, JoinPolicy.approval);
       expect(tayfa.status, TayfaStatus.active);
       expect(tayfa.modules.qa, isFalse);
@@ -117,7 +204,7 @@ void main() {
           'interests': ['convoy', 'yelken'],
           'status': 'gelecek_durum',
         });
-        expect(tayfa.interests, [EventType.convoy, EventType.unknown]);
+        expect(tayfa.interests, ['convoy', 'yelken']);
         expect(tayfa.status, TayfaStatus.unknown);
         // Sözleşmede olmayan unknown sunucuya gönderilemez.
         expect(tayfa.toJson, throwsStateError);
@@ -126,7 +213,7 @@ void main() {
 
     test('koleksiyonlar değiştirilemez', () {
       final tayfa = Tayfa.fromJson(_tayfaJson());
-      expect(() => tayfa.interests.add(EventType.hike), throwsUnsupportedError);
+      expect(() => tayfa.interests.add('hike'), throwsUnsupportedError);
     });
 
     test('eksik zorunlu alan FormatException; mesajda değer yok', () {

@@ -75,6 +75,8 @@ Event etkinlikKopyasi(
   id: etkinlik.id,
   tayfaId: etkinlik.tayfaId,
   type: etkinlik.type,
+  typeVersion: etkinlik.typeVersion,
+  fields: etkinlik.fields,
   mode: etkinlik.mode,
   title: etkinlik.title,
   description: etkinlik.description,
@@ -105,6 +107,4 @@ Event etkinlikKopyasi(
   camp: camp ?? etkinlik.camp,
   hike: etkinlik.hike,
   fishing: etkinlik.fishing,
-  gaming: etkinlik.gaming,
-  sports: etkinlik.sports,
 );

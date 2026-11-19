@@ -38,7 +38,7 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   Tayfa eski, {
   required String ad,
   required String aciklama,
-  required Set<EventType> ilgi,
+  required Set<String> ilgi,
   required JoinPolicy katilim,
   required bool uyeEtkinlikAcar,
   Object? kapak = _kapakAyni,
@@ -47,7 +47,7 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
       !identical(kapak, _kapakAyni) && kapak != eski.coverUploadId;
   final yeniAd = ad.trim();
   final yeniAciklama = aciklama.trim();
-  final eskiIlgi = eski.interests.where(ilgiAlanlari.contains).toSet();
+  final eskiIlgi = eski.interests.toSet();
   final ilgiDegisti =
       eskiIlgi.length != ilgi.length || !eskiIlgi.containsAll(ilgi);
   final istek = TayfaUpdateRequest(
@@ -56,8 +56,8 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
     description: yeniAciklama == eski.description ? null : yeniAciklama,
     interests: ilgiDegisti
         ? [
-            for (final t in ilgiAlanlari)
-              if (ilgi.contains(t)) t,
+            // Formdaki sırayla (katalog sırası; `bilgiler_ekrani`).
+            ...ilgi,
           ]
         : null,
     joinPolicy: katilim == eski.joinPolicy ? null : katilim,

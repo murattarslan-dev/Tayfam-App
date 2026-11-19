@@ -30,7 +30,7 @@ const double rotaOnizlemeYakinligi = 10;
 /// aracını ekler ve değiştirir (plaka isteğe bağlı); kendi aracını ve,
 /// yönetebiliyorsa, başkasının aracını çıkarır.
 final class KonvoyTuru extends KayitliEtkinlikTuru {
-  const KonvoyTuru() : super(EventType.convoy);
+  const KonvoyTuru() : super('convoy');
 
   @override
   Widget? aracBolumu(BuildContext context, Event etkinlik) =>

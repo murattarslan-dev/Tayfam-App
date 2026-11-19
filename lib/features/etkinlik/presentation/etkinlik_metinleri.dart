@@ -84,30 +84,6 @@ String katilimciSekmesi(AppLocalizations m, ListEventAttendeesStatus durum) =>
       ListEventAttendeesStatus.unknown => m.etkinlik_katilimci_waitlist,
     };
 
-/// Oyun platformunun adı.
-String platformAdi(AppLocalizations m, GamingDetailsPlatform platform) =>
-    switch (platform) {
-      GamingDetailsPlatform.pc => m.etkinlik_platform_pc,
-      GamingDetailsPlatform.playstation => m.etkinlik_platform_playstation,
-      GamingDetailsPlatform.xbox => m.etkinlik_platform_xbox,
-      GamingDetailsPlatform.switch_ => m.etkinlik_platform_switch,
-      GamingDetailsPlatform.mobile => m.etkinlik_platform_mobile,
-      GamingDetailsPlatform.other ||
-      GamingDetailsPlatform.unknown => m.etkinlik_platform_other,
-    };
-
-/// Spor dalının adı.
-String sporAdi(AppLocalizations m, SportsDetailsSport spor) => switch (spor) {
-  SportsDetailsSport.football => m.etkinlik_spor_football,
-  SportsDetailsSport.tableFootball => m.etkinlik_spor_table_football,
-  SportsDetailsSport.basketball => m.etkinlik_spor_basketball,
-  SportsDetailsSport.volleyball => m.etkinlik_spor_volleyball,
-  SportsDetailsSport.tennis => m.etkinlik_spor_tennis,
-  SportsDetailsSport.tableTennis => m.etkinlik_spor_table_tennis,
-  SportsDetailsSport.other ||
-  SportsDetailsSport.unknown => m.etkinlik_spor_other,
-};
-
 /// Var / yok / bilinmiyor.
 String varYok(AppLocalizations m, bool? deger) => switch (deger) {
   true => m.etkinlik_var,
@@ -124,18 +100,6 @@ String balikGizliligiAdi(
     m.etkinlik_balik_gizlilik_participants,
   FishingDetailsSpotVisibility.tayfa ||
   FishingDetailsSpotVisibility.unknown => m.etkinlik_balik_gizlilik_tayfa,
-};
-
-/// Sihirbazın tür kutusundaki kısa açıklama (2026-11-13 tasarım:
-/// Sihirbaz-Tur).
-String turAciklamasi(AppLocalizations m, EventType tur) => switch (tur) {
-  EventType.convoy => m.etkinlik_tur_aciklama_convoy,
-  EventType.camp => m.etkinlik_tur_aciklama_camp,
-  EventType.hike => m.etkinlik_tur_aciklama_hike,
-  EventType.fishing => m.etkinlik_tur_aciklama_fishing,
-  EventType.gaming => m.etkinlik_tur_aciklama_gaming,
-  EventType.sports => m.etkinlik_tur_aciklama_sports,
-  EventType.general || EventType.unknown => m.etkinlik_tur_aciklama_general,
 };
 
 /// Tekrarın sıklığı: "Her hafta", "2 haftada bir", "Her ay", "3 ayda bir".

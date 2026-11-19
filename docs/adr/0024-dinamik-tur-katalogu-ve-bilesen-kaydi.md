@@ -187,3 +187,34 @@ kapalıdır.
 - **Katalogu diske yazmak:** Çevrimdışı ilk açılışta tür adlarını gösterirdi,
   ama ADR-0006'ya istisna açar; kazanç küçük.
 - **Katalog metinlerini ARB'ye üretmek:** Yeni tür yine sürüm isterdi.
+
+## Notlar
+
+- **2026-11-19 (issue #225, uygulama):**
+  - **Okuma.** `katalogProvider` kendiliğinden istek atmaz; kataloğu
+    kabuk katmanı (`KatalogYenileyici`: oturum açıldıktan sonra ve ön plana
+    dönünce, en fazla saatte bir) ve kataloğa ihtiyaç duyan bölümler
+    (`KatalogBekleyici`: tür seçimi, ilgi alanı seçimi) okutur. Çipler ve
+    kartlar yalnızca eldeki kataloğu gösterir. Katalog kişisel veri
+    taşımadığı için oturum değişince sıfırlanmaz.
+  - **İlgi alanları.** Sözleşmede tayfa ve profil ilgi alanları artık
+    etkinlik türü değil, katalogdaki ilgi alanı anahtarıdır
+    (`InterestKey`); seçim listeleri katalogdan gelir, emekli ilgi alanı
+    yalnızca seçiliyse gösterilir.
+  - **Renk.** Katalog renk taşımaz. ADR-0004'teki yedi türün rengi
+    korunur; ilgi alanları en yakın türün rengini alır (otomobil → konvoy,
+    doğa → kamp, su → balık, oyun → oyun, spor → spor), haritada olmayan
+    tür ana ilgi alanının, o da yoksa genel rengi alır
+    (`core/katalog/katalog_renkleri.dart`). Yeni ilgi alanlarının rengi
+    platform sahibinin kararıdır (açık soru; Tasarım Standartları).
+  - **Katalogsuz ekranlar.** Giriş, hoş geldin ve karşılamadaki örnek tür
+    hapları katalog gelmeden çizildiği için adları ARB'de kalır
+    (`TanitimTuru`); yalnızca tanıtımdır.
+  - **Geçiş sırası.** `EventType` ve `etkinlik_turu_kaydi.dart` bu iş
+    kaydıyla kalktı. `features/etkinlik/turler/` (konvoy, kamp, yürüyüş,
+    balık araç bölümleri) ve sihirbazdaki bu dört türün Faz 1 alanları,
+    sözleşmede hâlâ ayrı nesne oldukları için (`Event.convoy` …) bileşen
+    kaydı iş kaydına (#226) kadar durur.
+  - **İkon listesi.** `tool/katalog_ikonlari` haritadaki anahtarları yazar
+    ve bir listeyle karşılaştırır; CI adımı Tayfam-Api'de panelin ikon
+    listesi oluşunca eklenir (`.github/`, platform sahibi).

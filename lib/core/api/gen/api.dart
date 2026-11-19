@@ -6,6 +6,7 @@ library;
 export 'package:tayfam/core/api/gen/apis/announcements_api.dart';
 export 'package:tayfam/core/api/gen/apis/answers_api.dart';
 export 'package:tayfam/core/api/gen/apis/auth_api.dart';
+export 'package:tayfam/core/api/gen/apis/catalog_api.dart';
 export 'package:tayfam/core/api/gen/apis/channels_api.dart';
 export 'package:tayfam/core/api/gen/apis/client_config_api.dart';
 export 'package:tayfam/core/api/gen/apis/conversion_api.dart';

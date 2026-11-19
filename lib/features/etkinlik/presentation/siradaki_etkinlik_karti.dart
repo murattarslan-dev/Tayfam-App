@@ -87,7 +87,10 @@ class _Kart extends ConsumerWidget {
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                EtkinlikTuruCipi(tur: etkinlik.type),
+                EtkinlikTuruCipi(
+                  tur: etkinlik.type,
+                  surum: etkinlik.typeVersion,
+                ),
                 Etiket(
                   metin: m.etkinlik_siradaki(
                     geriSayim(

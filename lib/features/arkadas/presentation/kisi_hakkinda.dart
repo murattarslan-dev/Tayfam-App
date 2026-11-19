@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/kullanici/sosyal_medya.dart';
 import 'package:tayfam/core/metin/diller.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -34,9 +35,12 @@ class KisiHakkinda extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final p = profil;
     final hakkimda = p.about?.trim() ?? '';
+    // Yalnızca katalogda adı olan ilgi alanları çizilir (ADR-0024 §2);
+    // katalog gelmeden bölüm boş kalır.
+    final katalog = ref.watch(katalogProvider).value;
     final ilgiler = [
-      for (final t in p.interests ?? const <EventType>[])
-        if (t != EventType.unknown) t,
+      for (final anahtar in p.interests ?? const <String>[])
+        if (katalog?.ilgiAlani(anahtar) != null) anahtar,
     ];
     final dogumGunu = dogumGunuMetni(m, p.birthday);
     final meslek = p.occupation?.trim() ?? '';
@@ -104,7 +108,8 @@ class KisiHakkinda extends ConsumerWidget {
                         spacing: TayfamSpacing.s8,
                         runSpacing: TayfamSpacing.s8,
                         children: [
-                          for (final tur in ilgiler) EtkinlikTuruCipi(tur: tur),
+                          for (final anahtar in ilgiler)
+                            IlgiAlaniCipi(anahtar: anahtar),
                         ],
                       ),
                   ],

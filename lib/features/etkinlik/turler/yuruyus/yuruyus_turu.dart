@@ -19,7 +19,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// sayılır; "Döndüm" çıkıştan sonra (bitişten sonra da) görünür. Dönmeme
 /// alarmı sunucudadır.
 final class YuruyusTuru extends KayitliEtkinlikTuru {
-  const YuruyusTuru() : super(EventType.hike);
+  const YuruyusTuru() : super('hike');
 
   @override
   Widget? aracBolumu(BuildContext context, Event etkinlik) =>

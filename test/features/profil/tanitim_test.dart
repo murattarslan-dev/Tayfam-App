@@ -236,7 +236,7 @@ void main() {
         ikiKatYazi(tester);
         await _Ortam({
           hesapYolu: () => _bekleyenHesap(const {
-            'interests': ['convoy', 'camp'],
+            'interests': ['automotive', 'nature'],
             'about': 'Hafta sonları yola çıkarım.',
             'declined_profile_fields': ['team'],
             'languages': ['tr', 'en'],
@@ -390,7 +390,7 @@ void main() {
       ekranBoyutu(tester, yukseklik: 1200);
       final o = _Ortam({
         hesapYolu: () => _bekleyenHesap(const {
-          'interests': ['convoy', 'camp'],
+          'interests': ['automotive', 'nature'],
           'declined_profile_fields': ['team'],
           'languages': ['tr', 'en'],
         }),
@@ -398,7 +398,7 @@ void main() {
       });
       await o.yonlendiriciyleAc(tester, Adresler.tanitimBilgileri);
 
-      expect(find.text('Konvoy, Kamp'), findsOneWidget);
+      expect(find.text('Otomobil ve motor, Doğa'), findsOneWidget);
       expect(find.text('Türkçe, İngilizce'), findsOneWidget);
       expect(_metin('profil_tamamla_paylasmak_istemiyorum'), findsOneWidget);
       // Hakkımda, meslek ve sosyal medya eklenmedi.

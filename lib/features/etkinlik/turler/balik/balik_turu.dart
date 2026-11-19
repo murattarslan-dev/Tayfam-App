@@ -35,7 +35,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   cihaz konumu kullanılmaz (kesin kural 3).
 /// - Kendi avını herkes, başkasınınkini moderatör ve yönetici çıkarır.
 final class BalikTuru extends KayitliEtkinlikTuru {
-  const BalikTuru() : super(EventType.fishing);
+  const BalikTuru() : super('fishing');
 
   @override
   Widget? aracBolumu(BuildContext context, Event etkinlik) =>

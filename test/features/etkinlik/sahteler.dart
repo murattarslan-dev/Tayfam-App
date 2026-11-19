@@ -96,6 +96,7 @@ Map<String, Object?> etkinlikJson({
     'id': id,
     'tayfa_id': ornekTayfaId,
     'type': tur,
+    'type_version': 1,
     'mode': mod,
     'title': baslik,
     'description': aciklama,
@@ -347,8 +348,9 @@ List<Override> etkinlikOverridelari({
   KonumServisi? konum,
   SonTayfaDeposu? sonTayfa,
   MagazaDegerlendirmesi? magaza,
+  Override? katalog,
 }) => [
-  ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa),
+  ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
   sikayetDeposuProvider.overrideWithValue(SikayetDeposu(tasima)),
   profilOkuyucuProvider.overrideWithValue((id) async {

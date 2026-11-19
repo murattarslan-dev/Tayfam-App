@@ -176,6 +176,7 @@ Event kesfetEtkinligi({
     'id': kesfetEtkinlikId,
     'tayfa_id': kesfetTayfaId,
     'type': 'hiking',
+    'type_version': 1,
     'mode': mod,
     'title': 'Yürüyüş',
     'description': '',

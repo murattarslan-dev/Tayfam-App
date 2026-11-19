@@ -11,15 +11,6 @@ class _DenemeTuru implements EtkinlikTuru {
   String get sunucuDegeri => 'convoy';
 
   @override
-  IconData get ikon => Icons.directions_car;
-
-  @override
-  String etiket(BuildContext context) => 'Konvoy';
-
-  @override
-  Widget formAlanlari(BuildContext context) => const SizedBox.shrink();
-
-  @override
   Widget? aracBolumu(BuildContext context, Event etkinlik) => null;
 }
 

@@ -77,11 +77,11 @@ final class Account {
     birthdayVisibility: BirthdayVisibility.fromWire(
       _readString(json['birthday_visibility'], 'Account.birthday_visibility'),
     ),
-    interests: List<EventType>.unmodifiable(
-      _readList(json['interests'], 'Account.interests').map(
-        (Object? e0) =>
-            EventType.fromWire(_readString(e0, 'Account.interests')),
-      ),
+    interests: List<String>.unmodifiable(
+      _readList(
+        json['interests'],
+        'Account.interests',
+      ).map((Object? e0) => _readString(e0, 'Account.interests')),
     ),
     about: switch (json['about']) {
       null => null,
@@ -142,7 +142,7 @@ final class Account {
 
   final BirthdayVisibility birthdayVisibility;
 
-  final List<EventType> interests;
+  final List<String> interests;
 
   /// Boşsa alan yoktur.
   final String? about;
@@ -174,7 +174,7 @@ final class Account {
     'referral_code': referralCode,
     'activity_visibility': activityVisibility.wire,
     'birthday_visibility': birthdayVisibility.wire,
-    'interests': <Object?>[for (final e0 in interests) e0.wire],
+    'interests': <Object?>[for (final e0 in interests) e0],
     if (about case final value?) 'about': value,
     if (occupation case final value?) 'occupation': value,
     if (team case final value?) 'team': value,
@@ -267,11 +267,11 @@ final class AccountUpdate {
     },
     interests: switch (json['interests']) {
       null => null,
-      final Object v => List<EventType>.unmodifiable(
-        _readList(v, 'AccountUpdate.interests').map(
-          (Object? e0) =>
-              EventType.fromWire(_readString(e0, 'AccountUpdate.interests')),
-        ),
+      final Object v => List<String>.unmodifiable(
+        _readList(
+          v,
+          'AccountUpdate.interests',
+        ).map((Object? e0) => _readString(e0, 'AccountUpdate.interests')),
       ),
     },
     about: switch (json['about']) {
@@ -333,10 +333,10 @@ final class AccountUpdate {
 
   final BirthdayVisibility? birthdayVisibility;
 
-  /// Etkinlik türlerinden tekrarsız çoklu seçim.
+  /// Katalogdaki ilgi alanlarından tekrarsız çoklu seçim.
   ///
-  /// Kısıtlar: maxItems: 7; uniqueItems: true.
-  final List<EventType>? interests;
+  /// Kısıtlar: maxItems: 20; uniqueItems: true.
+  final List<String>? interests;
 
   /// Hakkımda; kırpıldıktan sonra en fazla 160 karakter, satır sonu olabilir. `""` temizler.
   ///
@@ -376,7 +376,7 @@ final class AccountUpdate {
     if (activityVisibility case final value?) 'activity_visibility': value.wire,
     if (birthdayVisibility case final value?) 'birthday_visibility': value.wire,
     if (interests case final value?)
-      'interests': <Object?>[for (final e0 in value) e0.wire],
+      'interests': <Object?>[for (final e0 in value) e0],
     if (about case final value?) 'about': value,
     if (occupation case final value?) 'occupation': value,
     if (team case final value?) 'team': value,
@@ -481,9 +481,7 @@ final class ActivityRecord {
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory ActivityRecord.fromJson(Map<String, Object?> json) => ActivityRecord(
-    eventType: EventType.fromWire(
-      _readString(json['event_type'], 'ActivityRecord.event_type'),
-    ),
+    eventType: _readString(json['event_type'], 'ActivityRecord.event_type'),
     mode: ActivityRecordMode.fromWire(
       _readString(json['mode'], 'ActivityRecord.mode'),
     ),
@@ -519,7 +517,7 @@ final class ActivityRecord {
     },
   );
 
-  final EventType eventType;
+  final String eventType;
 
   final ActivityRecordMode mode;
 
@@ -545,7 +543,7 @@ final class ActivityRecord {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
-    'event_type': eventType.wire,
+    'event_type': eventType,
     'mode': mode.wire,
     if (city case final value?) 'city': value,
     if (district case final value?) 'district': value,
@@ -2016,6 +2014,838 @@ final class CampItemCreateRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[name, quantity, assignedUserId]);
+}
+
+final class Catalog {
+  const Catalog({
+    required this.catalogVersion,
+    required this.interests,
+    required this.eventTypes,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory Catalog.fromJson(Map<String, Object?> json) => Catalog(
+    catalogVersion: _readInt(
+      json['catalog_version'],
+      'Catalog.catalog_version',
+    ),
+    interests: List<CatalogInterest>.unmodifiable(
+      _readList(json['interests'], 'Catalog.interests').map(
+        (Object? e0) =>
+            CatalogInterest.fromJson(_readObject(e0, 'Catalog.interests')),
+      ),
+    ),
+    eventTypes: List<CatalogEventType>.unmodifiable(
+      _readList(json['event_types'], 'Catalog.event_types').map(
+        (Object? e0) =>
+            CatalogEventType.fromJson(_readObject(e0, 'Catalog.event_types')),
+      ),
+    ),
+  );
+
+  /// Kataloğun bütününün sürümü; her değişiklikte artar. `ETag` ile aynıdır.
+  final int catalogVersion;
+
+  /// Bütün ilgi alanları (emekliler dahil), `position` sırasıyla.
+  final List<CatalogInterest> interests;
+
+  /// Aktif türlerin güncel sürümleri, listeleme sırasıyla.
+  final List<CatalogEventType> eventTypes;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'catalog_version': catalogVersion,
+    'interests': <Object?>[for (final e0 in interests) e0.toJson()],
+    'event_types': <Object?>[for (final e0 in eventTypes) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Catalog &&
+          catalogVersion == other.catalogVersion &&
+          _deepEquals(interests, other.interests) &&
+          _deepEquals(eventTypes, other.eventTypes);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    catalogVersion,
+    _deepHash(interests),
+    _deepHash(eventTypes),
+  ]);
+}
+
+/// Bir bileşen (ADR-0025 §4, ADR-0037 §3). `kind` kapalı listedir ve
+/// kodla büyür; istemci tanımadığı bir `kind` görürse o bölümde
+/// "uygulamayı güncelle" gösterir, etkinliğin geri kalanı çalışır
+/// (ADR-0025 §9). Katılım, kontenjan, check-in ve albüm her etkinliğin
+/// temelidir; bileşen değildir.
+///
+/// `params` bileşene göre değişir; bilinmeyen parametre yok sayılır.
+/// "seçimli" işaretli parametre, değer yerine organizatöre bırakılan bir
+/// liste olabilir: `{"organizer_choice": ["elimination", "league",
+/// "swiss"], "default": "swiss"}` (ADR-0037 §2).
+///
+/// | `kind` | `params` |
+/// |--------|----------|
+/// | `route` | — |
+/// | `meeting_point` | — |
+/// | `schedule` | `max_items` (1–100) |
+/// | `checklist` | `label` (`gear`, `task`, `section`, `duty`, `item`), `assignment`, `quantity` (boolean) |
+/// | `roll_call` | `alarm` (boolean), `return_grace_minutes` (1–1440) |
+/// | `vehicles` | `plate`, `seats` (boolean) |
+/// | `teams` | `mode` (`random`, `balanced`, `manual`; seçimli), `team_size` (1–50), `team_count` (2–50) |
+/// | `draw` | — |
+/// | `bracket` | `format` (`elimination`, `league`, `swiss`; seçimli), `best_of` (1, 3, 5; seçimli) |
+/// | `scoreboard` | `side` (`player`, `team`), `tables` (boolean), `presets` (ön ayar anahtarları), `rounds` (`round`, `single`, `first_to`; seçimli), `target` (1–100000), `winner` (`high`, `low`, `first`; seçimli), `result` (`points`, `wdl`), `best_of` (1, 3, 5; seçimli), `guests` (boolean) |
+/// | `ranking` | `source` (bir ölçümün `key`'i), `metric` (`duration`, `rank`), `direction` (`asc`, `desc`) |
+/// | `vote` | `source` (`free`, `participants`, `vehicles`, `album`, `route_stops`; zorunlu) |
+/// | `celebration` | `source` (bir `scoreboard`, `bracket`, `ranking` ya da `vote` bileşeninin `key`'i) |
+/// | `measure` | `unit`, `scope` (`personal`, `total`), `entered_by` (`self`, `organizer`) zorunlu; `min`, `max`, `decimals` (0–3), `showcase`, `sensitive` (boolean), `prefill_from` (bir alanın `key`'i) |
+/// | `goal` | `measure` (bir ölçümün `key`'i; zorunlu), `default_target` |
+/// | `log` | `fields` (`CatalogField` listesi, 1–8; zorunlu), `location` (boolean), `location_default` (`self`, `participants`, `tayfa`), `stat` (en fazla 3: `count`, `distinct:<alan>`, `sum:<alan>`), `max_entries` (1–500) |
+/// | `questions` | `anonymous` (boolean) |
+/// | `timer` | `mode` (`countdown`, `stopwatch`, `chess_clock`; seçimli), `presets` (saniye, en fazla 6) |
+/// | `pool_link` | `max_links` (1–50) |
+///
+/// Birimler (`unit`, kapalı liste; adları çeviri dosyasında): `kg`,
+/// `piece`, `bag`, `km`, `m`, `altitude_m`, `page`, `minute`, `hour`,
+/// `unit`, `goal`, `point`, `night`, `nm`, `box`, `section`, `net`.
+/// Para birimi yoktur; hiçbir bileşende para, bahis ya da ödül
+/// parametresi yoktur.
+final class CatalogComponent {
+  const CatalogComponent({
+    required this.kind,
+    this.key,
+    this.labels,
+    this.optional,
+    this.params,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogComponent.fromJson(Map<String, Object?> json) =>
+      CatalogComponent(
+        kind: _readString(json['kind'], 'CatalogComponent.kind'),
+        key: switch (json['key']) {
+          null => null,
+          final Object v => _readString(v, 'CatalogComponent.key'),
+        },
+        labels: switch (json['labels']) {
+          null => null,
+          final Object v => Map<String, String>.unmodifiable(
+            _readObject(v, 'CatalogComponent.labels').map(
+              (String k0, Object? e0) =>
+                  MapEntry(k0, _readString(e0, 'CatalogComponent.labels')),
+            ),
+          ),
+        },
+        optional: switch (json['optional']) {
+          null => null,
+          final Object v => CatalogComponentOptional.fromJson(
+            _readObject(v, 'CatalogComponent.optional'),
+          ),
+        },
+        params: switch (json['params']) {
+          null => null,
+          final Object v => _readJsonObject(v, 'CatalogComponent.params'),
+        },
+      );
+
+  /// Bileşen türü (yukarıdaki tablo).
+  final String kind;
+
+  /// Bileşenin tür içindeki anahtarı; yoksa `kind` ile aynıdır. Aynı
+  /// `kind` bir türde birden fazla kez kullanılıyorsa (iki ölçüm) her
+  /// biri kendi anahtarını taşır. `measure` ve `log` için zorunludur.
+  final String? key;
+
+  final Map<String, String>? labels;
+
+  final CatalogComponentOptional? optional;
+
+  /// Bileşenin parametreleri (yukarıdaki tablo); bileşene göre değişen serbest nesne.
+  final Map<String, Object?>? params;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'kind': kind,
+    if (key case final value?) 'key': value,
+    if (labels case final value?)
+      'labels': <String, Object?>{
+        for (final e0 in value.entries) e0.key: e0.value,
+      },
+    if (optional case final value?) 'optional': value.toJson(),
+    if (params case final value?) 'params': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogComponent &&
+          kind == other.kind &&
+          key == other.key &&
+          _deepEquals(labels, other.labels) &&
+          optional == other.optional &&
+          _deepEquals(params, other.params);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    kind,
+    key,
+    _deepHash(labels),
+    optional,
+    _deepHash(params),
+  ]);
+}
+
+/// Bileşen isteğe bağlıdır; organizatör etkinliği kurarken açıp kapatır (ADR-0037 §2).
+final class CatalogComponentOptional {
+  const CatalogComponentOptional({required this.default_});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogComponentOptional.fromJson(Map<String, Object?> json) =>
+      CatalogComponentOptional(
+        default_: _readBool(
+          json['default'],
+          'CatalogComponentOptional.default',
+        ),
+      );
+
+  /// Varsayılan olarak açık mı.
+  final bool default_;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'default': default_};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogComponentOptional && default_ == other.default_;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[default_]);
+}
+
+/// Tür tanımı (ADR-0025 §3, ADR-0037 §2). Tamamen bildirimseldir:
+/// çalıştırılabilir kural, ifade, şablon, HTML ya da URL içermez. Sunucu
+/// tanımı kapalı bir şemaya karşı doğrular (bilinmeyen anahtar
+/// reddedilir, en fazla 16 KiB); istemci de yalnızca bildiği anahtarları
+/// yorumlar. Üç anahtar da isteğe bağlıdır: boş nesne, alanı ve
+/// bileşeni olmayan türdür ("Genel").
+final class CatalogDefinition {
+  const CatalogDefinition({this.fields, this.components, this.flags});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogDefinition.fromJson(Map<String, Object?> json) =>
+      CatalogDefinition(
+        fields: switch (json['fields']) {
+          null => null,
+          final Object v => List<CatalogField>.unmodifiable(
+            _readList(v, 'CatalogDefinition.fields').map(
+              (Object? e0) => CatalogField.fromJson(
+                _readObject(e0, 'CatalogDefinition.fields'),
+              ),
+            ),
+          ),
+        },
+        components: switch (json['components']) {
+          null => null,
+          final Object v => List<CatalogComponent>.unmodifiable(
+            _readList(v, 'CatalogDefinition.components').map(
+              (Object? e0) => CatalogComponent.fromJson(
+                _readObject(e0, 'CatalogDefinition.components'),
+              ),
+            ),
+          ),
+        },
+        flags: switch (json['flags']) {
+          null => null,
+          final Object v => CatalogTypeFlags.fromJson(
+            _readObject(v, 'CatalogDefinition.flags'),
+          ),
+        },
+      );
+
+  /// Etkinliğin türe özel alanları (en fazla 20). Değerleri etkinliğin `fields` nesnesindedir.
+  ///
+  /// Kısıtlar: maxItems: 20.
+  final List<CatalogField>? fields;
+
+  /// Etkinliğin bileşenleri, gösterim sırasıyla (en fazla 20).
+  ///
+  /// Kısıtlar: maxItems: 20.
+  final List<CatalogComponent>? components;
+
+  final CatalogTypeFlags? flags;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (fields case final value?)
+      'fields': <Object?>[for (final e0 in value) e0.toJson()],
+    if (components case final value?)
+      'components': <Object?>[for (final e0 in value) e0.toJson()],
+    if (flags case final value?) 'flags': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogDefinition &&
+          _deepEquals(fields, other.fields) &&
+          _deepEquals(components, other.components) &&
+          flags == other.flags;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(fields),
+    _deepHash(components),
+    flags,
+  ]);
+}
+
+/// Bir etkinlik türünün bir sürümü.
+final class CatalogEventType {
+  const CatalogEventType({
+    required this.key,
+    required this.interestKeys,
+    required this.labels,
+    required this.icon,
+    required this.modes,
+    required this.status,
+    required this.version,
+    required this.definition,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogEventType.fromJson(Map<String, Object?> json) =>
+      CatalogEventType(
+        key: _readString(json['key'], 'CatalogEventType.key'),
+        interestKeys: List<String>.unmodifiable(
+          _readList(
+            json['interest_keys'],
+            'CatalogEventType.interest_keys',
+          ).map(
+            (Object? e0) => _readString(e0, 'CatalogEventType.interest_keys'),
+          ),
+        ),
+        labels: Map<String, String>.unmodifiable(
+          _readObject(json['labels'], 'CatalogEventType.labels').map(
+            (String k0, Object? e0) =>
+                MapEntry(k0, _readString(e0, 'CatalogEventType.labels')),
+          ),
+        ),
+        icon: _readString(json['icon'], 'CatalogEventType.icon'),
+        modes: List<EventMode>.unmodifiable(
+          _readList(json['modes'], 'CatalogEventType.modes').map(
+            (Object? e0) =>
+                EventMode.fromWire(_readString(e0, 'CatalogEventType.modes')),
+          ),
+        ),
+        status: CatalogStatus.fromWire(
+          _readString(json['status'], 'CatalogEventType.status'),
+        ),
+        version: _readInt(json['version'], 'CatalogEventType.version'),
+        definition: CatalogDefinition.fromJson(
+          _readObject(json['definition'], 'CatalogEventType.definition'),
+        ),
+      );
+
+  /// Değişmez anahtar: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// 1–3 ilgi alanı; ilki ana ilgi alanıdır. Tür hepsinde listelenir.
+  ///
+  /// Kısıtlar: minItems: 1; maxItems: 3.
+  final List<String> interestKeys;
+
+  final Map<String, String> labels;
+
+  /// İstemcinin sabit ikon setinden bir anahtar.
+  final String icon;
+
+  /// Bu türde etkinliğin alabileceği modlar.
+  ///
+  /// Kısıtlar: minItems: 1; maxItems: 2.
+  final List<EventMode> modes;
+
+  final CatalogStatus status;
+
+  /// Türün her değişikliğinde artar.
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int version;
+
+  final CatalogDefinition definition;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'interest_keys': <Object?>[for (final e0 in interestKeys) e0],
+    'labels': <String, Object?>{
+      for (final e0 in labels.entries) e0.key: e0.value,
+    },
+    'icon': icon,
+    'modes': <Object?>[for (final e0 in modes) e0.wire],
+    'status': status.wire,
+    'version': version,
+    'definition': definition.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogEventType &&
+          key == other.key &&
+          _deepEquals(interestKeys, other.interestKeys) &&
+          _deepEquals(labels, other.labels) &&
+          icon == other.icon &&
+          _deepEquals(modes, other.modes) &&
+          status == other.status &&
+          version == other.version &&
+          definition == other.definition;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    _deepHash(interestKeys),
+    _deepHash(labels),
+    icon,
+    _deepHash(modes),
+    status,
+    version,
+    definition,
+  ]);
+}
+
+/// Bir alan: türün alanı ya da `log` bileşeninin kayıt alanı. `kind`
+/// kapalı listedir; para, URL, dosya, konum ve kişi alanı yoktur.
+/// İstemci tanımadığı bir `kind` görürse alanı göstermez ve o türde
+/// etkinlik oluşturmayı kapatır (ADR-0025 §9).
+///
+/// | `kind` | Değer (JSON) | Ek anahtarlar |
+/// |--------|--------------|---------------|
+/// | `text` | metin, tek satır | `max_length` (≤ 120), `vocabulary` |
+/// | `long_text` | metin, çok satırlı | `max_length` (≤ 1000) |
+/// | `integer` | tam sayı | `min`, `max`, `unit` |
+/// | `decimal` | sayı | `min`, `max`, `decimals` (1–3), `unit` |
+/// | `choice` | `options`'tan biri | `options`, `option_labels` |
+/// | `multi_choice` | `options`'tan liste | `options`, `option_labels`, `max_selected` |
+/// | `boolean` | `true` / `false` | — |
+/// | `date` | `YYYY-MM-DD` | — |
+/// | `duration` | dakika, tam sayı | `min`, `max` |
+final class CatalogField {
+  const CatalogField({
+    required this.key,
+    required this.kind,
+    this.required_,
+    required this.labels,
+    this.maxLength,
+    this.min,
+    this.max,
+    this.decimals,
+    this.unit,
+    this.options,
+    this.optionLabels,
+    this.maxSelected,
+    this.vocabulary,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogField.fromJson(Map<String, Object?> json) => CatalogField(
+    key: _readString(json['key'], 'CatalogField.key'),
+    kind: _readString(json['kind'], 'CatalogField.kind'),
+    required_: switch (json['required']) {
+      null => null,
+      final Object v => _readBool(v, 'CatalogField.required'),
+    },
+    labels: Map<String, String>.unmodifiable(
+      _readObject(json['labels'], 'CatalogField.labels').map(
+        (String k0, Object? e0) =>
+            MapEntry(k0, _readString(e0, 'CatalogField.labels')),
+      ),
+    ),
+    maxLength: switch (json['max_length']) {
+      null => null,
+      final Object v => _readInt(v, 'CatalogField.max_length'),
+    },
+    min: switch (json['min']) {
+      null => null,
+      final Object v => _readDouble(v, 'CatalogField.min'),
+    },
+    max: switch (json['max']) {
+      null => null,
+      final Object v => _readDouble(v, 'CatalogField.max'),
+    },
+    decimals: switch (json['decimals']) {
+      null => null,
+      final Object v => _readInt(v, 'CatalogField.decimals'),
+    },
+    unit: switch (json['unit']) {
+      null => null,
+      final Object v => _readString(v, 'CatalogField.unit'),
+    },
+    options: switch (json['options']) {
+      null => null,
+      final Object v => List<String>.unmodifiable(
+        _readList(
+          v,
+          'CatalogField.options',
+        ).map((Object? e0) => _readString(e0, 'CatalogField.options')),
+      ),
+    },
+    optionLabels: switch (json['option_labels']) {
+      null => null,
+      final Object v => Map<String, Map<String, String>>.unmodifiable(
+        _readObject(v, 'CatalogField.option_labels').map(
+          (String k0, Object? e0) => MapEntry(
+            k0,
+            Map<String, String>.unmodifiable(
+              _readObject(e0, 'CatalogField.option_labels').map(
+                (String k1, Object? e1) =>
+                    MapEntry(k1, _readString(e1, 'CatalogField.option_labels')),
+              ),
+            ),
+          ),
+        ),
+      ),
+    },
+    maxSelected: switch (json['max_selected']) {
+      null => null,
+      final Object v => _readInt(v, 'CatalogField.max_selected'),
+    },
+    vocabulary: switch (json['vocabulary']) {
+      null => null,
+      final Object v => CatalogVocabulary.fromJson(
+        _readObject(v, 'CatalogField.vocabulary'),
+      ),
+    },
+  );
+
+  /// Tür içinde tekil: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// `text`, `long_text`, `integer`, `decimal`, `choice`, `multi_choice`, `boolean`, `date`, `duration`.
+  final String kind;
+
+  /// Etkinlik oluştururken zorunlu mu; yoksa `false`.
+  final bool? required_;
+
+  final Map<String, String> labels;
+
+  /// `text`, `long_text`: en fazla karakter.
+  final int? maxLength;
+
+  /// `integer`, `decimal`, `duration`: en küçük değer; yoksa 0 (`duration`: 1).
+  final double? min;
+
+  /// `integer`, `decimal`, `duration`: en büyük değer.
+  final double? max;
+
+  /// `decimal`: ondalık basamak sayısı; yoksa 2.
+  final int? decimals;
+
+  /// `integer`, `decimal`: isteğe bağlı birim (birim listesi `CatalogComponent`'te); adı çeviri dosyasındadır.
+  final String? unit;
+
+  /// `choice`, `multi_choice`: seçenek anahtarları (`^[a-z0-9][a-z0-9_]{0,39}$`), en fazla 50.
+  ///
+  /// Kısıtlar: maxItems: 50.
+  final List<String>? options;
+
+  /// Seçenek anahtarı → adlar (dil → metin). Adı olmayan seçenek olduğu gibi gösterilir (`"1"` … `"5"`).
+  final Map<String, Map<String, String>>? optionLabels;
+
+  /// `multi_choice`: en fazla seçim; yoksa seçenek sayısı.
+  final int? maxSelected;
+
+  final CatalogVocabulary? vocabulary;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'kind': kind,
+    if (required_ case final value?) 'required': value,
+    'labels': <String, Object?>{
+      for (final e0 in labels.entries) e0.key: e0.value,
+    },
+    if (maxLength case final value?) 'max_length': value,
+    if (min case final value?) 'min': value,
+    if (max case final value?) 'max': value,
+    if (decimals case final value?) 'decimals': value,
+    if (unit case final value?) 'unit': value,
+    if (options case final value?)
+      'options': <Object?>[for (final e0 in value) e0],
+    if (optionLabels case final value?)
+      'option_labels': <String, Object?>{
+        for (final e0 in value.entries)
+          e0.key: <String, Object?>{
+            for (final e1 in e0.value.entries) e1.key: e1.value,
+          },
+      },
+    if (maxSelected case final value?) 'max_selected': value,
+    if (vocabulary case final value?) 'vocabulary': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogField &&
+          key == other.key &&
+          kind == other.kind &&
+          required_ == other.required_ &&
+          _deepEquals(labels, other.labels) &&
+          maxLength == other.maxLength &&
+          min == other.min &&
+          max == other.max &&
+          decimals == other.decimals &&
+          unit == other.unit &&
+          _deepEquals(options, other.options) &&
+          _deepEquals(optionLabels, other.optionLabels) &&
+          maxSelected == other.maxSelected &&
+          vocabulary == other.vocabulary;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    kind,
+    required_,
+    _deepHash(labels),
+    maxLength,
+    min,
+    max,
+    decimals,
+    unit,
+    _deepHash(options),
+    _deepHash(optionLabels),
+    maxSelected,
+    vocabulary,
+  ]);
+}
+
+final class CatalogInterest {
+  const CatalogInterest({
+    required this.key,
+    required this.position,
+    required this.labels,
+    required this.icon,
+    required this.status,
+    required this.defaultWidgets,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogInterest.fromJson(Map<String, Object?> json) =>
+      CatalogInterest(
+        key: _readString(json['key'], 'CatalogInterest.key'),
+        position: _readInt(json['position'], 'CatalogInterest.position'),
+        labels: Map<String, String>.unmodifiable(
+          _readObject(json['labels'], 'CatalogInterest.labels').map(
+            (String k0, Object? e0) =>
+                MapEntry(k0, _readString(e0, 'CatalogInterest.labels')),
+          ),
+        ),
+        icon: _readString(json['icon'], 'CatalogInterest.icon'),
+        status: CatalogStatus.fromWire(
+          _readString(json['status'], 'CatalogInterest.status'),
+        ),
+        defaultWidgets: List<String>.unmodifiable(
+          _readList(
+            json['default_widgets'],
+            'CatalogInterest.default_widgets',
+          ).map(
+            (Object? e0) => _readString(e0, 'CatalogInterest.default_widgets'),
+          ),
+        ),
+      );
+
+  /// Değişmez anahtar: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// Listeleme sırası (küçükten büyüğe).
+  final int position;
+
+  final Map<String, String> labels;
+
+  /// İstemcinin sabit ikon setinden bir anahtar.
+  final String icon;
+
+  final CatalogStatus status;
+
+  /// Bu ilgi alanını seçen tayfada varsayılan açık gelen ana sayfa bileşenleri (ADR-0027).
+  final List<String> defaultWidgets;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'position': position,
+    'labels': <String, Object?>{
+      for (final e0 in labels.entries) e0.key: e0.value,
+    },
+    'icon': icon,
+    'status': status.wire,
+    'default_widgets': <Object?>[for (final e0 in defaultWidgets) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogInterest &&
+          key == other.key &&
+          position == other.position &&
+          _deepEquals(labels, other.labels) &&
+          icon == other.icon &&
+          status == other.status &&
+          _deepEquals(defaultWidgets, other.defaultWidgets);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    position,
+    _deepHash(labels),
+    icon,
+    status,
+    _deepHash(defaultWidgets),
+  ]);
+}
+
+/// `retired`: yeni etkinlikte, tayfada ya da profilde seçilemez; eski
+/// kayıtlar göstermeye devam eder. Katalog kaydı hiç silinmez.
+enum CatalogStatus {
+  active('active'),
+  retired('retired'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const CatalogStatus(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('CatalogStatus.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static CatalogStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Tür bayrakları (ADR-0037 §1). Olmayan bayrak `false`tur.
+final class CatalogTypeFlags {
+  const CatalogTypeFlags({
+    this.sensitiveAttendance,
+    this.albumNotice,
+    this.personalScopeForbidden,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogTypeFlags.fromJson(Map<String, Object?> json) =>
+      CatalogTypeFlags(
+        sensitiveAttendance: switch (json['sensitive_attendance']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'CatalogTypeFlags.sensitive_attendance',
+          ),
+        },
+        albumNotice: switch (json['album_notice']) {
+          null => null,
+          final Object v => _readBool(v, 'CatalogTypeFlags.album_notice'),
+        },
+        personalScopeForbidden: switch (json['personal_scope_forbidden']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'CatalogTypeFlags.personal_scope_forbidden',
+          ),
+        },
+      );
+
+  /// Katılım kişisel geçmişe, istatistiğe ve arkadaşlık puanına girmez; katılımcı listesini yalnızca organizatör görür.
+  final bool? sensitiveAttendance;
+
+  /// Albüme yüklemeden önce izin onayı istenir.
+  final bool? albumNotice;
+
+  /// Bu türde kişi bazında değer tutulmaz (kişisel ölçüm ve günlük tanımlanamaz).
+  final bool? personalScopeForbidden;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (sensitiveAttendance case final value?) 'sensitive_attendance': value,
+    if (albumNotice case final value?) 'album_notice': value,
+    if (personalScopeForbidden case final value?)
+      'personal_scope_forbidden': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogTypeFlags &&
+          sensitiveAttendance == other.sensitiveAttendance &&
+          albumNotice == other.albumNotice &&
+          personalScopeForbidden == other.personalScopeForbidden;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    sensitiveAttendance,
+    albumNotice,
+    personalScopeForbidden,
+  ]);
+}
+
+/// `text` alanı tayfa sözlüğüne bağlıdır (ADR-0037 §4): serbest metin +
+/// tayfanın önceki değerlerinden otomatik tamamlama.
+final class CatalogVocabulary {
+  const CatalogVocabulary({required this.namespace});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogVocabulary.fromJson(Map<String, Object?> json) =>
+      CatalogVocabulary(
+        namespace: _readString(
+          json['namespace'],
+          'CatalogVocabulary.namespace',
+        ),
+      );
+
+  /// Sözlüğün ad alanı; türler paylaşabilir.
+  final String namespace;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'namespace': namespace};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogVocabulary && namespace == other.namespace;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[namespace]);
 }
 
 final class Channel {
@@ -4824,9 +5654,7 @@ final class DiscoverItemEvent {
   factory DiscoverItemEvent.fromJson(Map<String, Object?> json) =>
       DiscoverItemEvent(
         id: _readString(json['id'], 'DiscoverItemEvent.id'),
-        type: EventType.fromWire(
-          _readString(json['type'], 'DiscoverItemEvent.type'),
-        ),
+        type: _readString(json['type'], 'DiscoverItemEvent.type'),
         title: _readString(json['title'], 'DiscoverItemEvent.title'),
         startsAt: _readDateTime(
           json['starts_at'],
@@ -4845,7 +5673,7 @@ final class DiscoverItemEvent {
 
   final String id;
 
-  final EventType type;
+  final String type;
 
   final String title;
 
@@ -4860,7 +5688,7 @@ final class DiscoverItemEvent {
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
-    'type': type.wire,
+    'type': type,
     'title': title,
     'starts_at': startsAt.toUtc().toIso8601String(),
     'ends_at': endsAt.toUtc().toIso8601String(),
@@ -6939,15 +7767,21 @@ final class E2ESignedPreKey {
   int get hashCode => Object.hashAll(<Object?>[keyId, publicKey, signature]);
 }
 
-/// Bir etkin üyenin gördüğü etkinlik. Türe özel ayrıntı (`convoy`,
-/// `camp`, `hike`, `fishing`, `gaming`, `sports`) yalnızca tek etkinlik
-/// yanıtında ve en fazla biri dolu gelir.
+/// Bir etkin üyenin gördüğü etkinlik. `type` katalog anahtarıdır;
+/// etkinlik oluşturulduğu tür sürümüne (`type_version`) bağlıdır ve o
+/// sürümün tanımıyla gösterilir (güncel katalogda yoksa
+/// `GET /v1/catalog/event-types/{key}/versions/{version}`). `fields`
+/// ve Faz 1'den kalan türe özel ayrıntı (`convoy`, `camp`, `hike`,
+/// `fishing`; bileşenlere taşınana kadar) yalnızca tek etkinlik
+/// yanıtında gelir; ayrıntılardan en fazla biri doludur.
 final class Event {
   const Event({
     this.coverUploadId,
     required this.id,
     required this.tayfaId,
     required this.type,
+    required this.typeVersion,
+    this.fields,
     required this.mode,
     required this.title,
     required this.description,
@@ -6978,8 +7812,6 @@ final class Event {
     this.camp,
     this.hike,
     this.fishing,
-    this.gaming,
-    this.sports,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -6992,7 +7824,12 @@ final class Event {
     },
     id: _readString(json['id'], 'Event.id'),
     tayfaId: _readString(json['tayfa_id'], 'Event.tayfa_id'),
-    type: EventType.fromWire(_readString(json['type'], 'Event.type')),
+    type: _readString(json['type'], 'Event.type'),
+    typeVersion: _readInt(json['type_version'], 'Event.type_version'),
+    fields: switch (json['fields']) {
+      null => null,
+      final Object v => _readJsonObject(v, 'Event.fields'),
+    },
     mode: EventMode.fromWire(_readString(json['mode'], 'Event.mode')),
     title: _readString(json['title'], 'Event.title'),
     description: _readString(json['description'], 'Event.description'),
@@ -7077,14 +7914,6 @@ final class Event {
         _readObject(v, 'Event.fishing'),
       ),
     },
-    gaming: switch (json['gaming']) {
-      null => null,
-      final Object v => GamingDetails.fromJson(_readObject(v, 'Event.gaming')),
-    },
-    sports: switch (json['sports']) {
-      null => null,
-      final Object v => SportsDetails.fromJson(_readObject(v, 'Event.sports')),
-    },
   );
 
   /// Kapak; linkleri `POST /v1/media/urls`. Serinin ürettiği etkinliklerde yoktur.
@@ -7094,7 +7923,14 @@ final class Event {
 
   final String tayfaId;
 
-  final EventType type;
+  final String type;
+
+  /// Etkinliğin oluşturulduğu tür sürümü; etkinlik boyunca değişmez.
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int typeVersion;
+
+  final Map<String, Object?>? fields;
 
   final EventMode mode;
 
@@ -7167,16 +8003,14 @@ final class Event {
 
   final FishingDetails? fishing;
 
-  final GamingDetails? gaming;
-
-  final SportsDetails? sports;
-
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (coverUploadId case final value?) 'cover_upload_id': value,
     'id': id,
     'tayfa_id': tayfaId,
-    'type': type.wire,
+    'type': type,
+    'type_version': typeVersion,
+    if (fields case final value?) 'fields': value,
     'mode': mode.wire,
     'title': title,
     'description': description,
@@ -7208,8 +8042,6 @@ final class Event {
     if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
-    if (gaming case final value?) 'gaming': value.toJson(),
-    if (sports case final value?) 'sports': value.toJson(),
   };
 
   @override
@@ -7220,6 +8052,8 @@ final class Event {
           id == other.id &&
           tayfaId == other.tayfaId &&
           type == other.type &&
+          typeVersion == other.typeVersion &&
+          _deepEquals(fields, other.fields) &&
           mode == other.mode &&
           title == other.title &&
           description == other.description &&
@@ -7249,9 +8083,7 @@ final class Event {
           convoy == other.convoy &&
           camp == other.camp &&
           hike == other.hike &&
-          fishing == other.fishing &&
-          gaming == other.gaming &&
-          sports == other.sports;
+          fishing == other.fishing;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -7259,6 +8091,8 @@ final class Event {
     id,
     tayfaId,
     type,
+    typeVersion,
+    _deepHash(fields),
     mode,
     title,
     description,
@@ -7289,8 +8123,6 @@ final class Event {
     camp,
     hike,
     fishing,
-    gaming,
-    sports,
   ]);
 }
 
@@ -7327,12 +8159,18 @@ final class EventCancelRequest {
 
 /// Yüz yüze: `meeting_point`, `city`, `district` zorunlu; `online_url`
 /// boş. Çevrimiçi: `online_url` (https) zorunlu; yer alanları boş.
-/// Türe özel ayrıntı en fazla bir tane ve türle aynı olur; `gaming` ve
-/// `sports` için zorunlu, `general` için yoktur.
+/// `type` katalogdaki aktif bir türün anahtarıdır; etkinlik türün
+/// güncel sürümüyle oluşturulur ve `mode` türün izin verdiği modlardan
+/// biri olmalıdır. `fields` türün tanımına göre doğrulanır: zorunlu
+/// alanlar verilir, tanımda olmayan alan gönderilmez (ör. `gaming`:
+/// `game`, `platform`; `sports`: `sport`, `venue_name`). Faz 1'den
+/// kalan ayrıntılar (`convoy`, `camp`, `hike`, `fishing`) yalnızca kendi
+/// türlerinde, en fazla bir tane verilir.
 final class EventCreateRequest {
   const EventCreateRequest({
     this.coverUploadId,
     required this.type,
+    this.fields,
     required this.mode,
     required this.title,
     this.description,
@@ -7349,8 +8187,6 @@ final class EventCreateRequest {
     this.camp,
     this.hike,
     this.fishing,
-    this.gaming,
-    this.sports,
     this.recurrence,
     required this.clientRequestId,
   });
@@ -7365,9 +8201,11 @@ final class EventCreateRequest {
       null => null,
       final Object v => _readString(v, 'EventCreateRequest.cover_upload_id'),
     },
-    type: EventType.fromWire(
-      _readString(json['type'], 'EventCreateRequest.type'),
-    ),
+    type: _readString(json['type'], 'EventCreateRequest.type'),
+    fields: switch (json['fields']) {
+      null => null,
+      final Object v => _readJsonObject(v, 'EventCreateRequest.fields'),
+    },
     mode: EventMode.fromWire(
       _readString(json['mode'], 'EventCreateRequest.mode'),
     ),
@@ -7432,18 +8270,6 @@ final class EventCreateRequest {
         _readObject(v, 'EventCreateRequest.fishing'),
       ),
     },
-    gaming: switch (json['gaming']) {
-      null => null,
-      final Object v => GamingDetails.fromJson(
-        _readObject(v, 'EventCreateRequest.gaming'),
-      ),
-    },
-    sports: switch (json['sports']) {
-      null => null,
-      final Object v => SportsDetails.fromJson(
-        _readObject(v, 'EventCreateRequest.sports'),
-      ),
-    },
     recurrence: switch (json['recurrence']) {
       null => null,
       final Object v => Recurrence.fromJson(
@@ -7459,7 +8285,9 @@ final class EventCreateRequest {
   /// İsteğe bağlı: kendi hazır `cover` yüklemeniz (bu tayfa için açılmış). Yalnızca bu etkinliğe bağlanır.
   final String? coverUploadId;
 
-  final EventType type;
+  final String type;
+
+  final Map<String, Object?>? fields;
 
   final EventMode mode;
 
@@ -7509,10 +8337,6 @@ final class EventCreateRequest {
 
   final FishingDetails? fishing;
 
-  final GamingDetails? gaming;
-
-  final SportsDetails? sports;
-
   final Recurrence? recurrence;
 
   /// İstemcinin her açma denemesi için bir kez ürettiği, tekrar gönderimde aynen kullandığı UUID.
@@ -7521,7 +8345,8 @@ final class EventCreateRequest {
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (coverUploadId case final value?) 'cover_upload_id': value,
-    'type': type.wire,
+    'type': type,
+    if (fields case final value?) 'fields': value,
     'mode': mode.wire,
     'title': title,
     if (description case final value?) 'description': value,
@@ -7538,8 +8363,6 @@ final class EventCreateRequest {
     if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
-    if (gaming case final value?) 'gaming': value.toJson(),
-    if (sports case final value?) 'sports': value.toJson(),
     if (recurrence case final value?) 'recurrence': value.toJson(),
     'client_request_id': clientRequestId,
   };
@@ -7550,6 +8373,7 @@ final class EventCreateRequest {
       other is EventCreateRequest &&
           coverUploadId == other.coverUploadId &&
           type == other.type &&
+          _deepEquals(fields, other.fields) &&
           mode == other.mode &&
           title == other.title &&
           description == other.description &&
@@ -7566,8 +8390,6 @@ final class EventCreateRequest {
           camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing &&
-          gaming == other.gaming &&
-          sports == other.sports &&
           recurrence == other.recurrence &&
           clientRequestId == other.clientRequestId;
 
@@ -7575,6 +8397,7 @@ final class EventCreateRequest {
   int get hashCode => Object.hashAll(<Object?>[
     coverUploadId,
     type,
+    _deepHash(fields),
     mode,
     title,
     description,
@@ -7591,8 +8414,6 @@ final class EventCreateRequest {
     camp,
     hike,
     fishing,
-    gaming,
-    sports,
     recurrence,
     clientRequestId,
   ]);
@@ -8129,45 +8950,14 @@ enum EventStatus {
   }
 }
 
-/// Tayfanın ilgi alanları etkinlik türleriyle aynı değerleri kullanır.
-enum EventType {
-  convoy('convoy'),
-  camp('camp'),
-  hike('hike'),
-  fishing('fishing'),
-  gaming('gaming'),
-  sports('sports'),
-  general('general'),
-
-  /// Sözleşmede yok: okunurken tanınmayan değer.
-  /// Sunucuya hiçbir zaman gönderilmez.
-  unknown(null);
-
-  const EventType(this._wire);
-
-  final String? _wire;
-
-  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
-  /// [StateError] fırlatır.
-  String get wire =>
-      _wire ?? (throw StateError('EventType.unknown gönderilemez'));
-
-  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
-  static EventType fromWire(String wire) {
-    for (final value in values) {
-      if (value._wire == wire) {
-        return value;
-      }
-    }
-    return unknown;
-  }
-}
-
-/// Kurallar açmadakiyle aynıdır; tür değişmez.
+/// Kurallar açmadakiyle aynıdır; tür ve tür sürümü değişmez. `fields`
+/// verilirse alan değerlerinin TAMAMI yerine geçer (etkinliğin kendi tür
+/// sürümüne göre doğrulanır); `{}` bütün değerleri kaldırır.
 ///
 /// Kısıtlar: minProperties: 1.
 final class EventUpdateRequest {
   const EventUpdateRequest({
+    this.fields,
     this.coverUploadId,
     this.title,
     this.description,
@@ -8185,8 +8975,6 @@ final class EventUpdateRequest {
     this.camp,
     this.hike,
     this.fishing,
-    this.gaming,
-    this.sports,
     this.applyToSeries,
   });
 
@@ -8196,6 +8984,10 @@ final class EventUpdateRequest {
   factory EventUpdateRequest.fromJson(
     Map<String, Object?> json,
   ) => EventUpdateRequest(
+    fields: switch (json['fields']) {
+      null => null,
+      final Object v => _readJsonObject(v, 'EventUpdateRequest.fields'),
+    },
     coverUploadId: switch (json['cover_upload_id']) {
       null => null,
       final Object v => _readString(v, 'EventUpdateRequest.cover_upload_id'),
@@ -8276,23 +9068,13 @@ final class EventUpdateRequest {
         _readObject(v, 'EventUpdateRequest.fishing'),
       ),
     },
-    gaming: switch (json['gaming']) {
-      null => null,
-      final Object v => GamingDetails.fromJson(
-        _readObject(v, 'EventUpdateRequest.gaming'),
-      ),
-    },
-    sports: switch (json['sports']) {
-      null => null,
-      final Object v => SportsDetails.fromJson(
-        _readObject(v, 'EventUpdateRequest.sports'),
-      ),
-    },
     applyToSeries: switch (json['apply_to_series']) {
       null => null,
       final Object v => _readBool(v, 'EventUpdateRequest.apply_to_series'),
     },
   );
+
+  final Map<String, Object?>? fields;
 
   /// Kendi hazır `cover` yüklemeniz; `""` kapağı kaldırır, eski kapak
   /// silinir. `apply_to_series: true` ile verilemez.
@@ -8340,15 +9122,12 @@ final class EventUpdateRequest {
 
   final FishingDetails? fishing;
 
-  final GamingDetails? gaming;
-
-  final SportsDetails? sports;
-
   /// `true` yalnızca seriye ait etkinlikte geçerlidir; yoksa `false`.
   final bool? applyToSeries;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
+    if (fields case final value?) 'fields': value,
     if (coverUploadId case final value?) 'cover_upload_id': value,
     if (title case final value?) 'title': value,
     if (description case final value?) 'description': value,
@@ -8367,8 +9146,6 @@ final class EventUpdateRequest {
     if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
-    if (gaming case final value?) 'gaming': value.toJson(),
-    if (sports case final value?) 'sports': value.toJson(),
     if (applyToSeries case final value?) 'apply_to_series': value,
   };
 
@@ -8376,6 +9153,7 @@ final class EventUpdateRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is EventUpdateRequest &&
+          _deepEquals(fields, other.fields) &&
           coverUploadId == other.coverUploadId &&
           title == other.title &&
           description == other.description &&
@@ -8393,12 +9171,11 @@ final class EventUpdateRequest {
           camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing &&
-          gaming == other.gaming &&
-          sports == other.sports &&
           applyToSeries == other.applyToSeries;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(fields),
     coverUploadId,
     title,
     description,
@@ -8416,8 +9193,6 @@ final class EventUpdateRequest {
     camp,
     hike,
     fishing,
-    gaming,
-    sports,
     applyToSeries,
   ]);
 }
@@ -9048,73 +9823,6 @@ final class FriendSuggestionList {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(suggestions)]);
 }
 
-final class GamingDetails {
-  const GamingDetails({required this.game, required this.platform});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory GamingDetails.fromJson(Map<String, Object?> json) => GamingDetails(
-    game: _readString(json['game'], 'GamingDetails.game'),
-    platform: GamingDetailsPlatform.fromWire(
-      _readString(json['platform'], 'GamingDetails.platform'),
-    ),
-  );
-
-  /// Kısıtlar: minLength: 1; maxLength: 60.
-  final String game;
-
-  final GamingDetailsPlatform platform;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'game': game,
-    'platform': platform.wire,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GamingDetails &&
-          game == other.game &&
-          platform == other.platform;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[game, platform]);
-}
-
-enum GamingDetailsPlatform {
-  pc('pc'),
-  playstation('playstation'),
-  xbox('xbox'),
-  switch_('switch'),
-  mobile('mobile'),
-  other('other'),
-
-  /// Sözleşmede yok: okunurken tanınmayan değer.
-  /// Sunucuya hiçbir zaman gönderilmez.
-  unknown(null);
-
-  const GamingDetailsPlatform(this._wire);
-
-  final String? _wire;
-
-  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
-  /// [StateError] fırlatır.
-  String get wire =>
-      _wire ?? (throw StateError('GamingDetailsPlatform.unknown gönderilemez'));
-
-  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
-  static GamingDetailsPlatform fromWire(String wire) {
-    for (final value in values) {
-      if (value._wire == wire) {
-        return value;
-      }
-    }
-    return unknown;
-  }
-}
-
 final class HikeCheckin {
   const HikeCheckin({required this.startedAt, this.returnedAt});
 
@@ -9407,11 +10115,11 @@ final class Invitation {
       final Object v => _readString(v, 'Invitation.inviter_user_id'),
     },
     invitedAt: _readDateTime(json['invited_at'], 'Invitation.invited_at'),
-    interests: List<EventType>.unmodifiable(
-      _readList(json['interests'], 'Invitation.interests').map(
-        (Object? e0) =>
-            EventType.fromWire(_readString(e0, 'Invitation.interests')),
-      ),
+    interests: List<String>.unmodifiable(
+      _readList(
+        json['interests'],
+        'Invitation.interests',
+      ).map((Object? e0) => _readString(e0, 'Invitation.interests')),
     ),
   );
 
@@ -9428,7 +10136,7 @@ final class Invitation {
   final DateTime invitedAt;
 
   /// Tayfanın ilgi alanları (issue
-  final List<EventType> interests;
+  final List<String> interests;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
@@ -9437,7 +10145,7 @@ final class Invitation {
     'user_id': userId,
     if (inviterUserId case final value?) 'inviter_user_id': value,
     'invited_at': invitedAt.toUtc().toIso8601String(),
-    'interests': <Object?>[for (final e0 in interests) e0.wire],
+    'interests': <Object?>[for (final e0 in interests) e0],
   };
 
   @override
@@ -9682,11 +10390,11 @@ final class InvitePreview {
       json['already_member'],
       'InvitePreview.already_member',
     ),
-    interests: List<EventType>.unmodifiable(
-      _readList(json['interests'], 'InvitePreview.interests').map(
-        (Object? e0) =>
-            EventType.fromWire(_readString(e0, 'InvitePreview.interests')),
-      ),
+    interests: List<String>.unmodifiable(
+      _readList(
+        json['interests'],
+        'InvitePreview.interests',
+      ).map((Object? e0) => _readString(e0, 'InvitePreview.interests')),
     ),
   );
 
@@ -9701,7 +10409,7 @@ final class InvitePreview {
 
   /// Tayfanın ilgi alanları (issue #194; avatar rengi). Yalnızca geçerli
   /// davette döner; geçersiz davette hiçbir tayfa bilgisi dönmez.
-  final List<EventType> interests;
+  final List<String> interests;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
@@ -9709,7 +10417,7 @@ final class InvitePreview {
     'name': name,
     'member_count': memberCount,
     'already_member': alreadyMember,
-    'interests': <Object?>[for (final e0 in interests) e0.wire],
+    'interests': <Object?>[for (final e0 in interests) e0],
   };
 
   @override
@@ -14555,77 +15263,6 @@ final class SocialSettingsUpdate {
   ]);
 }
 
-final class SportsDetails {
-  const SportsDetails({required this.sport, this.venueName});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory SportsDetails.fromJson(Map<String, Object?> json) => SportsDetails(
-    sport: SportsDetailsSport.fromWire(
-      _readString(json['sport'], 'SportsDetails.sport'),
-    ),
-    venueName: switch (json['venue_name']) {
-      null => null,
-      final Object v => _readString(v, 'SportsDetails.venue_name'),
-    },
-  );
-
-  final SportsDetailsSport sport;
-
-  /// Kısıtlar: maxLength: 120.
-  final String? venueName;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'sport': sport.wire,
-    if (venueName case final value?) 'venue_name': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is SportsDetails &&
-          sport == other.sport &&
-          venueName == other.venueName;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[sport, venueName]);
-}
-
-enum SportsDetailsSport {
-  football('football'),
-  tableFootball('table_football'),
-  basketball('basketball'),
-  volleyball('volleyball'),
-  tennis('tennis'),
-  tableTennis('table_tennis'),
-  other('other'),
-
-  /// Sözleşmede yok: okunurken tanınmayan değer.
-  /// Sunucuya hiçbir zaman gönderilmez.
-  unknown(null);
-
-  const SportsDetailsSport(this._wire);
-
-  final String? _wire;
-
-  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
-  /// [StateError] fırlatır.
-  String get wire =>
-      _wire ?? (throw StateError('SportsDetailsSport.unknown gönderilemez'));
-
-  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
-  static SportsDetailsSport fromWire(String wire) {
-    for (final value in values) {
-      if (value._wire == wire) {
-        return value;
-      }
-    }
-    return unknown;
-  }
-}
-
 final class Status {
   const Status({
     required this.status,
@@ -14859,10 +15496,11 @@ final class Tayfa {
       final Object v => _readDateTime(v, 'Tayfa.converted_at'),
     },
     description: _readString(json['description'], 'Tayfa.description'),
-    interests: List<EventType>.unmodifiable(
-      _readList(json['interests'], 'Tayfa.interests').map(
-        (Object? e0) => EventType.fromWire(_readString(e0, 'Tayfa.interests')),
-      ),
+    interests: List<String>.unmodifiable(
+      _readList(
+        json['interests'],
+        'Tayfa.interests',
+      ).map((Object? e0) => _readString(e0, 'Tayfa.interests')),
     ),
     joinPolicy: JoinPolicy.fromWire(
       _readString(json['join_policy'], 'Tayfa.join_policy'),
@@ -14915,7 +15553,7 @@ final class Tayfa {
 
   final String description;
 
-  final List<EventType> interests;
+  final List<String> interests;
 
   final JoinPolicy joinPolicy;
 
@@ -14961,7 +15599,7 @@ final class Tayfa {
     if (convertedAt case final value?)
       'converted_at': value.toUtc().toIso8601String(),
     'description': description,
-    'interests': <Object?>[for (final e0 in interests) e0.wire],
+    'interests': <Object?>[for (final e0 in interests) e0],
     'join_policy': joinPolicy.wire,
     'modules': modules.toJson(),
     'status': status.wire,
@@ -15046,11 +15684,9 @@ final class TayfaConvertRequest {
         },
         interests: switch (json['interests']) {
           null => null,
-          final Object v => List<EventType>.unmodifiable(
+          final Object v => List<String>.unmodifiable(
             _readList(v, 'TayfaConvertRequest.interests').map(
-              (Object? e0) => EventType.fromWire(
-                _readString(e0, 'TayfaConvertRequest.interests'),
-              ),
+              (Object? e0) => _readString(e0, 'TayfaConvertRequest.interests'),
             ),
           ),
         },
@@ -15070,8 +15706,8 @@ final class TayfaConvertRequest {
   /// Kısıtlar: maxLength: 500.
   final String? description;
 
-  /// Kısıtlar: maxItems: 7; uniqueItems: true.
-  final List<EventType>? interests;
+  /// Kısıtlar: maxItems: 20; uniqueItems: true.
+  final List<String>? interests;
 
   /// Kısıtlar: varsayılan (sunucu): `approval`.
   final JoinPolicy? joinPolicy;
@@ -15081,7 +15717,7 @@ final class TayfaConvertRequest {
     'name': name,
     if (description case final value?) 'description': value,
     if (interests case final value?)
-      'interests': <Object?>[for (final e0 in value) e0.wire],
+      'interests': <Object?>[for (final e0 in value) e0],
     if (joinPolicy case final value?) 'join_policy': value.wire,
   };
 
@@ -15124,11 +15760,9 @@ final class TayfaCreateRequest {
         },
         interests: switch (json['interests']) {
           null => null,
-          final Object v => List<EventType>.unmodifiable(
+          final Object v => List<String>.unmodifiable(
             _readList(v, 'TayfaCreateRequest.interests').map(
-              (Object? e0) => EventType.fromWire(
-                _readString(e0, 'TayfaCreateRequest.interests'),
-              ),
+              (Object? e0) => _readString(e0, 'TayfaCreateRequest.interests'),
             ),
           ),
         },
@@ -15152,8 +15786,8 @@ final class TayfaCreateRequest {
   /// Kısıtlar: maxLength: 500.
   final String? description;
 
-  /// Kısıtlar: maxItems: 7; uniqueItems: true.
-  final List<EventType>? interests;
+  /// Kısıtlar: maxItems: 20; uniqueItems: true.
+  final List<String>? interests;
 
   /// Kısıtlar: varsayılan (sunucu): `approval`.
   final JoinPolicy? joinPolicy;
@@ -15166,7 +15800,7 @@ final class TayfaCreateRequest {
     'name': name,
     if (description case final value?) 'description': value,
     if (interests case final value?)
-      'interests': <Object?>[for (final e0 in value) e0.wire],
+      'interests': <Object?>[for (final e0 in value) e0],
     if (joinPolicy case final value?) 'join_policy': value.wire,
     'client_request_id': clientRequestId,
   };
@@ -15437,11 +16071,9 @@ final class TayfaUpdateRequest {
         },
         interests: switch (json['interests']) {
           null => null,
-          final Object v => List<EventType>.unmodifiable(
+          final Object v => List<String>.unmodifiable(
             _readList(v, 'TayfaUpdateRequest.interests').map(
-              (Object? e0) => EventType.fromWire(
-                _readString(e0, 'TayfaUpdateRequest.interests'),
-              ),
+              (Object? e0) => _readString(e0, 'TayfaUpdateRequest.interests'),
             ),
           ),
         },
@@ -15470,8 +16102,8 @@ final class TayfaUpdateRequest {
   /// Kısıtlar: maxLength: 500.
   final String? description;
 
-  /// Kısıtlar: maxItems: 7; uniqueItems: true.
-  final List<EventType>? interests;
+  /// Kısıtlar: maxItems: 20; uniqueItems: true.
+  final List<String>? interests;
 
   final JoinPolicy? joinPolicy;
 
@@ -15484,7 +16116,7 @@ final class TayfaUpdateRequest {
     if (name case final value?) 'name': value,
     if (description case final value?) 'description': value,
     if (interests case final value?)
-      'interests': <Object?>[for (final e0 in value) e0.wire],
+      'interests': <Object?>[for (final e0 in value) e0],
     if (joinPolicy case final value?) 'join_policy': value.wire,
     if (membersCanCreateEvents case final value?)
       'members_can_create_events': value,
@@ -16260,11 +16892,11 @@ final class UserProfile {
     },
     interests: switch (json['interests']) {
       null => null,
-      final Object v => List<EventType>.unmodifiable(
-        _readList(v, 'UserProfile.interests').map(
-          (Object? e0) =>
-              EventType.fromWire(_readString(e0, 'UserProfile.interests')),
-        ),
+      final Object v => List<String>.unmodifiable(
+        _readList(
+          v,
+          'UserProfile.interests',
+        ).map((Object? e0) => _readString(e0, 'UserProfile.interests')),
       ),
     },
     about: switch (json['about']) {
@@ -16321,7 +16953,7 @@ final class UserProfile {
 
   final Birthday? birthday;
 
-  final List<EventType>? interests;
+  final List<String>? interests;
 
   final String? about;
 
@@ -16346,7 +16978,7 @@ final class UserProfile {
     if (activityVisibility case final value?) 'activity_visibility': value.wire,
     if (birthday case final value?) 'birthday': value.toJson(),
     if (interests case final value?)
-      'interests': <Object?>[for (final e0 in value) e0.wire],
+      'interests': <Object?>[for (final e0 in value) e0],
     if (about case final value?) 'about': value,
     if (occupation case final value?) 'occupation': value,
     if (team case final value?) 'team': value,
@@ -16509,6 +17141,11 @@ Map<String, Object?> _readObject(Object? value, String at) =>
 
 List<Object?> _readList(Object? value, String at) =>
     value is List<Object?> ? value : _invalid(at);
+
+/// Serbest JSON nesnesi (`additionalProperties: true`): değerler çözülmüş
+/// JSON'dur ve burada doğrulanmaz; kullanan katman girdi kabul eder.
+Map<String, Object?> _readJsonObject(Object? value, String at) =>
+    Map<String, Object?>.unmodifiable(_readObject(value, at));
 
 bool _deepEquals(Object? a, Object? b) {
   if (a is List<Object?> && b is List<Object?>) {

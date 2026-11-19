@@ -809,6 +809,269 @@ void main() {
     });
   });
 
+  group('takma adlar ve serbest nesne', () {
+    final spec = _spec(
+      schemas: {
+        'TypeKey': {
+          'type': 'string',
+          'description': 'Katalog anahtarı.',
+          'pattern': '^[a-z][a-z0-9_]{1,39}\$',
+        },
+        'Labels': {
+          'type': 'object',
+          'additionalProperties': {'type': 'string'},
+        },
+        'FieldValues': {'type': 'object', 'additionalProperties': true},
+        'Component': {
+          'type': 'object',
+          'required': ['kind', 'labels'],
+          'properties': {
+            'kind': _ref('TypeKey'),
+            'labels': _ref('Labels'),
+            'keys': {'type': 'array', 'items': _ref('TypeKey')},
+            'option_labels': {
+              'type': 'object',
+              'additionalProperties': _ref('Labels'),
+            },
+            'fields': _ref('FieldValues'),
+            'params': {'type': 'object', 'additionalProperties': true},
+          },
+        },
+      },
+    );
+
+    test('takma adın sınıfı ya da enum\'u üretilmez', () {
+      final models = _models(spec);
+      expect(models, isNot(contains('class TypeKey')));
+      expect(models, isNot(contains('enum TypeKey')));
+      expect(models, isNot(contains('class Labels')));
+      expect(models, isNot(contains('class FieldValues')));
+    });
+
+    test(r'takma ada $ref doğrudan tipini verir', () {
+      final models = _models(spec);
+      expect(models, contains('final String kind;'));
+      expect(models, contains('final Map<String, String> labels;'));
+      expect(models, contains('final List<String>? keys;'));
+      expect(
+        models,
+        contains('final Map<String, Map<String, String>>? optionLabels;'),
+      );
+    });
+
+    test('serbest nesne Map<String, Object?> olur ve olduğu gibi yazılır', () {
+      final models = _models(spec);
+      expect(models, contains('final Map<String, Object?>? fields;'));
+      expect(models, contains('final Map<String, Object?>? params;'));
+      expect(models, contains("_readJsonObject(v, 'Component.params')"));
+      expect(models, contains("if (params case final value?) 'params': value"));
+      expect(models, contains('_deepEquals(params, other.params)'));
+    });
+
+    test('properties ile additionalProperties: true hata verir', () {
+      final bad = _spec(
+        schemas: {
+          'Thing': {
+            'type': 'object',
+            'properties': {
+              'extra': {
+                'type': 'object',
+                'additionalProperties': true,
+                'properties': {
+                  'id': {'type': 'string'},
+                },
+              },
+            },
+          },
+        },
+      );
+      expect(() => _generate(bad), throwsA(isA<GenException>()));
+    });
+
+    test('takma ad gövde ya da JSON yanıtı olamaz', () {
+      final bad = _spec(
+        schemas: {
+          'Labels': {
+            'type': 'object',
+            'additionalProperties': {'type': 'string'},
+          },
+        },
+        paths: {
+          '/v1/labels': {
+            'get': {
+              'operationId': 'getLabels',
+              'responses': {
+                '200': {'description': 'Adlar', ..._json(_ref('Labels'))},
+              },
+            },
+          },
+        },
+      );
+      expect(() => _generate(bad), throwsA(isA<GenException>()));
+    });
+  });
+
+  group('koşullu istek', () {
+    String specWith({
+      String method = 'get',
+      bool header = true,
+      Map<String, Object?> extraResponses = const {},
+      Map<String, Object?>? ok,
+      Map<String, Object?> headerSchema = const {'type': 'string'},
+    }) => _spec(
+      schemas: {
+        'Catalog': {'type': 'object'},
+      },
+      paths: {
+        '/v1/catalog': {
+          method: {
+            'operationId': 'getCatalog',
+            'parameters': [
+              if (header)
+                {
+                  'name': 'If-None-Match',
+                  'in': 'header',
+                  'required': false,
+                  'description': 'Eldeki sürüm.',
+                  'schema': headerSchema,
+                },
+              {
+                'name': 'X-Tayfam-Client-Version',
+                'in': 'header',
+                'schema': {'type': 'string'},
+              },
+            ],
+            'responses': {
+              '200':
+                  ok ??
+                  {
+                    'description': 'Katalog',
+                    'headers': {
+                      'ETag': {
+                        'schema': {'type': 'string'},
+                      },
+                    },
+                    ..._json(_ref('Catalog')),
+                  },
+              ...extraResponses,
+              '401': _problem,
+            },
+          },
+        },
+      },
+    );
+
+    String catalog(String spec) =>
+        _generate(spec).files['apis/catalog_api.dart']!;
+
+    test('If-None-Match parametre olur, başlık olarak gider', () {
+      final code = catalog(specWith());
+      expect(
+        code,
+        contains('Future<Catalog?> getCatalog({String? ifNoneMatch,})'),
+      );
+      expect(
+        code,
+        contains(
+          "headers: {if (ifNoneMatch != null) 'If-None-Match': ifNoneMatch}",
+        ),
+      );
+      expect(code, contains('[ifNoneMatch]: Eldeki sürüm.'));
+    });
+
+    test('304 null döner', () {
+      final code = catalog(specWith());
+      expect(code, contains('if (response == null) {'));
+      expect(code, contains('return null;'));
+      expect(code, contains('sunucu `304` dönerse'));
+      expect(
+        code,
+        contains(
+          "return Catalog.fromJson(jsonObject(response, 'getCatalog'));",
+        ),
+      );
+    });
+
+    test('ApiClient\'ın eklediği başlıklar parametre olmaz', () {
+      final code = catalog(specWith());
+      expect(code, isNot(contains('X-Tayfam-Client-Version')));
+      expect(code, isNot(contains('xTayfamClientVersion')));
+    });
+
+    test('sözleşmede yazılı gövdesiz 304 kabul edilir', () {
+      final code = catalog(
+        specWith(
+          extraResponses: {
+            '304': {'description': 'Değişmedi'},
+          },
+        ),
+      );
+      expect(code, contains('Future<Catalog?> getCatalog('));
+    });
+
+    test('If-None-Match olmadan 304 hata verir', () {
+      expect(
+        () => _generate(
+          specWith(
+            header: false,
+            extraResponses: {
+              '304': {'description': 'Değişmedi'},
+            },
+          ),
+        ),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('gövdeli 304 hata verir', () {
+      expect(
+        () => _generate(
+          specWith(
+            extraResponses: {
+              '304': {'description': 'Değişmedi', ..._json(_ref('Catalog'))},
+            },
+          ),
+        ),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('GET dışında If-None-Match hata verir', () {
+      expect(
+        () => _generate(specWith(method: 'post')),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('gövdesiz başarılı yanıtla If-None-Match hata verir', () {
+      expect(
+        () => _generate(specWith(ok: {'description': 'Boş'})),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('string olmayan başlık parametresi hata verir', () {
+      expect(
+        () => _generate(specWith(headerSchema: {'type': 'integer'})),
+        throwsA(isA<GenException>()),
+      );
+    });
+
+    test('koşulsuz işlemler null dönmez ve başlık göndermez', () {
+      final code = catalog(specWith(header: false));
+      expect(code, contains('Future<Catalog> getCatalog() async'));
+      expect(code, isNot(contains('headers:')));
+      expect(code, isNot(contains('return null;')));
+    });
+
+    test('taşıma arayüzü başlıkları kabul eder', () {
+      expect(
+        _generate(specWith()).files['transport.dart'],
+        contains('Map<String, String> headers = const {},'),
+      );
+    });
+  });
+
   group('hata kodları', () {
     test('ProblemType kebab → camelCase, wire korunur, unknown eklenir', () {
       final problem = _generate(

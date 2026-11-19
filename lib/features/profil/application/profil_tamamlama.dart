@@ -34,7 +34,7 @@ const int dilEnCok = 5;
 
 /// [hesap]'ta [alan]'ın değeri var mı (boş metin ve boş liste yok sayılır).
 bool alanDolu(Account hesap, ProfileField alan) => switch (alan) {
-  ProfileField.interests => hesap.interests.any((t) => t != EventType.unknown),
+  ProfileField.interests => hesap.interests.isNotEmpty,
   ProfileField.about => (hesap.about ?? '').trim().isNotEmpty,
   ProfileField.occupation => (hesap.occupation ?? '').trim().isNotEmpty,
   ProfileField.team => (hesap.team ?? '').trim().isNotEmpty,

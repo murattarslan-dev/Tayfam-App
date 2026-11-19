@@ -5,7 +5,8 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/sosyal_medya.dart';
 import 'package:tayfam/core/metin/diller.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
 import 'package:tayfam/features/profil/application/profil_tamamlama.dart';
@@ -162,17 +163,30 @@ String adimAdi(AppLocalizations m, TamamlamaAdimi adim) => switch (adim) {
 
 /// Alanın şu anki değerinin kısa özeti (tasarım: Profil-Tanitim): değer,
 /// "Paylaşmak istemiyorum" ya da "Eklenmedi".
-String alanOzeti(AppLocalizations m, Account hesap, ProfileField alan) {
+///
+/// İlgi alanlarının adları katalogdan gelir ([katalog], [dil]; ADR-0024
+/// §2); katalog gelmediyse ya da hiçbir ad bulunamadıysa yalnızca sayı
+/// yazılır.
+String alanOzeti(
+  AppLocalizations m,
+  Account hesap,
+  ProfileField alan, {
+  Katalog? katalog,
+  String dil = katalogVarsayilanDil,
+}) {
   if (!alanDolu(hesap, alan)) {
     return alanReddedildi(hesap, alan)
         ? m.profil_tamamla_paylasmak_istemiyorum
         : m.profil_tanitim_eklenmedi;
   }
   return switch (alan) {
-    ProfileField.interests => [
-      for (final t in hesap.interests)
-        if (t != EventType.unknown) etkinlikTuruGirdisi(t).ad(m),
-    ].join(m.profil_liste_ayirici),
+    ProfileField.interests => switch ([
+      for (final anahtar in hesap.interests)
+        ?katalogAdi(katalog?.ilgiAlani(anahtar)?.labels, dil),
+    ]) {
+      [] => m.katalog_ilgi_sayisi(hesap.interests.length),
+      final adlar => adlar.join(m.profil_liste_ayirici),
+    },
     ProfileField.about => hesap.about?.trim() ?? '',
     ProfileField.occupation => hesap.occupation?.trim() ?? '',
     ProfileField.team => hesap.team?.trim() ?? '',

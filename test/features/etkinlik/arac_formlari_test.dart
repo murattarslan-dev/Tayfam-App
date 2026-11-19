@@ -240,7 +240,7 @@ void main() {
   group('konvoy rotası', () {
     EtkinlikTaslagi taslak(List<LatLng> rota) => EtkinlikTaslagi(
       istekKimligi: sahteEtkinlikIstekKimligi,
-      tur: EventType.convoy,
+      tur: 'convoy',
       baslik: 'Sapanca turu',
       baslangic: ornekBaslangic,
       bitis: ornekBaslangic.add(const Duration(hours: 4)),

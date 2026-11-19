@@ -1627,31 +1627,27 @@
   },
   "etkinlik_turu_convoy": "Konvoy",
   "@etkinlik_turu_convoy": {
-    "description": "Etkinlik türünün adı: konvoy (convoy). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+    "description": "Katalogsuz tanıtım ekranlarındaki (giriş, hoş geldin, karşılama) örnek tür adı. Uygulamanın gerçek tür adları katalogdan gelir (ADR-0024)."
   },
   "etkinlik_turu_camp": "Kamp",
   "@etkinlik_turu_camp": {
-    "description": "Etkinlik türünün adı: kamp (camp). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+    "description": "Katalogsuz tanıtım ekranlarındaki (giriş, hoş geldin, karşılama) örnek tür adı. Uygulamanın gerçek tür adları katalogdan gelir (ADR-0024)."
   },
   "etkinlik_turu_hike": "Yürüyüş",
   "@etkinlik_turu_hike": {
-    "description": "Etkinlik türünün adı: yürüyüş (hike). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+    "description": "Katalogsuz tanıtım ekranlarındaki (giriş, hoş geldin, karşılama) örnek tür adı. Uygulamanın gerçek tür adları katalogdan gelir (ADR-0024)."
   },
   "etkinlik_turu_fishing": "Balık",
   "@etkinlik_turu_fishing": {
-    "description": "Etkinlik türünün adı: balık (fishing). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+    "description": "Katalogsuz tanıtım ekranlarındaki (giriş, hoş geldin, karşılama) örnek tür adı. Uygulamanın gerçek tür adları katalogdan gelir (ADR-0024)."
   },
   "etkinlik_turu_gaming": "Oyun",
   "@etkinlik_turu_gaming": {
-    "description": "Etkinlik türünün adı: oyun (gaming). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+    "description": "Katalogsuz tanıtım ekranlarındaki (giriş, hoş geldin, karşılama) örnek tür adı. Uygulamanın gerçek tür adları katalogdan gelir (ADR-0024)."
   },
   "etkinlik_turu_sports": "Spor",
   "@etkinlik_turu_sports": {
-    "description": "Etkinlik türünün adı: spor (sports). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
-  },
-  "etkinlik_turu_general": "Genel",
-  "@etkinlik_turu_general": {
-    "description": "Etkinlik türünün adı: genel (belirli bir türe girmeyen buluşmalar; sunucunun henüz tanımadığı türler de bu adla görünür) (general). Tür çiplerinde, karşılamadaki tür haplarında ve oluşturma sihirbazının ilgi alanlarında ikonla birlikte görünür."
+    "description": "Katalogsuz tanıtım ekranlarındaki (giriş, hoş geldin, karşılama) örnek tür adı. Uygulamanın gerçek tür adları katalogdan gelir (ADR-0024)."
   },
   "etkinlik_daha_fazla": "Daha fazla göster",
   "@etkinlik_daha_fazla": {
@@ -2478,74 +2474,6 @@
   "@etkinlik_balik_gizlilik_participants": {
     "description": "Balık etkinliğinde buluşma noktasını yalnızca organizatör, yönetim ve \"Geliyorum\"/\"Belki\" diyenler görür."
   },
-  "etkinlik_oyun": "Oyun",
-  "@etkinlik_oyun": {
-    "description": "Oyun etkinliğinde oynanacak oyunun adı: detayda bilgi etiketi, sihirbazda alan etiketi."
-  },
-  "etkinlik_oyun_platform": "Platform",
-  "@etkinlik_oyun_platform": {
-    "description": "Oyun etkinliğinin platformu: detayda bilgi etiketi, sihirbazda seçim etiketi."
-  },
-  "etkinlik_platform_pc": "Bilgisayar",
-  "@etkinlik_platform_pc": {
-    "description": "Oyun platformu: bilgisayar (pc)."
-  },
-  "etkinlik_platform_playstation": "PlayStation",
-  "@etkinlik_platform_playstation": {
-    "description": "Oyun platformu: PlayStation (marka adı, çevrilmez)."
-  },
-  "etkinlik_platform_xbox": "Xbox",
-  "@etkinlik_platform_xbox": {
-    "description": "Oyun platformu: Xbox (marka adı, çevrilmez)."
-  },
-  "etkinlik_platform_switch": "Nintendo Switch",
-  "@etkinlik_platform_switch": {
-    "description": "Oyun platformu: Nintendo Switch (marka adı, çevrilmez)."
-  },
-  "etkinlik_platform_mobile": "Mobil",
-  "@etkinlik_platform_mobile": {
-    "description": "Oyun platformu: telefon ve tablet (mobile)."
-  },
-  "etkinlik_platform_other": "Diğer",
-  "@etkinlik_platform_other": {
-    "description": "Oyun platformu: diğer (other)."
-  },
-  "etkinlik_spor": "Spor dalı",
-  "@etkinlik_spor": {
-    "description": "Spor etkinliğinin dalı: detayda bilgi etiketi, sihirbazda seçim etiketi."
-  },
-  "etkinlik_spor_football": "Futbol",
-  "@etkinlik_spor_football": {
-    "description": "Spor dalı: futbol."
-  },
-  "etkinlik_spor_table_football": "Langırt",
-  "@etkinlik_spor_table_football": {
-    "description": "Spor dalı: langırt (table_football)."
-  },
-  "etkinlik_spor_basketball": "Basketbol",
-  "@etkinlik_spor_basketball": {
-    "description": "Spor dalı: basketbol."
-  },
-  "etkinlik_spor_volleyball": "Voleybol",
-  "@etkinlik_spor_volleyball": {
-    "description": "Spor dalı: voleybol."
-  },
-  "etkinlik_spor_tennis": "Tenis",
-  "@etkinlik_spor_tennis": {
-    "description": "Spor dalı: tenis."
-  },
-  "etkinlik_spor_table_tennis": "Masa tenisi",
-  "@etkinlik_spor_table_tennis": {
-    "description": "Spor dalı: masa tenisi."
-  },
-  "etkinlik_spor_other": "Diğer",
-  "@etkinlik_spor_other": {
-    "description": "Spor dalı: diğer."
-  },
-  "etkinlik_spor_saha": "Saha",
-  "@etkinlik_spor_saha": {
-    "description": "Spor etkinliğinin sahası: detayda bilgi etiketi, sihirbazda alan etiketi."
-  },
   "etkinlik_iptal_baslik": "Etkinliği iptal et",
   "@etkinlik_iptal_baslik": {
     "description": "İptal diyaloğunun başlığı."
@@ -2669,38 +2597,6 @@
   "etkinlik_tur_ilgi_alanlari": "Tayfanın ilgi alanları",
   "@etkinlik_tur_ilgi_alanlari": {
     "description": "Sihirbazın tür adımında tayfanın ilgi alanlarındaki türlerin başlığı."
-  },
-  "etkinlik_tur_digerleri": "Diğer türler",
-  "@etkinlik_tur_digerleri": {
-    "description": "Sihirbazın tür adımında ilgi alanı dışındaki türlerin başlığı."
-  },
-  "etkinlik_tur_aciklama_convoy": "Rota ve araç listesi",
-  "@etkinlik_tur_aciklama_convoy": {
-    "description": "Sihirbazın tür kutusunda konvoyun kısa açıklaması."
-  },
-  "etkinlik_tur_aciklama_camp": "Malzeme listesi, kamp yeri",
-  "@etkinlik_tur_aciklama_camp": {
-    "description": "Sihirbazın tür kutusunda kampın kısa açıklaması."
-  },
-  "etkinlik_tur_aciklama_hike": "Zorluk, mesafe, yoklama",
-  "@etkinlik_tur_aciklama_hike": {
-    "description": "Sihirbazın tür kutusunda yürüyüşün kısa açıklaması."
-  },
-  "etkinlik_tur_aciklama_fishing": "Av günlüğü, mera gizliliği",
-  "@etkinlik_tur_aciklama_fishing": {
-    "description": "Sihirbazın tür kutusunda balığın kısa açıklaması."
-  },
-  "etkinlik_tur_aciklama_gaming": "Genelde çevrimiçi",
-  "@etkinlik_tur_aciklama_gaming": {
-    "description": "Sihirbazın tür kutusunda oyunun kısa açıklaması."
-  },
-  "etkinlik_tur_aciklama_sports": "Halısaha, basket, tenis…",
-  "@etkinlik_tur_aciklama_sports": {
-    "description": "Sihirbazın tür kutusunda sporun kısa açıklaması."
-  },
-  "etkinlik_tur_aciklama_general": "Sade etkinlik",
-  "@etkinlik_tur_aciklama_general": {
-    "description": "Sihirbazın tür kutusunda genel etkinliğin kısa açıklaması."
   },
   "etkinlik_bilgi_baslik": "Ne zaman, ne yapıyoruz?",
   "@etkinlik_bilgi_baslik": {
@@ -2846,10 +2742,6 @@
   "@etkinlik_kamp_notu_etiketi": {
     "description": "Sihirbazdaki kamp notu alanının etiketi."
   },
-  "etkinlik_spor_saha_etiketi": "Saha (isteğe bağlı)",
-  "@etkinlik_spor_saha_etiketi": {
-    "description": "Sihirbazdaki saha alanının etiketi."
-  },
   "etkinlik_yuruyus_donus_notu": "Beklenen dönüş ve tolerans, “Döndüm” demeyenler için verilen uyarıda kullanılır.",
   "@etkinlik_yuruyus_donus_notu": {
     "description": "Sihirbazda yürüyüşün dönüş alanlarının altındaki açıklama."
@@ -2917,14 +2809,6 @@
         "example": "52"
       }
     }
-  },
-  "etkinlik_secim_hata": "Bir seçenek seç.",
-  "@etkinlik_secim_hata": {
-    "description": "Zorunlu seçim (oyun platformu, spor dalı) yapılmadığında görünen hata."
-  },
-  "etkinlik_oyun_hata": "Oyunun adını yaz (en çok 60 karakter).",
-  "@etkinlik_oyun_hata": {
-    "description": "Oyun adı boşken ya da çok uzunken görünen hata."
   },
   "etkinlik_mesafe_etiketi": "Mesafe (km)",
   "@etkinlik_mesafe_etiketi": {
@@ -10547,5 +10431,265 @@
   "bosum_bir_sey_yapalim": "Bir şey yapalım",
   "@bosum_bir_sey_yapalim": {
     "description": "Arkadaşın boş günleri alttan sayfasındaki birincil düğme: anlık etkinlik sihirbazını ilk boş gün için, bu arkadaş davetli açar (ADR-0026)."
+  },
+  "hata_catalog_type_not_found": "Bu etkinlik türü bulunamadı.",
+  "@hata_catalog_type_not_found": {
+    "description": "Hata kodu `catalog-type-not-found`. Katalogda olmayan bir tür ya da tür sürümü istenince görünen hata."
+  },
+  "katalog_tur_bilinmiyor": "Etkinlik",
+  "@katalog_tur_bilinmiyor": {
+    "description": "Tür çipinde ve etkinlik başlığında, katalog henüz gelmediyse ya da tür tanınmıyorsa tür adı yerine görünen genel ad."
+  },
+  "katalog_yukleniyor": "Türler yükleniyor",
+  "@katalog_yukleniyor": {
+    "description": "Katalog (türler ve ilgi alanları) sunucudan okunurken yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "katalog_yuklenemedi": "Liste yüklenemedi. Bağlantını kontrol edip yeniden dene.",
+  "@katalog_yuklenemedi": {
+    "description": "Katalog (türler ve ilgi alanları) sunucudan okunamayınca tür ve ilgi alanı seçiminde görünen hata."
+  },
+  "katalog_tekrar_dene": "Tekrar dene",
+  "@katalog_tekrar_dene": {
+    "description": "Katalog okunamayınca hatanın altındaki, okumayı yeniden deneyen düğme."
+  },
+  "katalog_tum_turler": "Tüm türler",
+  "@katalog_tum_turler": {
+    "description": "Etkinlik sihirbazının tür adımında, bütün türlerin ilgi alanına göre gruplu listesinin başlığı."
+  },
+  "katalog_tur_ara": "Tür ara",
+  "@katalog_tur_ara": {
+    "description": "Tür adımındaki arama kutusunun etiketi."
+  },
+  "katalog_aramayi_temizle": "Aramayı temizle",
+  "@katalog_aramayi_temizle": {
+    "description": "Tür arama kutusundaki, yazılanı silen düğmenin ipucu ve ekran okuyucu etiketi."
+  },
+  "katalog_tur_bulunamadi": "Aramana uyan tür yok.",
+  "@katalog_tur_bulunamadi": {
+    "description": "Tür aramasında hiçbir tür eşleşmeyince görünen metin."
+  },
+  "katalog_tur_yok": "Henüz seçilebilecek tür yok.",
+  "@katalog_tur_yok": {
+    "description": "Katalogda seçilebilir hiçbir tür yokken tür adımında görünen metin."
+  },
+  "katalog_tur_guncelle": "Bu tür için uygulamayı güncelle.",
+  "@katalog_tur_guncelle": {
+    "description": "Tür kutusunda, türün alanlarından biri bu uygulama sürümünde tanınmadığı için tür seçilemezken görünen açıklama."
+  },
+  "katalog_ilgi_sayisi": "{sayi} ilgi alanı",
+  "@katalog_ilgi_sayisi": {
+    "description": "Profil bilgilerinde ilgi alanlarının özeti; adlar henüz yüklenmediyse yalnızca sayı yazılır.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "katalog_alan_istege_bagli": "{ad} (isteğe bağlı)",
+  "@katalog_alan_istege_bagli": {
+    "description": "Katalogdaki zorunlu olmayan bir alanın form etiketi; {ad} alanın katalogdaki adıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Saha adı"
+      }
+    }
+  },
+  "katalog_alan_zorunlu": "Bu alan zorunlu.",
+  "@katalog_alan_zorunlu": {
+    "description": "Katalogdaki zorunlu bir alan boş bırakılınca alanın altında görünen hata."
+  },
+  "katalog_alan_uzunluk": "En çok {enCok} karakter olabilir.",
+  "@katalog_alan_uzunluk": {
+    "description": "Katalogdaki metin alanı çok uzunken alanın altında görünen hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "katalog_alan_sayi": "Geçerli bir sayı yaz.",
+  "@katalog_alan_sayi": {
+    "description": "Katalogdaki sayı alanına sayı olmayan bir değer yazılınca görünen hata."
+  },
+  "katalog_alan_aralik": "{enAz} ile {enCok} arasında olmalı.",
+  "@katalog_alan_aralik": {
+    "description": "Katalogdaki sayı alanı tanımdaki aralığın dışındayken görünen hata.",
+    "placeholders": {
+      "enAz": {
+        "type": "String",
+        "example": "0"
+      },
+      "enCok": {
+        "type": "String",
+        "example": "1000"
+      }
+    }
+  },
+  "katalog_alan_en_az": "En az {enAz} olmalı.",
+  "@katalog_alan_en_az": {
+    "description": "Katalogdaki sayı alanı en küçük değerin altındayken (üst sınır yokken) görünen hata.",
+    "placeholders": {
+      "enAz": {
+        "type": "String",
+        "example": "1"
+      }
+    }
+  },
+  "katalog_alan_basamak": "Virgülden sonra en çok {basamak} basamak olabilir.",
+  "@katalog_alan_basamak": {
+    "description": "Katalogdaki ondalık sayı alanında fazla ondalık basamak yazılınca görünen hata.",
+    "placeholders": {
+      "basamak": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "katalog_alan_secim": "Bir seçenek seç.",
+  "@katalog_alan_secim": {
+    "description": "Katalogdaki zorunlu seçim alanında seçim yokken ya da seçenek geçersizken görünen hata."
+  },
+  "katalog_alan_cok_secim": "En çok {enCok} seçenek seçebilirsin.",
+  "@katalog_alan_cok_secim": {
+    "description": "Katalogdaki çoklu seçim alanında en çok seçim sayısı aşılınca görünen hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "katalog_alan_tarih": "Geçerli bir tarih seç.",
+  "@katalog_alan_tarih": {
+    "description": "Katalogdaki tarih alanının değeri geçerli bir gün değilken görünen hata."
+  },
+  "katalog_cok_secim_sayaci": "{secili} / {enCok}",
+  "@katalog_cok_secim_sayaci": {
+    "description": "Katalogdaki çoklu seçim alanının başlığının yanında: seçilen ve en çok seçilebilen seçenek sayısı.",
+    "placeholders": {
+      "secili": {
+        "type": "int",
+        "example": "1"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "katalog_evet": "Evet",
+  "@katalog_evet": {
+    "description": "Katalogdaki evet/hayır alanının olumlu seçeneği ve detaydaki değeri."
+  },
+  "katalog_hayir": "Hayır",
+  "@katalog_hayir": {
+    "description": "Katalogdaki evet/hayır alanının olumsuz seçeneği ve detaydaki değeri."
+  },
+  "katalog_tarih_sec": "Tarih seç",
+  "@katalog_tarih_sec": {
+    "description": "Katalogdaki tarih alanında henüz tarih seçilmemişken düğmenin metni."
+  },
+  "katalog_tarih_temizle": "Tarihi temizle",
+  "@katalog_tarih_temizle": {
+    "description": "Katalogdaki tarih alanında seçili tarihi kaldıran düğmenin ipucu ve ekran okuyucu etiketi."
+  },
+  "katalog_sure_degeri": "{dakika} dk",
+  "@katalog_sure_degeri": {
+    "description": "Katalogdaki süre alanının detayda gösterilen değeri (dakika).",
+    "placeholders": {
+      "dakika": {
+        "type": "int",
+        "example": "45"
+      }
+    }
+  },
+  "katalog_birimli_deger": "{deger} {birim}",
+  "@katalog_birimli_deger": {
+    "description": "Katalogdaki birimli sayı alanının detayda gösterilen değeri: sayı ve birimin kısa adı.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "12,4"
+      },
+      "birim": {
+        "type": "String",
+        "example": "km"
+      }
+    }
+  },
+  "katalog_ondalik_ayraci": ",",
+  "@katalog_ondalik_ayraci": {
+    "description": "Ondalık sayılar gösterilirken kullanılan ayraç (Türkçede virgül)."
+  },
+  "katalog_birim_kg": "kg",
+  "@katalog_birim_kg": {
+    "description": "Katalogdaki `kg` biriminin kısa adı (kilogram); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_piece": "adet",
+  "@katalog_birim_piece": {
+    "description": "Katalogdaki `piece` biriminin kısa adı (adet); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_bag": "torba",
+  "@katalog_birim_bag": {
+    "description": "Katalogdaki `bag` biriminin kısa adı (torba); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_km": "km",
+  "@katalog_birim_km": {
+    "description": "Katalogdaki `km` biriminin kısa adı (kilometre); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_m": "m",
+  "@katalog_birim_m": {
+    "description": "Katalogdaki `m` biriminin kısa adı (metre); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_altitude_m": "m",
+  "@katalog_birim_altitude_m": {
+    "description": "Katalogdaki `altitude_m` biriminin kısa adı (irtifa, metre); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_page": "sayfa",
+  "@katalog_birim_page": {
+    "description": "Katalogdaki `page` biriminin kısa adı (sayfa); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_minute": "dk",
+  "@katalog_birim_minute": {
+    "description": "Katalogdaki `minute` biriminin kısa adı (dakika); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_hour": "sa",
+  "@katalog_birim_hour": {
+    "description": "Katalogdaki `hour` biriminin kısa adı (saat); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_unit": "ünite",
+  "@katalog_birim_unit": {
+    "description": "Katalogdaki `unit` biriminin kısa adı (ünite (ör. kan bağışı)); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_goal": "gol",
+  "@katalog_birim_goal": {
+    "description": "Katalogdaki `goal` biriminin kısa adı (gol); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_point": "puan",
+  "@katalog_birim_point": {
+    "description": "Katalogdaki `point` biriminin kısa adı (puan); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_night": "gece",
+  "@katalog_birim_night": {
+    "description": "Katalogdaki `night` biriminin kısa adı (gece); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_nm": "dnm",
+  "@katalog_birim_nm": {
+    "description": "Katalogdaki `nm` biriminin kısa adı (deniz mili); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_box": "koli",
+  "@katalog_birim_box": {
+    "description": "Katalogdaki `box` biriminin kısa adı (koli); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_section": "bölüm",
+  "@katalog_birim_section": {
+    "description": "Katalogdaki `section` biriminin kısa adı (bölüm); sayı alanının sonunda ve değerin yanında görünür."
+  },
+  "katalog_birim_net": "net",
+  "@katalog_birim_net": {
+    "description": "Katalogdaki `net` biriminin kısa adı (net (deneme sınavı)); sayı alanının sonunda ve değerin yanında görünür."
   }
 }
