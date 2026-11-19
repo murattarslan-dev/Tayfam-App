@@ -156,32 +156,19 @@ class AraclarNotifier extends AsyncNotifier<EventVehicles> {
 
   /// Kendi aracını yazar; önceki aracının yerini alır.
   Future<Object?> aracYaz(EventVehicleRequest istek) => _yaz(
-    (d) => d.aracYaz(
-      kimlik.tayfaId,
-      kimlik.etkinlikId,
-      kimlik.anahtar,
-      istek,
-    ),
+    (d) => d.aracYaz(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, istek),
   );
 
   /// Aracı koltuk istekleriyle birlikte çıkarır.
   Future<Object?> aracCikar(String aracId) => _yaz(
-    (d) => d.aracCikar(
-      kimlik.tayfaId,
-      kimlik.etkinlikId,
-      kimlik.anahtar,
-      aracId,
-    ),
+    (d) =>
+        d.aracCikar(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, aracId),
   );
 
   /// Bu araçta koltuk ister.
   Future<Object?> koltukIste(String aracId) => _yaz(
-    (d) => d.koltukIste(
-      kimlik.tayfaId,
-      kimlik.etkinlikId,
-      kimlik.anahtar,
-      aracId,
-    ),
+    (d) =>
+        d.koltukIste(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, aracId),
   );
 
   /// Araç sahibi [kullaniciId]'nin isteğini onaylar.

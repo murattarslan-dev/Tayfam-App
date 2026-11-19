@@ -92,11 +92,8 @@ SahteTayfaTasima _tasima(
   String? cevap = 'going',
 }) {
   final t = etkinlikTasimasi({
-    'GET $etkinlikYolu': (_) => etkinlikJson(
-      tur: 'convoy',
-      cevap: cevap,
-      baslangic: yakinBaslangic,
-    ),
+    'GET $etkinlikYolu': (_) =>
+        etkinlikJson(tur: 'convoy', cevap: cevap, baslangic: yakinBaslangic),
     'GET $_rotaYolu': (_) => {
       'points': const <Object?>[],
       'caller_can_edit': false,
@@ -239,9 +236,8 @@ void main() {
         ikiKatYazi(tester);
         var istendi = false;
         final tasima = _tasima(ben: _yolcuId, {
-          'GET $_araclarYolu': (_) => _araclarJson([
-            _aracJson(plaka: '34 AB 1972'),
-          ]),
+          'GET $_araclarYolu': (_) =>
+              _araclarJson([_aracJson(plaka: '34 AB 1972')]),
           'PUT $_istegimYolu': (_) {
             istendi = true;
             return _araclarJson([

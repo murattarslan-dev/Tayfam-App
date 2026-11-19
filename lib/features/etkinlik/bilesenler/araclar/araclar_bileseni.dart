@@ -79,9 +79,7 @@ class _AraclarBolumuState extends ConsumerState<AraclarBolumu> {
   Future<void> _calistir(AracIslemi islem, {String? basari}) async {
     if (_mesgul) return;
     setState(() => _mesgul = true);
-    final hata = await islem(
-      ref.read(araclarProvider(widget.kimlik).notifier),
-    );
+    final hata = await islem(ref.read(araclarProvider(widget.kimlik).notifier));
     if (!mounted) return;
     setState(() => _mesgul = false);
     if (hata != null) {
@@ -324,10 +322,7 @@ class AracKarti extends ConsumerWidget {
                         Text(ad, style: context.yazi.titleSmall),
                         if (ayrinti.isNotEmpty) Text(ayrinti, style: ikincil),
                         if (plaka != null && plaka.isNotEmpty)
-                          Text(
-                            m.bilesen_vehicles_plaka(plaka),
-                            style: ikincil,
-                          ),
+                          Text(m.bilesen_vehicles_plaka(plaka), style: ikincil),
                         if (koltuklar && arac.seats > 0)
                           Text(
                             m.bilesen_vehicles_bos_koltuk(bos),
@@ -363,7 +358,8 @@ class AracKarti extends ConsumerWidget {
                         _onayliIslem(
                           context,
                           baslik: m.bilesen_vehicles_cikar_onay,
-                          metin: arac.riderUserIds.isEmpty &&
+                          metin:
+                              arac.riderUserIds.isEmpty &&
                                   arac.pendingUserIds.isEmpty
                               ? null
                               : m.bilesen_vehicles_cikar_metni,
@@ -499,8 +495,7 @@ class _KoltukSatiri extends ConsumerWidget {
                     style: context.yazi.bodyMedium,
                   ),
                 ),
-                if (bekliyor)
-                  Text(m.bilesen_vehicles_bekliyor, style: ikincil),
+                if (bekliyor) Text(m.bilesen_vehicles_bekliyor, style: ikincil),
               ],
             ),
           ),
