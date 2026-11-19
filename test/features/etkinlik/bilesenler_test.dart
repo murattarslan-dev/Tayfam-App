@@ -51,9 +51,9 @@ const EtkinlikAnahtari _anahtar = (
   etkinlikId: ornekEtkinlikId,
 );
 
-CatalogComponent _bilesen(String anahtar) => turBilesenleri(
-  testTuru(_tur),
-).firstWhere((b) => bilesenAnahtari(b) == anahtar);
+CatalogComponent _bilesen(String anahtar) =>
+    turBilesenleri(testTuru(_tur))
+        .firstWhere((b) => bilesenAnahtari(b) == anahtar);
 
 Map<String, Object?> _durum({
   bool? yoklama = false,
@@ -129,17 +129,17 @@ void main() {
 
         expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
         expect(tester.takeException(), isNull);
-        // Kayıttaki bileşen: rolü ve organizatörün seçimiyle.
-        expect(
-          find.text(
-            SahteBilesen.detayMetni('teams', BilesenRolu.katilimci, {
-              'mode': 'manual',
-            }),
-          ),
-          findsOneWidget,
-        );
-        // Kapalı (optional, organizatör kapatmış) bileşen çizilmez.
-        expect(find.textContaining('bileşen roll_call'), findsNothing);
+        // Kayıttaki bileşen: rolü ve organizatörün seçimiyle. Kapalı
+        // (optional, organizatör kapatmış) yoklama çizilmez.
+        final cizilenler = tester
+            .widgetList<Text>(find.textContaining('bileşen '))
+            .map((metin) => metin.data)
+            .toList();
+        expect(cizilenler, [
+          SahteBilesen.detayMetni('teams', BilesenRolu.katilimci, {
+            'mode': 'manual',
+          }),
+        ]);
         // Tanınmayan bileşenlerin hepsi için tek kart.
         final kart = tester.widget<BilesenGuncelleKarti>(
           find.byType(BilesenGuncelleKarti),
@@ -487,47 +487,53 @@ void main() {
       expect(tasima.giden('PATCH', etkinlikYolu), isEmpty);
     });
 
-    test('seçim kilidi: kilitli durumda seçim değişmez ve gönderilmez', () async {
-      final (:n, :t, :tasima) = duzenleme(
-        _durum(kilitli: true, yonetebilir: true),
-      );
-      expect(t().bilesenlerKilitli, isTrue);
-      n
-        ..bilesenAcKapat(_bilesen('roll_call'), acik: true)
-        ..bilesenSec(_bilesen('teams'), 'mode', 'random');
-      expect(n.girdiVar, isFalse);
-      await n.gonder();
-      expect(tasima.giden('PUT', bilesenYolu), isEmpty);
-    });
+    test(
+      'seçim kilidi: kilitli durumda seçim değişmez ve gönderilmez',
+      () async {
+        final (:n, :t, :tasima) = duzenleme(
+          _durum(kilitli: true, yonetebilir: true),
+        );
+        expect(t().bilesenlerKilitli, isTrue);
+        n
+          ..bilesenAcKapat(_bilesen('roll_call'), acik: true)
+          ..bilesenSec(_bilesen('teams'), 'mode', 'random');
+        expect(n.girdiVar, isFalse);
+        await n.gonder();
+        expect(tasima.giden('PUT', bilesenYolu), isEmpty);
+      },
+    );
 
     test('yönetemeyen için de seçimler salt okunur', () {
       final (n: _, :t, tasima: _) = duzenleme(_durum());
       expect(t().bilesenlerKilitli, isTrue);
     });
 
-    test('sunucu component-locked derse hata gösterilir, PATCH gitmez', () async {
-      final (:n, :t, :tasima) = duzenleme(
-        _durum(yonetebilir: true),
-        putYaniti: const ApiProblem(
-          type: ProblemType.componentLocked,
-          status: 409,
-        ),
-      );
-      n
-        ..baslikAyarla('Yeni başlık')
-        ..bilesenAcKapat(_bilesen('roll_call'), acik: true);
-      await n.gonder();
-      expect(t().sonuc, isNull);
-      expect(
-        t().hata,
-        isA<ApiProblem>().having(
-          (p) => p.type,
-          'type',
-          ProblemType.componentLocked,
-        ),
-      );
-      expect(tasima.giden('PATCH', etkinlikYolu), isEmpty);
-    });
+    test(
+      'sunucu component-locked derse hata gösterilir, PATCH gitmez',
+      () async {
+        final (:n, :t, :tasima) = duzenleme(
+          _durum(yonetebilir: true),
+          putYaniti: const ApiProblem(
+            type: ProblemType.componentLocked,
+            status: 409,
+          ),
+        );
+        n
+          ..baslikAyarla('Yeni başlık')
+          ..bilesenAcKapat(_bilesen('roll_call'), acik: true);
+        await n.gonder();
+        expect(t().sonuc, isNull);
+        expect(
+          t().hata,
+          isA<ApiProblem>().having(
+            (p) => p.type,
+            'type',
+            ProblemType.componentLocked,
+          ),
+        );
+        expect(tasima.giden('PATCH', etkinlikYolu), isEmpty);
+      },
+    );
   });
 
   group('canlı bileşen aboneliği', () {
@@ -570,10 +576,7 @@ void main() {
         await c.read(etkinlikBilesenleriProvider(_anahtar).future);
       }
 
-      final durum = c.listen(
-        etkinlikBilesenleriProvider(_anahtar),
-        (_, _) {},
-      );
+      final durum = c.listen(etkinlikBilesenleriProvider(_anahtar), (_, _) {});
       final sayac = c.listen(bilesenDegisimiProvider(takim), (_, _) {});
       await bekle();
       expect(okuma(), 1);

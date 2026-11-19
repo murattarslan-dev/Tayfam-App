@@ -157,7 +157,10 @@ final class TemelBilesen extends KayitliBilesen {
 
 /// [kayit]'ta [tur] türündeki bileşen; yoksa `null` (o bölümde "Uygulamayı
 /// güncelle" kartı gösterilir).
-EtkinlikBileseni? etkinlikBileseniBul(List<EtkinlikBileseni> kayit, String tur) {
+EtkinlikBileseni? etkinlikBileseniBul(
+  List<EtkinlikBileseni> kayit,
+  String tur,
+) {
   for (final bilesen in kayit) {
     if (bilesen.tur == tur) return bilesen;
   }

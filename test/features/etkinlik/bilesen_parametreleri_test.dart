@@ -9,9 +9,9 @@ import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import '../../core/katalog/sahte_katalog.dart';
 import 'sahteler.dart';
 
-CatalogComponent _bilesen(String anahtar) => turBilesenleri(
-  testTuru('ornek_bilesenler'),
-).firstWhere((b) => bilesenAnahtari(b) == anahtar);
+CatalogComponent _bilesen(String anahtar) =>
+    turBilesenleri(testTuru('ornek_bilesenler'))
+        .firstWhere((b) => bilesenAnahtari(b) == anahtar);
 
 CatalogEventType _tur(List<Map<String, Object?>> bilesenler) =>
     CatalogEventType.fromJson({
@@ -217,7 +217,10 @@ void main() {
 
     test('temel bileşen çizilmez; kayıtta olmayan bilinmeyendir', () {
       final plan = bilesenPlani(tanim, kayit);
-      expect(plan.map((p) => bilesenAnahtari(p.tanim)), isNot(contains('meeting_point')));
+      expect(
+        plan.map((p) => bilesenAnahtari(p.tanim)),
+        isNot(contains('meeting_point')),
+      );
       expect(plan.first.bilesen, isNull);
       expect(bilesenAnahtari(plan.first.tanim), 'route');
       expect(
@@ -291,10 +294,7 @@ void main() {
 
     test('hakem: etkinliğin tamamı ya da bu bileşen', () {
       expect(rol(d: durum(), h: hakemler({})), BilesenRolu.hakem);
-      expect(
-        rol(h: hakemler({'component_key': 'teams'})),
-        BilesenRolu.hakem,
-      );
+      expect(rol(h: hakemler({'component_key': 'teams'})), BilesenRolu.hakem);
       expect(
         rol(h: hakemler({'component_key': 'bracket'})),
         isNot(BilesenRolu.hakem),

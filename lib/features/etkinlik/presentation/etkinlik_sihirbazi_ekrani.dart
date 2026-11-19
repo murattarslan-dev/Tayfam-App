@@ -374,9 +374,7 @@ class _EtkinlikSihirbaziEkraniState
             .value;
         if (durum != null) {
           final n = _n;
-          unawaited(
-            Future<void>.microtask(() => n.bilesenDurumuGeldi(durum)),
-          );
+          unawaited(Future<void>.microtask(() => n.bilesenDurumuGeldi(durum)));
         }
       }
     }

@@ -12,8 +12,7 @@ const int bilesenSecimEnCok = 20;
 
 /// [bilesen]'in tür içindeki anahtarı (`CatalogComponent.key`; yoksa
 /// `kind`). Bileşen uçlarındaki `{component_key}` budur.
-String bilesenAnahtari(CatalogComponent bilesen) =>
-    bilesen.key ?? bilesen.kind;
+String bilesenAnahtari(CatalogComponent bilesen) => bilesen.key ?? bilesen.kind;
 
 /// Organizatöre bırakılan bir parametre (ADR-0031 §1; Tayfam-Api ADR-0037
 /// §2): tanımda değer yerine `{"organizer_choice": [...], "default": ...}`
@@ -249,9 +248,8 @@ BilesenSecimleri bilesenSecimYap(
   String param,
   String deger,
 ) {
-  final gecerli = secimliParametreler(
-    bilesen,
-  ).any((p) => p.ad == param && p.secenekler.contains(deger));
+  final gecerli = secimliParametreler(bilesen)
+      .any((p) => p.ad == param && p.secenekler.contains(deger));
   if (!gecerli) return secimler;
   final anahtar = bilesenAnahtari(bilesen);
   final onceki = secimler[anahtar];
