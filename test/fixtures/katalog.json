@@ -132,6 +132,40 @@
               "alarm": true,
               "return_grace_minutes": 30
             }
+          },
+          {
+            "kind": "measure",
+            "key": "distance",
+            "labels": {
+              "tr": "Mesafe"
+            },
+            "params": {
+              "unit": "km",
+              "scope": "total",
+              "entered_by": "organizer",
+              "min": 0,
+              "max": 1000,
+              "decimals": 2,
+              "showcase": true,
+              "prefill_from": "planned_distance"
+            }
+          },
+          {
+            "kind": "measure",
+            "key": "elevation_gain",
+            "labels": {
+              "tr": "İrtifa kazancı"
+            },
+            "params": {
+              "unit": "m",
+              "scope": "total",
+              "entered_by": "organizer",
+              "min": 0,
+              "max": 9000,
+              "decimals": 0,
+              "showcase": true,
+              "prefill_from": "planned_elevation"
+            }
           }
         ]
       }

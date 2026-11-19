@@ -56,6 +56,9 @@ const String listeYolu = '$bilesenYolu/items';
 const String yoklamaYolu = '$bilesenYolu/roll-call';
 const String gunlukYolu = '$bilesenYolu/entries';
 const String gunlukKaydiYolu = '$gunlukYolu/{entry_id}';
+const String olcumYolu = '$bilesenYolu/measure';
+const String olcumToplamiYolu = '$olcumYolu/total';
+const String olcumKaydiYolu = '$olcumYolu/entries/{user_id}';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -203,6 +206,34 @@ Map<String, Object?> gunlukJson({
   'location_default': ?(konum ? varsayilan : null),
   'max_entries': enCok,
   'caller_can_add': ekleyebilir,
+};
+
+/// Örnek `EventMeasure` JSON'u (ölçüm bileşeni, #233): varsayılanı
+/// yürüyüşün mesafesi gibi km'lik, iki basamaklı, organizatörün girdiği,
+/// değeri olmayan toplam ölçüm, yazamayan üye gözüyle.
+Map<String, Object?> olcumJson({
+  String birim = 'km',
+  String kapsam = 'total',
+  String giren = 'organizer',
+  num enAz = 0,
+  num enCok = 1000,
+  int basamak = 2,
+  num? toplam,
+  List<Map<String, Object?>> kayitlar = const [],
+  num? onerilen,
+  bool yazabilir = false,
+}) => {
+  'unit': birim,
+  'scope': kapsam,
+  'entered_by': giren,
+  'min': enAz,
+  'max': enCok,
+  'decimals': basamak,
+  'total': ?toplam,
+  'total_updated_at': ?(toplam == null ? null : '2026-11-11T08:00:00Z'),
+  'entries': kayitlar,
+  'suggested': ?onerilen,
+  'caller_can_edit': yazabilir,
 };
 
 /// Örnek `TayfaVocabularyValue` JSON'u; [hedefId] ve [hedef] verilirse
@@ -416,6 +447,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
           (_) => gunlukJson(),
     )
     ..putIfAbsent(
+      'GET $olcumYolu',
+      () =>
+          (_) => olcumJson(),
+    )
+    ..putIfAbsent(
       'GET $sozlukYolu',
       () =>
           (_) => sozlukJson(),
@@ -527,7 +563,7 @@ const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
 /// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü
 /// kayıtlıdır; bileşen kaydı [bilesenler]'dir (verilmezse temel
-/// `meeting_point`, liste, yoklama ve günlük). Mağaza değerlendirme
+/// `meeting_point`, liste, yoklama, günlük ve ölçüm). Mağaza değerlendirme
 /// penceresi verilmezse kullanılamaz (istenmez); değerlendirme bayrağı
 /// cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
 List<Override> etkinlikOverridelari({
@@ -545,6 +581,7 @@ List<Override> etkinlikOverridelari({
     ListeBileseni(),
     YoklamaBileseni(),
     GunlukBileseni(),
+    OlcumBileseni(),
   ],
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),

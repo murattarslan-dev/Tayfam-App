@@ -8907,6 +8907,278 @@ final class EventLogEntryList {
   ]);
 }
 
+/// Bir etkinliğin bir ölçüm bileşeni, isteği yapanın gördüğü haliyle (#245).
+final class EventMeasure {
+  const EventMeasure({
+    required this.unit,
+    required this.scope,
+    required this.enteredBy,
+    required this.min,
+    required this.max,
+    required this.decimals,
+    this.total,
+    this.totalUpdatedAt,
+    required this.entries,
+    this.suggested,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventMeasure.fromJson(Map<String, Object?> json) => EventMeasure(
+    unit: _readString(json['unit'], 'EventMeasure.unit'),
+    scope: EventMeasureScope.fromWire(
+      _readString(json['scope'], 'EventMeasure.scope'),
+    ),
+    enteredBy: EventMeasureEnteredBy.fromWire(
+      _readString(json['entered_by'], 'EventMeasure.entered_by'),
+    ),
+    min: _readDouble(json['min'], 'EventMeasure.min'),
+    max: _readDouble(json['max'], 'EventMeasure.max'),
+    decimals: _readInt(json['decimals'], 'EventMeasure.decimals'),
+    total: switch (json['total']) {
+      null => null,
+      final Object v => _readDouble(v, 'EventMeasure.total'),
+    },
+    totalUpdatedAt: switch (json['total_updated_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventMeasure.total_updated_at'),
+    },
+    entries: List<EventMeasureEntry>.unmodifiable(
+      _readList(json['entries'], 'EventMeasure.entries').map(
+        (Object? e0) =>
+            EventMeasureEntry.fromJson(_readObject(e0, 'EventMeasure.entries')),
+      ),
+    ),
+    suggested: switch (json['suggested']) {
+      null => null,
+      final Object v => _readDouble(v, 'EventMeasure.suggested'),
+    },
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventMeasure.caller_can_edit',
+    ),
+  );
+
+  /// Tanımdaki birim (kapalı liste, `CatalogComponent`); adı istemcinin çeviri dosyasında.
+  final String unit;
+
+  /// `total` etkinlik başına tek değer, `personal` katılımcı başına.
+  final EventMeasureScope scope;
+
+  /// `self` katılımcı kendi adına girer; `organizer` organizatör ve atanmış hakem girer.
+  final EventMeasureEnteredBy enteredBy;
+
+  /// Değerin alt sınırı (tanımda yoksa 0).
+  final double min;
+
+  /// Değerin üst sınırı (tanımda yoksa 1000000000).
+  final double max;
+
+  /// Değerin yuvarlandığı ondalık basamak.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 3.
+  final int decimals;
+
+  /// Toplam ölçümün değeri; yoksa ya da kişisel ölçümde yoktur.
+  final double? total;
+
+  /// Toplamın son yazıldığı an; değer yoksa yoktur.
+  final DateTime? totalUpdatedAt;
+
+  /// Kişisel ölçümün görebildiğiniz değerleri, en eski değişiklik önce; toplam ölçümde boş.
+  final List<EventMeasureEntry> entries;
+
+  /// Önerilen değer (`prefill_from`): etkinlik bittikten sonra, toplam
+  /// ölçümün değeri yokken etkinliğin ilgili alanının değeri. Biri
+  /// yazana kadar ölçüm sayılmaz.
+  final double? suggested;
+
+  /// Şu an yazabilirsiniz (toplamı, kendi değerinizi ya da herkesinkini; ölçümün kuralına göre). Etkinlik başlamış, iptal değil, donmamış, tayfa salt okunur değil.
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'unit': unit,
+    'scope': scope.wire,
+    'entered_by': enteredBy.wire,
+    'min': min,
+    'max': max,
+    'decimals': decimals,
+    if (total case final value?) 'total': value,
+    if (totalUpdatedAt case final value?)
+      'total_updated_at': value.toUtc().toIso8601String(),
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+    if (suggested case final value?) 'suggested': value,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventMeasure &&
+          unit == other.unit &&
+          scope == other.scope &&
+          enteredBy == other.enteredBy &&
+          min == other.min &&
+          max == other.max &&
+          decimals == other.decimals &&
+          total == other.total &&
+          totalUpdatedAt == other.totalUpdatedAt &&
+          _deepEquals(entries, other.entries) &&
+          suggested == other.suggested &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    unit,
+    scope,
+    enteredBy,
+    min,
+    max,
+    decimals,
+    total,
+    totalUpdatedAt,
+    _deepHash(entries),
+    suggested,
+    callerCanEdit,
+  ]);
+}
+
+/// `self` katılımcı kendi adına girer; `organizer` organizatör ve atanmış hakem girer.
+enum EventMeasureEnteredBy {
+  self('self'),
+  organizer('organizer'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventMeasureEnteredBy(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventMeasureEnteredBy.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventMeasureEnteredBy fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventMeasureEntry {
+  const EventMeasureEntry({
+    required this.userId,
+    required this.value,
+    this.updatedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventMeasureEntry.fromJson(Map<String, Object?> json) =>
+      EventMeasureEntry(
+        userId: _readString(json['user_id'], 'EventMeasureEntry.user_id'),
+        value: _readDouble(json['value'], 'EventMeasureEntry.value'),
+        updatedAt: switch (json['updated_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'EventMeasureEntry.updated_at'),
+        },
+      );
+
+  /// Değerin ait olduğu katılımcı.
+  final String userId;
+
+  final double value;
+
+  final DateTime? updatedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'value': value,
+    if (updatedAt case final value?)
+      'updated_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventMeasureEntry &&
+          userId == other.userId &&
+          value == other.value &&
+          updatedAt == other.updatedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, value, updatedAt]);
+}
+
+/// `total` etkinlik başına tek değer, `personal` katılımcı başına.
+enum EventMeasureScope {
+  total('total'),
+  personal('personal'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventMeasureScope(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventMeasureScope.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventMeasureScope fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventMeasureValueRequest {
+  const EventMeasureValueRequest({required this.value});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventMeasureValueRequest.fromJson(Map<String, Object?> json) =>
+      EventMeasureValueRequest(
+        value: _readDouble(json['value'], 'EventMeasureValueRequest.value'),
+      );
+
+  /// Tanımdaki sınırlar içinde; ondalık basamağa yuvarlanır.
+  ///
+  /// Kısıtlar: minimum: -1000000000; maximum: 1000000000.
+  final double value;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'value': value};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventMeasureValueRequest && value == other.value;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[value]);
+}
+
 enum EventMode {
   inPerson('in_person'),
   online('online'),

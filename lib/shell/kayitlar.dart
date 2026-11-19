@@ -59,6 +59,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // log (#231)
   GunlukBileseni(),
   // measure (#233)
+  OlcumBileseni(),
   // goal (#234)
   // schedule (#235)
   // teams (#236)
