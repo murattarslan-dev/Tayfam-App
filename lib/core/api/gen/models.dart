@@ -1728,294 +1728,6 @@ final class BlockedUserList {
       Object.hashAll(<Object?>[_deepHash(users), nextPageToken]);
 }
 
-final class CampDetails {
-  const CampDetails({
-    this.siteName,
-    this.hasWater,
-    this.hasToilet,
-    this.notes,
-    this.items,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory CampDetails.fromJson(Map<String, Object?> json) => CampDetails(
-    siteName: switch (json['site_name']) {
-      null => null,
-      final Object v => _readString(v, 'CampDetails.site_name'),
-    },
-    hasWater: switch (json['has_water']) {
-      null => null,
-      final Object v => _readBool(v, 'CampDetails.has_water'),
-    },
-    hasToilet: switch (json['has_toilet']) {
-      null => null,
-      final Object v => _readBool(v, 'CampDetails.has_toilet'),
-    },
-    notes: switch (json['notes']) {
-      null => null,
-      final Object v => _readString(v, 'CampDetails.notes'),
-    },
-    items: switch (json['items']) {
-      null => null,
-      final Object v => List<CampItem>.unmodifiable(
-        _readList(v, 'CampDetails.items').map(
-          (Object? e0) =>
-              CampItem.fromJson(_readObject(e0, 'CampDetails.items')),
-        ),
-      ),
-    },
-  );
-
-  final String? siteName;
-
-  /// Bilinmiyorsa yoktur.
-  final bool? hasWater;
-
-  /// Bilinmiyorsa yoktur.
-  final bool? hasToilet;
-
-  final String? notes;
-
-  /// Yalnızca tek etkinlik yanıtında.
-  final List<CampItem>? items;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (siteName case final value?) 'site_name': value,
-    if (hasWater case final value?) 'has_water': value,
-    if (hasToilet case final value?) 'has_toilet': value,
-    if (notes case final value?) 'notes': value,
-    if (items case final value?)
-      'items': <Object?>[for (final e0 in value) e0.toJson()],
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CampDetails &&
-          siteName == other.siteName &&
-          hasWater == other.hasWater &&
-          hasToilet == other.hasToilet &&
-          notes == other.notes &&
-          _deepEquals(items, other.items);
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[
-    siteName,
-    hasWater,
-    hasToilet,
-    notes,
-    _deepHash(items),
-  ]);
-}
-
-final class CampDetailsInput {
-  const CampDetailsInput({
-    this.siteName,
-    this.hasWater,
-    this.hasToilet,
-    this.notes,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory CampDetailsInput.fromJson(Map<String, Object?> json) =>
-      CampDetailsInput(
-        siteName: switch (json['site_name']) {
-          null => null,
-          final Object v => _readString(v, 'CampDetailsInput.site_name'),
-        },
-        hasWater: switch (json['has_water']) {
-          null => null,
-          final Object v => _readBool(v, 'CampDetailsInput.has_water'),
-        },
-        hasToilet: switch (json['has_toilet']) {
-          null => null,
-          final Object v => _readBool(v, 'CampDetailsInput.has_toilet'),
-        },
-        notes: switch (json['notes']) {
-          null => null,
-          final Object v => _readString(v, 'CampDetailsInput.notes'),
-        },
-      );
-
-  /// Kısıtlar: maxLength: 120.
-  final String? siteName;
-
-  final bool? hasWater;
-
-  final bool? hasToilet;
-
-  /// Kısıtlar: maxLength: 1000.
-  final String? notes;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (siteName case final value?) 'site_name': value,
-    if (hasWater case final value?) 'has_water': value,
-    if (hasToilet case final value?) 'has_toilet': value,
-    if (notes case final value?) 'notes': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CampDetailsInput &&
-          siteName == other.siteName &&
-          hasWater == other.hasWater &&
-          hasToilet == other.hasToilet &&
-          notes == other.notes;
-
-  @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[siteName, hasWater, hasToilet, notes]);
-}
-
-final class CampItem {
-  const CampItem({
-    required this.id,
-    required this.name,
-    required this.quantity,
-    this.assignedUserId,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory CampItem.fromJson(Map<String, Object?> json) => CampItem(
-    id: _readString(json['id'], 'CampItem.id'),
-    name: _readString(json['name'], 'CampItem.name'),
-    quantity: _readInt(json['quantity'], 'CampItem.quantity'),
-    assignedUserId: switch (json['assigned_user_id']) {
-      null => null,
-      final Object v => _readString(v, 'CampItem.assigned_user_id'),
-    },
-  );
-
-  final String id;
-
-  final String name;
-
-  final int quantity;
-
-  /// Getirecek kişi.
-  final String? assignedUserId;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
-    'name': name,
-    'quantity': quantity,
-    if (assignedUserId case final value?) 'assigned_user_id': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CampItem &&
-          id == other.id &&
-          name == other.name &&
-          quantity == other.quantity &&
-          assignedUserId == other.assignedUserId;
-
-  @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[id, name, quantity, assignedUserId]);
-}
-
-final class CampItemAssignRequest {
-  const CampItemAssignRequest({this.assignedUserId});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory CampItemAssignRequest.fromJson(Map<String, Object?> json) =>
-      CampItemAssignRequest(
-        assignedUserId: switch (json['assigned_user_id']) {
-          null => null,
-          final Object v => _readString(
-            v,
-            'CampItemAssignRequest.assigned_user_id',
-          ),
-        },
-      );
-
-  /// Getirecek kişi. Yoksa (ya da `null`) atama kaldırılır.
-  final String? assignedUserId;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (assignedUserId case final value?) 'assigned_user_id': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CampItemAssignRequest && assignedUserId == other.assignedUserId;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[assignedUserId]);
-}
-
-final class CampItemCreateRequest {
-  const CampItemCreateRequest({
-    required this.name,
-    this.quantity,
-    this.assignedUserId,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory CampItemCreateRequest.fromJson(Map<String, Object?> json) =>
-      CampItemCreateRequest(
-        name: _readString(json['name'], 'CampItemCreateRequest.name'),
-        quantity: switch (json['quantity']) {
-          null => null,
-          final Object v => _readInt(v, 'CampItemCreateRequest.quantity'),
-        },
-        assignedUserId: switch (json['assigned_user_id']) {
-          null => null,
-          final Object v => _readString(
-            v,
-            'CampItemCreateRequest.assigned_user_id',
-          ),
-        },
-      );
-
-  /// Kısıtlar: minLength: 1; maxLength: 60.
-  final String name;
-
-  /// 0 ya da yok: 1.
-  ///
-  /// Kısıtlar: minimum: 0; maximum: 999.
-  final int? quantity;
-
-  /// Tayfanın `going` cevabı vermiş etkin bir üyesi (`event-not-going`).
-  final String? assignedUserId;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'name': name,
-    if (quantity case final value?) 'quantity': value,
-    if (assignedUserId case final value?) 'assigned_user_id': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CampItemCreateRequest &&
-          name == other.name &&
-          quantity == other.quantity &&
-          assignedUserId == other.assignedUserId;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[name, quantity, assignedUserId]);
-}
-
 final class Catalog {
   const Catalog({
     required this.catalogVersion,
@@ -3876,6 +3588,273 @@ final class CheckInRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[location]);
+}
+
+/// Bir etkinliğin bir liste bileşeni, isteği yapanın gördüğü haliyle (#241).
+final class Checklist {
+  const Checklist({
+    required this.items,
+    required this.label,
+    required this.assignmentEnabled,
+    required this.quantityEnabled,
+    required this.callerCanManage,
+    required this.callerCanTake,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory Checklist.fromJson(Map<String, Object?> json) => Checklist(
+    items: List<ChecklistItem>.unmodifiable(
+      _readList(json['items'], 'Checklist.items').map(
+        (Object? e0) =>
+            ChecklistItem.fromJson(_readObject(e0, 'Checklist.items')),
+      ),
+    ),
+    label: ChecklistLabel.fromWire(
+      _readString(json['label'], 'Checklist.label'),
+    ),
+    assignmentEnabled: _readBool(
+      json['assignment_enabled'],
+      'Checklist.assignment_enabled',
+    ),
+    quantityEnabled: _readBool(
+      json['quantity_enabled'],
+      'Checklist.quantity_enabled',
+    ),
+    callerCanManage: _readBool(
+      json['caller_can_manage'],
+      'Checklist.caller_can_manage',
+    ),
+    callerCanTake: _readBool(
+      json['caller_can_take'],
+      'Checklist.caller_can_take',
+    ),
+  );
+
+  /// Eklenme sırasıyla.
+  final List<ChecklistItem> items;
+
+  /// Bileşenin `label` parametresi (malzeme, görev, bölüm, nöbet, madde); tanım vermezse `item`. Metni istemci çevirir.
+  final ChecklistLabel label;
+
+  /// Bileşenin `assignment` parametresi; kapalıysa madde üstlenilmez.
+  final bool assignmentEnabled;
+
+  /// Bileşenin `quantity` parametresi; kapalıysa adet hep 1.
+  final bool quantityEnabled;
+
+  /// Şu an madde ekleyebilir, çıkarabilir ve atayabilirsiniz (organizatör yetkisi, susturulmamış; etkinlik bitmemiş, iptal değil, tayfa salt okunur değil).
+  final bool callerCanManage;
+
+  /// Şu an boştaki maddeyi kendinize atayabilir ve kendi atamanızı kaldırabilirsiniz (`going`, susturulmamış, `assignment_enabled`; aynı pencereler).
+  final bool callerCanTake;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'items': <Object?>[for (final e0 in items) e0.toJson()],
+    'label': label.wire,
+    'assignment_enabled': assignmentEnabled,
+    'quantity_enabled': quantityEnabled,
+    'caller_can_manage': callerCanManage,
+    'caller_can_take': callerCanTake,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Checklist &&
+          _deepEquals(items, other.items) &&
+          label == other.label &&
+          assignmentEnabled == other.assignmentEnabled &&
+          quantityEnabled == other.quantityEnabled &&
+          callerCanManage == other.callerCanManage &&
+          callerCanTake == other.callerCanTake;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(items),
+    label,
+    assignmentEnabled,
+    quantityEnabled,
+    callerCanManage,
+    callerCanTake,
+  ]);
+}
+
+final class ChecklistAssignRequest {
+  const ChecklistAssignRequest({this.assignedUserId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChecklistAssignRequest.fromJson(Map<String, Object?> json) =>
+      ChecklistAssignRequest(
+        assignedUserId: switch (json['assigned_user_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'ChecklistAssignRequest.assigned_user_id',
+          ),
+        },
+      );
+
+  /// Üstlenecek kişi. Yoksa (ya da `null`) atama kaldırılır.
+  final String? assignedUserId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (assignedUserId case final value?) 'assigned_user_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChecklistAssignRequest && assignedUserId == other.assignedUserId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[assignedUserId]);
+}
+
+final class ChecklistItem {
+  const ChecklistItem({
+    required this.id,
+    required this.name,
+    required this.quantity,
+    this.assignedUserId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChecklistItem.fromJson(Map<String, Object?> json) => ChecklistItem(
+    id: _readString(json['id'], 'ChecklistItem.id'),
+    name: _readString(json['name'], 'ChecklistItem.name'),
+    quantity: _readInt(json['quantity'], 'ChecklistItem.quantity'),
+    assignedUserId: switch (json['assigned_user_id']) {
+      null => null,
+      final Object v => _readString(v, 'ChecklistItem.assigned_user_id'),
+    },
+  );
+
+  final String id;
+
+  final String name;
+
+  /// 1–999; bileşenin `quantity` parametresi kapalıysa hep 1.
+  final int quantity;
+
+  /// Maddeyi üstlenen kişi; kimse üstlenmediyse yoktur.
+  final String? assignedUserId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'name': name,
+    'quantity': quantity,
+    if (assignedUserId case final value?) 'assigned_user_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChecklistItem &&
+          id == other.id &&
+          name == other.name &&
+          quantity == other.quantity &&
+          assignedUserId == other.assignedUserId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, name, quantity, assignedUserId]);
+}
+
+final class ChecklistItemRequest {
+  const ChecklistItemRequest({
+    required this.name,
+    this.quantity,
+    this.assignedUserId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChecklistItemRequest.fromJson(Map<String, Object?> json) =>
+      ChecklistItemRequest(
+        name: _readString(json['name'], 'ChecklistItemRequest.name'),
+        quantity: switch (json['quantity']) {
+          null => null,
+          final Object v => _readInt(v, 'ChecklistItemRequest.quantity'),
+        },
+        assignedUserId: switch (json['assigned_user_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'ChecklistItemRequest.assigned_user_id',
+          ),
+        },
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 60.
+  final String name;
+
+  /// 0 ya da yok: 1. Birden büyük değer yalnızca `quantity_enabled` ise.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 999.
+  final int? quantity;
+
+  /// İsteğe bağlı; yalnızca `assignment_enabled` ise. Tayfanın `going` cevabı vermiş etkin bir üyesi (`event-not-going`).
+  final String? assignedUserId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'name': name,
+    if (quantity case final value?) 'quantity': value,
+    if (assignedUserId case final value?) 'assigned_user_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChecklistItemRequest &&
+          name == other.name &&
+          quantity == other.quantity &&
+          assignedUserId == other.assignedUserId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[name, quantity, assignedUserId]);
+}
+
+/// Bileşenin `label` parametresi (malzeme, görev, bölüm, nöbet, madde); tanım vermezse `item`. Metni istemci çevirir.
+enum ChecklistLabel {
+  gear('gear'),
+  task('task'),
+  section('section'),
+  duty('duty'),
+  item('item'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const ChecklistLabel(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('ChecklistLabel.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static ChecklistLabel fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class ClientConfig {
@@ -7551,10 +7530,12 @@ final class E2ESignedPreKey {
 /// etkinlik oluşturulduğu tür sürümüne (`type_version`) bağlıdır ve o
 /// sürümün tanımıyla gösterilir (güncel katalogda yoksa
 /// `GET /v1/catalog/event-types/{key}/versions/{version}`). `fields`
-/// ve Faz 1'den kalan türe özel ayrıntı (`camp`, `hike`, `fishing`;
+/// ve Faz 1'den kalan türe özel ayrıntı (`hike`, `fishing`;
 /// bileşenlere taşınana kadar) yalnızca tek etkinlik yanıtında gelir;
 /// ayrıntılardan en fazla biri doludur. Konvoyun rotası ve araçları
-/// bileşenlerindedir (`route`, `vehicles`).
+/// bileşenlerindedir (`route`, `vehicles`); kampın listesi `checklist`
+/// bileşenindedir, kamp yeri, su, tuvalet ve notlar `fields`'tadır
+/// (`site_name`, `has_water`, `has_toilet`, `notes`; #241).
 final class Event {
   const Event({
     this.coverUploadId,
@@ -7589,7 +7570,6 @@ final class Event {
     required this.seriesOverride,
     required this.createdAt,
     required this.updatedAt,
-    this.camp,
     this.hike,
     this.fishing,
   });
@@ -7676,10 +7656,6 @@ final class Event {
     seriesOverride: _readBool(json['series_override'], 'Event.series_override'),
     createdAt: _readDateTime(json['created_at'], 'Event.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Event.updated_at'),
-    camp: switch (json['camp']) {
-      null => null,
-      final Object v => CampDetails.fromJson(_readObject(v, 'Event.camp')),
-    },
     hike: switch (json['hike']) {
       null => null,
       final Object v => HikeDetails.fromJson(_readObject(v, 'Event.hike')),
@@ -7771,8 +7747,6 @@ final class Event {
 
   final DateTime updatedAt;
 
-  final CampDetails? camp;
-
   final HikeDetails? hike;
 
   final FishingDetails? fishing;
@@ -7812,7 +7786,6 @@ final class Event {
     'series_override': seriesOverride,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
-    if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
   };
@@ -7853,7 +7826,6 @@ final class Event {
           seriesOverride == other.seriesOverride &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
-          camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing;
 
@@ -7891,7 +7863,6 @@ final class Event {
     seriesOverride,
     createdAt,
     updatedAt,
-    camp,
     hike,
     fishing,
   ]);
@@ -8222,9 +8193,10 @@ final class EventComponentState {
 /// güncel sürümüyle oluşturulur ve `mode` türün izin verdiği modlardan
 /// biri olmalıdır. `fields` türün tanımına göre doğrulanır: zorunlu
 /// alanlar verilir, tanımda olmayan alan gönderilmez (ör. `gaming`:
-/// `game`, `platform`; `sports`: `sport`, `venue_name`). Faz 1'den
-/// kalan ayrıntılar (`camp`, `hike`, `fishing`) yalnızca kendi
-/// türlerinde, en fazla bir tane verilir. Rota etkinlik oluşturulduktan
+/// `game`, `platform`; `sports`: `sport`, `venue_name`; `camp`:
+/// `site_name`, `has_water`, `has_toilet`, `notes`). Faz 1'den kalan
+/// ayrıntılar (`hike`, `fishing`) yalnızca kendi türlerinde, en fazla
+/// bir tane verilir. Rota etkinlik oluşturulduktan
 /// sonra `route` bileşeninden yazılır.
 final class EventCreateRequest {
   const EventCreateRequest({
@@ -8244,7 +8216,6 @@ final class EventCreateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.camp,
     this.hike,
     this.fishing,
     this.recurrence,
@@ -8315,12 +8286,6 @@ final class EventCreateRequest {
     discoverable: switch (json['discoverable']) {
       null => null,
       final Object v => _readBool(v, 'EventCreateRequest.discoverable'),
-    },
-    camp: switch (json['camp']) {
-      null => null,
-      final Object v => CampDetailsInput.fromJson(
-        _readObject(v, 'EventCreateRequest.camp'),
-      ),
     },
     hike: switch (json['hike']) {
       null => null,
@@ -8404,8 +8369,6 @@ final class EventCreateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final CampDetailsInput? camp;
-
   final HikeDetails? hike;
 
   final FishingDetails? fishing;
@@ -8434,7 +8397,6 @@ final class EventCreateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
     if (recurrence case final value?) 'recurrence': value.toJson(),
@@ -8461,7 +8423,6 @@ final class EventCreateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing &&
           recurrence == other.recurrence &&
@@ -8485,7 +8446,6 @@ final class EventCreateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    camp,
     hike,
     fishing,
     recurrence,
@@ -9289,7 +9249,6 @@ final class EventUpdateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.camp,
     this.hike,
     this.fishing,
     this.applyToSeries,
@@ -9361,12 +9320,6 @@ final class EventUpdateRequest {
       null => null,
       final Object v => _readBool(v, 'EventUpdateRequest.discoverable'),
     },
-    camp: switch (json['camp']) {
-      null => null,
-      final Object v => CampDetailsInput.fromJson(
-        _readObject(v, 'EventUpdateRequest.camp'),
-      ),
-    },
     hike: switch (json['hike']) {
       null => null,
       final Object v => HikeDetails.fromJson(
@@ -9425,8 +9378,6 @@ final class EventUpdateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final CampDetailsInput? camp;
-
   final HikeDetails? hike;
 
   final FishingDetails? fishing;
@@ -9451,7 +9402,6 @@ final class EventUpdateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (camp case final value?) 'camp': value.toJson(),
     if (hike case final value?) 'hike': value.toJson(),
     if (fishing case final value?) 'fishing': value.toJson(),
     if (applyToSeries case final value?) 'apply_to_series': value,
@@ -9475,7 +9425,6 @@ final class EventUpdateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          camp == other.camp &&
           hike == other.hike &&
           fishing == other.fishing &&
           applyToSeries == other.applyToSeries;
@@ -9496,7 +9445,6 @@ final class EventUpdateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    camp,
     hike,
     fishing,
     applyToSeries,

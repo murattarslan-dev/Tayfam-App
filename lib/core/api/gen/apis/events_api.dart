@@ -12,7 +12,7 @@ final class EventsApi {
   /// Bitmemiş etkinlikler, başlangıç zamanına göre
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur). İptal edilenler
-  /// de listededir. Türe özel ayrıntılar (`camp`, `hike`, …) listede
+  /// de listededir. Türe özel ayrıntılar (`hike`, `fishing`) listede
   /// dolmaz; tek etkinlik ucunu kullanın.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events`
@@ -70,7 +70,9 @@ final class EventsApi {
   /// Katılımcılara özel balık noktasında (`spot_visibility=participants`)
   /// katılmayan üye `meeting_point` ve `meeting_point_name` almaz. Araçlar
   /// (ve plakalar) burada değildir; `vehicles` bileşenindedir
-  /// (`GET …/components/{component_key}/vehicles`, #240).
+  /// (`GET …/components/{component_key}/vehicles`, #240). Kamp listesi
+  /// `checklist` bileşenindedir (`GET …/components/{component_key}/items`,
+  /// #241); kamp yeri, su, tuvalet ve notlar `fields`'tadır.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}`
   Future<Event> getEvent({
@@ -95,9 +97,10 @@ final class EventsApi {
   /// - Yer: `mode`, `meeting_point_name`, `meeting_point`, `city`,
   ///   `district`, `online_url` birlikte değişir; bunlardan biri
   ///   gönderilirse `mode` zorunludur ve gönderilmeyenler boşalır.
-  /// - Türe özel ayrıntı (`camp`, `hike`, `fishing`) tamamen değişir; kamp
-  ///   listesi korunur. Konvoyun rotası `route` bileşenindedir
-  ///   (`PUT …/components/{component_key}/route`).
+  /// - Türe özel ayrıntı (`hike`, `fishing`) tamamen değişir. Konvoyun
+  ///   rotası `route` bileşenindedir
+  ///   (`PUT …/components/{component_key}/route`); kampın ayrıntıları
+  ///   `fields`'tadır.
   ///
   /// Kapasiteyi artırmak bekleme listesindekileri sırayla `going` yapar.
   /// Seriye ait bir etkinlikte `apply_to_series` `false` (varsayılan) ise
@@ -353,84 +356,6 @@ final class EventsApi {
       authenticated: true,
     );
     return HikeCheckin.fromJson(jsonObject(response, 'finishHike'));
-  }
-
-  /// Kamp listesine malzeme ekler (organizatör, moderatör, yönetici)
-  ///
-  /// Yalnızca kamp etkinliğinde (`event-type-mismatch`); en fazla 200
-  /// malzeme (`event-limit`). Liste tek etkinlik yanıtındaki
-  /// `camp.items`'tadır. `assigned_user_id` verilirse kişi tayfanın etkin
-  /// üyesi olmalı ve `going` cevabı vermiş olmalıdır (`event-not-going`).
-  ///
-  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/camp-items`
-  Future<CampItem> addCampItem({
-    required String tayfaId,
-    required String eventId,
-    required CampItemCreateRequest body,
-  }) async {
-    final response = await _transport.send(
-      method: 'POST',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
-      body: body.toJson(),
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return CampItem.fromJson(jsonObject(response, 'addCampItem'));
-  }
-
-  /// Malzemeyi kimin getireceğini belirler ya da atamayı kaldırır
-  ///
-  /// `assigned_user_id` bir kullanıcı kimliği atar; alan yoksa ya da
-  /// `null` ise atama kaldırılır.
-  ///
-  /// - Organizatör, moderatör ve yönetici `going` cevabı vermiş herhangi
-  ///   bir etkin üyeyi atayabilir ya da herhangi bir atamayı kaldırabilir.
-  /// - `going` cevabı vermiş diğer üyeler yalnızca boştaki malzemeyi
-  ///   kendine atayabilir ve yalnızca kendi atamasını kaldırabilir.
-  ///   Başkasına atamak `permission-denied`dır.
-  ///
-  /// `going` cevabı olmayan (ya da etkin üye olmayan) kişi:
-  /// `event-not-going`. Malzemeyi başkası üstlenmişse (aynı anda üstlenen
-  /// iki kişiden ikincisi dahil): `event-item-taken`; istemci etkinliği
-  /// yeniden yükler. Değeri zaten olana ayarlamak değişiklik yapmadan
-  /// başarılı olur. Yalnızca kamp etkinliğinde (`event-type-mismatch`).
-  ///
-  /// `PATCH /v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}`
-  Future<CampItem> assignCampItem({
-    required String tayfaId,
-    required String eventId,
-    required String itemId,
-    required CampItemAssignRequest body,
-  }) async {
-    final response = await _transport.send(
-      method: 'PATCH',
-      pathTemplate:
-          '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'item_id': itemId},
-      body: body.toJson(),
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return CampItem.fromJson(jsonObject(response, 'assignCampItem'));
-  }
-
-  /// Kamp listesinden malzeme çıkarır (organizatör, moderatör, yönetici)
-  ///
-  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}`
-  Future<void> removeCampItem({
-    required String tayfaId,
-    required String eventId,
-    required String itemId,
-  }) async {
-    await _transport.send(
-      method: 'DELETE',
-      pathTemplate:
-          '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'item_id': itemId},
-      expect: ResponseKind.none,
-      authenticated: true,
-    );
   }
 
   /// Av günlüğü, eskiden yeniye
@@ -1041,6 +966,155 @@ final class EventsApi {
     return EventVehicles.fromJson(
       jsonObject(response, 'approveEventVehicleSeat'),
     );
+  }
+
+  /// Listenin maddeleri
+  ///
+  /// Maddeler eklenme sırasıyladır. Her etkin üyeye açıktır (susturulmuş
+  /// üye de okur); iptal edilmiş ve donmuş etkinlikte de okunur. Bileşen
+  /// uçlarının ortak kuralları geçerlidir (`component-not-found`,
+  /// `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<Checklist> listChecklist({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Checklist.fromJson(jsonObject(response, 'listChecklist'));
+  }
+
+  /// Listeye madde ekler (organizatör, moderatör, yönetici)
+  ///
+  /// En fazla 200 madde (`event-limit`); etkinlik bitene kadar
+  /// (`event-ended`). Birden büyük `quantity` yalnızca bileşenin
+  /// `quantity` parametresi açıksa, `assigned_user_id` yalnızca
+  /// `assignment` parametresi açıksa kabul edilir (`quantity_enabled`,
+  /// `assignment_enabled`). Atanan kişi tayfanın etkin üyesi olmalı ve
+  /// `going` cevabı vermiş olmalıdır (`event-not-going`). Bileşen
+  /// uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<Checklist> addChecklistItem({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required ChecklistItemRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Checklist.fromJson(jsonObject(response, 'addChecklistItem'));
+  }
+
+  /// Listeden madde çıkarır (organizatör, moderatör, yönetici)
+  ///
+  /// Bilinmeyen madde `event-item-not-found`; etkinlik bitene kadar
+  /// (`event-ended`). Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items/{item_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [itemId]: Listedeki maddenin kimliği (`ChecklistItem.id`).
+  Future<Checklist> removeChecklistItem({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String itemId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items/{item_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'item_id': itemId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Checklist.fromJson(jsonObject(response, 'removeChecklistItem'));
+  }
+
+  /// Maddeyi kimin üstleneceğini belirler ya da atamayı kaldırır
+  ///
+  /// Yalnızca bileşenin `assignment` parametresi açıksa (yoksa
+  /// `invalid-request`). `assigned_user_id` bir kullanıcı kimliği atar;
+  /// alan yoksa ya da `null` ise atama kaldırılır.
+  ///
+  /// - Organizatör, moderatör ve yönetici `going` cevabı vermiş herhangi
+  ///   bir etkin üyeyi atayabilir ya da herhangi bir atamayı kaldırabilir.
+  /// - `going` cevabı vermiş diğer üyeler (susturulmamış) yalnızca
+  ///   boştaki maddeyi kendine atayabilir ve yalnızca kendi atamasını
+  ///   kaldırabilir. Başkasına atamak `permission-denied`dır.
+  ///
+  /// `going` cevabı olmayan (ya da etkin üye olmayan) kişi:
+  /// `event-not-going`. Maddeyi başkası üstlenmişse (aynı anda üstlenen
+  /// iki kişiden ikincisi dahil): `event-item-taken`; istemci listeyi
+  /// yeniden yükler. Değeri zaten olana ayarlamak değişiklik yapmadan
+  /// başarılı olur. Etkinlik bitene kadar (`event-ended`). Bileşen
+  /// uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items/{item_id}/assignee`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [itemId]: Listedeki maddenin kimliği (`ChecklistItem.id`).
+  Future<Checklist> assignChecklistItem({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String itemId,
+    required ChecklistAssignRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/items/{item_id}/assignee',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'item_id': itemId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Checklist.fromJson(jsonObject(response, 'assignChecklistItem'));
   }
 
   /// "Her şey yolunda mıydı?" cevabınız
