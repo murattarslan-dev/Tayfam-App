@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 
 /// Türe özel aracı olan bir etkinlik türü (ADR-0002): katalogdaki bir
-/// türün anahtarı (`convoy`, `camp`, `hike`, `fishing`).
+/// türün anahtarı (`camp`, `hike`, `fishing`). Konvoyun araçları `vehicles`
+/// bileşenine taşındı (#228).
 ///
 /// Türün adı, ikonu ve alanları katalogdan gelir (ADR-0024); burada
 /// yalnızca Faz 1'den kalan türe özel araç bölümü vardır. Araçlar bileşen
@@ -14,7 +15,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 /// kayıt listesine (`shell/kayitlar.dart`) bir satırla eklenir; etkinlik
 /// çekirdeğine dokunulmaz.
 abstract interface class EtkinlikTuru {
-  /// Türün katalog anahtarı (ör. `convoy`).
+  /// Türün katalog anahtarı (ör. `camp`).
   String get sunucuDegeri;
 
   /// Etkinlik detay ekranındaki türe özel araç bölümü (araç listesi,

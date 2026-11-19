@@ -53,10 +53,6 @@ const String malzemelerYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items';
 const String malzemeYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}';
-const String araclarYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles';
-const String aracYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles/{vehicle_id}';
 const String avlarYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches';
 const String avYolu =
@@ -479,7 +475,6 @@ List<Override> etkinlikOverridelari({
   tayfaModulleriProvider.overrideWithValue(const [EtkinlikModulu()]),
   konumServisiProvider.overrideWithValue(konum ?? SahteKonumServisi()),
   etkinlikTurleriProvider.overrideWithValue(const [
-    KonvoyTuru(),
     KampTuru(),
     YuruyusTuru(),
     BalikTuru(),

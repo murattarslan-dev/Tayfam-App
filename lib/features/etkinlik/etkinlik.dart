@@ -14,6 +14,8 @@ export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
         anaSayfaEtkinlikSayisi,
         etkinlikListesiProvider,
         etkinlikSirala;
+export 'package:tayfam/features/etkinlik/bilesenler/araclar/araclar_bileseni.dart'
+    show AraclarBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
     show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
 export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
@@ -34,7 +36,5 @@ export 'package:tayfam/features/etkinlik/turler/balik/balik_turu.dart'
 export 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 export 'package:tayfam/features/etkinlik/turler/kamp/kamp_turu.dart'
     show KampTuru;
-export 'package:tayfam/features/etkinlik/turler/konvoy/konvoy_turu.dart'
-    show KonvoyTuru;
 export 'package:tayfam/features/etkinlik/turler/yuruyus/yuruyus_turu.dart'
     show YuruyusTuru;

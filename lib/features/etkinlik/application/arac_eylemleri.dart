@@ -39,13 +39,9 @@ bool avEklenebilir(Event etkinlik, DateTime simdi) =>
     katilimDogrulandi(etkinlik) &&
     simdi.isBefore(etkinlik.endsAt.add(avEklemeSuresi));
 
-/// Konvoya araç eklenebilir mi: cevap "Geliyorum", iptal edilmemiş ve
-/// bitmemiş (sözleşme: `event-not-going`).
-bool aracEklenebilir(Event etkinlik, DateTime simdi) =>
-    etkinlik.callerRsvp == RsvpStatus.going && katilimAcik(etkinlik, simdi);
-
-/// Türe özel araçların detay ekranındaki işlemleri (ADR-0015 §6): konvoy
-/// araçları, kamp malzemeleri, av günlüğü ve organizatör düzeltmesi.
+/// Türe özel araçların detay ekranındaki işlemleri (ADR-0015 §6): kamp
+/// malzemeleri, av günlüğü ve organizatör düzeltmesi. Konvoy araçları
+/// `vehicles` bileşenine taşındı (#228).
 ///
 /// Durum, bir işlemin sürüp sürmediğidir; aynı anda tek işlem yapılır. Her
 /// işlem hatayı döndürür (başarıda `null`); ekran onu `hataBildir` ile
@@ -65,50 +61,6 @@ class AracEylemNotifier extends Notifier<bool> {
       ref.read(etkinlikDetayProvider(anahtar).notifier);
 
   Event? get _etkinlik => ref.read(etkinlikDetayProvider(anahtar)).value;
-
-  /// Kendi aracını konvoya ekler; önceki aracının yerini alır.
-  Future<Object?> aracKaydet(ConvoyVehicleCreateRequest istek) =>
-      _calistir(() async {
-        final arac = await _depo.aracEkle(
-          anahtar.tayfaId,
-          anahtar.etkinlikId,
-          istek,
-        );
-        final etkinlik = _etkinlik;
-        if (!ref.mounted || etkinlik == null) return;
-        final konvoy = etkinlik.convoy;
-        _detay.guncelle(
-          etkinlikKopyasi(
-            etkinlik,
-            convoy: ConvoyDetails(
-              vehicles: [
-                for (final a in konvoy?.vehicles ?? const <ConvoyVehicle>[])
-                  if (a.userId != arac.userId) a,
-                arac,
-              ],
-            ),
-          ),
-        );
-      });
-
-  /// Konvoydan bir aracı çıkarır.
-  Future<Object?> aracCikar(String aracId) => _calistir(() async {
-    await _depo.aracCikar(anahtar.tayfaId, anahtar.etkinlikId, aracId);
-    final etkinlik = _etkinlik;
-    if (!ref.mounted || etkinlik == null) return;
-    final konvoy = etkinlik.convoy;
-    _detay.guncelle(
-      etkinlikKopyasi(
-        etkinlik,
-        convoy: ConvoyDetails(
-          vehicles: [
-            for (final a in konvoy?.vehicles ?? const <ConvoyVehicle>[])
-              if (a.id != aracId) a,
-          ],
-        ),
-      ),
-    );
-  });
 
   /// Kamp listesine malzeme ekler.
   Future<Object?> malzemeEkle(CampItemCreateRequest istek) =>
