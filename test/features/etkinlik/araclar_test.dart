@@ -212,68 +212,6 @@ void main() {
     });
   });
 
-  group('yürüyüş', () {
-    for (final tema in _temalar) {
-      testWidgets('"Çıktım" sonra "Döndüm" (${tema.name}, 2× yazı)', (
-        tester,
-      ) async {
-        ekranBoyutu(tester, genislik: 320);
-        ikiKatYazi(tester);
-        final tasima = etkinlikTasimasi({
-          'GET $etkinlikYolu': (_) => etkinlikJson(
-            tur: 'hike',
-            cevap: 'going',
-            baslangic: yakinBaslangic,
-            ayrinti: {'difficulty': 3},
-          ),
-          'POST $cikisYolu': (_) => {'started_at': '2026-11-11T09:05:00Z'},
-          'POST $donusYolu': (_) => {
-            'started_at': '2026-11-11T09:05:00Z',
-            'returned_at': '2026-11-11T15:40:00Z',
-          },
-        });
-        await _detayiAc(tester, tasima, themeMode: tema);
-        expect(
-          find.text(arbMetni('etkinlik_varis_geldim')),
-          findsNothing,
-          reason: 'yürüyüşte katılım "Çıktım" ile',
-        );
-
-        await _gorunurDokun(
-          tester,
-          find.text(arbMetni('etkinlik_yuruyus_ciktim')),
-        );
-        expect(tasima.giden('POST', cikisYolu).single.govde, isEmpty);
-        await _gorunurDokun(
-          tester,
-          find.text(arbMetni('etkinlik_yuruyus_dondum')),
-        );
-        expect(tasima.giden('POST', donusYolu), hasLength(1));
-        expect(find.text(arbMetni('etkinlik_yuruyus_dondum')), findsNothing);
-        expect(tester.takeException(), isNull);
-      });
-    }
-
-    testWidgets('cevap "Belki" ise "Çıktım" yok', (tester) async {
-      ekranBoyutu(tester);
-      await _detayiAc(
-        tester,
-        etkinlikTasimasi({
-          'GET $etkinlikYolu': (_) => etkinlikJson(
-            tur: 'hike',
-            cevap: 'maybe',
-            baslangic: yakinBaslangic,
-          ),
-        }),
-      );
-      await _gorunurYap(
-        tester,
-        find.text(arbMetni('etkinlik_yuruyus_yoklama')),
-      );
-      expect(find.text(arbMetni('etkinlik_yuruyus_ciktim')), findsNothing);
-    });
-  });
-
   group('av günlüğü', () {
     Map<String, Object?> avlar() => {
       'catches': [

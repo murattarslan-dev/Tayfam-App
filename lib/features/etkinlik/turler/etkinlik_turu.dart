@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 
 /// Türe özel aracı olan bir etkinlik türü (ADR-0002): katalogdaki bir
-/// türün anahtarı (`hike`, `fishing`). Konvoyun araçları `vehicles`
-/// (#228), kampın malzeme listesi `checklist` bileşenine (#229) taşındı.
+/// türün anahtarı (`fishing`). Konvoyun araçları `vehicles` (#228),
+/// kampın malzeme listesi `checklist` (#229), yürüyüşün yoklaması
+/// `roll_call` bileşenine (#230) taşındı.
 ///
 /// Türün adı, ikonu ve alanları katalogdan gelir (ADR-0024); burada
 /// yalnızca Faz 1'den kalan türe özel araç bölümü vardır. Araçlar bileşen
@@ -15,12 +16,12 @@ import 'package:tayfam/core/api/gen/models.dart';
 /// kayıt listesine (`shell/kayitlar.dart`) bir satırla eklenir; etkinlik
 /// çekirdeğine dokunulmaz.
 abstract interface class EtkinlikTuru {
-  /// Türün katalog anahtarı (ör. `hike`).
+  /// Türün katalog anahtarı (ör. `fishing`).
   String get sunucuDegeri;
 
-  /// Etkinlik detay ekranındaki türe özel araç bölümü (araç listesi,
-  /// malzeme listesi, yoklama, av günlüğü…); yoksa `null`. [etkinlik] tek
-  /// etkinlik yanıtıdır (türe özel ayrıntı yalnızca orada gelir).
+  /// Etkinlik detay ekranındaki türe özel araç bölümü (av günlüğü); yoksa
+  /// `null`. [etkinlik] tek etkinlik yanıtıdır (türe özel ayrıntı yalnızca
+  /// orada gelir).
   Widget? aracBolumu(BuildContext context, Event etkinlik);
 }
 

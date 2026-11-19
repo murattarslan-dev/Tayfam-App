@@ -2020,46 +2020,6 @@
   "@etkinlik_arac_gizlilik_notu": {
     "description": "Aracını ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Arac-Ekle)."
   },
-  "etkinlik_yuruyus_yoklama": "Yürüyüş yoklaması",
-  "@etkinlik_yuruyus_yoklama": {
-    "description": "Yürüyüş etkinliğinde \"Çıktım\" ve \"Döndüm\" bölümünün başlığı."
-  },
-  "etkinlik_yuruyus_bilgi": "Yürüyüşe başlarken “Çıktım”a, döndüğünde “Döndüm”e bas.",
-  "@etkinlik_yuruyus_bilgi": {
-    "description": "Yürüyüş yoklaması bölümündeki açıklama."
-  },
-  "etkinlik_yuruyus_ciktim": "Çıktım",
-  "@etkinlik_yuruyus_ciktim": {
-    "description": "Yürüyüşe çıkıldığını bildiren düğme; katılım sayılır."
-  },
-  "etkinlik_yuruyus_dondum": "Döndüm",
-  "@etkinlik_yuruyus_dondum": {
-    "description": "Yürüyüşten dönüldüğünü bildiren düğme."
-  },
-  "etkinlik_yuruyus_cikis": "Çıkış: {zaman}",
-  "@etkinlik_yuruyus_cikis": {
-    "description": "Yürüyüşe çıkış zamanı.",
-    "placeholders": {
-      "zaman": {
-        "type": "String",
-        "example": "09:12"
-      }
-    }
-  },
-  "etkinlik_yuruyus_donus_zamani": "Dönüş: {zaman}",
-  "@etkinlik_yuruyus_donus_zamani": {
-    "description": "Yürüyüşten dönüş zamanı.",
-    "placeholders": {
-      "zaman": {
-        "type": "String",
-        "example": "15:40"
-      }
-    }
-  },
-  "etkinlik_yuruyus_ciktin": "Yürüyüşe çıkışın kaydedildi.",
-  "@etkinlik_yuruyus_ciktin": {
-    "description": "Katılımı doğrulanmış yürüyüşçüye, çıkış zamanı bilinmiyorsa görünen bilgi."
-  },
   "etkinlik_av_gunlugu": "Av günlüğü",
   "@etkinlik_av_gunlugu": {
     "description": "Balık etkinliğinde av günlüğü bölümünün başlığı."
@@ -2241,6 +2201,124 @@
         "example": "12"
       }
     }
+  },
+  "bilesen_roll_call_ad": "Yoklama",
+  "@bilesen_roll_call_ad": {
+    "description": "Yoklama bileşeninin adı (katalogda ad yoksa)."
+  },
+  "bilesen_roll_call_bilgi": "Çıkarken “Çıktım”a, döndüğünde “Döndüm”e bas.",
+  "@bilesen_roll_call_bilgi": {
+    "description": "Dönmeme alarmı kapalı yoklamanın açıklaması."
+  },
+  "bilesen_roll_call_alarm_bilgi": "Çıkarken “Çıktım”a, döndüğünde “Döndüm”e bas. Beklenen dönüşten {dakika} dk sonra dönmemiş olan organizatöre bildirilir.",
+  "@bilesen_roll_call_alarm_bilgi": {
+    "description": "Dönmeme alarmı açık yoklamanın açıklaması; dakika, dönüş toleransı.",
+    "placeholders": {
+      "dakika": {
+        "type": "String",
+        "example": "30"
+      }
+    }
+  },
+  "bilesen_roll_call_alarm_kurulmadi": "Çıkarken “Çıktım”a, döndüğünde “Döndüm”e bas. Beklenen dönüş yazılmadığı için dönmeme alarmı kurulmadı.",
+  "@bilesen_roll_call_alarm_kurulmadi": {
+    "description": "Alarm açık ama beklenen dönüş yazılmamış yoklamanın açıklaması."
+  },
+  "bilesen_roll_call_beklenen_donus": "Beklenen dönüş: {zaman}",
+  "@bilesen_roll_call_beklenen_donus": {
+    "description": "Yoklamadaki beklenen dönüş (tarih ve saat).",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "14 Kas 2026 17:00"
+      }
+    }
+  },
+  "bilesen_roll_call_donus_yaz": "Beklenen dönüşü yaz",
+  "@bilesen_roll_call_donus_yaz": {
+    "description": "Organizatörün beklenen dönüşü seçtiği düğme."
+  },
+  "bilesen_roll_call_donus_degistir": "Dönüşü değiştir",
+  "@bilesen_roll_call_donus_degistir": {
+    "description": "Organizatörün beklenen dönüşü değiştirdiği düğme."
+  },
+  "bilesen_roll_call_kaldir": "Kaldır",
+  "@bilesen_roll_call_kaldir": {
+    "description": "Beklenen dönüşü kaldıran düğme."
+  },
+  "bilesen_roll_call_kaldir_onay": "Beklenen dönüş kaldırılsın mı?",
+  "@bilesen_roll_call_kaldir_onay": {
+    "description": "Beklenen dönüşü kaldırma onayının başlığı."
+  },
+  "bilesen_roll_call_kaldir_metni": "Dönmeme alarmı kurulmaz.",
+  "@bilesen_roll_call_kaldir_metni": {
+    "description": "Beklenen dönüşü kaldırma onayının açıklaması."
+  },
+  "bilesen_roll_call_cikisin": "Çıkışın: {zaman}",
+  "@bilesen_roll_call_cikisin": {
+    "description": "Kendi çıkış saatin.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "09:12"
+      }
+    }
+  },
+  "bilesen_roll_call_donusun": "Dönüşün: {zaman}",
+  "@bilesen_roll_call_donusun": {
+    "description": "Kendi dönüş saatin.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "16:40"
+      }
+    }
+  },
+  "bilesen_roll_call_ciktim": "Çıktım",
+  "@bilesen_roll_call_ciktim": {
+    "description": "Çıkışı kaydeden düğme; katılım sayılır."
+  },
+  "bilesen_roll_call_dondum": "Döndüm",
+  "@bilesen_roll_call_dondum": {
+    "description": "Dönüşü kaydeden düğme."
+  },
+  "bilesen_roll_call_disarida": "{sayi} kişi dışarıda",
+  "@bilesen_roll_call_disarida": {
+    "description": "Yönetenin gördüğü, çıkıp dönmemiş kişi sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_roll_call_kimse_cikmadi": "Henüz kimse çıkmadı.",
+  "@bilesen_roll_call_kimse_cikmadi": {
+    "description": "Yönetenin listesi boşken."
+  },
+  "bilesen_roll_call_cikti": "Çıktı: {zaman}",
+  "@bilesen_roll_call_cikti": {
+    "description": "Listede bir kişinin çıkış saati.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "09:12"
+      }
+    }
+  },
+  "bilesen_roll_call_dondu": "Döndü: {zaman}",
+  "@bilesen_roll_call_dondu": {
+    "description": "Listede bir kişinin dönüş saati.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "16:40"
+      }
+    }
+  },
+  "bilesen_roll_call_donmedi": "Dönmedi",
+  "@bilesen_roll_call_donmedi": {
+    "description": "Beklenen dönüş ve tolerans geçtiği halde dönmemiş kişinin işareti."
   },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
@@ -2548,66 +2626,6 @@
   "@bilesen_checklist_kapandi": {
     "description": "Etkinlik bitince liste değiştirilemez; listenin altındaki bilgi."
   },
-  "etkinlik_yuruyus_zorluk": "Zorluk",
-  "@etkinlik_yuruyus_zorluk": {
-    "description": "Yürüyüşün zorluğu: detayda bilgi etiketi, sihirbazda seçim etiketi."
-  },
-  "etkinlik_zorluk_degeri": "{zorluk} / 5",
-  "@etkinlik_zorluk_degeri": {
-    "description": "Yürüyüş zorluğu, beş üzerinden.",
-    "placeholders": {
-      "zorluk": {
-        "type": "int",
-        "example": "3"
-      }
-    }
-  },
-  "etkinlik_yuruyus_mesafe": "Mesafe",
-  "@etkinlik_yuruyus_mesafe": {
-    "description": "Yürüyüş mesafesinin detaydaki bilgi etiketi."
-  },
-  "etkinlik_km": "{mesafe} km",
-  "@etkinlik_km": {
-    "description": "Yürüyüş mesafesi, kilometre.",
-    "placeholders": {
-      "mesafe": {
-        "type": "String",
-        "example": "12,5"
-      }
-    }
-  },
-  "etkinlik_yuruyus_yukselti": "Yükselti",
-  "@etkinlik_yuruyus_yukselti": {
-    "description": "Yürüyüşün toplam yükseltisinin detaydaki bilgi etiketi."
-  },
-  "etkinlik_metre": "{metre} m",
-  "@etkinlik_metre": {
-    "description": "Yükselti, metre.",
-    "placeholders": {
-      "metre": {
-        "type": "String",
-        "example": "850"
-      }
-    }
-  },
-  "etkinlik_yuruyus_donus": "Beklenen dönüş",
-  "@etkinlik_yuruyus_donus": {
-    "description": "Yürüyüşten beklenen dönüş zamanı: detayda bilgi etiketi, sihirbazda alan etiketi."
-  },
-  "etkinlik_yuruyus_tolerans": "Dönüş toleransı",
-  "@etkinlik_yuruyus_tolerans": {
-    "description": "Beklenen dönüşten sonra alarm verilmeden önce beklenecek sürenin detaydaki bilgi etiketi."
-  },
-  "etkinlik_dakika": "{dakika} dk",
-  "@etkinlik_dakika": {
-    "description": "Süre, dakika.",
-    "placeholders": {
-      "dakika": {
-        "type": "String",
-        "example": "30"
-      }
-    }
-  },
   "etkinlik_balik_gizlilik": "Buluşma noktasını kimler görür",
   "@etkinlik_balik_gizlilik": {
     "description": "Balık etkinliğinde buluşma noktasının görünürlüğü: detayda bilgi etiketi, sihirbazda seçim başlığı."
@@ -2788,10 +2806,6 @@
   "@etkinlik_zaman_sec": {
     "description": "Sihirbazda henüz seçilmemiş tarih ya da saat alanının düğme metni."
   },
-  "etkinlik_temizle": "Temizle",
-  "@etkinlik_temizle": {
-    "description": "Sihirbazda isteğe bağlı bir zamanı (beklenen dönüş) silen düğme."
-  },
   "etkinlik_baslangic_yok": "Başlangıç zamanını seç.",
   "@etkinlik_baslangic_yok": {
     "description": "Başlangıç seçilmeden \"İleri\"ye basıldığında görünen hata."
@@ -2880,10 +2894,6 @@
   "@etkinlik_kontenjan_sinirsiz": {
     "description": "Sihirbazda kontenjanı kaldıran anahtar; önizlemede kontenjansız etkinliğin değeri."
   },
-  "etkinlik_yuruyus_donus_notu": "Beklenen dönüş ve tolerans, “Döndüm” demeyenler için verilen uyarıda kullanılır.",
-  "@etkinlik_yuruyus_donus_notu": {
-    "description": "Sihirbazda yürüyüşün dönüş alanlarının altındaki açıklama."
-  },
   "etkinlik_onizleme_baslik": "Her şey doğru mu?",
   "@etkinlik_onizleme_baslik": {
     "description": "Sihirbazın son (önizleme) adımının başlığı."
@@ -2948,21 +2958,9 @@
       }
     }
   },
-  "etkinlik_mesafe_etiketi": "Mesafe (km)",
-  "@etkinlik_mesafe_etiketi": {
-    "description": "Yürüyüş mesafesi alanının etiketi."
-  },
-  "etkinlik_yukselti_etiketi": "Yükselti (m)",
-  "@etkinlik_yukselti_etiketi": {
-    "description": "Yürüyüş yükseltisi alanının etiketi."
-  },
   "etkinlik_donus_hata": "Dönüş başlangıçtan sonra olmalı.",
   "@etkinlik_donus_hata": {
     "description": "Beklenen dönüş başlangıçtan önce seçildiğinde görünen hata."
-  },
-  "etkinlik_tolerans_etiketi": "Dönüş toleransı, dakika (boş bırakırsan 30)",
-  "@etkinlik_tolerans_etiketi": {
-    "description": "Yürüyüş dönüş toleransı alanının etiketi."
   },
   "etkinlik_tekrar_baslik": "Tekrar",
   "@etkinlik_tekrar_baslik": {

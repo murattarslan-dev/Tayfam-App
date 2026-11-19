@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
@@ -118,83 +117,4 @@ final aracEylemProvider = NotifierProvider.autoDispose
     .family<AracEylemNotifier, bool, EtkinlikAnahtari>(
       AracEylemNotifier.new,
       name: 'aracEylemProvider',
-    );
-
-/// Yürüyüş yoklamasının ekrandaki durumu.
-@immutable
-final class YuruyusDurumu {
-  const YuruyusDurumu({this.kayit, this.suruyor = false});
-
-  /// Sunucunun döndürdüğü yoklama (çıkış ve varsa dönüş); bu ekranda
-  /// henüz bildirilmediyse `null`. Yalnızca bellektedir.
-  final HikeCheckin? kayit;
-
-  /// "Çıktım" ya da "Döndüm" gönderiliyor.
-  final bool suruyor;
-}
-
-/// Yürüyüş yoklaması (ADR-0015 §6): "Çıktım" (`hike-start`, katılım sayılır)
-/// ve "Döndüm" (`hike-return`). Dönmeme alarmı sunucudadır.
-///
-/// Sözleşmede yoklamayı okuyan uç yoktur; tekrar gönderim ilk çıkışı ya da
-/// dönüşü döndürdüğü için düğmeye yeniden basmak güvenlidir.
-class YuruyusNotifier extends Notifier<YuruyusDurumu> {
-  YuruyusNotifier(this.anahtar);
-
-  final EtkinlikAnahtari anahtar;
-
-  @override
-  YuruyusDurumu build() => const YuruyusDurumu();
-
-  /// "Çıktım". Katılım doğrulanmış gösterilir.
-  Future<Object?> cik() => _gonder(() async {
-    final kayit = await ref
-        .read(etkinlikDeposuProvider)
-        .yuruyuseCik(anahtar.tayfaId, anahtar.etkinlikId);
-    if (!ref.mounted) return kayit;
-    final detay = ref.read(etkinlikDetayProvider(anahtar).notifier);
-    final etkinlik = ref.read(etkinlikDetayProvider(anahtar)).value;
-    if (etkinlik != null) {
-      detay.guncelle(
-        etkinlikKopyasi(etkinlik, katilim: AttendanceStatus.attended),
-      );
-    }
-    ref.invalidate(katilimcilarProvider);
-    unawaited(detay.sessizceYenile());
-    return kayit;
-  });
-
-  /// "Döndüm".
-  Future<Object?> don() => _gonder(
-    () => ref
-        .read(etkinlikDeposuProvider)
-        .yuruyustenDon(anahtar.tayfaId, anahtar.etkinlikId),
-  );
-
-  Future<Object?> _gonder(Future<HikeCheckin> Function() islem) async {
-    if (state.suruyor) return null;
-    final onceki = state.kayit;
-    state = YuruyusDurumu(kayit: onceki, suruyor: true);
-    try {
-      final kayit = await islem();
-      if (ref.mounted) state = YuruyusDurumu(kayit: kayit);
-      return null;
-    } on OturumYok {
-      if (ref.mounted) {
-        state = YuruyusDurumu(kayit: onceki);
-        ref.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
-      }
-      return null;
-    } on Exception catch (hata) {
-      if (ref.mounted) state = YuruyusDurumu(kayit: onceki);
-      return hata;
-    }
-  }
-}
-
-/// Bir yürüyüşün yoklaması; detay ekranı kapanınca bırakılır.
-final yuruyusProvider = NotifierProvider.autoDispose
-    .family<YuruyusNotifier, YuruyusDurumu, EtkinlikAnahtari>(
-      YuruyusNotifier.new,
-      name: 'yuruyusProvider',
     );
