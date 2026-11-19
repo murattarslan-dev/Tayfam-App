@@ -109,6 +109,9 @@ Future<void> _dokun(WidgetTester tester, Finder bulucu) async {
 Finder _formda(Finder bulucu) =>
     find.descendant(of: find.byType(OlcumFormu), matching: bulucu);
 
+Finder _bolumde(Finder bulucu) =>
+    find.descendant(of: find.byType(OlcumBolumu), matching: bulucu);
+
 Finder get _degerAlani => _formda(find.byType(TextField));
 
 Finder get _kaydet => _formda(find.text(arbMetni('etkinlik_kaydet')));
@@ -119,9 +122,9 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe ölçüm bileşenini kullanan tür var', () {
-    final olcumler = turBilesenleri(
-      testTuru('hike'),
-    ).where((b) => b.kind == 'measure').toList();
+    final olcumler = turBilesenleri(testTuru('hike'))
+        .where((b) => b.kind == 'measure')
+        .toList();
     expect(olcumler.map(bilesenAnahtari), ['distance', 'elevation_gain']);
     final mesafe = BilesenParametreleri(olcumler.first.params);
     expect(mesafe.metin('unit'), 'km');
@@ -212,7 +215,10 @@ void main() {
           findsOneWidget,
         );
         // Yazamayan ölçümde düzeltme düğmesi yok.
-        expect(find.byTooltip(arbMetni('bilesen_measure_duzelt')), findsNothing);
+        expect(
+          find.byTooltip(arbMetni('bilesen_measure_duzelt')),
+          findsNothing,
+        );
 
         await _dokun(tester, find.text(arbMetni('bilesen_measure_onayla')));
         final istek = tasima.giden('PUT', olcumToplamiYolu).single;
@@ -275,7 +281,10 @@ void main() {
       final kaldir = find.byTooltip(arbMetni('bilesen_measure_kaldir'));
       await _gorunurYap(tester, kaldir);
       await _dokun(tester, kaldir);
-      expect(find.text(arbMetni('bilesen_measure_kaldir_onay')), findsOneWidget);
+      expect(
+        find.text(arbMetni('bilesen_measure_kaldir_onay')),
+        findsOneWidget,
+      );
       await _dokun(tester, find.text(arbMetni('bilesen_measure_kaldir')));
       expect(tasima.giden('DELETE', olcumToplamiYolu), hasLength(1));
       expect(find.text('12,4 km'), findsNothing);
@@ -351,9 +360,9 @@ void main() {
         await _detayiAc(tester, tasima, themeMode: tema);
 
         await _gorunurYap(tester, find.text('7 km'));
-        expect(find.text('Ayşe'), findsOneWidget);
+        expect(_bolumde(find.text('Ayşe')), findsOneWidget);
         expect(find.text('5,5 km'), findsOneWidget);
-        expect(find.text('Mert'), findsOneWidget);
+        expect(_bolumde(find.text('Mert')), findsOneWidget);
         // Kişi yalnızca kendi değerini değiştirir.
         expect(
           find.byTooltip(arbMetni('bilesen_measure_kaldir')),
@@ -361,24 +370,26 @@ void main() {
         );
         expect(find.text(arbMetni('bilesen_measure_kendi_gir')), findsNothing);
 
-        await _dokun(tester, find.byTooltip(arbMetni('bilesen_measure_kaldir')));
-        await _dokun(tester, find.text(arbMetni('bilesen_measure_kaldir')));
-        expect(
-          tasima.giden('DELETE', olcumKaydiYolu).single.yolParametreleri,
-          {
-            'tayfa_id': ornekTayfaId,
-            'event_id': ornekEtkinlikId,
-            'component_key': 'distance',
-            'user_id': katilimciId,
-          },
+        await _dokun(
+          tester,
+          find.byTooltip(arbMetni('bilesen_measure_kaldir')),
         );
+        await _dokun(tester, find.text(arbMetni('bilesen_measure_kaldir')));
+        expect(tasima.giden('DELETE', olcumKaydiYolu).single.yolParametreleri, {
+          'tayfa_id': ornekTayfaId,
+          'event_id': ornekEtkinlikId,
+          'component_key': 'distance',
+          'user_id': katilimciId,
+        });
         expect(find.text('7 km'), findsNothing);
 
         final gir = find.text(arbMetni('bilesen_measure_kendi_gir'));
         await _gorunurYap(tester, gir);
         await _dokun(tester, gir);
-        expect(_formda(find.text(arbMetni('bilesen_measure_kisi_sec'))),
-            findsNothing);
+        expect(
+          _formda(find.text(arbMetni('bilesen_measure_kisi_sec'))),
+          findsNothing,
+        );
         await tester.enterText(_degerAlani, '8');
         await _dokun(tester, _kaydet);
         final istek = tasima.giden('PUT', olcumKaydiYolu).single;
@@ -396,11 +407,8 @@ void main() {
       ekranBoyutu(tester);
       var ilk = true;
       final tasima = _tasima(
-        mesafe: (_) => olcumJson(
-          kapsam: 'personal',
-          giren: 'organizer',
-          yazabilir: true,
-        ),
+        mesafe: (_) =>
+            olcumJson(kapsam: 'personal', giren: 'organizer', yazabilir: true),
         yanitlar: {
           'PUT $olcumKaydiYolu': (_) {
             if (ilk) {

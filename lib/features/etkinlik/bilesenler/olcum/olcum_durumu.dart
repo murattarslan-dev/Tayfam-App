@@ -147,9 +147,8 @@ class OlcumNotifier extends AsyncNotifier<EventMeasure> {
     final etkinlik = (tayfaId: kimlik.tayfaId, etkinlikId: kimlik.etkinlikId);
     bilesenDegisiminiIzle(ref, etkinlik, kimlik.anahtar);
     ref.watch(
-      etkinlikDetayProvider(etkinlik).select(
-        (d) => (d.value?.callerAttendance, d.value?.status),
-      ),
+      etkinlikDetayProvider(etkinlik)
+          .select((d) => (d.value?.callerAttendance, d.value?.status)),
     );
     return ref
         .read(etkinlikDeposuProvider)

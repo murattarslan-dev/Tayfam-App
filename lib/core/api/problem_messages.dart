@@ -93,8 +93,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.vocabularyMerged => m.hata_vocabulary_merged,
   ProblemType.vocabularyNotMerged => m.hata_vocabulary_not_merged,
   ProblemType.measurementNotStarted => m.hata_measurement_not_started,
-  ProblemType.measurementNotParticipant =>
-    m.hata_measurement_not_participant,
+  ProblemType.measurementNotParticipant => m.hata_measurement_not_participant,
   ProblemType.measurementScope => m.hata_measurement_scope,
   ProblemType.eventTypeMismatch => m.hata_event_type_mismatch,
   ProblemType.checkInClosed => m.hata_check_in_closed,

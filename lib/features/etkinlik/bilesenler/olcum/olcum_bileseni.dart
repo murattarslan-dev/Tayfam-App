@@ -307,9 +307,8 @@ class _OlcumBolumuState extends ConsumerState<OlcumBolumu> {
                   kisi: kayit.userId,
                 ),
               ),
-              onKaldir: () => unawaited(
-                _kaldir((o) => o.degeriKaldir(kayit.userId)),
-              ),
+              onKaldir: () =>
+                  unawaited(_kaldir((o) => o.degeriKaldir(kayit.userId))),
             ),
         ],
       ),
@@ -402,9 +401,7 @@ class OlcumKarti extends StatelessWidget {
                   metin,
                   style: dolu
                       ? context.yazi.titleLarge
-                      : context.yazi.bodyMedium?.copyWith(
-                          color: r.metinGovde,
-                        ),
+                      : context.yazi.bodyMedium?.copyWith(color: r.metinGovde),
                 ),
               ),
             ],
