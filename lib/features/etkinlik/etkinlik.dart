@@ -1,5 +1,6 @@
-/// Etkinlik özelliğinin dışa açık dosyası (ADR-0002): etkinlik türü
-/// kaydı ve türe özel araçları olan türler, etkinlik modülü, yaklaşan
+/// Etkinlik özelliğinin dışa açık dosyası (ADR-0002): bileşen kaydı
+/// (ADR-0024 §3; her bileşen buraya kendi `export` satırını ekler), etkinlik
+/// türü kaydı ve türe özel araçları olan türler, etkinlik modülü, yaklaşan
 /// etkinlikler listesi ve etkinlik kartı (ADR-0015 §1, §3, §6). Detaydaki
 /// sohbet bölümünün yuvası kabukta doldurulur (Tayfam-Api #183).
 ///
@@ -13,6 +14,8 @@ export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
         anaSayfaEtkinlikSayisi,
         etkinlikListesiProvider,
         etkinlikSirala;
+export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
+    show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'
     show EtkinlikDeposu, etkinlikDeposuProvider;
 export 'package:tayfam/features/etkinlik/presentation/anlik/anlik_davet_sayfasi.dart'

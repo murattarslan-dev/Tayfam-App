@@ -218,3 +218,45 @@ kapalıdır.
   - **İkon listesi.** `tool/katalog_ikonlari` haritadaki anahtarları yazar
     ve bir listeyle karşılaştırır; CI adımı Tayfam-Api'de panelin ikon
     listesi oluşunca eklenir (`.github/`, platform sahibi).
+- **2026-11-19 (issue #226, uygulama; sözleşme Tayfam-Api #238):**
+  - **Kayıt.** `features/etkinlik/bilesenler/etkinlik_bileseni.dart`:
+    `EtkinlikBileseni`, `BilesenBaglami`, `etkinlikBilesenKaydiProvider`;
+    liste `shell/kayitlar.dart`'ta `etkinlikBilesenKaydi`. Arayüze §3'teki
+    üç bölüme ek olarak `ad(m)` girdi: `optional` bileşenin sihirbazdaki
+    aç/kapa satırı ad ister; tanımda `labels` varsa o gösterilir.
+  - **Bağlam.** Rol: `caller_can_manage` → organizatör; hakem ataması
+    (`GET …/referees`; etkinliğin tamamı ya da o bileşen) → hakem;
+    "Geliyorum" → katılımcı; diğerleri üye. Yalnızca arayüzü sadeleştirir.
+    Parametreler `BilesenParametreleri` ile tipli ve sınırlı okunur;
+    organizatöre bırakılan parametre geçerli seçimiyle gelir.
+  - **Temel bileşen.** `meeting_point` etkinliğin temel alanıdır
+    (Tayfam-Api ADR-0025 §4) ve detayda zaten çizilir; kayıtta bölümsüz
+    `TemelBilesen` olarak durur.
+  - **Tanınmayan bileşen.** Bir etkinlikte birden çok tanınmayan bileşen
+    varsa kart her biri için tekrarlanmaz: ilkinin yerinde, sayısını
+    söyleyen **tek** kart gösterilir (§3'ün yorumu; aynı kartın art arda
+    dizilmesi bilgi eklemiyor).
+  - **Bileşen durumu.** Detay, çizilecek bileşeni olan türde
+    `GET …/components`'i okur: kapalı (`optional`, organizatör kapatmış)
+    bileşen çizilmez, uçları da çağrılmaz. Okunamazsa bölümlerin yerinde
+    hata ve "Tekrar dene".
+  - **Canlı (§5).** Tek bağlantıda `event.watch` / `event.unwatch`
+    (bağlantı başına 20; aşılırsa en son istenenler). Abonelik bir
+    provider'dır (`bilesenDegisimiProvider`): okunduğu sürece etkinlik
+    izlenir, çerçeve gelince ve bağlantı yeniden kurulunca sayaç artar,
+    sayacı izleyen bileşen provider'ı REST'ten yeniden okur.
+  - **Sihirbaz (ADR-0031 §1).** Oluşturmada seçimler
+    `EventCreateRequest.components` ile gider (yalnızca dokunulanlar).
+    Düzenlemede sunucudaki durumdan başlar; değişenler kaydederken
+    `PUT …/components/{key}` ile, `PATCH`'ten önce gönderilir. `locked` ya
+    da çağıran yönetemiyorsa seçimler salt okunurdur ve nedeni yazılır.
+    Yalnızca kayıttaki bileşenlerin satırı çizilir.
+  - **Geçiş sırası.** `features/etkinlik/turler/` ve dört türün Faz 1
+    alanları sözleşmede hâlâ ayrı nesne olduğu için durur; bileşenini
+    taşıyan iş kaydı türü kayıttan çıkarır. O zamana kadar, `turler/`
+    kaydı olan bir türde kayıtta olmayan bileşen için güncelle kartı
+    gösterilmez (yerini eski araç bölümü tutar).
+  - **Açık: `ozetSatiri`.** Arayüzde durur ama hiçbir kartta çizilmez:
+    etkinlik listesi yanıtı bileşen verisi ya da seçim taşımıyor; kart
+    başına istek atmak doğru değil. Gerekirse sözleşmeyle birlikte ele
+    alınır (platform sahibinin kararı).

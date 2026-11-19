@@ -27,6 +27,8 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_bolumleri.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_durumu.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
@@ -119,7 +121,14 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
     if (etkinlik != null) {
       return Scaffold(
         body: TayfamYenile(
-          onRefresh: notifier.yenile,
+          // Bağlantı yokken bileşenler çekip yenilemeyle güncellenir
+          // (ADR-0024 §5); dinleyeni olmayan provider'da etkisizdir.
+          onRefresh: () {
+            ref
+              ..invalidate(etkinlikBilesenleriProvider(anahtar))
+              ..invalidate(etkinlikHakemleriProvider(anahtar));
+            return notifier.yenile();
+          },
           child: DegerlendirmeFirsati(
             etkinlikler: [etkinlik],
             child: _Detay(anahtar: anahtar, etkinlik: etkinlik),
@@ -257,6 +266,12 @@ class _Detay extends ConsumerWidget {
                   BilgiIzgarasi(bilgiler: ayrintilar),
                 ],
                 ?arac,
+                // Bileşenler, tür tanımındaki sırayla (ADR-0024 §3).
+                EtkinlikBilesenBolumleri(
+                  anahtar: anahtar,
+                  etkinlik: etkinlik,
+                  tanim: tanim?.version == etkinlik.typeVersion ? tanim : null,
+                ),
                 const SizedBox(height: TayfamSpacing.s16),
                 EtkinlikAnketleriBaglantisi(
                   tayfaId: anahtar.tayfaId,

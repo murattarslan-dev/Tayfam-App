@@ -57,6 +57,8 @@ void _varsayilanGunluk(String satir) =>
 /// - Her bağlantıda istenen kanallara yeniden abone olunur (en fazla 100;
 ///   açık ekrandaki kanal önce) ve [Baglandi] yayılır: açık ekranlar
 ///   kaçırdıklarını REST'ten çeker.
+/// - İzlenen etkinlikler ([etkinligiIzle]; bağlantı başına en fazla 20) her
+///   bağlantıda yeniden izlenir (ADR-0024 §5).
 /// - Çerçeve içeriği loglanmaz.
 final class RealtimeIstemcisi {
   RealtimeIstemcisi({
@@ -73,6 +75,9 @@ final class RealtimeIstemcisi {
 
   /// En fazla abonelik (sözleşme: bağlantı başına 100).
   static const int enFazlaAbonelik = 100;
+
+  /// En fazla etkinlik izlemesi (sözleşme: bağlantı başına 20).
+  static const int enFazlaIzleme = 20;
 
   /// Çerçeveye cevap bu sürede gelmezse REST'e düşülür.
   static const Duration cevapSuresi = Duration(seconds: 10);
@@ -124,6 +129,11 @@ final class RealtimeIstemcisi {
   final Set<KanalRef> _abone = {};
   final Set<KanalRef> _yenidenDenetlenen = {};
 
+  /// İzlenmek istenen etkinlikler ve isteyen sayısı, isteme sırasıyla.
+  final Map<EtkinlikRef, int> _izlemeIstekleri = {};
+  final Set<EtkinlikRef> _izlenen = {};
+  final Set<EtkinlikRef> _izlemesiDenetlenen = {};
+
   /// Sunucu olayları (yalnızca bellekteki durumu güncellemek için).
   Stream<RealtimeOlayi> get olaylar => _olaylar.stream;
 
@@ -136,6 +146,10 @@ final class RealtimeIstemcisi {
   /// Bu bağlantıda abone olunan (ya da abonelik isteği giden) kanallar.
   @visibleForTesting
   Set<KanalRef> get aboneler => Set.unmodifiable(_abone);
+
+  /// Bu bağlantıda izlenen (ya da izleme isteği giden) etkinlikler.
+  @visibleForTesting
+  Set<EtkinlikRef> get izlenenler => Set.unmodifiable(_izlenen);
 
   /// Oturum açık ve kayıt tamam: bağlantıyı kurar (ön plandaysa).
   void baslat() {
@@ -153,6 +167,8 @@ final class RealtimeIstemcisi {
     _sahip = null;
     _istenen = const [];
     _yenidenDenetlenen.clear();
+    _izlemeIstekleri.clear();
+    _izlemesiDenetlenen.clear();
     _soketiKapat();
   }
 
@@ -201,6 +217,30 @@ final class RealtimeIstemcisi {
     _sahip = null;
     _istenen = const [];
     _abonelikleriEsitle();
+  }
+
+  /// [etkinlik]'in bileşen değişikliklerini izler (`event.watch`;
+  /// ADR-0024 §5): ekran açıkken çağrılır, kapanınca
+  /// [etkinlikIzlemeyiBirak] ile bırakılır. Aynı etkinliği birden çok
+  /// ekran izleyebilir; sonuncusu bırakınca izleme biter. Değişiklikler
+  /// [olaylar]'da [EtkinlikBileseniDegisti] olarak gelir. Bağlantı yoksa
+  /// istek bağlanınca gider; ekran o zamana kadar çekip yenilemeyle
+  /// çalışır. Sınır ([enFazlaIzleme]) aşılırsa en son istenenler izlenir.
+  void etkinligiIzle(EtkinlikRef etkinlik) {
+    _izlemeIstekleri[etkinlik] = (_izlemeIstekleri[etkinlik] ?? 0) + 1;
+    _izlemeleriEsitle();
+  }
+
+  /// [etkinligiIzle]'nin karşılığı.
+  void etkinlikIzlemeyiBirak(EtkinlikRef etkinlik) {
+    final sayi = _izlemeIstekleri[etkinlik];
+    if (sayi == null) return;
+    if (sayi <= 1) {
+      _izlemeIstekleri.remove(etkinlik);
+    } else {
+      _izlemeIstekleri[etkinlik] = sayi - 1;
+    }
+    _izlemeleriEsitle();
   }
 
   /// Kanal mesajını `send` çerçevesiyle gönderir; sunucunun yazdığı
@@ -339,6 +379,7 @@ final class RealtimeIstemcisi {
     unawaited(_dinleyici?.cancel());
     _dinleyici = null;
     _abone.clear();
+    _izlenen.clear();
     final bekleyenler = _bekleyenler.values.toList();
     _bekleyenler.clear();
     for (final b in bekleyenler) {
@@ -407,6 +448,14 @@ final class RealtimeIstemcisi {
         _deneme = 0;
         _durumuAyarla(RealtimeDurumu.acik);
         _abonelikleriEsitle();
+        _izlemeleriEsitle();
+      case EtkinlikIzlemeBitti(:final etkinlik, :final neden):
+        _izlenen.remove(etkinlik);
+        if (neden == AbonelikBitisNedeni.erisimKalmadi) {
+          _izlemeIstekleri.remove(etkinlik);
+        } else if (neden == AbonelikBitisNedeni.denetlenemedi) {
+          _izlemeyiYenidenDenetle(etkinlik);
+        }
       case AbonelikBitti(:final kanal, :final neden):
         _abone.remove(kanal);
         if (neden == AbonelikBitisNedeni.erisimKalmadi) {
@@ -472,6 +521,68 @@ final class RealtimeIstemcisi {
         );
       }
     }
+  }
+
+  List<EtkinlikRef> get _istenenIzlemeler {
+    final hepsi = _izlemeIstekleri.keys.toList();
+    return hepsi.length <= enFazlaIzleme
+        ? hepsi
+        : hepsi.sublist(hepsi.length - enFazlaIzleme);
+  }
+
+  void _izlemeleriEsitle() {
+    if (_durum != RealtimeDurumu.acik) return;
+    final istenen = _istenenIzlemeler;
+    final kume = istenen.toSet();
+    for (final e in _izlenen.difference(kume).toList()) {
+      _izlenen.remove(e);
+      unawaited(
+        _istek('event.unwatch', {
+          'tayfa_id': e.tayfaId,
+          'event_id': e.etkinlikId,
+        }).then((_) {}, onError: (Object _) {}),
+      );
+    }
+    for (final e in istenen) {
+      if (!_izlenen.contains(e)) _izle(e);
+    }
+  }
+
+  void _izle(EtkinlikRef etkinlik) {
+    _izlenen.add(etkinlik);
+    unawaited(
+      _istek('event.watch', {
+        'tayfa_id': etkinlik.tayfaId,
+        'event_id': etkinlik.etkinlikId,
+      }).then((_) {}, onError: (Object hata) => _izlemeHatasi(etkinlik, hata)),
+    );
+  }
+
+  /// İzleme isteği reddedildi ya da cevapsız kaldı: etkinlik izlenmiyor
+  /// sayılır; ekran çekip yenilemeyle çalışır. Erişim yoksa
+  /// (`tayfa_not_found`, `event_not_found`) yeniden denenmez.
+  void _izlemeHatasi(EtkinlikRef etkinlik, Object hata) {
+    if (hata is RealtimeKapali) return;
+    _izlenen.remove(etkinlik);
+    if (hata is ApiProblem) {
+      _gunluk('realtime: izleme hatası ${hata.type.name}');
+      if (hata.type == ProblemType.tayfaNotFound ||
+          hata.type == ProblemType.eventNotFound) {
+        _izlemeIstekleri.remove(etkinlik);
+      }
+    }
+  }
+
+  /// `recheck_failed`: 5 saniye sonra bir kez yeniden izlenir.
+  void _izlemeyiYenidenDenetle(EtkinlikRef etkinlik) {
+    if (!_izlemesiDenetlenen.add(etkinlik)) return;
+    _zamanlayici(yenidenDenetimBeklemesi, () {
+      if (_izlemeIstekleri.containsKey(etkinlik) &&
+          !_izlenen.contains(etkinlik) &&
+          _durum == RealtimeDurumu.acik) {
+        _izlemeleriEsitle();
+      }
+    });
   }
 
   Future<Map<String, Object?>> _istek(String tur, Map<String, Object?> veri) {

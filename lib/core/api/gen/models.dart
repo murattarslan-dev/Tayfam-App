@@ -3958,6 +3958,42 @@ final class ClientConfigPlatforms {
   int get hashCode => Object.hashAll(<Object?>[android, ios, web]);
 }
 
+/// Organizatöre bırakılan bir parametre için seçim (ADR-0037 §2).
+/// `value` seçeneğin metin halidir: seçeneğin kendisi ya da tam sayı
+/// seçeneğin rakamları (`"swiss"`, `"3"`).
+final class ComponentChoice {
+  const ComponentChoice({required this.param, required this.value});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ComponentChoice.fromJson(Map<String, Object?> json) =>
+      ComponentChoice(
+        param: _readString(json['param'], 'ComponentChoice.param'),
+        value: _readString(json['value'], 'ComponentChoice.value'),
+      );
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String param;
+
+  /// Kısıtlar: minLength: 1; maxLength: 40.
+  final String value;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'param': param,
+    'value': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ComponentChoice && param == other.param && value == other.value;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[param, value]);
+}
+
 final class ConsentRequest {
   const ConsentRequest({
     required this.privacyNoticeVersion,
@@ -8157,6 +8193,294 @@ final class EventCancelRequest {
   int get hashCode => Object.hashAll(<Object?>[reason]);
 }
 
+final class EventComponentChoiceState {
+  const EventComponentChoiceState({
+    required this.param,
+    required this.value,
+    required this.options,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventComponentChoiceState.fromJson(Map<String, Object?> json) =>
+      EventComponentChoiceState(
+        param: _readString(json['param'], 'EventComponentChoiceState.param'),
+        value: _readString(json['value'], 'EventComponentChoiceState.value'),
+        options: List<String>.unmodifiable(
+          _readList(json['options'], 'EventComponentChoiceState.options').map(
+            (Object? e0) =>
+                _readString(e0, 'EventComponentChoiceState.options'),
+          ),
+        ),
+      );
+
+  final String param;
+
+  /// Geçerli seçenek: organizatörün seçimi ya da tanımdaki varsayılan.
+  final String value;
+
+  /// Tanımdaki seçenekler, tanımdaki sırayla.
+  final List<String> options;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'param': param,
+    'value': value,
+    'options': <Object?>[for (final e0 in options) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventComponentChoiceState &&
+          param == other.param &&
+          value == other.value &&
+          _deepEquals(options, other.options);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[param, value, _deepHash(options)]);
+}
+
+final class EventComponentList {
+  const EventComponentList({
+    required this.components,
+    required this.locked,
+    required this.callerCanManage,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventComponentList.fromJson(Map<String, Object?> json) =>
+      EventComponentList(
+        components: List<EventComponentState>.unmodifiable(
+          _readList(json['components'], 'EventComponentList.components').map(
+            (Object? e0) => EventComponentState.fromJson(
+              _readObject(e0, 'EventComponentList.components'),
+            ),
+          ),
+        ),
+        locked: _readBool(json['locked'], 'EventComponentList.locked'),
+        callerCanManage: _readBool(
+          json['caller_can_manage'],
+          'EventComponentList.caller_can_manage',
+        ),
+      );
+
+  final List<EventComponentState> components;
+
+  /// Seçimler artık değişmez: etkinlik başladı ya da iptal edildi, ya da tayfa salt okunur.
+  final bool locked;
+
+  /// Çağıran organizatör, moderatör ya da yöneticidir ve susturulmamıştır.
+  final bool callerCanManage;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'components': <Object?>[for (final e0 in components) e0.toJson()],
+    'locked': locked,
+    'caller_can_manage': callerCanManage,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventComponentList &&
+          _deepEquals(components, other.components) &&
+          locked == other.locked &&
+          callerCanManage == other.callerCanManage;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(components), locked, callerCanManage]);
+}
+
+/// Yeni etkinlikte bir bileşen için organizatörün seçimi.
+final class EventComponentSelection {
+  const EventComponentSelection({
+    required this.key,
+    this.enabled,
+    this.choices,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventComponentSelection.fromJson(Map<String, Object?> json) =>
+      EventComponentSelection(
+        key: _readString(json['key'], 'EventComponentSelection.key'),
+        enabled: switch (json['enabled']) {
+          null => null,
+          final Object v => _readBool(v, 'EventComponentSelection.enabled'),
+        },
+        choices: switch (json['choices']) {
+          null => null,
+          final Object v => List<ComponentChoice>.unmodifiable(
+            _readList(v, 'EventComponentSelection.choices').map(
+              (Object? e0) => ComponentChoice.fromJson(
+                _readObject(e0, 'EventComponentSelection.choices'),
+              ),
+            ),
+          ),
+        },
+      );
+
+  /// Bileşenin anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// `optional` bileşeni açar ya da kapatır; gönderilmezse tanımdaki varsayılan.
+  final bool? enabled;
+
+  /// Kısıtlar: maxItems: 20.
+  final List<ComponentChoice>? choices;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    if (enabled case final value?) 'enabled': value,
+    if (choices case final value?)
+      'choices': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventComponentSelection &&
+          key == other.key &&
+          enabled == other.enabled &&
+          _deepEquals(choices, other.choices);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[key, enabled, _deepHash(choices)]);
+}
+
+/// En az biri bulunur.
+final class EventComponentSelectionRequest {
+  const EventComponentSelectionRequest({this.enabled, this.choices});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventComponentSelectionRequest.fromJson(Map<String, Object?> json) =>
+      EventComponentSelectionRequest(
+        enabled: switch (json['enabled']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'EventComponentSelectionRequest.enabled',
+          ),
+        },
+        choices: switch (json['choices']) {
+          null => null,
+          final Object v => List<ComponentChoice>.unmodifiable(
+            _readList(v, 'EventComponentSelectionRequest.choices').map(
+              (Object? e0) => ComponentChoice.fromJson(
+                _readObject(e0, 'EventComponentSelectionRequest.choices'),
+              ),
+            ),
+          ),
+        },
+      );
+
+  /// `optional` bileşeni açar ya da kapatır.
+  final bool? enabled;
+
+  /// Kısıtlar: maxItems: 20.
+  final List<ComponentChoice>? choices;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (enabled case final value?) 'enabled': value,
+    if (choices case final value?)
+      'choices': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventComponentSelectionRequest &&
+          enabled == other.enabled &&
+          _deepEquals(choices, other.choices);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[enabled, _deepHash(choices)]);
+}
+
+final class EventComponentState {
+  const EventComponentState({
+    required this.key,
+    required this.kind,
+    required this.optional,
+    required this.enabled,
+    required this.choices,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventComponentState.fromJson(Map<String, Object?> json) =>
+      EventComponentState(
+        key: _readString(json['key'], 'EventComponentState.key'),
+        kind: _readString(json['kind'], 'EventComponentState.kind'),
+        optional: _readBool(json['optional'], 'EventComponentState.optional'),
+        enabled: _readBool(json['enabled'], 'EventComponentState.enabled'),
+        choices: List<EventComponentChoiceState>.unmodifiable(
+          _readList(json['choices'], 'EventComponentState.choices').map(
+            (Object? e0) => EventComponentChoiceState.fromJson(
+              _readObject(e0, 'EventComponentState.choices'),
+            ),
+          ),
+        ),
+      );
+
+  final String key;
+
+  /// Bileşen türü (`CatalogComponent.kind`).
+  final String kind;
+
+  /// Organizatör bileşeni açıp kapatabilir.
+  final bool optional;
+
+  /// Yalnızca kapatılmış `optional` bileşende `false`.
+  final bool enabled;
+
+  /// Organizatöre bırakılan her parametre, ada göre.
+  final List<EventComponentChoiceState> choices;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'kind': kind,
+    'optional': optional,
+    'enabled': enabled,
+    'choices': <Object?>[for (final e0 in choices) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventComponentState &&
+          key == other.key &&
+          kind == other.kind &&
+          optional == other.optional &&
+          enabled == other.enabled &&
+          _deepEquals(choices, other.choices);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    kind,
+    optional,
+    enabled,
+    _deepHash(choices),
+  ]);
+}
+
 /// Yüz yüze: `meeting_point`, `city`, `district` zorunlu; `online_url`
 /// boş. Çevrimiçi: `online_url` (https) zorunlu; yer alanları boş.
 /// `type` katalogdaki aktif bir türün anahtarıdır; etkinlik türün
@@ -8169,6 +8493,7 @@ final class EventCancelRequest {
 final class EventCreateRequest {
   const EventCreateRequest({
     this.coverUploadId,
+    this.components,
     required this.type,
     this.fields,
     required this.mode,
@@ -8200,6 +8525,16 @@ final class EventCreateRequest {
     coverUploadId: switch (json['cover_upload_id']) {
       null => null,
       final Object v => _readString(v, 'EventCreateRequest.cover_upload_id'),
+    },
+    components: switch (json['components']) {
+      null => null,
+      final Object v => List<EventComponentSelection>.unmodifiable(
+        _readList(v, 'EventCreateRequest.components').map(
+          (Object? e0) => EventComponentSelection.fromJson(
+            _readObject(e0, 'EventCreateRequest.components'),
+          ),
+        ),
+      ),
     },
     type: _readString(json['type'], 'EventCreateRequest.type'),
     fields: switch (json['fields']) {
@@ -8285,6 +8620,17 @@ final class EventCreateRequest {
   /// İsteğe bağlı: kendi hazır `cover` yüklemeniz (bu tayfa için açılmış). Yalnızca bu etkinliğe bağlanır.
   final String? coverUploadId;
 
+  /// Organizatörün bileşen seçimleri (ADR-0037 §2): `optional`
+  /// bileşenlerin açık/kapalı hali ve organizatöre bırakılan
+  /// parametreler. Gönderilmeyen bileşen tanımdaki varsayılanla
+  /// başlar. Türde olmayan ya da tekrar eden bileşen, `optional`
+  /// olmayan bileşeni kapatmak ve geçersiz seçim `invalid-request`.
+  /// Sonradan `PUT …/components/{component_key}` ile, etkinlik
+  /// başlayana kadar değişir.
+  ///
+  /// Kısıtlar: maxItems: 20.
+  final List<EventComponentSelection>? components;
+
   final String type;
 
   final Map<String, Object?>? fields;
@@ -8345,6 +8691,8 @@ final class EventCreateRequest {
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (coverUploadId case final value?) 'cover_upload_id': value,
+    if (components case final value?)
+      'components': <Object?>[for (final e0 in value) e0.toJson()],
     'type': type,
     if (fields case final value?) 'fields': value,
     'mode': mode.wire,
@@ -8372,6 +8720,7 @@ final class EventCreateRequest {
       identical(this, other) ||
       other is EventCreateRequest &&
           coverUploadId == other.coverUploadId &&
+          _deepEquals(components, other.components) &&
           type == other.type &&
           _deepEquals(fields, other.fields) &&
           mode == other.mode &&
@@ -8396,6 +8745,7 @@ final class EventCreateRequest {
   @override
   int get hashCode => Object.hashAll(<Object?>[
     coverUploadId,
+    _deepHash(components),
     type,
     _deepHash(fields),
     mode,
@@ -8780,6 +9130,156 @@ final class EventPhotoList {
   @override
   int get hashCode =>
       Object.hashAll(<Object?>[_deepHash(photos), nextPageToken]);
+}
+
+final class EventReferee {
+  const EventReferee({
+    required this.id,
+    required this.userId,
+    this.componentKey,
+    this.scopeId,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventReferee.fromJson(Map<String, Object?> json) => EventReferee(
+    id: _readString(json['id'], 'EventReferee.id'),
+    userId: _readString(json['user_id'], 'EventReferee.user_id'),
+    componentKey: switch (json['component_key']) {
+      null => null,
+      final Object v => _readString(v, 'EventReferee.component_key'),
+    },
+    scopeId: switch (json['scope_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventReferee.scope_id'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'EventReferee.created_at'),
+  );
+
+  final String id;
+
+  final String userId;
+
+  /// Yoksa atama etkinliğin bütün bileşenleri içindir.
+  final String? componentKey;
+
+  /// Bileşenin bir kapsamı (masa, maç); yoksa bileşenin tamamı.
+  final String? scopeId;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'user_id': userId,
+    if (componentKey case final value?) 'component_key': value,
+    if (scopeId case final value?) 'scope_id': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventReferee &&
+          id == other.id &&
+          userId == other.userId &&
+          componentKey == other.componentKey &&
+          scopeId == other.scopeId &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, userId, componentKey, scopeId, createdAt]);
+}
+
+final class EventRefereeAssignRequest {
+  const EventRefereeAssignRequest({
+    required this.userId,
+    this.componentKey,
+    this.scopeId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRefereeAssignRequest.fromJson(
+    Map<String, Object?> json,
+  ) => EventRefereeAssignRequest(
+    userId: _readString(json['user_id'], 'EventRefereeAssignRequest.user_id'),
+    componentKey: switch (json['component_key']) {
+      null => null,
+      final Object v => _readString(
+        v,
+        'EventRefereeAssignRequest.component_key',
+      ),
+    },
+    scopeId: switch (json['scope_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventRefereeAssignRequest.scope_id'),
+    },
+  );
+
+  /// Tayfanın etkin bir üyesi.
+  final String userId;
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? componentKey;
+
+  /// `component_key` ile birlikte verilir.
+  final String? scopeId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    if (componentKey case final value?) 'component_key': value,
+    if (scopeId case final value?) 'scope_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRefereeAssignRequest &&
+          userId == other.userId &&
+          componentKey == other.componentKey &&
+          scopeId == other.scopeId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, componentKey, scopeId]);
+}
+
+final class EventRefereeList {
+  const EventRefereeList({required this.referees});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRefereeList.fromJson(Map<String, Object?> json) =>
+      EventRefereeList(
+        referees: List<EventReferee>.unmodifiable(
+          _readList(json['referees'], 'EventRefereeList.referees').map(
+            (Object? e0) => EventReferee.fromJson(
+              _readObject(e0, 'EventRefereeList.referees'),
+            ),
+          ),
+        ),
+      );
+
+  final List<EventReferee> referees;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'referees': <Object?>[for (final e0 in referees) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRefereeList && _deepEquals(referees, other.referees);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(referees)]);
 }
 
 final class EventSeries {

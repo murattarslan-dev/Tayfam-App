@@ -645,6 +645,158 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin bileşenleri ve organizatörün seçimleri
+  ///
+  /// Etkinliğin tür sürümündeki her bileşen, tanımdaki sırayla ve bu
+  /// etkinlikteki haliyle: açık mı (`optional` bileşeni organizatör
+  /// açıp kapatır) ve organizatöre bırakılan (`organizer_choice`) her
+  /// parametrede geçerli seçenek (ADR-0037 §2). Bileşenin diğer
+  /// parametreleri ve adı tür tanımındadır (`CatalogComponent`). Her
+  /// etkin üyeye açıktır (susturulmuş üye de okur).
+  ///
+  /// **Bileşen uçlarının ortak kuralları** (her bileşenin
+  /// `…/components/{component_key}/…` uçları için): etkinliğin tür
+  /// sürümünde o anahtarla bir bileşen yoksa ya da bileşen ucun türünden
+  /// değilse `component-not-found`; kapalı bileşenin bütün uçları
+  /// (okuma dahil) `component-disabled`; iptal edilmiş etkinlikte yazma
+  /// `event-cancelled`, salt okunur tayfada `tayfa-read-only`;
+  /// etkinliğin bitiminden 7 gün sonra bileşen verisi donar
+  /// (`component-frozen`, ADR-0025 §5). "Organizatör" yetkisi etkinliği
+  /// açana ve her etkinlikte olduğu gibi moderatör ve yöneticilere
+  /// aittir; hakemler `…/referees` ile atanır.
+  ///
+  /// **Canlı güncelleme:** bir bileşen, seçimler ya da hakemler
+  /// değişince etkinliği izleyen bağlantılara `event.component_changed`
+  /// çerçevesi gider (`GET /v1/realtime`, `event.watch`); istemci
+  /// bileşeni REST'ten yeniden çeker.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components`
+  Future<EventComponentList> listEventComponents({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventComponentList.fromJson(
+      jsonObject(response, 'listEventComponents'),
+    );
+  }
+
+  /// Organizatörün bir bileşen için seçimini değiştirir
+  ///
+  /// `optional` bileşeni açar ya da kapatır ve organizatöre bırakılan
+  /// parametrelerde seçenek belirler (ADR-0037 §2). Gövdede en az biri
+  /// bulunur; gönderilmeyen seçim olduğu gibi kalır. Organizatör,
+  /// moderatör ve yönetici; yalnızca etkinlik **başlamadan önce**
+  /// (`component-locked`). `optional` olmayan bileşeni kapatmak,
+  /// organizatöre bırakılmamış bir parametre ya da listede olmayan bir
+  /// seçenek `invalid-request`. Seriye ait etkinlikte yalnızca bu
+  /// etkinlik değişir. Yeni etkinlikte seçimler `POST …/events`
+  /// gövdesindeki `components` ile verilir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventComponentList> setEventComponent({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventComponentSelectionRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate:
+          '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventComponentList.fromJson(
+      jsonObject(response, 'setEventComponent'),
+    );
+  }
+
+  /// Etkinliğin hakemleri
+  ///
+  /// Atama sırasıyla. Her etkin üyeye açıktır.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/referees`
+  Future<EventRefereeList> listEventReferees({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/referees',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRefereeList.fromJson(jsonObject(response, 'listEventReferees'));
+  }
+
+  /// Hakem atar
+  ///
+  /// Tayfanın etkin bir üyesini etkinliğin tamamına, bir bileşenine
+  /// (`component_key`) ya da bileşenin bir kapsamına (`scope_id`: masa,
+  /// maç) hakem yapar. Hakem, organizatörle birlikte sonuç girer
+  /// (ADR-0025 §5). Organizatör, moderatör ve yönetici. Aynı atama
+  /// tekrar gönderilirse ilk atama döner. Etkinlik başına en fazla 50
+  /// atama (`event-limit`). Etkin üye olmayan kişi `member-not-found`.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/referees`
+  Future<EventReferee> assignEventReferee({
+    required String tayfaId,
+    required String eventId,
+    required EventRefereeAssignRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/referees',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventReferee.fromJson(jsonObject(response, 'assignEventReferee'));
+  }
+
+  /// Hakem atamasını kaldırır
+  ///
+  /// Organizatör, moderatör ve yönetici. Olmayan atamayı kaldırmak hata değildir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/referees/{referee_id}`
+  Future<void> removeEventReferee({
+    required String tayfaId,
+    required String eventId,
+    required String refereeId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate:
+          '/v1/tayfas/{tayfa_id}/events/{event_id}/referees/{referee_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'referee_id': refereeId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

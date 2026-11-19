@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/api/gen/apis/me_api.dart';
@@ -12,11 +11,14 @@ import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/tayfa/son_tayfa_deposu.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_formu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/core/konum/konum_servisi.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/sikayet/data/sikayet_deposu.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
@@ -59,6 +61,11 @@ const String avlarYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches';
 const String avYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches/{catch_id}';
+const String bilesenlerYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/components';
+const String bilesenYolu =
+    '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}';
+const String hakemlerYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/referees';
 const String duzeltmeYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance';
 
@@ -125,6 +132,91 @@ Map<String, Object?> etkinlikJson({
     'updated_at': '2026-11-01T10:00:00Z',
     tur: ?ayrinti,
   };
+}
+
+/// Örnek `EventComponentState` JSON'u; [secimler] parametre adından
+/// (geçerli seçenek, seçenekler) çiftine.
+Map<String, Object?> bilesenDurumuJson(
+  String anahtar, {
+  String? tur,
+  bool? acik,
+  Map<String, (String, List<String>)> secimler = const {},
+}) => {
+  'key': anahtar,
+  'kind': tur ?? anahtar,
+  'optional': acik != null,
+  'enabled': acik ?? true,
+  'choices': [
+    for (final MapEntry(key: param, value: (deger, secenekler))
+        in secimler.entries)
+      {'param': param, 'value': deger, 'options': secenekler},
+  ],
+};
+
+/// Örnek `EventComponentList` JSON'u.
+Map<String, Object?> bilesenlerJson({
+  List<Map<String, Object?>> bilesenler = const [],
+  bool kilitli = false,
+  bool yonetebilir = false,
+}) => {
+  'components': bilesenler,
+  'locked': kilitli,
+  'caller_can_manage': yonetebilir,
+};
+
+/// Örnek `EventRefereeList` JSON'u: [kullanicilar] etkinliğin tamamının
+/// hakemidir.
+Map<String, Object?> hakemlerJson([List<String> kullanicilar = const []]) => {
+  'referees': [
+    for (final (sira, id) in kullanicilar.indexed)
+      {
+        'id': '4b3a2918-0706-4f5e-8d4c-3b2a1908f7e${sira % 10}',
+        'user_id': id,
+        'created_at': '2026-11-10T10:00:00Z',
+      },
+  ],
+};
+
+/// Test bileşeni (ADR-0024 §7): detayda bağlamını metin olarak yazar;
+/// [param] verilirse sihirbazda o parametrenin seçimini çizer ([etiketler]
+/// seçenek adlarıdır; adı olmayan seçenek "tanınmayan seçenek"tir).
+final class SahteBilesen extends KayitliBilesen {
+  const SahteBilesen(
+    super.tur, {
+    this.param,
+    this.etiketler = const {},
+    this.detay = true,
+  });
+
+  final String? param;
+  final Map<String, String> etiketler;
+  final bool detay;
+
+  /// Detay bölümünde yazan metin.
+  static String detayMetni(
+    String anahtar,
+    BilesenRolu rol, [
+    Map<String, String> secimler = const {},
+  ]) => 'bileşen $anahtar ${rol.name} $secimler';
+
+  @override
+  String ad(AppLocalizations m) => 'Sahte $tur';
+
+  @override
+  Widget? formBolumu(BilesenBaglami b) {
+    final param = this.param;
+    if (param == null) return null;
+    return BilesenSecimAlani(
+      baglam: b,
+      param: param,
+      baslik: 'Seçim $param',
+      etiketler: etiketler,
+    );
+  }
+
+  @override
+  Widget? detayBolumu(BilesenBaglami b) =>
+      detay ? Text(detayMetni(b.anahtar, b.rol, b.secimler)) : null;
 }
 
 /// Örnek `Event` modeli.
@@ -224,6 +316,16 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       'GET $katilimcilarYolu',
       () =>
           (_) => katilimcilarJson([katilimciId]),
+    )
+    ..putIfAbsent(
+      'GET $bilesenlerYolu',
+      () =>
+          (_) => bilesenlerJson(),
+    )
+    ..putIfAbsent(
+      'GET $hakemlerYolu',
+      () =>
+          (_) => hakemlerJson(),
     )
     ..putIfAbsent(
       'GET $avlarYolu',
@@ -336,7 +438,8 @@ const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 /// Etkinlik özelliğinin sahte bağımlılıkları: uçlar [tasima]'dan, saat
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
 /// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü ve
-/// türe özel araçları olan türler kayıtlıdır. Mağaza değerlendirme
+/// türe özel araçları olan türler kayıtlıdır; bileşen kaydı [bilesenler]'dir
+/// (verilmezse yalnızca temel `meeting_point`). Mağaza değerlendirme
 /// penceresi verilmezse kullanılamaz (istenmez); değerlendirme bayrağı
 /// cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
 List<Override> etkinlikOverridelari({
@@ -349,6 +452,7 @@ List<Override> etkinlikOverridelari({
   SonTayfaDeposu? sonTayfa,
   MagazaDegerlendirmesi? magaza,
   Override? katalog,
+  List<EtkinlikBileseni> bilesenler = const [TemelBilesen('meeting_point')],
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),
   etkinlikDeposuProvider.overrideWithValue(EtkinlikDeposu(tasima)),
@@ -380,6 +484,7 @@ List<Override> etkinlikOverridelari({
     YuruyusTuru(),
     BalikTuru(),
   ]),
+  etkinlikBilesenKaydiProvider.overrideWithValue(bilesenler),
   magazaDegerlendirmesiProvider.overrideWithValue(
     magaza ?? SahteMagazaDegerlendirmesi(kullanilabilir: false),
   ),

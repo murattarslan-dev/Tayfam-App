@@ -50,6 +50,56 @@ final class EtkinlikDeposu {
   Future<Event> etkinlik(String tayfaId, String etkinlikId) =>
       _api.getEvent(tayfaId: tayfaId, eventId: etkinlikId);
 
+  /// `GET .../events/{event_id}/components`: etkinliğin bileşenleri ve
+  /// organizatörün seçimleri (ADR-0031 §1).
+  Future<EventComponentList> bilesenler(String tayfaId, String etkinlikId) =>
+      _api.listEventComponents(tayfaId: tayfaId, eventId: etkinlikId);
+
+  /// `PUT .../events/{event_id}/components/{component_key}`: `optional`
+  /// bileşeni açar ya da kapatır, organizatöre bırakılan parametrelerde
+  /// seçenek belirler. Etkinlik başladıktan sonra `component-locked`.
+  Future<EventComponentList> bilesenSec(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventComponentSelectionRequest istek,
+  ) => _api.setEventComponent(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `GET .../events/{event_id}/referees`: hakem atamaları.
+  Future<List<EventReferee>> hakemler(String tayfaId, String etkinlikId) async {
+    final liste = await _api.listEventReferees(
+      tayfaId: tayfaId,
+      eventId: etkinlikId,
+    );
+    return liste.referees;
+  }
+
+  /// `POST .../events/{event_id}/referees`: etkinliğin tamamına, bir
+  /// bileşenine ya da bileşenin bir kapsamına hakem atar. Aynı atama tekrar
+  /// gönderilirse ilk atama döner.
+  Future<EventReferee> hakemAta(
+    String tayfaId,
+    String etkinlikId,
+    EventRefereeAssignRequest istek,
+  ) => _api.assignEventReferee(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    body: istek,
+  );
+
+  /// `DELETE .../events/{event_id}/referees/{referee_id}`.
+  Future<void> hakemKaldir(String tayfaId, String etkinlikId, String hakemId) =>
+      _api.removeEventReferee(
+        tayfaId: tayfaId,
+        eventId: etkinlikId,
+        refereeId: hakemId,
+      );
+
   /// `POST /v1/tayfas/{tayfa_id}/events`.
   Future<Event> olustur(String tayfaId, EventCreateRequest istek) =>
       _api.createEvent(tayfaId: tayfaId, body: istek);

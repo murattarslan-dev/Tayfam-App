@@ -6,9 +6,13 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
 
 /// Abone olunan bir kanal: tayfa ve kanal kimliği.
 typedef KanalRef = ({String tayfaId, String kanalId});
+
+/// İzlenen bir etkinlik: tayfa ve etkinlik kimliği (`event.watch`).
+typedef EtkinlikRef = ({String tayfaId, String etkinlikId});
 
 /// Sunucudan gelen bir WebSocket olayı (sözleşme: `GET /v1/realtime`
 /// "Sunucu çerçeveleri"; ADR-0007 "Diğer olaylar").
@@ -162,6 +166,29 @@ final class E2eGecmisAnahtariPaylasildi extends RealtimeOlayi {
   const E2eGecmisAnahtariPaylasildi();
 }
 
+/// `event.component_changed`: izlenen etkinlikte bir bileşen değişti
+/// (ADR-0024 §5; Tayfam-Api ADR-0025 §6). Çerçeve yalnızca kimlik taşır;
+/// bileşen REST'ten yeniden çekilir. [bilesenAnahtari] yoksa etkinliğin
+/// bileşen seçimleri ya da hakemleri değişmiştir.
+final class EtkinlikBileseniDegisti extends RealtimeOlayi {
+  const EtkinlikBileseniDegisti({required this.etkinlik, this.bilesenAnahtari});
+
+  final EtkinlikRef etkinlik;
+
+  /// Değişen bileşenin tür tanımındaki anahtarı (`CatalogComponent.key`;
+  /// yoksa `kind`).
+  final String? bilesenAnahtari;
+}
+
+/// `event.unwatched` (sunucu kesti): etkinlik izlemesi bitti. Nedenler
+/// kanal aboneliğiyle aynıdır.
+final class EtkinlikIzlemeBitti extends RealtimeOlayi {
+  const EtkinlikIzlemeBitti({required this.etkinlik, required this.neden});
+
+  final EtkinlikRef etkinlik;
+  final AbonelikBitisNedeni neden;
+}
+
 /// Bağlantı (yeniden) kuruldu ve `ready` geldi. Açık ekranlar
 /// kaçırdıklarını REST ile, son gördükleri kimlikten itibaren çeker
 /// (ADR-0007).
@@ -236,12 +263,33 @@ RealtimeOlayi? olayaCevir(GelenCerceve c) {
             tayfaId: _kimlik(v, 'tayfa_id'),
             kanalId: _kimlik(v, 'channel_id'),
           ),
-          neden: switch (v['reason']) {
-            'requested' => AbonelikBitisNedeni.istendi,
-            'access_lost' => AbonelikBitisNedeni.erisimKalmadi,
-            'recheck_failed' => AbonelikBitisNedeni.denetlenemedi,
-            _ => AbonelikBitisNedeni.bilinmiyor,
-          },
+          neden: _bitisNedeni(v['reason']),
+        );
+      case 'event.component_changed':
+        final ham = v['component_key'];
+        final String? anahtar;
+        if (ham == null) {
+          anahtar = null;
+        } else if (ham is String && katalogAnahtariMi(ham)) {
+          anahtar = ham;
+        } else {
+          // Biçimi bozuk anahtar "seçimler değişti" sayılmaz.
+          return null;
+        }
+        return EtkinlikBileseniDegisti(
+          etkinlik: (
+            tayfaId: _kimlik(v, 'tayfa_id'),
+            etkinlikId: _kimlik(v, 'event_id'),
+          ),
+          bilesenAnahtari: anahtar,
+        );
+      case 'event.unwatched':
+        return EtkinlikIzlemeBitti(
+          etkinlik: (
+            tayfaId: _kimlik(v, 'tayfa_id'),
+            etkinlikId: _kimlik(v, 'event_id'),
+          ),
+          neden: _bitisNedeni(v['reason']),
         );
       case 'notification':
         return BildirimGeldi(
@@ -312,6 +360,13 @@ ApiProblem cerceveHatasi(Map<String, Object?> v) {
     retryAfter: saniye is int && saniye > 0 ? Duration(seconds: saniye) : null,
   );
 }
+
+AbonelikBitisNedeni _bitisNedeni(Object? neden) => switch (neden) {
+  'requested' => AbonelikBitisNedeni.istendi,
+  'access_lost' => AbonelikBitisNedeni.erisimKalmadi,
+  'recheck_failed' => AbonelikBitisNedeni.denetlenemedi,
+  _ => AbonelikBitisNedeni.bilinmiyor,
+};
 
 String _kimlik(Map<String, Object?> v, String alan) {
   final deger = v[alan];

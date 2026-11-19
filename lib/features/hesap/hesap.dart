@@ -18,7 +18,7 @@ export 'package:tayfam/features/hesap/application/kayit_karsilamasi.dart'
         kayitDavetProvider,
         kayitKarsilamasiProvider;
 export 'package:tayfam/features/hesap/data/dis_baglanti.dart'
-    show DisBaglantiAcici, disBaglantiAciciProvider;
+    show DisBaglantiAcici, disBaglantiAciciProvider, playMagazaAdresi;
 export 'package:tayfam/features/hesap/data/google_kimligi.dart'
     show
         GoogleGirisHatasi,
