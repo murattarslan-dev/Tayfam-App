@@ -60,6 +60,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // meeting_point: buluşma noktası etkinliğin temel alanıdır.
   TemelBilesen('meeting_point'),
   // route (#227)
+  RotaBileseni(),
   // vehicles (#228)
   // checklist (#229)
   // roll_call (#230)

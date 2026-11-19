@@ -33,15 +33,11 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
-import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/tur_secici.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
-
-/// Sihirbazdaki rota önizlemesinin yüksekliği.
-const double sihirbazRotaYuksekligi = 120;
 
 /// Etkinlik düzenleme (`/t/<tayfaId>/etkinlikler/<etkinlikId>/duzenle`):
 /// etkinlik okununca sihirbaz o etkinlikle açılır. Sonraki yenilemeler
@@ -264,17 +260,6 @@ class _EtkinlikSihirbaziEkraniState
           ? Adresler.etkinlikler(tayfaId)
           : Adresler.etkinlik(tayfaId, eski.id),
     );
-  }
-
-  Future<void> _rotaSec() async {
-    final t = _t;
-    final rota = await rotaSeciciAc(
-      context,
-      baslangic: t.ayrinti.rota,
-      merkez: t.yer.nokta,
-    );
-    if (rota == null || !mounted) return;
-    _ayrinti((a) => a.kopya(rota: rota));
   }
 
   Future<void> _noktaSec() async {
@@ -1056,18 +1041,6 @@ class _EtkinlikSihirbaziEkraniState
                 : (g) => _ayrinti((a) => a.kopya(balikGizliligi: g)),
           ),
         ];
-      case EskiTur.konvoy:
-        return [
-          BolumEtiketi(baslik: m.etkinlik_rota_baslik),
-          _RotaKarti(
-            rota: a.rota,
-            onCiz: kapali ? null : () => unawaited(_rotaSec()),
-          ),
-          if (h.contains(TaslakHatasi.rota)) ...[
-            const SizedBox(height: TayfamSpacing.s8),
-            HataSatiri(metin: m.etkinlik_rota_hata),
-          ],
-        ];
       default:
         return const [];
     }
@@ -1258,89 +1231,9 @@ class _NoktaKarti extends StatelessWidget {
   }
 }
 
-/// Konvoy rotası kartı (tasarım: Sihirbaz-Ayrinti): çizilmediyse "Rota
-/// çizilmedi." ve "Rota çiz"; çizildiyse küçük önizleme, nokta sayısı ve
-/// "Rotayı düzenle".
-class _RotaKarti extends StatelessWidget {
-  const _RotaKarti({required this.rota, required this.onCiz});
-
-  final List<LatLng> rota;
-  final VoidCallback? onCiz;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    final bos = rota.isEmpty;
-    return Material(
-      color: r.kart,
-      shape: RoundedRectangleBorder(
-        borderRadius: TayfamRadii.kartKoseleri,
-        side: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (!bos)
-            SizedBox(
-              height: sihirbazRotaYuksekligi,
-              child: OsmHarita(
-                key: ValueKey(rota.length),
-                merkez: rota.first,
-                yakinlik: rotaSeciciYakinligi,
-                rota: rota,
-                etkilesimli: false,
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(TayfamSpacing.s12),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: TayfamSpacing.s8,
-              runSpacing: TayfamSpacing.s8,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ExcludeSemantics(
-                      child: Icon(
-                        Icons.route_outlined,
-                        size: TayfamSizes.ikon,
-                        color: r.tintMarkaUstu,
-                      ),
-                    ),
-                    const SizedBox(width: TayfamSpacing.s8),
-                    Flexible(
-                      child: Text(
-                        bos
-                            ? m.etkinlik_rota_yok
-                            : m.etkinlik_konvoy_rota_noktalari(
-                                etkinlikSayi(m, rota.length),
-                              ),
-                        style: context.yazi.titleSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                CerceveliHapEylem(
-                  etiket: bos ? m.etkinlik_rota_ciz : m.etkinlik_rota_duzenle,
-                  ikon: Icons.route,
-                  onPressed: onCiz,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Önizleme (5. adım; tasarım: Sihirbaz-Onizleme): "Her şey doğru mu?",
 /// türün renginde başlıklı özet kartı ve satırlar (Ne zaman, Nerede,
-/// Kontenjan, Tekrar; konvoyda Rota). Her satırdaki "Değiştir" ilgili
+/// Kontenjan, Tekrar). Her satırdaki "Değiştir" ilgili
 /// adıma götürür. Sunucunun hatası burada gösterilir.
 class _OnizlemeAdimi extends ConsumerWidget {
   const _OnizlemeAdimi({
@@ -1424,16 +1317,6 @@ class _OnizlemeAdimi extends ConsumerWidget {
             deger,
             SihirbazAdimi.ayrinti,
           ),
-      if (tur == EskiTur.konvoy)
-        (
-          m.etkinlik_konvoy_rota,
-          t.ayrinti.rota.isEmpty
-              ? m.etkinlik_rota_yok
-              : m.etkinlik_konvoy_rota_noktalari(
-                  etkinlikSayi(m, t.ayrinti.rota.length),
-                ),
-          SihirbazAdimi.ayrinti,
-        ),
       if (anlik)
         (
           m.anlik_onizleme_davetliler,

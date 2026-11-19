@@ -81,7 +81,6 @@ class AracEylemNotifier extends Notifier<bool> {
           etkinlikKopyasi(
             etkinlik,
             convoy: ConvoyDetails(
-              route: konvoy?.route,
               vehicles: [
                 for (final a in konvoy?.vehicles ?? const <ConvoyVehicle>[])
                   if (a.userId != arac.userId) a,
@@ -102,7 +101,6 @@ class AracEylemNotifier extends Notifier<bool> {
       etkinlikKopyasi(
         etkinlik,
         convoy: ConvoyDetails(
-          route: konvoy?.route,
           vehicles: [
             for (final a in konvoy?.vehicles ?? const <ConvoyVehicle>[])
               if (a.id != aracId) a,

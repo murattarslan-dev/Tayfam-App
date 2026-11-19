@@ -94,8 +94,9 @@ final class EventsApi {
   /// - Yer: `mode`, `meeting_point_name`, `meeting_point`, `city`,
   ///   `district`, `online_url` birlikte değişir; bunlardan biri
   ///   gönderilirse `mode` zorunludur ve gönderilmeyenler boşalır.
-  /// - Türe özel ayrıntı (`convoy`, `camp`, …) tamamen değişir; araçlar
-  ///   ve kamp listesi korunur.
+  /// - Türe özel ayrıntı (`camp`, `hike`, `fishing`) tamamen değişir; kamp
+  ///   listesi korunur. Konvoyun rotası `route` bileşenindedir
+  ///   (`PUT …/components/{component_key}/route`).
   ///
   /// Kapasiteyi artırmak bekleme listesindekileri sırayla `going` yapar.
   /// Seriye ait bir etkinlikte `apply_to_series` `false` (varsayılan) ise
@@ -795,6 +796,71 @@ final class EventsApi {
       expect: ResponseKind.none,
       authenticated: true,
     );
+  }
+
+  /// Etkinliğin rotası
+  ///
+  /// Rota yoksa `points` boş dizidir ve `updated_at` yoktur. Her etkin
+  /// üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve donmuş
+  /// etkinlikte de okunur. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/route`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRoute> getEventRoute({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/route',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRoute.fromJson(jsonObject(response, 'getEventRoute'));
+  }
+
+  /// Rotayı yazar ya da kaldırır (organizatör, moderatör, yönetici)
+  ///
+  /// Rotanın tamamı değişir: 2–500 nokta. Boş `points` rotayı kaldırır;
+  /// olmayan rotayı kaldırmak hata değildir. Etkinlik başladıktan ve
+  /// bittikten sonra da değişir; bitişten 7 gün sonra donar
+  /// (`component-frozen`). Seriye ait etkinlikte yalnızca bu etkinlik
+  /// değişir. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/route`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRoute> setEventRoute({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventRouteRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/route',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRoute.fromJson(jsonObject(response, 'setEventRoute'));
   }
 
   /// "Her şey yolunda mıydı?" cevabınız
