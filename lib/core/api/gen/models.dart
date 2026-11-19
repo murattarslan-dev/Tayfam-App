@@ -7530,14 +7530,14 @@ final class E2ESignedPreKey {
 /// etkinlik oluşturulduğu tür sürümüne (`type_version`) bağlıdır ve o
 /// sürümün tanımıyla gösterilir (güncel katalogda yoksa
 /// `GET /v1/catalog/event-types/{key}/versions/{version}`). `fields`
-/// ve Faz 1'den kalan türe özel ayrıntı (`fishing`; bileşene taşınana
-/// kadar) yalnızca tek etkinlik yanıtında gelir. Konvoyun rotası ve
+/// yalnızca tek etkinlik yanıtında gelir. Konvoyun rotası ve
 /// araçları bileşenlerindedir (`route`, `vehicles`); kampın listesi
 /// `checklist` bileşenindedir, kamp yeri, su, tuvalet ve notlar
 /// `fields`'tadır (`site_name`, `has_water`, `has_toilet`, `notes`;
 /// #241). Yürüyüşün yoklaması ve beklenen dönüşü `roll_call`
 /// bileşenindedir; zorluk, planlanan mesafe ve irtifa `fields`'tadır
 /// (`difficulty`, `planned_distance`, `planned_elevation`; #242).
+/// Balık etkinliğinin av günlüğü `log` bileşenindedir (`catches`; #243).
 final class Event {
   const Event({
     this.coverUploadId,
@@ -7572,7 +7572,6 @@ final class Event {
     required this.seriesOverride,
     required this.createdAt,
     required this.updatedAt,
-    this.fishing,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -7657,12 +7656,6 @@ final class Event {
     seriesOverride: _readBool(json['series_override'], 'Event.series_override'),
     createdAt: _readDateTime(json['created_at'], 'Event.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Event.updated_at'),
-    fishing: switch (json['fishing']) {
-      null => null,
-      final Object v => FishingDetails.fromJson(
-        _readObject(v, 'Event.fishing'),
-      ),
-    },
   );
 
   /// Kapak; linkleri `POST /v1/media/urls`. Serinin ürettiği etkinliklerde yoktur.
@@ -7744,8 +7737,6 @@ final class Event {
 
   final DateTime updatedAt;
 
-  final FishingDetails? fishing;
-
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (coverUploadId case final value?) 'cover_upload_id': value,
@@ -7781,7 +7772,6 @@ final class Event {
     'series_override': seriesOverride,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
-    if (fishing case final value?) 'fishing': value.toJson(),
   };
 
   @override
@@ -7819,8 +7809,7 @@ final class Event {
           seriesId == other.seriesId &&
           seriesOverride == other.seriesOverride &&
           createdAt == other.createdAt &&
-          updatedAt == other.updatedAt &&
-          fishing == other.fishing;
+          updatedAt == other.updatedAt;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -7856,7 +7845,6 @@ final class Event {
     seriesOverride,
     createdAt,
     updatedAt,
-    fishing,
   ]);
 }
 
@@ -8187,8 +8175,8 @@ final class EventComponentState {
 /// alanlar verilir, tanımda olmayan alan gönderilmez (ör. `gaming`:
 /// `game`, `platform`; `sports`: `sport`, `venue_name`; `camp`:
 /// `site_name`, `has_water`, `has_toilet`, `notes`; `hike`:
-/// `difficulty`, `planned_distance`, `planned_elevation`). Faz 1'den
-/// kalan ayrıntı (`fishing`) yalnızca kendi türünde verilir. Rota ve
+/// `difficulty`, `planned_distance`, `planned_elevation`). Türe özel
+/// ayrıntı nesnesi yoktur (#243). Rota ve
 /// yürüyüşün beklenen dönüşü etkinlik oluşturulduktan sonra
 /// bileşenlerinden (`route`, `roll_call`) yazılır.
 final class EventCreateRequest {
@@ -8209,7 +8197,6 @@ final class EventCreateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.fishing,
     this.recurrence,
     required this.clientRequestId,
   });
@@ -8278,12 +8265,6 @@ final class EventCreateRequest {
     discoverable: switch (json['discoverable']) {
       null => null,
       final Object v => _readBool(v, 'EventCreateRequest.discoverable'),
-    },
-    fishing: switch (json['fishing']) {
-      null => null,
-      final Object v => FishingDetails.fromJson(
-        _readObject(v, 'EventCreateRequest.fishing'),
-      ),
     },
     recurrence: switch (json['recurrence']) {
       null => null,
@@ -8355,8 +8336,6 @@ final class EventCreateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final FishingDetails? fishing;
-
   final Recurrence? recurrence;
 
   /// İstemcinin her açma denemesi için bir kez ürettiği, tekrar gönderimde aynen kullandığı UUID.
@@ -8381,7 +8360,6 @@ final class EventCreateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (fishing case final value?) 'fishing': value.toJson(),
     if (recurrence case final value?) 'recurrence': value.toJson(),
     'client_request_id': clientRequestId,
   };
@@ -8406,7 +8384,6 @@ final class EventCreateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          fishing == other.fishing &&
           recurrence == other.recurrence &&
           clientRequestId == other.clientRequestId;
 
@@ -8428,7 +8405,6 @@ final class EventCreateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    fishing,
     recurrence,
     clientRequestId,
   ]);
@@ -8598,6 +8574,295 @@ final class EventList {
   @override
   int get hashCode =>
       Object.hashAll(<Object?>[_deepHash(events), nextPageToken]);
+}
+
+/// Bir günlük kaydı, isteği yapanın gördüğü haliyle (#243).
+final class EventLogEntry {
+  const EventLogEntry({
+    required this.id,
+    required this.userId,
+    required this.values,
+    this.location,
+    this.locationVisibility,
+    this.photoUploadId,
+    required this.createdAt,
+    required this.callerCanRemove,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventLogEntry.fromJson(Map<String, Object?> json) => EventLogEntry(
+    id: _readString(json['id'], 'EventLogEntry.id'),
+    userId: _readString(json['user_id'], 'EventLogEntry.user_id'),
+    values: _readJsonObject(json['values'], 'EventLogEntry.values'),
+    location: switch (json['location']) {
+      null => null,
+      final Object v => LatLng.fromJson(
+        _readObject(v, 'EventLogEntry.location'),
+      ),
+    },
+    locationVisibility: switch (json['location_visibility']) {
+      null => null,
+      final Object v => LogLocationVisibility.fromWire(
+        _readString(v, 'EventLogEntry.location_visibility'),
+      ),
+    },
+    photoUploadId: switch (json['photo_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventLogEntry.photo_upload_id'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'EventLogEntry.created_at'),
+    callerCanRemove: _readBool(
+      json['caller_can_remove'],
+      'EventLogEntry.caller_can_remove',
+    ),
+  );
+
+  final String id;
+
+  /// Kaydı giren.
+  final String userId;
+
+  /// Kaydın alan değerleri; alanlar bileşenin `fields` parametresindedir.
+  final Map<String, Object?> values;
+
+  /// Kaydın konumu; yoksa ya da görmeniz gerekmiyorsa yoktur.
+  final LatLng? location;
+
+  /// Yalnızca kendi konumlu kayıtlarınızda.
+  final LogLocationVisibility? locationVisibility;
+
+  /// Fotoğraf; linkleri `POST /v1/media/urls`. Kaydı gören her üye görür.
+  final String? photoUploadId;
+
+  final DateTime createdAt;
+
+  /// Kaydı şu an çıkarabilirsiniz.
+  final bool callerCanRemove;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'user_id': userId,
+    'values': values,
+    if (location case final value?) 'location': value.toJson(),
+    if (locationVisibility case final value?) 'location_visibility': value.wire,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'caller_can_remove': callerCanRemove,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventLogEntry &&
+          id == other.id &&
+          userId == other.userId &&
+          _deepEquals(values, other.values) &&
+          location == other.location &&
+          locationVisibility == other.locationVisibility &&
+          photoUploadId == other.photoUploadId &&
+          createdAt == other.createdAt &&
+          callerCanRemove == other.callerCanRemove;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    userId,
+    _deepHash(values),
+    location,
+    locationVisibility,
+    photoUploadId,
+    createdAt,
+    callerCanRemove,
+  ]);
+}
+
+final class EventLogEntryCreateRequest {
+  const EventLogEntryCreateRequest({
+    required this.values,
+    this.location,
+    this.locationVisibility,
+    this.photoUploadId,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventLogEntryCreateRequest.fromJson(Map<String, Object?> json) =>
+      EventLogEntryCreateRequest(
+        values: _readJsonObject(
+          json['values'],
+          'EventLogEntryCreateRequest.values',
+        ),
+        location: switch (json['location']) {
+          null => null,
+          final Object v => LatLng.fromJson(
+            _readObject(v, 'EventLogEntryCreateRequest.location'),
+          ),
+        },
+        locationVisibility: switch (json['location_visibility']) {
+          null => null,
+          final Object v => LogLocationVisibility.fromWire(
+            _readString(v, 'EventLogEntryCreateRequest.location_visibility'),
+          ),
+        },
+        photoUploadId: switch (json['photo_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'EventLogEntryCreateRequest.photo_upload_id',
+          ),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'EventLogEntryCreateRequest.client_request_id',
+        ),
+      );
+
+  /// Kaydın alan değerleri (en fazla 8); zorunlu alanlar verilir.
+  final Map<String, Object?> values;
+
+  /// İsteğe bağlı; yalnızca `location_enabled` günlükte. Kişinin seçtiği nokta.
+  final LatLng? location;
+
+  /// Yalnızca konumla; yoksa günlüğün varsayılanı.
+  final LogLocationVisibility? locationVisibility;
+
+  /// İsteğe bağlı: kendi hazır `log_photo` yüklemeniz (bu tayfa için).
+  /// Fotoğrafın konum bilgisi (EXIF/GPS) işlemede silinmiştir; kaydın
+  /// konumu yalnızca `location` ile paylaşılır.
+  final String? photoUploadId;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'values': values,
+    if (location case final value?) 'location': value.toJson(),
+    if (locationVisibility case final value?) 'location_visibility': value.wire,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventLogEntryCreateRequest &&
+          _deepEquals(values, other.values) &&
+          location == other.location &&
+          locationVisibility == other.locationVisibility &&
+          photoUploadId == other.photoUploadId &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(values),
+    location,
+    locationVisibility,
+    photoUploadId,
+    clientRequestId,
+  ]);
+}
+
+/// Bir etkinliğin bir günlük bileşeninin kayıtları, eskiden yeniye (#243).
+final class EventLogEntryList {
+  const EventLogEntryList({
+    required this.entries,
+    this.nextPageToken,
+    required this.locationEnabled,
+    this.locationDefault,
+    required this.maxEntries,
+    required this.callerCanAdd,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventLogEntryList.fromJson(Map<String, Object?> json) =>
+      EventLogEntryList(
+        entries: List<EventLogEntry>.unmodifiable(
+          _readList(json['entries'], 'EventLogEntryList.entries').map(
+            (Object? e0) => EventLogEntry.fromJson(
+              _readObject(e0, 'EventLogEntryList.entries'),
+            ),
+          ),
+        ),
+        nextPageToken: switch (json['next_page_token']) {
+          null => null,
+          final Object v => _readString(v, 'EventLogEntryList.next_page_token'),
+        },
+        locationEnabled: _readBool(
+          json['location_enabled'],
+          'EventLogEntryList.location_enabled',
+        ),
+        locationDefault: switch (json['location_default']) {
+          null => null,
+          final Object v => LogLocationVisibility.fromWire(
+            _readString(v, 'EventLogEntryList.location_default'),
+          ),
+        },
+        maxEntries: _readInt(
+          json['max_entries'],
+          'EventLogEntryList.max_entries',
+        ),
+        callerCanAdd: _readBool(
+          json['caller_can_add'],
+          'EventLogEntryList.caller_can_add',
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 100.
+  final List<EventLogEntry> entries;
+
+  final String? nextPageToken;
+
+  /// Bileşenin `location` parametresi; kapalıysa kayda konum verilmez.
+  final bool locationEnabled;
+
+  /// Yeni kaydın konum görünürlüğünün varsayılanı; konum kapalıysa yoktur.
+  final LogLocationVisibility? locationDefault;
+
+  /// Kişi başına en fazla kayıt.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 500.
+  final int maxEntries;
+
+  /// Şu an kayıt ekleyebilirsiniz (katılımınız doğrulanmış, susturulmamış; etkinlik iptal değil, donmamış, tayfa salt okunur değil). Sayı sınırı ayrıca denetlenir.
+  final bool callerCanAdd;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+    'location_enabled': locationEnabled,
+    if (locationDefault case final value?) 'location_default': value.wire,
+    'max_entries': maxEntries,
+    'caller_can_add': callerCanAdd,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventLogEntryList &&
+          _deepEquals(entries, other.entries) &&
+          nextPageToken == other.nextPageToken &&
+          locationEnabled == other.locationEnabled &&
+          locationDefault == other.locationDefault &&
+          maxEntries == other.maxEntries &&
+          callerCanAdd == other.callerCanAdd;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(entries),
+    nextPageToken,
+    locationEnabled,
+    locationDefault,
+    maxEntries,
+    callerCanAdd,
+  ]);
 }
 
 enum EventMode {
@@ -9338,7 +9603,6 @@ final class EventUpdateRequest {
     this.onlineUrl,
     this.capacity,
     this.discoverable,
-    this.fishing,
     this.applyToSeries,
   });
 
@@ -9408,12 +9672,6 @@ final class EventUpdateRequest {
       null => null,
       final Object v => _readBool(v, 'EventUpdateRequest.discoverable'),
     },
-    fishing: switch (json['fishing']) {
-      null => null,
-      final Object v => FishingDetails.fromJson(
-        _readObject(v, 'EventUpdateRequest.fishing'),
-      ),
-    },
     applyToSeries: switch (json['apply_to_series']) {
       null => null,
       final Object v => _readBool(v, 'EventUpdateRequest.apply_to_series'),
@@ -9460,8 +9718,6 @@ final class EventUpdateRequest {
   /// etkilidir; özel adreste buluşan etkinlik işaretlenmez.
   final bool? discoverable;
 
-  final FishingDetails? fishing;
-
   /// `true` yalnızca seriye ait etkinlikte geçerlidir; yoksa `false`.
   final bool? applyToSeries;
 
@@ -9482,7 +9738,6 @@ final class EventUpdateRequest {
     if (onlineUrl case final value?) 'online_url': value,
     if (capacity case final value?) 'capacity': value,
     if (discoverable case final value?) 'discoverable': value,
-    if (fishing case final value?) 'fishing': value.toJson(),
     if (applyToSeries case final value?) 'apply_to_series': value,
   };
 
@@ -9504,7 +9759,6 @@ final class EventUpdateRequest {
           onlineUrl == other.onlineUrl &&
           capacity == other.capacity &&
           discoverable == other.discoverable &&
-          fishing == other.fishing &&
           applyToSeries == other.applyToSeries;
 
   @override
@@ -9523,7 +9777,6 @@ final class EventUpdateRequest {
     onlineUrl,
     capacity,
     discoverable,
-    fishing,
     applyToSeries,
   ]);
 }
@@ -9821,370 +10074,6 @@ final class EventVehicles {
     callerCanParticipate,
     callerCanManage,
   ]);
-}
-
-final class FishingCatch {
-  const FishingCatch({
-    this.photoUploadId,
-    required this.id,
-    required this.userId,
-    required this.species,
-    required this.lengthCm,
-    this.location,
-    required this.visibility,
-    required this.createdAt,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory FishingCatch.fromJson(Map<String, Object?> json) => FishingCatch(
-    photoUploadId: switch (json['photo_upload_id']) {
-      null => null,
-      final Object v => _readString(v, 'FishingCatch.photo_upload_id'),
-    },
-    id: _readString(json['id'], 'FishingCatch.id'),
-    userId: _readString(json['user_id'], 'FishingCatch.user_id'),
-    species: _readString(json['species'], 'FishingCatch.species'),
-    lengthCm: _readDouble(json['length_cm'], 'FishingCatch.length_cm'),
-    location: switch (json['location']) {
-      null => null,
-      final Object v => LatLng.fromJson(
-        _readObject(v, 'FishingCatch.location'),
-      ),
-    },
-    visibility: FishingCatchVisibility.fromWire(
-      _readString(json['visibility'], 'FishingCatch.visibility'),
-    ),
-    createdAt: _readDateTime(json['created_at'], 'FishingCatch.created_at'),
-  );
-
-  /// Fotoğraf; linkleri `POST /v1/media/urls`. Av kaydını gören her üye görür.
-  final String? photoUploadId;
-
-  final String id;
-
-  final String userId;
-
-  final String species;
-
-  final double lengthCm;
-
-  /// Avcıya, `tayfa` görünürlüğünde noktayı görebilenlere döner.
-  final LatLng? location;
-
-  final FishingCatchVisibility visibility;
-
-  final DateTime createdAt;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (photoUploadId case final value?) 'photo_upload_id': value,
-    'id': id,
-    'user_id': userId,
-    'species': species,
-    'length_cm': lengthCm,
-    if (location case final value?) 'location': value.toJson(),
-    'visibility': visibility.wire,
-    'created_at': createdAt.toUtc().toIso8601String(),
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FishingCatch &&
-          photoUploadId == other.photoUploadId &&
-          id == other.id &&
-          userId == other.userId &&
-          species == other.species &&
-          lengthCm == other.lengthCm &&
-          location == other.location &&
-          visibility == other.visibility &&
-          createdAt == other.createdAt;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[
-    photoUploadId,
-    id,
-    userId,
-    species,
-    lengthCm,
-    location,
-    visibility,
-    createdAt,
-  ]);
-}
-
-final class FishingCatchCreateRequest {
-  const FishingCatchCreateRequest({
-    this.photoUploadId,
-    required this.species,
-    required this.lengthCm,
-    this.location,
-    this.visibility,
-    required this.clientRequestId,
-  });
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory FishingCatchCreateRequest.fromJson(Map<String, Object?> json) =>
-      FishingCatchCreateRequest(
-        photoUploadId: switch (json['photo_upload_id']) {
-          null => null,
-          final Object v => _readString(
-            v,
-            'FishingCatchCreateRequest.photo_upload_id',
-          ),
-        },
-        species: _readString(
-          json['species'],
-          'FishingCatchCreateRequest.species',
-        ),
-        lengthCm: _readDouble(
-          json['length_cm'],
-          'FishingCatchCreateRequest.length_cm',
-        ),
-        location: switch (json['location']) {
-          null => null,
-          final Object v => LatLng.fromJson(
-            _readObject(v, 'FishingCatchCreateRequest.location'),
-          ),
-        },
-        visibility: switch (json['visibility']) {
-          null => null,
-          final Object v => FishingCatchCreateRequestVisibility.fromWire(
-            _readString(v, 'FishingCatchCreateRequest.visibility'),
-          ),
-        },
-        clientRequestId: _readString(
-          json['client_request_id'],
-          'FishingCatchCreateRequest.client_request_id',
-        ),
-      );
-
-  /// İsteğe bağlı: kendi hazır `catch_photo` yüklemeniz (bu tayfa için).
-  /// Fotoğrafın konum bilgisi (EXIF/GPS) işlemede silinmiştir; avın
-  /// konumu yalnızca `location` ve `visibility` ile paylaşılır.
-  final String? photoUploadId;
-
-  /// Kısıtlar: minLength: 1; maxLength: 60.
-  final String species;
-
-  /// Bir ondalık.
-  ///
-  /// Kısıtlar: maximum: 1000; exclusiveMinimum: 0.
-  final double lengthCm;
-
-  final LatLng? location;
-
-  /// Konumu kim görür; av kendisi her etkin üyeye görünür.
-  ///
-  /// Kısıtlar: varsayılan (sunucu): `self`.
-  final FishingCatchCreateRequestVisibility? visibility;
-
-  final String clientRequestId;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (photoUploadId case final value?) 'photo_upload_id': value,
-    'species': species,
-    'length_cm': lengthCm,
-    if (location case final value?) 'location': value.toJson(),
-    if (visibility case final value?) 'visibility': value.wire,
-    'client_request_id': clientRequestId,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FishingCatchCreateRequest &&
-          photoUploadId == other.photoUploadId &&
-          species == other.species &&
-          lengthCm == other.lengthCm &&
-          location == other.location &&
-          visibility == other.visibility &&
-          clientRequestId == other.clientRequestId;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[
-    photoUploadId,
-    species,
-    lengthCm,
-    location,
-    visibility,
-    clientRequestId,
-  ]);
-}
-
-/// Konumu kim görür; av kendisi her etkin üyeye görünür.
-///
-/// Kısıtlar: varsayılan (sunucu): `self`.
-enum FishingCatchCreateRequestVisibility {
-  self('self'),
-  tayfa('tayfa'),
-
-  /// Sözleşmede yok: okunurken tanınmayan değer.
-  /// Sunucuya hiçbir zaman gönderilmez.
-  unknown(null);
-
-  const FishingCatchCreateRequestVisibility(this._wire);
-
-  final String? _wire;
-
-  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
-  /// [StateError] fırlatır.
-  String get wire =>
-      _wire ??
-      (throw StateError(
-        'FishingCatchCreateRequestVisibility.unknown gönderilemez',
-      ));
-
-  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
-  static FishingCatchCreateRequestVisibility fromWire(String wire) {
-    for (final value in values) {
-      if (value._wire == wire) {
-        return value;
-      }
-    }
-    return unknown;
-  }
-}
-
-final class FishingCatchList {
-  const FishingCatchList({required this.catches, this.nextPageToken});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory FishingCatchList.fromJson(Map<String, Object?> json) =>
-      FishingCatchList(
-        catches: List<FishingCatch>.unmodifiable(
-          _readList(json['catches'], 'FishingCatchList.catches').map(
-            (Object? e0) => FishingCatch.fromJson(
-              _readObject(e0, 'FishingCatchList.catches'),
-            ),
-          ),
-        ),
-        nextPageToken: switch (json['next_page_token']) {
-          null => null,
-          final Object v => _readString(v, 'FishingCatchList.next_page_token'),
-        },
-      );
-
-  final List<FishingCatch> catches;
-
-  final String? nextPageToken;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    'catches': <Object?>[for (final e0 in catches) e0.toJson()],
-    if (nextPageToken case final value?) 'next_page_token': value,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FishingCatchList &&
-          _deepEquals(catches, other.catches) &&
-          nextPageToken == other.nextPageToken;
-
-  @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[_deepHash(catches), nextPageToken]);
-}
-
-enum FishingCatchVisibility {
-  self('self'),
-  tayfa('tayfa'),
-
-  /// Sözleşmede yok: okunurken tanınmayan değer.
-  /// Sunucuya hiçbir zaman gönderilmez.
-  unknown(null);
-
-  const FishingCatchVisibility(this._wire);
-
-  final String? _wire;
-
-  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
-  /// [StateError] fırlatır.
-  String get wire =>
-      _wire ??
-      (throw StateError('FishingCatchVisibility.unknown gönderilemez'));
-
-  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
-  static FishingCatchVisibility fromWire(String wire) {
-    for (final value in values) {
-      if (value._wire == wire) {
-        return value;
-      }
-    }
-    return unknown;
-  }
-}
-
-final class FishingDetails {
-  const FishingDetails({this.spotVisibility});
-
-  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
-  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
-  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
-  factory FishingDetails.fromJson(Map<String, Object?> json) => FishingDetails(
-    spotVisibility: switch (json['spot_visibility']) {
-      null => null,
-      final Object v => FishingDetailsSpotVisibility.fromWire(
-        _readString(v, 'FishingDetails.spot_visibility'),
-      ),
-    },
-  );
-
-  /// `participants`: buluşma noktasını yalnızca organizatör, moderatör,
-  /// yönetici ve `going`/`maybe` cevabı verenler görür. Yoksa `tayfa`.
-  final FishingDetailsSpotVisibility? spotVisibility;
-
-  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{
-    if (spotVisibility case final value?) 'spot_visibility': value.wire,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is FishingDetails && spotVisibility == other.spotVisibility;
-
-  @override
-  int get hashCode => Object.hashAll(<Object?>[spotVisibility]);
-}
-
-/// `participants`: buluşma noktasını yalnızca organizatör, moderatör,
-/// yönetici ve `going`/`maybe` cevabı verenler görür. Yoksa `tayfa`.
-enum FishingDetailsSpotVisibility {
-  tayfa('tayfa'),
-  participants('participants'),
-
-  /// Sözleşmede yok: okunurken tanınmayan değer.
-  /// Sunucuya hiçbir zaman gönderilmez.
-  unknown(null);
-
-  const FishingDetailsSpotVisibility(this._wire);
-
-  final String? _wire;
-
-  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
-  /// [StateError] fırlatır.
-  String get wire =>
-      _wire ??
-      (throw StateError('FishingDetailsSpotVisibility.unknown gönderilemez'));
-
-  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
-  static FishingDetailsSpotVisibility fromWire(String wire) {
-    for (final value in values) {
-      if (value._wire == wire) {
-        return value;
-      }
-    }
-    return unknown;
-  }
 }
 
 final class Friend {
@@ -11270,6 +11159,39 @@ enum ListTayfaReportsStatus {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static ListTayfaReportsStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Bir günlük kaydının konumunu kaydı girenin dışında kim görür:
+/// `self` kimse; `participants` `going`/`maybe` cevabı verenler,
+/// katılımı doğrulananlar, organizatör, moderatör ve yönetici; `tayfa`
+/// kaydı gören herkes.
+enum LogLocationVisibility {
+  self('self'),
+  participants('participants'),
+  tayfa('tayfa'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const LogLocationVisibility(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('LogLocationVisibility.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static LogLocationVisibility fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;
@@ -14771,7 +14693,8 @@ enum ReportResolveRequestResolution {
 
 /// `dm_message` (birebir mesaj) yalnızca `POST /v1/me/reports` ile;
 /// diğerleri yalnızca tayfa ucuyla. `channel_message` kanal mesajıdır
-/// (metin, fotoğraf ya da yer; #205).
+/// (metin, fotoğraf ya da yer; #205). `log_entry` bir günlük bileşeni
+/// kaydıdır (#243; eskiden `fishing_catch`).
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -14780,7 +14703,7 @@ enum ReportTargetType {
   question('question'),
   answer('answer'),
   poll('poll'),
-  fishingCatch('fishing_catch'),
+  logEntry('log_entry'),
   dmMessage('dm_message'),
   eventPhoto('event_photo'),
   channelMessage('channel_message'),
@@ -16978,7 +16901,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 1; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover`, `catch_photo`, `event_photo` ve `chat_photo` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
+  /// `cover`, `log_photo`, `event_photo` ve `chat_photo` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -17057,7 +16980,7 @@ final class UploadCreated {
 /// `report_evidence` birebir mesaj şikâyetinin kanıt fotoğrafıdır (#205).
 enum UploadPurpose {
   avatar('avatar'),
-  catchPhoto('catch_photo'),
+  logPhoto('log_photo'),
   cover('cover'),
   eventPhoto('event_photo'),
   chatPhoto('chat_photo'),

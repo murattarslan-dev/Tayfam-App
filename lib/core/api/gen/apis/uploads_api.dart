@@ -16,7 +16,7 @@ final class UploadsApi {
   /// geçerlidir ve yalnızca o varyantın nesnesi, türü ve boyutu içindir:
   /// `headers`'taki `Content-Type` ve `Content-Length` aynen
   /// gönderilmelidir; başka tür ya da boyutla R2 isteği reddeder. Anahtarı
-  /// sunucu belirler. Kapak, av fotoğrafı, albüm fotoğrafı ve `chat_photo`'da
+  /// sunucu belirler. Kapak, günlük fotoğrafı (`log_photo`), albüm fotoğrafı ve `chat_photo`'da
   /// `tayfa_id` zorunludur (aktif üye olunmalı, tayfa salt okunur
   /// olmamalı); avatar, `dm_attachment` ve `report_evidence`'ta verilmez.
   /// Aynı `client_request_id` ile tekrar, kayıt `pending` iken aynı
