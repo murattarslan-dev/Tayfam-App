@@ -8,6 +8,7 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/hedef/hedef_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_formu.dart';
@@ -23,6 +24,8 @@ const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
 const List<EtkinlikBileseni> _kayit = [
   TemelBilesen('meeting_point'),
   OlcumBileseni(),
+  // Yürüyüşte mesafeye bağlı hedef de var (#234).
+  HedefBileseni(),
 ];
 
 /// Organizatör "Ayşe", katılımcı "Mert".

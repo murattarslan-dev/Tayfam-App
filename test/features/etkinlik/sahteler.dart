@@ -59,6 +59,8 @@ const String gunlukKaydiYolu = '$gunlukYolu/{entry_id}';
 const String olcumYolu = '$bilesenYolu/measure';
 const String olcumToplamiYolu = '$olcumYolu/total';
 const String olcumKaydiYolu = '$olcumYolu/entries/{user_id}';
+const String hedefYolu = '$bilesenYolu/goal';
+const String hedefDegeriYolu = '$hedefYolu/target';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -234,6 +236,39 @@ Map<String, Object?> olcumJson({
   'entries': kayitlar,
   'suggested': ?onerilen,
   'caller_can_edit': yazabilir,
+};
+
+/// Örnek `EventGoal` JSON'u (hedef çubuğu bileşeni, #234): varsayılanı
+/// yürüyüşün mesafesine bağlı, türün varsayılan hedefi 10 km olan, değeri
+/// henüz olmayan hedef, değiştiremeyen üye gözüyle. [ulasildi] verilmezse
+/// [mevcut] hedefe ulaştıysa `true`.
+Map<String, Object?> hedefJson({
+  String olcum = 'distance',
+  String birim = 'km',
+  int basamak = 2,
+  num? hedef = 10,
+  bool konuldu = false,
+  num? varsayilan = 10,
+  num? mevcut = 0,
+  bool gizli = false,
+  bool olcumAcik = true,
+  bool? ulasildi,
+  bool degistirebilir = false,
+}) => {
+  'measure_key': olcum,
+  'unit': birim,
+  'decimals': basamak,
+  'target': ?hedef,
+  'target_set': konuldu,
+  'target_updated_at': ?(konuldu ? '2026-11-11T08:00:00Z' : null),
+  'default_target': ?varsayilan,
+  'current': ?(gizli || !olcumAcik ? null : mevcut),
+  'progress_hidden': gizli,
+  'measure_enabled': olcumAcik,
+  'reached':
+      ulasildi ??
+      (hedef != null && mevcut != null && !gizli && mevcut >= hedef),
+  'caller_can_edit': degistirebilir,
 };
 
 /// Örnek `TayfaVocabularyValue` JSON'u; [hedefId] ve [hedef] verilirse
@@ -452,6 +487,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
           (_) => olcumJson(),
     )
     ..putIfAbsent(
+      'GET $hedefYolu',
+      () =>
+          (_) => hedefJson(),
+    )
+    ..putIfAbsent(
       'GET $sozlukYolu',
       () =>
           (_) => sozlukJson(),
@@ -563,9 +603,9 @@ const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
 /// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü
 /// kayıtlıdır; bileşen kaydı [bilesenler]'dir (verilmezse temel
-/// `meeting_point`, liste, yoklama, günlük ve ölçüm). Mağaza değerlendirme
-/// penceresi verilmezse kullanılamaz (istenmez); değerlendirme bayrağı
-/// cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
+/// `meeting_point`, liste, yoklama, günlük, ölçüm ve hedef). Mağaza
+/// değerlendirme penceresi verilmezse kullanılamaz (istenmez);
+/// değerlendirme bayrağı cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
 List<Override> etkinlikOverridelari({
   required SahteTayfaTasima tasima,
   SahteTakvimPaylasici? takvim,
@@ -582,6 +622,7 @@ List<Override> etkinlikOverridelari({
     YoklamaBileseni(),
     GunlukBileseni(),
     OlcumBileseni(),
+    HedefBileseni(),
   ],
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),
