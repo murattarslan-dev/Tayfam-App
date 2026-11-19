@@ -124,7 +124,7 @@ class SozluklerEkrani extends StatelessWidget {
 ///   istatistiğin yeniden hesaplanacağını söyleyen onay →
 ///   `POST …/merge`. Birleştirme tek düzeydir; hedef listesinde yalnızca
 ///   birleştirilmemiş değerler vardır.
-/// - Birleştirilenler: "<değer>" ve "“<hedef>” olarak görünüyor"; "Geri al"
+/// - Birleştirilenler: değer ve "“hedef” olarak görünüyor"; "Geri al"
 ///   onayla `DELETE …/merge`.
 ///
 /// Düğmeler yalnızca `caller_can_merge` ise görünür; yetkiyi yine sunucu
@@ -346,8 +346,9 @@ class _Liste extends StatelessWidget {
     final liste = durum.value;
     final hata = durum.error;
     if (liste == null) {
-      if (hata != null)
+      if (hata != null) {
         return YuklemeHatasi(hata: hata, onTekrarDene: onTekrar);
+      }
       return Center(
         child: TayfamYukleniyor(etiket: m.bilesen_vocab_yukleniyor),
       );
