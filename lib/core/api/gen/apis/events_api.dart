@@ -1252,6 +1252,171 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin ölçümü
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Hassas ölçümde (`sensitive`) herkes
+  /// yalnızca kendi değerini görür; başkası adına değer girebilenler
+  /// hepsini görür. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventMeasure> getEventMeasure({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventMeasure.fromJson(jsonObject(response, 'getEventMeasure'));
+  }
+
+  /// Toplam ölçümü yazar (organizatör, moderatör, yönetici)
+  ///
+  /// Önerilen değeri (`suggested`) onaylamak da düzeltmek de bu uçtur;
+  /// onaylanmamış öneri istatistiğe girmez. Aynı değeri yeniden yazmak
+  /// bir şey değiştirmez. Kişisel ölçümde `measurement-scope`.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/total`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventMeasure> setEventMeasureTotal({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventMeasureValueRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/total',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventMeasure.fromJson(jsonObject(response, 'setEventMeasureTotal'));
+  }
+
+  /// Toplam ölçümü kaldırır (organizatör, moderatör, yönetici)
+  ///
+  /// Olmayan değeri kaldırmak hata değildir. Kişisel ölçümde
+  /// `measurement-scope`.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/total`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventMeasure> removeEventMeasureTotal({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/total',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventMeasure.fromJson(
+      jsonObject(response, 'removeEventMeasureTotal'),
+    );
+  }
+
+  /// Bir katılımcının kişisel ölçümünü yazar
+  ///
+  /// `entered_by: self` ölçümde yalnızca kendi kimliğinizle ve katılımınız
+  /// doğrulanmışsa (`not-attended`); başkasının değeri `permission-denied`.
+  /// `entered_by: organizer` ölçümde organizatör, moderatör, yönetici ve
+  /// atanmış hakem; `going` cevabı vermemiş ve katılımı doğrulanmamış
+  /// kişi `measurement-not-participant`. Aynı değeri yeniden yazmak bir
+  /// şey değiştirmez. Toplam ölçümde `measurement-scope`.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/entries/{user_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventMeasure> setEventMeasureEntry({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String userId,
+    required EventMeasureValueRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/entries/{user_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'user_id': userId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventMeasure.fromJson(jsonObject(response, 'setEventMeasureEntry'));
+  }
+
+  /// Bir katılımcının kişisel ölçümünü kaldırır
+  ///
+  /// Değeri yazabilen kaldırır (katılım denetimi olmadan). Olmayan değeri
+  /// kaldırmak hata değildir. Toplam ölçümde `measurement-scope`.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/entries/{user_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventMeasure> removeEventMeasureEntry({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String userId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/measure/entries/{user_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'user_id': userId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventMeasure.fromJson(
+      jsonObject(response, 'removeEventMeasureEntry'),
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

@@ -431,6 +431,72 @@ final class EtkinlikDeposu {
     entryId: kayitId,
   );
 
+  /// `GET .../components/{component_key}/measure`: ölçüm bileşeni (#233),
+  /// çağıranın gördüğü haliyle (hassas ölçümde yalnızca kendi değeri).
+  Future<EventMeasure> olcum(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventMeasure(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../measure/total`: toplam ölçümü yazar (önerilen değeri onaylamak
+  /// da düzeltmek de budur).
+  Future<EventMeasure> olcumToplamiYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    double deger,
+  ) => _api.setEventMeasureTotal(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventMeasureValueRequest(value: deger),
+  );
+
+  /// `DELETE .../measure/total`.
+  Future<EventMeasure> olcumToplaminiKaldir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.removeEventMeasureTotal(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../measure/entries/{user_id}`: [kullaniciId]'nin kişisel
+  /// ölçümünü yazar.
+  Future<EventMeasure> olcumDegeriYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String kullaniciId,
+    double deger,
+  ) => _api.setEventMeasureEntry(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    userId: kullaniciId,
+    body: EventMeasureValueRequest(value: deger),
+  );
+
+  /// `DELETE .../measure/entries/{user_id}`.
+  Future<EventMeasure> olcumDegeriniKaldir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String kullaniciId,
+  ) => _api.removeEventMeasureEntry(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    userId: kullaniciId,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(

@@ -7,6 +7,7 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yoklama/yoklama_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yoklama/yoklama_durumu.dart';
 
@@ -26,6 +27,8 @@ const String _digerId = '8a7f6e5d-4c3b-4a2f-9e1d-0c9b8a7f6e5d';
 const List<EtkinlikBileseni> _kayit = [
   TemelBilesen('meeting_point'),
   YoklamaBileseni(),
+  // Yürüyüşte iki ölçüm de var (#233); "Uygulamayı güncelle" kartı çıkmasın.
+  OlcumBileseni(),
 ];
 
 /// Organizatör "Ayşe", katılımcı "Mert", diğer üye "Deniz".

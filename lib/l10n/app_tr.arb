@@ -2336,6 +2336,102 @@
   "@bilesen_log_gizlilik_notu_konumsuz": {
     "description": "Konumu kapalı günlüğün kayıt formundaki gizlilik notu."
   },
+  "bilesen_measure_ad": "Ölçüm",
+  "@bilesen_measure_ad": {
+    "description": "Ölçüm bileşeninin (`measure`) adı; tanımda kendi adı (`labels`) yoksa bölüm başlığında görünür."
+  },
+  "bilesen_measure_yok": "Henüz değer girilmedi.",
+  "@bilesen_measure_yok": {
+    "description": "Ölçüm bileşeninde değer yokken görünen metin."
+  },
+  "bilesen_measure_baslamadi": "Değer etkinlik başlayınca girilir.",
+  "@bilesen_measure_baslamadi": {
+    "description": "Ölçüm bileşeninde, etkinlik henüz başlamamışken değer yerine görünen metin (ölçüm etkinlik başlamadan girilemez)."
+  },
+  "bilesen_measure_onerilen": "Önerilen: {deger}",
+  "@bilesen_measure_onerilen": {
+    "description": "Etkinlik bitince planlanan değerden gelen önerilen ölçüm (yalnızca değeri girebilene görünür).",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "12,4 km"
+      }
+    }
+  },
+  "bilesen_measure_onerilen_notu": "Etkinlik planındaki değer. Onaylayana ya da düzeltene kadar istatistiğe girmez.",
+  "@bilesen_measure_onerilen_notu": {
+    "description": "Önerilen ölçüm kartındaki açıklama."
+  },
+  "bilesen_measure_onayla": "Onayla",
+  "@bilesen_measure_onayla": {
+    "description": "Önerilen ölçümü olduğu gibi kaydeden düğme."
+  },
+  "bilesen_measure_duzelt": "Düzelt",
+  "@bilesen_measure_duzelt": {
+    "description": "Ölçüm değerini düzeltme düğmesi ve formunun başlığı; ikon düğmesinin ipucu."
+  },
+  "bilesen_measure_gir": "Değer gir",
+  "@bilesen_measure_gir": {
+    "description": "Toplam ölçümün değerini girme düğmesi ve formunun başlığı."
+  },
+  "bilesen_measure_kendi_gir": "Değerimi gir",
+  "@bilesen_measure_kendi_gir": {
+    "description": "Kişisel ölçümde katılımcının kendi değerini girme düğmesi ve formunun başlığı."
+  },
+  "bilesen_measure_kisi_ekle": "Kişi için değer gir",
+  "@bilesen_measure_kisi_ekle": {
+    "description": "Organizatörün girdiği kişisel ölçümde bir katılımcının değerini girme düğmesi ve formunun başlığı."
+  },
+  "bilesen_measure_kaldir": "Değeri kaldır",
+  "@bilesen_measure_kaldir": {
+    "description": "Ölçüm değerini kaldırma düğmesinin ipucu ve onay penceresindeki eylem."
+  },
+  "bilesen_measure_kaldir_onay": "Değer kaldırılsın mı?",
+  "@bilesen_measure_kaldir_onay": {
+    "description": "Ölçüm değerini kaldırma onay penceresinin başlığı."
+  },
+  "bilesen_measure_deger_alani": "Değer",
+  "@bilesen_measure_deger_alani": {
+    "description": "Ölçüm formundaki sayı alanının etiketi; birim alanın sonunda görünür."
+  },
+  "bilesen_measure_aralik": "{enAz} ile {enCok} arasında",
+  "@bilesen_measure_aralik": {
+    "description": "Ölçüm formundaki sayı alanının yardım metni: tanımdaki sınırlar.",
+    "placeholders": {
+      "enAz": {
+        "type": "String",
+        "example": "0"
+      },
+      "enCok": {
+        "type": "String",
+        "example": "1000"
+      }
+    }
+  },
+  "bilesen_measure_kisi_sec": "Kimin değeri?",
+  "@bilesen_measure_kisi_sec": {
+    "description": "Ölçüm formunda değerin ait olduğu kişiyi seçme başlığı."
+  },
+  "bilesen_measure_kisi_sec_hata": "Bir kişi seç.",
+  "@bilesen_measure_kisi_sec_hata": {
+    "description": "Ölçüm formunda kişi seçilmeden kaydedilince görünen hata."
+  },
+  "bilesen_measure_gelen_yok": "Henüz \"Geliyorum\" diyen yok.",
+  "@bilesen_measure_gelen_yok": {
+    "description": "Ölçüm formunda seçilecek katılımcı yokken görünen metin."
+  },
+  "bilesen_measure_katilim_notu": "Değerini girebilmek için katılımının doğrulanması gerekir.",
+  "@bilesen_measure_katilim_notu": {
+    "description": "Katılımcının kendi girdiği ölçümde, katılımı doğrulanmamış kişiye görünen bilgi."
+  },
+  "bilesen_measure_hassas_notu": "Bu ölçümde herkes yalnızca kendi değerini görür.",
+  "@bilesen_measure_hassas_notu": {
+    "description": "Hassas ölçümde (`sensitive`) değer listesinin altındaki bilgi."
+  },
+  "bilesen_measure_guncelle": "Bu ölçümü görmek için uygulamayı güncelle.",
+  "@bilesen_measure_guncelle": {
+    "description": "Ölçümün kapsamı uygulamanın bu sürümünce tanınmadığında görünen metin."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -10885,6 +10981,18 @@
   "hata_vocabulary_not_merged": "Bu değer birleştirilmemiş.",
   "@hata_vocabulary_not_merged": {
     "description": "Hata kodu `vocabulary-not-merged`. Birleştirilmemiş değerde geri alma."
+  },
+  "hata_measurement_not_started": "Değer etkinlik başladıktan sonra girilebilir.",
+  "@hata_measurement_not_started": {
+    "description": "Hata kodu `measurement-not-started`. Ölçüm etkinlik başlamadan girilmeye çalışılınca görünen hata."
+  },
+  "hata_measurement_not_participant": "Bu kişi etkinliğe katılmıyor; değeri girilemez.",
+  "@hata_measurement_not_participant": {
+    "description": "Hata kodu `measurement-not-participant`. Organizatör, \"Geliyorum\" demeyen ve katılımı doğrulanmamış birinin ölçümünü girmeye çalışınca görünen hata."
+  },
+  "hata_measurement_scope": "Bu ölçüm bu şekilde girilemez. Sayfayı yenileyip tekrar dene.",
+  "@hata_measurement_scope": {
+    "description": "Hata kodu `measurement-scope`. Toplam ölçüme kişisel değer (ya da tersi) yazılmaya çalışılınca görünen hata."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {
