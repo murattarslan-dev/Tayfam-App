@@ -12,7 +12,7 @@ final class EventsApi {
   /// Bitmemiş etkinlikler, başlangıç zamanına göre
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur). İptal edilenler
-  /// de listededir. Türe özel ayrıntılar (`convoy`, `camp`, …) listede
+  /// de listededir. Türe özel ayrıntılar (`camp`, `hike`, …) listede
   /// dolmaz; tek etkinlik ucunu kullanın.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events`
@@ -68,8 +68,9 @@ final class EventsApi {
   /// Tek etkinlik, türe özel ayrıntılarıyla
   ///
   /// Katılımcılara özel balık noktasında (`spot_visibility=participants`)
-  /// katılmayan üye `meeting_point` ve `meeting_point_name` almaz. Konvoy
-  /// plakaları yalnızca katılımcılara (`going`) ve organizatöre döner.
+  /// katılmayan üye `meeting_point` ve `meeting_point_name` almaz. Araçlar
+  /// (ve plakalar) burada değildir; `vehicles` bileşenindedir
+  /// (`GET …/components/{component_key}/vehicles`, #240).
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}`
   Future<Event> getEvent({
@@ -427,52 +428,6 @@ final class EventsApi {
       pathTemplate:
           '/v1/tayfas/{tayfa_id}/events/{event_id}/camp-items/{item_id}',
       pathParams: {'tayfa_id': tayfaId, 'event_id': eventId, 'item_id': itemId},
-      expect: ResponseKind.none,
-      authenticated: true,
-    );
-  }
-
-  /// Konvoya aracınızı ekler; önceki aracınızın yerini alır
-  ///
-  /// Yalnızca konvoy etkinliğinde (`event-type-mismatch`) ve `going`
-  /// cevabıyla (`event-not-going`). Araçlar tek etkinlik yanıtındaki
-  /// `convoy.vehicles`'tadır. Plaka kişisel veridir; isteğe bağlıdır.
-  ///
-  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles`
-  Future<ConvoyVehicle> addConvoyVehicle({
-    required String tayfaId,
-    required String eventId,
-    required ConvoyVehicleCreateRequest body,
-  }) async {
-    final response = await _transport.send(
-      method: 'POST',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles',
-      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
-      body: body.toJson(),
-      expect: ResponseKind.json,
-      authenticated: true,
-    );
-    return ConvoyVehicle.fromJson(jsonObject(response, 'addConvoyVehicle'));
-  }
-
-  /// Konvoydan araç çıkarır
-  ///
-  /// Kendi aracınızı; organizatör, moderatör ve yönetici her aracı.
-  ///
-  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles/{vehicle_id}`
-  Future<void> removeConvoyVehicle({
-    required String tayfaId,
-    required String eventId,
-    required String vehicleId,
-  }) async {
-    await _transport.send(
-      method: 'DELETE',
-      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/convoy-vehicles/{vehicle_id}',
-      pathParams: {
-        'tayfa_id': tayfaId,
-        'event_id': eventId,
-        'vehicle_id': vehicleId,
-      },
       expect: ResponseKind.none,
       authenticated: true,
     );
@@ -861,6 +816,231 @@ final class EventsApi {
       authenticated: true,
     );
     return EventRoute.fromJson(jsonObject(response, 'setEventRoute'));
+  }
+
+  /// Etkinliğin araçları
+  ///
+  /// Araçlar eklenme sırasıyladır. Her etkin üyeye açıktır (susturulmuş
+  /// üye de okur); iptal edilmiş ve donmuş etkinlikte de okunur. Plaka
+  /// yalnızca katılımcılara (`going`), organizatöre ve aracın sahibine
+  /// döner. Bekleyen koltuk isteklerini aracın sahibi görür; başkası
+  /// yalnızca kendi isteğini görür. Bileşen uçlarının ortak kuralları
+  /// geçerlidir (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVehicles> listEventVehicles({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVehicles.fromJson(jsonObject(response, 'listEventVehicles'));
+  }
+
+  /// Aracınızı yazar; önceki aracınızın yerini alır
+  ///
+  /// Yalnızca `going` cevabıyla (`event-not-going`) ve etkinlik bitene
+  /// kadar (`event-ended`). Aracın kimliği değişmez. `plate` yalnızca
+  /// bileşenin `plate` parametresi açıksa, sıfırdan büyük `seats`
+  /// yalnızca `seats` parametresi açıksa kabul edilir (`plate_enabled`,
+  /// `seats_enabled`). Koltuk sayısı onaylanmış yolcu sayısının altına
+  /// inemez (`vehicle-seats-taken`). Araç yazan kişinin başka bir araca
+  /// yazdığı koltuk isteği silinir. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/mine`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVehicles> setEventVehicle({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventVehicleRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/mine',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVehicles.fromJson(jsonObject(response, 'setEventVehicle'));
+  }
+
+  /// Aracı, ona yazılmış koltuk istekleriyle birlikte çıkarır
+  ///
+  /// Kendi aracınızı (susturulmuş olsanız da); organizatör, moderatör ve
+  /// yönetici her aracı. Bilinmeyen araç `event-item-not-found`. İptal
+  /// edilmiş ve donmuş etkinlikte çıkarılamaz (`event-cancelled`,
+  /// `component-frozen`); plaka etkinlik bitiminden 30 gün sonra
+  /// kendiliğinden silinir. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [vehicleId]: Bileşendeki aracın kimliği (`EventVehicle.id`).
+  Future<EventVehicles> removeEventVehicle({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String vehicleId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'vehicle_id': vehicleId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVehicles.fromJson(jsonObject(response, 'removeEventVehicle'));
+  }
+
+  /// Bu araçla gelmek için koltuk ister
+  ///
+  /// Yalnızca `going` cevabıyla (`event-not-going`), etkinlik bitene kadar
+  /// (`event-ended`) ve bileşende kendi aracı olmayan için
+  /// (`seat-request-driver`). Araçta boş koltuk yoksa ya da bileşenin
+  /// `seats` parametresi kapalıysa `vehicle-full`. Kişinin bileşende tek
+  /// isteği vardır; başka araca istek öncekinin (onaylanmış olsa da)
+  /// yerini alır, aynı isteği yinelemek hiçbir şey değiştirmez. İstek
+  /// araç sahibinin onayını bekler. Gövde yoktur.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}/seat-requests/mine`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [vehicleId]: Bileşendeki aracın kimliği (`EventVehicle.id`).
+  Future<EventVehicles> requestEventVehicleSeat({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String vehicleId,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}/seat-requests/mine',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'vehicle_id': vehicleId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVehicles.fromJson(
+      jsonObject(response, 'requestEventVehicleSeat'),
+    );
+  }
+
+  /// Koltuk isteğini (bekleyen ya da onaylanmış) kaldırır
+  ///
+  /// İsteyen kişi kendi isteğini geri çeker (susturulmuş olsa da); araç
+  /// sahibi isteği reddeder ya da yolcuyu çıkarır; organizatör, moderatör
+  /// ve yönetici her isteği kaldırır. Araç ya da bu kişinin o araca isteği
+  /// yoksa `event-item-not-found`. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}/seat-requests/{user_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [vehicleId]: Bileşendeki aracın kimliği (`EventVehicle.id`).
+  Future<EventVehicles> releaseEventVehicleSeat({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String vehicleId,
+    required String userId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}/seat-requests/{user_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'vehicle_id': vehicleId,
+        'user_id': userId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVehicles.fromJson(
+      jsonObject(response, 'releaseEventVehicleSeat'),
+    );
+  }
+
+  /// Aracınıza yazılmış koltuk isteğini onaylar (yalnızca araç sahibi)
+  ///
+  /// Onaylanmış isteği yeniden onaylamak hiçbir şey değiştirmez. Boş
+  /// koltuk kalmadıysa `vehicle-full`; etkinlik bittiyse `event-ended`.
+  /// Araç ya da bu kişinin o araca isteği yoksa `event-item-not-found`.
+  /// Gövde yoktur. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}/seat-requests/{user_id}/approval`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [vehicleId]: Bileşendeki aracın kimliği (`EventVehicle.id`).
+  Future<EventVehicles> approveEventVehicleSeat({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String vehicleId,
+    required String userId,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vehicles/{vehicle_id}/seat-requests/{user_id}/approval',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'vehicle_id': vehicleId,
+        'user_id': userId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVehicles.fromJson(
+      jsonObject(response, 'approveEventVehicleSeat'),
+    );
   }
 
   /// "Her şey yolunda mıydı?" cevabınız
