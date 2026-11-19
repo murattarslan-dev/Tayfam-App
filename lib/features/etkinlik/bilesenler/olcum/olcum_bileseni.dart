@@ -312,7 +312,7 @@ class _OlcumBolumuState extends ConsumerState<OlcumBolumu> {
             ),
         ],
       ),
-      if (kendiDegeriniGirer && ben != null) ...[
+      if (kendiDegeriniGirer) ...[
         const SizedBox(height: TayfamSpacing.s12),
         AracDugmesi(
           etiket: m.bilesen_measure_kendi_gir,
