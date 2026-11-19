@@ -122,9 +122,8 @@ Event _etkinlik({String? cevap = 'going', DateTime? baslangic}) =>
 
 void main() {
   test('katalog fikstüründe yoklama bileşenini kullanan tür var', () {
-    final yoklama = turBilesenleri(
-      testTuru('hike'),
-    ).where((b) => b.kind == 'roll_call');
+    final yoklama = turBilesenleri(testTuru('hike'))
+        .where((b) => b.kind == 'roll_call');
     expect(yoklama, hasLength(1));
     expect(yoklama.single.params?['alarm'], isTrue);
   });
@@ -215,10 +214,8 @@ void main() {
         final konum = SahteKonumServisi();
         final tasima = _tasima({
           'GET $yoklamaYolu': (_) => yoklamaJson(donus: plan),
-          'POST $_cikisYolu': (_) => yoklamaJson(
-            donus: plan,
-            benim: _kayitJson(katilimciId, cikis),
-          ),
+          'POST $_cikisYolu': (_) =>
+              yoklamaJson(donus: plan, benim: _kayitJson(katilimciId, cikis)),
           'POST $_donusYolu': (_) => yoklamaJson(
             donus: plan,
             benim: _kayitJson(katilimciId, cikis, donus: donus),
@@ -233,9 +230,8 @@ void main() {
             konum: konum,
           ),
         );
-        yonlendiriciyiAl(
-          tester,
-        ).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+        yonlendiriciyiAl(tester)
+            .go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
         await tester.pumpAndSettle();
 
         final ciktim = find.text(arbMetni('bilesen_roll_call_ciktim'));
@@ -247,17 +243,12 @@ void main() {
         );
         expect(
           find.text(
-            arbMetni('bilesen_roll_call_alarm_bilgi').replaceAll(
-              '{dakika}',
-              '30',
-            ),
+            arbMetni('bilesen_roll_call_alarm_bilgi')
+                .replaceAll('{dakika}', '30'),
           ),
           findsOneWidget,
         );
-        expect(
-          find.textContaining('Beklenen dönüş:'),
-          findsOneWidget,
-        );
+        expect(find.textContaining('Beklenen dönüş:'), findsOneWidget);
         expect(
           find.text(arbMetni('bilesen_roll_call_donus_yaz')),
           findsNothing,
@@ -366,9 +357,7 @@ void main() {
       });
     }
 
-    testWidgets('dönüş iptal edilmiş etkinlikte de gösterilir', (
-      tester,
-    ) async {
+    testWidgets('dönüş iptal edilmiş etkinlikte de gösterilir', (tester) async {
       ekranBoyutu(tester);
       final tasima = _tasima({
         'GET $etkinlikYolu': (_) => etkinlikJson(
@@ -429,7 +418,10 @@ void main() {
         },
       });
       await _detayiAc(tester, tasima);
-      final tekrar = find.text(arbMetni('etkinlik_tekrar_dene'));
+      final tekrar = find.descendant(
+        of: find.byType(YoklamaBolumu),
+        matching: find.text(arbMetni('etkinlik_tekrar_dene')),
+      );
       await _gorunurYap(tester, tekrar);
       await _dokun(tester, tekrar);
       await _gorunurYap(

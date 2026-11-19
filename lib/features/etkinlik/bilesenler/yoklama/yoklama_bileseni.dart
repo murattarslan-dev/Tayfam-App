@@ -325,11 +325,7 @@ class YoklamaKarti extends StatelessWidget {
 /// çıkış ya da dönüş saati; dönmemiş ve alarm anı geçmişse "Dönmedi"
 /// işareti (renk tek başına anlam taşımaz, metin de yazılır).
 class YoklamaSatiri extends StatelessWidget {
-  const YoklamaSatiri({
-    super.key,
-    required this.kayit,
-    required this.gecikti,
-  });
+  const YoklamaSatiri({super.key, required this.kayit, required this.gecikti});
 
   final RollCallEntry kayit;
 
@@ -382,9 +378,7 @@ class YoklamaSatiri extends StatelessWidget {
                 ),
                 child: Text(
                   m.bilesen_roll_call_donmedi,
-                  style: context.yazi.labelMedium?.copyWith(
-                    color: r.narMetin,
-                  ),
+                  style: context.yazi.labelMedium?.copyWith(color: r.narMetin),
                 ),
               ),
             ),

@@ -20,7 +20,11 @@ typedef YoklamaKimligi = ({String tayfaId, String etkinlikId, String anahtar});
 /// penceresi açık (başlangıçtan 30 dakika önce ile bitiş arası, iptal
 /// edilmemiş). Kolaylıktır; karar sunucunundur (`event-not-going`,
 /// `check-in-closed`).
-bool yoklamadaCikabilir(EventRollCall yoklama, Event etkinlik, DateTime simdi) =>
+bool yoklamadaCikabilir(
+  EventRollCall yoklama,
+  Event etkinlik,
+  DateTime simdi,
+) =>
     yoklama.mine == null &&
     etkinlik.callerRsvp == RsvpStatus.going &&
     varisPenceresiAcik(etkinlik, simdi);
@@ -98,8 +102,7 @@ class YoklamaNotifier extends AsyncNotifier<EventRollCall> {
   /// ve katılımcılar yeniden okunur.
   Future<Object?> cik() async {
     final hata = await _yaz(
-      (d) =>
-          d.yoklamadaCik(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar),
+      (d) => d.yoklamadaCik(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar),
     );
     if (hata != null || !ref.mounted) return hata;
     final detay = ref.read(etkinlikDetayProvider(_etkinlik).notifier);
@@ -116,8 +119,7 @@ class YoklamaNotifier extends AsyncNotifier<EventRollCall> {
 
   /// "Döndüm".
   Future<Object?> don() => _yaz(
-    (d) =>
-        d.yoklamadanDon(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar),
+    (d) => d.yoklamadanDon(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar),
   );
 
   /// Beklenen dönüşü [donus] yapar; `null` ise kaldırır (alarm kurulmaz).
