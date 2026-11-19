@@ -30,11 +30,10 @@ class RotaNotifier extends AsyncNotifier<EventRoute> {
 
   @override
   Future<EventRoute> build() {
-    bilesenDegisiminiIzle(
-      ref,
-      (tayfaId: kimlik.tayfaId, etkinlikId: kimlik.etkinlikId),
-      kimlik.anahtar,
-    );
+    bilesenDegisiminiIzle(ref, (
+      tayfaId: kimlik.tayfaId,
+      etkinlikId: kimlik.etkinlikId,
+    ), kimlik.anahtar);
     return ref
         .read(etkinlikDeposuProvider)
         .rota(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar);
@@ -56,12 +55,7 @@ class RotaNotifier extends AsyncNotifier<EventRoute> {
     try {
       final rota = await ref
           .read(etkinlikDeposuProvider)
-          .rotaYaz(
-            kimlik.tayfaId,
-            kimlik.etkinlikId,
-            kimlik.anahtar,
-            noktalar,
-          );
+          .rotaYaz(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, noktalar);
       if (ref.mounted) state = AsyncData(rota);
       return null;
     } on Exception catch (hata) {

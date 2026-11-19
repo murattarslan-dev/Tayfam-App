@@ -276,9 +276,7 @@ class _AltPanel extends StatelessWidget {
                     child: Text(
                       sayi == 0
                           ? m.bilesen_route_yok
-                          : m.bilesen_route_noktalari(
-                              etkinlikSayi(m, sayi),
-                            ),
+                          : m.bilesen_route_noktalari(etkinlikSayi(m, sayi)),
                       style: context.yazi.titleMedium,
                     ),
                   ),

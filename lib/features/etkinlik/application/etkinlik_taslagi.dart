@@ -662,11 +662,7 @@ Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
 
 /// Faz 1'den kalan türe özel ayrıntı (sözleşme: yalnızca kendi türünde, en
 /// fazla bir tane). Boş kalan isteğe bağlı ayrıntı gönderilmez.
-({
-  CampDetailsInput? camp,
-  HikeDetails? hike,
-  FishingDetails? fishing,
-})
+({CampDetailsInput? camp, HikeDetails? hike, FishingDetails? fishing})
 turAyrintisi(String? tur, TurAyrintisi a) {
   CampDetailsInput? camp;
   HikeDetails? hike;

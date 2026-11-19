@@ -55,9 +55,7 @@ Future<void> _detayiAc(
     themeMode: themeMode,
     tayfa: etkinlikOverridelari(tasima: tasima, bilesenler: _kayit),
   );
-  yonlendiriciyiAl(
-    tester,
-  ).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+  yonlendiriciyiAl(tester).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
   await tester.pumpAndSettle();
 }
 
