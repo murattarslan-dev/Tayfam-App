@@ -41,11 +41,7 @@ const List<TayfaModule> tayfaModulKaydi = [
 /// listeye bir satırla eklenir. Yalnızca türe özel aracı olan türler
 /// kayıtlıdır (ADR-0015 §6); oyun, spor ve genel yalnızca bilgi alanları
 /// gösterir.
-const List<EtkinlikTuru> etkinlikTuruKaydi = [
-  KampTuru(),
-  YuruyusTuru(),
-  BalikTuru(),
-];
+const List<EtkinlikTuru> etkinlikTuruKaydi = [YuruyusTuru(), BalikTuru()];
 
 /// Uygulamanın etkinlik bileşenleri (ADR-0024 §3). Koddaki sabit listedir;
 /// tür tanımı sunucudan gelir ama istemci yalnızca buradaki bileşenleri
@@ -63,6 +59,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // vehicles (#228)
   AraclarBileseni(),
   // checklist (#229)
+  ListeBileseni(),
   // roll_call (#230)
   // log (#231)
   // measure (#233)

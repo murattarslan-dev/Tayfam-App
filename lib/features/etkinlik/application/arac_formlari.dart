@@ -1,47 +1,12 @@
 import 'package:tayfam/core/api/gen/models.dart';
 
-/// Sözleşmedeki sınırlar (`CampItemCreateRequest`,
-/// `FishingCatchCreateRequest`). Araç formu `vehicles` bileşenindedir
-/// (`bilesenler/araclar/`, #228).
-const int malzemeAdiEnCok = 60;
-const int malzemeAdediEnCok = 999;
+/// Sözleşmedeki sınırlar (`FishingCatchCreateRequest`). Araç formu
+/// `vehicles` (`bilesenler/araclar/`, #228), malzeme formu `checklist`
+/// bileşenindedir (`bilesenler/liste/`, #229).
 const int avTuruEnCok = 60;
 const double avBoyuEnCok = 1000;
 
 int _uzunluk(String metin) => metin.runes.length;
-
-/// Kamp malzemesi formundaki bir alanın hatası.
-enum MalzemeHatasi { ad, adet }
-
-/// Kamp malzemesi formu; adet boşsa sunucu 1 sayar. [getiren] "Kim
-/// getirecek?" seçimidir (`assigned_user_id`; kendisi ya da seçilen kişi);
-/// `null` ise "Henüz kimse" ve alan gönderilmez.
-({CampItemCreateRequest? istek, Set<MalzemeHatasi> hatalar}) malzemeIstegi({
-  required String ad,
-  String adet = '',
-  String? getiren,
-}) {
-  final hatalar = <MalzemeHatasi>{};
-  final a = ad.trim();
-  if (a.isEmpty || _uzunluk(a) > malzemeAdiEnCok) hatalar.add(MalzemeHatasi.ad);
-  int? sayi;
-  final adetMetni = adet.trim();
-  if (adetMetni.isNotEmpty) {
-    sayi = int.tryParse(adetMetni);
-    if (sayi == null || sayi < 1 || sayi > malzemeAdediEnCok) {
-      hatalar.add(MalzemeHatasi.adet);
-    }
-  }
-  if (hatalar.isNotEmpty) return (istek: null, hatalar: hatalar);
-  return (
-    istek: CampItemCreateRequest(
-      name: a,
-      quantity: sayi,
-      assignedUserId: getiren,
-    ),
-    hatalar: const {},
-  );
-}
 
 /// Av formundaki bir alanın hatası.
 enum AvHatasi { tur, boy }

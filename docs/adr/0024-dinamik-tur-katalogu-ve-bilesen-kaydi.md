@@ -271,3 +271,17 @@ kapalıdır.
     cevabı değişince liste yeniden okunur (plaka ve koltuk ona bağlıdır).
   - **Sihirbaz.** Araç etkinlik oluşturulurken yazılmadığı için form bölümü
     yoktur. Plaka yalnızca bellekte tutulur, loglanmaz.
+- **2026-11-19 (issue #229, uygulama; sözleşme Tayfam-Api #241, PR #284):**
+  - **Liste.** `checklist` bileşeni `bilesenler/liste/`'dedir; Faz 1 kamp
+    aracı (`turler/kamp/`, `KampTuru`), `Event.camp` ve sihirbazdaki kamp
+    alanları kalktı. Kamp bilgileri katalog alanlarıyla (`fields`), malzeme
+    listesi `gear` anahtarlı listeyle gelir. Bir etkinlikte birden çok
+    liste olabileceği için durum `{component_key}` ile ayrılır.
+  - **Metin.** Düğme ve etiketler yanıttaki `label`'a göre seçilir
+    (`gear` malzeme, `task` görev, `section` bölüm, `duty` nöbet, diğerleri
+    madde); başlık katalogdaki addır. Adet yalnızca `quantity_enabled`,
+    üstlenme yalnızca `assignment_enabled` ise gösterilir.
+  - **Yetki.** Ekleme, çıkarma ve başkasının atamasını kaldırma
+    `caller_can_manage`; "Ben getiririm" / "Vazgeç" `caller_can_take` ile
+    sadeleşir. Bitmiş etkinlikte liste kapalıdır ve bu yazılır.
+    `event-item-taken` gibi bayat liste hatalarında liste yeniden okunur.

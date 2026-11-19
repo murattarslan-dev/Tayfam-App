@@ -212,36 +212,58 @@ final class EtkinlikDeposu {
         body: const HikeReturnRequest(),
       );
 
-  /// `POST .../camp-items`: ortak malzeme listesine ekler.
-  Future<CampItem> kampMalzemesiEkle(
+  /// `GET .../components/{component_key}/items`: liste bileşeninin
+  /// maddeleri (#229), çağıranın gördüğü haliyle.
+  Future<Checklist> liste(
     String tayfaId,
     String etkinlikId,
-    CampItemCreateRequest istek,
-  ) => _api.addCampItem(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
-
-  /// `PATCH .../camp-items/{item_id}`: malzemeyi [kullaniciId]'ye atar;
-  /// `null` ise atamayı kaldırır (gövdede alan yok).
-  Future<CampItem> kampMalzemesiAta(
-    String tayfaId,
-    String etkinlikId,
-    String malzemeId,
-    String? kullaniciId,
-  ) => _api.assignCampItem(
+    String bilesenAnahtari,
+  ) => _api.listChecklist(
     tayfaId: tayfaId,
     eventId: etkinlikId,
-    itemId: malzemeId,
-    body: CampItemAssignRequest(assignedUserId: kullaniciId),
+    componentKey: bilesenAnahtari,
   );
 
-  /// `DELETE .../camp-items/{item_id}`.
-  Future<void> kampMalzemesiCikar(
+  /// `POST .../items`: listeye madde ekler.
+  Future<Checklist> maddeEkle(
     String tayfaId,
     String etkinlikId,
-    String malzemeId,
-  ) => _api.removeCampItem(
+    String bilesenAnahtari,
+    ChecklistItemRequest istek,
+  ) => _api.addChecklistItem(
     tayfaId: tayfaId,
     eventId: etkinlikId,
-    itemId: malzemeId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `DELETE .../items/{item_id}`.
+  Future<Checklist> maddeCikar(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String maddeId,
+  ) => _api.removeChecklistItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    itemId: maddeId,
+  );
+
+  /// `PUT .../items/{item_id}/assignee`: maddeyi [kullaniciId]'ye atar;
+  /// `null` ise atamayı kaldırır (gövdede alan yok).
+  Future<Checklist> maddeAta(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String maddeId,
+    String? kullaniciId,
+  ) => _api.assignChecklistItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    itemId: maddeId,
+    body: ChecklistAssignRequest(assignedUserId: kullaniciId),
   );
 
   /// `GET .../components/{component_key}/vehicles`: araçlar bileşeninin

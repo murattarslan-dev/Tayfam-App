@@ -258,11 +258,7 @@ class _Detay extends ConsumerWidget {
                   ),
                 ],
                 if (ayrintilar.isNotEmpty) ...[
-                  AracBasligi(
-                    metin: etkinlik.type == 'camp'
-                        ? m.etkinlik_kamp_yeri
-                        : m.etkinlik_tur_bilgileri,
-                  ),
+                  AracBasligi(metin: m.etkinlik_tur_bilgileri),
                   BilgiIzgarasi(bilgiler: ayrintilar),
                 ],
                 ?arac,
@@ -1206,13 +1202,6 @@ List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
     }
   }
 
-  final camp = e.camp;
-  if (camp != null) {
-    ekle(m.etkinlik_kamp_yeri, camp.siteName);
-    ekle(m.etkinlik_kamp_su, varYok(m, camp.hasWater));
-    ekle(m.etkinlik_kamp_tuvalet, varYok(m, camp.hasToilet));
-    ekle(m.etkinlik_kamp_notu, camp.notes);
-  }
   final hike = e.hike;
   if (hike != null) {
     final zorluk = hike.difficulty;

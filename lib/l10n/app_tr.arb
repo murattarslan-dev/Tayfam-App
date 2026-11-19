@@ -2012,70 +2012,6 @@
   "@etkinlik_cikar": {
     "description": "Türe özel araçlardaki çıkarma onayının düğmesi."
   },
-  "etkinlik_kamp_malzemeler": "Ortak malzemeler",
-  "@etkinlik_kamp_malzemeler": {
-    "description": "Kamp etkinliğinde ortak malzeme listesinin başlığı."
-  },
-  "etkinlik_kamp_malzeme_yok": "Henüz malzeme eklenmedi.",
-  "@etkinlik_kamp_malzeme_yok": {
-    "description": "Kamp malzeme listesi boşken görünen metin."
-  },
-  "etkinlik_kamp_malzeme_ekle": "Malzeme ekle",
-  "@etkinlik_kamp_malzeme_ekle": {
-    "description": "Kamp listesine malzeme ekleyen düğme ve formun başlığı."
-  },
-  "etkinlik_kamp_malzeme_cikar": "Malzemeyi çıkar",
-  "@etkinlik_kamp_malzeme_cikar": {
-    "description": "Kamp listesinden malzemeyi çıkaran düğmenin ipucu."
-  },
-  "etkinlik_kamp_malzeme_cikar_onay": "Malzeme listeden çıkarılsın mı?",
-  "@etkinlik_kamp_malzeme_cikar_onay": {
-    "description": "Malzemeyi çıkarmadan önce sorulan onay."
-  },
-  "etkinlik_kamp_malzeme_adi": "Malzeme",
-  "@etkinlik_kamp_malzeme_adi": {
-    "description": "Kamp malzemesi formundaki ad alanı."
-  },
-  "etkinlik_kamp_malzeme_adi_hata": "Malzemenin adını yaz (en çok 60 karakter).",
-  "@etkinlik_kamp_malzeme_adi_hata": {
-    "description": "Kamp malzemesi adı boş ya da uzunsa görünen hata."
-  },
-  "etkinlik_kamp_adet_etiketi": "Adet",
-  "@etkinlik_kamp_adet_etiketi": {
-    "description": "Malzeme ekle formundaki adet sayacının etiketi (1–999)."
-  },
-  "etkinlik_kamp_kim_getirecek": "Kim getirecek?",
-  "@etkinlik_kamp_kim_getirecek": {
-    "description": "Malzeme ekle formunda getirecek kişinin seçildiği bölümün başlığı."
-  },
-  "etkinlik_kamp_getiren_ben": "Ben",
-  "@etkinlik_kamp_getiren_ben": {
-    "description": "Malzeme ekle formu, \"Kim getirecek?\": malzemeyi kendisi getirecek."
-  },
-  "etkinlik_kamp_getiren_kimse": "Henüz kimse",
-  "@etkinlik_kamp_getiren_kimse": {
-    "description": "Malzeme ekle formu, \"Kim getirecek?\": henüz kimse üstlenmedi."
-  },
-  "etkinlik_kamp_getiren_kisi": "Kişi seç",
-  "@etkinlik_kamp_getiren_kisi": {
-    "description": "Malzeme ekle formu, \"Kim getirecek?\": etkinliğe gelenlerden birini seç (yalnızca organizatör ve yönetim)."
-  },
-  "etkinlik_kamp_kisi_sec_notu": "\"Kişi seç\" yalnızca organizatöre ve yönetime görünür; etkinliğe gelenlerden biri seçilir.",
-  "@etkinlik_kamp_kisi_sec_notu": {
-    "description": "Malzeme ekle formunda \"Kim getirecek?\" seçeneklerinin altındaki not."
-  },
-  "etkinlik_kamp_kisi_sec_hata": "Malzemeyi getirecek kişiyi seç.",
-  "@etkinlik_kamp_kisi_sec_hata": {
-    "description": "Malzeme ekle formunda \"Kişi seç\" (ya da \"Ben\") seçilip kişi belli değilken gösterilen hata."
-  },
-  "etkinlik_kamp_gelen_yok": "Henüz \"Geliyorum\" diyen yok.",
-  "@etkinlik_kamp_gelen_yok": {
-    "description": "Malzeme ekle formunda \"Kişi seç\" açıkken etkinliğe gelen kimse yoksa."
-  },
-  "etkinlik_kamp_kimse_ustlenmedi": "Henüz kimse üstlenmedi",
-  "@etkinlik_kamp_kimse_ustlenmedi": {
-    "description": "Malzeme listesinde getirecek kişisi olmayan malzemenin alt satırı."
-  },
   "etkinlik_av_gizlilik_notu": "Avın türü ve boyu tayfaya görünür. Yer, seçmediğin sürece yalnızca sende kalır; fotoğrafın konum bilgisi gönderilmeden silinir. Yer haritada senin işaretlediğin noktadır; cihazının konumu kullanılmaz.",
   "@etkinlik_av_gizlilik_notu": {
     "description": "Av ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Av-Ekle)."
@@ -2083,32 +2019,6 @@
   "etkinlik_arac_gizlilik_notu": "Plaka yalnızca bu etkinliğe gelenlere ve organizatöre görünür ve 30 gün içinde silinir. Araç listesine yalnızca \"Geliyorum\" diyenler araç ekleyebilir.",
   "@etkinlik_arac_gizlilik_notu": {
     "description": "Aracını ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Arac-Ekle)."
-  },
-  "etkinlik_kamp_adet": "{adet} adet",
-  "@etkinlik_kamp_adet": {
-    "description": "Kamp malzemesinin adedi.",
-    "placeholders": {
-      "adet": {
-        "type": "String",
-        "example": "2"
-      }
-    }
-  },
-  "etkinlik_kamp_getirecek": "Getirecek:",
-  "@etkinlik_kamp_getirecek": {
-    "description": "Kamp malzemesini getirecek kişinin adından önceki etiket."
-  },
-  "etkinlik_kamp_getirecek_sen": "Getirecek: Sen",
-  "@etkinlik_kamp_getirecek_sen": {
-    "description": "Malzeme listesinde kullanıcının kendi üstlendiği malzemenin alt satırı (tasarım: Etkinlik-Malzeme-Liste)."
-  },
-  "etkinlik_kamp_ben_getiririm": "Ben getiririm",
-  "@etkinlik_kamp_ben_getiririm": {
-    "description": "Malzeme listesinde boştaki malzemeyi kendine alan düğme; yalnızca \"Geliyorum\" diyene görünür (tasarım: Etkinlik-Malzeme-Liste)."
-  },
-  "etkinlik_kamp_vazgec": "Vazgeç",
-  "@etkinlik_kamp_vazgec": {
-    "description": "Malzeme listesinde kullanıcının kendi üstlendiği malzemeyi bırakan düğme (tasarım: Etkinlik-Malzeme-Liste)."
   },
   "etkinlik_yuruyus_yoklama": "Yürüyüş yoklaması",
   "@etkinlik_yuruyus_yoklama": {
@@ -2476,33 +2386,167 @@
   "@bilesen_vehicles_yolcu_cikar_onay": {
     "description": "Yolcuyu çıkarmadan önce sorulan onay."
   },
-  "etkinlik_kamp_yeri": "Kamp yeri",
-  "@etkinlik_kamp_yeri": {
-    "description": "Kamp etkinliğinde kamp yerinin adı: detayda bilgi etiketi, sihirbazda alan etiketi."
+  "bilesen_checklist_ad": "Liste",
+  "@bilesen_checklist_ad": {
+    "description": "Liste bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
   },
-  "etkinlik_kamp_su": "Su",
-  "@etkinlik_kamp_su": {
-    "description": "Kamp etkinliğinde su olup olmadığı: detayda bilgi etiketi, sihirbazda seçim başlığı."
+  "bilesen_checklist_yok": "Liste henüz boş.",
+  "@bilesen_checklist_yok": {
+    "description": "Liste bileşeninde madde yokken görünen metin."
   },
-  "etkinlik_kamp_tuvalet": "Tuvalet",
-  "@etkinlik_kamp_tuvalet": {
-    "description": "Kamp etkinliğinde tuvalet olup olmadığı: detayda bilgi etiketi, sihirbazda seçim başlığı."
+  "bilesen_checklist_ustlenilen": "{ustlenilen}/{toplam} üstlenildi",
+  "@bilesen_checklist_ustlenilen": {
+    "description": "Liste başlığının yanında: üstlenilen madde sayısı / toplam (yalnızca atama açıksa).",
+    "placeholders": {
+      "ustlenilen": {
+        "type": "int",
+        "example": "3"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "5"
+      }
+    }
   },
-  "etkinlik_kamp_notu": "Not",
-  "@etkinlik_kamp_notu": {
-    "description": "Kamp etkinliğinin notu: detayda bilgi etiketi, sihirbazda alan etiketi."
+  "bilesen_checklist_ekle": "{tur, select, gear{Malzeme ekle} task{Görev ekle} section{Bölüm ekle} duty{Nöbet ekle} other{Madde ekle}}",
+  "@bilesen_checklist_ekle": {
+    "description": "Listeye madde ekleyen düğme ve formun başlığı. `tur` listenin `label`'ı: gear (malzeme), task (görev), section (bölüm), duty (nöbet), diğerleri madde.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "gear"
+      }
+    }
   },
-  "etkinlik_var": "Var",
-  "@etkinlik_var": {
-    "description": "Kamp yerinde su ya da tuvalet var."
+  "bilesen_checklist_cikar": "Listeden çıkar",
+  "@bilesen_checklist_cikar": {
+    "description": "Maddeyi listeden çıkaran düğmenin ipucu."
   },
-  "etkinlik_yok": "Yok",
-  "@etkinlik_yok": {
-    "description": "Kamp yerinde su ya da tuvalet yok."
+  "bilesen_checklist_cikar_onay": "Listeden çıkarılsın mı?",
+  "@bilesen_checklist_cikar_onay": {
+    "description": "Maddeyi listeden çıkarmadan önce sorulan onay."
   },
-  "etkinlik_bilinmiyor": "Bilinmiyor",
-  "@etkinlik_bilinmiyor": {
-    "description": "Kamp yerinde su ya da tuvalet olup olmadığı bilinmiyor."
+  "bilesen_checklist_atamayi_kaldir": "Atamayı kaldır",
+  "@bilesen_checklist_atamayi_kaldir": {
+    "description": "Yönetimin, başkasının üstlendiği maddeyi boşa çıkaran düğmesi (ipucu ve onay düğmesi)."
+  },
+  "bilesen_checklist_atamayi_kaldir_onay": "Bu kişinin ataması kaldırılsın mı?",
+  "@bilesen_checklist_atamayi_kaldir_onay": {
+    "description": "Yönetim başkasının atamasını kaldırmadan önce sorulan onay."
+  },
+  "bilesen_checklist_ad_alani": "{tur, select, gear{Malzeme} task{Görev} section{Bölüm} duty{Nöbet} other{Madde}}",
+  "@bilesen_checklist_ad_alani": {
+    "description": "Madde ekle formundaki ad alanının etiketi. `tur` listenin `label`'ı: gear (malzeme), task (görev), section (bölüm), duty (nöbet), diğerleri madde.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "gear"
+      }
+    }
+  },
+  "bilesen_checklist_ad_hata": "Adını yaz (en çok {enCok} karakter).",
+  "@bilesen_checklist_ad_hata": {
+    "description": "Madde adı boş ya da uzunsa görünen hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "60"
+      }
+    }
+  },
+  "bilesen_checklist_adet_etiketi": "Adet",
+  "@bilesen_checklist_adet_etiketi": {
+    "description": "Madde ekle formundaki adet sayacının etiketi (1–999; yalnızca bileşenin adet parametresi açıksa)."
+  },
+  "bilesen_checklist_adet": "{adet} adet",
+  "@bilesen_checklist_adet": {
+    "description": "Maddenin adedi (yalnızca bileşenin adet parametresi açıksa).",
+    "placeholders": {
+      "adet": {
+        "type": "String",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_checklist_kim": "{tur, select, gear{Kim getirecek?} task{Kim üstlenecek?} section{Kim üstlenecek?} duty{Kim tutacak?} other{Kim üstlenecek?}}",
+  "@bilesen_checklist_kim": {
+    "description": "Madde ekle formunda maddeyi üstlenecek kişinin seçildiği bölümün başlığı. `tur` listenin `label`'ı: gear (malzeme), task (görev), section (bölüm), duty (nöbet), diğerleri madde.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "gear"
+      }
+    }
+  },
+  "bilesen_checklist_kim_ben": "Ben",
+  "@bilesen_checklist_kim_ben": {
+    "description": "Madde ekle formu, \"Kim?\": maddeyi kendisi üstlenecek."
+  },
+  "bilesen_checklist_kim_kimse": "Henüz kimse",
+  "@bilesen_checklist_kim_kimse": {
+    "description": "Madde ekle formu, \"Kim?\": henüz kimse üstlenmedi."
+  },
+  "bilesen_checklist_kim_kisi": "Kişi seç",
+  "@bilesen_checklist_kim_kisi": {
+    "description": "Madde ekle formu, \"Kim?\": etkinliğe gelenlerden birini seç."
+  },
+  "bilesen_checklist_kisi_sec_notu": "Yalnızca etkinliğe \"Geliyorum\" diyenlerden biri seçilebilir.",
+  "@bilesen_checklist_kisi_sec_notu": {
+    "description": "Madde ekle formunda \"Kim?\" seçeneklerinin altındaki not."
+  },
+  "bilesen_checklist_kisi_sec_hata": "Maddeyi üstlenecek kişiyi seç.",
+  "@bilesen_checklist_kisi_sec_hata": {
+    "description": "Madde ekle formunda \"Kişi seç\" (ya da \"Ben\") seçilip kişi belli değilken gösterilen hata."
+  },
+  "bilesen_checklist_gelen_yok": "Henüz \"Geliyorum\" diyen yok.",
+  "@bilesen_checklist_gelen_yok": {
+    "description": "Madde ekle formunda \"Kişi seç\" açıkken etkinliğe gelen kimse yoksa."
+  },
+  "bilesen_checklist_kimse_ustlenmedi": "Henüz kimse üstlenmedi",
+  "@bilesen_checklist_kimse_ustlenmedi": {
+    "description": "Listede kimsenin üstlenmediği maddenin alt satırı."
+  },
+  "bilesen_checklist_ustlenen": "{tur, select, gear{Getirecek:} task{Üstlenen:} section{Üstlenen:} duty{Nöbetçi:} other{Üstlenen:}}",
+  "@bilesen_checklist_ustlenen": {
+    "description": "Maddeyi üstlenen kişinin adından önceki etiket. `tur` listenin `label`'ı: gear (malzeme), task (görev), section (bölüm), duty (nöbet), diğerleri madde.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "gear"
+      }
+    }
+  },
+  "bilesen_checklist_ustlenen_sen": "{tur, select, gear{Getirecek: Sen} task{Üstlenen: Sen} section{Üstlenen: Sen} duty{Nöbetçi: Sen} other{Üstlenen: Sen}}",
+  "@bilesen_checklist_ustlenen_sen": {
+    "description": "Listede kullanıcının kendi üstlendiği maddenin alt satırı (tasarım: Etkinlik-Malzeme-Liste). `tur` listenin `label`'ı: gear (malzeme), task (görev), section (bölüm), duty (nöbet), diğerleri madde.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "gear"
+      }
+    }
+  },
+  "bilesen_checklist_ustlen": "{tur, select, gear{Ben getiririm} task{Ben üstlenirim} section{Ben üstlenirim} duty{Nöbeti alırım} other{Ben üstlenirim}}",
+  "@bilesen_checklist_ustlen": {
+    "description": "Listede boştaki maddeyi kendine alan düğme; yalnızca \"Geliyorum\" diyene görünür (tasarım: Etkinlik-Malzeme-Liste). `tur` listenin `label`'ı: gear (malzeme), task (görev), section (bölüm), duty (nöbet), diğerleri madde.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "gear"
+      }
+    }
+  },
+  "bilesen_checklist_vazgec": "Vazgeç",
+  "@bilesen_checklist_vazgec": {
+    "description": "Listede kullanıcının kendi üstlendiği maddeyi bırakan düğme (tasarım: Etkinlik-Malzeme-Liste)."
+  },
+  "bilesen_checklist_ustlen_bilgi": "Madde üstlenmek için etkinliğe \"Geliyorum\" de.",
+  "@bilesen_checklist_ustlen_bilgi": {
+    "description": "Atama açık listede \"Geliyorum\" demeyen üyeye görünen bilgi."
+  },
+  "bilesen_checklist_kapandi": "Etkinlik bittiği için liste kapandı.",
+  "@bilesen_checklist_kapandi": {
+    "description": "Etkinlik bitince liste değiştirilemez; listenin altındaki bilgi."
   },
   "etkinlik_yuruyus_zorluk": "Zorluk",
   "@etkinlik_yuruyus_zorluk": {
@@ -2835,14 +2879,6 @@
   "etkinlik_kontenjan_sinirsiz": "Sınırsız",
   "@etkinlik_kontenjan_sinirsiz": {
     "description": "Sihirbazda kontenjanı kaldıran anahtar; önizlemede kontenjansız etkinliğin değeri."
-  },
-  "etkinlik_kamp_yeri_etiketi": "Kamp yeri (isteğe bağlı)",
-  "@etkinlik_kamp_yeri_etiketi": {
-    "description": "Sihirbazdaki kamp yeri alanının etiketi."
-  },
-  "etkinlik_kamp_notu_etiketi": "Not (isteğe bağlı)",
-  "@etkinlik_kamp_notu_etiketi": {
-    "description": "Sihirbazdaki kamp notu alanının etiketi."
   },
   "etkinlik_yuruyus_donus_notu": "Beklenen dönüş ve tolerans, “Döndüm” demeyenler için verilen uyarıda kullanılır.",
   "@etkinlik_yuruyus_donus_notu": {

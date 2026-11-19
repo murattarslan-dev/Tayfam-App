@@ -44,19 +44,17 @@ const int etkinlikYerAdiEnCok = 120;
 const int etkinlikIlEnCok = 50;
 const int etkinlikBaglantiEnCok = 2048;
 const int etkinlikKontenjanEnCok = 10000;
-const int etkinlikKampYeriEnCok = 120;
-const int etkinlikKampNotuEnCok = 1000;
 const int etkinlikZorlukEnCok = 5;
 const double etkinlikMesafeEnCok = 1000;
 const int etkinlikYukseltiEnCok = 9000;
 const int etkinlikToleransEnCok = 1440;
 
 /// Faz 1'den kalan, türe özel ayrıntısı sözleşmede ayrı nesne olan türlerin
-/// katalog anahtarları (`camp`, `hike`, `fishing`); bileşenlere taşınana
-/// kadar sihirbazda kendi alanlarıyla çizilirler. Konvoyun rotası `route`
-/// bileşenindedir (#227).
+/// katalog anahtarları (`hike`, `fishing`); bileşenlere taşınana kadar
+/// sihirbazda kendi alanlarıyla çizilirler. Konvoyun rotası `route`
+/// bileşenindedir (#227); kampın bilgileri katalog alanları (`fields`),
+/// malzeme listesi `checklist` bileşenidir (#229).
 abstract final class EskiTur {
-  static const String kamp = 'camp';
   static const String yuruyus = 'hike';
   static const String balik = 'fishing';
 }
@@ -79,8 +77,6 @@ enum TaslakHatasi {
   /// Katalogdaki tür alanlarından en az biri geçersiz; alan başına hata
   /// [alanHatalari] ile hesaplanır.
   alanlar,
-  kampYeri,
-  kampNotu,
   mesafe,
   yukselti,
   donus,
@@ -160,10 +156,6 @@ final class YerBilgisi {
 @immutable
 final class TurAyrintisi {
   const TurAyrintisi({
-    this.kampYeri = '',
-    this.su,
-    this.tuvalet,
-    this.kampNotu = '',
     this.zorluk = 0,
     this.mesafe = '',
     this.yukselti = '',
@@ -171,12 +163,6 @@ final class TurAyrintisi {
     this.tolerans = '',
     this.balikGizliligi = FishingDetailsSpotVisibility.tayfa,
   });
-
-  /// Kamp: yer adı, su ve tuvalet (bilinmiyorsa `null`), not.
-  final String kampYeri;
-  final bool? su;
-  final bool? tuvalet;
-  final String kampNotu;
 
   /// Yürüyüş: zorluk (0: verilmemiş, 1–5), mesafe (km), yükselti (m),
   /// beklenen dönüş ve dönüş toleransı (dakika).
@@ -190,10 +176,6 @@ final class TurAyrintisi {
   final FishingDetailsSpotVisibility balikGizliligi;
 
   TurAyrintisi kopya({
-    String? kampYeri,
-    Object? su = _ayni,
-    Object? tuvalet = _ayni,
-    String? kampNotu,
     int? zorluk,
     String? mesafe,
     String? yukselti,
@@ -201,10 +183,6 @@ final class TurAyrintisi {
     String? tolerans,
     FishingDetailsSpotVisibility? balikGizliligi,
   }) => TurAyrintisi(
-    kampYeri: kampYeri ?? this.kampYeri,
-    su: identical(su, _ayni) ? this.su : su as bool?,
-    tuvalet: identical(tuvalet, _ayni) ? this.tuvalet : tuvalet as bool?,
-    kampNotu: kampNotu ?? this.kampNotu,
     zorluk: zorluk ?? this.zorluk,
     mesafe: mesafe ?? this.mesafe,
     yukselti: yukselti ?? this.yukselti,
@@ -216,10 +194,6 @@ final class TurAyrintisi {
   @override
   bool operator ==(Object other) =>
       other is TurAyrintisi &&
-      other.kampYeri == kampYeri &&
-      other.su == su &&
-      other.tuvalet == tuvalet &&
-      other.kampNotu == kampNotu &&
       other.zorluk == zorluk &&
       other.mesafe == mesafe &&
       other.yukselti == yukselti &&
@@ -229,10 +203,6 @@ final class TurAyrintisi {
 
   @override
   int get hashCode => Object.hash(
-    kampYeri,
-    su,
-    tuvalet,
-    kampNotu,
     zorluk,
     mesafe,
     yukselti,
@@ -442,7 +412,6 @@ EtkinlikTaslagi duzenlemeTaslagi(
   CatalogEventType? tanim,
 }) {
   final hike = etkinlik.hike;
-  final camp = etkinlik.camp;
   return EtkinlikTaslagi(
     istekKimligi: istekKimligi,
     adim: 1,
@@ -471,10 +440,6 @@ EtkinlikTaslagi duzenlemeTaslagi(
     kontenjan: etkinlik.capacity > 0 ? '${etkinlik.capacity}' : '',
     kapak: etkinlik.coverUploadId,
     ayrinti: TurAyrintisi(
-      kampYeri: camp?.siteName ?? '',
-      su: camp?.hasWater,
-      tuvalet: camp?.hasToilet,
-      kampNotu: camp?.notes ?? '',
       zorluk: hike?.difficulty ?? 0,
       mesafe: _sayiMetni(hike?.distanceKm),
       yukselti: _sayiMetni(hike?.elevationM),
@@ -634,13 +599,6 @@ Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
   final a = t.ayrinti;
   final hatalar = <TaslakHatasi>{};
   switch (t.tur) {
-    case EskiTur.kamp:
-      if (_uzunluk(a.kampYeri.trim()) > etkinlikKampYeriEnCok) {
-        hatalar.add(TaslakHatasi.kampYeri);
-      }
-      if (_uzunluk(a.kampNotu.trim()) > etkinlikKampNotuEnCok) {
-        hatalar.add(TaslakHatasi.kampNotu);
-      }
     case EskiTur.yuruyus:
       if (!_aralikta(_ondalik(a.mesafe), etkinlikMesafeEnCok)) {
         hatalar.add(TaslakHatasi.mesafe);
@@ -662,20 +620,11 @@ Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
 
 /// Faz 1'den kalan türe özel ayrıntı (sözleşme: yalnızca kendi türünde, en
 /// fazla bir tane). Boş kalan isteğe bağlı ayrıntı gönderilmez.
-({CampDetailsInput? camp, HikeDetails? hike, FishingDetails? fishing})
+({HikeDetails? hike, FishingDetails? fishing})
 turAyrintisi(String? tur, TurAyrintisi a) {
-  CampDetailsInput? camp;
   HikeDetails? hike;
   FishingDetails? fishing;
   switch (tur) {
-    case EskiTur.kamp:
-      final girdi = CampDetailsInput(
-        siteName: _doluysa(a.kampYeri),
-        hasWater: a.su,
-        hasToilet: a.tuvalet,
-        notes: _doluysa(a.kampNotu),
-      );
-      if (girdi.toJson().isNotEmpty) camp = girdi;
     case EskiTur.yuruyus:
       final mesafe = _ondalik(a.mesafe);
       final girdi = HikeDetails(
@@ -689,7 +638,7 @@ turAyrintisi(String? tur, TurAyrintisi a) {
     case EskiTur.balik:
       fishing = FishingDetails(spotVisibility: a.balikGizliligi);
   }
-  return (camp: camp, hike: hike, fishing: fishing);
+  return (hike: hike, fishing: fishing);
 }
 
 /// Taslaktaki katalog alanlarının `fields` gövdesi; türün alanı yoksa ya
@@ -722,7 +671,6 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     // Yalnızca işaretliyse gönderilir; çevrim içinde anlamı yoktur.
     discoverable: yuzYuze && t.yer.halkaAcik ? true : null,
     capacity: kontenjanSayisi(t.kontenjan),
-    camp: ayrinti.camp,
     hike: ayrinti.hike,
     fishing: ayrinti.fishing,
     recurrence: tekrar == null ? null : tekrarKurali(tekrar),
@@ -754,7 +702,6 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
       district: etkinlik.district,
       onlineUrl: etkinlik.onlineUrl,
       capacity: etkinlik.capacity,
-      camp: etkinlik.camp,
       hike: etkinlik.hike,
       fishing: etkinlik.fishing,
       clientRequestId: etkinlik.clientRequestId,
@@ -796,7 +743,7 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
   final kontenjan = kontenjanSayisi(t.kontenjan) ?? 0;
   final ayrinti = t.ayrintiDegisti
       ? turAyrintisi(t.tur, t.ayrinti)
-      : (camp: null, hike: null, fishing: null);
+      : (hike: null, fishing: null);
   // `fields` verilirse değerlerin tamamı yerine geçer; boş nesne bütün
   // değerleri kaldırır (sözleşme). Tanım bilinmiyorsa gönderilmez.
   final alanlar = t.alanlarDegisti && t.turTanimi != null
@@ -818,7 +765,6 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
     onlineUrl: yerDegisti ? baglanti : null,
     discoverable: halkaAcik == eski.discoverable ? null : halkaAcik,
     capacity: kontenjan == eski.capacity ? null : kontenjan,
-    camp: ayrinti.camp,
     hike: ayrinti.hike,
     fishing: ayrinti.fishing,
   );
