@@ -47,16 +47,14 @@ const String takvimYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/calendar';
 const String iptalYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/cancellation';
 const String profilYolu = '/v1/users/{user_id}/profile';
 const String varisYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/check-in';
-const String avlarYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches';
-const String avYolu =
-    '/v1/tayfas/{tayfa_id}/events/{event_id}/fishing-catches/{catch_id}';
 const String bilesenlerYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/components';
 const String bilesenYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}';
 const String listeYolu = '$bilesenYolu/items';
 const String yoklamaYolu = '$bilesenYolu/roll-call';
+const String gunlukYolu = '$bilesenYolu/entries';
+const String gunlukKaydiYolu = '$gunlukYolu/{entry_id}';
 const String hakemlerYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/referees';
 const String duzeltmeYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/attendees/{user_id}/attendance';
@@ -181,6 +179,25 @@ Map<String, Object?> yoklamaJson({
   'entries': kayitlar,
   'caller_can_manage': yonetebilir,
   'caller_can_edit': duzenleyebilir,
+};
+
+/// Örnek `EventLogEntryList` JSON'u (günlük bileşeni, #231): varsayılanı
+/// konumu açık, varsayılan görünürlüğü "Yalnızca ben" olan boş günlük,
+/// kayıt ekleyemeyen üye gözüyle.
+Map<String, Object?> gunlukJson({
+  List<Map<String, Object?>> kayitlar = const [],
+  bool konum = true,
+  String? varsayilan = 'self',
+  int enCok = 100,
+  bool ekleyebilir = false,
+  String? sonraki,
+}) => {
+  'entries': kayitlar,
+  'next_page_token': ?sonraki,
+  'location_enabled': konum,
+  'location_default': ?(konum ? varsayilan : null),
+  'max_entries': enCok,
+  'caller_can_add': ekleyebilir,
 };
 
 /// Örnek `EventComponentList` JSON'u.
@@ -368,9 +385,9 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
           (_) => yoklamaJson(),
     )
     ..putIfAbsent(
-      'GET $avlarYolu',
+      'GET $gunlukYolu',
       () =>
-          (_) => {'catches': const <Object?>[]},
+          (_) => gunlukJson(),
     )
     ..putIfAbsent(
       'GET $profilYolu',
@@ -477,9 +494,9 @@ const String sahteEtkinlikIstekKimligi = '2c9d8e7f-6a5b-4c3d-8e2f-1a0b9c8d7e6f';
 
 /// Etkinlik özelliğinin sahte bağımlılıkları: uçlar [tasima]'dan, saat
 /// [sabitSimdi], karolar verilmezse çizilmez (ağ yok), paylaşım ve dış
-/// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü ve
-/// türe özel araçları olan türler kayıtlıdır; bileşen kaydı [bilesenler]'dir
-/// (verilmezse yalnızca temel `meeting_point`). Mağaza değerlendirme
+/// bağlantılar ve konum sahte, istek kimliği sabit. Etkinlik modülü
+/// kayıtlıdır; bileşen kaydı [bilesenler]'dir (verilmezse temel
+/// `meeting_point`, liste, yoklama ve günlük). Mağaza değerlendirme
 /// penceresi verilmezse kullanılamaz (istenmez); değerlendirme bayrağı
 /// cihaz ayarlarındadır (`uygulamayiAc`'ın `cihazAyarlari`'ı).
 List<Override> etkinlikOverridelari({
@@ -496,6 +513,7 @@ List<Override> etkinlikOverridelari({
     TemelBilesen('meeting_point'),
     ListeBileseni(),
     YoklamaBileseni(),
+    GunlukBileseni(),
   ],
 }) => [
   ...tayfaOverridelari(tasima: tasima, sonTayfa: sonTayfa, katalog: katalog),
@@ -522,7 +540,6 @@ List<Override> etkinlikOverridelari({
   ),
   tayfaModulleriProvider.overrideWithValue(const [EtkinlikModulu()]),
   konumServisiProvider.overrideWithValue(konum ?? SahteKonumServisi()),
-  etkinlikTurleriProvider.overrideWithValue(const [BalikTuru()]),
   etkinlikBilesenKaydiProvider.overrideWithValue(bilesenler),
   magazaDegerlendirmesiProvider.overrideWithValue(
     magaza ?? SahteMagazaDegerlendirmesi(kullanilabilir: false),

@@ -228,24 +228,6 @@ void main() {
       expect(find.textContaining('bileşen teams'), findsOneWidget);
       expect(find.byType(BilesenGuncelleKarti), findsOneWidget);
     });
-
-    testWidgets('Faz 1 türünde bileşen durumu okunmaz, kart çıkmaz', (
-      tester,
-    ) async {
-      ekranBoyutu(tester);
-      // Balık hâlâ Faz 1 türü (`BalikTuru`); `log` kayıtta yok.
-      final tasima = etkinlikTasimasi({
-        'GET $etkinlikYolu': (_) => etkinlikJson(tur: 'fishing'),
-      });
-      await _git(
-        tester,
-        tasima,
-        Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId),
-      );
-      expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
-      expect(find.byType(BilesenGuncelleKarti), findsNothing);
-      expect(tasima.giden('GET', bilesenlerYolu), isEmpty);
-    });
   });
 
   group('sihirbazdaki bileşen bölümleri', () {

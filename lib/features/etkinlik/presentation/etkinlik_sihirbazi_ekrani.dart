@@ -216,9 +216,6 @@ class _EtkinlikSihirbaziEkraniState
 
   bool get _duzenleme => _anahtar.duzenlenen != null;
 
-  void _ayrinti(TurAyrintisi Function(TurAyrintisi a) degisim) =>
-      _n.ayrintiAyarla(degisim(_t.ayrinti));
-
   void _yer(YerBilgisi Function(YerBilgisi y) degisim) =>
       _n.yerAyarla(degisim(_t.yer));
 
@@ -842,8 +839,8 @@ class _EtkinlikSihirbaziEkraniState
     );
   }
 
-  /// Türe özel alanlar: önce katalogdaki tür alanları (tek alan çizici,
-  /// ADR-0024 §3), sonra Faz 1'den kalan türlerin kendi alanları.
+  /// Türe özel alanlar: katalogdaki tür alanları (tek alan çizici,
+  /// ADR-0024 §3) ve bileşenlerin seçimleri.
   List<Widget> _turAlanlari(BuildContext context, EtkinlikTaslagi t) {
     final alanlar = turAlanlari(t.turTanimi);
     return [
@@ -856,7 +853,6 @@ class _EtkinlikSihirbaziEkraniState
               : const {},
           onDegisti: t.gonderiliyor ? null : _n.alanlariAyarla,
         ),
-      ..._eskiTurAlanlari(context, t),
       // Bileşenler: `optional` aç/kapa satırları ve organizatöre bırakılan
       // seçimler (ADR-0031 §1). Düzenlemede durum okunana kadar çizilmez.
       if (t.bilesenlerOkundu)
@@ -871,33 +867,6 @@ class _EtkinlikSihirbaziEkraniState
           onSecim: _n.bilesenSec,
         ),
     ];
-  }
-
-  List<Widget> _eskiTurAlanlari(BuildContext context, EtkinlikTaslagi t) {
-    final m = AppLocalizations.of(context);
-    final a = t.ayrinti;
-    final kapali = t.gonderiliyor;
-    switch (t.tur) {
-      case EskiTur.balik:
-        return [
-          BolumEtiketi(baslik: m.etkinlik_balik_gizlilik),
-          SecimCipleri<FishingDetailsSpotVisibility>(
-            secenekler: [
-              for (final g in const [
-                FishingDetailsSpotVisibility.tayfa,
-                FishingDetailsSpotVisibility.participants,
-              ])
-                (g, balikGizliligiAdi(m, g)),
-            ],
-            secili: a.balikGizliligi,
-            onSecildi: kapali
-                ? null
-                : (g) => _ayrinti((a) => a.kopya(balikGizliligi: g)),
-          ),
-        ];
-      default:
-        return const [];
-    }
   }
 }
 

@@ -323,14 +323,7 @@ void main() {
     expect(t().yer.mod, EventMode.inPerson);
   });
 
-  test('Faz 1 ayrıntısı yalnızca balıkta gider; yürüyüşte yok', () {
-    const a = TurAyrintisi(
-      balikGizliligi: FishingDetailsSpotVisibility.participants,
-    );
-    expect(turAyrintisi('fishing', a)?.toJson(), {
-      'spot_visibility': 'participants',
-    });
-    expect(turAyrintisi('hike', a), isNull);
+  test('yürüyüşün ayrıntı adımı katalog alanlarıyla hatasız', () {
     final yuruyus = EtkinlikTaslagi(
       istekKimligi: sahteEtkinlikIstekKimligi,
       tur: 'hike',

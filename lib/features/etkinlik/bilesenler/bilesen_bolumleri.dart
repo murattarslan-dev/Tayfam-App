@@ -14,7 +14,6 @@ import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
-import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/features/hesap/hesap.dart' show playMagazaAdresi;
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -28,19 +27,15 @@ typedef PlanliBilesen = ({CatalogComponent tanim, EtkinlikBileseni? bilesen});
 /// - Etkinliğin temel alanlarıyla karşılanan bileşenler ([TemelBilesen])
 ///   çizilmez.
 /// - Kayıtta olmayan bileşen `bilesen: null` ile döner ("Uygulamayı
-///   güncelle" kartı). [eskiTurVar] ise (türün Faz 1'den kalan araç bölümü
-///   hâlâ `turler/` altında kayıtlı) atlanır: o bölüm bileşenin yerini
-///   tutar; bileşeni taşıyan iş kaydı türü kayıttan çıkarır.
+///   güncelle" kartı).
 List<PlanliBilesen> bilesenPlani(
   CatalogEventType? tanim,
-  List<EtkinlikBileseni> kayit, {
-  bool eskiTurVar = false,
-}) {
+  List<EtkinlikBileseni> kayit,
+) {
   final plan = <PlanliBilesen>[];
   for (final b in turBilesenleri(tanim)) {
     final bilesen = etkinlikBileseniBul(kayit, b.kind);
     if (bilesen is TemelBilesen) continue;
-    if (bilesen == null && eskiTurVar) continue;
     plan.add((tanim: b, bilesen: bilesen));
   }
   return plan;
@@ -102,11 +97,7 @@ class EtkinlikBilesenBolumleri extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final kayit = ref.watch(etkinlikBilesenKaydiProvider);
-    final eskiTur = etkinlikTuruBul(
-      ref.watch(etkinlikTurleriProvider),
-      etkinlik.type,
-    );
-    final plan = bilesenPlani(tanim, kayit, eskiTurVar: eskiTur != null);
+    final plan = bilesenPlani(tanim, kayit);
     if (plan.isEmpty) return const SizedBox.shrink();
 
     final okunan = ref.watch(etkinlikBilesenleriProvider(anahtar));

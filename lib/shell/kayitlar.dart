@@ -37,12 +37,6 @@ const List<TayfaModule> tayfaModulKaydi = [
   SoruCevapModulu(),
 ];
 
-/// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
-/// listeye bir satırla eklenir. Yalnızca türe özel aracı olan türler
-/// kayıtlıdır (ADR-0015 §6); oyun, spor ve genel yalnızca bilgi alanları
-/// gösterir.
-const List<EtkinlikTuru> etkinlikTuruKaydi = [BalikTuru()];
-
 /// Uygulamanın etkinlik bileşenleri (ADR-0024 §3). Koddaki sabit listedir;
 /// tür tanımı sunucudan gelir ama istemci yalnızca buradaki bileşenleri
 /// çizer (kayıtta olmayan bileşen için "Uygulamayı güncelle" kartı).
@@ -63,6 +57,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // roll_call (#230)
   YoklamaBileseni(),
   // log (#231)
+  GunlukBileseni(),
   // measure (#233)
   // goal (#234)
   // schedule (#235)
@@ -82,7 +77,6 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
 /// override'lar; uygulamanın kökündeki `ProviderScope`'a verilir.
 final List<Override> kayitOverridelari = [
   tayfaModulleriProvider.overrideWithValue(tayfaModulKaydi),
-  etkinlikTurleriProvider.overrideWithValue(etkinlikTuruKaydi),
   etkinlikBilesenKaydiProvider.overrideWithValue(etkinlikBilesenKaydi),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),

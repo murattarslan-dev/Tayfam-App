@@ -387,33 +387,49 @@ final class EtkinlikDeposu {
     userId: kullaniciId,
   );
 
-  /// `GET .../fishing-catches`: av günlüğünün bir sayfası, eskiden yeniye.
-  Future<Sayfa<FishingCatch>> avlar(
-    String tayfaId,
-    String etkinlikId, {
-    String? sayfaToken,
-  }) async {
-    final liste = await _api.listFishingCatches(
-      tayfaId: tayfaId,
-      eventId: etkinlikId,
-      pageSize: etkinlikSayfaBoyutu,
-      pageToken: sayfaToken,
-    );
-    return (ogeler: liste.catches, sonraki: liste.nextPageToken);
-  }
-
-  /// `POST .../fishing-catches`. Aynı `client_request_id` ile tekrar
-  /// gönderim ilk avı döndürür. Av yeri kullanıcının bilerek paylaştığı
-  /// içeriktir; log'a yazılmaz.
-  Future<FishingCatch> avEkle(
+  /// `GET .../components/{component_key}/entries`: günlüğün bir sayfası,
+  /// eskiden yeniye (Tayfam-Api #243). Her sayfa günlüğün parametrelerini
+  /// ve çağıranın yetkisini de taşır.
+  Future<EventLogEntryList> gunlukKayitlari(
     String tayfaId,
     String etkinlikId,
-    FishingCatchCreateRequest istek,
-  ) => _api.addFishingCatch(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
+    String bilesenAnahtari, {
+    String? sayfaToken,
+  }) => _api.listEventLogEntries(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    pageSize: etkinlikSayfaBoyutu,
+    pageToken: sayfaToken,
+  );
 
-  /// `DELETE .../fishing-catches/{catch_id}`.
-  Future<void> avCikar(String tayfaId, String etkinlikId, String avId) => _api
-      .removeFishingCatch(tayfaId: tayfaId, eventId: etkinlikId, catchId: avId);
+  /// `POST .../entries`: günlüğe kayıt ekler. Aynı `client_request_id` ile
+  /// tekrar gönderim ilk kaydı döndürür. Konum kişinin bilerek paylaştığı
+  /// içeriktir; log'a yazılmaz.
+  Future<EventLogEntry> gunlugeEkle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventLogEntryCreateRequest istek,
+  ) => _api.addEventLogEntry(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `DELETE .../entries/{entry_id}`: günlükten kayıt çıkarır.
+  Future<void> gunluktenCikar(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String kayitId,
+  ) => _api.removeEventLogEntry(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    entryId: kayitId,
+  );
 
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.

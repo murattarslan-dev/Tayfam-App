@@ -84,17 +84,6 @@ String katilimciSekmesi(AppLocalizations m, ListEventAttendeesStatus durum) =>
       ListEventAttendeesStatus.unknown => m.etkinlik_katilimci_waitlist,
     };
 
-/// Balık noktasının görünürlüğü.
-String balikGizliligiAdi(
-  AppLocalizations m,
-  FishingDetailsSpotVisibility gizlilik,
-) => switch (gizlilik) {
-  FishingDetailsSpotVisibility.participants =>
-    m.etkinlik_balik_gizlilik_participants,
-  FishingDetailsSpotVisibility.tayfa ||
-  FishingDetailsSpotVisibility.unknown => m.etkinlik_balik_gizlilik_tayfa,
-};
-
 /// Tekrarın sıklığı: "Her hafta", "2 haftada bir", "Her ay", "3 ayda bir".
 String _tekrarSikligi(AppLocalizations m, TekrarSecimi secim) =>
     switch (secim.siklik) {

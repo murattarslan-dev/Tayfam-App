@@ -201,14 +201,37 @@
                   "kind": "text",
                   "required": true,
                   "max_length": 60,
+                  "vocabulary": {
+                    "namespace": "fish_species"
+                  },
                   "labels": {
                     "tr": "Tür"
                   }
                 },
                 {
+                  "key": "count",
+                  "kind": "integer",
+                  "min": 1,
+                  "max": 1000,
+                  "unit": "piece",
+                  "labels": {
+                    "tr": "Adet"
+                  }
+                },
+                {
+                  "key": "weight",
+                  "kind": "decimal",
+                  "min": 0.01,
+                  "max": 1000,
+                  "decimals": 2,
+                  "unit": "kg",
+                  "labels": {
+                    "tr": "Ağırlık"
+                  }
+                },
+                {
                   "key": "length_cm",
                   "kind": "decimal",
-                  "required": true,
                   "min": 0.1,
                   "max": 1000,
                   "decimals": 1,
@@ -219,7 +242,11 @@
               ],
               "location": true,
               "location_default": "self",
-              "max_entries": 100
+              "max_entries": 100,
+              "stat": [
+                "distinct:species",
+                "sum:weight"
+              ]
             }
           }
         ]

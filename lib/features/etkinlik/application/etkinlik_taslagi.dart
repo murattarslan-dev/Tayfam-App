@@ -45,16 +45,6 @@ const int etkinlikIlEnCok = 50;
 const int etkinlikBaglantiEnCok = 2048;
 const int etkinlikKontenjanEnCok = 10000;
 
-/// Faz 1'den kalan, türe özel ayrıntısı sözleşmede ayrı nesne olan türün
-/// katalog anahtarı (`fishing`); bileşene taşınana kadar sihirbazda kendi
-/// alanıyla çizilir. Konvoyun rotası `route` bileşenindedir (#227); kampın
-/// ve yürüyüşün bilgileri katalog alanları (`fields`), kampın malzeme
-/// listesi `checklist` (#229), yürüyüşün yoklaması `roll_call` bileşenidir
-/// (#230).
-abstract final class EskiTur {
-  static const String balik = 'fishing';
-}
-
 /// Sihirbazdaki bir alanın hatası.
 enum TaslakHatasi {
   tur,
@@ -141,28 +131,6 @@ final class YerBilgisi {
       Object.hash(mod, nokta, noktaAdi, il, ilce, baglanti, halkaAcik);
 }
 
-/// Türe özel alan (sözleşmedeki `FishingDetails`): Faz 1'den kalan balık
-/// ayrıntısı.
-@immutable
-final class TurAyrintisi {
-  const TurAyrintisi({
-    this.balikGizliligi = FishingDetailsSpotVisibility.tayfa,
-  });
-
-  /// Balık: buluşma noktasını kimin göreceği.
-  final FishingDetailsSpotVisibility balikGizliligi;
-
-  TurAyrintisi kopya({FishingDetailsSpotVisibility? balikGizliligi}) =>
-      TurAyrintisi(balikGizliligi: balikGizliligi ?? this.balikGizliligi);
-
-  @override
-  bool operator ==(Object other) =>
-      other is TurAyrintisi && other.balikGizliligi == balikGizliligi;
-
-  @override
-  int get hashCode => balikGizliligi.hashCode;
-}
-
 /// Oluşturma ya da düzenleme sihirbazının durumu. Girilenler adımlar
 /// arasında korunur (ADR-0014 §4, ADR-0015 §3). Zamanlar UTC'dir.
 @immutable
@@ -184,8 +152,6 @@ final class EtkinlikTaslagi {
     this.yer = const YerBilgisi(),
     this.kontenjan = '',
     this.tekrar,
-    this.ayrinti = const TurAyrintisi(),
-    this.ayrintiDegisti = false,
     this.kapak,
     this.onizlemeyeDon = false,
     this.hatalar = const {},
@@ -245,12 +211,6 @@ final class EtkinlikTaslagi {
   /// Tekrar; `null` ise tek seferlik. Yalnızca oluşturmada.
   final TekrarSecimi? tekrar;
 
-  final TurAyrintisi ayrinti;
-
-  /// Türe özel alanlardan biri değişti (düzenlemede ayrıntı yalnızca o
-  /// zaman gönderilir; sunucu ayrıntıyı tamamen değiştirir).
-  final bool ayrintiDegisti;
-
   /// Kapak fotoğrafının yüklemesi (`null`: kapak yok; ADR-0021 §6).
   /// Düzenlemede etkinliğin kapağıyla başlar.
   final String? kapak;
@@ -294,8 +254,6 @@ final class EtkinlikTaslagi {
     YerBilgisi? yer,
     String? kontenjan,
     Object? tekrar = _ayni,
-    TurAyrintisi? ayrinti,
-    bool? ayrintiDegisti,
     Object? kapak = _ayni,
     bool? onizlemeyeDon,
     Set<TaslakHatasi>? hatalar,
@@ -323,8 +281,6 @@ final class EtkinlikTaslagi {
     yer: yer ?? this.yer,
     kontenjan: kontenjan ?? this.kontenjan,
     tekrar: identical(tekrar, _ayni) ? this.tekrar : tekrar as TekrarSecimi?,
-    ayrinti: ayrinti ?? this.ayrinti,
-    ayrintiDegisti: ayrintiDegisti ?? this.ayrintiDegisti,
     kapak: identical(kapak, _ayni) ? this.kapak : kapak as String?,
     onizlemeyeDon: onizlemeyeDon ?? this.onizlemeyeDon,
     hatalar: hatalar ?? this.hatalar,
@@ -350,7 +306,6 @@ bool ayniGirdi(EtkinlikTaslagi a, EtkinlikTaslagi b) =>
     a.yer == b.yer &&
     a.kontenjan == b.kontenjan &&
     a.tekrar == b.tekrar &&
-    a.ayrinti == b.ayrinti &&
     a.kapak == b.kapak &&
     listEquals(a.davetliler, b.davetliler);
 
@@ -389,13 +344,6 @@ EtkinlikTaslagi duzenlemeTaslagi(
     ),
     kontenjan: etkinlik.capacity > 0 ? '${etkinlik.capacity}' : '',
     kapak: etkinlik.coverUploadId,
-    ayrinti: TurAyrintisi(
-      balikGizliligi:
-          etkinlik.fishing?.spotVisibility ==
-              FishingDetailsSpotVisibility.participants
-          ? FishingDetailsSpotVisibility.participants
-          : FishingDetailsSpotVisibility.tayfa,
-    ),
   );
 }
 
@@ -523,13 +471,6 @@ Set<TaslakHatasi> adimHatalari(
   return Set.unmodifiable(hatalar);
 }
 
-/// Faz 1'den kalan türe özel ayrıntı (sözleşme: yalnızca kendi türünde);
-/// balık dışındaki türde `null`.
-FishingDetails? turAyrintisi(String? tur, TurAyrintisi a) =>
-    tur == EskiTur.balik
-    ? FishingDetails(spotVisibility: a.balikGizliligi)
-    : null;
-
 /// Taslaktaki katalog alanlarının `fields` gövdesi; türün alanı yoksa ya
 /// da hiçbir değer girilmediyse `null` (alan gönderilmez).
 Map<String, Object?>? _alanGovdesi(EtkinlikTaslagi t) {
@@ -541,7 +482,6 @@ Map<String, Object?>? _alanGovdesi(EtkinlikTaslagi t) {
 /// yer alanları gönderilir.
 EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
   final yuzYuze = t.yer.mod != EventMode.online;
-  final ayrinti = turAyrintisi(t.tur, t.ayrinti);
   final tekrar = t.tekrar;
   return EventCreateRequest(
     type: t.tur!,
@@ -560,7 +500,6 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     // Yalnızca işaretliyse gönderilir; çevrim içinde anlamı yoktur.
     discoverable: yuzYuze && t.yer.halkaAcik ? true : null,
     capacity: kontenjanSayisi(t.kontenjan),
-    fishing: ayrinti,
     recurrence: tekrar == null ? null : tekrarKurali(tekrar),
     coverUploadId: t.kapak,
     clientRequestId: t.istekKimligi,
@@ -590,7 +529,6 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
       district: etkinlik.district,
       onlineUrl: etkinlik.onlineUrl,
       capacity: etkinlik.capacity,
-      fishing: etkinlik.fishing,
       clientRequestId: etkinlik.clientRequestId,
     ),
     inviteeUserIds: davetliler.isEmpty ? null : davetliler,
@@ -628,7 +566,6 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
       baglanti != eski.onlineUrl;
   final halkaAcik = yuzYuze && t.yer.halkaAcik;
   final kontenjan = kontenjanSayisi(t.kontenjan) ?? 0;
-  final ayrinti = t.ayrintiDegisti ? turAyrintisi(t.tur, t.ayrinti) : null;
   // `fields` verilirse değerlerin tamamı yerine geçer; boş nesne bütün
   // değerleri kaldırır (sözleşme). Tanım bilinmiyorsa gönderilmez.
   final alanlar = t.alanlarDegisti && t.turTanimi != null
@@ -650,7 +587,6 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
     onlineUrl: yerDegisti ? baglanti : null,
     discoverable: halkaAcik == eski.discoverable ? null : halkaAcik,
     capacity: kontenjan == eski.capacity ? null : kontenjan,
-    fishing: ayrinti,
   );
   return istek.toJson().isEmpty ? null : istek;
 }

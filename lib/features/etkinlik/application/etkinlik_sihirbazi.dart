@@ -280,12 +280,6 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
     _ayarla(state.kopya(tekrar: tekrar));
   }
 
-  /// Türe özel alanlar.
-  void ayrintiAyarla(TurAyrintisi ayrinti) {
-    if (_kilitli) return;
-    _ayarla(state.kopya(ayrinti: ayrinti, ayrintiDegisti: true));
-  }
-
   /// Anlık etkinlikte [kullaniciId] arkadaşını davetlilere ekler ya da
   /// çıkarır. En çok [anlikDavetliEnCok] kişi seçilir; fazlası yok sayılır.
   void davetliDegistir(String kullaniciId) {

@@ -2012,103 +2012,9 @@
   "@etkinlik_cikar": {
     "description": "Türe özel araçlardaki çıkarma onayının düğmesi."
   },
-  "etkinlik_av_gizlilik_notu": "Avın türü ve boyu tayfaya görünür. Yer, seçmediğin sürece yalnızca sende kalır; fotoğrafın konum bilgisi gönderilmeden silinir. Yer haritada senin işaretlediğin noktadır; cihazının konumu kullanılmaz.",
-  "@etkinlik_av_gizlilik_notu": {
-    "description": "Av ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Av-Ekle)."
-  },
   "etkinlik_arac_gizlilik_notu": "Plaka yalnızca bu etkinliğe gelenlere ve organizatöre görünür ve 30 gün içinde silinir. Araç listesine yalnızca \"Geliyorum\" diyenler araç ekleyebilir.",
   "@etkinlik_arac_gizlilik_notu": {
     "description": "Aracını ekle formunun altındaki bilgi notu (tasarım: Etkinlik-Arac-Ekle)."
-  },
-  "etkinlik_av_gunlugu": "Av günlüğü",
-  "@etkinlik_av_gunlugu": {
-    "description": "Balık etkinliğinde av günlüğü bölümünün başlığı."
-  },
-  "etkinlik_av_yok": "Henüz av eklenmedi.",
-  "@etkinlik_av_yok": {
-    "description": "Av günlüğü boşken görünen metin."
-  },
-  "etkinlik_av_ekle": "Av ekle",
-  "@etkinlik_av_ekle": {
-    "description": "Av günlüğüne av ekleyen düğme ve formun başlığı."
-  },
-  "etkinlik_av_ekle_bilgi": "Av eklemek için önce varışını bildir.",
-  "@etkinlik_av_ekle_bilgi": {
-    "description": "Katılımı doğrulanmamış kullanıcıya av günlüğünde görünen bilgi."
-  },
-  "etkinlik_av_cikar": "Avı çıkar",
-  "@etkinlik_av_cikar": {
-    "description": "Av günlüğünden avı çıkaran düğmenin ipucu."
-  },
-  "etkinlik_av_cikar_onay": "Av günlükten çıkarılsın mı?",
-  "@etkinlik_av_cikar_onay": {
-    "description": "Avı çıkarmadan önce sorulan onay."
-  },
-  "etkinlik_av_turu": "Balık türü",
-  "@etkinlik_av_turu": {
-    "description": "Av formundaki tür alanı."
-  },
-  "etkinlik_av_turu_hata": "Türü yaz (en çok 60 karakter).",
-  "@etkinlik_av_turu_hata": {
-    "description": "Av formunda tür boş ya da uzunsa görünen hata."
-  },
-  "etkinlik_av_boyu": "Boy (cm)",
-  "@etkinlik_av_boyu": {
-    "description": "Av formundaki boy alanı."
-  },
-  "etkinlik_av_boyu_hata": "0'dan büyük, en çok 1000 cm bir boy yaz.",
-  "@etkinlik_av_boyu_hata": {
-    "description": "Av formunda boy geçersizse görünen hata."
-  },
-  "etkinlik_av_ozet": "{tur}, {boy} cm",
-  "@etkinlik_av_ozet": {
-    "description": "Av günlüğünde avın türü ve boyu.",
-    "placeholders": {
-      "tur": {
-        "type": "String",
-        "example": "Levrek"
-      },
-      "boy": {
-        "type": "String",
-        "example": "42,5"
-      }
-    }
-  },
-  "etkinlik_av_yer_sec": "Yeri haritada işaretle (isteğe bağlı)",
-  "@etkinlik_av_yer_sec": {
-    "description": "Av formunda avın yerini harita seçicide işaretleyen düğme."
-  },
-  "etkinlik_av_yer_secildi": "Yer işaretlendi.",
-  "@etkinlik_av_yer_secildi": {
-    "description": "Av formunda yer seçildikten sonra görünen bilgi."
-  },
-  "etkinlik_av_yer_kaldir": "Yeri kaldır",
-  "@etkinlik_av_yer_kaldir": {
-    "description": "Av formunda seçilen yeri kaldıran düğme."
-  },
-  "etkinlik_av_yer_kimin": "Yeri kim görsün?",
-  "@etkinlik_av_yer_kimin": {
-    "description": "Av formunda yerin görünürlük seçiminin başlığı."
-  },
-  "etkinlik_av_yer_self": "Yalnızca ben",
-  "@etkinlik_av_yer_self": {
-    "description": "Av yerini yalnızca avcının gördüğü seçenek."
-  },
-  "etkinlik_av_yer_tayfa": "Noktayı görebilen tayfa üyeleri",
-  "@etkinlik_av_yer_tayfa": {
-    "description": "Av yerini buluşma noktasını görebilen üyelerin de gördüğü seçenek."
-  },
-  "etkinlik_av_yeri_ac": "Yeri haritada aç",
-  "@etkinlik_av_yeri_ac": {
-    "description": "Av günlüğünde avın yerini sistemin harita uygulamasında açan düğme."
-  },
-  "etkinlik_av_yeri_sende": "Yerini yalnızca sen görüyorsun.",
-  "@etkinlik_av_yeri_sende": {
-    "description": "Kendi avında yer görünürlüğü \"yalnızca ben\" ise görünen bilgi."
-  },
-  "etkinlik_av_yeri_tayfada": "Yerini noktayı görebilen üyeler de görüyor.",
-  "@etkinlik_av_yeri_tayfada": {
-    "description": "Kendi avında yer görünürlüğü \"tayfa\" ise görünen bilgi."
   },
   "etkinlik_duzeltme": "Katılımı düzelt",
   "@etkinlik_duzeltme": {
@@ -2319,6 +2225,116 @@
   "bilesen_roll_call_donmedi": "Dönmedi",
   "@bilesen_roll_call_donmedi": {
     "description": "Beklenen dönüş ve tolerans geçtiği halde dönmemiş kişinin işareti."
+  },
+  "bilesen_log_ad": "Günlük",
+  "@bilesen_log_ad": {
+    "description": "Günlük bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
+  },
+  "bilesen_log_kayit": "Kayıt",
+  "@bilesen_log_kayit": {
+    "description": "Alanlarından hiçbiri gösterilemeyen günlük kaydının başlığı."
+  },
+  "bilesen_log_yok": "Henüz kayıt yok.",
+  "@bilesen_log_yok": {
+    "description": "Günlükte kayıt yokken bölümde görünen metin."
+  },
+  "bilesen_log_ekle": "Kayıt ekle",
+  "@bilesen_log_ekle": {
+    "description": "Günlük bölümünün başlığındaki ekleme düğmesi ve kayıt ekleme formunun başlığı."
+  },
+  "bilesen_log_ekle_bilgi": "Kayıt eklemek için önce varışını bildir.",
+  "@bilesen_log_ekle_bilgi": {
+    "description": "Katılımı doğrulanmamış üyeye günlük bölümünde görünen bilgi."
+  },
+  "bilesen_log_guncelle": "Bu günlüğe kayıt eklemek için uygulamayı güncelle.",
+  "@bilesen_log_guncelle": {
+    "description": "Günlüğün alanlarından biri bu sürümde tanınmıyorsa ekleme düğmesinin yerinde görünen bilgi."
+  },
+  "bilesen_log_alan_degeri": "{ad}: {deger}",
+  "@bilesen_log_alan_degeri": {
+    "description": "Günlük kaydının satırında bir alanın adı ve değeri (ör. \"Ağırlık: 1,5 kg\").",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ağırlık"
+      },
+      "deger": {
+        "type": "String",
+        "example": "1,5 kg"
+      }
+    }
+  },
+  "bilesen_log_cikar": "Kaydı çıkar",
+  "@bilesen_log_cikar": {
+    "description": "Günlük kaydının satırındaki silme düğmesinin ipucu."
+  },
+  "bilesen_log_cikar_onay": "Kayıt günlükten çıkarılsın mı?",
+  "@bilesen_log_cikar_onay": {
+    "description": "Günlük kaydını çıkarmadan önceki onayın başlığı."
+  },
+  "bilesen_log_bos_hata": "En az bir bilgiyi doldur.",
+  "@bilesen_log_bos_hata": {
+    "description": "Kayıt formunda hiçbir alan doldurulmadan Ekle'ye basılınca görünen hata."
+  },
+  "bilesen_log_fotograf": "Fotoğraf (isteğe bağlı)",
+  "@bilesen_log_fotograf": {
+    "description": "Kayıt formundaki fotoğraf alanının başlığı."
+  },
+  "bilesen_log_fotograf_etiketi": "Kayıt fotoğrafı",
+  "@bilesen_log_fotograf_etiketi": {
+    "description": "Günlük kaydının fotoğrafının ekran okuyucu etiketi."
+  },
+  "bilesen_log_yer_sec": "Yeri haritada işaretle (isteğe bağlı)",
+  "@bilesen_log_yer_sec": {
+    "description": "Kayıt formunda yeri haritadan seçme düğmesi."
+  },
+  "bilesen_log_yer_secildi": "Yer işaretlendi.",
+  "@bilesen_log_yer_secildi": {
+    "description": "Kayıt formunda yer seçildikten sonra görünen metin."
+  },
+  "bilesen_log_yer_kaldir": "Yeri kaldır",
+  "@bilesen_log_yer_kaldir": {
+    "description": "Kayıt formunda seçilen yeri kaldırma düğmesi."
+  },
+  "bilesen_log_yer_kimin": "Yeri kim görsün?",
+  "@bilesen_log_yer_kimin": {
+    "description": "Kayıt formunda yerin görünürlük seçiminin başlığı."
+  },
+  "bilesen_log_gorunurluk_ben": "Yalnızca ben",
+  "@bilesen_log_gorunurluk_ben": {
+    "description": "Kayıt yerinin görünürlüğü: yalnızca kaydı giren."
+  },
+  "bilesen_log_gorunurluk_katilimci": "Katılımcılar",
+  "@bilesen_log_gorunurluk_katilimci": {
+    "description": "Kayıt yerinin görünürlüğü: etkinliğe gelenler, organizatör ve yönetim."
+  },
+  "bilesen_log_gorunurluk_tayfa": "Tayfa",
+  "@bilesen_log_gorunurluk_tayfa": {
+    "description": "Kayıt yerinin görünürlüğü: kaydı gören herkes."
+  },
+  "bilesen_log_yeri_ac": "Yeri haritada aç",
+  "@bilesen_log_yeri_ac": {
+    "description": "Günlük kaydının satırında, yeri görülebiliyorsa harita uygulamasını açan düğme."
+  },
+  "bilesen_log_yeri_sende": "Yerini yalnızca sen görüyorsun.",
+  "@bilesen_log_yeri_sende": {
+    "description": "Kendi konumlu kaydında, yerin görünürlüğü \"Yalnızca ben\" iken."
+  },
+  "bilesen_log_yeri_katilimcilarda": "Yerini katılımcılar da görüyor.",
+  "@bilesen_log_yeri_katilimcilarda": {
+    "description": "Kendi konumlu kaydında, yerin görünürlüğü \"Katılımcılar\" iken."
+  },
+  "bilesen_log_yeri_tayfada": "Yerini kaydı gören herkes görüyor.",
+  "@bilesen_log_yeri_tayfada": {
+    "description": "Kendi konumlu kaydında, yerin görünürlüğü \"Tayfa\" iken."
+  },
+  "bilesen_log_gizlilik_notu": "Kayıt tayfaya görünür. Yer isteğe bağlıdır ve haritada senin işaretlediğin noktadır; cihazının konumu kullanılmaz. Fotoğrafın konum bilgisi gönderilmeden silinir.",
+  "@bilesen_log_gizlilik_notu": {
+    "description": "Konumu açık günlüğün kayıt formundaki gizlilik notu."
+  },
+  "bilesen_log_gizlilik_notu_konumsuz": "Kayıt tayfaya görünür. Fotoğrafın konum bilgisi gönderilmeden silinir.",
+  "@bilesen_log_gizlilik_notu_konumsuz": {
+    "description": "Konumu kapalı günlüğün kayıt formundaki gizlilik notu."
   },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
@@ -2625,18 +2641,6 @@
   "bilesen_checklist_kapandi": "Etkinlik bittiği için liste kapandı.",
   "@bilesen_checklist_kapandi": {
     "description": "Etkinlik bitince liste değiştirilemez; listenin altındaki bilgi."
-  },
-  "etkinlik_balik_gizlilik": "Buluşma noktasını kimler görür",
-  "@etkinlik_balik_gizlilik": {
-    "description": "Balık etkinliğinde buluşma noktasının görünürlüğü: detayda bilgi etiketi, sihirbazda seçim başlığı."
-  },
-  "etkinlik_balik_gizlilik_tayfa": "Bütün tayfa",
-  "@etkinlik_balik_gizlilik_tayfa": {
-    "description": "Balık etkinliğinde buluşma noktasını bütün tayfa görür."
-  },
-  "etkinlik_balik_gizlilik_participants": "Yalnızca katılımcılar",
-  "@etkinlik_balik_gizlilik_participants": {
-    "description": "Balık etkinliğinde buluşma noktasını yalnızca organizatör, yönetim ve \"Geliyorum\"/\"Belki\" diyenler görür."
   },
   "etkinlik_iptal_baslik": "Etkinliği iptal et",
   "@etkinlik_iptal_baslik": {
@@ -5879,7 +5883,7 @@
   },
   "hata_not_attended": "Bunun için etkinliğe katıldığın doğrulanmış olmalı.",
   "@hata_not_attended": {
-    "description": "Hata kodu `not-attended`. Av kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
+    "description": "Hata kodu `not-attended`. Günlük kaydı gibi katılım doğrulaması gerektiren bir işlem katılımı doğrulanmamış kullanıcı tarafından denendiğinde görünen hata."
   },
   "hata_album_closed": "Albüm şu an fotoğraf eklemeye kapalı.",
   "@hata_album_closed": {
@@ -8613,9 +8617,9 @@
   "@sikayet_soru_anket": {
     "description": "Bir anketi şikâyet ederken sayfanın sorusu."
   },
-  "sikayet_soru_av_kaydi": "Bu av kaydını neden şikâyet ediyorsun?",
+  "sikayet_soru_av_kaydi": "Bu günlük kaydını neden şikâyet ediyorsun?",
   "@sikayet_soru_av_kaydi": {
-    "description": "Balık etkinliğindeki bir av kaydını şikâyet ederken sayfanın sorusu."
+    "description": "Bir etkinlik günlüğü kaydını (ör. av kaydı) şikâyet ederken sayfanın sorusu."
   },
   "sikayet_soru_album_fotografi": "Bu fotoğrafı neden şikâyet ediyorsun?",
   "@sikayet_soru_album_fotografi": {
@@ -8791,7 +8795,7 @@
   "@sikayet_tur_anket": {
     "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: anket."
   },
-  "sikayet_tur_av_kaydi": "Av kaydı",
+  "sikayet_tur_av_kaydi": "Günlük kaydı",
   "@sikayet_tur_av_kaydi": {
     "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: balık etkinliğinin av kaydı."
   },
@@ -9798,10 +9802,6 @@
   "@medya_kapak_etiketi": {
     "description": "Tayfa ya da etkinlik kapağının ekran okuyucu etiketi ve alan başlığı."
   },
-  "medya_av_fotografi_etiketi": "Av fotoğrafı",
-  "@medya_av_fotografi_etiketi": {
-    "description": "Av günlüğündeki fotoğrafın ekran okuyucu etiketi."
-  },
   "medya_hata_okunamadi": "Bu fotoğraf okunamadı. Başka bir fotoğraf seç.",
   "@medya_hata_okunamadi": {
     "description": "Seçilen dosya çözülemeyince (desteklenmeyen biçim) gösterilir."
@@ -9849,10 +9849,6 @@
   "yonetim_kapak_aciklama": "Yalnızca tayfanın üyeleri görür. Kaydet'e basınca uygulanır.",
   "@yonetim_kapak_aciklama": {
     "description": "Tayfa bilgileri ekranındaki kapak fotoğrafı alanının açıklaması."
-  },
-  "etkinlik_av_fotografi": "Fotoğraf (isteğe bağlı)",
-  "@etkinlik_av_fotografi": {
-    "description": "Av ekleme formundaki fotoğraf alanının başlığı."
   },
   "medya_avatar_etiketi": "{ad} profil fotoğrafı",
   "@medya_avatar_etiketi": {

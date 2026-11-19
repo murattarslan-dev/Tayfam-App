@@ -231,11 +231,6 @@ void main() {
       expect(etkinlikBileseniBul(kayit, 'gelecek_bilesen'), isNull);
     });
 
-    test('Faz 1 türü kayıtlıyken bilinmeyen bileşen atlanır', () {
-      final plan = bilesenPlani(tanim, kayit, eskiTurVar: true);
-      expect(plan.map((p) => bilesenAnahtari(p.tanim)), ['teams']);
-    });
-
     test('bileşenin hali: durum yoksa tanımdaki varsayılan', () {
       expect(bilesenHali(_bilesen('roll_call'), null).acik, isFalse);
       final takim = bilesenHali(_bilesen('teams'), null);
