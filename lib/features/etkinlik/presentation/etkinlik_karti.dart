@@ -89,10 +89,7 @@ class EtkinlikKarti extends StatelessWidget {
             runSpacing: TayfamSpacing.s8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              EtkinlikTuruCipi(
-                tur: etkinlik.type,
-                surum: etkinlik.typeVersion,
-              ),
+              EtkinlikTuruCipi(tur: etkinlik.type, surum: etkinlik.typeVersion),
               if (iptal) Etiket(metin: m.etkinlik_karti_iptal),
             ],
           ),

@@ -64,10 +64,7 @@ void main() {
       yaziOlcegi: 1,
       overrides: [katalogOverride()],
     );
-    expect(
-      find.text(arbMetni('etkinlik_tur_ilgi_alanlari')),
-      findsOneWidget,
-    );
+    expect(find.text(arbMetni('etkinlik_tur_ilgi_alanlari')), findsOneWidget);
     expect(
       find.text(arbMetni('katalog_tum_turler'), skipOffstage: false),
       findsOneWidget,
@@ -111,10 +108,7 @@ void main() {
     );
     await _gorunurDokun(tester, find.text('Balıkçılık'));
     expect(_secili(tester)?.key, 'fishing');
-    expect(
-      tester.widget<TurKutusu>(_kutu('Balıkçılık')).secili,
-      isTrue,
-    );
+    expect(tester.widget<TurKutusu>(_kutu('Balıkçılık')).secili, isTrue);
     expect(tester.widget<TurKutusu>(_kutu('Kamp')).secili, isFalse);
     expect(find.byIcon(Icons.check, skipOffstage: false), findsOneWidget);
   });
@@ -198,9 +192,7 @@ void main() {
         tester,
         const _Secim(),
         mod: mod,
-        overrides: [
-          katalogDurumuOverride(const AsyncLoading<Katalog?>()),
-        ],
+        overrides: [katalogDurumuOverride(const AsyncLoading<Katalog?>())],
       );
       expect(tester.takeException(), isNull);
       expect(find.byType(TurKutusu), findsNothing);

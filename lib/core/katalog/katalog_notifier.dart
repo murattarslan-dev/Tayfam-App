@@ -99,11 +99,10 @@ class KatalogNotifier extends Notifier<AsyncValue<Katalog?>> {
 
 /// Uygulama boyunca yaşayan katalog (açıkça kalıcı: `autoDispose` değil;
 /// ADR-0001 kural 4).
-final katalogProvider =
-    NotifierProvider<KatalogNotifier, AsyncValue<Katalog?>>(
-      KatalogNotifier.new,
-      name: 'katalogProvider',
-    );
+final katalogProvider = NotifierProvider<KatalogNotifier, AsyncValue<Katalog?>>(
+  KatalogNotifier.new,
+  name: 'katalogProvider',
+);
 
 Duration? _yenidenDenemeYok(int deneme, Object hata) => null;
 
@@ -148,8 +147,13 @@ class TurSurumuNotifier extends AsyncNotifier<CatalogEventType?> {
 
 /// Tür sürümleri; oturum boyunca bellekte (açıkça kalıcı). Hata otomatik
 /// yeniden denenmez.
-final turSurumuProvider = AsyncNotifierProvider.family<
-  TurSurumuNotifier,
-  CatalogEventType?,
-  TurSurumu
->(TurSurumuNotifier.new, name: 'turSurumuProvider', retry: _yenidenDenemeYok);
+final turSurumuProvider =
+    AsyncNotifierProvider.family<
+      TurSurumuNotifier,
+      CatalogEventType?,
+      TurSurumu
+    >(
+      TurSurumuNotifier.new,
+      name: 'turSurumuProvider',
+      retry: _yenidenDenemeYok,
+    );

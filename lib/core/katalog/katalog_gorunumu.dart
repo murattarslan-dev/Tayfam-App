@@ -104,6 +104,5 @@ CatalogEventType? turTaniminiIzle(
   if (guncel != null && guncelYeter) return guncel;
   // Katalog gelmeden sürüm çekilmez; sürüm çoğunlukla onunla gelir.
   if (katalog == null) return null;
-  return ref.watch(turSurumuProvider((tur: tur, surum: surum))).value ??
-      guncel;
+  return ref.watch(turSurumuProvider((tur: tur, surum: surum))).value ?? guncel;
 }

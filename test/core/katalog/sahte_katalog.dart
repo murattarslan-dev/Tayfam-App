@@ -70,9 +70,11 @@ Override katalogDurumuOverride(AsyncValue<Katalog?> durum) =>
 
 /// Sahte katalog uçları: istekleri kaydeder, sıradaki yanıtı döndürür.
 final class SahteKatalogDeposu implements KatalogDeposu {
-  SahteKatalogDeposu({Catalog? katalog, Map<String, CatalogEventType>? surumler})
-    : katalog = katalog ?? testKataloguModeli(),
-      surumler = surumler ?? {};
+  SahteKatalogDeposu({
+    Catalog? katalog,
+    Map<String, CatalogEventType>? surumler,
+  }) : katalog = katalog ?? testKataloguModeli(),
+       surumler = surumler ?? {};
 
   /// Sunucudaki katalog; `null` ise okuma [hata] fırlatır.
   Catalog? katalog;

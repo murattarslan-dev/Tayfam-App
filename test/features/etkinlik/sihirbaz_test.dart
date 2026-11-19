@@ -279,10 +279,9 @@ void main() {
     const bos = EtkinlikTaslagi(istekKimligi: sahteEtkinlikIstekKimligi);
     expect(adimHatalari(0, bos, simdi: sabitSimdi), {TaslakHatasi.tur});
     // Tanımı olmayan anahtar (katalog gelmeden) geçmez.
-    expect(
-      adimHatalari(0, bos.kopya(tur: 'camp'), simdi: sabitSimdi),
-      {TaslakHatasi.tur},
-    );
+    expect(adimHatalari(0, bos.kopya(tur: 'camp'), simdi: sabitSimdi), {
+      TaslakHatasi.tur,
+    });
     final gelecek = testTuru('gelecek_tur');
     expect(
       adimHatalari(
@@ -399,41 +398,45 @@ void main() {
       });
     });
 
-    test('katalog alanları tanım gelince okunur; değişince tamamı gider', () async {
-      final eski = Event.fromJson({
-        ...etkinlikJson(tur: 'gaming', mod: 'online', yonetebilir: true),
-        'type_version': 2,
-        'fields': {'game': 'Valorant', 'platform': 'pc'},
-      });
-      final anahtar = (tayfaId: ornekTayfaId, duzenlenen: eski);
-      final tasima = etkinlikTasimasi({
-        'PATCH $etkinlikYolu': (_) => etkinlikJson(tur: 'gaming', mod: 'online'),
-      });
-      final c = _kapsayici(tasima);
-      c.listen(etkinlikSihirbaziProvider(anahtar), (_, _) {});
-      final n = c.read(etkinlikSihirbaziProvider(anahtar).notifier);
-      EtkinlikTaslagi t() => c.read(etkinlikSihirbaziProvider(anahtar));
+    test(
+      'katalog alanları tanım gelince okunur; değişince tamamı gider',
+      () async {
+        final eski = Event.fromJson({
+          ...etkinlikJson(tur: 'gaming', mod: 'online', yonetebilir: true),
+          'type_version': 2,
+          'fields': {'game': 'Valorant', 'platform': 'pc'},
+        });
+        final anahtar = (tayfaId: ornekTayfaId, duzenlenen: eski);
+        final tasima = etkinlikTasimasi({
+          'PATCH $etkinlikYolu': (_) =>
+              etkinlikJson(tur: 'gaming', mod: 'online'),
+        });
+        final c = _kapsayici(tasima);
+        c.listen(etkinlikSihirbaziProvider(anahtar), (_, _) {});
+        final n = c.read(etkinlikSihirbaziProvider(anahtar).notifier);
+        EtkinlikTaslagi t() => c.read(etkinlikSihirbaziProvider(anahtar));
 
-      // Tanım gelmeden alanlar çizilmez ve gönderilmez.
-      expect(t().turTanimi, isNull);
-      expect(t().alanlar, isEmpty);
-      // Başka sürümün tanımı etkinliğe uygulanmaz.
-      n.tanimGeldi(testTuru('sports'));
-      expect(t().turTanimi, isNull);
+        // Tanım gelmeden alanlar çizilmez ve gönderilmez.
+        expect(t().turTanimi, isNull);
+        expect(t().alanlar, isEmpty);
+        // Başka sürümün tanımı etkinliğe uygulanmaz.
+        n.tanimGeldi(testTuru('sports'));
+        expect(t().turTanimi, isNull);
 
-      n.tanimGeldi(testTuru('gaming'));
-      expect(t().alanlar, {'game': 'Valorant', 'platform': 'pc'});
-      expect(n.girdiVar, isFalse, reason: 'tanımın gelmesi girdi değildir');
+        n.tanimGeldi(testTuru('gaming'));
+        expect(t().alanlar, {'game': 'Valorant', 'platform': 'pc'});
+        expect(n.girdiVar, isFalse, reason: 'tanımın gelmesi girdi değildir');
 
-      n.alanlariAyarla(const {'game': 'Valorant', 'platform': 'xbox'});
-      expect(n.girdiVar, isTrue);
-      await n.gonder();
+        n.alanlariAyarla(const {'game': 'Valorant', 'platform': 'xbox'});
+        expect(n.girdiVar, isTrue);
+        await n.gonder();
 
-      expect(t().sonuc, ornekEtkinlikId);
-      expect(tasima.giden('PATCH', etkinlikYolu).single.govde, {
-        'fields': {'game': 'Valorant', 'platform': 'xbox'},
-      });
-    });
+        expect(t().sonuc, ornekEtkinlikId);
+        expect(tasima.giden('PATCH', etkinlikYolu).single.govde, {
+          'fields': {'game': 'Valorant', 'platform': 'xbox'},
+        });
+      },
+    );
 
     test('değişiklik yoksa istek gitmez', () async {
       final eski = ornekEtkinlik(yonetebilir: true);

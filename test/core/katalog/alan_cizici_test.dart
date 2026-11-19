@@ -187,7 +187,11 @@ void main() {
     );
     expect(cip('Türkçe').selected, isTrue);
     expect(cip('Almanca').onSelected, isNull, reason: 'en çok 2 seçim');
-    expect(cip('Türkçe').onSelected, isNotNull, reason: 'seçili kaldırılabilir');
+    expect(
+      cip('Türkçe').onSelected,
+      isNotNull,
+      reason: 'seçili kaldırılabilir',
+    );
 
     await _gorunurDokun(tester, find.text('Türkçe'));
     expect(_degerler(tester)['diller'], ['en']);
@@ -218,9 +222,8 @@ void main() {
       yaziOlcegi: 1,
     );
     final baglam = tester.element(find.byType(KatalogAlanlari));
-    final gosterilen = MaterialLocalizations.of(
-      baglam,
-    ).formatMediumDate(DateTime.utc(2026, 11, 30));
+    final gosterilen = MaterialLocalizations.of(baglam)
+        .formatMediumDate(DateTime.utc(2026, 11, 30));
     expect(find.text(gosterilen, skipOffstage: false), findsOneWidget);
 
     await _gorunurDokun(
@@ -236,9 +239,7 @@ void main() {
     await _gorunurDokun(tester, find.text(arbMetni('katalog_tarih_sec')));
     await tester.pumpAndSettle();
     expect(find.byType(DatePickerDialog), findsOneWidget);
-    await tester.tap(
-      find.text(MaterialLocalizations.of(baglam).okButtonLabel),
-    );
+    await tester.tap(find.text(MaterialLocalizations.of(baglam).okButtonLabel));
     await tester.pumpAndSettle();
     final secilen = _degerler(tester)['son_kayit']! as String;
     expect(alanTarihiCoz(secilen), isNotNull);
@@ -262,9 +263,7 @@ void main() {
       mod: ThemeMode.light,
       yaziOlcegi: 1,
     );
-    final m = AppLocalizations.of(
-      tester.element(find.byType(KatalogAlanlari)),
-    );
+    final m = AppLocalizations.of(tester.element(find.byType(KatalogAlanlari)));
     // Zorunlu metin alanı ve zorunlu çoklu seçim boş.
     expect(
       find.text(m.katalog_alan_zorunlu, skipOffstage: false),

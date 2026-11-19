@@ -60,13 +60,12 @@ Future<void> _metneDokun(WidgetTester tester, String ad) async {
 }
 
 /// [ad] ilgi alanının kartındaki onay kutusu.
-Checkbox _onayKutusu(WidgetTester tester, String ad) =>
-    tester.widget<Checkbox>(
-      find.descendant(
-        of: find.widgetWithText(IlgiKarti, ad),
-        matching: find.byType(Checkbox),
-      ),
-    );
+Checkbox _onayKutusu(WidgetTester tester, String ad) => tester.widget<Checkbox>(
+  find.descendant(
+    of: find.widgetWithText(IlgiKarti, ad),
+    matching: find.byType(Checkbox),
+  ),
+);
 
 /// Başarılı oluşturma ve ardından yeni tayfayı döndüren liste yanıtları.
 Map<String, TayfaYaniti> _basariliYanitlar() {

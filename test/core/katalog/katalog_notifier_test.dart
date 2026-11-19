@@ -60,22 +60,25 @@ void main() {
     expect(k.depo.etagler, hasLength(1), reason: 'eldeyse yeniden okunmaz');
   });
 
-  test('yeniden çekerken ETag gider; 304 gelirse eldeki katalog kalır', () async {
-    final k = _Kurulum();
-    await k.n.gerekli();
-    final ilk = k.katalog;
+  test(
+    'yeniden çekerken ETag gider; 304 gelirse eldeki katalog kalır',
+    () async {
+      final k = _Kurulum();
+      await k.n.gerekli();
+      final ilk = k.katalog;
 
-    await k.n.yenile();
-    expect(k.depo.etagler, [null, '"7"']);
-    expect(k.katalog, same(ilk));
+      await k.n.yenile();
+      expect(k.depo.etagler, [null, '"7"']);
+      expect(k.katalog, same(ilk));
 
-    // Katalog sunucuda değişti: yeni sürüm gelir.
-    k.depo.katalog = _katalog(8, turler: ['general']);
-    await k.n.yenile();
-    expect(k.depo.etagler.last, '"7"');
-    expect(k.katalog!.surum, 8);
-    expect(k.katalog!.turler.map((t) => t.key), ['general']);
-  });
+      // Katalog sunucuda değişti: yeni sürüm gelir.
+      k.depo.katalog = _katalog(8, turler: ['general']);
+      await k.n.yenile();
+      expect(k.depo.etagler.last, '"7"');
+      expect(k.katalog!.surum, 8);
+      expect(k.katalog!.turler.map((t) => t.key), ['general']);
+    },
+  );
 
   test('eşzamanlı yenilemeler tek istekte birleşir', () async {
     final k = _Kurulum();

@@ -132,11 +132,13 @@ void main() {
       final tasima = _SahteTasima(
         (katalogJson()['event_types']! as List<Object?>).single,
       );
-      final tur = await CatalogApi(
-        tasima,
-      ).getCatalogEventTypeVersion(key: 'hike', version: 3);
+      final tur = await CatalogApi(tasima)
+          .getCatalogEventTypeVersion(key: 'hike', version: 3);
       expect(tur.version, 3);
-      expect(tasima.istekler.single.pathParams, {'key': 'hike', 'version': '3'});
+      expect(tasima.istekler.single.pathParams, {
+        'key': 'hike',
+        'version': '3',
+      });
     });
 
     test('etkinliğin fields alanı serbest nesnedir', () {

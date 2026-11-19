@@ -488,9 +488,7 @@ List<EventMode> turModlari(CatalogEventType? tanim) {
     for (final mod in const [EventMode.inPerson, EventMode.online])
       if (tanim?.modes.contains(mod) ?? true) mod,
   ];
-  return modlar.isEmpty
-      ? const [EventMode.inPerson, EventMode.online]
-      : modlar;
+  return modlar.isEmpty ? const [EventMode.inPerson, EventMode.online] : modlar;
 }
 
 String _sayiMetni(num? sayi) {

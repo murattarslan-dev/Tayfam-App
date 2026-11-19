@@ -186,7 +186,7 @@ void main() {
         expect(_metin('hesap_davet_kart'), findsOneWidget);
         expect(_metin('hesap_davet_giris_baslik'), findsOneWidget);
         expect(_metin('hesap_slogan'), findsNothing);
-        expect(find.byType(EtkinlikTuruCipi), findsNothing);
+        expect(find.byType(TanitimTurCipi), findsNothing);
         expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
         expect(tester.takeException(), isNull);
       });

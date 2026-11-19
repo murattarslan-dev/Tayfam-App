@@ -440,7 +440,6 @@ class IlgiKarti extends StatelessWidget {
   }
 }
 
-
 /// 3 · Katılım ve açıklama (tasarım: Tayfa-Kur-Katilim, Tayfa-Kur-Limit):
 /// Onaylı ("Önerilen", varsayılan) ve Açık radyo kartları, sayaçlı
 /// açıklama, gönderim hatası ve en altta 7 günde 3 üye ile 24 saatte bir

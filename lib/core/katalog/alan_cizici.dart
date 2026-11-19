@@ -221,6 +221,11 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
     final m = AppLocalizations.of(context);
     final dil = katalogDili(context);
     final acik = widget.onDegisti != null;
+    // Hata metni ana metin rengindedir (ADR-0004: nar metin rengi olmaz;
+    // açık zeminde 4.5:1'i tutmaz). Hatayı kenar rengi ve metin taşır.
+    final hataStili = context.yazi.bodySmall?.copyWith(
+      color: context.renkler.metin,
+    );
     final cocuklar = <Widget>[];
     for (final alan in widget.alanlar) {
       final tur = AlanTuru.coz(alan.kind);
@@ -253,6 +258,7 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
                   labelText: etiket,
                   alignLabelWithHint: uzun,
                   errorText: hataMetni,
+                  errorStyle: hataStili,
                   errorMaxLines: 3,
                 ),
               ),
@@ -284,6 +290,7 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
                       ? m.katalog_birim_minute
                       : katalogBirimAdi(m, alan.unit),
                   errorText: hataMetni,
+                  errorStyle: hataStili,
                   errorMaxLines: 3,
                 ),
               ),
@@ -341,8 +348,7 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
                       selected: secili.contains(secenek),
                       // En çok seçime ulaşılınca yalnızca seçililer
                       // kaldırılabilir.
-                      onSelected:
-                          !acik || (dolu && !secili.contains(secenek))
+                      onSelected: !acik || (dolu && !secili.contains(secenek))
                           ? null
                           : (sec) {
                               final yeni = [
@@ -397,9 +403,7 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: acik
-                          ? () => unawaited(_tarihSec(alan))
-                          : null,
+                      onPressed: acik ? () => unawaited(_tarihSec(alan)) : null,
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(
                           TayfamSizes.dokunmaMin,
@@ -410,9 +414,8 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
                       label: Text(
                         tarih == null
                             ? m.katalog_tarih_sec
-                            : MaterialLocalizations.of(
-                                context,
-                              ).formatMediumDate(tarih),
+                            : MaterialLocalizations.of(context)
+                                  .formatMediumDate(tarih),
                       ),
                     ),
                   ),

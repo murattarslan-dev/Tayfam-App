@@ -62,9 +62,7 @@ class TayfaAvatari extends StatelessWidget {
     // Renk katalog gerektirmez: anahtardan gelir; tanınmayan anahtar
     // "genel" görünür.
     final cift = context.turRenkleri.cift(
-      ilgiAlanlari.isEmpty
-          ? TurRengi.genel
-          : katalogRengi(ilgiAlanlari.first),
+      ilgiAlanlari.isEmpty ? TurRengi.genel : katalogRengi(ilgiAlanlari.first),
     );
     final zemin = pasif ? r.cizgi : cift.dolgu;
     final yazi = pasif ? r.metinIkincil : cift.ustu;

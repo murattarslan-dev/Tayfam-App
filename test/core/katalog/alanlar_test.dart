@@ -65,15 +65,13 @@ void main() {
     });
 
     test('metin uzunluğu tanımdan (harf sayısı)', () {
-      expect(
-        alanHatalari(alanlar, {...dolu, 'baslik': 'ğ' * 41}),
-        {'baslik': AlanHatasi.uzunluk},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'baslik': 'ğ' * 41}), {
+        'baslik': AlanHatasi.uzunluk,
+      });
       expect(alanHatalari(alanlar, {...dolu, 'baslik': 'ğ' * 40}), isEmpty);
-      expect(
-        alanHatalari(alanlar, {...dolu, 'notlar': 'a' * 301}),
-        {'notlar': AlanHatasi.uzunluk},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'notlar': 'a' * 301}), {
+        'notlar': AlanHatasi.uzunluk,
+      });
     });
 
     test('tam sayı: biçim ve aralık', () {
@@ -85,49 +83,41 @@ void main() {
           reason: kotu,
         );
       }
-      expect(
-        alanHatalari(alanlar, {...dolu, 'kisi': '0'}),
-        {'kisi': AlanHatasi.aralik},
-      );
-      expect(
-        alanHatalari(alanlar, {...dolu, 'kisi': '51'}),
-        {'kisi': AlanHatasi.aralik},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'kisi': '0'}), {
+        'kisi': AlanHatasi.aralik,
+      });
+      expect(alanHatalari(alanlar, {...dolu, 'kisi': '51'}), {
+        'kisi': AlanHatasi.aralik,
+      });
       expect(alanHatalari(alanlar, {...dolu, 'kisi': '50'}), isEmpty);
     });
 
     test('ondalık: virgül ve nokta, basamak sayısı, aralık', () {
       expect(alanHatalari(alanlar, {...dolu, 'mesafe': '12.5'}), isEmpty);
-      expect(
-        alanHatalari(alanlar, {...dolu, 'mesafe': '12,55'}),
-        {'mesafe': AlanHatasi.basamak},
-      );
-      expect(
-        alanHatalari(alanlar, {...dolu, 'mesafe': '0,4'}),
-        {'mesafe': AlanHatasi.aralik},
-      );
-      expect(
-        alanHatalari(alanlar, {...dolu, 'mesafe': '1,2,3'}),
-        {'mesafe': AlanHatasi.sayi},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'mesafe': '12,55'}), {
+        'mesafe': AlanHatasi.basamak,
+      });
+      expect(alanHatalari(alanlar, {...dolu, 'mesafe': '0,4'}), {
+        'mesafe': AlanHatasi.aralik,
+      });
+      expect(alanHatalari(alanlar, {...dolu, 'mesafe': '1,2,3'}), {
+        'mesafe': AlanHatasi.sayi,
+      });
     });
 
     test('süre: dakika, tam sayı, en az tanımdan', () {
-      expect(
-        alanHatalari(alanlar, {...dolu, 'sure': '4'}),
-        {'sure': AlanHatasi.aralik},
-      );
-      expect(
-        alanHatalari(alanlar, {...dolu, 'sure': '1,5'}),
-        {'sure': AlanHatasi.sayi},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'sure': '4'}), {
+        'sure': AlanHatasi.aralik,
+      });
+      expect(alanHatalari(alanlar, {...dolu, 'sure': '1,5'}), {
+        'sure': AlanHatasi.sayi,
+      });
     });
 
     test('seçim: tanımda olmayan seçenek ve en çok seçim', () {
-      expect(
-        alanHatalari(alanlar, {...dolu, 'seviye': 'efsane'}),
-        {'seviye': AlanHatasi.secim},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'seviye': 'efsane'}), {
+        'seviye': AlanHatasi.secim,
+      });
       expect(
         alanHatalari(alanlar, {
           ...dolu,
@@ -145,14 +135,12 @@ void main() {
     });
 
     test('tarih: geçerli takvim günü', () {
-      expect(
-        alanHatalari(alanlar, {...dolu, 'son_kayit': '2026-02-30'}),
-        {'son_kayit': AlanHatasi.tarih},
-      );
-      expect(
-        alanHatalari(alanlar, {...dolu, 'son_kayit': '30.11.2026'}),
-        {'son_kayit': AlanHatasi.tarih},
-      );
+      expect(alanHatalari(alanlar, {...dolu, 'son_kayit': '2026-02-30'}), {
+        'son_kayit': AlanHatasi.tarih,
+      });
+      expect(alanHatalari(alanlar, {...dolu, 'son_kayit': '30.11.2026'}), {
+        'son_kayit': AlanHatasi.tarih,
+      });
       expect(alanTarihiCoz('2028-02-29'), DateTime.utc(2028, 2, 29));
       expect(alanTarihiYaz(DateTime(2026, 3, 7)), '2026-03-07');
     });
@@ -239,7 +227,9 @@ void main() {
     test('tanımda olmayan anahtar ve tanınmayan türdeki alan gönderilmez', () {
       expect(alanGovdesi(alanlar, {...dolu, 'yabanci': 'x'}).keys, dolu.keys);
       final gelecek = testTuru('gelecek_tur').definition.fields!;
-      expect(alanGovdesi(gelecek, const {'tablo': 'x', 'ad': 'Y'}), {'ad': 'Y'});
+      expect(alanGovdesi(gelecek, const {'tablo': 'x', 'ad': 'Y'}), {
+        'ad': 'Y',
+      });
     });
 
     test('alan hiç yoksa boş nesne', () {

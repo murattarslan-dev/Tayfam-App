@@ -631,9 +631,7 @@ class _EtkinlikSihirbaziEkraniState
               (EventMode.online, m.etkinlik_mod_cevrimici),
             ],
             secili: cevrimici ? EventMode.online : EventMode.inPerson,
-            onSecildi: kapali
-                ? null
-                : (mod) => _yer((y) => y.kopya(mod: mod)),
+            onSecildi: kapali ? null : (mod) => _yer((y) => y.kopya(mod: mod)),
           ),
         if (cevrimici) ...[
           const SizedBox(height: TayfamSpacing.s20),

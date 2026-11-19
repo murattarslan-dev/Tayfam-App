@@ -42,14 +42,15 @@ void main() {
     });
 
     test('tür birden fazla ilgi alanında listelenir (interest_keys)', () {
-      expect(
-        katalog.ilgiAlanininTurleri('nature').map((t) => t.key),
-        ['hike', 'camp', 'dog_walk'],
-      );
-      expect(
-        katalog.ilgiAlanininTurleri('sports').map((t) => t.key),
-        ['sports', 'dog_walk'],
-      );
+      expect(katalog.ilgiAlanininTurleri('nature').map((t) => t.key), [
+        'hike',
+        'camp',
+        'dog_walk',
+      ]);
+      expect(katalog.ilgiAlanininTurleri('sports').map((t) => t.key), [
+        'sports',
+        'dog_walk',
+      ]);
     });
 
     test('biçimi geçersiz anahtar ve yinelenen kayıt atlanır', () {
@@ -62,7 +63,10 @@ void main() {
           'event_types': [
             {...turler.first, 'key': 'Bozuk Anahtar'},
             turler.first,
-            {...turler.first, 'labels': {'tr': 'İkinci kopya'}},
+            {
+              ...turler.first,
+              'labels': {'tr': 'İkinci kopya'},
+            },
           ],
         }),
       );
@@ -144,14 +148,17 @@ void main() {
       expect(anahtarlar, [...anahtarlar]..sort());
     });
 
-    test('test kataloğundaki ikonlar (bilerek bilinmeyen dışında) haritada', () {
-      final katalog = testKatalogu();
-      final kullanilan = {
-        for (final i in katalog.ilgiAlanlari) i.icon,
-        for (final t in katalog.turler) t.icon,
-      }..remove('bilinmeyen_ikon');
-      expect(katalogIkonlari.keys, containsAll(kullanilan));
-    });
+    test(
+      'test kataloğundaki ikonlar (bilerek bilinmeyen dışında) haritada',
+      () {
+        final katalog = testKatalogu();
+        final kullanilan = {
+          for (final i in katalog.ilgiAlanlari) i.icon,
+          for (final t in katalog.turler) t.icon,
+        }..remove('bilinmeyen_ikon');
+        expect(katalogIkonlari.keys, containsAll(kullanilan));
+      },
+    );
   });
 
   group('görünüm', () {
@@ -206,11 +213,10 @@ void main() {
     });
 
     test('kataloğun sırasına dizilir; bilinmeyen anahtar sonda kalır', () {
-      expect(ilgiAlanlariniSirala(katalog, const ['water', 'bilinmeyen', 'nature']), [
-        'nature',
-        'water',
-        'bilinmeyen',
-      ]);
+      expect(
+        ilgiAlanlariniSirala(katalog, const ['water', 'bilinmeyen', 'nature']),
+        ['nature', 'water', 'bilinmeyen'],
+      );
       expect(ilgiAlanlariniSirala(null, const ['water', 'nature']), [
         'water',
         'nature',

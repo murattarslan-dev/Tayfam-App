@@ -25,9 +25,8 @@ List<CatalogEventType> turAra(
   if (aranan.isEmpty) return turler;
   return [
     for (final tur in turler)
-      if (turkceKucukHarf(
-        katalogAdi(tur.labels, dil) ?? tur.key,
-      ).contains(aranan))
+      if (turkceKucukHarf(katalogAdi(tur.labels, dil) ?? tur.key)
+          .contains(aranan))
         tur,
   ];
 }

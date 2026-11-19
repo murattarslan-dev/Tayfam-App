@@ -191,9 +191,7 @@ void main() {
         tester,
         const IlgiAlaniCipi(anahtar: 'nature'),
         mod: ThemeMode.light,
-        overrides: [
-          katalogDurumuOverride(const AsyncData<Katalog?>(null)),
-        ],
+        overrides: [katalogDurumuOverride(const AsyncData<Katalog?>(null))],
       );
       expect(find.byType(TurCipi), findsNothing);
     });

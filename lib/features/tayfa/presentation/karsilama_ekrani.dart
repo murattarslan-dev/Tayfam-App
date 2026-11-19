@@ -366,9 +366,7 @@ class TurVurgusu extends StatelessWidget {
       child: Wrap(
         spacing: TayfamSpacing.s8,
         runSpacing: TayfamSpacing.s8,
-        children: [
-          for (final tur in TanitimTuru.values) _TurHapi(tur: tur),
-        ],
+        children: [for (final tur in TanitimTuru.values) _TurHapi(tur: tur)],
       ),
     );
   }
