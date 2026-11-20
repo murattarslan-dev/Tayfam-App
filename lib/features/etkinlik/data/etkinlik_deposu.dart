@@ -137,6 +137,11 @@ final class EtkinlikDeposu {
     EventUpdateRequest istek,
   ) => _api.updateEvent(tayfaId: tayfaId, eventId: etkinlikId, body: istek);
 
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/finish`: açık uçlu
+  /// (Şimdi başlat) etkinliği bitirir; gövdesizdir (Tayfam-Api ADR-0038).
+  Future<Event> bitir(String tayfaId, String etkinlikId) =>
+      _api.finishEvent(tayfaId: tayfaId, eventId: etkinlikId);
+
   /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/cancellation`.
   Future<Event> iptalEt(String tayfaId, String etkinlikId, String? gerekce) =>
       _api.cancelEvent(

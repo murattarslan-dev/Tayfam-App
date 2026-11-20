@@ -259,6 +259,8 @@ List<RouteBase> rotalariOlustur(
     // Anlık etkinlik sihirbazı ve "Bu ekiple tayfa kur" tam ekran açılır
     // (ADR-0026).
     anlikEtkinlikRotasi,
+    // Şimdi başlat tek ekranı (App ADR-0032 §2).
+    simdiRotasi,
     GoRoute(
       path: '${Adresler.tayfaDonusturOneki}/:$tayfaIdParametresi',
       builder: (context, state) =>

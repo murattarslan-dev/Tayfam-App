@@ -79,6 +79,7 @@ Map<String, Object?> etkinlikJson(
   'description': '',
   'starts_at': baslangic,
   'ends_at': '2026-11-14T12:00:00Z',
+  'open_ended': false,
   'meeting_point_name': ?yer,
   'city': ?il,
   'district': ?ilce,

@@ -21,19 +21,24 @@ typedef HaritaSecimSonucu = ({LatLng nokta, YerSonucu? oneri});
 
 /// Buluşma noktası seçicisini açar; vazgeçilirse `null`.
 ///
-/// [konumDugmesi] yalnızca sohbetteki yer paylaşımında açılır ("Bulunduğum
-/// yer"; istemci ADR-0028 §5); etkinlikte cihaz konumu istenmez (ADR-0015
-/// §4). [secEtiketi] seçim düğmesinin metnidir.
+/// [konumDugmesi] sohbetteki yer paylaşımında açılır ("Bulunduğum yer";
+/// istemci ADR-0028 §5); planlı etkinlikte cihaz konumu istenmez (ADR-0015
+/// §4). [konumlaAc] Şimdi başlat'ta (App ADR-0032 §2) seçiciyi cihaz
+/// konumuyla açar: izin yalnızca bu an istenir, kullanıcı noktayı haritada
+/// onaylar; izin yoksa seçici elle çalışır. [secEtiketi] seçim düğmesinin
+/// metnidir.
 Future<HaritaSecimSonucu?> haritaSeciciAc(
   BuildContext context, {
   LatLng? baslangic,
   bool konumDugmesi = false,
+  bool konumlaAc = false,
   String? secEtiketi,
 }) => Navigator.of(context).push(
   MaterialPageRoute<HaritaSecimSonucu>(
     builder: (_) => HaritaSeciciEkrani(
       baslangic: baslangic,
-      konumDugmesi: konumDugmesi,
+      konumDugmesi: konumDugmesi || konumlaAc,
+      konumlaAc: konumlaAc,
       secEtiketi: secEtiketi,
     ),
   ),
@@ -56,6 +61,7 @@ class HaritaSeciciEkrani extends ConsumerStatefulWidget {
     super.key,
     this.baslangic,
     this.konumDugmesi = false,
+    this.konumlaAc = false,
     this.secEtiketi,
   });
 
@@ -64,6 +70,9 @@ class HaritaSeciciEkrani extends ConsumerStatefulWidget {
 
   /// "Bulunduğum yer" düğmesi gösterilir mi.
   final bool konumDugmesi;
+
+  /// Açılınca bir kez "Bulunduğum yer" istenir ([konumDugmesi] ile).
+  final bool konumlaAc;
 
   /// Seçim düğmesinin metni; yoksa "Bu noktayı seç".
   final String? secEtiketi;
@@ -74,6 +83,22 @@ class HaritaSeciciEkrani extends ConsumerStatefulWidget {
 
 class _HaritaSeciciEkraniState extends ConsumerState<HaritaSeciciEkrani> {
   final TextEditingController _arama = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.konumlaAc && widget.konumDugmesi) {
+      // Durum derleme sırasında değiştirilmez; ilk çizimden sonra.
+      unawaited(
+        Future<void>.microtask(() async {
+          if (!mounted) return;
+          await ref
+              .read(haritaSecimiProvider(widget.baslangic).notifier)
+              .konumaGit();
+        }),
+      );
+    }
+  }
 
   @override
   void dispose() {

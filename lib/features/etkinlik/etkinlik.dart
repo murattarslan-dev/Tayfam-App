@@ -7,6 +7,7 @@
 ///
 /// Anlık (bireysel) etkinlik (ADR-0026): [anlikEtkinlikRotasi] üst düzeye
 /// eklenir; [anlikArkadasDavetEt] `arkadasDavetiProvider`'a verilir.
+/// Şimdi başlat (App ADR-0032): [simdiRotasi] üst düzeye eklenir.
 library;
 
 export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart'
@@ -62,3 +63,5 @@ export 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_modulu.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
+export 'package:tayfam/features/etkinlik/presentation/simdi/simdi_rotasi.dart'
+    show simdiRotasi;

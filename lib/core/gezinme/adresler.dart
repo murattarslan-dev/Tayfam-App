@@ -193,6 +193,26 @@ abstract final class Adresler {
         '${iki(gun.day)}';
   }
 
+  /// Şimdi başlat ekranı (App ADR-0032 §2): kabuğun üstünde tam ekran.
+  /// `tayfa` yoksa anlık etkinlik açılır.
+  static const simdiYolu = '/simdi';
+
+  /// Şimdi ekranının tayfa sorgu parametresi (UUID; girdi kabul edilir).
+  static const simdiTayfaParametresi = 'tayfa';
+
+  /// Şimdi ekranının adresi: [tayfaId] verilirse o tayfada; verilmezse
+  /// anlık etkinlik ("Boşum" rozetinden [davetli] ile).
+  static String simdi({String? tayfaId, String? davetli}) {
+    final sorgu = <String, String>{
+      simdiTayfaParametresi: ?tayfaId,
+      anlikDavetliParametresi: ?davetli,
+    };
+    return Uri(
+      path: simdiYolu,
+      queryParameters: sorgu.isEmpty ? null : sorgu,
+    ).toString();
+  }
+
   /// Anlık tayfayı kalıcı tayfaya dönüştürme sihirbazının yolu
   /// ("Bu ekiple tayfa kur"; ADR-0026). Tam ekran; kimlik girdi kabul
   /// edilir.

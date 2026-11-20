@@ -12,4 +12,16 @@ void main() {
   test('küçük harfli metin değişmiyor', () {
     expect(turkceKucukHarf('kamp ateşi'), 'kamp ateşi');
   });
+
+  test('ilgi eki son ünlüye göre, ünlüyle bitende n ile', () {
+    expect(ilgiEki('Murat'), "'ın");
+    expect(ilgiEki('Ayşe'), "'nin");
+    expect(ilgiEki('Ali'), "'nin");
+    expect(ilgiEki('Oğuz'), "'un");
+    expect(ilgiEki('Gül'), "'ün");
+    expect(ilgiEki('Burcu'), "'nun");
+    expect(ilgiEki('IŞIK'), "'ın");
+    expect(ilgiEki('Mehmet Can'), "'ın");
+    expect(ilgiEki('XYZ'), "'in");
+  });
 }

@@ -493,6 +493,8 @@ class _EtkinlikSihirbaziEkraniState
     final baslangic = t.baslangic;
     final bitis = t.bitis;
     final kapali = t.gonderiliyor;
+    // Açık uçlu etkinliğin zamanı düzenlenemez (Tayfam-Api ADR-0038 §1).
+    final zamanKilitli = _n.zamanKilitli;
     final baslangicHatasi = h.contains(TaslakHatasi.baslangicYok)
         ? m.etkinlik_baslangic_yok
         : h.contains(TaslakHatasi.baslangicGecmis)
@@ -527,7 +529,7 @@ class _EtkinlikSihirbaziEkraniState
             an: baslangic,
             ayniGun: false,
             hatali: baslangicHatasi != null,
-            onPressed: kapali
+            onPressed: kapali || zamanKilitli
                 ? null
                 : () async {
                     final secilen = await _tarihSaatSec(baslangic);
@@ -542,7 +544,7 @@ class _EtkinlikSihirbaziEkraniState
                 bitis != null &&
                 _ayniGun(baslangic, bitis),
             hatali: bitisHatasi != null,
-            onPressed: kapali
+            onPressed: kapali || zamanKilitli
                 ? null
                 : () async {
                     final secilen = await _tarihSaatSec(bitis ?? baslangic);
@@ -550,6 +552,15 @@ class _EtkinlikSihirbaziEkraniState
                   },
           ),
         ),
+        if (zamanKilitli) ...[
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(
+            m.simdi_zaman_duzenlenemez,
+            style: context.yazi.bodySmall?.copyWith(
+              color: context.renkler.metinIkincil,
+            ),
+          ),
+        ],
         if (baslangicHatasi != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
           HataSatiri(metin: baslangicHatasi),

@@ -34,6 +34,7 @@ class BilesenFormBolumleri extends ConsumerWidget {
     this.etkinlik,
     this.kilitli = false,
     this.etkin = true,
+    this.yalnizcaAcKapa = false,
   });
 
   /// Seçilen türün tanımı.
@@ -54,6 +55,11 @@ class BilesenFormBolumleri extends ConsumerWidget {
   final bool kilitli;
   final bool etkin;
 
+  /// Yalnızca `optional` bileşenlerin aç/kapa satırları çizilir; form
+  /// bölümleri çizilmez ve organizatöre bırakılan seçimler varsayılanla
+  /// gider (Şimdi başlat, App ADR-0032 §2).
+  final bool yalnizcaAcKapa;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
@@ -65,7 +71,7 @@ class BilesenFormBolumleri extends ConsumerWidget {
       if (bilesen == null) continue;
       final istegeBagli = parca.optional != null;
       final acik = bilesenAcikMi(parca, secimler);
-      final form = !acik
+      final form = !acik || yalnizcaAcKapa
           ? null
           : bilesen.formBolumu(
               BilesenBaglami(

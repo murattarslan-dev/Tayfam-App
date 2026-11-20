@@ -169,6 +169,10 @@ Finder kisiSayfasi(String kullaniciId) =>
 /// görünen yer tutucunun öneki; ardından adresin sorgu metni gelir.
 const String anlikSayfasiOneki = 'anlik-sayfasi:';
 
+/// [widgetAc] ile açılan ekrandan Şimdi başlat ekranına gidildiyse görünen
+/// yer tutucunun öneki; ardından adresin sorgu metni gelir.
+const String simdiSayfasiOneki = 'simdi-sayfasi:';
+
 /// Herhangi bir kişi profili yer tutucusu açık mı.
 Finder herhangiKisiSayfasi() => find.textContaining(_kisiSayfasiOneki);
 
@@ -228,6 +232,13 @@ Future<void> widgetAc(
                     path: Adresler.anlikEtkinlikYolu,
                     builder: (_, durum) => Scaffold(
                       body: Text('$anlikSayfasiOneki${durum.uri.query}'),
+                    ),
+                  ),
+                  // Şimdi başlat ekranının yer tutucusu (App ADR-0032).
+                  GoRoute(
+                    path: Adresler.simdiYolu,
+                    builder: (_, durum) => Scaffold(
+                      body: Text('$simdiSayfasiOneki${durum.uri.query}'),
                     ),
                   ),
                 ],

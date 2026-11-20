@@ -15,6 +15,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Etkinlik oluşturmayı başlatan geri çağırma ("Etkinlik aç").
@@ -35,7 +36,8 @@ const int anaSayfaYaklasanSayisi = 2;
 /// açılır.
 ///
 /// Boşken kısa bir boş durum gösterilir; "Etkinlik aç" kısayolu bölümde
-/// değil, ana sayfanın "Oluştur" sayfasındadır.
+/// değil, ana sayfanın "Oluştur" sayfasındadır. Şimdi başlatabilene
+/// bölümün altında "Şimdi başlat" (App ADR-0032 §1).
 ///
 /// Elindeki listede bitmiş ve cevabı "Geliyorum" olan bir etkinlik varsa
 /// uygulama değerlendirme penceresi için fırsat denetlenir (ADR-0016;
@@ -111,6 +113,19 @@ class EtkinlikBolumu extends ConsumerWidget {
                   ),
               ],
             ),
+          // Şimdi başlat (App ADR-0032 §1): tayfanın ayarındaki rol ve
+          // üstüne; izni sunucu doğrular.
+          if (ref.watch(tayfaOzetiProvider(tayfaId)).simdiBaslatabilir) ...[
+            const SizedBox(height: TayfamSpacing.s12),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: CerceveliHapEylem(
+                etiket: metinler.simdi_baslat_dugmesi,
+                ikon: Icons.bolt_outlined,
+                onPressed: () => context.go(Adresler.simdi(tayfaId: tayfaId)),
+              ),
+            ),
+          ],
         ],
       ),
     );

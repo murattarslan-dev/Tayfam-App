@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Türkiye saatinin UTC farkı (Europe/Istanbul, 2016'dan beri yaz saati
@@ -51,7 +52,8 @@ String? etkinlikCevabi(AppLocalizations m, RsvpStatus? cevap) {
 /// Bir etkinliğin kartı (ADR-0015 §3, ADR-0004 §2a): tür çipi (renk ve
 /// ikon tür kaydından), başlık, tarih ve saat, yer adı ya da "Çevrimiçi",
 /// gelen/kontenjan bilgisi ve kullanıcının cevabı. İptal edilen etkinlik
-/// soluk görünür ve "İptal edildi" etiketi taşır.
+/// soluk görünür ve "İptal edildi" etiketi taşır; açık uçlu etkinlik
+/// sürerken "Sürüyor" etiketi ve geçen süre gösterilir.
 ///
 /// Bu pakette salt okunurdur; etkinlik çekirdeği (issue #38) [onTap] ile
 /// detaya bağlar ve kartı genişletir.
@@ -91,6 +93,10 @@ class EtkinlikKarti extends StatelessWidget {
             children: [
               EtkinlikTuruCipi(tur: etkinlik.type, surum: etkinlik.typeVersion),
               if (iptal) Etiket(metin: m.etkinlik_karti_iptal),
+              // Açık uçlu (Şimdi başlat) etkinlik sürerken "Sürüyor · 25 dk"
+              // (App ADR-0032 §3); dakikada bir güncellenir.
+              if (etkinlik.openEnded && !iptal)
+                SuruyorEtiketi(etkinlik: etkinlik),
             ],
           ),
           const SizedBox(height: TayfamSpacing.s12),

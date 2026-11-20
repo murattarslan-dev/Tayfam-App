@@ -120,6 +120,8 @@ enum ProblemType {
   celebrationNotParticipant('celebration-not-participant'),
   attendeesHidden('attendees-hidden'),
   albumConsentRequired('album-consent-required'),
+  nowLimitReached('now-limit-reached'),
+  eventNotOpenEnded('event-not-open-ended'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),

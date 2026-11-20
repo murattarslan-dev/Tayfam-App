@@ -547,9 +547,11 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
   final aciklama = t.aciklama.trim();
   final baslangic = t.baslangic!;
   final bitis = t.bitis!;
+  // Açık uçlu etkinliğin zamanı düzenlenemez (Tayfam-Api ADR-0038 §1).
   final zamanDegisti =
-      !eski.startsAt.isAtSameMomentAs(baslangic) ||
-      !eski.endsAt.isAtSameMomentAs(bitis);
+      !eski.openEnded &&
+      (!eski.startsAt.isAtSameMomentAs(baslangic) ||
+          !eski.endsAt.isAtSameMomentAs(bitis));
   final yuzYuze = t.yer.mod != EventMode.online;
   final mod = yuzYuze ? EventMode.inPerson : EventMode.online;
   final noktaAdi = yuzYuze ? _doluysa(t.yer.noktaAdi) : null;

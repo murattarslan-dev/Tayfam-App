@@ -44,7 +44,9 @@ final class EventsApi {
   /// Etkinlik açar; açan kişi organizatördür
   ///
   /// Moderatör ve yönetici; tayfada `members_can_create_events` açıksa
-  /// her etkin üye. Aynı `client_request_id` ile tekrar gönderim ilk
+  /// her etkin üye. `starts_now` ile (Şimdi başlat) tayfanın
+  /// `now_create_min_role` ayarı ve üstü (varsayılan her etkin üye).
+  /// Aynı `client_request_id` ile tekrar gönderim ilk
   /// açılan etkinliği döndürür ve yeni etkinlik açmaz. `recurrence`
   /// verilirse etkinlik tekrarlayan bir serinin ilkidir; sunucu sonraki
   /// etkinlikleri sekiz hafta ileriye kadar kendisi açar.
@@ -153,6 +155,32 @@ final class EventsApi {
       authenticated: true,
     );
     return Event.fromJson(jsonObject(response, 'cancelEvent'));
+  }
+
+  /// Açık uçlu etkinliği bitirir (organizatör)
+  ///
+  /// Şimdi başlat ile açılmış (`open_ended`) etkinlikte "Bitir"
+  /// (ADR-0038 §1): `ends_at` sunucu saatiyle şimdi olur, `open_ended`
+  /// `false` olur. Check-in, bileşenlerin yazma penceresi ve 7 günlük
+  /// düzeltme penceresi yeni bitişten sayılır. Katılımcılara bildirim
+  /// gitmez. Yalnızca organizatör; bitirilmeyen etkinlik başlangıçtan 12
+  /// saat sonra kendiliğinden biter. Planlı etkinlik
+  /// `event-not-open-ended`, bitmiş ya da bitirilmiş etkinlik
+  /// `event-ended`, iptal edilmiş etkinlik `event-cancelled` alır.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/finish`
+  Future<Event> finishEvent({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/finish',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return Event.fromJson(jsonObject(response, 'finishEvent'));
   }
 
   /// Etkinliği takvime eklemek için iCalendar (.ics) dosyası
