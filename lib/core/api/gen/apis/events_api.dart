@@ -2633,6 +2633,78 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin kutlaması
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Kaynak henüz sonuçlanmadıysa ya da
+  /// kapalıysa `winners` boştur. Bileşen uçlarının ortak kuralları
+  /// geçerlidir (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/celebration`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventCelebration> getEventCelebration({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/celebration',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventCelebration.fromJson(
+      jsonObject(response, 'getEventCelebration'),
+    );
+  }
+
+  /// Kazananı ilan eder (organizatör, moderatör, yönetici)
+  ///
+  /// Etkinlik başladıktan (`celebration-not-started`) bitişten 7 gün
+  /// sonrasına kadar (`component-frozen`). Kaynaklı kutlamada gövde boş
+  /// nesnedir (`winner_ids` verilirse `invalid-request`) ve kaynağın
+  /// kazananı yoksa `celebration-no-winner`. Kaynaksız kutlamada
+  /// `winner_ids` 1–10 farklı kişidir; `going` cevabı vermemiş ve katılımı
+  /// doğrulanmamış kişi `celebration-not-participant`. İlk ilan bildirim
+  /// gönderir; yeniden ilan yalnızca elle seçilen kazananları değiştirir,
+  /// bildirim göndermez.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/celebration`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventCelebration> announceEventCelebration({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventCelebrationRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/celebration',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventCelebration.fromJson(
+      jsonObject(response, 'announceEventCelebration'),
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten
