@@ -22,6 +22,9 @@ const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
 
 const String _fotolarYolu = '/v1/tayfas/{tayfa_id}/events/{event_id}/photos';
 
+/// Seçilen ve kodlayıcının tanıdığı görüntü (aynı nesne olmalı).
+final _jpeg = ornekJpeg();
+
 /// Test kataloğunda `sensitive_attendance` ve `album_notice` bayraklı tür.
 const String _bayrakliTur = 'ornek_alanlar';
 
@@ -72,7 +75,7 @@ List<Override> _medya(SahteTayfaTasima t, SahteSecici secici) =>
       tasima: t,
       secici: secici,
       kodlayici: SahteKodlayici(
-        kaynak: ornekJpeg(),
+        kaynak: _jpeg,
         kaynakOlcusu: const JpegOlculeri(3024, 4032),
       ),
       depo: sahteDepo(<http.Request>[]),
@@ -92,9 +95,8 @@ Future<void> _albumuAc(
     tayfa: etkinlikOverridelari(tasima: t),
     overrides: _medya(t, secici),
   );
-  yonlendiriciyiAl(
-    tester,
-  ).go(Adresler.etkinlikAlbumu(ornekTayfaId, ornekEtkinlikId));
+  yonlendiriciyiAl(tester)
+      .go(Adresler.etkinlikAlbumu(ornekTayfaId, ornekEtkinlikId));
   await tester.pumpAndSettle();
 }
 
@@ -124,7 +126,7 @@ void main() {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         final t = _tasima(_bayrakliTur);
-        final k = ornekJpeg();
+        final k = _jpeg;
         final secici = SahteSecici([k]);
         await _albumuAc(tester, t, secici, themeMode: tema);
 
@@ -157,7 +159,7 @@ void main() {
     testWidgets('pencerenin dışına dokunmak Vazgeç sayılır', (tester) async {
       ekranBoyutu(tester);
       final t = _tasima(_bayrakliTur);
-      await _albumuAc(tester, t, SahteSecici([ornekJpeg()]));
+      await _albumuAc(tester, t, SahteSecici([_jpeg]));
       await _fotografSec(tester, 1);
       expect(_metin('bayrak_album_izin_baslik'), findsOneWidget);
       await tester.tapAt(const Offset(4, 4));
@@ -172,7 +174,7 @@ void main() {
     ) async {
       ekranBoyutu(tester);
       final t = _tasima('camp');
-      await _albumuAc(tester, t, SahteSecici([ornekJpeg()]));
+      await _albumuAc(tester, t, SahteSecici([_jpeg]));
       await _fotografSec(tester, 1);
       expect(_metin('bayrak_album_izin_baslik'), findsNothing);
       final govde =
@@ -187,7 +189,7 @@ void main() {
         status: 400,
       );
       final t = _tasima(_bayrakliTur, ekle: (_) => hata);
-      final k = ornekJpeg();
+      final k = _jpeg;
       await _albumuAc(tester, t, SahteSecici([k, k]));
       await _fotografSec(tester, 2);
       await tester.tap(_metin('bayrak_album_izin_onay'));
@@ -236,9 +238,8 @@ void main() {
           themeMode: tema,
           tayfa: etkinlikOverridelari(tasima: t),
         );
-        yonlendiriciyiAl(
-          tester,
-        ).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+        yonlendiriciyiAl(tester)
+            .go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
         await tester.pumpAndSettle();
 
         final ozet = find.textContaining(
@@ -276,9 +277,8 @@ void main() {
           themeMode: tema,
           tayfa: etkinlikOverridelari(tasima: t),
         );
-        yonlendiriciyiAl(tester).go(
-          Adresler.etkinlikKatilimcilari(ornekTayfaId, ornekEtkinlikId),
-        );
+        yonlendiriciyiAl(tester)
+            .go(Adresler.etkinlikKatilimcilari(ornekTayfaId, ornekEtkinlikId));
         await tester.pumpAndSettle();
 
         expect(tester.takeException(), isNull);
