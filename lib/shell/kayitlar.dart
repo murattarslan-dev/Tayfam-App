@@ -78,6 +78,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // celebration (#243)
   KutlamaBileseni(),
   // questions (#244)
+  SorularBileseni(),
   // timer (#245)
   // pool_link (#256)
 ];

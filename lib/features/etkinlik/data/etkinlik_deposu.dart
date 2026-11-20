@@ -565,6 +565,90 @@ final class EtkinlikDeposu {
     body: EventCelebrationRequest(winnerIds: kazananlar),
   );
 
+  /// `GET .../components/{component_key}/questions`: soru toplama
+  /// bileşeninin soruları (#244), çağıranın gördüğü haliyle. Anonim
+  /// sorunun yazarı hiçbir yanıtta yoktur.
+  Future<EventQuestionList> sorular(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.listEventQuestions(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../questions`: soru sorar. Aynı [istek] kimliğiyle tekrar
+  /// gönderim ilk soruyu döndürür.
+  Future<EventQuestion> soruSor(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventQuestionCreateRequest istek,
+  ) => _api.askEventQuestion(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `DELETE .../questions/{question_id}`: soruyu kaldırır.
+  Future<void> soruyuKaldir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String soruId,
+  ) => _api.removeEventQuestion(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    questionId: soruId,
+  );
+
+  /// `PUT` / `DELETE .../questions/{question_id}/vote`: [ver] ise oy
+  /// verir, değilse oyu geri alır.
+  Future<void> soruyaOy(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String soruId, {
+    required bool ver,
+  }) => ver
+      ? _api.voteEventQuestion(
+          tayfaId: tayfaId,
+          eventId: etkinlikId,
+          componentKey: bilesenAnahtari,
+          questionId: soruId,
+        )
+      : _api.unvoteEventQuestion(
+          tayfaId: tayfaId,
+          eventId: etkinlikId,
+          componentKey: bilesenAnahtari,
+          questionId: soruId,
+        );
+
+  /// `PUT` / `DELETE .../questions/{question_id}/answered`: [isaretle] ise
+  /// soruyu cevaplandı işaretler, değilse işareti kaldırır.
+  Future<void> soruCevaplandi(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String soruId, {
+    required bool isaretle,
+  }) => isaretle
+      ? _api.markEventQuestionAnswered(
+          tayfaId: tayfaId,
+          eventId: etkinlikId,
+          componentKey: bilesenAnahtari,
+          questionId: soruId,
+        )
+      : _api.unmarkEventQuestionAnswered(
+          tayfaId: tayfaId,
+          eventId: etkinlikId,
+          componentKey: bilesenAnahtari,
+          questionId: soruId,
+        );
+
   /// `GET .../components/{component_key}/goal`: hedef bileşeni (#234),
   /// çağıranın gördüğü haliyle (hassas ölçümde ilerleme gizli olabilir).
   Future<EventGoal> hedef(

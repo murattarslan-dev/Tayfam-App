@@ -64,6 +64,10 @@ const String hedefDegeriYolu = '$hedefYolu/target';
 const String dereceYolu = '$bilesenYolu/ranking';
 const String dereceKaydiYolu = '$dereceYolu/entries/{user_id}';
 const String kutlamaYolu = '$bilesenYolu/celebration';
+const String sorularYolu = '$bilesenYolu/questions';
+const String soruYolu = '$sorularYolu/{question_id}';
+const String soruOyuYolu = '$soruYolu/vote';
+const String soruCevaplandiYolu = '$soruYolu/answered';
 const String programYolu = '$bilesenYolu/schedule';
 const String programMaddeleriYolu = '$programYolu/items';
 const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
@@ -359,6 +363,47 @@ Map<String, Object?> kutlamaKazananiJson({
   'team_id': ?takim,
   'guest_id': ?misafir,
   'table_id': ?masa,
+};
+
+/// Örnek `EventQuestion` JSON'u (soru toplama bileşeni, #244). Anonim
+/// soruda yazar ([yazar]) hiçbir zaman yoktur (sözleşme).
+Map<String, Object?> soruJson({
+  required String id,
+  String metin = 'Rota ne kadar sürecek?',
+  String? yazar = katilimciId,
+  bool anonim = false,
+  bool benim = false,
+  int oy = 0,
+  bool oyVerdim = false,
+  bool cevaplandi = false,
+  bool kaldirabilir = false,
+}) => {
+  'id': id,
+  'body': metin,
+  'anonymous': anonim,
+  'author_id': ?(anonim ? null : yazar),
+  'caller_is_author': benim,
+  'vote_count': oy,
+  'caller_voted': oyVerdim,
+  if (cevaplandi) 'answered_at': '2026-11-14T09:30:00Z',
+  'created_at': '2026-11-14T09:05:00Z',
+  'caller_can_remove': kaldirabilir,
+};
+
+/// Örnek `EventQuestionList` JSON'u: varsayılanı sorusuz, anonim soruya
+/// izin veren, soru soramayan üye gözüyle.
+Map<String, Object?> sorularJson({
+  List<Map<String, Object?>> sorular = const [],
+  bool anonimAcik = true,
+  bool sorabilir = false,
+  bool isaretleyebilir = false,
+  int enCok = 20,
+}) => {
+  'questions': sorular,
+  'anonymous_allowed': anonimAcik,
+  'caller_can_ask': sorabilir,
+  'caller_can_mark_answered': isaretleyebilir,
+  'max_questions_per_person': enCok,
 };
 
 /// Örnek `EventScheduleItem` JSON'u (program akışı bileşeni, #235).

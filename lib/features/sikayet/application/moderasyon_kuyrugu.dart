@@ -53,6 +53,12 @@ bool icerikMi(ReportTargetType tur) =>
     tur != ReportTargetType.tayfa &&
     tur != ReportTargetType.unknown;
 
+/// Şikâyet `member_sanctioned` ile sonuçlandırılabilir mi: yazarı gizli
+/// şikâyette (anonim etkinlik sorusu; `subject_user_id` yok) sunucu bunu
+/// reddeder, seçenek gösterilmez (Tayfam-Api #256).
+bool yaptirimSecilebilir(ModerationReport s) =>
+    s.targetType != ReportTargetType.eventQuestion || s.subjectUserId != null;
+
 /// Bir moderasyon işlemini çalıştırır. Başarıda `null`, aksi halde
 /// gösterilecek hata. Oturum kapandıysa giriş ekranına dönülür. Hata
 /// log'a yazılmaz.
