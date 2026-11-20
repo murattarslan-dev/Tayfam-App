@@ -154,11 +154,10 @@ void main() {
         ],
         acikModuller: {'events'},
       );
-      expect([for (final (b, _) in sonuc) b.anahtar], [
-        'countdown',
-        'upcoming',
-        'stats',
-      ]);
+      expect(
+        [for (final (b, _) in sonuc) b.anahtar],
+        ['countdown', 'upcoming', 'stats'],
+      );
     });
 
     test('modülü görünür olmayan bölüm ve kapalı bileşen atlanır', () {
@@ -241,12 +240,15 @@ void main() {
         dil: 'tr',
         secili: const ['olmayan_tur.distance'],
       );
-      expect([for (final s in hepsi) s.anahtar], [
-        ...ortakMetrikler,
-        'hike.distance',
-        'fishing.catches.count',
-        'olmayan_tur.distance',
-      ]);
+      expect(
+        [for (final s in hepsi) s.anahtar],
+        [
+          ...ortakMetrikler,
+          'hike.distance',
+          'fishing.catches.count',
+          'olmayan_tur.distance',
+        ],
+      );
       expect(hepsi.last.ad, m.anasayfa_metrik_bilinmiyor);
       final gunluk = metrikSecenekleri(
         m,

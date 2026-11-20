@@ -342,14 +342,16 @@ void main() {
       expect(find.text(m.anasayfa_stats_ad), findsOneWidget);
       expect(find.text(m.anasayfa_goal_ad), findsOneWidget);
       expect(find.text(m.anasayfa_bilinmeyen_ad), findsOneWidget);
-      expect(find.text(m.anasayfa_guncelle_etiketi), findsOneWidget);
+      expect(find.textContaining(m.anasayfa_guncelle_etiketi), findsOneWidget);
       // Tanınmayan satırda aç/kapa ve taşıma yok.
       expect(
         satirdaki(m.anasayfa_bilinmeyen_ad, find.byType(Switch)),
         findsNothing,
       );
-      expect(find.byTooltip(m.anasayfa_yukari(m.anasayfa_bilinmeyen_ad)),
-          findsNothing);
+      expect(
+        find.byTooltip(m.anasayfa_yukari(m.anasayfa_bilinmeyen_ad)),
+        findsNothing,
+      );
       // Ayarsız açılamayan bileşen bunu söylüyor.
       expect(
         find.text(m.anasayfa_ayar_gerekli(m.anasayfa_goal_aciklama)),
@@ -470,7 +472,8 @@ void main() {
 
       await tester.tap(satirdaki(m.anasayfa_goal_ad, find.byType(Switch)));
       await tester.pumpAndSettle();
-      Navigator.of(tester.element(find.text(m.anasayfa_goal_hedef_alani))).pop();
+      Navigator.of(tester.element(find.text(m.anasayfa_goal_hedef_alani)))
+          .pop();
       await tester.pumpAndSettle();
 
       final anahtar = tester.widget<Switch>(
@@ -479,9 +482,7 @@ void main() {
       expect(anahtar.value, isFalse);
     });
 
-    testWidgets('kaydetme hatası gösteriliyor, taslak kalıyor', (
-      tester,
-    ) async {
+    testWidgets('kaydetme hatası gösteriliyor, taslak kalıyor', (tester) async {
       ekranBoyutu(tester, yukseklik: 2000);
       final tasima = duzenTasimasi();
       tasima.yanitlar['PUT $_duzenYolu'] = (_) =>
@@ -526,7 +527,7 @@ void main() {
         await duzeniAc(tester, duzenTasimasi(), themeMode: mod);
 
         expect(tester.takeException(), isNull);
-        expect(find.text(m.anasayfa_guncelle_etiketi), findsOneWidget);
+        expect(find.textContaining(m.anasayfa_guncelle_etiketi), findsOneWidget);
       });
     }
   });
