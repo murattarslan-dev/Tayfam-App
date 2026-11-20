@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
+import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/hedef/hedef_bileseni.dart';
@@ -387,6 +388,11 @@ void main() {
           'component_key': anahtar,
         });
 
+    // Detay önce okunur: hedef etkinliğin durumu değişince de yeniden
+    // okunur.
+    const etkinlik = (tayfaId: ornekTayfaId, etkinlikId: ornekEtkinlikId);
+    final detay = c.listen(etkinlikDetayProvider(etkinlik), (_, _) {});
+    await c.read(etkinlikDetayProvider(etkinlik).future);
     final durum = c.listen(hedefProvider(_kimlik), (_, _) {});
     await bekle();
     expect(okuma(), 1);
@@ -414,5 +420,6 @@ void main() {
     expect(okuma(), once + 2);
 
     durum.close();
+    detay.close();
   });
 }
