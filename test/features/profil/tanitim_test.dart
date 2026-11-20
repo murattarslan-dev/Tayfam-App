@@ -494,4 +494,46 @@ void main() {
       expect(_metin('profil_dogum_gunu_tam_aciklama'), findsOneWidget);
     });
   });
+
+  testWidgets('kişisel istatistik görünürlüğü seçilip gönderilir (#250)', (
+    tester,
+  ) async {
+    ekranBoyutu(tester);
+    final o = _Ortam({
+      hesapGuncelleYolu: () => hesapJson(istatistikGorunurlugu: 'friends'),
+    });
+    await o.ac(tester, const TanitimBilgileriEkrani());
+    final satir = find.byKey(const ValueKey('tanitim-istatistik'));
+    await tester.scrollUntilVisible(
+      satir,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      find.descendant(
+        of: satir,
+        matching: _metin('istatistik_gorunurluk_none'),
+      ),
+      findsOneWidget,
+    );
+    await _dokun(tester, satir);
+    expect(_metin('istatistik_gorunurluk_soru'), findsOneWidget);
+    await _dokun(
+      tester,
+      find.widgetWithText(
+        RadioListTile<StatsVisibility>,
+        arbMetni('istatistik_gorunurluk_friends'),
+      ),
+    );
+    expect(o.guncellemeler, [
+      {'stats_visibility': 'friends'},
+    ]);
+    expect(
+      find.descendant(
+        of: satir,
+        matching: _metin('istatistik_gorunurluk_friends'),
+      ),
+      findsOneWidget,
+    );
+  });
 }

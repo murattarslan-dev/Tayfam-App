@@ -318,6 +318,13 @@ abstract final class Adresler {
       '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
 
   /// Katılım isteklerinin ayarlar altındaki yolu.
+  /// Tayfa istatistiklerinin tayfa altındaki yolu (#250).
+  static const istatistikYolu = 'istatistik';
+
+  /// Tayfa istatistikleri ekranı (Tayfam-Api ADR-0026).
+  static String tayfaIstatistikleri(String tayfaId) =>
+      '${tayfa(tayfaId)}/$istatistikYolu';
+
   static const katilimIstekleriYolu = 'istekler';
 
   /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).

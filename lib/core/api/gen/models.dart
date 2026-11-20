@@ -58,6 +58,7 @@ final class Account {
     required this.declinedProfileFields,
     required this.aboutVisibility,
     required this.profileCompletionPending,
+    required this.statsVisibility,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -124,6 +125,9 @@ final class Account {
       json['profile_completion_pending'],
       'Account.profile_completion_pending',
     ),
+    statsVisibility: StatsVisibility.fromWire(
+      _readString(json['stats_visibility'], 'Account.stats_visibility'),
+    ),
   );
 
   /// Kendi kullanıcı kimliğiniz.
@@ -166,6 +170,8 @@ final class Account {
   /// reddedilmemiş) bir alan var ve geçerli bir erteleme yok.
   final bool profileCompletionPending;
 
+  final StatsVisibility statsVisibility;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'user_id': userId,
@@ -185,6 +191,7 @@ final class Account {
     ],
     'about_visibility': aboutVisibility.wire,
     'profile_completion_pending': profileCompletionPending,
+    'stats_visibility': statsVisibility.wire,
   };
 
   @override
@@ -205,7 +212,8 @@ final class Account {
           _deepEquals(socialAccounts, other.socialAccounts) &&
           _deepEquals(declinedProfileFields, other.declinedProfileFields) &&
           aboutVisibility == other.aboutVisibility &&
-          profileCompletionPending == other.profileCompletionPending;
+          profileCompletionPending == other.profileCompletionPending &&
+          statsVisibility == other.statsVisibility;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -224,6 +232,7 @@ final class Account {
     _deepHash(declinedProfileFields),
     aboutVisibility,
     profileCompletionPending,
+    statsVisibility,
   ]);
 }
 
@@ -243,6 +252,7 @@ final class AccountUpdate {
     this.socialAccounts,
     this.declinedProfileFields,
     this.aboutVisibility,
+    this.statsVisibility,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -321,6 +331,12 @@ final class AccountUpdate {
         _readString(v, 'AccountUpdate.about_visibility'),
       ),
     },
+    statsVisibility: switch (json['stats_visibility']) {
+      null => null,
+      final Object v => StatsVisibility.fromWire(
+        _readString(v, 'AccountUpdate.stats_visibility'),
+      ),
+    },
   );
 
   /// Yeni görünen ad; boşluklar tekleştirilip kırpıldıktan sonra 1–40
@@ -370,6 +386,8 @@ final class AccountUpdate {
 
   final AboutVisibility? aboutVisibility;
 
+  final StatsVisibility? statsVisibility;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (displayName case final value?) 'display_name': value,
@@ -387,6 +405,7 @@ final class AccountUpdate {
     if (declinedProfileFields case final value?)
       'declined_profile_fields': <Object?>[for (final e0 in value) e0.wire],
     if (aboutVisibility case final value?) 'about_visibility': value.wire,
+    if (statsVisibility case final value?) 'stats_visibility': value.wire,
   };
 
   @override
@@ -403,7 +422,8 @@ final class AccountUpdate {
           _deepEquals(languages, other.languages) &&
           _deepEquals(socialAccounts, other.socialAccounts) &&
           _deepEquals(declinedProfileFields, other.declinedProfileFields) &&
-          aboutVisibility == other.aboutVisibility;
+          aboutVisibility == other.aboutVisibility &&
+          statsVisibility == other.statsVisibility;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -418,6 +438,7 @@ final class AccountUpdate {
     _deepHash(socialAccounts),
     _deepHash(declinedProfileFields),
     aboutVisibility,
+    statsVisibility,
   ]);
 }
 
@@ -5869,6 +5890,7 @@ final class DiscoverItemTayfa {
     required this.createdAt,
     required this.eventCount,
     required this.attendanceCount,
+    this.showcase,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -5898,6 +5920,12 @@ final class DiscoverItemTayfa {
           json['attendance_count'],
           'DiscoverItemTayfa.attendance_count',
         ),
+        showcase: switch (json['showcase']) {
+          null => null,
+          final Object v => TayfaShowcase.fromJson(
+            _readObject(v, 'DiscoverItemTayfa.showcase'),
+          ),
+        },
       );
 
   final String id;
@@ -5916,6 +5944,8 @@ final class DiscoverItemTayfa {
   /// Kısıtlar: minimum: 0.
   final int attendanceCount;
 
+  final TayfaShowcase? showcase;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -5925,6 +5955,7 @@ final class DiscoverItemTayfa {
     'created_at': createdAt.toUtc().toIso8601String(),
     'event_count': eventCount,
     'attendance_count': attendanceCount,
+    if (showcase case final value?) 'showcase': value.toJson(),
   };
 
   @override
@@ -5937,7 +5968,8 @@ final class DiscoverItemTayfa {
           city == other.city &&
           createdAt == other.createdAt &&
           eventCount == other.eventCount &&
-          attendanceCount == other.attendanceCount;
+          attendanceCount == other.attendanceCount &&
+          showcase == other.showcase;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -5948,6 +5980,7 @@ final class DiscoverItemTayfa {
     createdAt,
     eventCount,
     attendanceCount,
+    showcase,
   ]);
 }
 
@@ -20697,6 +20730,40 @@ enum SocialSettingsUpdateNowFromFriends {
   }
 }
 
+/// Kişisel istatistiklerinizi ve kişisel rozetlerinizi profilinizde
+/// kimin göreceği (issue #267, ADR-0026 §4). `none` (varsayılan):
+/// yalnızca siz. `friends`: arkadaşlarınız. `friends_and_mutual`:
+/// arkadaşlarınız ve ortak tayfa üyeleri. Kendi profilinizde her zaman
+/// görürsünüz.
+enum StatsVisibility {
+  none('none'),
+  friends('friends'),
+  friendsAndMutual('friends_and_mutual'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const StatsVisibility(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('StatsVisibility.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static StatsVisibility fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class Status {
   const Status({
     required this.status,
@@ -21272,7 +21339,11 @@ final class TayfaCreateRequest {
 }
 
 final class TayfaDiscover {
-  const TayfaDiscover({required this.state, required this.enabled});
+  const TayfaDiscover({
+    required this.state,
+    required this.enabled,
+    required this.statsShowcase,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -21282,6 +21353,10 @@ final class TayfaDiscover {
       _readString(json['state'], 'TayfaDiscover.state'),
     ),
     enabled: _readBool(json['enabled'], 'TayfaDiscover.enabled'),
+    statsShowcase: _readBool(
+      json['stats_showcase'],
+      'TayfaDiscover.stats_showcase',
+    ),
   );
 
   /// `off` kapalı; `pending` incelemede; `listed` açık (Keşfet'te
@@ -21292,10 +21367,16 @@ final class TayfaDiscover {
   /// Yöneticilerin Keşfet isteği.
   final bool enabled;
 
+  /// İstatistik kartı Keşfet vitrininde gösterilir (#267, ADR-0026 §3;
+  /// varsayılan açık). `PUT /v1/tayfas/{tayfa_id}/discover/stats-showcase`
+  /// ile değişir.
+  final bool statsShowcase;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'state': state.wire,
     'enabled': enabled,
+    'stats_showcase': statsShowcase,
   };
 
   @override
@@ -21303,10 +21384,11 @@ final class TayfaDiscover {
       identical(this, other) ||
       other is TayfaDiscover &&
           state == other.state &&
-          enabled == other.enabled;
+          enabled == other.enabled &&
+          statsShowcase == other.statsShowcase;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[state, enabled]);
+  int get hashCode => Object.hashAll(<Object?>[state, enabled, statsShowcase]);
 }
 
 final class TayfaDiscoverInput {
@@ -21452,6 +21534,317 @@ final class TayfaModules {
   @override
   int get hashCode =>
       Object.hashAll(<Object?>[announcements, events, qa, polls]);
+}
+
+/// Tayfanın Keşfet vitrinindeki istatistik kartı (#267; ADR-0026 §3,
+/// ADR-0039 §3). Yalnızca yöneticiler vitrini kapatmamışsa ve tayfanın
+/// donmuş (bitişinden 7 gün geçmiş, iptal edilmemiş) en az 3 etkinliği
+/// varsa döner; yoksa alan da yoktur ve istemci kart göstermez ("henüz
+/// yok" değil). Yalnızca tüm zamanlar toplamı; kişi, tarih, saat, gün,
+/// ilçe, koordinat ve yıl kırılımı yoktur. Tayfalar arası sıralama
+/// yoktur.
+final class TayfaShowcase {
+  const TayfaShowcase({required this.stats, required this.badges});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaShowcase.fromJson(Map<String, Object?> json) => TayfaShowcase(
+    stats: List<TayfaStat>.unmodifiable(
+      _readList(json['stats'], 'TayfaShowcase.stats').map(
+        (Object? e0) =>
+            TayfaStat.fromJson(_readObject(e0, 'TayfaShowcase.stats')),
+      ),
+    ),
+    badges: List<EarnedBadge>.unmodifiable(
+      _readList(json['badges'], 'TayfaShowcase.badges').map(
+        (Object? e0) =>
+            EarnedBadge.fromJson(_readObject(e0, 'TayfaShowcase.badges')),
+      ),
+    ),
+  );
+
+  /// Ortak metriklerin tayfa toplamı (`events`, `attended`,
+  /// `participants`, `duration`; türe göre `<tür>.<metrik>`) ve
+  /// katalogda vitrine izin verilen ölçümler (`<tür>.<ölçüm>`).
+  /// Günlük metrikleri ve katılımı hassas türlerin metrikleri hiç
+  /// gelmez; hassas türler yalnızca genel `events` ve `attended`
+  /// toplamına girer (ADR-0037 §7).
+  final List<TayfaStat> stats;
+
+  /// Tayfanın rozetleri, kazanılma sırasıyla.
+  final List<EarnedBadge> badges;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'stats': <Object?>[for (final e0 in stats) e0.toJson()],
+    'badges': <Object?>[for (final e0 in badges) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaShowcase &&
+          _deepEquals(stats, other.stats) &&
+          _deepEquals(badges, other.badges);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(stats), _deepHash(badges)]);
+}
+
+final class TayfaStat {
+  const TayfaStat({
+    required this.metricKey,
+    required this.source,
+    required this.value,
+    required this.eventCount,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaStat.fromJson(Map<String, Object?> json) => TayfaStat(
+    metricKey: _readString(json['metric_key'], 'TayfaStat.metric_key'),
+    source: TayfaStatSource.fromWire(
+      _readString(json['source'], 'TayfaStat.source'),
+    ),
+    value: _readDouble(json['value'], 'TayfaStat.value'),
+    eventCount: _readInt(json['event_count'], 'TayfaStat.event_count'),
+  );
+
+  final String metricKey;
+
+  final TayfaStatSource source;
+
+  final double value;
+
+  /// Değere katkı veren etkinlik sayısı.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int eventCount;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_key': metricKey,
+    'source': source.wire,
+    'value': value,
+    'event_count': eventCount,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaStat &&
+          metricKey == other.metricKey &&
+          source == other.source &&
+          value == other.value &&
+          eventCount == other.eventCount;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[metricKey, source, value, eventCount]);
+}
+
+/// Etkin bir üyenin ölçüm ya da günlük metriğindeki katkısı.
+final class TayfaStatContribution {
+  const TayfaStatContribution({
+    required this.userId,
+    required this.metricKey,
+    required this.value,
+    required this.eventCount,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaStatContribution.fromJson(Map<String, Object?> json) =>
+      TayfaStatContribution(
+        userId: _readString(json['user_id'], 'TayfaStatContribution.user_id'),
+        metricKey: _readString(
+          json['metric_key'],
+          'TayfaStatContribution.metric_key',
+        ),
+        value: _readDouble(json['value'], 'TayfaStatContribution.value'),
+        eventCount: _readInt(
+          json['event_count'],
+          'TayfaStatContribution.event_count',
+        ),
+      );
+
+  final String userId;
+
+  final String metricKey;
+
+  final double value;
+
+  /// Kısıtlar: minimum: 0.
+  final int eventCount;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'metric_key': metricKey,
+    'value': value,
+    'event_count': eventCount,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaStatContribution &&
+          userId == other.userId &&
+          metricKey == other.metricKey &&
+          value == other.value &&
+          eventCount == other.eventCount;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[userId, metricKey, value, eventCount]);
+}
+
+enum TayfaStatSource {
+  common('common'),
+  measure('measure'),
+  log('log'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const TayfaStatSource(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('TayfaStatSource.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static TayfaStatSource fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class TayfaStats {
+  const TayfaStats({
+    this.year,
+    required this.years,
+    required this.totals,
+    required this.contributions,
+    this.computedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaStats.fromJson(Map<String, Object?> json) => TayfaStats(
+    year: switch (json['year']) {
+      null => null,
+      final Object v => _readInt(v, 'TayfaStats.year'),
+    },
+    years: List<int>.unmodifiable(
+      _readList(
+        json['years'],
+        'TayfaStats.years',
+      ).map((Object? e0) => _readInt(e0, 'TayfaStats.years')),
+    ),
+    totals: List<TayfaStat>.unmodifiable(
+      _readList(json['totals'], 'TayfaStats.totals').map(
+        (Object? e0) =>
+            TayfaStat.fromJson(_readObject(e0, 'TayfaStats.totals')),
+      ),
+    ),
+    contributions: List<TayfaStatContribution>.unmodifiable(
+      _readList(json['contributions'], 'TayfaStats.contributions').map(
+        (Object? e0) => TayfaStatContribution.fromJson(
+          _readObject(e0, 'TayfaStats.contributions'),
+        ),
+      ),
+    ),
+    computedAt: switch (json['computed_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'TayfaStats.computed_at'),
+    },
+  );
+
+  /// İstenen yıl; tüm zamanlarda yoktur.
+  final int? year;
+
+  /// İstatistiği olan yıllar, yeniden eskiye.
+  final List<int> years;
+
+  final List<TayfaStat> totals;
+
+  final List<TayfaStatContribution> contributions;
+
+  /// Son hesaplama; henüz hesaplanmadıysa yoktur.
+  final DateTime? computedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (year case final value?) 'year': value,
+    'years': <Object?>[for (final e0 in years) e0],
+    'totals': <Object?>[for (final e0 in totals) e0.toJson()],
+    'contributions': <Object?>[for (final e0 in contributions) e0.toJson()],
+    if (computedAt case final value?)
+      'computed_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaStats &&
+          year == other.year &&
+          _deepEquals(years, other.years) &&
+          _deepEquals(totals, other.totals) &&
+          _deepEquals(contributions, other.contributions) &&
+          computedAt == other.computedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    year,
+    _deepHash(years),
+    _deepHash(totals),
+    _deepHash(contributions),
+    computedAt,
+  ]);
+}
+
+final class TayfaStatsShowcaseInput {
+  const TayfaStatsShowcaseInput({required this.statsShowcase});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaStatsShowcaseInput.fromJson(Map<String, Object?> json) =>
+      TayfaStatsShowcaseInput(
+        statsShowcase: _readBool(
+          json['stats_showcase'],
+          'TayfaStatsShowcaseInput.stats_showcase',
+        ),
+      );
+
+  final bool statsShowcase;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'stats_showcase': statsShowcase,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaStatsShowcaseInput && statsShowcase == other.statsShowcase;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[statsShowcase]);
 }
 
 /// `warned`: hareketsiz, 7 gün sonra arşivlenir. `archived`: salt okunur.
@@ -22459,6 +22852,7 @@ final class UserProfile {
     required this.activityVisible,
     this.activityVisibility,
     this.badges,
+    this.stats,
     this.birthday,
     this.interests,
     this.about,
@@ -22508,6 +22902,15 @@ final class UserProfile {
         _readList(v, 'UserProfile.badges').map(
           (Object? e0) =>
               EarnedBadge.fromJson(_readObject(e0, 'UserProfile.badges')),
+        ),
+      ),
+    },
+    stats: switch (json['stats']) {
+      null => null,
+      final Object v => List<TayfaStat>.unmodifiable(
+        _readList(v, 'UserProfile.stats').map(
+          (Object? e0) =>
+              TayfaStat.fromJson(_readObject(e0, 'UserProfile.stats')),
         ),
       ),
     },
@@ -22585,6 +22988,16 @@ final class UserProfile {
   /// Şampiyonluk rozetleri tayfanın içinde ayrıca görünür.
   final List<EarnedBadge>? badges;
 
+  /// Kişisel istatistikler (#267, ADR-0026 §4): kişinin bütün
+  /// tayfalarındaki tüm zamanlar toplamı, metrik başına (`attended`,
+  /// `duration`, kişisel ölçümler ve günlük kayıtları). Yıl, tarih,
+  /// yer ya da tayfa yoktur; hassas ölçüm ve hassas katılım hiç
+  /// girmez. `badges` ile aynı kural: kendi profilinizde her zaman
+  /// (yoksa boş liste); başkasınınkinde yalnızca kişinin
+  /// `stats_visibility` ayarı size izin veriyorsa, yoksa alan da
+  /// yoktur (gizlendiği belli edilmez).
+  final List<TayfaStat>? stats;
+
   final Birthday? birthday;
 
   final List<String>? interests;
@@ -22612,6 +23025,8 @@ final class UserProfile {
     if (activityVisibility case final value?) 'activity_visibility': value.wire,
     if (badges case final value?)
       'badges': <Object?>[for (final e0 in value) e0.toJson()],
+    if (stats case final value?)
+      'stats': <Object?>[for (final e0 in value) e0.toJson()],
     if (birthday case final value?) 'birthday': value.toJson(),
     if (interests case final value?)
       'interests': <Object?>[for (final e0 in value) e0],
@@ -22637,6 +23052,7 @@ final class UserProfile {
           activityVisible == other.activityVisible &&
           activityVisibility == other.activityVisibility &&
           _deepEquals(badges, other.badges) &&
+          _deepEquals(stats, other.stats) &&
           birthday == other.birthday &&
           _deepEquals(interests, other.interests) &&
           about == other.about &&
@@ -22656,6 +23072,7 @@ final class UserProfile {
     activityVisible,
     activityVisibility,
     _deepHash(badges),
+    _deepHash(stats),
     birthday,
     _deepHash(interests),
     about,

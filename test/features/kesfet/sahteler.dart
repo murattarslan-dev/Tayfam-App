@@ -21,6 +21,7 @@ const String elifId = '00000000-0000-4000-8000-0000000000a3';
 const String akisYolu = '/v1/discover/events';
 const String kesfetKatilYolu = '/v1/discover/tayfas/{tayfa_id}/join';
 const String tayfaKesfetYolu = '/v1/tayfas/{tayfa_id}/discover';
+const String vitrinYolu = '/v1/tayfas/{tayfa_id}/discover/stats-showcase';
 const String geriBildirimYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/feedback';
 const String guvenlikYolu =
@@ -54,6 +55,7 @@ Map<String, Object?> kesfetOgesiJson({
   String? aciklama = 'Her pazar sabahı kolay ve orta parkurlar.',
   int etkinlikSayisi = 42,
   int katilimSayisi = 318,
+  Map<String, Object?>? vitrin,
 }) => {
   'event': {
     'id': etkinlikId,
@@ -72,6 +74,7 @@ Map<String, Object?> kesfetOgesiJson({
     'created_at': '2024-03-10T10:00:00Z',
     'event_count': etkinlikSayisi,
     'attendance_count': katilimSayisi,
+    'showcase': ?vitrin,
   },
   'friends': [
     if (arkadasSayisi > 0) kisiJson(ayseId, 'Ayşe'),
@@ -117,6 +120,13 @@ Map<String, Object?> arkadasJson(String id, String ad, {String? durum}) => {
   'requested_at': '2026-11-10T09:00:00Z',
 };
 
+/// `TayfaDiscover` JSON'u.
+Map<String, Object?> kesfetAyariJson({
+  String durum = 'off',
+  bool acik = false,
+  bool vitrin = true,
+}) => {'state': durum, 'enabled': acik, 'stats_showcase': vitrin};
+
 /// Her istekte [deger]'i döndüren yanıt.
 TayfaYaniti yanit(Object? deger) =>
     (_) => deger;
@@ -146,10 +156,7 @@ SahteTayfaTasima kesfetTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
         ],
       }),
     )
-    ..putIfAbsent(
-      'GET $tayfaKesfetYolu',
-      () => yanit({'state': 'off', 'enabled': false}),
-    );
+    ..putIfAbsent('GET $tayfaKesfetYolu', () => yanit(kesfetAyariJson()));
   return tasima;
 }
 

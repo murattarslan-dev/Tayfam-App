@@ -35,6 +35,7 @@ export 'package:tayfam/core/api/gen/apis/questions_api.dart';
 export 'package:tayfam/core/api/gen/apis/referral_lookups_api.dart';
 export 'package:tayfam/core/api/gen/apis/registration_api.dart';
 export 'package:tayfam/core/api/gen/apis/reports_api.dart';
+export 'package:tayfam/core/api/gen/apis/stats_api.dart';
 export 'package:tayfam/core/api/gen/apis/status_api.dart';
 export 'package:tayfam/core/api/gen/apis/tags_api.dart';
 export 'package:tayfam/core/api/gen/apis/tayfa_joins_api.dart';

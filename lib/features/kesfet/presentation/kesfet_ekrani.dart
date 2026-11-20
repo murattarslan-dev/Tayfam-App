@@ -9,6 +9,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/istatistik/istatistik.dart';
 import 'package:tayfam/features/kesfet/application/kesfet_akisi.dart';
 import 'package:tayfam/features/kesfet/application/kesfet_ortak.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -212,6 +213,10 @@ class KesfetKarti extends ConsumerWidget {
             kesfetOlgulari(m, tayfa),
             style: yazi.labelMedium?.copyWith(color: r.metinIkincil),
           ),
+          // İstatistik vitrini (#250; Tayfam-Api ADR-0026 §3): alan yoksa
+          // kart da yoktur ("henüz yok" denmez).
+          if (tayfa.showcase case final vitrin?)
+            VitrinIstatistikleri(vitrin: vitrin),
           const SizedBox(height: TayfamSpacing.s16),
           if (asama == KatilimAsamasi.gonderildi)
             _Gonderildi(metin: m.kesfet_istek_gonderildi)
