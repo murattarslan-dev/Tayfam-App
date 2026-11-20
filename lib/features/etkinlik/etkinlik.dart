@@ -37,6 +37,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/sozluk/sozluk_ekranlari.dart
     show sozlukGirisEtiketi, sozlukGirisIkonu, sozlukRotalari, sozluklerAdresi;
 export 'package:tayfam/features/etkinlik/bilesenler/takim/takim_bileseni.dart'
     show TakimBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_bileseni.dart'
+    show YazbozBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/yoklama/yoklama_bileseni.dart'
     show YoklamaBileseni;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'

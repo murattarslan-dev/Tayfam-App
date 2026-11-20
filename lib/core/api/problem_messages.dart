@@ -100,6 +100,13 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.teamsNotParticipant => m.hata_teams_not_participant,
   ProblemType.drawAlreadyMade => m.hata_draw_already_made,
   ProblemType.drawTooFew => m.hata_draw_too_few,
+  ProblemType.scorePresetUnavailable => m.hata_score_preset_unavailable,
+  ProblemType.scoreTableNotFound => m.hata_score_table_not_found,
+  ProblemType.scoreTableFinished => m.hata_score_table_finished,
+  ProblemType.scoreTableStarted => m.hata_score_table_started,
+  ProblemType.scorePlayerNotParticipant =>
+    m.hata_score_player_not_participant,
+  ProblemType.scoreNotStarted => m.hata_score_not_started,
   ProblemType.eventTypeMismatch => m.hata_event_type_mismatch,
   ProblemType.checkInClosed => m.hata_check_in_closed,
   ProblemType.checkInTooFar => m.hata_check_in_too_far,
