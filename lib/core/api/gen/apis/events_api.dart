@@ -2169,6 +2169,110 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin misafir oyuncuları
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/guests`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventGuestPlayers> listEventGuestPlayers({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/guests',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventGuestPlayers.fromJson(
+      jsonObject(response, 'listEventGuestPlayers'),
+    );
+  }
+
+  /// Misafir oyuncu ekler (organizatör, moderatör, yönetici, hakem)
+  ///
+  /// Etkinliğin, bileşenin ya da `table_id` masasının hakemi de ekler;
+  /// diğerleri `permission-denied`. Bileşende olmayan masa
+  /// `score-table-not-found`; 30 misafirde `event-limit`. Bileşen
+  /// uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/guests`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventGuestPlayers> addEventGuestPlayer({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventGuestPlayerRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/guests',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventGuestPlayers.fromJson(
+      jsonObject(response, 'addEventGuestPlayer'),
+    );
+  }
+
+  /// Misafir oyuncuyu siler (organizatör, moderatör, yönetici)
+  ///
+  /// Masada yeri ya da kurada yeri olan misafir silinmez
+  /// (`guest-player-in-use`); etkinliğin misafiri değilse
+  /// `guest-player-not-found`. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/guests/{guest_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [guestId]: Misafir oyuncunun kimliği (`EventGuestPlayer.id`).
+  Future<EventGuestPlayers> removeEventGuestPlayer({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String guestId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/guests/{guest_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'guest_id': guestId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventGuestPlayers.fromJson(
+      jsonObject(response, 'removeEventGuestPlayer'),
+    );
+  }
+
   /// Etkinliğin eşleşme ağacı
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
