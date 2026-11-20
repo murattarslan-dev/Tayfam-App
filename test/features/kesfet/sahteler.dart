@@ -156,10 +156,7 @@ SahteTayfaTasima kesfetTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
         ],
       }),
     )
-    ..putIfAbsent(
-      'GET $tayfaKesfetYolu',
-      () => yanit(kesfetAyariJson()),
-    );
+    ..putIfAbsent('GET $tayfaKesfetYolu', () => yanit(kesfetAyariJson()));
   return tasima;
 }
 

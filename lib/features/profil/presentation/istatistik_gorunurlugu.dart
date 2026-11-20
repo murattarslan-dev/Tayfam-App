@@ -27,15 +27,14 @@ String istatistikGorunurlukAdi(AppLocalizations m, StatsVisibility g) =>
     };
 
 /// Seçeneğin açıklaması.
-String istatistikGorunurlukAciklamasi(
-  AppLocalizations m,
-  StatsVisibility g,
-) => switch (g) {
-  StatsVisibility.none ||
-  StatsVisibility.unknown => m.istatistik_gorunurluk_none_aciklama,
-  StatsVisibility.friends => m.istatistik_gorunurluk_friends_aciklama,
-  StatsVisibility.friendsAndMutual => m.istatistik_gorunurluk_ortak_aciklama,
-};
+String istatistikGorunurlukAciklamasi(AppLocalizations m, StatsVisibility g) =>
+    switch (g) {
+      StatsVisibility.none ||
+      StatsVisibility.unknown => m.istatistik_gorunurluk_none_aciklama,
+      StatsVisibility.friends => m.istatistik_gorunurluk_friends_aciklama,
+      StatsVisibility.friendsAndMutual =>
+        m.istatistik_gorunurluk_ortak_aciklama,
+    };
 
 /// "İstatistiklerini ve rozetlerini kim görsün?" alttan sayfası: üç
 /// seçenek kartı (doğum günü sayfasıyla aynı düzen). Seçilen değer döner;
@@ -70,23 +69,23 @@ Future<StatsVisibility?> istatistikGorunurlukSayfasiniAc(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (final (sira, g) in istatistikGorunurlukSecenekleri.indexed)
-                ...[
-                  if (sira > 0) const SizedBox(height: TayfamSpacing.s8),
-                  SecimKarti(
-                    secili: g == secili,
-                    child: RadioListTile<StatsVisibility>(
-                      value: g,
-                      title: Text(istatistikGorunurlukAdi(m, g)),
-                      subtitle: Text(
-                        istatistikGorunurlukAciklamasi(m, g),
-                        style: sayfa.yazi.bodySmall?.copyWith(
-                          color: sayfa.renkler.metinGovde,
-                        ),
+              for (final (sira, g)
+                  in istatistikGorunurlukSecenekleri.indexed) ...[
+                if (sira > 0) const SizedBox(height: TayfamSpacing.s8),
+                SecimKarti(
+                  secili: g == secili,
+                  child: RadioListTile<StatsVisibility>(
+                    value: g,
+                    title: Text(istatistikGorunurlukAdi(m, g)),
+                    subtitle: Text(
+                      istatistikGorunurlukAciklamasi(m, g),
+                      style: sayfa.yazi.bodySmall?.copyWith(
+                        color: sayfa.renkler.metinGovde,
                       ),
                     ),
                   ),
-                ],
+                ),
+              ],
             ],
           ),
         ),

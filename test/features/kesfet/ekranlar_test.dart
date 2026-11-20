@@ -566,11 +566,17 @@ void main() {
     testWidgets('kapalı: açmak onay ister ve PUT gider', (tester) async {
       ekranBoyutu(tester);
       final tasima = kesfetTasimasi({
-        'PUT $tayfaKesfetYolu': yanit(kesfetAyariJson(durum: 'pending', acik: true)),
+        'PUT $tayfaKesfetYolu': yanit(
+          kesfetAyariJson(durum: 'pending', acik: true),
+        ),
       });
       await _ac(
         tester,
-        const Scaffold(body: TayfaKesfetBolumu(tayfaId: kesfetTayfaId)),
+        const Scaffold(
+          body: SingleChildScrollView(
+            child: TayfaKesfetBolumu(tayfaId: kesfetTayfaId),
+          ),
+        ),
         tasima,
       );
       expect(find.text(arbMetni('yonetim_kesfet_off')), findsOneWidget);
@@ -600,7 +606,11 @@ void main() {
       });
       await _ac(
         tester,
-        const Scaffold(body: TayfaKesfetBolumu(tayfaId: kesfetTayfaId)),
+        const Scaffold(
+          body: SingleChildScrollView(
+            child: TayfaKesfetBolumu(tayfaId: kesfetTayfaId),
+          ),
+        ),
         tasima,
       );
       expect(find.text(arbMetni('istatistik_vitrin_goster')), findsOneWidget);
@@ -609,17 +619,18 @@ void main() {
         'stats_showcase': false,
       });
       expect(tasima.giden('PUT', tayfaKesfetYolu), isEmpty);
-      expect(
-        tester.widget<Switch>(find.byType(Switch).last).value,
-        isFalse,
-      );
+      expect(tester.widget<Switch>(find.byType(Switch).last).value, isFalse);
     });
 
     testWidgets('yönetici değilse (403) bölüm yok', (tester) async {
       ekranBoyutu(tester);
       await _ac(
         tester,
-        const Scaffold(body: TayfaKesfetBolumu(tayfaId: kesfetTayfaId)),
+        const Scaffold(
+          body: SingleChildScrollView(
+            child: TayfaKesfetBolumu(tayfaId: kesfetTayfaId),
+          ),
+        ),
         kesfetTasimasi({
           'GET $tayfaKesfetYolu': yanit(
             problem(ProblemType.permissionDenied, status: 403),
@@ -633,9 +644,15 @@ void main() {
       ekranBoyutu(tester);
       await _ac(
         tester,
-        const Scaffold(body: TayfaKesfetBolumu(tayfaId: kesfetTayfaId)),
+        const Scaffold(
+          body: SingleChildScrollView(
+            child: TayfaKesfetBolumu(tayfaId: kesfetTayfaId),
+          ),
+        ),
         kesfetTasimasi({
-          'GET $tayfaKesfetYolu': yanit(kesfetAyariJson(durum: 'listed', acik: true)),
+          'GET $tayfaKesfetYolu': yanit(
+            kesfetAyariJson(durum: 'listed', acik: true),
+          ),
         }),
       );
       expect(

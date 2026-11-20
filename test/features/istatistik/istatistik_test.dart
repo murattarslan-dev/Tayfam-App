@@ -44,10 +44,7 @@ TayfaStat _stat(
 );
 
 /// `TayfaStats` JSON'u: dolu toplamlar ve bir üyenin katkıları.
-Map<String, Object?> _istatistiklerJson({
-  int? yil,
-  bool bos = false,
-}) => {
+Map<String, Object?> _istatistiklerJson({int? yil, bool bos = false}) => {
   'year': ?yil,
   'years': [2026, 2025],
   'totals': bos
@@ -118,7 +115,10 @@ void main() {
     test('türün ortak metriği tür adıyla', () {
       expect(
         g('hike.attended', 5)?.ad,
-        m.istatistik_metrik_turlu('Doğa yürüyüşü', m.istatistik_metrik_attended),
+        m.istatistik_metrik_turlu(
+          'Doğa yürüyüşü',
+          m.istatistik_metrik_attended,
+        ),
       );
     });
 
@@ -237,9 +237,7 @@ void main() {
       expect(tasima.giden('GET', _istatistikYolu).single.sorgu, isEmpty);
       await tester.tap(find.text('2025'));
       await tester.pumpAndSettle();
-      expect(tasima.giden('GET', _istatistikYolu).last.sorgu, {
-        'year': '2025',
-      });
+      expect(tasima.giden('GET', _istatistikYolu).last.sorgu, {'year': '2025'});
       final cip = tester.widget<ChoiceChip>(
         find.widgetWithText(ChoiceChip, '2025'),
       );
@@ -296,13 +294,8 @@ void main() {
     ) async {
       ekranBoyutu(tester);
       final anlam = tester.ensureSemantics();
-      await ac(
-        tester,
-        IstatistikBolumu(statlar: [_stat('duration', 1530)]),
-      );
-      final etiket = tester
-          .getSemantics(find.byType(IstatistikSatiri))
-          .label;
+      await ac(tester, IstatistikBolumu(statlar: [_stat('duration', 1530)]));
+      final etiket = tester.getSemantics(find.byType(IstatistikSatiri)).label;
       expect(etiket, contains(m.istatistik_metrik_duration));
       expect(etiket, contains(sureOkunusu(m, 91800)));
       expect(etiket, isNot(contains(sureMetni(m, 91800))));
