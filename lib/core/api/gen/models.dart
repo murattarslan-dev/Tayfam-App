@@ -1812,7 +1812,7 @@ final class Catalog {
 /// | `draw` | — |
 /// | `bracket` | `format` (`elimination`, `league`, `swiss`; seçimli), `best_of` (1, 3, 5; seçimli) |
 /// | `scoreboard` | `side` (`player`, `team`), `tables` (boolean), `presets` (ön ayar anahtarları), `rounds` (`round`, `single`, `first_to`; seçimli), `target` (1–100000), `winner` (`high`, `low`, `first`; seçimli), `result` (`points`, `wdl`), `best_of` (1, 3, 5; seçimli), `guests` (boolean) |
-/// | `ranking` | `source` (bir ölçümün `key`'i), `metric` (`duration`, `rank`), `direction` (`asc`, `desc`) |
+/// | `ranking` | `source` (kişisel bir ölçümün `key`'i) ya da `metric` (`duration`, `rank`); biri zorunlu, ikisi birlikte olmaz; `direction` (`asc`, `desc`) |
 /// | `vote` | `source` (`free`, `participants`, `vehicles`, `album`, `route_stops`; zorunlu) |
 /// | `celebration` | `source` (bir `scoreboard`, `bracket`, `ranking` ya da `vote` bileşeninin `key`'i) |
 /// | `measure` | `unit`, `scope` (`personal`, `total`), `entered_by` (`self`, `organizer`) zorunlu; `min`, `max`, `decimals` (0–3), `showcase`, `sensitive` (boolean), `prefill_from` (bir alanın `key`'i) |
@@ -10723,6 +10723,272 @@ final class EventPhotoList {
   @override
   int get hashCode =>
       Object.hashAll(<Object?>[_deepHash(photos), nextPageToken]);
+}
+
+/// Bir etkinliğin bir derece bileşeni, isteği yapanın gördüğü haliyle (#253).
+final class EventRanking {
+  const EventRanking({
+    this.source,
+    this.metric,
+    required this.direction,
+    this.unit,
+    required this.decimals,
+    required this.entries,
+    required this.hidden,
+    required this.measureEnabled,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRanking.fromJson(Map<String, Object?> json) => EventRanking(
+    source: switch (json['source']) {
+      null => null,
+      final Object v => _readString(v, 'EventRanking.source'),
+    },
+    metric: switch (json['metric']) {
+      null => null,
+      final Object v => EventRankingMetric.fromWire(
+        _readString(v, 'EventRanking.metric'),
+      ),
+    },
+    direction: EventRankingDirection.fromWire(
+      _readString(json['direction'], 'EventRanking.direction'),
+    ),
+    unit: switch (json['unit']) {
+      null => null,
+      final Object v => _readString(v, 'EventRanking.unit'),
+    },
+    decimals: _readInt(json['decimals'], 'EventRanking.decimals'),
+    entries: List<EventRankingEntry>.unmodifiable(
+      _readList(json['entries'], 'EventRanking.entries').map(
+        (Object? e0) =>
+            EventRankingEntry.fromJson(_readObject(e0, 'EventRanking.entries')),
+      ),
+    ),
+    hidden: _readBool(json['hidden'], 'EventRanking.hidden'),
+    measureEnabled: _readBool(
+      json['measure_enabled'],
+      'EventRanking.measure_enabled',
+    ),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventRanking.caller_can_edit',
+    ),
+  );
+
+  /// Derecenin hesaplandığı kişisel ölçümün anahtarı (`EventMeasure`); elle girilen derecede yoktur.
+  final String? source;
+
+  /// Elle girilen derecenin ölçütü: `duration` süre (saniye), `rank` sıra. Ölçümden hesaplanan derecede yoktur.
+  final EventRankingMetric? metric;
+
+  /// `asc` en küçük değer önde (süre, sıra), `desc` en büyük değer önde.
+  final EventRankingDirection direction;
+
+  /// Ölçümden hesaplanan derecede ölçümün birimi (kapalı liste); elle girilen derecede yoktur.
+  final String? unit;
+
+  /// Değerin ondalık basamağı: ölçümünki ya da ölçütünkü (`duration` 2, `rank` 0).
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 3.
+  final int decimals;
+
+  /// Katılımcılar sırayla, en iyi önde; gizliyken ya da kaynak ölçüm kapalıyken boş.
+  final List<EventRankingEntry> entries;
+
+  /// Derece hassas bir ölçümden hesaplanıyor ve ölçümün bütün değerlerini göremiyorsunuz.
+  final bool hidden;
+
+  /// Ölçümden hesaplanan derecede kaynak ölçüm bu etkinlikte açık; elle girilen derecede her zaman `true`.
+  final bool measureEnabled;
+
+  /// Şu an değer girebilirsiniz (yalnızca elle girilen derecede; organizatör, moderatör, yönetici ya da atanmış hakem). Etkinlik başlamış, iptal değil, donmamış, tayfa salt okunur değil.
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (source case final value?) 'source': value,
+    if (metric case final value?) 'metric': value.wire,
+    'direction': direction.wire,
+    if (unit case final value?) 'unit': value,
+    'decimals': decimals,
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+    'hidden': hidden,
+    'measure_enabled': measureEnabled,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRanking &&
+          source == other.source &&
+          metric == other.metric &&
+          direction == other.direction &&
+          unit == other.unit &&
+          decimals == other.decimals &&
+          _deepEquals(entries, other.entries) &&
+          hidden == other.hidden &&
+          measureEnabled == other.measureEnabled &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    source,
+    metric,
+    direction,
+    unit,
+    decimals,
+    _deepHash(entries),
+    hidden,
+    measureEnabled,
+    callerCanEdit,
+  ]);
+}
+
+/// `asc` en küçük değer önde (süre, sıra), `desc` en büyük değer önde.
+enum EventRankingDirection {
+  asc('asc'),
+  desc('desc'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventRankingDirection(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventRankingDirection.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventRankingDirection fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventRankingEntry {
+  const EventRankingEntry({
+    required this.userId,
+    required this.value,
+    required this.rank,
+    this.updatedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRankingEntry.fromJson(Map<String, Object?> json) =>
+      EventRankingEntry(
+        userId: _readString(json['user_id'], 'EventRankingEntry.user_id'),
+        value: _readDouble(json['value'], 'EventRankingEntry.value'),
+        rank: _readInt(json['rank'], 'EventRankingEntry.rank'),
+        updatedAt: switch (json['updated_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'EventRankingEntry.updated_at'),
+        },
+      );
+
+  /// Derecenin ait olduğu katılımcı.
+  final String userId;
+
+  /// Süre (saniye), sıra ya da ölçümün değeri.
+  final double value;
+
+  /// Sıra; eşit değerler aynı sırayı paylaşır (1, 1, 3).
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int rank;
+
+  final DateTime? updatedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'value': value,
+    'rank': rank,
+    if (updatedAt case final value?)
+      'updated_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRankingEntry &&
+          userId == other.userId &&
+          value == other.value &&
+          rank == other.rank &&
+          updatedAt == other.updatedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, value, rank, updatedAt]);
+}
+
+/// Elle girilen derecenin ölçütü: `duration` süre (saniye), `rank` sıra. Ölçümden hesaplanan derecede yoktur.
+enum EventRankingMetric {
+  duration('duration'),
+  rank('rank'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventRankingMetric(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventRankingMetric.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventRankingMetric fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventRankingValueRequest {
+  const EventRankingValueRequest({required this.value});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventRankingValueRequest.fromJson(Map<String, Object?> json) =>
+      EventRankingValueRequest(
+        value: _readDouble(json['value'], 'EventRankingValueRequest.value'),
+      );
+
+  /// `duration` ölçütünde saniye (iki basamağa yuvarlanır, en çok 1000000), `rank` ölçütünde 1–10000 arası tam sayı.
+  ///
+  /// Kısıtlar: maximum: 1000000; exclusiveMinimum: 0.
+  final double value;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'value': value};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventRankingValueRequest && value == other.value;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[value]);
 }
 
 final class EventReferee {
