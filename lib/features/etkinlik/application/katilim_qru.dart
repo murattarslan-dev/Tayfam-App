@@ -124,10 +124,7 @@ class KatilimQruNotifier extends Notifier<KatilimQruDurumu> {
 
   void _kur(Duration sure) {
     _durdur();
-    _zamanlayici = ref.read(zamanlayiciProvider)(
-      sure,
-      () => unawaited(_al()),
-    );
+    _zamanlayici = ref.read(zamanlayiciProvider)(sure, () => unawaited(_al()));
   }
 
   /// Bağlantı ya da sunucu kaynaklı, yeniden denenebilir hata mı.

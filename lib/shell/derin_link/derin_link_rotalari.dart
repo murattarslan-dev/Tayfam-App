@@ -9,8 +9,7 @@ import 'package:tayfam/shell/derin_link/derin_link.dart';
 import 'package:tayfam/shell/derin_link/qr_katilim_ekrani.dart';
 
 export 'package:tayfam/shell/derin_link/davet_ekrani.dart' show DavetEkrani;
-export 'package:tayfam/shell/derin_link/derin_link.dart'
-    show davetYolu, qrYolu;
+export 'package:tayfam/shell/derin_link/derin_link.dart' show davetYolu, qrYolu;
 export 'package:tayfam/shell/derin_link/derin_link_kutusu.dart';
 
 /// Yönlendiricinin üst düzeyine eklenen rotalar. Davet ekranının adresi
@@ -19,8 +18,5 @@ export 'package:tayfam/shell/derin_link/derin_link_kutusu.dart';
 /// katılım ekranının adresi de token taşımaz (`/q`; App ADR-0032 §3).
 List<RouteBase> derinLinkRotalari() => [
   GoRoute(path: davetYolu, builder: (context, state) => const DavetEkrani()),
-  GoRoute(
-    path: qrYolu,
-    builder: (context, state) => const QrKatilimEkrani(),
-  ),
+  GoRoute(path: qrYolu, builder: (context, state) => const QrKatilimEkrani()),
 ];

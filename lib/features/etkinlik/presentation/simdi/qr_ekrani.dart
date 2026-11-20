@@ -79,13 +79,18 @@ class _KatilimQruEkraniState extends ConsumerState<KatilimQruEkrani> {
       appBar: AppBar(title: Text(m.simdi_qr_baslik)),
       body: SafeArea(
         child: switch (durum) {
-          KatilimQruHatasi(:final hata) => YuklemeHatasi(
-            hata: hata,
-            onTekrarDene: () => unawaited(
-              ref
-                  .read(katilimQruProvider(widget.anahtar).notifier)
-                  .tekrarDene(),
-            ),
+          // Büyük yazıda taşmasın diye kaydırılabilir.
+          KatilimQruHatasi(:final hata) => ListView(
+            children: [
+              YuklemeHatasi(
+                hata: hata,
+                onTekrarDene: () => unawaited(
+                  ref
+                      .read(katilimQruProvider(widget.anahtar).notifier)
+                      .tekrarDene(),
+                ),
+              ),
+            ],
           ),
           _ => Center(
             child: SingleChildScrollView(

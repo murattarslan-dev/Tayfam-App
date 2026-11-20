@@ -28,8 +28,8 @@ const EtkinlikAnahtari _anahtar = (
 );
 
 /// Sahte token'lar (22 karakter base64url; gerçek değil).
-const String _ilkToken = 'sahte_qr-sahte_qr-0001';
-const String _ikinciToken = 'sahte_qr-sahte_qr-0002';
+const String _ilkDeger = 'sahte_qr-sahte_qr-0001';
+const String _ikinciDeger = 'sahte_qr-sahte_qr-0002';
 
 Map<String, Object?> _qrJson(String token, {DateTime? bitis}) => {
   'token': token,
@@ -38,16 +38,18 @@ Map<String, Object?> _qrJson(String token, {DateTime? bitis}) => {
 };
 
 /// Sürmekte olan yüz yüze etkinlik.
-Map<String, Object?> _suren({bool yonetebilir = false, String mod = 'in_person'}) =>
-    etkinlikJson(
-      tur: 'general',
-      baslik: 'Masa kuruldu',
-      mod: mod,
-      baslangic: sabitSimdi.subtract(const Duration(minutes: 25)),
-      sure: const Duration(hours: 12),
-      yonetebilir: yonetebilir,
-      acikUclu: true,
-    );
+Map<String, Object?> _suren({
+  bool yonetebilir = false,
+  String mod = 'in_person',
+}) => etkinlikJson(
+  tur: 'general',
+  baslik: 'Masa kuruldu',
+  mod: mod,
+  baslangic: sabitSimdi.subtract(const Duration(minutes: 25)),
+  sure: const Duration(hours: 12),
+  yonetebilir: yonetebilir,
+  acikUclu: true,
+);
 
 final class _SahteIsik implements QrEkranIsigi {
   final List<bool> cagrilar = [];
@@ -95,29 +97,32 @@ void main() {
   group('katılım QR\'ı notifier\'ı', () {
     test('açılınca token ister; süresi dolmadan yenisini ister; link '
         'https://tayfam.app/q#<token>', () async {
-      final tokenlar = [_ilkToken, _ikinciToken];
+      final tokenlar = [_ilkDeger, _ikinciDeger];
       var i = 0;
       final tasima = etkinlikTasimasi({
         'POST $_qrYolu': (_) => _qrJson(tokenlar[i++]),
       });
       final (:c, :zaman) = _kapsayici(tasima);
       final abonelik = c.listen(katilimQruProvider(_anahtar), (_, _) {});
-      expect(c.read(katilimQruProvider(_anahtar)), isA<KatilimQruHazirlaniyor>());
+      expect(
+        c.read(katilimQruProvider(_anahtar)),
+        isA<KatilimQruHazirlaniyor>(),
+      );
       await pumpEventQueue();
 
       final istek = tasima.giden('POST', _qrYolu).single;
       expect(istek.yolParametreleri['event_id'], ornekEtkinlikId);
       expect(istek.govde, isNull);
       final ilk = c.read(katilimQruProvider(_anahtar)) as KatilimQruHazir;
-      expect(ilk.link, 'https://tayfam.app/q#$_ilkToken');
-      expect(ilk.toString(), isNot(contains(_ilkToken)));
+      expect(ilk.link, 'https://tayfam.app/q#$_ilkDeger');
+      expect(ilk.toString(), isNot(contains(_ilkDeger)));
       expect(zaman.etkin.single.sure, qrTokenOmru - qrYenilemePayi);
 
       zaman.calistir();
       await pumpEventQueue();
       expect(tasima.giden('POST', _qrYolu), hasLength(2));
       final ikinci = c.read(katilimQruProvider(_anahtar)) as KatilimQruHazir;
-      expect(ikinci.link, 'https://tayfam.app/q#$_ikinciToken');
+      expect(ikinci.link, 'https://tayfam.app/q#$_ikinciDeger');
 
       // Ekran kapanınca yenileme durur.
       abonelik.close();
@@ -131,9 +136,9 @@ void main() {
       var i = 0;
       final tasima = etkinlikTasimasi({
         'POST $_qrYolu': (_) => switch (i++) {
-          0 => _qrJson(_ilkToken),
+          0 => _qrJson(_ilkDeger),
           1 => const ApiOffline(),
-          _ => _qrJson(_ikinciToken),
+          _ => _qrJson(_ikinciDeger),
         },
       });
       final (:c, :zaman) = _kapsayici(tasima);
@@ -142,14 +147,14 @@ void main() {
       zaman.calistir();
       await pumpEventQueue();
       final durum = c.read(katilimQruProvider(_anahtar)) as KatilimQruHazir;
-      expect(durum.link, endsWith(_ilkToken));
+      expect(durum.link, endsWith(_ilkDeger));
       expect(zaman.etkin.single.sure, qrYenidenDenemeAraligi);
 
       zaman.calistir();
       await pumpEventQueue();
       expect(
         (c.read(katilimQruProvider(_anahtar)) as KatilimQruHazir).link,
-        endsWith(_ikinciToken),
+        endsWith(_ikinciDeger),
       );
     });
 
@@ -159,7 +164,7 @@ void main() {
       final tasima = etkinlikTasimasi({
         'POST $_qrYolu': (_) => i++ == 0
             ? const ApiProblem(status: 409, type: ProblemType.eventEnded)
-            : _qrJson(_ilkToken),
+            : _qrJson(_ilkDeger),
       });
       final (:c, :zaman) = _kapsayici(tasima);
       c.listen(katilimQruProvider(_anahtar), (_, _) {});
@@ -180,7 +185,7 @@ void main() {
       };
       addTearDown(() => debugPrint = onceki);
       final tasima = etkinlikTasimasi({
-        'POST $_qrYolu': (_) => _qrJson(_ilkToken),
+        'POST $_qrYolu': (_) => _qrJson(_ilkDeger),
       });
       final (:c, zaman: _) = _kapsayici(tasima);
       final durumlar = <String>[];
@@ -190,7 +195,10 @@ void main() {
       );
       await pumpEventQueue();
       expect(durumlar, isNotEmpty);
-      expect([...loglar, ...durumlar].where((l) => l.contains(_ilkToken)), isEmpty);
+      expect(
+        [...loglar, ...durumlar].where((l) => l.contains(_ilkDeger)),
+        isEmpty,
+      );
     });
   });
 
@@ -198,7 +206,10 @@ void main() {
     Event ev(Map<String, Object?> json) => Event.fromJson(json);
 
     test('organizatör/yönetici: yüz yüze, bitmemiş etkinlikte QR göster', () {
-      expect(qrDugmesi(ev(_suren(yonetebilir: true)), sabitSimdi), QrDugmesi.goster);
+      expect(
+        qrDugmesi(ev(_suren(yonetebilir: true)), sabitSimdi),
+        QrDugmesi.goster,
+      );
       // Başlamamış etkinlikte de gösterilebilir.
       expect(
         qrDugmesi(ev(etkinlikJson(yonetebilir: true)), sabitSimdi),
@@ -247,7 +258,7 @@ void main() {
         'GET $etkinlikYolu': (_) => _suren(yonetebilir: yonetebilir),
         'GET $hesapYolu': (_) =>
             hesapJson(yonetebilir ? organizatorId : katilimciId),
-        'POST $_qrYolu': (_) => _qrJson(_ilkToken),
+        'POST $_qrYolu': (_) => _qrJson(_ilkDeger),
       });
       await uygulamayiAc(
         tester,
@@ -269,7 +280,7 @@ void main() {
       testWidgets('QR göster → QR ekranı (${tema.name}, 2× yazı, 320 dp)', (
         tester,
       ) async {
-        ekranBoyutu(tester, genislik: 320, yukseklik: 2400);
+        ekranBoyutu(tester, genislik: 320, yukseklik: 4000);
         ikiKatYazi(tester);
         final (tasima, isik) = await ac(tester, yonetebilir: true, tema: tema);
         expect(find.text(arbMetni('simdi_qr_okut')), findsNothing);
@@ -286,7 +297,7 @@ void main() {
         expect(
           yonlendiriciyiAl(tester).routerDelegate.currentConfiguration.uri
               .toString(),
-          isNot(contains(_ilkToken)),
+          isNot(contains(_ilkDeger)),
         );
 
         await tester.pageBack();

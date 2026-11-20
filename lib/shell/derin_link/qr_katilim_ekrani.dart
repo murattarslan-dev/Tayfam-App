@@ -50,9 +50,7 @@ class QrKatilimEkrani extends ConsumerWidget {
       kamera: kamera,
       ayarlar: ref.watch(ayarlarAciciProvider),
       tekrarOkut: n.tekrarOkut,
-      tekrarDene: n.tekrarDenenebilir
-          ? () => unawaited(n.tekrarDene())
-          : null,
+      tekrarDene: n.tekrarDenenebilir ? () => unawaited(n.tekrarDene()) : null,
       kapat: () => _kapat(context),
       etkinligeGit: (tayfaId, etkinlikId) =>
           context.go(Adresler.etkinlik(tayfaId, etkinlikId)),

@@ -21,7 +21,7 @@ import '../../features/tayfa/sahteler.dart';
 import '../../yardimcilar.dart';
 
 /// Biçimi geçerli, açıkça sahte QR token'ı (22 karakter base64url).
-const String _token = 'sahte_qr-sahte_qr-0123';
+const String _deger = 'sahte_qr-sahte_qr-0123';
 
 const String _katilYolu = '/v1/join-qr';
 
@@ -85,13 +85,13 @@ void main() {
   group('gelenAdresiAyristir: QR ile katılım linki', () {
     test('tam uygulama linki', () {
       expect(
-        _ayristir('https://tayfam.app/q#$_token'),
-        const QrKatilimLinki(_token),
+        _ayristir('https://tayfam.app/q#$_deger'),
+        const QrKatilimLinki(_deger),
       );
     });
 
     test('yalnızca yol + fragment (eski gömücü biçimi)', () {
-      expect(_ayristir('/q#$_token'), const QrKatilimLinki(_token));
+      expect(_ayristir('/q#$_deger'), const QrKatilimLinki(_deger));
     });
 
     test('fragmentsiz iç /q adresi uygulamanın kendi ekranı', () {
@@ -100,30 +100,30 @@ void main() {
 
     test('QR linki ayrıştırıcıdan geçer', () {
       expect(
-        _ayristir(Adresler.qrKatilimLinki(_token)),
-        const QrKatilimLinki(_token),
+        _ayristir(Adresler.qrKatilimLinki(_deger)),
+        const QrKatilimLinki(_deger),
       );
-      expect(Adresler.qrKatilimLinki(_token), 'https://tayfam.app/q#$_token');
+      expect(Adresler.qrKatilimLinki(_deger), 'https://tayfam.app/q#$_deger');
     });
 
     for (final adres in [
-      'http://tayfam.app/q#$_token',
-      'https://tayfam.app.kotu.example/q#$_token',
-      'https://kotu.example/q#$_token',
-      'https://www.tayfam.app/q#$_token',
-      'https://tayfam.app:8443/q#$_token',
-      'https://biri@tayfam.app/q#$_token',
-      'https://tayfam.app/qr#$_token',
-      'https://tayfam.app/q/x#$_token',
-      'https://tayfam.app/x/q#$_token',
-      'https://tayfam.app/q?token=$_token',
-      'https://tayfam.app/q?utm=x#$_token',
+      'http://tayfam.app/q#$_deger',
+      'https://tayfam.app.kotu.example/q#$_deger',
+      'https://kotu.example/q#$_deger',
+      'https://www.tayfam.app/q#$_deger',
+      'https://tayfam.app:8443/q#$_deger',
+      'https://biri@tayfam.app/q#$_deger',
+      'https://tayfam.app/qr#$_deger',
+      'https://tayfam.app/q/x#$_deger',
+      'https://tayfam.app/x/q#$_deger',
+      'https://tayfam.app/q?token=$_deger',
+      'https://tayfam.app/q?utm=x#$_deger',
       'https://tayfam.app/q',
       'https://tayfam.app/q#',
-      'https://tayfam.app/q#${_token}a',
+      'https://tayfam.app/q#${_deger}a',
       'https://tayfam.app/q#kısa',
       'https://tayfam.app/q#sahte_qr.sahte_qr.0123',
-      'tayfam://q#$_token',
+      'tayfam://q#$_deger',
     ]) {
       test('reddedilir: $adres', () {
         expect(_ayristir(adres), isA<GecersizLink>());
@@ -131,23 +131,23 @@ void main() {
     }
 
     test('toString token içermez', () {
-      expect(const QrKatilimLinki(_token).toString(), isNot(contains(_token)));
+      expect(const QrKatilimLinki(_deger).toString(), isNot(contains(_deger)));
     });
   });
 
   group('qrMetnindenToken (kamerayla okunan metin)', () {
     test('yalnızca tam https://tayfam.app/q#<token> kabul edilir', () {
-      expect(qrMetnindenToken('https://tayfam.app/q#$_token'), _token);
+      expect(qrMetnindenToken('https://tayfam.app/q#$_deger'), _deger);
     });
 
     for (final metin in [
-      '/q#$_token',
-      'q#$_token',
-      _token,
-      'https://tayfam.app/davet#$_token',
+      '/q#$_deger',
+      'q#$_deger',
+      _deger,
+      'https://tayfam.app/davet#$_deger',
       'https://tayfam.app/r/TYF-8K2M4Q',
-      'https://kotu.example/q#$_token',
-      'https://tayfam.app/q?x=1#$_token',
+      'https://kotu.example/q#$_deger',
+      'https://tayfam.app/q?x=1#$_deger',
       'javascript:alert(1)',
       '',
       'http://[::1',
@@ -162,20 +162,20 @@ void main() {
     test('QR linki kutuya alınır, adres köke döner; token bir kez alınır', () {
       final kutu = DerinLinkKutusu();
       final konum = kutu.yakala(
-        Uri.parse('https://tayfam.app/q#$_token'),
+        Uri.parse('https://tayfam.app/q#$_deger'),
         oturumAcik: true,
       );
       expect(konum.toString(), Adresler.kok);
-      expect(konum.toString(), isNot(contains(_token)));
+      expect(konum.toString(), isNot(contains(_deger)));
       expect(kutu.qrBekliyor, isTrue);
-      expect(kutu.qrTokeniAl(), _token);
+      expect(kutu.qrTokeniAl(), _deger);
       expect(kutu.qrBekliyor, isFalse);
       expect(kutu.qrTokeniAl(), isNull);
     });
 
     test('geçersiz QR linki kutuya alınmaz', () {
       final kutu = DerinLinkKutusu()
-        ..yakala(Uri.parse('https://kotu.example/q#$_token'), oturumAcik: true);
+        ..yakala(Uri.parse('https://kotu.example/q#$_deger'), oturumAcik: true);
       expect(kutu.qrBekliyor, isFalse);
     });
 
@@ -212,8 +212,7 @@ void main() {
       );
     });
 
-    test('oturum yokken önce giriş; tanıtım hedefi /q (adreste token yok)',
-        () {
+    test('oturum yokken önce giriş; tanıtım hedefi /q (adreste token yok)', () {
       expect(
         yonlendir(
           oturum: OturumDurumu.girisYok,
@@ -231,7 +230,7 @@ void main() {
         tanitim: TanitimDurumu.gosterilmedi,
       );
       expect(hedef, Adresler.hosGeldinAdresi(qrYolu));
-      expect(hedef, isNot(contains(_token)));
+      expect(hedef, isNot(contains(_deger)));
     });
   });
 
@@ -251,7 +250,7 @@ void main() {
       );
       addTearDown(c.dispose);
       final kutu = c.read(derinLinkKutusuProvider)
-        ..yakala(Uri.parse('https://tayfam.app/q#$_token'), oturumAcik: true);
+        ..yakala(Uri.parse('https://tayfam.app/q#$_deger'), oturumAcik: true);
       c.listen(
         qrKatilimProvider,
         (_, sonraki) => durumlar.add(sonraki.toString()),
@@ -262,15 +261,15 @@ void main() {
       await pumpEventQueue();
 
       final istek = tasima.giden('POST', _katilYolu).single;
-      expect(istek.govde, {'token': _token});
+      expect(istek.govde, {'token': _deger});
       final durum = c.read(qrKatilimProvider);
       expect(durum, isA<QrKatilimSonucu>());
       expect((durum as QrKatilimSonucu).sonuc.eventId, ornekEtkinlikId);
       expect(c.read(qrKatilimProvider.notifier).tekrarDenenebilir, isFalse);
 
-      expect(loglar.where((l) => l.contains(_token)), isEmpty);
+      expect(loglar.where((l) => l.contains(_deger)), isEmpty);
       expect(durumlar, hasLength(greaterThan(1)));
-      expect(durumlar.where((d) => d.contains(_token)), isEmpty);
+      expect(durumlar.where((d) => d.contains(_deger)), isEmpty);
     });
 
     test('kutuda token yoksa kamera açılır; istek gitmez', () async {
@@ -286,7 +285,7 @@ void main() {
       final c = _kapsayici(tasima);
       await c
           .read(qrKatilimProvider.notifier)
-          .kodOkundu('https://kotu.example/q#$_token');
+          .kodOkundu('https://kotu.example/q#$_deger');
       expect(c.read(qrKatilimProvider), isA<QrTaninmadi>());
       expect(tasima.giden('POST', _katilYolu), isEmpty);
 
@@ -301,9 +300,9 @@ void main() {
       final c = _kapsayici(tasima);
       await c
           .read(qrKatilimProvider.notifier)
-          .kodOkundu('https://tayfam.app/q#$_token');
+          .kodOkundu('https://tayfam.app/q#$_deger');
       final istek = tasima.giden('POST', _katilYolu).single;
-      expect(istek.govde, {'token': _token});
+      expect(istek.govde, {'token': _deger});
       expect(istek.yolParametreleri, isEmpty);
       final durum = c.read(qrKatilimProvider);
       expect((durum as QrKatilimSonucu).sonuc.pending, isTrue);
@@ -316,15 +315,12 @@ void main() {
         'POST $_katilYolu': (_) => switch (deneme++) {
           0 => const ApiOffline(),
           1 => _sonucJson(katilim: 'attended'),
-          _ => const ApiProblem(
-            status: 400,
-            type: ProblemType.invalidJoinQr,
-          ),
+          _ => const ApiProblem(status: 400, type: ProblemType.invalidJoinQr),
         },
       });
       final c = _kapsayici(tasima);
       final n = c.read(qrKatilimProvider.notifier);
-      await n.kodOkundu('https://tayfam.app/q#$_token');
+      await n.kodOkundu('https://tayfam.app/q#$_deger');
       expect(c.read(qrKatilimProvider), isA<QrKatilimHatasi>());
       expect(n.tekrarDenenebilir, isTrue);
 
@@ -334,17 +330,14 @@ void main() {
       expect(tasima.giden('POST', _katilYolu), hasLength(2));
       expect(
         tasima.giden('POST', _katilYolu).map((i) => i.govde),
-        everyElement({'token': _token}),
+        everyElement({'token': _deger}),
       );
 
       n.tekrarOkut();
-      await n.kodOkundu('https://tayfam.app/q#$_token');
+      await n.kodOkundu('https://tayfam.app/q#$_deger');
       final hata = c.read(qrKatilimProvider) as QrKatilimHatasi;
-      expect(
-        (hata.hata as ApiProblem).type,
-        ProblemType.invalidJoinQr,
-      );
-      expect(hata.toString(), isNot(contains(_token)));
+      expect((hata.hata as ApiProblem).type, ProblemType.invalidJoinQr);
+      expect(hata.toString(), isNot(contains(_deger)));
     });
   });
 
