@@ -10,6 +10,7 @@ export 'package:tayfam/core/bilesenler/bolum_basligi.dart';
 export 'package:tayfam/core/bilesenler/bolum_etiketi.dart';
 export 'package:tayfam/core/bilesenler/cerceveli_eylem.dart';
 export 'package:tayfam/core/bilesenler/cok_yakinda_rozeti.dart';
+export 'package:tayfam/core/bilesenler/ders_konu_secici.dart';
 export 'package:tayfam/core/bilesenler/etiket.dart';
 export 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
 export 'package:tayfam/core/bilesenler/eylemli_satir.dart';

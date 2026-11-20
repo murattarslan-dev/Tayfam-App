@@ -13159,5 +13159,37 @@
   "bayrak_katilimcilar_gizli_kisa": "Katılımcı listesi gizli",
   "@bayrak_katilimcilar_gizli_kisa": {
     "description": "Etkinlik detayındaki katılımcı özetinde, liste gizliyken sayıların yanındaki kısa not."
+  },
+  "ders_konu_duzey": "Sınav / düzey",
+  "@ders_konu_duzey": {
+    "description": "Ortak ders/konu seçicide (soru havuzu, materyal) ilk seviyenin alan etiketi ve seçenek listesinin başlığı (LGS, YKS gibi)."
+  },
+  "ders_konu_ders": "Ders",
+  "@ders_konu_ders": {
+    "description": "Ortak ders/konu seçicide zorunlu ders alanının etiketi ve ders listesinin başlığı."
+  },
+  "ders_konu_konu": "Konu (isteğe bağlı)",
+  "@ders_konu_konu": {
+    "description": "Ortak ders/konu seçicide, seçilen dersin altındaki isteğe bağlı konu alanının etiketi ve konu listesinin başlığı."
+  },
+  "ders_konu_konu_belirtme": "Konu belirtme",
+  "@ders_konu_konu_belirtme": {
+    "description": "Ortak ders/konu seçicinin konu listesinin başındaki, konuyu boş bırakan (yalnızca ders) seçenek."
+  },
+  "ders_konu_ara": "Ara",
+  "@ders_konu_ara": {
+    "description": "Ortak ders/konu seçicide uzun listelerin üstündeki arama kutusunun etiketi."
+  },
+  "ders_konu_sonuc_yok": "Eşleşen yok.",
+  "@ders_konu_sonuc_yok": {
+    "description": "Ortak ders/konu seçicide arama hiçbir seçenekle eşleşmeyince listenin yerindeki not."
+  },
+  "ders_konu_emekli": "Artık seçilemez",
+  "@ders_konu_emekli": {
+    "description": "Ortak ders/konu seçicide, mevcut değer kullanımdan kaldırılmış (emekli) bir etiketse alanın ve satırın altındaki not."
+  },
+  "ders_konu_liste_bos": "Ders listesi henüz hazır değil.",
+  "@ders_konu_liste_bos": {
+    "description": "Ortak ders/konu seçicide katalogda hiç seçilebilir ders yokken seçicinin yerindeki sakin not."
   }
 }
