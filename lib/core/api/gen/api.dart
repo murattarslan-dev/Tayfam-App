@@ -15,6 +15,7 @@ export 'package:tayfam/core/api/gen/apis/direct_messages_api.dart';
 export 'package:tayfam/core/api/gen/apis/discover_api.dart';
 export 'package:tayfam/core/api/gen/apis/event_series_api.dart';
 export 'package:tayfam/core/api/gen/apis/events_api.dart';
+export 'package:tayfam/core/api/gen/apis/home_widgets_api.dart';
 export 'package:tayfam/core/api/gen/apis/instant_events_api.dart';
 export 'package:tayfam/core/api/gen/apis/invitations_api.dart';
 export 'package:tayfam/core/api/gen/apis/invite_joins_api.dart';

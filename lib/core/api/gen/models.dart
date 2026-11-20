@@ -2959,6 +2959,182 @@ final class CatalogVocabulary {
   int get hashCode => Object.hashAll(<Object?>[namespace]);
 }
 
+/// Bir kazanan; tam biri bulunur. Kişi (`user_id`), takım (`team_id`;
+/// `team_name` adsız takımda yoktur, `team_position` 1'den) ya da
+/// misafir oyuncu (`guest_id`; `guest_nickname` silinmişse yoktur).
+final class ChampionWinner {
+  const ChampionWinner({
+    this.userId,
+    this.teamId,
+    this.teamName,
+    this.teamPosition,
+    this.guestId,
+    this.guestNickname,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChampionWinner.fromJson(Map<String, Object?> json) => ChampionWinner(
+    userId: switch (json['user_id']) {
+      null => null,
+      final Object v => _readString(v, 'ChampionWinner.user_id'),
+    },
+    teamId: switch (json['team_id']) {
+      null => null,
+      final Object v => _readString(v, 'ChampionWinner.team_id'),
+    },
+    teamName: switch (json['team_name']) {
+      null => null,
+      final Object v => _readString(v, 'ChampionWinner.team_name'),
+    },
+    teamPosition: switch (json['team_position']) {
+      null => null,
+      final Object v => _readInt(v, 'ChampionWinner.team_position'),
+    },
+    guestId: switch (json['guest_id']) {
+      null => null,
+      final Object v => _readString(v, 'ChampionWinner.guest_id'),
+    },
+    guestNickname: switch (json['guest_nickname']) {
+      null => null,
+      final Object v => _readString(v, 'ChampionWinner.guest_nickname'),
+    },
+  );
+
+  final String? userId;
+
+  final String? teamId;
+
+  final String? teamName;
+
+  final int? teamPosition;
+
+  final String? guestId;
+
+  final String? guestNickname;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (userId case final value?) 'user_id': value,
+    if (teamId case final value?) 'team_id': value,
+    if (teamName case final value?) 'team_name': value,
+    if (teamPosition case final value?) 'team_position': value,
+    if (guestId case final value?) 'guest_id': value,
+    if (guestNickname case final value?) 'guest_nickname': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChampionWinner &&
+          userId == other.userId &&
+          teamId == other.teamId &&
+          teamName == other.teamName &&
+          teamPosition == other.teamPosition &&
+          guestId == other.guestId &&
+          guestNickname == other.guestNickname;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    userId,
+    teamId,
+    teamName,
+    teamPosition,
+    guestId,
+    guestNickname,
+  ]);
+}
+
+/// Şampiyonlar: bu türlerdeki etkinliklerin ilan edilmiş kazananları
+/// (boş liste her tür) ve dönem (`last_30_days` ya da `this_year`).
+/// Ayarsız kart bu yılın bütün türlerini gösterir.
+final class ChampionsWidgetConfig {
+  const ChampionsWidgetConfig({required this.eventTypes, required this.period});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChampionsWidgetConfig.fromJson(Map<String, Object?> json) =>
+      ChampionsWidgetConfig(
+        eventTypes: List<String>.unmodifiable(
+          _readList(
+            json['event_types'],
+            'ChampionsWidgetConfig.event_types',
+          ).map(
+            (Object? e0) =>
+                _readString(e0, 'ChampionsWidgetConfig.event_types'),
+          ),
+        ),
+        period: HomeWidgetPeriod.fromWire(
+          _readString(json['period'], 'ChampionsWidgetConfig.period'),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 10.
+  final List<String> eventTypes;
+
+  final HomeWidgetPeriod period;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'event_types': <Object?>[for (final e0 in eventTypes) e0],
+    'period': period.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChampionsWidgetConfig &&
+          _deepEquals(eventTypes, other.eventTypes) &&
+          period == other.period;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(eventTypes), period]);
+}
+
+final class ChampionsWidgetData {
+  const ChampionsWidgetData({required this.period, required this.champions});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory ChampionsWidgetData.fromJson(Map<String, Object?> json) =>
+      ChampionsWidgetData(
+        period: HomeWidgetPeriod.fromWire(
+          _readString(json['period'], 'ChampionsWidgetData.period'),
+        ),
+        champions: List<HomeChampion>.unmodifiable(
+          _readList(json['champions'], 'ChampionsWidgetData.champions').map(
+            (Object? e0) => HomeChampion.fromJson(
+              _readObject(e0, 'ChampionsWidgetData.champions'),
+            ),
+          ),
+        ),
+      );
+
+  final HomeWidgetPeriod period;
+
+  /// Kısıtlar: maxItems: 10.
+  final List<HomeChampion> champions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'period': period.wire,
+    'champions': <Object?>[for (final e0 in champions) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChampionsWidgetData &&
+          period == other.period &&
+          _deepEquals(champions, other.champions);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[period, _deepHash(champions)]);
+}
+
 final class Channel {
   const Channel({
     required this.id,
@@ -4733,6 +4909,75 @@ enum ConversationStatus {
     }
     return unknown;
   }
+}
+
+/// Geri sayım. Başlık kötüye kullanım filtresinden geçer; an geçince
+/// bileşen gösterilmez.
+final class CountdownWidgetConfig {
+  const CountdownWidgetConfig({required this.title, required this.at});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CountdownWidgetConfig.fromJson(Map<String, Object?> json) =>
+      CountdownWidgetConfig(
+        title: _readString(json['title'], 'CountdownWidgetConfig.title'),
+        at: _readDateTime(json['at'], 'CountdownWidgetConfig.at'),
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 60.
+  final String title;
+
+  /// Saniyeye yuvarlanır.
+  final DateTime at;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'title': title,
+    'at': at.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CountdownWidgetConfig && title == other.title && at == other.at;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[title, at]);
+}
+
+final class CountdownWidgetData {
+  const CountdownWidgetData({required this.title, this.at});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CountdownWidgetData.fromJson(Map<String, Object?> json) =>
+      CountdownWidgetData(
+        title: _readString(json['title'], 'CountdownWidgetData.title'),
+        at: switch (json['at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'CountdownWidgetData.at'),
+        },
+      );
+
+  final String title;
+
+  final DateTime? at;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'title': title,
+    if (at case final value?) 'at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CountdownWidgetData && title == other.title && at == other.at;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[title, at]);
 }
 
 final class CreatedInvite {
@@ -14943,6 +15188,695 @@ final class FriendSuggestionList {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(suggestions)]);
 }
 
+/// Yıllık hedef: tayfa istatistiğinden bir metrik ve hedef değer.
+/// İlerleme yalnızca istatistikten dolar, elle artırılmaz.
+final class GoalWidgetConfig {
+  const GoalWidgetConfig({
+    required this.metricKey,
+    required this.target,
+    this.year,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory GoalWidgetConfig.fromJson(Map<String, Object?> json) =>
+      GoalWidgetConfig(
+        metricKey: _readString(
+          json['metric_key'],
+          'GoalWidgetConfig.metric_key',
+        ),
+        target: _readDouble(json['target'], 'GoalWidgetConfig.target'),
+        year: switch (json['year']) {
+          null => null,
+          final Object v => _readInt(v, 'GoalWidgetConfig.year'),
+        },
+      );
+
+  /// Kısıtlar: maxLength: 130.
+  final String metricKey;
+
+  /// Kısıtlar: maximum: 1000000000; exclusiveMinimum: 0.
+  final double target;
+
+  /// Yoksa her zaman içinde bulunulan yıl.
+  ///
+  /// Kısıtlar: minimum: 2000; maximum: 2999.
+  final int? year;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_key': metricKey,
+    'target': target,
+    if (year case final value?) 'year': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GoalWidgetConfig &&
+          metricKey == other.metricKey &&
+          target == other.target &&
+          year == other.year;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[metricKey, target, year]);
+}
+
+final class GoalWidgetData {
+  const GoalWidgetData({
+    required this.metricKey,
+    required this.target,
+    required this.year,
+    required this.value,
+    required this.eventCount,
+    required this.reached,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory GoalWidgetData.fromJson(Map<String, Object?> json) => GoalWidgetData(
+    metricKey: _readString(json['metric_key'], 'GoalWidgetData.metric_key'),
+    target: _readDouble(json['target'], 'GoalWidgetData.target'),
+    year: _readInt(json['year'], 'GoalWidgetData.year'),
+    value: _readDouble(json['value'], 'GoalWidgetData.value'),
+    eventCount: _readInt(json['event_count'], 'GoalWidgetData.event_count'),
+    reached: _readBool(json['reached'], 'GoalWidgetData.reached'),
+  );
+
+  final String metricKey;
+
+  final double target;
+
+  final int year;
+
+  final double value;
+
+  final int eventCount;
+
+  final bool reached;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_key': metricKey,
+    'target': target,
+    'year': year,
+    'value': value,
+    'event_count': eventCount,
+    'reached': reached,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GoalWidgetData &&
+          metricKey == other.metricKey &&
+          target == other.target &&
+          year == other.year &&
+          value == other.value &&
+          eventCount == other.eventCount &&
+          reached == other.reached;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    metricKey,
+    target,
+    year,
+    value,
+    eventCount,
+    reached,
+  ]);
+}
+
+final class HomeChampion {
+  const HomeChampion({
+    required this.eventId,
+    required this.eventTitle,
+    required this.eventType,
+    this.startsAt,
+    required this.componentKey,
+    this.announcedAt,
+    required this.winners,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeChampion.fromJson(Map<String, Object?> json) => HomeChampion(
+    eventId: _readString(json['event_id'], 'HomeChampion.event_id'),
+    eventTitle: _readString(json['event_title'], 'HomeChampion.event_title'),
+    eventType: _readString(json['event_type'], 'HomeChampion.event_type'),
+    startsAt: switch (json['starts_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'HomeChampion.starts_at'),
+    },
+    componentKey: _readString(
+      json['component_key'],
+      'HomeChampion.component_key',
+    ),
+    announcedAt: switch (json['announced_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'HomeChampion.announced_at'),
+    },
+    winners: List<ChampionWinner>.unmodifiable(
+      _readList(json['winners'], 'HomeChampion.winners').map(
+        (Object? e0) =>
+            ChampionWinner.fromJson(_readObject(e0, 'HomeChampion.winners')),
+      ),
+    ),
+  );
+
+  final String eventId;
+
+  final String eventTitle;
+
+  final String eventType;
+
+  final DateTime? startsAt;
+
+  /// Etkinliğin kutlama bileşeni.
+  final String componentKey;
+
+  final DateTime? announcedAt;
+
+  final List<ChampionWinner> winners;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'event_id': eventId,
+    'event_title': eventTitle,
+    'event_type': eventType,
+    if (startsAt case final value?)
+      'starts_at': value.toUtc().toIso8601String(),
+    'component_key': componentKey,
+    if (announcedAt case final value?)
+      'announced_at': value.toUtc().toIso8601String(),
+    'winners': <Object?>[for (final e0 in winners) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeChampion &&
+          eventId == other.eventId &&
+          eventTitle == other.eventTitle &&
+          eventType == other.eventType &&
+          startsAt == other.startsAt &&
+          componentKey == other.componentKey &&
+          announcedAt == other.announcedAt &&
+          _deepEquals(winners, other.winners);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    eventId,
+    eventTitle,
+    eventType,
+    startsAt,
+    componentKey,
+    announcedAt,
+    _deepHash(winners),
+  ]);
+}
+
+final class HomeMetricValue {
+  const HomeMetricValue({
+    required this.metricKey,
+    required this.value,
+    required this.eventCount,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeMetricValue.fromJson(
+    Map<String, Object?> json,
+  ) => HomeMetricValue(
+    metricKey: _readString(json['metric_key'], 'HomeMetricValue.metric_key'),
+    value: _readDouble(json['value'], 'HomeMetricValue.value'),
+    eventCount: _readInt(json['event_count'], 'HomeMetricValue.event_count'),
+  );
+
+  final String metricKey;
+
+  /// Henüz sayılmamış metrikte 0.
+  final double value;
+
+  final int eventCount;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_key': metricKey,
+    'value': value,
+    'event_count': eventCount,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeMetricValue &&
+          metricKey == other.metricKey &&
+          value == other.value &&
+          eventCount == other.eventCount;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[metricKey, value, eventCount]);
+}
+
+/// Ana sayfa bileşeni. `kind` istemciye bilgi içindir; anahtar
+/// listesi sunucunundur ve büyüyebilir (bugün `upcoming`,
+/// `announcements`, `polls`, `questions`, `stats`, `goal`,
+/// `countdown`, `champions`, `log_summary`).
+final class HomeWidget {
+  const HomeWidget({
+    required this.key,
+    required this.kind,
+    this.module,
+    required this.enabled,
+    required this.position,
+    this.config,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeWidget.fromJson(Map<String, Object?> json) => HomeWidget(
+    key: _readString(json['key'], 'HomeWidget.key'),
+    kind: HomeWidgetKind.fromWire(_readString(json['kind'], 'HomeWidget.kind')),
+    module: switch (json['module']) {
+      null => null,
+      final Object v => _readString(v, 'HomeWidget.module'),
+    },
+    enabled: _readBool(json['enabled'], 'HomeWidget.enabled'),
+    position: _readInt(json['position'], 'HomeWidget.position'),
+    config: switch (json['config']) {
+      null => null,
+      final Object v => HomeWidgetConfig.fromJson(
+        _readObject(v, 'HomeWidget.config'),
+      ),
+    },
+  );
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// `section` eski sabit bölüm (modülünün listesi), `display`
+  /// gösterim bileşeni (verisi `…/data`), `module` modül vitrini
+  /// (verisi modülün kendi uçlarından).
+  final HomeWidgetKind kind;
+
+  /// Bileşenin bağlı olduğu tayfa modülü; yoksa alan yoktur.
+  final String? module;
+
+  /// Ana sayfada (`home_widgets`) her zaman true.
+  final bool enabled;
+
+  /// Sıradaki kartından sonraki yeri, 0'dan.
+  final int position;
+
+  final HomeWidgetConfig? config;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'kind': kind.wire,
+    if (module case final value?) 'module': value,
+    'enabled': enabled,
+    'position': position,
+    if (config case final value?) 'config': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeWidget &&
+          key == other.key &&
+          kind == other.kind &&
+          module == other.module &&
+          enabled == other.enabled &&
+          position == other.position &&
+          config == other.config;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[key, kind, module, enabled, position, config]);
+}
+
+/// Bileşenin ayarı: en fazla bileşenin kendi anahtarındaki alan
+/// bulunur. Okurken `stats` ve `champions` her zaman ayarlıdır
+/// (varsayılanlarla).
+final class HomeWidgetConfig {
+  const HomeWidgetConfig({
+    this.stats,
+    this.goal,
+    this.countdown,
+    this.champions,
+    this.logSummary,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeWidgetConfig.fromJson(Map<String, Object?> json) =>
+      HomeWidgetConfig(
+        stats: switch (json['stats']) {
+          null => null,
+          final Object v => StatsWidgetConfig.fromJson(
+            _readObject(v, 'HomeWidgetConfig.stats'),
+          ),
+        },
+        goal: switch (json['goal']) {
+          null => null,
+          final Object v => GoalWidgetConfig.fromJson(
+            _readObject(v, 'HomeWidgetConfig.goal'),
+          ),
+        },
+        countdown: switch (json['countdown']) {
+          null => null,
+          final Object v => CountdownWidgetConfig.fromJson(
+            _readObject(v, 'HomeWidgetConfig.countdown'),
+          ),
+        },
+        champions: switch (json['champions']) {
+          null => null,
+          final Object v => ChampionsWidgetConfig.fromJson(
+            _readObject(v, 'HomeWidgetConfig.champions'),
+          ),
+        },
+        logSummary: switch (json['log_summary']) {
+          null => null,
+          final Object v => LogSummaryWidgetConfig.fromJson(
+            _readObject(v, 'HomeWidgetConfig.log_summary'),
+          ),
+        },
+      );
+
+  final StatsWidgetConfig? stats;
+
+  final GoalWidgetConfig? goal;
+
+  final CountdownWidgetConfig? countdown;
+
+  final ChampionsWidgetConfig? champions;
+
+  final LogSummaryWidgetConfig? logSummary;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (stats case final value?) 'stats': value.toJson(),
+    if (goal case final value?) 'goal': value.toJson(),
+    if (countdown case final value?) 'countdown': value.toJson(),
+    if (champions case final value?) 'champions': value.toJson(),
+    if (logSummary case final value?) 'log_summary': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeWidgetConfig &&
+          stats == other.stats &&
+          goal == other.goal &&
+          countdown == other.countdown &&
+          champions == other.champions &&
+          logSummary == other.logSummary;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[stats, goal, countdown, champions, logSummary]);
+}
+
+/// Bileşenin anahtarındaki alan bulunur.
+final class HomeWidgetData {
+  const HomeWidgetData({
+    required this.key,
+    this.stats,
+    this.goal,
+    this.countdown,
+    this.champions,
+    this.logSummary,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeWidgetData.fromJson(Map<String, Object?> json) => HomeWidgetData(
+    key: _readString(json['key'], 'HomeWidgetData.key'),
+    stats: switch (json['stats']) {
+      null => null,
+      final Object v => StatsWidgetData.fromJson(
+        _readObject(v, 'HomeWidgetData.stats'),
+      ),
+    },
+    goal: switch (json['goal']) {
+      null => null,
+      final Object v => GoalWidgetData.fromJson(
+        _readObject(v, 'HomeWidgetData.goal'),
+      ),
+    },
+    countdown: switch (json['countdown']) {
+      null => null,
+      final Object v => CountdownWidgetData.fromJson(
+        _readObject(v, 'HomeWidgetData.countdown'),
+      ),
+    },
+    champions: switch (json['champions']) {
+      null => null,
+      final Object v => ChampionsWidgetData.fromJson(
+        _readObject(v, 'HomeWidgetData.champions'),
+      ),
+    },
+    logSummary: switch (json['log_summary']) {
+      null => null,
+      final Object v => LogSummaryWidgetData.fromJson(
+        _readObject(v, 'HomeWidgetData.log_summary'),
+      ),
+    },
+  );
+
+  final String key;
+
+  final StatsWidgetData? stats;
+
+  final GoalWidgetData? goal;
+
+  final CountdownWidgetData? countdown;
+
+  final ChampionsWidgetData? champions;
+
+  final LogSummaryWidgetData? logSummary;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    if (stats case final value?) 'stats': value.toJson(),
+    if (goal case final value?) 'goal': value.toJson(),
+    if (countdown case final value?) 'countdown': value.toJson(),
+    if (champions case final value?) 'champions': value.toJson(),
+    if (logSummary case final value?) 'log_summary': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeWidgetData &&
+          key == other.key &&
+          stats == other.stats &&
+          goal == other.goal &&
+          countdown == other.countdown &&
+          champions == other.champions &&
+          logSummary == other.logSummary;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    stats,
+    goal,
+    countdown,
+    champions,
+    logSummary,
+  ]);
+}
+
+final class HomeWidgetInput {
+  const HomeWidgetInput({
+    required this.key,
+    required this.enabled,
+    this.config,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeWidgetInput.fromJson(Map<String, Object?> json) =>
+      HomeWidgetInput(
+        key: _readString(json['key'], 'HomeWidgetInput.key'),
+        enabled: _readBool(json['enabled'], 'HomeWidgetInput.enabled'),
+        config: switch (json['config']) {
+          null => null,
+          final Object v => HomeWidgetConfig.fromJson(
+            _readObject(v, 'HomeWidgetInput.config'),
+          ),
+        },
+      );
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  final bool enabled;
+
+  final HomeWidgetConfig? config;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'enabled': enabled,
+    if (config case final value?) 'config': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeWidgetInput &&
+          key == other.key &&
+          enabled == other.enabled &&
+          config == other.config;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[key, enabled, config]);
+}
+
+/// `section` eski sabit bölüm (modülünün listesi), `display`
+/// gösterim bileşeni (verisi `…/data`), `module` modül vitrini
+/// (verisi modülün kendi uçlarından).
+enum HomeWidgetKind {
+  section('section'),
+  display('display'),
+  module('module'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const HomeWidgetKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('HomeWidgetKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static HomeWidgetKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class HomeWidgetLayout {
+  const HomeWidgetLayout({required this.widgets});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeWidgetLayout.fromJson(Map<String, Object?> json) =>
+      HomeWidgetLayout(
+        widgets: List<HomeWidget>.unmodifiable(
+          _readList(json['widgets'], 'HomeWidgetLayout.widgets').map(
+            (Object? e0) => HomeWidget.fromJson(
+              _readObject(e0, 'HomeWidgetLayout.widgets'),
+            ),
+          ),
+        ),
+      );
+
+  final List<HomeWidget> widgets;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'widgets': <Object?>[for (final e0 in widgets) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeWidgetLayout && _deepEquals(widgets, other.widgets);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(widgets)]);
+}
+
+final class HomeWidgetLayoutInput {
+  const HomeWidgetLayoutInput({required this.widgets});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory HomeWidgetLayoutInput.fromJson(Map<String, Object?> json) =>
+      HomeWidgetLayoutInput(
+        widgets: List<HomeWidgetInput>.unmodifiable(
+          _readList(json['widgets'], 'HomeWidgetLayoutInput.widgets').map(
+            (Object? e0) => HomeWidgetInput.fromJson(
+              _readObject(e0, 'HomeWidgetLayoutInput.widgets'),
+            ),
+          ),
+        ),
+      );
+
+  /// Bütün liste, yeni sırasıyla.
+  ///
+  /// Kısıtlar: maxItems: 64.
+  final List<HomeWidgetInput> widgets;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'widgets': <Object?>[for (final e0 in widgets) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeWidgetLayoutInput && _deepEquals(widgets, other.widgets);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(widgets)]);
+}
+
+/// Dönem. `this_year` Europe/Istanbul takvim yılı; `all_time` tüm
+/// zamanlar (`stats`, `log_summary`); `last_30_days` son 30 gün
+/// (`champions`).
+enum HomeWidgetPeriod {
+  thisYear('this_year'),
+  allTime('all_time'),
+  last30Days('last_30_days'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const HomeWidgetPeriod(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('HomeWidgetPeriod.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static HomeWidgetPeriod fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class InstantEvent {
   const InstantEvent({required this.tayfa, required this.event});
 
@@ -15936,6 +16870,115 @@ enum LogLocationVisibility {
     }
     return unknown;
   }
+}
+
+/// Günlük özeti: bir günlük istatistiği (`<tür>.<günlük>.<stat>`,
+/// örneğin `birding.sightings.distinct_species`) ve dönem
+/// (`this_year` ya da `all_time`).
+final class LogSummaryWidgetConfig {
+  const LogSummaryWidgetConfig({required this.metricKey, required this.period});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LogSummaryWidgetConfig.fromJson(Map<String, Object?> json) =>
+      LogSummaryWidgetConfig(
+        metricKey: _readString(
+          json['metric_key'],
+          'LogSummaryWidgetConfig.metric_key',
+        ),
+        period: HomeWidgetPeriod.fromWire(
+          _readString(json['period'], 'LogSummaryWidgetConfig.period'),
+        ),
+      );
+
+  /// Kısıtlar: maxLength: 130.
+  final String metricKey;
+
+  final HomeWidgetPeriod period;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_key': metricKey,
+    'period': period.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LogSummaryWidgetConfig &&
+          metricKey == other.metricKey &&
+          period == other.period;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[metricKey, period]);
+}
+
+final class LogSummaryWidgetData {
+  const LogSummaryWidgetData({
+    required this.metricKey,
+    required this.period,
+    this.year,
+    required this.value,
+    required this.eventCount,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LogSummaryWidgetData.fromJson(Map<String, Object?> json) =>
+      LogSummaryWidgetData(
+        metricKey: _readString(
+          json['metric_key'],
+          'LogSummaryWidgetData.metric_key',
+        ),
+        period: HomeWidgetPeriod.fromWire(
+          _readString(json['period'], 'LogSummaryWidgetData.period'),
+        ),
+        year: switch (json['year']) {
+          null => null,
+          final Object v => _readInt(v, 'LogSummaryWidgetData.year'),
+        },
+        value: _readDouble(json['value'], 'LogSummaryWidgetData.value'),
+        eventCount: _readInt(
+          json['event_count'],
+          'LogSummaryWidgetData.event_count',
+        ),
+      );
+
+  final String metricKey;
+
+  final HomeWidgetPeriod period;
+
+  /// Europe/Istanbul yılı; tüm zamanlarda yoktur.
+  final int? year;
+
+  final double value;
+
+  final int eventCount;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_key': metricKey,
+    'period': period.wire,
+    if (year case final value?) 'year': value,
+    'value': value,
+    'event_count': eventCount,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LogSummaryWidgetData &&
+          metricKey == other.metricKey &&
+          period == other.period &&
+          year == other.year &&
+          value == other.value &&
+          eventCount == other.eventCount;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[metricKey, period, year, value, eventCount]);
 }
 
 final class MediaUrls {
@@ -20764,6 +21807,116 @@ enum StatsVisibility {
   }
 }
 
+/// İstatistik kartı: tayfa istatistiğinden en fazla 4 metrik
+/// (`TayfaStat.metric_key`) ve dönem (`this_year` ya da `all_time`).
+/// Ayarsız kart bu yılın dört ortak metriğini gösterir.
+final class StatsWidgetConfig {
+  const StatsWidgetConfig({required this.metricKeys, required this.period});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory StatsWidgetConfig.fromJson(Map<String, Object?> json) =>
+      StatsWidgetConfig(
+        metricKeys: List<String>.unmodifiable(
+          _readList(json['metric_keys'], 'StatsWidgetConfig.metric_keys').map(
+            (Object? e0) => _readString(e0, 'StatsWidgetConfig.metric_keys'),
+          ),
+        ),
+        period: HomeWidgetPeriod.fromWire(
+          _readString(json['period'], 'StatsWidgetConfig.period'),
+        ),
+      );
+
+  /// Kısıtlar: minItems: 1; maxItems: 4.
+  final List<String> metricKeys;
+
+  final HomeWidgetPeriod period;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'metric_keys': <Object?>[for (final e0 in metricKeys) e0],
+    'period': period.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StatsWidgetConfig &&
+          _deepEquals(metricKeys, other.metricKeys) &&
+          period == other.period;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(metricKeys), period]);
+}
+
+final class StatsWidgetData {
+  const StatsWidgetData({
+    required this.period,
+    this.year,
+    required this.values,
+    this.computedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory StatsWidgetData.fromJson(Map<String, Object?> json) =>
+      StatsWidgetData(
+        period: HomeWidgetPeriod.fromWire(
+          _readString(json['period'], 'StatsWidgetData.period'),
+        ),
+        year: switch (json['year']) {
+          null => null,
+          final Object v => _readInt(v, 'StatsWidgetData.year'),
+        },
+        values: List<HomeMetricValue>.unmodifiable(
+          _readList(json['values'], 'StatsWidgetData.values').map(
+            (Object? e0) => HomeMetricValue.fromJson(
+              _readObject(e0, 'StatsWidgetData.values'),
+            ),
+          ),
+        ),
+        computedAt: switch (json['computed_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'StatsWidgetData.computed_at'),
+        },
+      );
+
+  final HomeWidgetPeriod period;
+
+  /// Europe/Istanbul yılı; tüm zamanlarda yoktur.
+  final int? year;
+
+  /// Ayardaki metrikler, ayardaki sırayla.
+  final List<HomeMetricValue> values;
+
+  /// Son hesaplama; henüz hesaplanmadıysa yoktur.
+  final DateTime? computedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'period': period.wire,
+    if (year case final value?) 'year': value,
+    'values': <Object?>[for (final e0 in values) e0.toJson()],
+    if (computedAt case final value?)
+      'computed_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StatsWidgetData &&
+          period == other.period &&
+          year == other.year &&
+          _deepEquals(values, other.values) &&
+          computedAt == other.computedAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[period, year, _deepHash(values), computedAt]);
+}
+
 final class Status {
   const Status({
     required this.status,
@@ -22001,6 +23154,7 @@ final class TayfaView {
     required this.tayfa,
     required this.callerRole,
     required this.badges,
+    required this.homeWidgets,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -22017,6 +23171,12 @@ final class TayfaView {
             EarnedBadge.fromJson(_readObject(e0, 'TayfaView.badges')),
       ),
     ),
+    homeWidgets: List<HomeWidget>.unmodifiable(
+      _readList(json['home_widgets'], 'TayfaView.home_widgets').map(
+        (Object? e0) =>
+            HomeWidget.fromJson(_readObject(e0, 'TayfaView.home_widgets')),
+      ),
+    ),
   );
 
   final Tayfa tayfa;
@@ -22026,11 +23186,18 @@ final class TayfaView {
   /// Tayfanın rozetleri, kazanılma sırasıyla (#258, ADR-0039 §3).
   final List<EarnedBadge> badges;
 
+  /// Ana sayfanın "Sıradaki" kartından sonra gösterdiği bileşenler,
+  /// sırasıyla (#268, ADR-0027 §3): yalnızca açık olanlar, modülü
+  /// açık olanlar ve tarihi geçmemiş geri sayım. İstemci tanımadığı
+  /// anahtarı atlar.
+  final List<HomeWidget> homeWidgets;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa': tayfa.toJson(),
     'caller_role': callerRole.wire,
     'badges': <Object?>[for (final e0 in badges) e0.toJson()],
+    'home_widgets': <Object?>[for (final e0 in homeWidgets) e0.toJson()],
   };
 
   @override
@@ -22039,11 +23206,16 @@ final class TayfaView {
       other is TayfaView &&
           tayfa == other.tayfa &&
           callerRole == other.callerRole &&
-          _deepEquals(badges, other.badges);
+          _deepEquals(badges, other.badges) &&
+          _deepEquals(homeWidgets, other.homeWidgets);
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[tayfa, callerRole, _deepHash(badges)]);
+  int get hashCode => Object.hashAll(<Object?>[
+    tayfa,
+    callerRole,
+    _deepHash(badges),
+    _deepHash(homeWidgets),
+  ]);
 }
 
 final class TayfaVocabularyList {
