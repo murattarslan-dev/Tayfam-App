@@ -18,6 +18,7 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/gunun_icerigi/gunun_icerigi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/profil/profil.dart';
@@ -37,6 +38,8 @@ const List<TayfaModule> tayfaModulKaydi = [
   DuyuruModulu(),
   AnketModulu(),
   SoruCevapModulu(),
+  // daily (#253): kartı ana sayfa bileşenidir, modül rotaları ve izni.
+  GununIcerigiModulu(),
 ];
 
 /// Uygulamanın etkinlik bileşenleri (ADR-0024 §3). Koddaki sabit listedir;
@@ -111,6 +114,7 @@ const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
   // log_summary (#252)
   GunlukOzetiKartiBileseni(),
   // daily (#253)
+  GununIcerigiBileseni(),
   // library (#255)
   // question_pool (#256)
   // materials (#257)

@@ -14514,5 +14514,319 @@
         "type": "int"
       }
     }
+  },
+  "hata_daily_item_not_found": "Bu içerik artık havuzda yok.",
+  "@hata_daily_item_not_found": {
+    "description": "Hata kodu `daily-item-not-found`. Günün içeriği havuzunda olmayan (silinmiş ya da 30 günden önce silinmiş) bir içerik düzenlenmek, silinmek ya da geri alınmak istenince."
+  },
+  "hata_daily_item_limit": "Havuz dolu: en fazla 1000 içerik olabilir. Yeni içerik için önce birini sil.",
+  "@hata_daily_item_limit": {
+    "description": "Hata kodu `daily-item-limit`. Günün içeriği havuzu 1000 içeriğe ulaşınca ekleme ya da geri alma reddedilir."
+  },
+  "gunun_icerigi_ad": "Günün içeriği",
+  "@gunun_icerigi_ad": {
+    "description": "Günün içeriği: ana sayfa kartının ve havuz ekranının başlığı, ana sayfa düzenindeki bileşen adı."
+  },
+  "gunun_icerigi_aciklama": "Tayfanın kendi söz, dize ve notlarından her gün bir tane",
+  "@gunun_icerigi_aciklama": {
+    "description": "Ana sayfa düzeninde günün içeriği bileşeninin kısa açıklaması."
+  },
+  "gunun_icerigi_tumu": "Günün içeriği havuzu",
+  "@gunun_icerigi_tumu": {
+    "description": "Günün içeriği kartındaki \"Tümü\" bağlantısının ekran okuyucu etiketi."
+  },
+  "gunun_icerigi_yukleniyor": "Günün içeriği yükleniyor",
+  "@gunun_icerigi_yukleniyor": {
+    "description": "Günün içeriği kartı ve havuz ekranı yüklenirken gösterilen göstergenin etiketi."
+  },
+  "gunun_icerigi_bugune_ozel": "Bugüne özel",
+  "@gunun_icerigi_bugune_ozel": {
+    "description": "Günün içeriği kartı: içerik bugüne sabitlenmiş (sunucu `pinned`)."
+  },
+  "gunun_icerigi_secenekler": "İçerik seçenekleri",
+  "@gunun_icerigi_secenekler": {
+    "description": "Günün içeriği kartındaki üç nokta menüsünün ipucu."
+  },
+  "gunun_icerigi_sikayet_et": "Şikâyet et",
+  "@gunun_icerigi_sikayet_et": {
+    "description": "Günün içeriği kartı menüsü: içeriği şikâyet et."
+  },
+  "gunun_icerigi_bos_uye": "Havuzda henüz içerik yok. Yöneticiler söz, dize ya da not ekleyince her gün biri burada görünür.",
+  "@gunun_icerigi_bos_uye": {
+    "description": "Günün içeriği havuzu boşken üyeye gösterilen sakin boş durum metni."
+  },
+  "gunun_icerigi_bos_yonetici": "Havuzda henüz içerik yok. Söz, dize ya da kısa notlar ekle; her gün sırayla biri gösterilir.",
+  "@gunun_icerigi_bos_yonetici": {
+    "description": "Günün içeriği havuzu boşken moderatör ve yöneticiye gösterilen boş durum metni."
+  },
+  "gunun_icerigi_ekle": "İçerik ekle",
+  "@gunun_icerigi_ekle": {
+    "description": "Günün içeriği: havuza yeni içerik ekleme düğmesi."
+  },
+  "gunun_icerigi_olustur_baslik": "Günün içeriği ekle",
+  "@gunun_icerigi_olustur_baslik": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında günün içeriği havuzunu açan seçeneğin başlığı (moderatör, yönetici)."
+  },
+  "gunun_icerigi_olustur_aciklama": "Söz, dize, bilgi notu",
+  "@gunun_icerigi_olustur_aciklama": {
+    "description": "\"Oluştur\" sayfasında günün içeriği seçeneğinin kısa açıklaması."
+  },
+  "gunun_icerigi_modul": "Günün içeriği",
+  "@gunun_icerigi_modul": {
+    "description": "Tayfa ayarları → Modüller: günün içeriği modülünün adı."
+  },
+  "gunun_icerigi_modul_aciklama": "Ana sayfada her gün tayfanın havuzundan bir içerik",
+  "@gunun_icerigi_modul_aciklama": {
+    "description": "Tayfa ayarları → Modüller: günün içeriği modülünün açıklaması."
+  },
+  "gunun_icerigi_soyleyen": "— {ad}",
+  "@gunun_icerigi_soyleyen": {
+    "description": "Günün içeriği: metnin altında söyleyen ya da kaynak (ör. \"— Yunus Emre\").",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Yunus Emre"
+      }
+    }
+  },
+  "gunun_icerigi_her_yil": "Her yıl {gun}",
+  "@gunun_icerigi_her_yil": {
+    "description": "Günün içeriği: her yıl tekrarlanan sabitleme (ör. \"Her yıl 23 Nisan\"). gun: ay ve gün.",
+    "placeholders": {
+      "gun": {
+        "type": "String",
+        "example": "23 Nisan"
+      }
+    }
+  },
+  "gunun_icerigi_havuz_aciklama_yonetici": "İçerikler bu sırayla, her gün bir tane gösterilir; bir güne sabitlenen içerik o gün öne geçer. Sıralamak için sürükle ya da yukarı/aşağı düğmelerini kullan.",
+  "@gunun_icerigi_havuz_aciklama_yonetici": {
+    "description": "Günün içeriği havuz ekranı: moderatör ve yöneticiye açıklama."
+  },
+  "gunun_icerigi_havuz_aciklama_uye": "İçerikler bu sırayla, her gün bir tane gösterilir. Havuzu moderatörler ve yöneticiler düzenler.",
+  "@gunun_icerigi_havuz_aciklama_uye": {
+    "description": "Günün içeriği havuz ekranı: üyeye açıklama."
+  },
+  "gunun_icerigi_sayi": "{sayi, plural, other{{sayi} içerik}}",
+  "@gunun_icerigi_sayi": {
+    "description": "Günün içeriği havuz ekranı: havuzdaki içerik sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "gunun_icerigi_sira_no": "{no}. sırada",
+  "@gunun_icerigi_sira_no": {
+    "description": "Günün içeriği havuz ekranı: içeriğin havuzdaki sırası.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "gunun_icerigi_surukle": "{no}. içerik: sürükleyerek taşı",
+  "@gunun_icerigi_surukle": {
+    "description": "Günün içeriği havuzu: sürükleme tutamacının ekran okuyucu etiketi.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "gunun_icerigi_yukari": "{no}. içerik: yukarı taşı",
+  "@gunun_icerigi_yukari": {
+    "description": "Günün içeriği havuzu: içeriği bir yukarı taşıyan düğmenin ipucu.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "gunun_icerigi_asagi": "{no}. içerik: aşağı taşı",
+  "@gunun_icerigi_asagi": {
+    "description": "Günün içeriği havuzu: içeriği bir aşağı taşıyan düğmenin ipucu.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "gunun_icerigi_duzenle": "Düzenle",
+  "@gunun_icerigi_duzenle": {
+    "description": "Günün içeriği havuzu: içeriği düzenleme düğmesi."
+  },
+  "gunun_icerigi_duzenle_etiketi": "{no}. içeriği düzenle",
+  "@gunun_icerigi_duzenle_etiketi": {
+    "description": "Günün içeriği havuzu: düzenleme düğmesinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "gunun_icerigi_sil": "Sil",
+  "@gunun_icerigi_sil": {
+    "description": "Günün içeriği: silme düğmesi ve silme onayının dolu yıkıcı düğmesi."
+  },
+  "gunun_icerigi_sil_etiketi": "{no}. içeriği sil",
+  "@gunun_icerigi_sil_etiketi": {
+    "description": "Günün içeriği havuzu: silme düğmesinin ekran okuyucu etiketi.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "gunun_icerigi_sil_baslik": "İçerik silinsin mi?",
+  "@gunun_icerigi_sil_baslik": {
+    "description": "Günün içeriği: silme onayının başlığı."
+  },
+  "gunun_icerigi_sil_metni": "30 gün içinde Silinenler'den geri alabilirsin; sonra kalıcı olarak silinir.",
+  "@gunun_icerigi_sil_metni": {
+    "description": "Günün içeriği: silme onayının açıklaması."
+  },
+  "gunun_icerigi_vazgec": "Vazgeç",
+  "@gunun_icerigi_vazgec": {
+    "description": "Günün içeriği: onay penceresinde vazgeç düğmesi."
+  },
+  "gunun_icerigi_silindi": "İçerik silindi",
+  "@gunun_icerigi_silindi": {
+    "description": "Günün içeriği: silme sonrası kısa bildirim."
+  },
+  "gunun_icerigi_geri_al": "Geri al",
+  "@gunun_icerigi_geri_al": {
+    "description": "Günün içeriği: silinen içeriği geri alma düğmesi (kısa bildirimde ve Silinenler ekranında)."
+  },
+  "gunun_icerigi_geri_alindi": "İçerik havuzun sonuna geri alındı",
+  "@gunun_icerigi_geri_alindi": {
+    "description": "Günün içeriği: geri alma sonrası kısa bildirim."
+  },
+  "gunun_icerigi_kaydedildi": "İçerik kaydedildi",
+  "@gunun_icerigi_kaydedildi": {
+    "description": "Günün içeriği: ekleme ya da düzenleme sonrası kısa bildirim."
+  },
+  "gunun_icerigi_cakisma_baslik": "Bu güne başka içerik de sabitli",
+  "@gunun_icerigi_cakisma_baslik": {
+    "description": "Günün içeriği: sunucu `pin_conflict` dönünce gösterilen uyarının başlığı."
+  },
+  "gunun_icerigi_cakisma_metni": "İçerik kaydedildi. Aynı güne sabitlenmiş birden fazla içerik olduğunda o gün havuz sırasında önce gelen gösterilir.",
+  "@gunun_icerigi_cakisma_metni": {
+    "description": "Günün içeriği: sabitleme çakışması uyarısının metni."
+  },
+  "gunun_icerigi_tamam": "Tamam",
+  "@gunun_icerigi_tamam": {
+    "description": "Günün içeriği: uyarı penceresini kapatan düğme."
+  },
+  "gunun_icerigi_silinenler": "Silinenler",
+  "@gunun_icerigi_silinenler": {
+    "description": "Günün içeriği: son 30 günde silinenler ekranının başlığı ve onu açan düğmenin ipucu."
+  },
+  "gunun_icerigi_silinenler_aciklama": "Son 30 günde silinen içerikler. Geri alınan içerik havuzun sonuna eklenir.",
+  "@gunun_icerigi_silinenler_aciklama": {
+    "description": "Günün içeriği Silinenler ekranının açıklaması."
+  },
+  "gunun_icerigi_silinenler_bos": "Son 30 günde silinen içerik yok.",
+  "@gunun_icerigi_silinenler_bos": {
+    "description": "Günün içeriği Silinenler ekranı boşken."
+  },
+  "gunun_icerigi_silinme_zamani": "Silinme: {tarih}",
+  "@gunun_icerigi_silinme_zamani": {
+    "description": "Günün içeriği Silinenler ekranı: içeriğin silindiği gün.",
+    "placeholders": {
+      "tarih": {
+        "type": "String",
+        "example": "20 Kasım 2026"
+      }
+    }
+  },
+  "gunun_icerigi_form_yeni": "Yeni içerik",
+  "@gunun_icerigi_form_yeni": {
+    "description": "Günün içeriği formu: yeni içerik başlığı."
+  },
+  "gunun_icerigi_form_duzenle": "İçeriği düzenle",
+  "@gunun_icerigi_form_duzenle": {
+    "description": "Günün içeriği formu: düzenleme başlığı."
+  },
+  "gunun_icerigi_kaydet": "Kaydet",
+  "@gunun_icerigi_kaydet": {
+    "description": "Günün içeriği formu: kaydet düğmesi."
+  },
+  "gunun_icerigi_kaydediliyor": "Kaydediliyor",
+  "@gunun_icerigi_kaydediliyor": {
+    "description": "Günün içeriği formu: kaydederken gösterilen göstergenin etiketi."
+  },
+  "gunun_icerigi_metin_alani": "Metin",
+  "@gunun_icerigi_metin_alani": {
+    "description": "Günün içeriği formu: içerik metni alanının etiketi."
+  },
+  "gunun_icerigi_metin_ipucu": "Söz, dize ya da kısa bilgi notu. Dizeler için alt satıra geçebilirsin.",
+  "@gunun_icerigi_metin_ipucu": {
+    "description": "Günün içeriği formu: metin alanının yardım metni."
+  },
+  "gunun_icerigi_metin_bos": "Metin boş olamaz",
+  "@gunun_icerigi_metin_bos": {
+    "description": "Günün içeriği formu: metin boşken hata."
+  },
+  "gunun_icerigi_metin_uzun": "Metin en fazla {sayi} karakter olabilir",
+  "@gunun_icerigi_metin_uzun": {
+    "description": "Günün içeriği formu: metin uzunken hata.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
+  "gunun_icerigi_soyleyen_alani": "Söyleyen ya da kaynak (isteğe bağlı)",
+  "@gunun_icerigi_soyleyen_alani": {
+    "description": "Günün içeriği formu: söyleyen alanının etiketi."
+  },
+  "gunun_icerigi_soyleyen_ipucu": "Ör. Yunus Emre, bir atasözü, kitabın adı",
+  "@gunun_icerigi_soyleyen_ipucu": {
+    "description": "Günün içeriği formu: söyleyen alanının yardım metni."
+  },
+  "gunun_icerigi_sabitle_baslik": "Bir güne sabitle",
+  "@gunun_icerigi_sabitle_baslik": {
+    "description": "Günün içeriği formu: tarih sabitleme bölümünün başlığı."
+  },
+  "gunun_icerigi_sabitle_aciklama": "İsteğe bağlı. Sabitlenen içerik yalnızca o gün gösterilir ve günlük sıraya girmez.",
+  "@gunun_icerigi_sabitle_aciklama": {
+    "description": "Günün içeriği formu: tarih sabitleme açıklaması."
+  },
+  "gunun_icerigi_gun_sec": "Gün seç",
+  "@gunun_icerigi_gun_sec": {
+    "description": "Günün içeriği formu: sabitlenecek günü seçme düğmesi."
+  },
+  "gunun_icerigi_gun_degistir": "Değiştir",
+  "@gunun_icerigi_gun_degistir": {
+    "description": "Günün içeriği formu: seçilen günü değiştirme düğmesi."
+  },
+  "gunun_icerigi_sabitleme_kaldir": "Sabitlemeyi kaldır",
+  "@gunun_icerigi_sabitleme_kaldir": {
+    "description": "Günün içeriği formu: sabitlemeyi kaldıran düğmenin ipucu."
+  },
+  "gunun_icerigi_her_yil_tekrarla": "Her yıl tekrarla",
+  "@gunun_icerigi_her_yil_tekrarla": {
+    "description": "Günün içeriği formu: sabitlemenin her yıl tekrarlanması anahtarı."
+  },
+  "gunun_icerigi_artik_yil_notu": "29 Şubat yalnızca artık yıllarda gösterilir.",
+  "@gunun_icerigi_artik_yil_notu": {
+    "description": "Günün içeriği formu: her yıl tekrarlanan 29 Şubat sabitlemesi için not."
+  },
+  "gunun_icerigi_sikayet_turu": "Günün içeriği",
+  "@gunun_icerigi_sikayet_turu": {
+    "description": "Moderasyon kuyruğu: şikâyet edilen şeyin türü (günün içeriği havuzundaki bir içerik)."
+  },
+  "gunun_icerigi_sikayet_sorusu": "Bu içeriği neden şikâyet ediyorsun?",
+  "@gunun_icerigi_sikayet_sorusu": {
+    "description": "Şikâyet sayfası: günün içeriği şikâyetinin sorusu."
   }
 }
