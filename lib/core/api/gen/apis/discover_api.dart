@@ -103,4 +103,29 @@ final class DiscoverApi {
     );
     return TayfaDiscover.fromJson(jsonObject(response, 'setTayfaDiscover'));
   }
+
+  /// Tayfanın istatistik kartını Keşfet vitrininde gösterir ya da gizler (yönetici)
+  ///
+  /// Varsayılan açıktır (#267, ADR-0026 §3). Kart yalnızca tayfa
+  /// Keşfet'te listelendiğinde ve en az 3 donmuş etkinliği olduğunda
+  /// görünür; ayar bundan bağımsız değiştirilebilir. Değişiklik denetim
+  /// kaydına yazılır. Cevap tayfanın Keşfet durumudur.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/discover/stats-showcase`
+  Future<TayfaDiscover> setTayfaStatsShowcase({
+    required String tayfaId,
+    required TayfaStatsShowcaseInput body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/discover/stats-showcase',
+      pathParams: {'tayfa_id': tayfaId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return TayfaDiscover.fromJson(
+      jsonObject(response, 'setTayfaStatsShowcase'),
+    );
+  }
 }
