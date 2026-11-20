@@ -75,6 +75,8 @@ const String yazbozElleriYolu = '$yazbozMasasiYolu/rounds';
 const String yazbozEliYolu = '$yazbozElleriYolu/{round}';
 const String yazbozBitirYolu = '$yazbozMasasiYolu/finish';
 const String agacYolu = '$bilesenYolu/bracket';
+const String misafirlerYolu = '$bilesenYolu/guests';
+const String misafirYolu = '$misafirlerYolu/{guest_id}';
 const String agacTurlariYolu = '$agacYolu/rounds';
 const String agacOyunlariYolu = '$agacYolu/matches/{match_id}/games';
 const String agacOyunuYolu = '$agacOyunlariYolu/{game}';
@@ -341,10 +343,16 @@ Map<String, Object?> takimlarJson({
 
 /// Örnek `EventDrawEntry` JSON'u (kura bileşeni, #237): [kisi] ya da
 /// [takim] verilmezse boş yer (bay).
-Map<String, Object?> kuraYeriJson(int sira, {String? kisi, String? takim}) => {
+Map<String, Object?> kuraYeriJson(
+  int sira, {
+  String? kisi,
+  String? takim,
+  String? misafir,
+}) => {
   'position': sira,
   'user_id': ?kisi,
   'team_id': ?takim,
+  'guest_id': ?misafir,
 };
 
 /// Örnek `EventDraw` JSON'u (kura bileşeni, #237): verilmezse çekilmemiş
@@ -493,7 +501,14 @@ Map<String, Object?> yazbozYeriJson(
   int sira, {
   String? kisi,
   String? takim,
-}) => {'id': id, 'position': sira, 'user_id': ?kisi, 'team_id': ?takim};
+  String? misafir,
+}) => {
+  'id': id,
+  'position': sira,
+  'user_id': ?kisi,
+  'team_id': ?takim,
+  'guest_id': ?misafir,
+};
 
 /// Örnek `EventScoreTable` JSON'u (yazboz bileşeni, #238): verilmezse
 /// oyuncusuz, açık, puanla el el oynanan, yüksek toplamın kazandığı masa.
@@ -777,6 +792,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
           (_) => programJson(),
     )
     ..putIfAbsent(
+      'GET $misafirlerYolu',
+      () =>
+          (_) => misafirlerJson(),
+    )
+    ..putIfAbsent(
       'GET $sozlukYolu',
       () =>
           (_) => sozlukJson(),
@@ -791,6 +811,28 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
     );
   return t;
 }
+
+/// Örnek `EventGuestPlayer` JSON'u (misafir oyuncu, #240); [ad] verilmezse
+/// takma adı silinmiş misafir.
+Map<String, Object?> misafirJson(String id, {String? ad}) => {
+  'id': id,
+  'nickname': ?ad,
+  'created_at': '2026-11-20T10:00:00Z',
+};
+
+/// Örnek `EventGuestPlayers` JSON'u: verilmezse misafirsiz, ekleyemeyen ve
+/// silemeyen üye gözüyle.
+Map<String, Object?> misafirlerJson({
+  List<Map<String, Object?>> misafirler = const [],
+  int enCok = 30,
+  bool ekleyebilir = false,
+  bool silebilir = false,
+}) => {
+  'guests': misafirler,
+  'max_guests': enCok,
+  'caller_can_add': ekleyebilir,
+  'caller_can_remove': silebilir,
+};
 
 /// Sahte takvim paylaşıcısı: paylaşılan metinleri tutar.
 final class SahteTakvimPaylasici implements TakvimPaylasici {

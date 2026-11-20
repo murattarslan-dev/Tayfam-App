@@ -878,6 +878,44 @@ final class EtkinlikDeposu {
     game: oyun,
   );
 
+  /// `GET .../components/{component_key}/guests`: etkinliğin misafir
+  /// oyuncuları (Tayfam-Api #252). Takma ad log'a yazılmaz.
+  Future<EventGuestPlayers> misafirler(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.listEventGuestPlayers(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../guests`: misafir oyuncu ekler.
+  Future<EventGuestPlayers> misafirEkle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventGuestPlayerRequest istek,
+  ) => _api.addEventGuestPlayer(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `DELETE .../guests/{guest_id}`: misafir oyuncuyu siler.
+  Future<EventGuestPlayers> misafiriSil(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String misafirId,
+  ) => _api.removeEventGuestPlayer(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    guestId: misafirId,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(

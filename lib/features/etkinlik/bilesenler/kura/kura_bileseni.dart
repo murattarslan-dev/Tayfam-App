@@ -14,6 +14,8 @@ import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/kura/kura_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_ortak.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
@@ -147,6 +149,11 @@ class _KuraBolumuState extends ConsumerState<KuraBolumu> {
             etkinlikId: widget.kimlik.etkinlikId,
             anahtar: takimlar,
           );
+    final misafirler = etkinlikMisafirleri(
+      ref,
+      widget.kimlik.tayfaId,
+      widget.kimlik.etkinlikId,
+    );
     final cekilmis = kura.drawn && kura.entries.isNotEmpty;
     final sure = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
@@ -180,6 +187,7 @@ class _KuraBolumuState extends ConsumerState<KuraBolumu> {
                           key: ValueKey('kura-eslesme-${eslesme.no}'),
                           eslesme: eslesme,
                           takimlar: takimKimligi,
+                          misafirler: misafirler,
                         ),
                   ],
                 ),
@@ -207,6 +215,7 @@ class KuraEslesmesiSatiri extends StatelessWidget {
     super.key,
     required this.eslesme,
     required this.takimlar,
+    this.misafirler,
   });
 
   final KuraEslesmesi eslesme;
@@ -214,6 +223,9 @@ class KuraEslesmesiSatiri extends StatelessWidget {
   /// Takım kurasında takımların okunduğu bileşen; katılımcı kurasında
   /// `null`.
   final TakimKimligi? takimlar;
+
+  /// Misafirlerin okunduğu bileşen (katılımcı kurasına misafir de girer).
+  final MisafirKimligi? misafirler;
 
   @override
   Widget build(BuildContext context) {
@@ -231,9 +243,17 @@ class KuraEslesmesiSatiri extends StatelessWidget {
               style: context.yazi.titleSmall,
             ),
           ),
-          KuraYeriSatiri(yer: eslesme.ilk, takimlar: takimlar),
+          KuraYeriSatiri(
+            yer: eslesme.ilk,
+            takimlar: takimlar,
+            misafirler: misafirler,
+          ),
           if (ikinci != null)
-            KuraYeriSatiri(yer: ikinci, takimlar: takimlar)
+            KuraYeriSatiri(
+              yer: ikinci,
+              takimlar: takimlar,
+              misafirler: misafirler,
+            )
           else
             const _BaySatiri(),
         ],
@@ -243,13 +263,22 @@ class KuraEslesmesiSatiri extends StatelessWidget {
 }
 
 /// Kurada bir yer: sıra numarası ve kişinin ya da takımın adı (kişiye
-/// dokununca profili); boş yerde "Bay". Çağıranın yeri "Sen" etiketli.
+/// dokununca profili) ya da misafirin takma adı ("Misafir" etiketli,
+/// profilsiz); boş yerde "Bay". Çağıranın yeri "Sen" etiketli.
 class KuraYeriSatiri extends ConsumerWidget {
-  const KuraYeriSatiri({super.key, required this.yer, required this.takimlar});
+  const KuraYeriSatiri({
+    super.key,
+    required this.yer,
+    required this.takimlar,
+    this.misafirler,
+  });
 
   final EventDrawEntry yer;
 
   final TakimKimligi? takimlar;
+
+  /// Misafirlerin okunduğu bileşen; yoksa misafir adsız gösterilir.
+  final MisafirKimligi? misafirler;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -257,10 +286,13 @@ class KuraYeriSatiri extends ConsumerWidget {
     final yazi = context.yazi.bodyMedium;
     final kisi = yer.userId;
     final takimId = yer.teamId;
+    final misafir = yer.guestId;
     if (kuraYeriBos(yer)) return _BaySatiri(sira: yer.position);
     Widget ad;
     var benim = false;
-    if (kisi != null) {
+    if (misafir != null) {
+      ad = MisafirAdi(kimlik: misafirler, misafirId: misafir, style: yazi);
+    } else if (kisi != null) {
       benim = ref.watch(kendisiMiProvider(kisi));
       ad = KisiyeDokun(
         kullaniciId: kisi,

@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/agac/agac_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_ortak.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -72,19 +74,27 @@ EventTeam? _takim(WidgetRef ref, TakimKimligi? takimlar, String? takimId) {
   return null;
 }
 
+/// Etkinliğin misafirlerinin okunduğu bileşen (katılımcı kurasına misafir
+/// de girer); yoksa `null`.
+MisafirKimligi? agacMisafirleri(WidgetRef ref, AgacKimligi kimlik) =>
+    etkinlikMisafirleri(ref, kimlik.tayfaId, kimlik.etkinlikId);
+
 /// Kuradaki [sira] yerin adı: kişinin adı (hesabını silmişse "Silinmiş
-/// kullanıcı"), takımın adı ya da numarası; boş yerde "Boş yer", taraf
-/// yoksa "Bay".
+/// kullanıcı"), takımın adı ya da numarası, misafirin takma adı
+/// ("Deniz (misafir)"); boş yerde "Boş yer", taraf yoksa "Bay".
 String agacYerAdi(
   WidgetRef ref,
   AppLocalizations m,
   EventBracket agac,
   TakimKimligi? takimlar,
-  int? sira,
-) {
+  int? sira, {
+  MisafirKimligi? misafirler,
+}) {
   if (sira == null) return m.bilesen_bracket_bay;
   final yer = agacYeri(agac, sira);
   if (agacYeriBos(yer)) return m.bilesen_bracket_bos_yer;
+  final misafir = yer?.guestId;
+  if (misafir != null) return misafirAdiMetni(ref, m, misafirler, misafir);
   final kisi = yer?.userId;
   if (kisi != null) {
     ref.read(kullaniciAdlariProvider.notifier).iste(kisi);

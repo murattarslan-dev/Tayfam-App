@@ -153,8 +153,23 @@ class _AgacOyunFormuState extends ConsumerState<AgacOyunFormu> {
     final agac = widget.agac;
     final mac = widget.mac;
     final takimlar = agacTakimlari(widget.kimlik, agac);
-    final aAd = agacYerAdi(ref, m, agac, takimlar, mac.aPosition);
-    final bAd = agacYerAdi(ref, m, agac, takimlar, mac.bPosition);
+    final misafirler = agacMisafirleri(ref, widget.kimlik);
+    final aAd = agacYerAdi(
+      ref,
+      m,
+      agac,
+      takimlar,
+      mac.aPosition,
+      misafirler: misafirler,
+    );
+    final bAd = agacYerAdi(
+      ref,
+      m,
+      agac,
+      takimlar,
+      mac.bPosition,
+      misafirler: misafirler,
+    );
     return AracFormSayfasi(
       baslik: widget.duzeltilen == null
           ? m.bilesen_bracket_oyun_baslik(widget.oyun)

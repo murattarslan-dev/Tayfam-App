@@ -11,6 +11,7 @@ import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_formu.dart';
@@ -85,6 +86,10 @@ class _YazbozBolumuState extends ConsumerState<YazbozBolumu> {
   YazbozNotifier get _notifier =>
       ref.read(yazbozProvider(widget.kimlik).notifier);
 
+  /// Bileşen misafir alıyorsa misafirlerin okunduğu yer: kendisi.
+  MisafirKimligi? get _misafirler =>
+      misafirAlir(widget.tanim) ? widget.kimlik : null;
+
   Future<void> _masaAc(EventScoreboard yazboz, List<String> takimlar) =>
       aracFormuAc<void>(
         context,
@@ -92,6 +97,7 @@ class _YazbozBolumuState extends ConsumerState<YazbozBolumu> {
           kimlik: widget.kimlik,
           yazboz: yazboz,
           takimAnahtarlari: takimlar,
+          misafirler: _misafirler,
           gonder: (istek) => _notifier.masaKur(istek),
         ),
       );
@@ -153,6 +159,7 @@ class _YazbozBolumuState extends ConsumerState<YazbozBolumu> {
                 kimlik: widget.kimlik,
                 yazboz: yazboz,
                 masa: masa,
+                misafirler: _misafirler,
               ),
           ],
         ),
@@ -188,11 +195,15 @@ class YazbozMasasi extends ConsumerStatefulWidget {
     required this.kimlik,
     required this.yazboz,
     required this.masa,
+    this.misafirler,
   });
 
   final YazbozKimligi kimlik;
   final EventScoreboard yazboz;
   final EventScoreTable masa;
+
+  /// Bileşen misafir alıyorsa misafirlerin okunduğu yer; değilse `null`.
+  final MisafirKimligi? misafirler;
 
   @override
   ConsumerState<YazbozMasasi> createState() => _YazbozMasasiState();
@@ -222,6 +233,7 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
     (_) => YazbozElFormu(
       kimlik: widget.kimlik,
       masa: _masa,
+      misafirler: widget.misafirler,
       el: (yazbozSonEl(_masa)?.number ?? 0) + 1,
       gonder: (istek) => _notifier.elGir(_masa.id, istek),
     ),
@@ -251,6 +263,7 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
             yazboz: widget.yazboz,
             masa: masa,
             takimAnahtarlari: [?masa.teamsKey],
+            misafirler: widget.misafirler,
             yerleriGonder: (yerler) =>
                 _notifier.yerleriBelirle(masa.id, yerler),
           ),
@@ -263,6 +276,7 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
           (_) => YazbozElFormu(
             kimlik: widget.kimlik,
             masa: masa,
+            misafirler: widget.misafirler,
             el: son.number,
             duzeltilen: son,
             gonder: (istek) => _notifier.eliDuzelt(masa.id, son.number, istek),
@@ -423,6 +437,7 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
               satir: satir,
               kural: masa.rules,
               takimlar: _takimKimligi(widget.kimlik, masa),
+              misafirler: widget.misafirler,
             ),
         ],
         if (eller.isNotEmpty)
@@ -442,6 +457,7 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
               el: el,
               masa: masa,
               takimlar: _takimKimligi(widget.kimlik, masa),
+              misafirler: widget.misafirler,
             ),
         if (masa.callerCanScore && acik) ...[
           const SizedBox(height: TayfamSpacing.s8),
@@ -501,11 +517,13 @@ class YazbozSiraSatiri extends ConsumerWidget {
     required this.satir,
     required this.kural,
     required this.takimlar,
+    this.misafirler,
   });
 
   final YazbozSirasi satir;
   final EventScoreRules kural;
   final TakimKimligi? takimlar;
+  final MisafirKimligi? misafirler;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -546,6 +564,7 @@ class YazbozSiraSatiri extends ConsumerWidget {
                       YazbozYerAdi(
                         yer: satir.yer,
                         takimlar: takimlar,
+                        misafirler: misafirler,
                         style: satir.kazanan
                             ? yazi.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
@@ -580,11 +599,13 @@ class YazbozElSatiri extends StatelessWidget {
     required this.el,
     required this.masa,
     required this.takimlar,
+    this.misafirler,
   });
 
   final EventScoreRound el;
   final EventScoreTable masa;
   final TakimKimligi? takimlar;
+  final MisafirKimligi? misafirler;
 
   @override
   Widget build(BuildContext context) {
@@ -605,6 +626,7 @@ class YazbozElSatiri extends StatelessWidget {
                     child: YazbozYerAdi(
                       yer: yer,
                       takimlar: takimlar,
+                      misafirler: misafirler,
                       style: yazi.bodySmall,
                     ),
                   ),

@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_ortak.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -57,17 +59,22 @@ String yazbozSkorMetni(AppLocalizations m, EventScoreEntry? skor) {
 }
 
 /// Bir yerin adı: kişinin adı (hesabını silmişse "Silinmiş kullanıcı") ya
-/// da takımın adı veya numarası (kaldırılmışsa "Kaldırılmış takım").
+/// da takımın adı veya numarası (kaldırılmışsa "Kaldırılmış takım") ya da
+/// misafirin takma adı "Misafir" etiketiyle (profil bağlantısı yok).
 class YazbozYerAdi extends ConsumerWidget {
   const YazbozYerAdi({
     super.key,
     required this.yer,
     required this.takimlar,
+    this.misafirler,
     this.style,
   });
 
   final EventScorePlayer? yer;
   final TakimKimligi? takimlar;
+
+  /// Misafirlerin okunduğu bileşen (misafir alan yazbozda kendisi).
+  final MisafirKimligi? misafirler;
   final TextStyle? style;
 
   @override
@@ -76,6 +83,10 @@ class YazbozYerAdi extends ConsumerWidget {
     final kisi = yer?.userId;
     if (kisi != null) {
       return KullaniciAdiMetni(kullaniciId: kisi, style: style);
+    }
+    final misafir = yer?.guestId;
+    if (misafir != null) {
+      return MisafirAdi(kimlik: misafirler, misafirId: misafir, style: style);
     }
     final takim = yazbozTakimi(ref, takimlar, yer?.teamId);
     if (takim != null) {

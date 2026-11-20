@@ -392,9 +392,10 @@ class AgacSampiyonu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final takimlar = agacTakimlari(kimlik, agac);
+    final misafirler = agacMisafirleri(ref, kimlik);
     final adlar = [
       for (final sira in agac.winnerPositions)
-        agacYerAdi(ref, m, agac, takimlar, sira),
+        agacYerAdi(ref, m, agac, takimlar, sira, misafirler: misafirler),
     ];
     final metin = adlar.isEmpty
         ? m.bilesen_bracket_bitti
@@ -447,7 +448,14 @@ class AgacSiraSatiri extends ConsumerWidget {
     final yazi = context.yazi;
     final r = context.renkler;
     final takimlar = agacTakimlari(kimlik, agac);
-    final ad = agacYerAdi(ref, m, agac, takimlar, sira.position);
+    final ad = agacYerAdi(
+      ref,
+      m,
+      agac,
+      takimlar,
+      sira.position,
+      misafirler: agacMisafirleri(ref, kimlik),
+    );
     final benim = agacBenimYerim(ref, agac, takimlar, sira.position);
     final sampiyon = agacSampiyonuMu(agac, sira.position);
     final rakam = yazi.bodyMedium?.copyWith(
@@ -595,8 +603,23 @@ class _AgacMaciState extends ConsumerState<AgacMaci> {
     final agac = widget.agac;
     final mac = _mac;
     final takimlar = agacTakimlari(widget.kimlik, agac);
-    final aAd = agacYerAdi(ref, m, agac, takimlar, mac.aPosition);
-    final bAd = agacYerAdi(ref, m, agac, takimlar, mac.bPosition);
+    final misafirler = agacMisafirleri(ref, widget.kimlik);
+    final aAd = agacYerAdi(
+      ref,
+      m,
+      agac,
+      takimlar,
+      mac.aPosition,
+      misafirler: misafirler,
+    );
+    final bAd = agacYerAdi(
+      ref,
+      m,
+      agac,
+      takimlar,
+      mac.bPosition,
+      misafirler: misafirler,
+    );
     final aSkor = agacSkorMetni(m, agac, mac, a: true);
     final bSkor = agacSkorMetni(m, agac, mac, a: false);
     final kazanan = mac.winnerPosition;
