@@ -70,8 +70,9 @@ class _TakimModSecimi extends StatelessWidget {
       param: 'mode',
       baslik: m.bilesen_teams_mod_baslik,
       etiketler: {
-        for (final mod in EventTeamsMode.values)
-          if (takimModAdi(m, mod) case final ad?) mod.wire: ad,
+        EventTeamsMode.random.wire: m.bilesen_teams_mod_random,
+        EventTeamsMode.balanced.wire: m.bilesen_teams_mod_balanced,
+        EventTeamsMode.manual.wire: m.bilesen_teams_mod_manual,
       },
     );
   }
