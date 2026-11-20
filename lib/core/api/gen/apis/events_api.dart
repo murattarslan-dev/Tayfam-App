@@ -207,7 +207,10 @@ final class EventsApi {
   /// Bir cevaptaki katılımcılar, eskiden yeniye
   ///
   /// `status=waitlist` için sıra bekleme sırasıdır. `attendance`
-  /// doğrulanmış katılımı gösterir.
+  /// doğrulanmış katılımı gösterir. Türü `sensitive_attendance`
+  /// bayraklı etkinlikte (ADR-0037 §1, kan bağışı) listeyi yalnızca
+  /// organizatör, moderatör ve yönetici alır; diğerleri
+  /// `attendees-hidden` alır ve etkinlikteki sayıları görür.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/attendees`
   ///
@@ -360,6 +363,8 @@ final class EventsApi {
   /// (`event-cancelled`). Kişi başı 30, albüm başına 500 fotoğraf
   /// (`event-limit`; silinenler sayılmaz). Aynı `client_request_id` ile
   /// tekrar gönderim ilk fotoğrafı döndürür. Fotoğraf bildirim üretmez.
+  /// Türü `album_notice` bayraklı etkinlikte (ADR-0037 §1, ziyaret)
+  /// `consent_ack: true` zorunludur; yoksa `album-consent-required`.
   ///
   /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/photos`
   Future<EventPhoto> addEventPhoto({

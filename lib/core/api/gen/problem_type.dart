@@ -118,6 +118,8 @@ enum ProblemType {
   celebrationNotStarted('celebration-not-started'),
   celebrationNoWinner('celebration-no-winner'),
   celebrationNotParticipant('celebration-not-participant'),
+  attendeesHidden('attendees-hidden'),
+  albumConsentRequired('album-consent-required'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),
