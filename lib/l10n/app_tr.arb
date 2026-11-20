@@ -3328,6 +3328,522 @@
   "@bilesen_scoreboard_hakem_sec": {
     "description": "Hakem formunda kişi seçiminin etiketi."
   },
+  "bilesen_bracket_ad": "Eşleşme ağacı",
+  "@bilesen_bracket_ad": {
+    "description": "Eşleşme ağacı bileşeninin adı (katalogda ad yoksa)."
+  },
+  "bilesen_bracket_format_baslik": "Turnuva nasıl oynansın?",
+  "@bilesen_bracket_format_baslik": {
+    "description": "Sihirbazda organizatöre bırakılan biçim seçiminin başlığı."
+  },
+  "bilesen_bracket_format_elimination": "Eleme",
+  "@bilesen_bracket_format_elimination": {
+    "description": "Biçim: kaybeden elenir. Bölüm başlığının sağında da görünür."
+  },
+  "bilesen_bracket_format_league": "Lig",
+  "@bilesen_bracket_format_league": {
+    "description": "Biçim: herkes herkesle bir kez."
+  },
+  "bilesen_bracket_format_swiss": "İsviçre",
+  "@bilesen_bracket_format_swiss": {
+    "description": "Biçim: İsviçre usulü, puanı yakın olanlar eşlenir."
+  },
+  "bilesen_bracket_bo_baslik": "Maç kaç oyun?",
+  "@bilesen_bracket_bo_baslik": {
+    "description": "Sihirbazda maç başına oyun seçiminin başlığı."
+  },
+  "bilesen_bracket_bo_tek": "Tek oyun",
+  "@bilesen_bracket_bo_tek": {
+    "description": "Maç tek oyundur (BO1)."
+  },
+  "bilesen_bracket_bo": "BO{bo}",
+  "@bilesen_bracket_bo": {
+    "description": "Maç en çok bu kadar oyundan; çoğunu kazanan alır (BO3, BO5).",
+    "placeholders": {
+      "bo": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_bracket_kural_high": "Puanla, yüksek kazanır",
+  "@bilesen_bracket_kural_high": {
+    "description": "Skor kuralı özeti: oyunda yüksek puan kazanır."
+  },
+  "bilesen_bracket_kural_low": "Puanla, düşük kazanır",
+  "@bilesen_bracket_kural_low": {
+    "description": "Skor kuralı özeti: oyunda düşük puan kazanır."
+  },
+  "bilesen_bracket_kural_wdl": "Galibiyet, beraberlik, mağlubiyet",
+  "@bilesen_bracket_kural_wdl": {
+    "description": "Skor kuralı özeti: oyun galibiyet/beraberlik/mağlubiyetle sonuçlanır."
+  },
+  "bilesen_bracket_tur_sayisi": "{sayi} tur",
+  "@bilesen_bracket_tur_sayisi": {
+    "description": "Kural özetinde planlanan tur sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_bracket_kura_yok": "Bu türde kura yok; eşleşme ağacı kuradan başladığı için başlatılamaz.",
+  "@bilesen_bracket_kura_yok": {
+    "description": "Türde kura bileşeni yokken başlamamış ağacın bilgisi."
+  },
+  "bilesen_bracket_kura_bekleniyor": "Kura çekilmeden eşleşme ağacı başlamaz. Önce kurayı çek; maçlar kuradaki sıraya göre eşlenir.",
+  "@bilesen_bracket_kura_bekleniyor": {
+    "description": "Kura çekilmemişken ağacın bilgisi."
+  },
+  "bilesen_bracket_baslamadi": "Kura çekildi ({sayi} yer); ağaç henüz başlatılmadı.",
+  "@bilesen_bracket_baslamadi": {
+    "description": "Kura çekilmiş, ağaç başlamamışken bilgi.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "bilesen_bracket_baslat": "Ağacı başlat",
+  "@bilesen_bracket_baslat": {
+    "description": "Organizatörün ağacı kuradan başlatma düğmesi ve onaydaki eylem."
+  },
+  "bilesen_bracket_baslat_onay": "Eşleşme ağacı başlatılsın mı?",
+  "@bilesen_bracket_baslat_onay": {
+    "description": "Başlatma onayının başlığı."
+  },
+  "bilesen_bracket_baslat_aciklama": "Maçlar kuradaki sıraya göre eşlenir. Skor kuralı türün yazbozundan alınır ve başlatınca sabitlenir; sonradan değişmez.",
+  "@bilesen_bracket_baslat_aciklama": {
+    "description": "Başlatma onayının açıklaması."
+  },
+  "bilesen_bracket_tur_durumu": "Tur {tur}/{toplam} oynanıyor.",
+  "@bilesen_bracket_tur_durumu": {
+    "description": "Süren ağaçta mevcut tur ve planlanan tur.",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "2"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_bracket_bitti": "Eşleşme ağacı sonuçlandı.",
+  "@bilesen_bracket_bitti": {
+    "description": "Kazananı olmayan bitmiş ağaç."
+  },
+  "bilesen_bracket_sampiyon": "Şampiyon: {ad}",
+  "@bilesen_bracket_sampiyon": {
+    "description": "Bitmiş ağacın kazananı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_bracket_sampiyonlar": "Şampiyonlar: {adlar}",
+  "@bilesen_bracket_sampiyonlar": {
+    "description": "Tam eşitlikte birden çok kazanan, virgülle.",
+    "placeholders": {
+      "adlar": {
+        "type": "String",
+        "example": "Ayşe, Can"
+      }
+    }
+  },
+  "bilesen_bracket_sampiyon_etiketi": "Şampiyon",
+  "@bilesen_bracket_sampiyon_etiketi": {
+    "description": "Sıralamada kazananın yanındaki etiket."
+  },
+  "bilesen_bracket_siralama": "Sıralama",
+  "@bilesen_bracket_siralama": {
+    "description": "Lig ve İsviçre sıralamasının başlığı."
+  },
+  "bilesen_bracket_sira": "{sira}.",
+  "@bilesen_bracket_sira": {
+    "description": "Kuradaki yer ya da sıralamadaki sıra numarası.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_bracket_puan": "{puan} puan",
+  "@bilesen_bracket_puan": {
+    "description": "Sıralamada puan (galibiyet 1, beraberlik yarım, bay 1).",
+    "placeholders": {
+      "puan": {
+        "type": "String",
+        "example": "2,5"
+      }
+    }
+  },
+  "bilesen_bracket_gbm": "{g}G {b}B {m}M",
+  "@bilesen_bracket_gbm": {
+    "description": "Sıralamada galibiyet, beraberlik, mağlubiyet sayısı.",
+    "placeholders": {
+      "g": {
+        "type": "int",
+        "example": "2"
+      },
+      "b": {
+        "type": "int",
+        "example": "1"
+      },
+      "m": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "bilesen_bracket_buchholz": "Buchholz {puan}",
+  "@bilesen_bracket_buchholz": {
+    "description": "İsviçre sıralamasında rakiplerin puanları toplamı.",
+    "placeholders": {
+      "puan": {
+        "type": "String",
+        "example": "4,5"
+      }
+    }
+  },
+  "bilesen_bracket_tur": "Tur {tur}",
+  "@bilesen_bracket_tur": {
+    "description": "Turun başlığı (planlanan tur bilinmiyorsa).",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_bracket_tur_toplam": "Tur {tur}/{toplam}",
+  "@bilesen_bracket_tur_toplam": {
+    "description": "Turun başlığı ve planlanan tur sayısı.",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_bracket_biten_mac": "{biten}/{toplam} maç sonuçlandı",
+  "@bilesen_bracket_biten_mac": {
+    "description": "Turun başlığının altında sonuçlanan maç sayısı.",
+    "placeholders": {
+      "biten": {
+        "type": "int",
+        "example": "3"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "bilesen_bracket_turu_goster": "{tur}. turu göster",
+  "@bilesen_bracket_turu_goster": {
+    "description": "Kapalı turu açan bağlantı.",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_bracket_turu_gizle": "{tur}. turu gizle",
+  "@bilesen_bracket_turu_gizle": {
+    "description": "Açık turu kapatan bağlantı.",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_bracket_mac": "Maç {mac}",
+  "@bilesen_bracket_mac": {
+    "description": "Maçın turdaki sırasıyla başlığı.",
+    "placeholders": {
+      "mac": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_bracket_ozet": "Tur {tur}, Maç {mac}",
+  "@bilesen_bracket_ozet": {
+    "description": "Maçın ekran okuyucu özetinin başı ve oyun formundaki maç adı.",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "1"
+      },
+      "mac": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_bracket_ozet_taraflar": "{a} {aSkor}, {b} {bSkor}",
+  "@bilesen_bracket_ozet_taraflar": {
+    "description": "Maçın ekran okuyucu özetinde taraflar ve skorları.",
+    "placeholders": {
+      "a": {
+        "type": "String",
+        "example": "Ayşe"
+      },
+      "aSkor": {
+        "type": "String",
+        "example": "2"
+      },
+      "b": {
+        "type": "String",
+        "example": "Can"
+      },
+      "bSkor": {
+        "type": "String",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_bracket_ozet_kazanan": "Kazanan: {ad}",
+  "@bilesen_bracket_ozet_kazanan": {
+    "description": "Maçın ekran okuyucu özetinde kazanan.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_bracket_ozet_berabere": "Berabere",
+  "@bilesen_bracket_ozet_berabere": {
+    "description": "Maçın ekran okuyucu özetinde beraberlik (lig, İsviçre)."
+  },
+  "bilesen_bracket_ozet_suruyor": "Sonuçlanmadı",
+  "@bilesen_bracket_ozet_suruyor": {
+    "description": "Maçın ekran okuyucu özetinde sonuçlanmamış maç."
+  },
+  "bilesen_bracket_ozet_bay": "Bay: {ad} tur atlar",
+  "@bilesen_bracket_ozet_bay": {
+    "description": "Maçın ekran okuyucu özetinde rakipsiz taraf.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_bracket_kazanan": "Kazanan",
+  "@bilesen_bracket_kazanan": {
+    "description": "Maçta kazanan tarafın yanındaki etiket (yalnızca renkle değil)."
+  },
+  "bilesen_bracket_sen": "Sen",
+  "@bilesen_bracket_sen": {
+    "description": "Çağıranın yerinin yanındaki etiket."
+  },
+  "bilesen_bracket_bay": "Bay",
+  "@bilesen_bracket_bay": {
+    "description": "Rakipsiz taraf."
+  },
+  "bilesen_bracket_bay_gecer": "Bay: rakipsiz, tur atlar",
+  "@bilesen_bracket_bay_gecer": {
+    "description": "Bay maçında olmayan tarafın yerindeki satır."
+  },
+  "bilesen_bracket_bos_yer": "Boş yer",
+  "@bilesen_bracket_bos_yer": {
+    "description": "Kişisi ya da takımı geri çekilmiş kura yeri."
+  },
+  "bilesen_bracket_takim": "Takım",
+  "@bilesen_bracket_takim": {
+    "description": "Takımı okunamayan takım yeri."
+  },
+  "bilesen_bracket_skor_yok": "–",
+  "@bilesen_bracket_skor_yok": {
+    "description": "Oyunu girilmemiş maçta skor."
+  },
+  "bilesen_bracket_oyun_skoru": "{a}–{b}",
+  "@bilesen_bracket_oyun_skoru": {
+    "description": "Bir oyunun A ve B tarafı skoru.",
+    "placeholders": {
+      "a": {
+        "type": "String",
+        "example": "21"
+      },
+      "b": {
+        "type": "String",
+        "example": "18"
+      }
+    }
+  },
+  "bilesen_bracket_oyunlar": "Oyunlar: {liste}",
+  "@bilesen_bracket_oyunlar": {
+    "description": "Maçın oyunları, ortalanmış noktayla ayrılmış.",
+    "placeholders": {
+      "liste": {
+        "type": "String",
+        "example": "21–18 · 15–21"
+      }
+    }
+  },
+  "bilesen_bracket_oyun_gir": "Oyun gir",
+  "@bilesen_bracket_oyun_gir": {
+    "description": "Maça sonraki oyunu girme düğmesi."
+  },
+  "bilesen_bracket_islemler": "Tur {tur}, Maç {mac} işlemleri",
+  "@bilesen_bracket_islemler": {
+    "description": "Maç işlemleri menüsünün ipucu.",
+    "placeholders": {
+      "tur": {
+        "type": "int",
+        "example": "1"
+      },
+      "mac": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_bracket_son_oyunu_duzelt": "Son oyunu düzelt",
+  "@bilesen_bracket_son_oyunu_duzelt": {
+    "description": "Maç işlemleri menüsünde son oyunu düzeltme."
+  },
+  "bilesen_bracket_son_oyunu_sil": "Son oyunu sil",
+  "@bilesen_bracket_son_oyunu_sil": {
+    "description": "Maç işlemleri menüsünde son oyunu silme."
+  },
+  "bilesen_bracket_son_oyunu_sil_onay": "{oyun}. oyun silinsin mi?",
+  "@bilesen_bracket_son_oyunu_sil_onay": {
+    "description": "Son oyunu silme onayının başlığı.",
+    "placeholders": {
+      "oyun": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_bracket_son_oyunu_sil_aciklama": "Maçın sonucu oyunlara göre yeniden hesaplanır.",
+  "@bilesen_bracket_son_oyunu_sil_aciklama": {
+    "description": "Son oyunu silme onayının açıklaması."
+  },
+  "bilesen_bracket_sil": "Sil",
+  "@bilesen_bracket_sil": {
+    "description": "Silme onayındaki eylem."
+  },
+  "bilesen_bracket_sonraki_tur": "Sonraki turu eşle",
+  "@bilesen_bracket_sonraki_tur": {
+    "description": "Mevcut turun maçları sonuçlanınca sonraki turu eşleyen düğme."
+  },
+  "bilesen_bracket_sifirla": "Ağacı sıfırla",
+  "@bilesen_bracket_sifirla": {
+    "description": "Ağacı sıfırlayan düğme ve onaydaki eylem."
+  },
+  "bilesen_bracket_sifirla_onay": "Eşleşme ağacı sıfırlansın mı?",
+  "@bilesen_bracket_sifirla_onay": {
+    "description": "Sıfırlama onayının başlığı."
+  },
+  "bilesen_bracket_sifirla_aciklama": "Bütün maçlar, oyunlar ve maçlara atanmış hakemler silinir; kura kalır. Bu geri alınamaz.",
+  "@bilesen_bracket_sifirla_aciklama": {
+    "description": "Sıfırlama onayının açıklaması."
+  },
+  "bilesen_bracket_oyun_baslik": "{oyun}. oyun",
+  "@bilesen_bracket_oyun_baslik": {
+    "description": "Oyun giriş formunun başlığı.",
+    "placeholders": {
+      "oyun": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_bracket_duzelt_baslik": "{oyun}. oyunu düzelt",
+  "@bilesen_bracket_duzelt_baslik": {
+    "description": "Oyun düzeltme formunun başlığı.",
+    "placeholders": {
+      "oyun": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_bracket_mac_basligi": "{mac}: {a} – {b}",
+  "@bilesen_bracket_mac_basligi": {
+    "description": "Oyun formunda maç ve taraflar.",
+    "placeholders": {
+      "mac": {
+        "type": "String",
+        "example": "Tur 1, Maç 2"
+      },
+      "a": {
+        "type": "String",
+        "example": "Ayşe"
+      },
+      "b": {
+        "type": "String",
+        "example": "Can"
+      }
+    }
+  },
+  "bilesen_bracket_ek_oyun": "Elemede berabere biten maç ek oyunla sürer (en çok {enCok} oyun).",
+  "@bilesen_bracket_ek_oyun": {
+    "description": "Eleme biçiminde oyun formundaki bilgi.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "9"
+      }
+    }
+  },
+  "bilesen_bracket_puan_alani": "{ad} puanı",
+  "@bilesen_bracket_puan_alani": {
+    "description": "Oyun formunda bir tarafın puan alanı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_bracket_puan_hatali": "-1.000.000 ile 1.000.000 arasında bir tam sayı yaz.",
+  "@bilesen_bracket_puan_hatali": {
+    "description": "Puan alanı geçersizken hata."
+  },
+  "bilesen_bracket_puan_yok": "İki tarafın puanını da yaz.",
+  "@bilesen_bracket_puan_yok": {
+    "description": "Puanlar boşken hata."
+  },
+  "bilesen_bracket_sonuc_alani": "Oyunun sonucu",
+  "@bilesen_bracket_sonuc_alani": {
+    "description": "Sonuç seçiminin ekran okuyucu etiketi."
+  },
+  "bilesen_bracket_kazandi": "{ad} kazandı",
+  "@bilesen_bracket_kazandi": {
+    "description": "Sonuç seçeneği: bu taraf kazandı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_bracket_berabere": "Berabere",
+  "@bilesen_bracket_berabere": {
+    "description": "Sonuç seçeneği: berabere."
+  },
+  "bilesen_bracket_sonuc_yok": "Oyunun sonucunu seç.",
+  "@bilesen_bracket_sonuc_yok": {
+    "description": "Sonuç seçilmeden kaydedilince hata."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -11933,6 +12449,46 @@
   "hata_score_not_started": "Skor etkinlik başlayınca girilir.",
   "@hata_score_not_started": {
     "description": "Hata kodu `score-not-started`. Etkinlik başlamadan el girilmeye ya da masa bitirilmeye çalışınca."
+  },
+  "hata_bracket_draw_required": "Kura çekilmeden eşleşme ağacı başlamaz.",
+  "@hata_bracket_draw_required": {
+    "description": "Hata kodu `bracket-draw-required`. İlk kura bileşeni yoksa ya da kura çekilmemişse başlatınca."
+  },
+  "hata_bracket_started": "Eşleşme ağacı zaten başlatıldı.",
+  "@hata_bracket_started": {
+    "description": "Hata kodu `bracket-started`. Başlamış ağaç yeniden başlatılınca."
+  },
+  "hata_bracket_not_started": "Eşleşme ağacı henüz başlatılmadı.",
+  "@hata_bracket_not_started": {
+    "description": "Hata kodu `bracket-not-started`. Başlamamış ağaçta tur eşlenince ya da sıfırlanınca."
+  },
+  "hata_bracket_too_few": "Eşleşme ağacı için kurada en az iki dolu yer gerekir.",
+  "@hata_bracket_too_few": {
+    "description": "Hata kodu `bracket-too-few`. Kurada ikiden az dolu yer varken başlatınca."
+  },
+  "hata_bracket_match_not_found": "Maç bulunamadı; ağaç sıfırlanmış olabilir.",
+  "@hata_bracket_match_not_found": {
+    "description": "Hata kodu `bracket-match-not-found`. İşlem yapılan maç yoksa."
+  },
+  "hata_bracket_game_not_found": "Oyun bulunamadı; yalnızca son oyun silinebilir.",
+  "@hata_bracket_game_not_found": {
+    "description": "Hata kodu `bracket-game-not-found`. Girilmemiş oyun düzeltilince ya da son olmayan oyun silinince."
+  },
+  "hata_bracket_match_decided": "Maç sonuçlandı; oyun girilemez.",
+  "@hata_bracket_match_decided": {
+    "description": "Hata kodu `bracket-match-decided`. Sonuçlanmış maça ya da baya oyun girilince."
+  },
+  "hata_bracket_round_open": "Turun bütün maçları sonuçlanmadan sonraki tur eşlenemez.",
+  "@hata_bracket_round_open": {
+    "description": "Hata kodu `bracket-round-open`. Sonuçlanmamış maç varken sonraki tur eşlenince."
+  },
+  "hata_bracket_round_closed": "Sonraki tur eşlendi; bu maç artık değişmez. Gerekirse ağacı sıfırla.",
+  "@hata_bracket_round_closed": {
+    "description": "Hata kodu `bracket-round-closed`. Sonraki tur eşlendikten sonra önceki turun maçı değiştirilince."
+  },
+  "hata_bracket_finished": "Eşleşme ağacı sonuçlandı; eşlenecek tur kalmadı.",
+  "@hata_bracket_finished": {
+    "description": "Hata kodu `bracket-finished`. Sonraki tur yokken eşlenince."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {

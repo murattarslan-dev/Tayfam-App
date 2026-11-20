@@ -607,6 +607,57 @@
       }
     },
     {
+      "key": "chess",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Satranç"
+      },
+      "icon": "casino",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "draw"
+          },
+          {
+            "kind": "bracket",
+            "params": {
+              "format": {
+                "organizer_choice": [
+                  "swiss",
+                  "league",
+                  "elimination"
+                ],
+                "default": "swiss"
+              },
+              "best_of": {
+                "organizer_choice": [
+                  1,
+                  3,
+                  5
+                ],
+                "default": 1
+              }
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "player",
+              "rounds": "single",
+              "result": "wdl"
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

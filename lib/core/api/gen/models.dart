@@ -7848,6 +7848,819 @@ final class Event {
   ]);
 }
 
+/// Bir etkinliğin bir eşleşme ağacı bileşeni, isteği yapanın gördüğü haliyle (#251).
+final class EventBracket {
+  const EventBracket({
+    required this.started,
+    required this.format,
+    required this.bestOf,
+    required this.result,
+    required this.winner,
+    this.drawKey,
+    required this.drawn,
+    this.subject,
+    this.teamsKey,
+    required this.rounds,
+    required this.currentRound,
+    this.startedAt,
+    required this.entrants,
+    required this.matches,
+    required this.standings,
+    required this.finished,
+    required this.winnerPositions,
+    required this.callerCanManage,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventBracket.fromJson(Map<String, Object?> json) => EventBracket(
+    started: _readBool(json['started'], 'EventBracket.started'),
+    format: EventBracketFormat.fromWire(
+      _readString(json['format'], 'EventBracket.format'),
+    ),
+    bestOf: _readInt(json['best_of'], 'EventBracket.best_of'),
+    result: EventBracketResult.fromWire(
+      _readString(json['result'], 'EventBracket.result'),
+    ),
+    winner: EventBracketWinner.fromWire(
+      _readString(json['winner'], 'EventBracket.winner'),
+    ),
+    drawKey: switch (json['draw_key']) {
+      null => null,
+      final Object v => _readString(v, 'EventBracket.draw_key'),
+    },
+    drawn: _readBool(json['drawn'], 'EventBracket.drawn'),
+    subject: switch (json['subject']) {
+      null => null,
+      final Object v => EventBracketSubject.fromWire(
+        _readString(v, 'EventBracket.subject'),
+      ),
+    },
+    teamsKey: switch (json['teams_key']) {
+      null => null,
+      final Object v => _readString(v, 'EventBracket.teams_key'),
+    },
+    rounds: _readInt(json['rounds'], 'EventBracket.rounds'),
+    currentRound: _readInt(json['current_round'], 'EventBracket.current_round'),
+    startedAt: switch (json['started_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventBracket.started_at'),
+    },
+    entrants: List<EventBracketEntrant>.unmodifiable(
+      _readList(json['entrants'], 'EventBracket.entrants').map(
+        (Object? e0) => EventBracketEntrant.fromJson(
+          _readObject(e0, 'EventBracket.entrants'),
+        ),
+      ),
+    ),
+    matches: List<EventBracketMatch>.unmodifiable(
+      _readList(json['matches'], 'EventBracket.matches').map(
+        (Object? e0) =>
+            EventBracketMatch.fromJson(_readObject(e0, 'EventBracket.matches')),
+      ),
+    ),
+    standings: List<EventBracketStanding>.unmodifiable(
+      _readList(json['standings'], 'EventBracket.standings').map(
+        (Object? e0) => EventBracketStanding.fromJson(
+          _readObject(e0, 'EventBracket.standings'),
+        ),
+      ),
+    ),
+    finished: _readBool(json['finished'], 'EventBracket.finished'),
+    winnerPositions: List<int>.unmodifiable(
+      _readList(
+        json['winner_positions'],
+        'EventBracket.winner_positions',
+      ).map((Object? e0) => _readInt(e0, 'EventBracket.winner_positions')),
+    ),
+    callerCanManage: _readBool(
+      json['caller_can_manage'],
+      'EventBracket.caller_can_manage',
+    ),
+  );
+
+  /// Eşleşme ağacı başlatıldı.
+  final bool started;
+
+  /// Eleme, lig ya da İsviçre; başlamamışsa başlatılırsa alınacak olan.
+  final EventBracketFormat format;
+
+  /// Maç başına oyun (BO1/BO3/BO5).
+  final int bestOf;
+
+  /// Oyun puanla mı galibiyet/beraberlik/mağlubiyetle mi skorlanır.
+  final EventBracketResult result;
+
+  /// `points` kuralında yüksek ya da düşük puan kazanır.
+  final EventBracketWinner winner;
+
+  /// Tohumların geldiği kura bileşeninin anahtarı; türde kura yoksa alan yok.
+  final String? drawKey;
+
+  /// Kura çekildi; `subject`, `teams_key` ve `entrants` onundur.
+  final bool drawn;
+
+  final EventBracketSubject? subject;
+
+  /// Yalnızca takım kurasında, takım bileşeninin anahtarı.
+  final String? teamsKey;
+
+  /// Planlanan tur: ligin turları, İsviçre'de oynanacak tur, elemede en çok tur.
+  final int rounds;
+
+  /// Eşlenmiş son tur; başlamamışsa 0.
+  final int currentRound;
+
+  /// Yalnızca başlamış eşleşme ağacında.
+  final DateTime? startedAt;
+
+  /// Kuradaki yerler, sıraya göre.
+  final List<EventBracketEntrant> entrants;
+
+  /// Tura ve sıraya göre.
+  final List<EventBracketMatch> matches;
+
+  /// Lig ya da İsviçre sıralaması (puan → aralarındaki maç → Buchholz); elemede boş.
+  final List<EventBracketStanding> standings;
+
+  /// Eşleşme ağacı sonuçlandı.
+  final bool finished;
+
+  /// Sonuçlandıysa kazananların kuradaki yerleri (elemede son kazanan, lig ve İsviçre'de birinci; tam eşitlikte birden çok); öncesinde boş.
+  final List<int> winnerPositions;
+
+  /// Şu an başlatabilir, sonraki turu eşleyebilir, düzeltebilir ve sıfırlayabilirsiniz (organizatör, moderatör, yönetici; susturulmamış; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanManage;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'started': started,
+    'format': format.wire,
+    'best_of': bestOf,
+    'result': result.wire,
+    'winner': winner.wire,
+    if (drawKey case final value?) 'draw_key': value,
+    'drawn': drawn,
+    if (subject case final value?) 'subject': value.wire,
+    if (teamsKey case final value?) 'teams_key': value,
+    'rounds': rounds,
+    'current_round': currentRound,
+    if (startedAt case final value?)
+      'started_at': value.toUtc().toIso8601String(),
+    'entrants': <Object?>[for (final e0 in entrants) e0.toJson()],
+    'matches': <Object?>[for (final e0 in matches) e0.toJson()],
+    'standings': <Object?>[for (final e0 in standings) e0.toJson()],
+    'finished': finished,
+    'winner_positions': <Object?>[for (final e0 in winnerPositions) e0],
+    'caller_can_manage': callerCanManage,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventBracket &&
+          started == other.started &&
+          format == other.format &&
+          bestOf == other.bestOf &&
+          result == other.result &&
+          winner == other.winner &&
+          drawKey == other.drawKey &&
+          drawn == other.drawn &&
+          subject == other.subject &&
+          teamsKey == other.teamsKey &&
+          rounds == other.rounds &&
+          currentRound == other.currentRound &&
+          startedAt == other.startedAt &&
+          _deepEquals(entrants, other.entrants) &&
+          _deepEquals(matches, other.matches) &&
+          _deepEquals(standings, other.standings) &&
+          finished == other.finished &&
+          _deepEquals(winnerPositions, other.winnerPositions) &&
+          callerCanManage == other.callerCanManage;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    started,
+    format,
+    bestOf,
+    result,
+    winner,
+    drawKey,
+    drawn,
+    subject,
+    teamsKey,
+    rounds,
+    currentRound,
+    startedAt,
+    _deepHash(entrants),
+    _deepHash(matches),
+    _deepHash(standings),
+    finished,
+    _deepHash(winnerPositions),
+    callerCanManage,
+  ]);
+}
+
+/// Eşleşme ağacının tohumlandığı kuradaki bir yer. Boş yerde (kişi ya da takım geri çekildi) ne `user_id` ne `team_id` vardır.
+final class EventBracketEntrant {
+  const EventBracketEntrant({required this.position, this.userId, this.teamId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventBracketEntrant.fromJson(Map<String, Object?> json) =>
+      EventBracketEntrant(
+        position: _readInt(json['position'], 'EventBracketEntrant.position'),
+        userId: switch (json['user_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventBracketEntrant.user_id'),
+        },
+        teamId: switch (json['team_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventBracketEntrant.team_id'),
+        },
+      );
+
+  /// Kısıtlar: minimum: 1; maximum: 500.
+  final int position;
+
+  /// Katılımcı kurasında kişinin kullanıcı kimliği.
+  final String? userId;
+
+  /// Takım kurasında takımın kimliği.
+  final String? teamId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'position': position,
+    if (userId case final value?) 'user_id': value,
+    if (teamId case final value?) 'team_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventBracketEntrant &&
+          position == other.position &&
+          userId == other.userId &&
+          teamId == other.teamId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[position, userId, teamId]);
+}
+
+/// Eleme, lig ya da İsviçre; başlamamışsa başlatılırsa alınacak olan.
+enum EventBracketFormat {
+  elimination('elimination'),
+  league('league'),
+  swiss('swiss'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventBracketFormat(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventBracketFormat.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventBracketFormat fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Maçın bir oyunu.
+final class EventBracketGame {
+  const EventBracketGame({
+    required this.number,
+    this.aPoints,
+    this.bPoints,
+    this.aOutcome,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventBracketGame.fromJson(Map<String, Object?> json) =>
+      EventBracketGame(
+        number: _readInt(json['number'], 'EventBracketGame.number'),
+        aPoints: switch (json['a_points']) {
+          null => null,
+          final Object v => _readInt(v, 'EventBracketGame.a_points'),
+        },
+        bPoints: switch (json['b_points']) {
+          null => null,
+          final Object v => _readInt(v, 'EventBracketGame.b_points'),
+        },
+        aOutcome: switch (json['a_outcome']) {
+          null => null,
+          final Object v => EventBracketGameAOutcome.fromWire(
+            _readString(v, 'EventBracketGame.a_outcome'),
+          ),
+        },
+      );
+
+  /// Kısıtlar: minimum: 1; maximum: 9.
+  final int number;
+
+  /// Yalnızca `points` kuralında.
+  final int? aPoints;
+
+  /// Yalnızca `points` kuralında.
+  final int? bPoints;
+
+  /// Yalnızca `wdl` kuralında; B tarafınınki tersidir.
+  final EventBracketGameAOutcome? aOutcome;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'number': number,
+    if (aPoints case final value?) 'a_points': value,
+    if (bPoints case final value?) 'b_points': value,
+    if (aOutcome case final value?) 'a_outcome': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventBracketGame &&
+          number == other.number &&
+          aPoints == other.aPoints &&
+          bPoints == other.bPoints &&
+          aOutcome == other.aOutcome;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[number, aPoints, bPoints, aOutcome]);
+}
+
+/// Yalnızca `wdl` kuralında; B tarafınınki tersidir.
+enum EventBracketGameAOutcome {
+  win('win'),
+  draw('draw'),
+  loss('loss'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventBracketGameAOutcome(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('EventBracketGameAOutcome.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventBracketGameAOutcome fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `points` kuralında `a_points` ve `b_points` birlikte, `wdl` kuralında yalnızca `a_outcome`.
+final class EventBracketGameRequest {
+  const EventBracketGameRequest({this.aPoints, this.bPoints, this.aOutcome});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventBracketGameRequest.fromJson(Map<String, Object?> json) =>
+      EventBracketGameRequest(
+        aPoints: switch (json['a_points']) {
+          null => null,
+          final Object v => _readInt(v, 'EventBracketGameRequest.a_points'),
+        },
+        bPoints: switch (json['b_points']) {
+          null => null,
+          final Object v => _readInt(v, 'EventBracketGameRequest.b_points'),
+        },
+        aOutcome: switch (json['a_outcome']) {
+          null => null,
+          final Object v => EventBracketGameRequestAOutcome.fromWire(
+            _readString(v, 'EventBracketGameRequest.a_outcome'),
+          ),
+        },
+      );
+
+  /// Kısıtlar: minimum: -1000000; maximum: 1000000.
+  final int? aPoints;
+
+  /// Kısıtlar: minimum: -1000000; maximum: 1000000.
+  final int? bPoints;
+
+  final EventBracketGameRequestAOutcome? aOutcome;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (aPoints case final value?) 'a_points': value,
+    if (bPoints case final value?) 'b_points': value,
+    if (aOutcome case final value?) 'a_outcome': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventBracketGameRequest &&
+          aPoints == other.aPoints &&
+          bPoints == other.bPoints &&
+          aOutcome == other.aOutcome;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[aPoints, bPoints, aOutcome]);
+}
+
+enum EventBracketGameRequestAOutcome {
+  win('win'),
+  draw('draw'),
+  loss('loss'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventBracketGameRequestAOutcome(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError(
+        'EventBracketGameRequestAOutcome.unknown gönderilemez',
+      ));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventBracketGameRequestAOutcome fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Eşleşme ağacının bir maçı (#251). Taraflar kuradaki yerlerdir.
+final class EventBracketMatch {
+  const EventBracketMatch({
+    required this.id,
+    required this.round,
+    required this.slot,
+    this.aPosition,
+    this.bPosition,
+    required this.games,
+    required this.decided,
+    required this.bye,
+    this.winnerPosition,
+    required this.aTotal,
+    required this.bTotal,
+    required this.aGamesWon,
+    required this.bGamesWon,
+    required this.callerCanScore,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventBracketMatch.fromJson(
+    Map<String, Object?> json,
+  ) => EventBracketMatch(
+    id: _readString(json['id'], 'EventBracketMatch.id'),
+    round: _readInt(json['round'], 'EventBracketMatch.round'),
+    slot: _readInt(json['slot'], 'EventBracketMatch.slot'),
+    aPosition: switch (json['a_position']) {
+      null => null,
+      final Object v => _readInt(v, 'EventBracketMatch.a_position'),
+    },
+    bPosition: switch (json['b_position']) {
+      null => null,
+      final Object v => _readInt(v, 'EventBracketMatch.b_position'),
+    },
+    games: List<EventBracketGame>.unmodifiable(
+      _readList(json['games'], 'EventBracketMatch.games').map(
+        (Object? e0) => EventBracketGame.fromJson(
+          _readObject(e0, 'EventBracketMatch.games'),
+        ),
+      ),
+    ),
+    decided: _readBool(json['decided'], 'EventBracketMatch.decided'),
+    bye: _readBool(json['bye'], 'EventBracketMatch.bye'),
+    winnerPosition: switch (json['winner_position']) {
+      null => null,
+      final Object v => _readInt(v, 'EventBracketMatch.winner_position'),
+    },
+    aTotal: _readDouble(json['a_total'], 'EventBracketMatch.a_total'),
+    bTotal: _readDouble(json['b_total'], 'EventBracketMatch.b_total'),
+    aGamesWon: _readInt(json['a_games_won'], 'EventBracketMatch.a_games_won'),
+    bGamesWon: _readInt(json['b_games_won'], 'EventBracketMatch.b_games_won'),
+    callerCanScore: _readBool(
+      json['caller_can_score'],
+      'EventBracketMatch.caller_can_score',
+    ),
+  );
+
+  final String id;
+
+  /// Kısıtlar: minimum: 1.
+  final int round;
+
+  /// Maçın turdaki sırası.
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int slot;
+
+  /// A tarafının kuradaki yeri; yoksa (bay) alan yok.
+  final int? aPosition;
+
+  /// B tarafının kuradaki yeri; yoksa (bay) alan yok.
+  final int? bPosition;
+
+  final List<EventBracketGame> games;
+
+  /// Maç sonuçlandı: kazanan, beraberlik (elemede yok) ya da bay.
+  final bool decided;
+
+  /// En fazla bir taraflı maç.
+  final bool bye;
+
+  /// Kazananın yeri; beraberlikte, sonuçlanmamış maçta ya da tarafsız maçta alan yok.
+  final int? winnerPosition;
+
+  /// Tarafın toplamı; `wdl` kuralında galibiyet 1, beraberlik 0.5.
+  final double aTotal;
+
+  final double bTotal;
+
+  /// Tarafın tek başına kazandığı oyun sayısı.
+  final int aGamesWon;
+
+  final int bGamesWon;
+
+  /// Şu an bu maça oyun girebilirsiniz (organizatör, moderatör, yönetici ya da maçın hakemi; mevcut turun sonuçlanmamış maçı; etkinlik başlamış, iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanScore;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'round': round,
+    'slot': slot,
+    if (aPosition case final value?) 'a_position': value,
+    if (bPosition case final value?) 'b_position': value,
+    'games': <Object?>[for (final e0 in games) e0.toJson()],
+    'decided': decided,
+    'bye': bye,
+    if (winnerPosition case final value?) 'winner_position': value,
+    'a_total': aTotal,
+    'b_total': bTotal,
+    'a_games_won': aGamesWon,
+    'b_games_won': bGamesWon,
+    'caller_can_score': callerCanScore,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventBracketMatch &&
+          id == other.id &&
+          round == other.round &&
+          slot == other.slot &&
+          aPosition == other.aPosition &&
+          bPosition == other.bPosition &&
+          _deepEquals(games, other.games) &&
+          decided == other.decided &&
+          bye == other.bye &&
+          winnerPosition == other.winnerPosition &&
+          aTotal == other.aTotal &&
+          bTotal == other.bTotal &&
+          aGamesWon == other.aGamesWon &&
+          bGamesWon == other.bGamesWon &&
+          callerCanScore == other.callerCanScore;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    round,
+    slot,
+    aPosition,
+    bPosition,
+    _deepHash(games),
+    decided,
+    bye,
+    winnerPosition,
+    aTotal,
+    bTotal,
+    aGamesWon,
+    bGamesWon,
+    callerCanScore,
+  ]);
+}
+
+/// Oyun puanla mı galibiyet/beraberlik/mağlubiyetle mi skorlanır.
+enum EventBracketResult {
+  points('points'),
+  wdl('wdl'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventBracketResult(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventBracketResult.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventBracketResult fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Lig ya da İsviçre sıralamasında bir katılımcı.
+final class EventBracketStanding {
+  const EventBracketStanding({
+    required this.position,
+    required this.played,
+    required this.won,
+    required this.drawn,
+    required this.lost,
+    required this.points,
+    required this.headToHead,
+    required this.buchholz,
+    required this.rank,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventBracketStanding.fromJson(Map<String, Object?> json) =>
+      EventBracketStanding(
+        position: _readInt(json['position'], 'EventBracketStanding.position'),
+        played: _readInt(json['played'], 'EventBracketStanding.played'),
+        won: _readInt(json['won'], 'EventBracketStanding.won'),
+        drawn: _readInt(json['drawn'], 'EventBracketStanding.drawn'),
+        lost: _readInt(json['lost'], 'EventBracketStanding.lost'),
+        points: _readDouble(json['points'], 'EventBracketStanding.points'),
+        headToHead: _readDouble(
+          json['head_to_head'],
+          'EventBracketStanding.head_to_head',
+        ),
+        buchholz: _readDouble(
+          json['buchholz'],
+          'EventBracketStanding.buchholz',
+        ),
+        rank: _readInt(json['rank'], 'EventBracketStanding.rank'),
+      );
+
+  /// Kuradaki yeri.
+  final int position;
+
+  final int played;
+
+  final int won;
+
+  final int drawn;
+
+  final int lost;
+
+  /// Galibiyet 1, beraberlik 0.5, bay 1.
+  final double points;
+
+  /// Puanca eşit olanlara karşı alınan puan.
+  final double headToHead;
+
+  /// Rakiplerin puanları toplamı.
+  final double buchholz;
+
+  /// 1'den başlar; üçünde de eşit olanlar aynı sırayı paylaşır.
+  final int rank;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'position': position,
+    'played': played,
+    'won': won,
+    'drawn': drawn,
+    'lost': lost,
+    'points': points,
+    'head_to_head': headToHead,
+    'buchholz': buchholz,
+    'rank': rank,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventBracketStanding &&
+          position == other.position &&
+          played == other.played &&
+          won == other.won &&
+          drawn == other.drawn &&
+          lost == other.lost &&
+          points == other.points &&
+          headToHead == other.headToHead &&
+          buchholz == other.buchholz &&
+          rank == other.rank;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    position,
+    played,
+    won,
+    drawn,
+    lost,
+    points,
+    headToHead,
+    buchholz,
+    rank,
+  ]);
+}
+
+enum EventBracketSubject {
+  participants('participants'),
+  teams('teams'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventBracketSubject(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventBracketSubject.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventBracketSubject fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `points` kuralında yüksek ya da düşük puan kazanır.
+enum EventBracketWinner {
+  high('high'),
+  low('low'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventBracketWinner(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventBracketWinner.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventBracketWinner fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class EventCancelRequest {
   const EventCancelRequest({this.reason});
 
