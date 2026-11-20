@@ -246,12 +246,40 @@ void main() {
       expect(models, contains('throw StateError'));
     });
 
-    test('string olmayan enum hata verir', () {
+    test('integer enum düz int üretir; tam sayı olmayan değer hata', () {
+      final ok = _spec(
+        schemas: {
+          'Match': {
+            'type': 'object',
+            'properties': {
+              'best_of': {
+                'type': 'integer',
+                'enum': [3, 5],
+              },
+            },
+          },
+        },
+      );
+      final models = _models(ok);
+      expect(models, contains('final int? bestOf;'));
+      expect(models, isNot(contains('enum MatchBestOf')));
       final bad = _spec(
         schemas: {
           'Level': {
             'type': 'integer',
-            'enum': [1, 2],
+            'enum': [1, 'iki'],
+          },
+        },
+      );
+      expect(() => _generate(bad), throwsA(isA<GenException>()));
+    });
+
+    test('number ve boolean enum hata verir', () {
+      final bad = _spec(
+        schemas: {
+          'Level': {
+            'type': 'number',
+            'enum': [1.5, 2.5],
           },
         },
       );
