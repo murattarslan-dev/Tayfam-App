@@ -28,6 +28,8 @@
     <string name="push_join_approved_title">Katılım isteğin onaylandı</string>
     <string name="push_join_request_body">Tayfana katılmak isteyen biri var.</string>
     <string name="push_join_request_title">Yeni katılım isteği</string>
+    <string name="push_now_started_body">Şu an başlayan bir etkinlik var. Ayrıntı için uygulamayı aç.</string>
+    <string name="push_now_started_title">Şimdi başladı</string>
     <string name="push_report_resolved_body">Gönderdiğin şikâyet incelendi.</string>
     <string name="push_report_resolved_title">Şikâyetin sonuçlandı</string>
     <string name="push_rsvp_promoted_body">Bekleme listesinden katılımcılara geçtin.</string>

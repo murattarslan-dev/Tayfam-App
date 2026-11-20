@@ -128,6 +128,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.attendeesHidden => m.hata_attendees_hidden,
   ProblemType.albumConsentRequired => m.hata_album_consent_required,
   ProblemType.nowLimitReached => m.hata_now_limit_reached,
+  ProblemType.nowBroadcastLimitReached => m.hata_now_broadcast_limit_reached,
   ProblemType.invalidJoinQr => m.hata_invalid_join_qr,
   ProblemType.joinQrLimitReached => m.hata_join_qr_limit_reached,
   ProblemType.eventNotOpenEnded => m.hata_event_not_open_ended,

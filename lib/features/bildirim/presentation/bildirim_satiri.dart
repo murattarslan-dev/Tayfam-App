@@ -58,7 +58,10 @@ class BildirimSatiri extends ConsumerWidget {
     final tayfaAdi = tayfaId == null
         ? null
         : ref.watch(tayfaAdiProvider(tayfaId)) ?? m.tayfa_adi_bilinmiyor;
-    final islem = satirIciIslem(bildirim);
+    final islem = satirIciIslem(
+      bildirim,
+      etkinUyeMi: etkinUyelik(ref.watch(tayfalarimProvider).value),
+    );
 
     final icerik = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,7 +405,8 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.eventUpdated ||
   NotificationType.rsvpPromoted ||
   NotificationType.celebration ||
-  NotificationType.badgeEarned => BildirimKategorisi.etkinlik,
+  NotificationType.badgeEarned ||
+  NotificationType.nowStarted => BildirimKategorisi.etkinlik,
   NotificationType.dmRequest ||
   NotificationType.dmMessage => BildirimKategorisi.mesaj,
   NotificationType.friendRequest ||
@@ -468,6 +472,8 @@ String bildirimMetni(
     bildirim.targetType == NotificationTargetType.tayfa
         ? m.rozet_bildirim_tayfa
         : m.rozet_bildirim,
+  // Başlık, tür ve yer yazılmaz (Tayfam-Api ADR-0038 §4).
+  NotificationType.nowStarted => m.simdi_bildirim_satir(kisi),
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -498,5 +504,6 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.dataExportReady => Icons.download_outlined,
   NotificationType.celebration => Icons.emoji_events_outlined,
   NotificationType.badgeEarned => Icons.military_tech_outlined,
+  NotificationType.nowStarted => Icons.bolt,
   NotificationType.unknown => Icons.notifications_outlined,
 };

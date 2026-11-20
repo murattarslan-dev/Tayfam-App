@@ -18,7 +18,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 Widget tayfaUstMenusu(BuildContext context, String tayfaId) =>
     TayfaYonetimMenusu(tayfaId: tayfaId);
 
-enum _Secim { ayarlar, sessiz, sikayet, ayril }
+enum _Secim { ayarlar, sessiz, simdi, sikayet, ayril }
 
 /// Tayfa ana sayfasının mor üst bölümündeki ⋯ düğmesi ve onun açtığı
 /// alttan sayfa (ADR-0018 §1; tasarım: Ayar-Menu, Ayar-Menu-Yonetici):
@@ -27,6 +27,8 @@ enum _Secim { ayarlar, sessiz, sikayet, ayril }
 ///   vurgulu; bekleyen katılım isteği varsa düğmede ve girişte sayılı
 ///   rozet (`pending_join_request_count`). Ayarlar tam ekran açılır.
 /// - "Bildirimleri sessize al" / "Bildirimleri aç".
+/// - "Şimdi bildirimlerini kapat" / "… aç" (`tayfa_now`; App ADR-0032
+///   §5): Şimdi başlat bildirimleri; anlık tayfada yok.
 /// - "Tayfayı şikâyet et": yönetim dışındaki üyeye; yalnızca Tayfam
 ///   ekibine gider (ADR-0018 §8).
 /// - "Tayfadan ayrıl" (yıkıcı, onaylı). Son yöneticinin ayrılamaması
@@ -48,6 +50,7 @@ class TayfaYonetimMenusu extends ConsumerWidget {
     // Sessizlik tercihi menü açılmadan okunur ve düğme durdukça bellekte
     // kalır; sayfa kapanınca seçim bu değere göre uygulanır.
     ref.watch(tayfaSessizProvider(tayfaId));
+    ref.watch(tayfaSimdiKapaliProvider(tayfaId));
     final renk = context.renkler.markaYuzeyUstu;
     return IconButton(
       tooltip: bekleyen ? m.yonetim_menu_ipucu_bekleyen : m.yonetim_menu_ipucu,
@@ -93,6 +96,20 @@ class TayfaYonetimMenusu extends ConsumerWidget {
           context,
           hata,
           yeni ? m.yonetim_sessize_alindi : m.yonetim_sessizden_cikti,
+        );
+      case _Secim.simdi:
+        final kapali =
+            !(ref.read(tayfaSimdiKapaliProvider(tayfaId)).value ?? false);
+        final hata = await ref
+            .read(tayfaSimdiKapaliProvider(tayfaId).notifier)
+            .ayarla(kapali: kapali);
+        if (!context.mounted) return;
+        sonucuBildir(
+          context,
+          hata,
+          kapali
+              ? m.simdi_bildirim_tayfa_kapatildi
+              : m.simdi_bildirim_tayfa_acildi,
         );
       case _Secim.sikayet:
         await sikayetSayfasiniAc(context, SikayetHedefi.tayfa(tayfaId));
@@ -141,6 +158,9 @@ class _TayfaMenusuIcerigi extends ConsumerWidget {
     final yonetimde = ozet.yonetimde;
     final sayi = ozet.bekleyenIstekSayisi;
     final sessiz = ref.watch(tayfaSessizProvider(tayfaId)).value;
+    final simdiKapali = ozet.tur == TayfaKind.instant
+        ? null
+        : ref.watch(tayfaSimdiKapaliProvider(tayfaId)).value;
     return AltSayfaIcerigi(
       baslik: ozet.ad ?? m.tayfa_adi_bilinmiyor,
       children: [
@@ -175,6 +195,19 @@ class _TayfaMenusuIcerigi extends ConsumerWidget {
                 ? m.yonetim_menu_sessizden_cikar_aciklama
                 : m.yonetim_menu_sessize_al_aciklama,
             onTap: () => onSec(_Secim.sessiz),
+          ),
+        if (simdiKapali != null)
+          MenuSatiri(
+            ikon: simdiKapali
+                ? Icons.bolt
+                : Icons.notifications_paused_outlined,
+            baslik: simdiKapali
+                ? m.simdi_bildirim_tayfa_ac
+                : m.simdi_bildirim_tayfa_kapat,
+            aciklama: simdiKapali
+                ? m.simdi_bildirim_tayfa_ac_aciklama
+                : m.simdi_bildirim_tayfa_kapat_aciklama,
+            onTap: () => onSec(_Secim.simdi),
           ),
         if (!yonetimde)
           MenuSatiri(

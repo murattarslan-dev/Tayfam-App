@@ -24,6 +24,11 @@ final class BildirimTercihleriDeposu {
   /// sesini açar (varsayılan `all`).
   Future<void> tayfaSesiniAc(String tayfaId) =>
       _api.resetTayfaNotificationPreference(tayfaId: tayfaId);
+
+  /// `DELETE /v1/notification-preferences/tayfas/{tayfa_id}/now`: tayfanın
+  /// şimdi bildirimlerini açar (varsayılan `all`; Tayfam-Api ADR-0038 §4).
+  Future<void> tayfaSimdiAc(String tayfaId) =>
+      _api.resetTayfaNowNotificationPreference(tayfaId: tayfaId);
 }
 
 /// Bildirim tercihi uçlarının deposu.

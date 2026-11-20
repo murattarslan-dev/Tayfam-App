@@ -30,10 +30,18 @@ final class SessizTayfa {
 /// tasarım: Bildirim-Ayarlari, karar 8).
 @immutable
 final class SessizOzeti {
-  const SessizOzeti({required this.tayfalar, required this.konusmaSayisi});
+  const SessizOzeti({
+    required this.tayfalar,
+    required this.konusmaSayisi,
+    this.simdiKapali = const [],
+  });
 
   /// Sessizdeki tayfalar, sunucunun sırasıyla.
   final List<SessizTayfa> tayfalar;
+
+  /// Şimdi bildirimleri kapalı tayfalar (`tayfa_now`, seviye `none`; App
+  /// ADR-0032 §5), sunucunun sırasıyla.
+  final List<SessizTayfa> simdiKapali;
 
   /// Sessizdeki birebir konuşma sayısı. Konuşmalar burada listelenmez;
   /// sesleri konuşmanın ⋯ menüsünden açılır.
@@ -54,6 +62,7 @@ SessizOzeti sessizOzeti(
   }
 
   final tayfalar = <SessizTayfa>[];
+  final simdiKapali = <SessizTayfa>[];
   var konusma = 0;
   for (final t in tercihler) {
     if (!uuidBicimindeMi(t.scopeId) || !suruyor(t)) continue;
@@ -62,12 +71,19 @@ SessizOzeti sessizOzeti(
     if (t.scopeType == NotificationPreferenceScopeType.tayfa &&
         (sessiz || yalnizAnma)) {
       tayfalar.add(SessizTayfa(t.scopeId, t.muteUntil));
+    } else if (t.scopeType == NotificationPreferenceScopeType.tayfaNow &&
+        sessiz) {
+      simdiKapali.add(SessizTayfa(t.scopeId, t.muteUntil));
     } else if (t.scopeType == NotificationPreferenceScopeType.dmConversation &&
         sessiz) {
       konusma++;
     }
   }
-  return SessizOzeti(tayfalar: tayfalar, konusmaSayisi: konusma);
+  return SessizOzeti(
+    tayfalar: tayfalar,
+    konusmaSayisi: konusma,
+    simdiKapali: simdiKapali,
+  );
 }
 
 /// Profil → Bildirim ayarları'ndaki sessize alınanlar (`GET
@@ -89,9 +105,20 @@ class SessizOzetiNotifier extends AsyncNotifier<SessizOzeti> {
 
   /// [tayfaId]'nin sesini açar ve listeden çıkarır. Başarıda `null`, aksi
   /// halde gösterilecek hata.
-  Future<Object?> sesiAc(String tayfaId) async {
+  Future<Object?> sesiAc(String tayfaId) => _ac(tayfaId, simdi: false);
+
+  /// [tayfaId]'nin şimdi bildirimlerini açar ve listeden çıkarır.
+  /// Başarıda `null`, aksi halde gösterilecek hata.
+  Future<Object?> simdiAc(String tayfaId) => _ac(tayfaId, simdi: true);
+
+  Future<Object?> _ac(String tayfaId, {required bool simdi}) async {
     try {
-      await ref.read(bildirimTercihleriDeposuProvider).tayfaSesiniAc(tayfaId);
+      final depo = ref.read(bildirimTercihleriDeposuProvider);
+      if (simdi) {
+        await depo.tayfaSimdiAc(tayfaId);
+      } else {
+        await depo.tayfaSesiniAc(tayfaId);
+      }
     } on OturumYok catch (hata) {
       if (ref.mounted) {
         ref.read(oturumDurumuProvider.notifier).ayarla(OturumDurumu.girisYok);
@@ -107,9 +134,13 @@ class SessizOzetiNotifier extends AsyncNotifier<SessizOzeti> {
         SessizOzeti(
           tayfalar: [
             for (final t in ozet.tayfalar)
-              if (t.tayfaId != tayfaId) t,
+              if (simdi || t.tayfaId != tayfaId) t,
           ],
           konusmaSayisi: ozet.konusmaSayisi,
+          simdiKapali: [
+            for (final t in ozet.simdiKapali)
+              if (!simdi || t.tayfaId != tayfaId) t,
+          ],
         ),
       );
     }

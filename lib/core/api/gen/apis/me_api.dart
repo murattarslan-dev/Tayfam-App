@@ -770,6 +770,11 @@ final class MeApi {
   /// varsayılan açık): kapatınca etkinliklere katılımınız arkadaşlarınızın
   /// Keşfet akışında gösterilmez ve sayılmaz (hemen).
   ///
+  /// **Şimdi bildirimi kimden** (`now_from_friends`, varsayılan `all`;
+  /// ADR-0038 §4): `all` bütün arkadaşlarınızdan, `close` yalnızca
+  /// arkadaş listenizin ilk 20'sindekilerden, `off` hiçbirinden.
+  /// Geçersiz değer `invalid-request`.
+  ///
   /// Ayarı kapatıp açmak haftalık öneri sınırını ve daha önce kimin
   /// önerildiğini sıfırlamaz; kapattığınız öneriler de hatırlanır.
   ///

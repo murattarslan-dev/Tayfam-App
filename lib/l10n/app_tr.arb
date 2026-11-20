@@ -13845,5 +13845,163 @@
   "simdi_qr_etkinlige_git": "Etkinliğe git",
   "@simdi_qr_etkinlige_git": {
     "description": "QR ile katıldıktan sonra etkinlik detayını açan düğme."
+  },
+  "simdi_bildirim_haber": "Seçtiğin {sayi} arkadaşına haber verilecek ve etkinliğe davet edilecekler.",
+  "@simdi_bildirim_haber": {
+    "description": "Şimdi ekranında (anlık) \"Kimler duysun\" bilgi metni: seçili arkadaş sayısı (App ADR-0032 §4).",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "simdi_bildirim_sec": "Arkadaşları seç",
+  "@simdi_bildirim_sec": {
+    "description": "Şimdi ekranında arkadaş seçici sayfasını açan düğme."
+  },
+  "simdi_bildirim_secici_baslik": "Kimler duysun?",
+  "@simdi_bildirim_secici_baslik": {
+    "description": "Şimdi başlat arkadaş seçici sayfasının başlığı."
+  },
+  "simdi_bildirim_secici_aciklama": "Bugün boş olan arkadaşların önce gelir. Seçtiklerine bildirim gider ve etkinliğe davet edilirler; şimdi bildirimlerini kapatmış olanlara bildirim gitmez.",
+  "@simdi_bildirim_secici_aciklama": {
+    "description": "Arkadaş seçici sayfasının üstündeki açıklama (App ADR-0032 §4)."
+  },
+  "simdi_bildirim_secilen": "{sayi} / {enCok} kişi seçildi",
+  "@simdi_bildirim_secilen": {
+    "description": "Arkadaş seçicideki seçili kişi sayacı; ekran okuyucuya canlı bölge olarak okunur.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "12"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "simdi_bildirim_sinir": "En fazla {enCok} arkadaşına haber verebilirsin.",
+  "@simdi_bildirim_sinir": {
+    "description": "Arkadaş seçicide sınır dolunca gösterilen not.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "simdi_bildirim_temizle": "Seçimi temizle",
+  "@simdi_bildirim_temizle": {
+    "description": "Arkadaş seçicide bütün seçimi kaldıran düğme."
+  },
+  "simdi_bildirim_tamam": "Tamam",
+  "@simdi_bildirim_tamam": {
+    "description": "Arkadaş seçici sayfasını kapatan alt düğme."
+  },
+  "simdi_bildirim_arkadas_yok": "Henüz arkadaşın yok. Etkinliği başlatıp davet linkini paylaşabilirsin.",
+  "@simdi_bildirim_arkadas_yok": {
+    "description": "Arkadaş seçicide arkadaş yokken gösterilen metin."
+  },
+  "simdi_bildirim_bildirimsiz": "Bildirimsiz başlat",
+  "@simdi_bildirim_bildirimsiz": {
+    "description": "Günlük şimdi yayını sınırı aşılınca etkinliği alıcısız başlatan düğme (`now-broadcast-limit-reached`)."
+  },
+  "simdi_bildirim_satir": "{kisi} şimdi bir etkinlik başlattı",
+  "@simdi_bildirim_satir": {
+    "description": "Bildirim metni (`now_started`): organizatör Şimdi başlat ile etkinlik açtı. Başlık, tür ve yer yazılmaz.",
+    "placeholders": {
+      "kisi": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "simdi_bildirim_kimden": "Arkadaşlarımdan şimdi bildirimleri",
+  "@simdi_bildirim_kimden": {
+    "description": "Profil → Gizlilik: \"Şimdi bildirimi kimden\" ayarının başlığı (`now_from_friends`)."
+  },
+  "simdi_bildirim_kimden_aciklama": "Arkadaşların bir etkinliği şimdi başlatınca kimlerden haber alacağın.",
+  "@simdi_bildirim_kimden_aciklama": {
+    "description": "\"Şimdi bildirimi kimden\" ayarının açıklaması."
+  },
+  "simdi_bildirim_kimden_herkes": "Herkes",
+  "@simdi_bildirim_kimden_herkes": {
+    "description": "\"Şimdi bildirimi kimden\" seçeneği: bütün arkadaşlar (`all`)."
+  },
+  "simdi_bildirim_kimden_yakin": "Yakın arkadaşlarım",
+  "@simdi_bildirim_kimden_yakin": {
+    "description": "\"Şimdi bildirimi kimden\" seçeneği: arkadaş listesinin ilk 20 kişisi (`close`)."
+  },
+  "simdi_bildirim_kimden_yakin_aciklama": "Arkadaş listendeki ilk 20 kişi",
+  "@simdi_bildirim_kimden_yakin_aciklama": {
+    "description": "\"Yakın arkadaşlarım\" seçeneğinin açıklaması."
+  },
+  "simdi_bildirim_kimden_yakin_pasif": "Profilleme kapalıyken yakın arkadaş belirlenemez",
+  "@simdi_bildirim_kimden_yakin_pasif": {
+    "description": "Profilleme kapalıyken pasif \"Yakın arkadaşlarım\" seçeneğinin açıklaması (App ADR-0032 §5)."
+  },
+  "simdi_bildirim_kimden_kapali": "Kapalı",
+  "@simdi_bildirim_kimden_kapali": {
+    "description": "\"Şimdi bildirimi kimden\" seçeneği: hiçbirinden (`off`)."
+  },
+  "simdi_bildirim_tayfa_kapat": "Şimdi bildirimlerini kapat",
+  "@simdi_bildirim_tayfa_kapat": {
+    "description": "Tayfa menüsü: tayfanın şimdi bildirimlerini kapatan satır (`tayfa_now`)."
+  },
+  "simdi_bildirim_tayfa_kapat_aciklama": "Biri bu tayfada bir şeyi şimdi başlatınca bildirim gelmez",
+  "@simdi_bildirim_tayfa_kapat_aciklama": {
+    "description": "Tayfa menüsü: şimdi bildirimlerini kapatma satırının açıklaması."
+  },
+  "simdi_bildirim_tayfa_ac": "Şimdi bildirimlerini aç",
+  "@simdi_bildirim_tayfa_ac": {
+    "description": "Tayfa menüsü: tayfanın şimdi bildirimlerini açan satır."
+  },
+  "simdi_bildirim_tayfa_ac_aciklama": "Biri bu tayfada bir şeyi şimdi başlatınca haber alırsın",
+  "@simdi_bildirim_tayfa_ac_aciklama": {
+    "description": "Tayfa menüsü: şimdi bildirimlerini açma satırının açıklaması."
+  },
+  "simdi_bildirim_tayfa_kapatildi": "Şimdi bildirimleri kapatıldı",
+  "@simdi_bildirim_tayfa_kapatildi": {
+    "description": "Tayfanın şimdi bildirimleri kapatılınca kısa bildirim."
+  },
+  "simdi_bildirim_tayfa_acildi": "Şimdi bildirimleri açıldı",
+  "@simdi_bildirim_tayfa_acildi": {
+    "description": "Tayfanın şimdi bildirimleri açılınca kısa bildirim."
+  },
+  "simdi_bildirim_ayar_baslik": "Şimdi bildirimleri kapalı tayfalar",
+  "@simdi_bildirim_ayar_baslik": {
+    "description": "Profil → Bildirim ayarları: şimdi bildirimleri kapalı tayfaların bölüm başlığı."
+  },
+  "simdi_bildirim_ayar_yok": "Bütün tayfalarında şimdi bildirimleri açık.",
+  "@simdi_bildirim_ayar_yok": {
+    "description": "Şimdi bildirimleri kapalı tayfa yokken gösterilen metin."
+  },
+  "simdi_bildirim_ayar_ac": "Aç",
+  "@simdi_bildirim_ayar_ac": {
+    "description": "Şimdi bildirimleri kapalı tayfa satırındaki \"Aç\" düğmesi."
+  },
+  "simdi_bildirim_ayar_acildi": "{ad} için şimdi bildirimleri açıldı",
+  "@simdi_bildirim_ayar_acildi": {
+    "description": "Bildirim ayarlarında bir tayfanın şimdi bildirimleri açılınca kısa bildirim.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Kamp Tayfası"
+      }
+    }
+  },
+  "hata_now_broadcast_limit_reached": "Bugünkü şimdi bildirimi hakkını doldurdun (günde 2). Etkinliği bildirimsiz başlatabilirsin.",
+  "@hata_now_broadcast_limit_reached": {
+    "description": "Hata kodu `now-broadcast-limit-reached`. Kişi başı günde 2 şimdi yayını sınırı aşılınca; hiçbir şey açılmaz, alıcısız başlatılabilir."
+  },
+  "push_now_started_title": "Şimdi başladı",
+  "@push_now_started_title": {
+    "description": "Push bildirimi başlığı (`now_started`, Android title_loc_key): biri Şimdi başlat ile etkinlik açtı; ad, başlık, tür ve yer yazılmaz. Uygulama kapalıyken Android gösterir. İçerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "push_now_started_body": "Şu an başlayan bir etkinlik var. Ayrıntı için uygulamayı aç.",
+  "@push_now_started_body": {
+    "description": "Push bildirimi gövdesi (`now_started`, Android body_loc_key): içerik, isim, konum yazılmaz; argüman yoktur."
   }
 }

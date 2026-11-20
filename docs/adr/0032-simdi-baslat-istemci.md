@@ -121,3 +121,17 @@ Adres `/simdi?tayfa=<id>` (tayfa yoksa anlık), kabuğun üstünde tam ekran.
   doğaçlama için asıl engel.
 - **QR yerine yakın cihaz keşfi (Bluetooth/Nearby):** Reddedildi; ek izin,
   platform farkları ve konum benzeri veri.
+
+## Notlar
+
+- **#249 (sözleşme, Tayfam-Api #307):** §4'teki günlük yayın sınırının
+  hata kodu `now-broadcast-limit-reached`'tir (`now-limit-reached` kişi
+  başı tek açık şimdi etkinliği sınırıdır). Sınır aşılınca sunucu hiçbir
+  şey açmaz; ekran bunu söyler ve "Bildirimsiz başlat"ı önerir (aynı
+  `client_request_id` ile `now_recipient_ids`'siz yeniden gönderim). Böylece
+  §4'teki "etkinlik yine açılabilir, bildirim gitmez" tek dokunuşla
+  karşılanır. `now_started` bildirimi anlık etkinlikte bir davettir:
+  alıcı tayfanın etkin üyesi değilse satırda "Katıl"
+  (`/v1/me/invitations/{tayfa_id}/acceptance`) ve dokununca gelen davetler
+  açılır; üyeyse etkinlik detayı. Şimdi bildirimleri kapalı tayfalar
+  Profil → Bildirim ayarları'nda ayrıca listelenir ve oradan açılır.

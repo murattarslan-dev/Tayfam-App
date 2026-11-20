@@ -124,6 +124,7 @@ enum ProblemType {
   eventNotOpenEnded('event-not-open-ended'),
   invalidJoinQr('invalid-join-qr'),
   joinQrLimitReached('join-qr-limit-reached'),
+  nowBroadcastLimitReached('now-broadcast-limit-reached'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),

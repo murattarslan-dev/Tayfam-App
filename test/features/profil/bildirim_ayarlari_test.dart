@@ -223,6 +223,37 @@ void main() {
       expect(find.byType(SnackBar), findsOneWidget);
     });
 
+    testWidgets('şimdi bildirimleri kapalı tayfa ayrı listede; "Aç" yalnızca '
+        'şimdi tercihini siler', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      const simdiYolu = '$_tayfaTercihiYolu/now';
+      final tasima = SahteTayfaTasima({
+        'GET $_tercihlerYolu': _yanit({
+          'preferences': [_tercih(ikinciTayfaId, kapsam: 'tayfa_now')],
+        }),
+        'DELETE $simdiYolu': _yanit(null),
+      });
+      await _ac(
+        tester,
+        const BildirimAyarlariEkrani(),
+        SahtePushPlatformu(),
+        tercihler: tasima,
+      );
+
+      // Genel sessiz listesinde değil.
+      expect(_metin('bildirim_ayar_sessiz_tayfa_yok'), findsOneWidget);
+      expect(_metin('simdi_bildirim_ayar_baslik'), findsOneWidget);
+      expect(find.text('Halısaha'), findsOneWidget);
+      await tester.tap(_metin('simdi_bildirim_ayar_ac'));
+      await tester.pumpAndSettle();
+
+      final silme = tasima.giden('DELETE', simdiYolu).single;
+      expect(silme.yolParametreleri['tayfa_id'], ikinciTayfaId);
+      expect(tasima.giden('DELETE', _tayfaTercihiYolu), isEmpty);
+      expect(_metin('simdi_bildirim_ayar_yok'), findsOneWidget);
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+
     testWidgets('hiçbir şey sessizde değilse boş metinler', (tester) async {
       ekranBoyutu(tester, yukseklik: 1400);
       await _ac(tester, const BildirimAyarlariEkrani(), SahtePushPlatformu());

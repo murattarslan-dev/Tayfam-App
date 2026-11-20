@@ -147,6 +147,26 @@ bool tayfaSessizde(
   return false;
 }
 
+/// [tayfaId]'nin şimdi bildirimleri (`tayfa_now`; Tayfam-Api ADR-0038 §4)
+/// [simdi] itibarıyla kapalı mı: seviyesi `none` ve (varsa) süresi
+/// dolmamış. Tercihi olmayan tayfada açıktır (sözleşme).
+bool tayfaSimdiKapali(
+  List<NotificationPreference> tercihler,
+  String tayfaId,
+  DateTime simdi,
+) {
+  for (final t in tercihler) {
+    if (t.scopeType != NotificationPreferenceScopeType.tayfaNow ||
+        t.scopeId != tayfaId) {
+      continue;
+    }
+    if (t.level != NotificationPreferenceLevel.none) return false;
+    final bitis = t.muteUntil;
+    return bitis == null || bitis.isAfter(simdi);
+  }
+  return false;
+}
+
 /// Davet linki: token yalnızca fragment'tadır (kesin kural 9); sunucuya
 /// URL ile gitmez. Link log'a ve diske yazılmaz.
 String davetLinki(String token) => Uri(
