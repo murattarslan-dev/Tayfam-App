@@ -293,10 +293,13 @@ class SimdiNotifier extends Notifier<EtkinlikTaslagi> {
             .take(anlikDavetliEnCok)
             .toList();
         // Şimdi bildirimi alıcıları (ADR-0032 §4): davetlilerle kesişmez,
-        // en çok [simdiAliciEnCok].
-        final alicilar = ref
-            .read(simdiAlicilariProvider(anahtar))
-            .secili
+        // en çok [simdiAliciEnCok]. Seçim ekranda kurulur; yoksa alıcı
+        // yoktur (arkadaş listesi burada istenmez).
+        final secim = simdiAlicilariProvider(anahtar);
+        final secili = ref.read(secim.exists)
+            ? ref.read(secim).secili
+            : const <String>[];
+        final alicilar = secili
             .where((id) => !davetliler.contains(id))
             .toSet()
             .take(simdiAliciEnCok)
@@ -333,7 +336,8 @@ class SimdiNotifier extends Notifier<EtkinlikTaslagi> {
   /// aynı `client_request_id` güvenle yeniden kullanılır (sözleşme).
   Future<void> bildirimsizGonder({required String varsayilanBaslik}) async {
     if (_kilitli || anahtar.tayfaId != null) return;
-    ref.read(simdiAlicilariProvider(anahtar).notifier).temizle();
+    final secim = simdiAlicilariProvider(anahtar);
+    if (ref.read(secim.exists)) ref.read(secim.notifier).temizle();
     await gonder(varsayilanBaslik: varsayilanBaslik);
   }
 

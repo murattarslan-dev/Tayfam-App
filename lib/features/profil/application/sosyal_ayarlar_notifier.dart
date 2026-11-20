@@ -30,16 +30,15 @@ final class SosyalAyarlarDurumu {
 /// değer döndürürse (`unknown`) sözleşmenin varsayılanı `all` gösterilir.
 /// En geniş seçenek gösterilir ki kullanıcı bildirim alacağını sansın ve
 /// gerekirse daraltsın; daha kısıtlı görünüp açık kalmasın.
-SocialSettingsUpdateNowFromFriends simdiKimdenGorunen(SocialSettings a) =>
-    switch (a.nowFromFriends) {
-      SocialSettingsNowFromFriends.close =>
-        SocialSettingsUpdateNowFromFriends.close,
-      SocialSettingsNowFromFriends.off =>
-        SocialSettingsUpdateNowFromFriends.off,
-      SocialSettingsNowFromFriends.all ||
-      SocialSettingsNowFromFriends.unknown =>
-        SocialSettingsUpdateNowFromFriends.all,
-    };
+SocialSettingsUpdateNowFromFriends simdiKimdenGorunen(
+  SocialSettings a,
+) => switch (a.nowFromFriends) {
+  SocialSettingsNowFromFriends.close =>
+    SocialSettingsUpdateNowFromFriends.close,
+  SocialSettingsNowFromFriends.off => SocialSettingsUpdateNowFromFriends.off,
+  SocialSettingsNowFromFriends.all || SocialSettingsNowFromFriends.unknown =>
+    SocialSettingsUpdateNowFromFriends.all,
+};
 
 class SosyalAyarlarNotifier extends AsyncNotifier<SosyalAyarlarDurumu> {
   @override
@@ -71,9 +70,8 @@ class SosyalAyarlarNotifier extends AsyncNotifier<SosyalAyarlarDurumu> {
   /// "Arkadaşlarımdan şimdi bildirimleri"ni [deger] yapar (Tayfam-Api
   /// ADR-0038 §4; App ADR-0032 §5). Onaysızdır. Başarıda `null`, aksi
   /// halde gösterilecek hata.
-  Future<Object?> simdiKimdenAyarla(
-    SocialSettingsUpdateNowFromFriends deger,
-  ) => _degistir(SocialSettingsUpdate(nowFromFriends: deger));
+  Future<Object?> simdiKimdenAyarla(SocialSettingsUpdateNowFromFriends deger) =>
+      _degistir(SocialSettingsUpdate(nowFromFriends: deger));
 
   Future<Object?> _degistir(SocialSettingsUpdate degisiklik) async {
     final simdiki = state.value;

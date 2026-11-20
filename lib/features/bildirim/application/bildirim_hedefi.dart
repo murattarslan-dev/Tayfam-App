@@ -162,10 +162,7 @@ enum SatirIciIslem {
 /// (Notion Faz 3 §D: bildirimden "Katıl" doğrudan katılım); [etkinUyeMi]
 /// [bildirimAdresi]'ndeki gibidir. Yetki kararı sunucudadır (kesin kural
 /// 5): işlem reddedilirse hata gösterilir.
-SatirIciIslem? satirIciIslem(
-  Notification bildirim, {
-  EtkinUyeMi? etkinUyeMi,
-}) {
+SatirIciIslem? satirIciIslem(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
   final tayfa = _gecerli(bildirim.tayfaId);
   return switch (bildirim.type) {
     NotificationType.friendRequest when bildirimKisisi(bildirim) != null =>

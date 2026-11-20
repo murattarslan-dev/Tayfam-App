@@ -432,6 +432,54 @@ void main() {
       expect(anahtarDegeri(tester, 'profil_kesfet_gorunurluk').value, isFalse);
     });
 
+    testWidgets('"Arkadaşlarımdan şimdi bildirimleri": alttan sayfada '
+        'seçilip onaysız kaydediliyor', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarDegistirYolu: () => sosyalAyarlarJson(simdiKimden: 'off'),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      expect(_metin('simdi_bildirim_kimden'), findsOneWidget);
+      expect(_metin('simdi_bildirim_kimden_herkes'), findsOneWidget);
+      await _kaydirVeDokun(tester, _metin('simdi_bildirim_kimden'));
+      expect(_metin('simdi_bildirim_kimden_aciklama'), findsOneWidget);
+      expect(_metin('simdi_bildirim_kimden_yakin_aciklama'), findsOneWidget);
+      await tester.tap(_metin('simdi_bildirim_kimden_kapali'));
+      await tester.pumpAndSettle();
+
+      final istek = o.tasima.istekler.last;
+      expect('${istek.method} ${istek.yol}', sosyalAyarlarDegistirYolu);
+      expect(istek.govde, {'now_from_friends': 'off'});
+      expect(_metin('simdi_bildirim_kimden_kapali'), findsOneWidget);
+    });
+
+    testWidgets('şimdi bildirimi: profilleme kapalıyken "Yakın '
+        'arkadaşlarım" pasif; tanınmayan değer "Herkes" gösterilir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final o = _Ortam({
+        sosyalAyarlarYolu: () =>
+            sosyalAyarlarJson(profilleme: false, simdiKimden: 'gelecek'),
+      });
+      await o.ac(tester, const ProfilEkrani());
+
+      expect(_metin('simdi_bildirim_kimden_herkes'), findsOneWidget);
+      await _kaydirVeDokun(tester, _metin('simdi_bildirim_kimden'));
+      expect(_metin('simdi_bildirim_kimden_yakin_pasif'), findsOneWidget);
+      final yakin = tester.widget<RadioListTile<Object?>>(
+        find.ancestor(
+          of: _metin('simdi_bildirim_kimden_yakin'),
+          matching: find.byWidgetPredicate((w) => w is RadioListTile),
+        ),
+      );
+      expect(yakin.enabled, isFalse);
+      await tester.tap(_metin('simdi_bildirim_kimden_yakin'));
+      await tester.pumpAndSettle();
+      expect(o.tasima.sayi('PATCH', '/v1/me/social-settings'), 0);
+    });
+
     testWidgets('profillemeyi kapatmak onay istiyor; vazgeçilirse istek yok', (
       tester,
     ) async {
