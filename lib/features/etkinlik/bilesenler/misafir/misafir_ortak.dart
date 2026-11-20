@@ -172,9 +172,7 @@ class _MisafirFormuState extends State<MisafirFormu> {
           enableSuggestions: false,
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.done,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(misafirAdiEnCok),
-          ],
+          inputFormatters: [LengthLimitingTextInputFormatter(misafirAdiEnCok)],
           onChanged: (_) => setState(() {
             _hatali = false;
             _hata = null;

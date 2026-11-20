@@ -62,8 +62,10 @@ const Set<ProblemType> _bayatMisafirHatalari = {
 };
 
 /// Bir misafir işlemi: depoda çalışır, listenin güncel halini döner.
-typedef MisafirYazimi =
-    Future<EventGuestPlayers> Function(EtkinlikDeposu depo, MisafirKimligi k);
+typedef MisafirYazimi = Future<EventGuestPlayers> Function(
+  EtkinlikDeposu depo,
+  MisafirKimligi k,
+);
 
 /// Etkinliğin misafir oyuncuları (`GET …/components/{component_key}/
 /// guests`; Tayfam-Api #252). Misafir hesabı olmayan, yalnızca takma adla

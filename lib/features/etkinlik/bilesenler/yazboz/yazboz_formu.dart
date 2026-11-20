@@ -345,14 +345,14 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
         if (!_takimMasasi)
           if (widget.misafirler case final misafirler?)
             _MisafirSecimi(
-            kimlik: misafirler,
-            masaId: widget.masa?.id,
-            secilenler: _secilenler,
-            onSecildi: _mesgul ? null : _misafirSec,
-            onSilindi: (id) {
-              if (_secilenler.remove(id)) _degisti();
-            },
-          ),
+              kimlik: misafirler,
+              masaId: widget.masa?.id,
+              secilenler: _secilenler,
+              onSecildi: _mesgul ? null : _misafirSec,
+              onSilindi: (id) {
+                if (_secilenler.remove(id)) _degisti();
+              },
+            ),
         if (hata != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
           HataSatiri.hatadan(hata),
@@ -513,9 +513,7 @@ class _MisafirSecimiState extends ConsumerState<_MisafirSecimi> {
     final masaId = liste.callerCanAdd ? null : widget.masaId;
     await aracFormuAc<void>(
       context,
-      (_) => MisafirFormu(
-        gonder: (ad) => _notifier.ekle(ad, masaId: masaId),
-      ),
+      (_) => MisafirFormu(gonder: (ad) => _notifier.ekle(ad, masaId: masaId)),
     );
     if (!mounted) return;
     final yeni = ref.read(misafirProvider(widget.kimlik)).value;
@@ -611,19 +609,19 @@ class _MisafirSecimiState extends ConsumerState<_MisafirSecimi> {
           AracBilgisi(metin: m.bilesen_guest_dolu(liste.maxGuests))
         else if (ekleyebilir)
           Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TextButton.icon(
-                key: const ValueKey('yazboz-misafir-ekle'),
-                onPressed: _mesgul || onSecildi == null
-                    ? null
-                    : () => unawaited(_ekle(liste)),
-                style: TextButton.styleFrom(
-                  minimumSize: const Size.square(TayfamSizes.dokunmaMin),
-                ),
-                icon: const Icon(Icons.person_add_alt_outlined),
-                label: Text(m.bilesen_guest_ekle),
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              key: const ValueKey('yazboz-misafir-ekle'),
+              onPressed: _mesgul || onSecildi == null
+                  ? null
+                  : () => unawaited(_ekle(liste)),
+              style: TextButton.styleFrom(
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
               ),
+              icon: const Icon(Icons.person_add_alt_outlined),
+              label: Text(m.bilesen_guest_ekle),
             ),
+          ),
       ],
     );
   }

@@ -126,16 +126,15 @@ void main() {
                     yazbozYeriJson(_yer2, 2, misafir: _deniz),
                     yazbozYeriJson(_yer3, 3, misafir: _adsiz),
                   ],
-                  siralama: [
-                    _sira(_yer1, 1),
-                    _sira(_yer2, 1),
-                    _sira(_yer3, 1),
-                  ],
+                  siralama: [_sira(_yer1, 1), _sira(_yer2, 1), _sira(_yer3, 1)],
                 ),
               ],
             ),
             'GET $misafirlerYolu': (_) => misafirlerJson(
-              misafirler: [misafirJson(_deniz, ad: 'Deniz'), misafirJson(_adsiz)],
+              misafirler: [
+                misafirJson(_deniz, ad: 'Deniz'),
+                misafirJson(_adsiz),
+              ],
             ),
           },
         );
@@ -230,7 +229,10 @@ void main() {
           findsOneWidget,
         );
 
-        await _dokun(tester, find.byKey(const ValueKey('yazboz-misafir-$_deniz')));
+        await _dokun(
+          tester,
+          find.byKey(const ValueKey('yazboz-misafir-$_deniz')),
+        );
         await _dokun(
           tester,
           _icinde(YazbozMasaFormu, find.text(m.etkinlik_kaydet)),
@@ -341,21 +343,15 @@ void main() {
               ],
               cekildi: '2026-11-20T11:05:00Z',
             ),
-            'GET $misafirlerYolu': (_) => misafirlerJson(
-              misafirler: [misafirJson(_deniz, ad: 'Deniz')],
-            ),
+            'GET $misafirlerYolu': (_) =>
+                misafirlerJson(misafirler: [misafirJson(_deniz, ad: 'Deniz')]),
           },
         );
-        await _detayiAc(
-          tester,
-          tasima,
-          const [
-            KuraBileseni(),
-            TemelBilesen('bracket'),
-            TemelBilesen('scoreboard'),
-          ],
-          themeMode: tema,
-        );
+        await _detayiAc(tester, tasima, const [
+          KuraBileseni(),
+          TemelBilesen('bracket'),
+          TemelBilesen('scoreboard'),
+        ], themeMode: tema);
 
         final deniz = _icinde(KuraBolumu, find.text('Deniz'));
         await _gorunurYap(tester, deniz);
@@ -364,7 +360,10 @@ void main() {
           _icinde(KuraBolumu, find.textContaining(m.bilesen_guest_etiket)),
           findsOneWidget,
         );
-        expect(_icinde(KuraBolumu, find.text(m.bilesen_draw_bay)), findsNothing);
+        expect(
+          _icinde(KuraBolumu, find.text(m.bilesen_draw_bay)),
+          findsNothing,
+        );
         expect(tester.takeException(), isNull);
       });
     }
@@ -405,21 +404,15 @@ void main() {
               ],
               cekildi: '2026-11-20T11:05:00Z',
             ),
-            'GET $misafirlerYolu': (_) => misafirlerJson(
-              misafirler: [misafirJson(_deniz, ad: 'Deniz')],
-            ),
+            'GET $misafirlerYolu': (_) =>
+                misafirlerJson(misafirler: [misafirJson(_deniz, ad: 'Deniz')]),
           },
         );
-        await _detayiAc(
-          tester,
-          tasima,
-          const [
-            AgacBileseni(),
-            TemelBilesen('draw'),
-            TemelBilesen('scoreboard'),
-          ],
-          themeMode: tema,
-        );
+        await _detayiAc(tester, tasima, const [
+          AgacBileseni(),
+          TemelBilesen('draw'),
+          TemelBilesen('scoreboard'),
+        ], themeMode: tema);
 
         final ad = _icinde(
           AgacBolumu,
