@@ -1200,8 +1200,7 @@ List<(AnaSayfaBileseni, HomeWidget)> gosterilecekBilesenler(
     for (final veri in sunucudakiler)
       if (veri.enabled && gorulen.add(veri.key))
         if (anaSayfaBileseniBul(kayit, veri.key) case final bilesen?)
-          if (bilesen is! BolumBileseni ||
-              acikModuller.contains(bilesen.modul))
+          if (bilesen is! BolumBileseni || acikModuller.contains(bilesen.modul))
             (bilesen, veri),
   ];
 }

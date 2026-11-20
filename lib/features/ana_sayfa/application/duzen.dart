@@ -12,11 +12,8 @@ final class DuzenSatiri {
   const DuzenSatiri({required this.kaynak, required this.acik, this.ayar});
 
   /// Sunucunun gönderdiği bileşen (`GET …/home-widgets`).
-  factory DuzenSatiri.sunucudan(HomeWidget bilesen) => DuzenSatiri(
-    kaynak: bilesen,
-    acik: bilesen.enabled,
-    ayar: bilesen.config,
-  );
+  factory DuzenSatiri.sunucudan(HomeWidget bilesen) =>
+      DuzenSatiri(kaynak: bilesen, acik: bilesen.enabled, ayar: bilesen.config);
 
   final HomeWidget kaynak;
   final bool acik;

@@ -222,6 +222,7 @@ class HedefKartiIcerigi extends StatelessWidget {
               ),
               const SizedBox(height: TayfamSpacing.s8),
               Semantics(
+                container: true,
                 label: m.anasayfa_goal_yuzde(yuzde),
                 excludeSemantics: true,
                 child: ClipRRect(
@@ -434,7 +435,10 @@ class GunlukOzetiKartiIcerigi extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (gorunum == null)
-              IstatistikNotu(metin: m.anasayfa_metrik_bilinmiyor, ikincil: false)
+              IstatistikNotu(
+                metin: m.anasayfa_metrik_bilinmiyor,
+                ikincil: false,
+              )
             else
               ListeKarti(
                 children: [

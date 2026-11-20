@@ -201,9 +201,7 @@ class _MetrikSecenekleri extends ConsumerWidget {
     );
     final statlar = durum.value?.totals;
     if (statlar == null && durum.error == null) {
-      return Center(
-        child: TayfamYukleniyor(etiket: m.anasayfa_yukleniyor),
-      );
+      return Center(child: TayfamYukleniyor(etiket: m.anasayfa_yukleniyor));
     }
     return KatalogBekleyici(
       builder: (context, katalog) {
@@ -505,7 +503,10 @@ class _GunlukOzetiAyariState extends State<_GunlukOzetiAyari> {
           secili: [?metrik],
           yalnizcaGunluk: true,
           builder: (context, secenekler) => secenekler.isEmpty
-              ? IstatistikNotu(metin: m.anasayfa_log_summary_bos, ikincil: false)
+              ? IstatistikNotu(
+                  metin: m.anasayfa_log_summary_bos,
+                  ikincil: false,
+                )
               : _TekMetrikListesi(
                   secenekler: secenekler,
                   secili: metrik,
@@ -620,9 +621,8 @@ class _GeriSayimAyariState extends ConsumerState<_GeriSayimAyari> {
                       an == null
                           ? m.anasayfa_countdown_an_sec
                           : m.anasayfa_countdown_an(
-                              DateFormat.yMMMMEEEEd(
-                                m.localeName,
-                              ).format(an.toLocal()),
+                              DateFormat.yMMMMEEEEd(m.localeName)
+                                  .format(an.toLocal()),
                               saatMetni(m, an),
                             ),
                     ),
@@ -654,7 +654,9 @@ Future<HomeWidgetConfig?> sampiyonlarAyariniAc(
 
 /// Türün tanımında kutlama bileşeni var mı (şampiyon çıkabilir).
 bool kutlamaliTur(CatalogEventType tur) =>
-    tur.definition.components.any((b) => b.kind == 'celebration');
+    (tur.definition.components ?? const <CatalogComponent>[]).any(
+      (b) => b.kind == 'celebration',
+    );
 
 class _SampiyonlarAyari extends StatefulWidget {
   const _SampiyonlarAyari({required this.mevcut});

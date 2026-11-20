@@ -55,9 +55,8 @@ class _AnaSayfaDuzenEkraniState extends ConsumerState<AnaSayfaDuzenEkrani> {
           .kaydet(taslak);
       if (!mounted) return;
       setState(() => _taslak = null);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(m.anasayfa_kaydedildi)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(m.anasayfa_kaydedildi)));
     } on Exception catch (hata) {
       if (mounted) hataBildir(context, hata);
     } finally {
@@ -107,11 +106,7 @@ class _AnaSayfaDuzenEkraniState extends ConsumerState<AnaSayfaDuzenEkrani> {
     _degistir(taslak.acKapa(sira, acik: acik));
   }
 
-  Future<void> _ayarla(
-    DuzenTaslagi taslak,
-    int sira,
-    BilesenAyari ayar,
-  ) async {
+  Future<void> _ayarla(DuzenTaslagi taslak, int sira, BilesenAyari ayar) async {
     final yeni = await ayar.duzenle(
       context,
       widget.tayfaId,
@@ -130,9 +125,7 @@ class _AnaSayfaDuzenEkraniState extends ConsumerState<AnaSayfaDuzenEkrani> {
     final saglayici = anaSayfaDuzeniProvider(widget.tayfaId);
     final durum = ref.watch(saglayici);
     final sunucudaki = durum.value;
-    final ilk = sunucudaki == null
-        ? null
-        : DuzenTaslagi.sunucudan(sunucudaki);
+    final ilk = sunucudaki == null ? null : DuzenTaslagi.sunucudan(sunucudaki);
     final taslak = _taslak ?? ilk;
     final degisti = taslak != null && ilk != null && taslak != ilk;
     final kaydedebilir =
@@ -225,7 +218,7 @@ class _Liste extends StatelessWidget {
     final satirlar = taslak.satirlar;
     return ReorderableListView.builder(
       buildDefaultDragHandles: false,
-      padding: const EdgeInsetsDirectional.fromSTEB(
+      padding: const EdgeInsets.fromLTRB(
         TayfamSpacing.kenarMobil,
         TayfamSpacing.s12,
         TayfamSpacing.kenarMobil,
@@ -237,7 +230,7 @@ class _Liste extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              duzenleyebilir || !taslak.kaydedilebilir
+              duzenleyebilir
                   ? m.anasayfa_duzen_aciklama
                   : m.anasayfa_duzen_yalnizca_yonetici,
               style: context.yazi.bodyMedium?.copyWith(
@@ -330,13 +323,11 @@ class _BilesenSatiri extends StatelessWidget {
                 ReorderableDragStartListener(
                   index: sira,
                   child: Semantics(
+                    container: true,
                     label: m.anasayfa_surukle(ad),
                     child: SizedBox.square(
                       dimension: TayfamSizes.dokunmaMin,
-                      child: Icon(
-                        Icons.drag_indicator,
-                        color: r.metinIkincil,
-                      ),
+                      child: Icon(Icons.drag_indicator, color: r.metinIkincil),
                     ),
                   ),
                 ),

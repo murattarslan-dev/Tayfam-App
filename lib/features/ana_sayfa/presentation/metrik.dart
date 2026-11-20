@@ -15,7 +15,8 @@ TayfaStatSource metrikKaynagi(String anahtar, Katalog? katalog) {
       return TayfaStatSource.common;
     case 2:
       final tur = katalog?.tur(parcalar.first);
-      for (final b in tur?.definition.components ?? const <CatalogComponent>[]) {
+      for (final b
+          in tur?.definition.components ?? const <CatalogComponent>[]) {
         if (b.kind == 'measure' && b.key == parcalar[1]) {
           return TayfaStatSource.measure;
         }
