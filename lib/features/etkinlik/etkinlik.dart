@@ -15,6 +15,8 @@ export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
         anaSayfaEtkinlikSayisi,
         etkinlikListesiProvider,
         etkinlikSirala;
+export 'package:tayfam/features/etkinlik/bilesenler/agac/agac_bileseni.dart'
+    show AgacBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/araclar/araclar_bileseni.dart'
     show AraclarBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'

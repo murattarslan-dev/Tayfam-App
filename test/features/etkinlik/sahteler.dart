@@ -74,6 +74,10 @@ const String yazbozYerleriYolu = '$yazbozMasasiYolu/players';
 const String yazbozElleriYolu = '$yazbozMasasiYolu/rounds';
 const String yazbozEliYolu = '$yazbozElleriYolu/{round}';
 const String yazbozBitirYolu = '$yazbozMasasiYolu/finish';
+const String agacYolu = '$bilesenYolu/bracket';
+const String agacTurlariYolu = '$agacYolu/rounds';
+const String agacOyunlariYolu = '$agacYolu/matches/{match_id}/games';
+const String agacOyunuYolu = '$agacOyunlariYolu/{game}';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -358,6 +362,111 @@ Map<String, Object?> kuraJson({
   'drawn_at': ?cekildi,
   'entries': yerler,
   'caller_can_draw': cekebilir,
+};
+
+/// Örnek `EventBracketGame` JSON'u (eşleşme ağacı, #239): puan kuralında
+/// [a] ve [b], galibiyet/beraberlik/mağlubiyette [sonuc].
+Map<String, Object?> agacOyunuJson(
+  int no, {
+  int? a,
+  int? b,
+  String? sonuc,
+}) => {'number': no, 'a_points': ?a, 'b_points': ?b, 'a_outcome': ?sonuc};
+
+/// Örnek `EventBracketMatch` JSON'u (eşleşme ağacı, #239).
+Map<String, Object?> agacMaciJson({
+  required String id,
+  int tur = 1,
+  int sira = 1,
+  int? a,
+  int? b,
+  List<Map<String, Object?>> oyunlar = const [],
+  bool sonuclandi = false,
+  bool bay = false,
+  int? kazanan,
+  num aToplam = 0,
+  num bToplam = 0,
+  int aOyun = 0,
+  int bOyun = 0,
+  bool girebilir = false,
+}) => {
+  'id': id,
+  'round': tur,
+  'slot': sira,
+  'a_position': ?a,
+  'b_position': ?b,
+  'games': oyunlar,
+  'decided': sonuclandi,
+  'bye': bay,
+  'winner_position': ?kazanan,
+  'a_total': aToplam,
+  'b_total': bToplam,
+  'a_games_won': aOyun,
+  'b_games_won': bOyun,
+  'caller_can_score': girebilir,
+};
+
+/// Örnek `EventBracketStanding` JSON'u (eşleşme ağacı, #239).
+Map<String, Object?> agacSirasiJson(
+  int yer, {
+  required int sira,
+  num puan = 0,
+  int oynadi = 0,
+  int galibiyet = 0,
+  int beraberlik = 0,
+  int maglubiyet = 0,
+  num buchholz = 0,
+}) => {
+  'position': yer,
+  'played': oynadi,
+  'won': galibiyet,
+  'drawn': beraberlik,
+  'lost': maglubiyet,
+  'points': puan,
+  'head_to_head': 0,
+  'buchholz': buchholz,
+  'rank': sira,
+};
+
+/// Örnek `EventBracket` JSON'u (eşleşme ağacı, #239): verilmezse kura
+/// çekilmemiş, başlamamış eleme ağacı, yönetemeyen üye gözüyle.
+Map<String, Object?> agacJson({
+  bool basladi = false,
+  String bicim = 'elimination',
+  int bo = 1,
+  String sonuc = 'points',
+  String kazanan = 'high',
+  String? kura = 'draw',
+  bool cekildi = false,
+  String konu = 'participants',
+  String? takimAnahtari,
+  int turlar = 0,
+  int mevcutTur = 0,
+  List<Map<String, Object?>> yerler = const [],
+  List<Map<String, Object?>> maclar = const [],
+  List<Map<String, Object?>> siralama = const [],
+  bool bitti = false,
+  List<int> kazananlar = const [],
+  bool yonetebilir = false,
+}) => {
+  'started': basladi,
+  'format': bicim,
+  'best_of': bo,
+  'result': sonuc,
+  'winner': kazanan,
+  'draw_key': ?kura,
+  'drawn': cekildi,
+  'subject': konu,
+  'teams_key': ?takimAnahtari,
+  'rounds': turlar,
+  'current_round': mevcutTur,
+  if (basladi) 'started_at': '2026-11-20T11:10:00Z',
+  'entrants': yerler,
+  'matches': maclar,
+  'standings': siralama,
+  'finished': bitti,
+  'winner_positions': kazananlar,
+  'caller_can_manage': yonetebilir,
 };
 
 /// Örnek `EventScorePreset` JSON'u (yazboz bileşeni, #238).

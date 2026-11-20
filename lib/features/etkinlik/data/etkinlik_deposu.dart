@@ -783,6 +783,101 @@ final class EtkinlikDeposu {
     tableId: masaId,
   );
 
+  /// `GET .../components/{component_key}/bracket`: eşleşme ağacı bileşeni
+  /// (#239); başlamamışsa `started` false, maç yok.
+  Future<EventBracket> agac(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventBracket(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../bracket`: eşleşme ağacını kuradan başlatır; kurallar
+  /// sabitlenir.
+  Future<EventBracket> agaciBaslat(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.startEventBracket(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `DELETE .../bracket`: maçları ve oyunları siler; kura kalır.
+  Future<EventBracket> agaciSifirla(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.resetEventBracket(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../bracket/rounds`: sonraki turu eşler.
+  Future<EventBracket> agactaSonrakiTur(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.pairEventBracketRound(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../matches/{match_id}/games`: maça sonraki oyunu girer.
+  /// Çevrimdışı kuyruğa girmez: skor ancak sunucu kabul edince yazılmış
+  /// sayılır.
+  Future<EventBracket> agacOyunuGir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String macId,
+    EventBracketGameRequest istek,
+  ) => _api.addEventBracketGame(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    matchId: macId,
+    body: istek,
+  );
+
+  /// `PUT .../matches/{match_id}/games/{game}`: girilmiş oyunu düzeltir.
+  Future<EventBracket> agacOyununuDuzelt(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String macId,
+    int oyun,
+    EventBracketGameRequest istek,
+  ) => _api.correctEventBracketGame(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    matchId: macId,
+    game: oyun,
+    body: istek,
+  );
+
+  /// `DELETE .../matches/{match_id}/games/{game}`: maçın son oyununu siler.
+  Future<EventBracket> agacOyununuSil(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String macId,
+    int oyun,
+  ) => _api.deleteEventBracketGame(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    matchId: macId,
+    game: oyun,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(
