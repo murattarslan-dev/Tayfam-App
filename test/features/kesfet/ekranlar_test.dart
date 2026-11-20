@@ -115,6 +115,7 @@ void main() {
           'GET $tayfaKesfetYolu': yanit({
             'state': 'under_review',
             'enabled': true,
+            'stats_showcase': true,
           }),
         }),
       ),
@@ -521,7 +522,7 @@ void main() {
     testWidgets('kapalı: açmak onay ister ve PUT gider', (tester) async {
       ekranBoyutu(tester);
       final tasima = kesfetTasimasi({
-        'PUT $tayfaKesfetYolu': yanit({'state': 'pending', 'enabled': true}),
+        'PUT $tayfaKesfetYolu': yanit(kesfetAyariJson(durum: 'pending', acik: true)),
       });
       await _ac(
         tester,
@@ -561,7 +562,7 @@ void main() {
         tester,
         const Scaffold(body: TayfaKesfetBolumu(tayfaId: kesfetTayfaId)),
         kesfetTasimasi({
-          'GET $tayfaKesfetYolu': yanit({'state': 'listed', 'enabled': true}),
+          'GET $tayfaKesfetYolu': yanit(kesfetAyariJson(durum: 'listed', acik: true)),
         }),
       );
       expect(

@@ -70,6 +70,7 @@ Map<String, Object?> hesapJson({
   String gorunurluk = 'tayfa',
   String kimlik = benimKimligim,
   String ad = 'Deniz Örnek',
+  String istatistikGorunurlugu = 'none',
 }) => {
   'user_id': kimlik,
   'display_name': ad,
@@ -81,6 +82,7 @@ Map<String, Object?> hesapJson({
   'social_accounts': const <Object?>[],
   'declined_profile_fields': const <Object?>[],
   'about_visibility': 'friends_and_mutual',
+  'stats_visibility': istatistikGorunurlugu,
   'profile_completion_pending': false,
 };
 

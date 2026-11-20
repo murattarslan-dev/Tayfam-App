@@ -117,6 +117,13 @@ Map<String, Object?> arkadasJson(String id, String ad, {String? durum}) => {
   'requested_at': '2026-11-10T09:00:00Z',
 };
 
+/// `TayfaDiscover` JSON'u.
+Map<String, Object?> kesfetAyariJson({
+  String durum = 'off',
+  bool acik = false,
+  bool vitrin = true,
+}) => {'state': durum, 'enabled': acik, 'stats_showcase': vitrin};
+
 /// Her istekte [deger]'i döndüren yanıt.
 TayfaYaniti yanit(Object? deger) =>
     (_) => deger;
@@ -148,7 +155,7 @@ SahteTayfaTasima kesfetTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
     )
     ..putIfAbsent(
       'GET $tayfaKesfetYolu',
-      () => yanit({'state': 'off', 'enabled': false}),
+      () => yanit(kesfetAyariJson()),
     );
   return tasima;
 }

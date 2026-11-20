@@ -113,6 +113,7 @@ class HesapAyarlariNotifier extends AsyncNotifier<Account> {
     socialAccounts: hesap.socialAccounts,
     declinedProfileFields: hesap.declinedProfileFields,
     aboutVisibility: hesap.aboutVisibility,
+    statsVisibility: hesap.statsVisibility,
     profileCompletionPending:
         profileCompletionPending ?? hesap.profileCompletionPending,
   );

@@ -832,6 +832,7 @@ Map<String, Object?> hesapJson(String id) => {
   'social_accounts': const <Object?>[],
   'declined_profile_fields': const <Object?>[],
   'about_visibility': 'friends_and_mutual',
+  'stats_visibility': 'none',
   'profile_completion_pending': false,
 };
 
