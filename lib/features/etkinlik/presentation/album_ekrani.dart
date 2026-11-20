@@ -12,6 +12,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/fotograf_goruntuleyici.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Albüm ekranı (`/t/<tayfaId>/etkinlikler/<etkinlikId>/album`; tasarım:
@@ -50,6 +51,7 @@ class AlbumEkrani extends ConsumerWidget {
     final simdi = ref.watch(etkinlikSaatiProvider)();
     final durum = etkinlik == null ? null : albumEklemeDurumu(etkinlik, simdi);
     final bilgi = durum == null ? null : albumBilgisi(m, durum);
+    final izinSor = etkinlik != null && albumIzniSorulur(ref, etkinlik);
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -72,8 +74,9 @@ class AlbumEkrani extends ConsumerWidget {
             IconButton(
               tooltip: m.album_ekle,
               icon: const Icon(Icons.add_photo_alternate_outlined),
-              onPressed: () =>
-                  unawaited(albumeFotografEkle(context, ref, anahtar)),
+              onPressed: () => unawaited(
+                albumeFotografEkle(context, ref, anahtar, izinSor: izinSor),
+              ),
             ),
         ],
       ),

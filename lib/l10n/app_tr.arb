@@ -12988,6 +12988,14 @@
   "@hata_celebration_not_participant": {
     "description": "Hata kodu `celebration-not-participant`. Gelmeyen ya da katılımı doğrulanmamış kişi kazanan seçilince."
   },
+  "hata_attendees_hidden": "Bu etkinliğin katılımcı listesi gizli; yalnızca sayılar görünür.",
+  "@hata_attendees_hidden": {
+    "description": "Hata kodu `attendees-hidden`. Türü hassas katılımlı (sensitive_attendance) etkinlikte organizatör, moderatör ya da yönetici olmayan katılımcı listesini isteyince."
+  },
+  "hata_album_consent_required": "Bu etkinlikte fotoğraf eklemeden önce, yüzü görünenlerden izin aldığını onaylaman gerekiyor. Fotoğrafları yeniden ekle.",
+  "@hata_album_consent_required": {
+    "description": "Hata kodu `album-consent-required`. Türü album_notice bayraklı etkinliğin albümüne izin onayı olmadan fotoğraf eklenince."
+  },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {
     "description": "Sözlüğe bağlı günlük alanında, yazılan metin sözlükteki bir değerse alanın altındaki ipucu."
@@ -13131,5 +13139,25 @@
   "bilesen_vocab_geri_alindi": "Birleştirme geri alındı.",
   "@bilesen_vocab_geri_alindi": {
     "description": "Geri alma başarılı olunca kısa bildirim."
+  },
+  "bayrak_album_izin_baslik": "İzin aldın mı?",
+  "@bayrak_album_izin_baslik": {
+    "description": "album_notice bayraklı etkinlikte albüme yüklemeden önce açılan onay penceresinin başlığı (istemci ADR-0031 §6)."
+  },
+  "bayrak_album_izin_metni": "Yüzü görünenlerden (çocuklarda velisinden) izin aldın mı? Bu etkinliğin albümüne yalnızca izin alınmış fotoğraflar eklenir.",
+  "@bayrak_album_izin_metni": {
+    "description": "İzin onayı penceresinin metni. Her yüklemede sorulur; cevap saklanmaz."
+  },
+  "bayrak_album_izin_onay": "Evet, izin aldım",
+  "@bayrak_album_izin_onay": {
+    "description": "İzin onayı penceresinde yüklemeyi başlatan düğme; istek consent_ack: true taşır."
+  },
+  "bayrak_katilimcilar_gizli": "Bu etkinlikte katılımcı listesini yalnızca organizatör ve tayfa yöneticileri görür. Kimlerin katıldığı gizli tutulur; yukarıda yalnızca sayılar var.",
+  "@bayrak_katilimcilar_gizli": {
+    "description": "Katılımcılar ekranında, sunucu listeyi vermeyince (attendees-hidden; sensitive_attendance türü) listenin yerindeki bilgi kutusu."
+  },
+  "bayrak_katilimcilar_gizli_kisa": "Katılımcı listesi gizli",
+  "@bayrak_katilimcilar_gizli_kisa": {
+    "description": "Etkinlik detayındaki katılımcı özetinde, liste gizliyken sayıların yanındaki kısa not."
   }
 }

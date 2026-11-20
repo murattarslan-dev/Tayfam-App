@@ -38,6 +38,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.da
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -1205,6 +1206,10 @@ List<(String, String)> _alanSatirlari(
 /// Katılımcıların özeti (tasarım: Etkinlik-Detay "Katılımcılar"): gelenlerin
 /// ilk beşinin avatarı, "N kişi geliyor" ve "K belki · W bekleme
 /// listesinde"; dokununca Katılımcılar ekranı açılır.
+///
+/// Sunucu listeyi vermezse (`attendees-hidden`, türü `sensitive_attendance`
+/// bayraklı; istemci ADR-0031 §6) yalnızca sayılar ve "Katılımcı listesi
+/// gizli" kalır; avatar yoktur, satır dokunulmaz.
 class _KatilimciOzeti extends ConsumerWidget {
   const _KatilimciOzeti({required this.anahtar, required this.etkinlik});
 
@@ -1214,29 +1219,32 @@ class _KatilimciOzeti extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
-    final gelenler =
-        ref
-            .watch(
-              katilimcilarProvider((
-                tayfaId: anahtar.tayfaId,
-                etkinlikId: anahtar.etkinlikId,
-                durum: ListEventAttendeesStatus.going,
-              )),
-            )
-            .value
-            ?.ogeler ??
-        const <Attendee>[];
+    final liste = ref.watch(
+      katilimcilarProvider((
+        tayfaId: anahtar.tayfaId,
+        etkinlikId: anahtar.etkinlikId,
+        durum: ListEventAttendeesStatus.going,
+      )),
+    );
+    final gizli = katilimcilarGizli(liste.error);
+    final gelenler = liste.value?.ogeler ?? const <Attendee>[];
     final alt = [
       if (etkinlik.maybeCount > 0) m.etkinlik_ozet_belki(etkinlik.maybeCount),
       if (etkinlik.waitlistCount > 0)
         m.etkinlik_ozet_bekleme(etkinlik.waitlistCount),
+      if (gizli) m.bayrak_katilimcilar_gizli_kisa,
     ].join(ozetAyraci);
     return ListeKarti(
       children: [
         ListeKartiSatiri(
-          onTap: () => context.go(
-            Adresler.etkinlikKatilimcilari(anahtar.tayfaId, anahtar.etkinlikId),
-          ),
+          onTap: gizli
+              ? null
+              : () => context.go(
+                  Adresler.etkinlikKatilimcilari(
+                    anahtar.tayfaId,
+                    anahtar.etkinlikId,
+                  ),
+                ),
           child: Row(
             children: [
               if (gelenler.isNotEmpty) ...[
@@ -1260,8 +1268,10 @@ class _KatilimciOzeti extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: TayfamSpacing.s8),
-              const SatirOku(),
+              if (!gizli) ...[
+                const SizedBox(width: TayfamSpacing.s8),
+                const SatirOku(),
+              ],
             ],
           ),
         ),

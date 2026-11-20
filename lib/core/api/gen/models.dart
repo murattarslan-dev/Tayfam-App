@@ -2496,10 +2496,10 @@ final class CatalogTypeFlags {
         },
       );
 
-  /// Katılım kişisel geçmişe, istatistiğe ve arkadaşlık puanına girmez; katılımcı listesini yalnızca organizatör görür.
+  /// Katılım kişisel geçmişe, istatistiğe ve arkadaşlık puanına girmez; katılımcı listesini yalnızca organizatör, moderatör ve yönetici görür (diğerleri `attendees-hidden`).
   final bool? sensitiveAttendance;
 
-  /// Albüme yüklemeden önce izin onayı istenir.
+  /// Albüme yüklemeden önce izin onayı istenir; onaysız istek `album-consent-required` alır (`consent_ack`).
   final bool? albumNotice;
 
   /// Bu türde kişi bazında değer tutulmaz (kişisel ölçüm ve günlük tanımlanamaz).
@@ -10872,6 +10872,7 @@ final class EventPhotoCreateRequest {
     required this.uploadId,
     this.caption,
     required this.clientRequestId,
+    this.consentAck,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -10891,6 +10892,10 @@ final class EventPhotoCreateRequest {
           json['client_request_id'],
           'EventPhotoCreateRequest.client_request_id',
         ),
+        consentAck: switch (json['consent_ack']) {
+          null => null,
+          final Object v => _readBool(v, 'EventPhotoCreateRequest.consent_ack'),
+        },
       );
 
   /// Kendi hazır `event_photo` yüklemeniz (bu tayfa için, başka içeriğe
@@ -10904,11 +10909,19 @@ final class EventPhotoCreateRequest {
 
   final String clientRequestId;
 
+  /// Yüzü görünenlerden (çocuklarda velisinden) izin alındığının
+  /// onayı. Türü `album_notice` bayraklı etkinlikte `true` olmalıdır
+  /// (`album-consent-required`); diğerlerinde yok sayılır. Saklanmaz.
+  ///
+  /// Kısıtlar: varsayılan (sunucu): false.
+  final bool? consentAck;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'upload_id': uploadId,
     if (caption case final value?) 'caption': value,
     'client_request_id': clientRequestId,
+    if (consentAck case final value?) 'consent_ack': value,
   };
 
   @override
@@ -10917,11 +10930,12 @@ final class EventPhotoCreateRequest {
       other is EventPhotoCreateRequest &&
           uploadId == other.uploadId &&
           caption == other.caption &&
-          clientRequestId == other.clientRequestId;
+          clientRequestId == other.clientRequestId &&
+          consentAck == other.consentAck;
 
   @override
   int get hashCode =>
-      Object.hashAll(<Object?>[uploadId, caption, clientRequestId]);
+      Object.hashAll(<Object?>[uploadId, caption, clientRequestId, consentAck]);
 }
 
 final class EventPhotoList {
