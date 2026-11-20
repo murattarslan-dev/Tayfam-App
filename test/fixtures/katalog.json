@@ -541,6 +541,72 @@
       }
     },
     {
+      "key": "board_game_night",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Masa oyunu gecesi"
+      },
+      "icon": "casino",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "player",
+              "tables": true,
+              "presets": [
+                "batak",
+                "okey_101",
+                "backgammon",
+                "free"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "team_sport",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Takım sporu"
+      },
+      "icon": "sports_soccer",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": "balanced"
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "team",
+              "rounds": "single",
+              "winner": "high",
+              "result": "points"
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

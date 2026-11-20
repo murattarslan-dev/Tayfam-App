@@ -652,6 +652,137 @@ final class EtkinlikDeposu {
     componentKey: bilesenAnahtari,
   );
 
+  /// `GET .../components/{component_key}/scoreboard`: yazboz bileşeni
+  /// (#238); masalar kuruluş sırasıyla, ön ayarlar katalog sırasıyla.
+  Future<EventScoreboard> yazboz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventScoreboard(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../scoreboard/tables`: masa kurar.
+  Future<EventScoreboard> yazbozMasasiKur(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventScoreTableRequest istek,
+  ) => _api.createEventScoreTable(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `PATCH .../tables/{table_id}`: masanın adını ya da durumunu değiştirir.
+  Future<EventScoreboard> yazbozMasasiniGuncelle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+    EventScoreTableUpdate istek,
+  ) => _api.updateEventScoreTable(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+    body: istek,
+  );
+
+  /// `DELETE .../tables/{table_id}`: masayı yerleri, elleri ve hakem
+  /// atamalarıyla siler.
+  Future<EventScoreboard> yazbozMasasiniSil(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+  ) => _api.deleteEventScoreTable(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+  );
+
+  /// `PUT .../tables/{table_id}/players`: masanın yerlerini sırasıyla
+  /// belirler (ilk elden önce).
+  Future<EventScoreboard> yazbozYerleriniBelirle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+    EventScorePlayersRequest istek,
+  ) => _api.setEventScorePlayers(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+    body: istek,
+  );
+
+  /// `POST .../tables/{table_id}/rounds`: sıradaki eli girer. Çevrimdışı
+  /// kuyruğa girmez: skor ancak sunucu kabul edince yazılmış sayılır.
+  Future<EventScoreboard> yazbozEliGir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+    EventScoreRoundRequest istek,
+  ) => _api.addEventScoreRound(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+    body: istek,
+  );
+
+  /// `PUT .../tables/{table_id}/rounds/{round}`: girilmiş eli düzeltir.
+  Future<EventScoreboard> yazbozEliniDuzelt(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+    int el,
+    EventScoreRoundRequest istek,
+  ) => _api.correctEventScoreRound(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+    round: el,
+    body: istek,
+  );
+
+  /// `DELETE .../tables/{table_id}/rounds/{round}`: masanın son elini siler.
+  Future<EventScoreboard> yazbozEliniSil(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+    int el,
+  ) => _api.deleteEventScoreRound(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+    round: el,
+  );
+
+  /// `POST .../tables/{table_id}/finish`: masayı bitirir.
+  Future<EventScoreboard> yazbozMasasiniBitir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String masaId,
+  ) => _api.finishEventScoreTable(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    tableId: masaId,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(

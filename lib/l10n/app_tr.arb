@@ -2906,6 +2906,428 @@
   "@bilesen_draw_sen": {
     "description": "Kurada çağıranın (ya da takımının) yerini işaretleyen etiket."
   },
+  "bilesen_scoreboard_ad": "Yazboz",
+  "@bilesen_scoreboard_ad": {
+    "description": "Yazboz bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
+  },
+  "bilesen_scoreboard_masa_sayisi": "{sayi}/{enCok} masa",
+  "@bilesen_scoreboard_masa_sayisi": {
+    "description": "Bölüm başlığının sağında açılmış masa sayısı ve en çok masa.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "bilesen_scoreboard_yok": "Henüz masa açılmadı.",
+  "@bilesen_scoreboard_yok": {
+    "description": "Masa yokken bölümdeki boş durum metni."
+  },
+  "bilesen_scoreboard_masa_ac": "Masa aç",
+  "@bilesen_scoreboard_masa_ac": {
+    "description": "Yeni masa açan düğme ve masa formunun başlığı (organizatör, moderatör, yönetici)."
+  },
+  "bilesen_scoreboard_durum_open": "Sürüyor",
+  "@bilesen_scoreboard_durum_open": {
+    "description": "Açık masanın durum etiketi."
+  },
+  "bilesen_scoreboard_durum_finished": "Bitti",
+  "@bilesen_scoreboard_durum_finished": {
+    "description": "Biten masanın durum etiketi."
+  },
+  "bilesen_scoreboard_kural_single": "Tek maç",
+  "@bilesen_scoreboard_kural_single": {
+    "description": "Masa kuralı özeti: oyun tek maçtır."
+  },
+  "bilesen_scoreboard_kural_high": "Yüksek toplam kazanır",
+  "@bilesen_scoreboard_kural_high": {
+    "description": "Masa kuralı özeti: en yüksek toplam kazanır."
+  },
+  "bilesen_scoreboard_kural_low": "Düşük toplam kazanır",
+  "@bilesen_scoreboard_kural_low": {
+    "description": "Masa kuralı özeti: en düşük toplam kazanır (ör. 101 Okey)."
+  },
+  "bilesen_scoreboard_kural_first": "Hedefe ilk ulaşan kazanır",
+  "@bilesen_scoreboard_kural_first": {
+    "description": "Masa kuralı özeti: hedef puana ilk ulaşan kazanır."
+  },
+  "bilesen_scoreboard_kural_hedef": "Hedef: {hedef}",
+  "@bilesen_scoreboard_kural_hedef": {
+    "description": "Masa kuralı özeti: hedef puan.",
+    "placeholders": {
+      "hedef": {
+        "type": "String",
+        "example": "151"
+      }
+    }
+  },
+  "bilesen_scoreboard_kural_bo": "{sayi} maçın çoğunu alan kazanır",
+  "@bilesen_scoreboard_kural_bo": {
+    "description": "Masa kuralı özeti: BO maçı (3 ya da 5).",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_scoreboard_kural_wdl": "Galibiyet 1, beraberlik ½, mağlubiyet 0",
+  "@bilesen_scoreboard_kural_wdl": {
+    "description": "Masa kuralı özeti: sonuç galibiyet/beraberlik/mağlubiyet olarak girilir."
+  },
+  "bilesen_scoreboard_oyuncu_yok": "Masada henüz oyuncu yok.",
+  "@bilesen_scoreboard_oyuncu_yok": {
+    "description": "Yerleri verilmemiş masadaki bilgi."
+  },
+  "bilesen_scoreboard_siralama": "Sıralama",
+  "@bilesen_scoreboard_siralama": {
+    "description": "Masadaki sıralamanın başlığı."
+  },
+  "bilesen_scoreboard_sira": "{sira}.",
+  "@bilesen_scoreboard_sira": {
+    "description": "Sıralamada yerin sırası; eşitler aynı sırayı paylaşır.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_scoreboard_puan": "{puan} puan",
+  "@bilesen_scoreboard_puan": {
+    "description": "Sıralamada yerin toplamı.",
+    "placeholders": {
+      "puan": {
+        "type": "String",
+        "example": "120"
+      }
+    }
+  },
+  "bilesen_scoreboard_el_kazandi": "{sayi} el kazandı",
+  "@bilesen_scoreboard_el_kazandi": {
+    "description": "BO maçında yerin tek başına kazandığı el sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_scoreboard_kazanan": "Kazanan",
+  "@bilesen_scoreboard_kazanan": {
+    "description": "Biten masada birinci sıradaki yerin etiketi (beraberlikte birden çok)."
+  },
+  "bilesen_scoreboard_sen": "Sen",
+  "@bilesen_scoreboard_sen": {
+    "description": "Sıralamada çağıranın (ya da takımının) yerini işaretleyen etiket."
+  },
+  "bilesen_scoreboard_takim_yok": "Kaldırılmış takım",
+  "@bilesen_scoreboard_takim_yok": {
+    "description": "Takımı kaldırılmış yerin adı."
+  },
+  "bilesen_scoreboard_elleri_goster": "Elleri göster ({sayi})",
+  "@bilesen_scoreboard_elleri_goster": {
+    "description": "Masanın el geçmişini açan bağlantı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "bilesen_scoreboard_elleri_gizle": "Elleri gizle",
+  "@bilesen_scoreboard_elleri_gizle": {
+    "description": "Masanın el geçmişini kapatan bağlantı."
+  },
+  "bilesen_scoreboard_el": "El {no}",
+  "@bilesen_scoreboard_el": {
+    "description": "El geçmişinde elin başlığı.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_scoreboard_skor_yok": "–",
+  "@bilesen_scoreboard_skor_yok": {
+    "description": "El geçmişinde o elde skoru olmayan yer."
+  },
+  "bilesen_scoreboard_sonuc_win": "Galibiyet",
+  "@bilesen_scoreboard_sonuc_win": {
+    "description": "El sonucu: galibiyet."
+  },
+  "bilesen_scoreboard_sonuc_draw": "Beraberlik",
+  "@bilesen_scoreboard_sonuc_draw": {
+    "description": "El sonucu: beraberlik."
+  },
+  "bilesen_scoreboard_sonuc_loss": "Mağlubiyet",
+  "@bilesen_scoreboard_sonuc_loss": {
+    "description": "El sonucu: mağlubiyet."
+  },
+  "bilesen_scoreboard_el_gir": "El gir",
+  "@bilesen_scoreboard_el_gir": {
+    "description": "Masanın sıradaki elini girme düğmesi (organizatör ya da masanın hakemi)."
+  },
+  "bilesen_scoreboard_bitir": "Masayı bitir",
+  "@bilesen_scoreboard_bitir": {
+    "description": "Masayı bitiren düğme ve onayın eylemi."
+  },
+  "bilesen_scoreboard_bitir_onay": "Masa bitirilsin mi?",
+  "@bilesen_scoreboard_bitir_onay": {
+    "description": "Masayı bitirmeden önceki onayın başlığı."
+  },
+  "bilesen_scoreboard_bitir_aciklama": "Masa bitince el girilemez ve kazanan ilan edilir. Organizatör masayı yeniden açabilir.",
+  "@bilesen_scoreboard_bitir_aciklama": {
+    "description": "Masayı bitirme onayının metni."
+  },
+  "bilesen_scoreboard_islemler": "{masa} işlemleri",
+  "@bilesen_scoreboard_islemler": {
+    "description": "Masa işlemleri menüsünün ipucu (ekran okuyucu).",
+    "placeholders": {
+      "masa": {
+        "type": "String",
+        "example": "Masa 1"
+      }
+    }
+  },
+  "bilesen_scoreboard_yerler": "Oyuncuları düzenle",
+  "@bilesen_scoreboard_yerler": {
+    "description": "Masanın yerlerini değiştiren menü seçeneği ve formun başlığı (ilk elden önce)."
+  },
+  "bilesen_scoreboard_son_eli_duzelt": "Son eli düzelt",
+  "@bilesen_scoreboard_son_eli_duzelt": {
+    "description": "Masanın son elini düzelten menü seçeneği."
+  },
+  "bilesen_scoreboard_son_eli_sil": "Son eli sil",
+  "@bilesen_scoreboard_son_eli_sil": {
+    "description": "Masanın son elini silen menü seçeneği."
+  },
+  "bilesen_scoreboard_son_eli_sil_onay": "El {no} silinsin mi?",
+  "@bilesen_scoreboard_son_eli_sil_onay": {
+    "description": "Son eli silmeden önceki onayın başlığı.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_scoreboard_son_eli_sil_aciklama": "Yalnızca son el silinebilir; masanın durumu değişmez.",
+  "@bilesen_scoreboard_son_eli_sil_aciklama": {
+    "description": "Son eli silme onayının metni."
+  },
+  "bilesen_scoreboard_sil": "Sil",
+  "@bilesen_scoreboard_sil": {
+    "description": "Silme onaylarının eylem düğmesi."
+  },
+  "bilesen_scoreboard_yeniden_ac": "Yeniden aç",
+  "@bilesen_scoreboard_yeniden_ac": {
+    "description": "Biten masayı yeniden açan menü seçeneği (organizatör)."
+  },
+  "bilesen_scoreboard_adlandir": "Adını değiştir",
+  "@bilesen_scoreboard_adlandir": {
+    "description": "Masanın adını değiştiren menü seçeneği ve formun başlığı."
+  },
+  "bilesen_scoreboard_hakemler": "Hakemler",
+  "@bilesen_scoreboard_hakemler": {
+    "description": "Masanın hakemlerini yöneten menü seçeneği."
+  },
+  "bilesen_scoreboard_masayi_sil": "Masayı sil",
+  "@bilesen_scoreboard_masayi_sil": {
+    "description": "Masayı silen menü seçeneği."
+  },
+  "bilesen_scoreboard_masayi_sil_onay": "Masa silinsin mi?",
+  "@bilesen_scoreboard_masayi_sil_onay": {
+    "description": "Masayı silmeden önceki onayın başlığı."
+  },
+  "bilesen_scoreboard_masayi_sil_aciklama": "Masa oyuncuları, elleri ve hakemleriyle silinir; geri alınamaz.",
+  "@bilesen_scoreboard_masayi_sil_aciklama": {
+    "description": "Masayı silme onayının metni."
+  },
+  "bilesen_scoreboard_ad_alani": "Masanın adı",
+  "@bilesen_scoreboard_ad_alani": {
+    "description": "Masa formunda ad alanının etiketi."
+  },
+  "bilesen_scoreboard_ad_varsayilan": "Masa {no}",
+  "@bilesen_scoreboard_ad_varsayilan": {
+    "description": "Yeni masanın önerilen adı.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_scoreboard_ad_hatali": "Ad 1–30 karakter olmalı.",
+  "@bilesen_scoreboard_ad_hatali": {
+    "description": "Masa adı boş ya da uzunken alanın altındaki hata."
+  },
+  "bilesen_scoreboard_oyun": "Oyun",
+  "@bilesen_scoreboard_oyun": {
+    "description": "Masa formunda ön ayar (oyun) seçiminin başlığı."
+  },
+  "bilesen_scoreboard_oyun_sec": "Bir oyun seç.",
+  "@bilesen_scoreboard_oyun_sec": {
+    "description": "Ön ayar seçilmeden masa açılmaya çalışınca görünen hata."
+  },
+  "bilesen_scoreboard_hedef_alani": "Hedef puan",
+  "@bilesen_scoreboard_hedef_alani": {
+    "description": "Masa formunda hedef puan alanının etiketi."
+  },
+  "bilesen_scoreboard_hedef_ipucu": "Boş bırakırsan oyunun hedefi geçerli olur.",
+  "@bilesen_scoreboard_hedef_ipucu": {
+    "description": "Hedef puan alanının yardım metni."
+  },
+  "bilesen_scoreboard_hedef_hatali": "Hedef 1 ile 100.000 arasında olmalı.",
+  "@bilesen_scoreboard_hedef_hatali": {
+    "description": "Hedef puan geçersizken alanın altındaki hata."
+  },
+  "bilesen_scoreboard_oyuncular": "Oyuncular",
+  "@bilesen_scoreboard_oyuncular": {
+    "description": "Masa formunda kişi seçiminin başlığı."
+  },
+  "bilesen_scoreboard_takimlar": "Takımlar",
+  "@bilesen_scoreboard_takimlar": {
+    "description": "Masa formunda takım seçiminin başlığı (takım masası)."
+  },
+  "bilesen_scoreboard_yer_aciklama": "Seçim sırası masadaki sıradır. Oyuncuları sonra da ekleyebilirsin.",
+  "@bilesen_scoreboard_yer_aciklama": {
+    "description": "Masa formunda yer seçiminin açıklaması."
+  },
+  "bilesen_scoreboard_yer_siniri": "Bu oyun {enAz}–{enCok} oyuncuyla oynanır.",
+  "@bilesen_scoreboard_yer_siniri": {
+    "description": "Ön ayarın oyuncu sayısı sınırı; seçim dışındaysa hata olarak da görünür.",
+    "placeholders": {
+      "enAz": {
+        "type": "int",
+        "example": "3"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "bilesen_scoreboard_yer_cok": "Bir masada en çok {enCok} oyuncu olur.",
+  "@bilesen_scoreboard_yer_cok": {
+    "description": "Seçilen yer sayısı en çoğu aşınca görünen hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "bilesen_scoreboard_yer_no": "{no}. oyuncu",
+  "@bilesen_scoreboard_yer_no": {
+    "description": "Seçilen kişinin ya da takımın masadaki sırası.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_scoreboard_gelen_yok": "Henüz “Geliyorum” diyen yok.",
+  "@bilesen_scoreboard_gelen_yok": {
+    "description": "Yer ya da hakem seçiminde seçilecek katılımcı yokken."
+  },
+  "bilesen_scoreboard_takim_bileseni_yok": "Bu etkinlikte takım kurma yok; takım masası açılamaz.",
+  "@bilesen_scoreboard_takim_bileseni_yok": {
+    "description": "Takım masası için etkinlikte takım kurma bileşeni yokken."
+  },
+  "bilesen_scoreboard_takimsiz": "Henüz takım kurulmadı.",
+  "@bilesen_scoreboard_takimsiz": {
+    "description": "Takım masası için takım kurma bileşeninde takım yokken."
+  },
+  "bilesen_scoreboard_el_baslik": "El {no}",
+  "@bilesen_scoreboard_el_baslik": {
+    "description": "El girme formunun başlığı.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_scoreboard_duzelt_baslik": "El {no} düzeltmesi",
+  "@bilesen_scoreboard_duzelt_baslik": {
+    "description": "Son eli düzeltme formunun başlığı.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_scoreboard_puan_aciklama": "Her oyuncunun bu eldeki puanını yaz; eksi olabilir. Boş bırakılan oyuncunun bu elde puanı olmaz.",
+  "@bilesen_scoreboard_puan_aciklama": {
+    "description": "El formunda puan modunun açıklaması."
+  },
+  "bilesen_scoreboard_sonuc_aciklama": "Her oyuncunun bu eldeki sonucunu seç: bir galibiyet ve diğerleri mağlubiyet ya da herkes berabere.",
+  "@bilesen_scoreboard_sonuc_aciklama": {
+    "description": "El formunda galibiyet/beraberlik/mağlubiyet modunun açıklaması."
+  },
+  "bilesen_scoreboard_puan_alani": "Puan",
+  "@bilesen_scoreboard_puan_alani": {
+    "description": "El formunda bir oyuncunun puan alanının etiketi."
+  },
+  "bilesen_scoreboard_puan_hatali": "−1.000.000 ile 1.000.000 arasında bir tam sayı yaz.",
+  "@bilesen_scoreboard_puan_hatali": {
+    "description": "Puan geçersizken alanın altındaki hata."
+  },
+  "bilesen_scoreboard_puan_yok": "En az bir oyuncunun puanını yaz.",
+  "@bilesen_scoreboard_puan_yok": {
+    "description": "Hiç puan yazılmadan el kaydedilmeye çalışınca görünen hata."
+  },
+  "bilesen_scoreboard_sonuc_alani": "Sonuç",
+  "@bilesen_scoreboard_sonuc_alani": {
+    "description": "El formunda bir oyuncunun sonuç seçiminin etiketi (ekran okuyucu)."
+  },
+  "bilesen_scoreboard_sonuc_bos": "Yok",
+  "@bilesen_scoreboard_sonuc_bos": {
+    "description": "El formunda sonuç seçilmemiş seçenek."
+  },
+  "bilesen_scoreboard_sonuc_yok": "En az bir oyuncunun sonucunu seç.",
+  "@bilesen_scoreboard_sonuc_yok": {
+    "description": "Hiç sonuç seçilmeden el kaydedilmeye çalışınca görünen hata."
+  },
+  "bilesen_scoreboard_hakemler_baslik": "{masa} hakemleri",
+  "@bilesen_scoreboard_hakemler_baslik": {
+    "description": "Masanın hakem formunun başlığı.",
+    "placeholders": {
+      "masa": {
+        "type": "String",
+        "example": "Masa 1"
+      }
+    }
+  },
+  "bilesen_scoreboard_hakem_aciklama": "Hakem bu masada el girer ve masayı bitirebilir.",
+  "@bilesen_scoreboard_hakem_aciklama": {
+    "description": "Hakem formunun açıklaması."
+  },
+  "bilesen_scoreboard_hakem_yok": "Bu masaya henüz hakem atanmadı.",
+  "@bilesen_scoreboard_hakem_yok": {
+    "description": "Masanın hakemi yokken hakem formundaki bilgi."
+  },
+  "bilesen_scoreboard_hakem_ata": "Hakem ata",
+  "@bilesen_scoreboard_hakem_ata": {
+    "description": "Seçilen kişiyi masaya hakem atayan düğme."
+  },
+  "bilesen_scoreboard_hakem_kaldir": "Hakemi kaldır",
+  "@bilesen_scoreboard_hakem_kaldir": {
+    "description": "Hakemi masadan kaldıran ikon düğmesinin ipucu."
+  },
+  "bilesen_scoreboard_hakem_sec": "Hakem olacak kişi",
+  "@bilesen_scoreboard_hakem_sec": {
+    "description": "Hakem formunda kişi seçiminin etiketi."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -11487,6 +11909,30 @@
   "hata_draw_too_few": "Kura için en az iki katılımcı (takım kurasında üyesi olan iki takım) gerekir.",
   "@hata_draw_too_few": {
     "description": "Hata kodu `draw-too-few`. İkiden az katılımcıyla ya da takımla kura çekilmeye çalışınca görünen hata."
+  },
+  "hata_score_preset_unavailable": "Bu oyun artık seçilemiyor; başka bir oyun seç.",
+  "@hata_score_preset_unavailable": {
+    "description": "Hata kodu `score-preset-unavailable`. Masa açarken seçilen ön ayar bileşende yoksa ya da emekliye ayrıldıysa."
+  },
+  "hata_score_table_not_found": "Masa bulunamadı; silinmiş olabilir.",
+  "@hata_score_table_not_found": {
+    "description": "Hata kodu `score-table-not-found`. İşlem yapılan yazboz masası yoksa."
+  },
+  "hata_score_table_finished": "Masa bitti; el girilemez.",
+  "@hata_score_table_finished": {
+    "description": "Hata kodu `score-table-finished`. Biten masaya el girilmeye çalışınca."
+  },
+  "hata_score_table_started": "İlk el girildi; oyuncular artık değişmez.",
+  "@hata_score_table_started": {
+    "description": "Hata kodu `score-table-started`. İlk elden sonra masanın yerleri değiştirilmeye çalışınca."
+  },
+  "hata_score_player_not_participant": "Seçilenlerden biri etkinliğin katılımcısı (ya da takımı) değil.",
+  "@hata_score_player_not_participant": {
+    "description": "Hata kodu `score-player-not-participant`. Masaya katılımcı olmayan kişi ya da takım bileşeninde olmayan takım verilince."
+  },
+  "hata_score_not_started": "Skor etkinlik başlayınca girilir.",
+  "@hata_score_not_started": {
+    "description": "Hata kodu `score-not-started`. Etkinlik başlamadan el girilmeye ya da masa bitirilmeye çalışınca."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {

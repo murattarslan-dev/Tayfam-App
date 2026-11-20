@@ -67,6 +67,13 @@ const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
 const String takimYolu = '$bilesenYolu/teams';
 const String takimKurmaYolu = '$takimYolu/generate';
 const String kuraYolu = '$bilesenYolu/draw';
+const String yazbozYolu = '$bilesenYolu/scoreboard';
+const String yazbozMasalariYolu = '$yazbozYolu/tables';
+const String yazbozMasasiYolu = '$yazbozMasalariYolu/{table_id}';
+const String yazbozYerleriYolu = '$yazbozMasasiYolu/players';
+const String yazbozElleriYolu = '$yazbozMasasiYolu/rounds';
+const String yazbozEliYolu = '$yazbozElleriYolu/{round}';
+const String yazbozBitirYolu = '$yazbozMasasiYolu/finish';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -351,6 +358,88 @@ Map<String, Object?> kuraJson({
   'drawn_at': ?cekildi,
   'entries': yerler,
   'caller_can_draw': cekebilir,
+};
+
+/// Örnek `EventScorePreset` JSON'u (yazboz bileşeni, #238).
+Map<String, Object?> yazbozOnAyariJson(
+  String anahtar,
+  String ad, {
+  int? enAz,
+  int? enCok,
+  Map<String, Object?> kurallar = const {},
+  bool emekli = false,
+}) => {
+  'key': anahtar,
+  'labels': {'tr': ad},
+  'players_min': ?enAz,
+  'players_max': ?enCok,
+  'rules': kurallar,
+  'retired': emekli,
+};
+
+/// Örnek `EventScorePlayer` JSON'u (yazboz bileşeni, #238): [kisi] ya da
+/// [takim] verilmezse hesabı silinmiş kişi.
+Map<String, Object?> yazbozYeriJson(
+  String id,
+  int sira, {
+  String? kisi,
+  String? takim,
+}) => {'id': id, 'position': sira, 'user_id': ?kisi, 'team_id': ?takim};
+
+/// Örnek `EventScoreTable` JSON'u (yazboz bileşeni, #238): verilmezse
+/// oyuncusuz, açık, puanla el el oynanan, yüksek toplamın kazandığı masa.
+Map<String, Object?> yazbozMasasiJson({
+  required String id,
+  String ad = 'Masa 1',
+  String? onAyar,
+  Map<String, Object?> kurallar = const {
+    'side': 'player',
+    'rounds': 'round',
+    'winner': 'high',
+    'result': 'points',
+  },
+  String? takimAnahtari,
+  bool bitti = false,
+  List<Map<String, Object?>> yerler = const [],
+  List<Map<String, Object?>> eller = const [],
+  List<Map<String, Object?>> siralama = const [],
+  List<String> kazananlar = const [],
+  bool skorGirebilir = false,
+}) => {
+  'id': id,
+  'label': ad,
+  'preset_key': ?onAyar,
+  'rules': kurallar,
+  'teams_key': ?takimAnahtari,
+  'status': bitti ? 'finished' : 'open',
+  if (bitti) 'finished_at': '2026-11-14T08:00:00Z',
+  'created_at': '2026-11-14T06:30:00Z',
+  'players': yerler,
+  'rounds': eller,
+  'standings': siralama,
+  'winner_ids': kazananlar,
+  'caller_can_score': skorGirebilir,
+};
+
+/// Örnek `EventScoreboard` JSON'u (yazboz bileşeni, #238): verilmezse
+/// masasız, yönetemeyen üye gözüyle.
+Map<String, Object?> yazbozJson({
+  List<Map<String, Object?>> masalar = const [],
+  List<Map<String, Object?>> onAyarlar = const [],
+  Map<String, Object?> kurallar = const {
+    'side': 'player',
+    'rounds': 'round',
+    'winner': 'high',
+    'result': 'points',
+  },
+  int enCok = 20,
+  bool yonetebilir = false,
+}) => {
+  'tables': masalar,
+  'presets': onAyarlar,
+  'rules': kurallar,
+  'max_tables': enCok,
+  'caller_can_manage': yonetebilir,
 };
 
 /// Örnek `TayfaVocabularyValue` JSON'u; [hedefId] ve [hedef] verilirse

@@ -503,7 +503,7 @@ final class _Parser {
             throw GenException('$at: desteklenmeyen string biçimi: $format');
         }
       case 'integer':
-        _noEnum(schema, at);
+        _intEnum(schema, at);
         if (format != null && format != 'int32' && format != 'int64') {
           throw GenException('$at: desteklenmeyen integer biçimi: $format');
         }
@@ -548,6 +548,20 @@ final class _Parser {
         return ClassRef(nameHint);
       default:
         throw GenException('$at: desteklenmeyen tip: $type');
+    }
+  }
+
+  /// Integer enum (ör. `best_of: [3, 5]`) düz `int` üretilir: değerler
+  /// tam sayı olmalıdır; tanınmayan değer istemciyi kırmaz, son sözü sunucu
+  /// söyler.
+  void _intEnum(Map<String, Object?> schema, String at) {
+    if (!schema.containsKey('enum')) return;
+    final values = _asList(schema['enum'], '$at.enum');
+    if (values.isEmpty) throw GenException('$at: enum boş');
+    for (final value in values) {
+      if (value is! int) {
+        throw GenException('$at: integer enum değeri tam sayı olmalı: $value');
+      }
     }
   }
 
