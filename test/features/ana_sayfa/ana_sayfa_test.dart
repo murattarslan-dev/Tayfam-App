@@ -527,7 +527,10 @@ void main() {
         await duzeniAc(tester, duzenTasimasi(), themeMode: mod);
 
         expect(tester.takeException(), isNull);
-        expect(find.textContaining(m.anasayfa_guncelle_etiketi), findsOneWidget);
+        expect(
+          find.textContaining(m.anasayfa_guncelle_etiketi),
+          findsOneWidget,
+        );
       });
     }
   });
