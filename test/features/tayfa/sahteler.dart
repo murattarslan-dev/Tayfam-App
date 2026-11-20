@@ -179,6 +179,7 @@ Map<String, Object?> gorunumJson(
   String? anlikEtkinlikId,
   String? donusum,
   List<Map<String, Object?>> rozetler = const [],
+  List<Map<String, Object?>>? bilesenler,
 }) => {
   'tayfa': tayfaJson(
     id: id,
@@ -195,7 +196,38 @@ Map<String, Object?> gorunumJson(
   ),
   'caller_role': rol,
   'badges': rozetler,
+  'home_widgets': bilesenler ?? varsayilanBilesenler(),
 };
+
+/// Ana sayfa bileşeni (`HomeWidget`) JSON'u.
+Map<String, Object?> anaSayfaBileseniJson(
+  String anahtar, {
+  String tur = 'display',
+  String? modul,
+  bool acik = true,
+  int sira = 0,
+  Map<String, Object?>? ayar,
+}) => {
+  'key': anahtar,
+  'kind': tur,
+  'module': ?modul,
+  'enabled': acik,
+  'position': sira,
+  'config': ?ayar,
+};
+
+/// Bugünkü dört bölüm, sırasıyla (Tayfam-Api `home.Widgets()`).
+List<Map<String, Object?>> varsayilanBilesenler() => [
+  anaSayfaBileseniJson('upcoming', tur: 'section', modul: 'events'),
+  anaSayfaBileseniJson(
+    'announcements',
+    tur: 'section',
+    modul: 'announcements',
+    sira: 1,
+  ),
+  anaSayfaBileseniJson('polls', tur: 'section', modul: 'polls', sira: 2),
+  anaSayfaBileseniJson('questions', tur: 'section', modul: 'qa', sira: 3),
+];
 
 /// `Membership` JSON'u.
 Map<String, Object?> uyelikJson(String id, {String durum = 'active'}) => {

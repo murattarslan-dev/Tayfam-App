@@ -59,7 +59,16 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
     final ozet = ref.watch(tayfaOzetiProvider(tayfaId));
     final yonetici = ozet.rol == Role.admin;
     final bekleyen = ozet.bekleyenIstekSayisi;
-    final ekGirisler = ref.watch(yonetimEkGirisleriProvider);
+    final tumEkGirisler = ref.watch(yonetimEkGirisleriProvider);
+    final ekGirisler = [
+      for (final g in tumEkGirisler)
+        if (!g.yalnizcaYonetici) g,
+    ];
+    final yoneticiGirisleri = [
+      if (yonetici && !ozet.anlik)
+        for (final g in tumEkGirisler)
+          if (g.yalnizcaYonetici) g,
+    ];
     final ekSayilar = [
       for (final giris in ekGirisler) giris.sayi?.call(ref, tayfaId),
     ];
@@ -198,6 +207,12 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
                     ),
                   ),
                   _KodSatiri(tayfaId: tayfaId, kod: ozet.katilimKodu),
+                  for (final giris in yoneticiGirisleri)
+                    _AyarSatiri(
+                      ikon: giris.ikon,
+                      baslik: giris.etiket(context),
+                      onTap: () => context.go(giris.adres(tayfaId)),
+                    ),
                 ],
               ),
               _BolumBasligi(baslik: m.yonetim_moduller),
