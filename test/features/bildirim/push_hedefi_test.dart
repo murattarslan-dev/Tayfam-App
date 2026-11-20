@@ -130,6 +130,8 @@ void main() {
         // Arkadaş önerisi yalnızca uygulama içidir, push gitmez
         // (Tayfam-Api ADR-0030 §8).
         if (tur == NotificationType.friendSuggestion) continue;
+        // Kutlama da yalnızca uygulama içidir (Tayfam-Api #255).
+        if (tur == NotificationType.celebration) continue;
         expect(arb['push_${tur.wire}_title'], isA<String>(), reason: tur.wire);
         expect(arb['push_${tur.wire}_body'], isA<String>(), reason: tur.wire);
       }

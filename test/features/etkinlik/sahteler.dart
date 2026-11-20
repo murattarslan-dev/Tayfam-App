@@ -63,6 +63,7 @@ const String hedefYolu = '$bilesenYolu/goal';
 const String hedefDegeriYolu = '$hedefYolu/target';
 const String dereceYolu = '$bilesenYolu/ranking';
 const String dereceKaydiYolu = '$dereceYolu/entries/{user_id}';
+const String kutlamaYolu = '$bilesenYolu/celebration';
 const String programYolu = '$bilesenYolu/schedule';
 const String programMaddeleriYolu = '$programYolu/items';
 const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
@@ -325,6 +326,40 @@ Map<String, Object?> dereceKaydiJson(String kullaniciId, num deger, int sira) =>
       'rank': sira,
       'updated_at': '2026-11-11T08:00:00Z',
     };
+
+/// Örnek `EventCelebration` JSON'u (kutlama bileşeni, #243): varsayılanı
+/// elle seçilen, kazanansız ve ilan edilmemiş kutlama, ilan edemeyen üye
+/// gözüyle. [kaynak] verilirse kaynaklı ([kaynakTuru]).
+Map<String, Object?> kutlamaJson({
+  String? kaynak,
+  String kaynakTuru = 'scoreboard',
+  List<Map<String, Object?>> kazananlar = const [],
+  bool gizli = false,
+  bool ilanEdildi = false,
+  bool ilanEdebilir = false,
+}) => {
+  'source': ?kaynak,
+  'source_kind': ?(kaynak == null ? null : kaynakTuru),
+  'winners': gizli ? const <Object?>[] : kazananlar,
+  'hidden': gizli,
+  'announced': ilanEdildi,
+  if (ilanEdildi) 'announced_at': '2026-11-14T09:05:00Z',
+  'caller_can_announce': ilanEdebilir,
+};
+
+/// Örnek `EventCelebrationWinner` JSON'u: kişi, takım ya da misafir;
+/// yazboz kaynağında [masa].
+Map<String, Object?> kutlamaKazananiJson({
+  String? kisi,
+  String? takim,
+  String? misafir,
+  String? masa,
+}) => {
+  'user_id': ?kisi,
+  'team_id': ?takim,
+  'guest_id': ?misafir,
+  'table_id': ?masa,
+};
 
 /// Örnek `EventScheduleItem` JSON'u (program akışı bileşeni, #235).
 Map<String, Object?> programMaddesiJson({

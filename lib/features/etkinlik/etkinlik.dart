@@ -29,6 +29,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/hedef/hedef_bileseni.dart'
     show HedefBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/kura/kura_bileseni.dart'
     show KuraBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/kutlama/kutlama_bileseni.dart'
+    show KutlamaBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
     show ListeBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_bileseni.dart'
