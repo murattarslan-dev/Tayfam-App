@@ -18,6 +18,7 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/gunun_icerigi/gunun_icerigi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/profil/profil.dart';
@@ -36,6 +37,9 @@ const List<TayfaModule> tayfaModulKaydi = [
   EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
   DuyuruModulu(),
   AnketModulu(),
+  // daily (#253): kartı ana sayfa bileşenidir; rotalar ve "Oluştur".
+  GununIcerigiModulu(),
+  // Soru-cevap son sırada kalır (ADR-0018 Genel).
   SoruCevapModulu(),
 ];
 
@@ -111,6 +115,7 @@ const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
   // log_summary (#252)
   GunlukOzetiKartiBileseni(),
   // daily (#253)
+  GununIcerigiBileseni(),
   // library (#255)
   // question_pool (#256)
   // materials (#257)

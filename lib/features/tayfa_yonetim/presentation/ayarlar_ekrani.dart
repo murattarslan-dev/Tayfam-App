@@ -578,6 +578,12 @@ class _ModullerKarti extends ConsumerWidget {
         m.yonetim_modul_soru_cevap_aciklama,
         moduller.qa == true,
       ),
+      (
+        Module.daily,
+        m.gunun_icerigi_modul,
+        m.gunun_icerigi_modul_aciklama,
+        moduller.daily == true,
+      ),
     ];
     return ListeKarti(
       children: [

@@ -5013,6 +5013,454 @@ final class CreatedInvite {
   int get hashCode => Object.hashAll(<Object?>[invite, token]);
 }
 
+final class DailyItem {
+  const DailyItem({
+    required this.id,
+    required this.body,
+    this.attribution,
+    required this.position,
+    this.pin,
+    this.createdByUserId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyItem.fromJson(Map<String, Object?> json) => DailyItem(
+    id: _readString(json['id'], 'DailyItem.id'),
+    body: _readString(json['body'], 'DailyItem.body'),
+    attribution: switch (json['attribution']) {
+      null => null,
+      final Object v => _readString(v, 'DailyItem.attribution'),
+    },
+    position: _readInt(json['position'], 'DailyItem.position'),
+    pin: switch (json['pin']) {
+      null => null,
+      final Object v => DailyPin.fromJson(_readObject(v, 'DailyItem.pin')),
+    },
+    createdByUserId: switch (json['created_by_user_id']) {
+      null => null,
+      final Object v => _readString(v, 'DailyItem.created_by_user_id'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'DailyItem.created_at'),
+    updatedAt: _readDateTime(json['updated_at'], 'DailyItem.updated_at'),
+    deletedAt: switch (json['deleted_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'DailyItem.deleted_at'),
+    },
+  );
+
+  final String id;
+
+  /// 1–500 karakter. Satırlar `\n` ile ayrılır (dizeler için; art
+  /// arda en fazla bir boş satır); başka denetim karakteri yoktur.
+  final String body;
+
+  /// Söyleyen ya da kaynak; tek satır, en fazla 120. Yoksa alan yoktur.
+  final String? attribution;
+
+  /// Havuzdaki yeri, küçükten büyüğe (boşluk olabilir).
+  final int position;
+
+  final DailyPin? pin;
+
+  /// Ekleyen; hesabı silindiyse yoktur ("Silinmiş kullanıcı").
+  final String? createdByUserId;
+
+  final DateTime createdAt;
+
+  final DateTime updatedAt;
+
+  /// Yalnızca silinenler listesinde (`deleted=true`).
+  final DateTime? deletedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'body': body,
+    if (attribution case final value?) 'attribution': value,
+    'position': position,
+    if (pin case final value?) 'pin': value.toJson(),
+    if (createdByUserId case final value?) 'created_by_user_id': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+    if (deletedAt case final value?)
+      'deleted_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyItem &&
+          id == other.id &&
+          body == other.body &&
+          attribution == other.attribution &&
+          position == other.position &&
+          pin == other.pin &&
+          createdByUserId == other.createdByUserId &&
+          createdAt == other.createdAt &&
+          updatedAt == other.updatedAt &&
+          deletedAt == other.deletedAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    body,
+    attribution,
+    position,
+    pin,
+    createdByUserId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ]);
+}
+
+final class DailyItemCreateRequest {
+  const DailyItemCreateRequest({
+    required this.body,
+    this.attribution,
+    this.pin,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyItemCreateRequest.fromJson(Map<String, Object?> json) =>
+      DailyItemCreateRequest(
+        body: _readString(json['body'], 'DailyItemCreateRequest.body'),
+        attribution: switch (json['attribution']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'DailyItemCreateRequest.attribution',
+          ),
+        },
+        pin: switch (json['pin']) {
+          null => null,
+          final Object v => DailyPin.fromJson(
+            _readObject(v, 'DailyItemCreateRequest.pin'),
+          ),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'DailyItemCreateRequest.client_request_id',
+        ),
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 4096.
+  final String body;
+
+  /// Boş: yok.
+  ///
+  /// Kısıtlar: maxLength: 4096.
+  final String? attribution;
+
+  final DailyPin? pin;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'body': body,
+    if (attribution case final value?) 'attribution': value,
+    if (pin case final value?) 'pin': value.toJson(),
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyItemCreateRequest &&
+          body == other.body &&
+          attribution == other.attribution &&
+          pin == other.pin &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[body, attribution, pin, clientRequestId]);
+}
+
+final class DailyItemInput {
+  const DailyItemInput({required this.body, this.attribution, this.pin});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyItemInput.fromJson(Map<String, Object?> json) => DailyItemInput(
+    body: _readString(json['body'], 'DailyItemInput.body'),
+    attribution: switch (json['attribution']) {
+      null => null,
+      final Object v => _readString(v, 'DailyItemInput.attribution'),
+    },
+    pin: switch (json['pin']) {
+      null => null,
+      final Object v => DailyPin.fromJson(_readObject(v, 'DailyItemInput.pin')),
+    },
+  );
+
+  /// Kısıtlar: minLength: 1; maxLength: 4096.
+  final String body;
+
+  /// Boş: yok.
+  ///
+  /// Kısıtlar: maxLength: 4096.
+  final String? attribution;
+
+  final DailyPin? pin;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'body': body,
+    if (attribution case final value?) 'attribution': value,
+    if (pin case final value?) 'pin': value.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyItemInput &&
+          body == other.body &&
+          attribution == other.attribution &&
+          pin == other.pin;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[body, attribution, pin]);
+}
+
+final class DailyItemList {
+  const DailyItemList({required this.items, required this.callerCanManage});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyItemList.fromJson(Map<String, Object?> json) => DailyItemList(
+    items: List<DailyItem>.unmodifiable(
+      _readList(json['items'], 'DailyItemList.items').map(
+        (Object? e0) =>
+            DailyItem.fromJson(_readObject(e0, 'DailyItemList.items')),
+      ),
+    ),
+    callerCanManage: _readBool(
+      json['caller_can_manage'],
+      'DailyItemList.caller_can_manage',
+    ),
+  );
+
+  final List<DailyItem> items;
+
+  /// Çağıran havuzu şimdi yönetebilir mi.
+  final bool callerCanManage;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'items': <Object?>[for (final e0 in items) e0.toJson()],
+    'caller_can_manage': callerCanManage,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyItemList &&
+          _deepEquals(items, other.items) &&
+          callerCanManage == other.callerCanManage;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(items), callerCanManage]);
+}
+
+final class DailyItemSaved {
+  const DailyItemSaved({required this.item, required this.pinConflict});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyItemSaved.fromJson(Map<String, Object?> json) => DailyItemSaved(
+    item: DailyItem.fromJson(_readObject(json['item'], 'DailyItemSaved.item')),
+    pinConflict: _readBool(json['pin_conflict'], 'DailyItemSaved.pin_conflict'),
+  );
+
+  final DailyItem item;
+
+  /// Aynı güne sabitlenmiş başka içerik var; istemci uyarır.
+  final bool pinConflict;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'item': item.toJson(),
+    'pin_conflict': pinConflict,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyItemSaved &&
+          item == other.item &&
+          pinConflict == other.pinConflict;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[item, pinConflict]);
+}
+
+final class DailyOrder {
+  const DailyOrder({required this.items});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyOrder.fromJson(Map<String, Object?> json) => DailyOrder(
+    items: List<DailyItem>.unmodifiable(
+      _readList(json['items'], 'DailyOrder.items').map(
+        (Object? e0) => DailyItem.fromJson(_readObject(e0, 'DailyOrder.items')),
+      ),
+    ),
+  );
+
+  final List<DailyItem> items;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'items': <Object?>[for (final e0 in items) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyOrder && _deepEquals(items, other.items);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(items)]);
+}
+
+final class DailyOrderRequest {
+  const DailyOrderRequest({required this.itemIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyOrderRequest.fromJson(Map<String, Object?> json) =>
+      DailyOrderRequest(
+        itemIds: List<String>.unmodifiable(
+          _readList(
+            json['item_ids'],
+            'DailyOrderRequest.item_ids',
+          ).map((Object? e0) => _readString(e0, 'DailyOrderRequest.item_ids')),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 1000.
+  final List<String> itemIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'item_ids': <Object?>[for (final e0 in itemIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyOrderRequest && _deepEquals(itemIds, other.itemIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(itemIds)]);
+}
+
+/// Yılın bir gününe sabitleme. `year` yoksa her yıl tekrarlanır.
+/// Yılsız 29 Şubat yalnızca artık yıllarda gösterilir; yıllı 29 Şubat
+/// artık yıl ister.
+final class DailyPin {
+  const DailyPin({required this.month, required this.day, this.year});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyPin.fromJson(Map<String, Object?> json) => DailyPin(
+    month: _readInt(json['month'], 'DailyPin.month'),
+    day: _readInt(json['day'], 'DailyPin.day'),
+    year: switch (json['year']) {
+      null => null,
+      final Object v => _readInt(v, 'DailyPin.year'),
+    },
+  );
+
+  /// Kısıtlar: minimum: 1; maximum: 12.
+  final int month;
+
+  /// Kısıtlar: minimum: 1; maximum: 31.
+  final int day;
+
+  /// Kısıtlar: minimum: 2000; maximum: 2100.
+  final int? year;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'month': month,
+    'day': day,
+    if (year case final value?) 'year': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyPin &&
+          month == other.month &&
+          day == other.day &&
+          year == other.year;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[month, day, year]);
+}
+
+final class DailyToday {
+  const DailyToday({this.item, required this.pinned, required this.date});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DailyToday.fromJson(Map<String, Object?> json) => DailyToday(
+    item: switch (json['item']) {
+      null => null,
+      final Object v => DailyItem.fromJson(_readObject(v, 'DailyToday.item')),
+    },
+    pinned: _readBool(json['pinned'], 'DailyToday.pinned'),
+    date: _readString(json['date'], 'DailyToday.date'),
+  );
+
+  final DailyItem? item;
+
+  /// İçerik bugüne sabitlenmiş.
+  final bool pinned;
+
+  /// Bugün, Europe/Istanbul.
+  ///
+  /// Kısıtlar: biçim: `YYYY-AA-GG` (saat dilimsiz tarih).
+  final String date;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (item case final value?) 'item': value.toJson(),
+    'pinned': pinned,
+    'date': date,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DailyToday &&
+          item == other.item &&
+          pinned == other.pinned &&
+          date == other.date;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[item, pinned, date]);
+}
+
 final class DataExport {
   const DataExport({
     required this.id,
@@ -15446,7 +15894,7 @@ final class HomeMetricValue {
 /// Ana sayfa bileşeni. `kind` istemciye bilgi içindir; anahtar
 /// listesi sunucunundur ve büyüyebilir (bugün `upcoming`,
 /// `announcements`, `polls`, `questions`, `stats`, `goal`,
-/// `countdown`, `champions`, `log_summary`).
+/// `countdown`, `champions`, `log_summary`, `daily`).
 final class HomeWidget {
   const HomeWidget({
     required this.key,
@@ -17659,11 +18107,13 @@ enum ModerationReportStatus {
   }
 }
 
+/// `daily` günün içeriğidir (#269).
 enum Module {
   announcements('announcements'),
   events('events'),
   qa('qa'),
   polls('polls'),
+  daily('daily'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -20599,7 +21049,8 @@ enum ReportResolveRequestResolution {
 /// kaydıdır (#243; eskiden `fishing_catch`). `event_question` soru
 /// toplama bileşenindeki bir sorudur (#256); anonim sorunun yazarı
 /// tayfa kuyruğunda yer almaz (`subject_user_id` yoktur), yalnızca
-/// platform yönetimine görünür.
+/// platform yönetimine görünür. `daily_item` günün içeriği havuzundaki
+/// bir içeriktir (#269); `daily` modülü açık olmalıdır.
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -20613,6 +21064,7 @@ enum ReportTargetType {
   eventPhoto('event_photo'),
   channelMessage('channel_message'),
   eventQuestion('event_question'),
+  dailyItem('daily_item'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -22635,7 +23087,13 @@ enum TayfaKind {
 
 /// Her modülün açık olup olmadığı.
 final class TayfaModules {
-  const TayfaModules({this.announcements, this.events, this.qa, this.polls});
+  const TayfaModules({
+    this.announcements,
+    this.events,
+    this.qa,
+    this.polls,
+    this.daily,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -22657,6 +23115,10 @@ final class TayfaModules {
       null => null,
       final Object v => _readBool(v, 'TayfaModules.polls'),
     },
+    daily: switch (json['daily']) {
+      null => null,
+      final Object v => _readBool(v, 'TayfaModules.daily'),
+    },
   );
 
   final bool? announcements;
@@ -22667,12 +23129,15 @@ final class TayfaModules {
 
   final bool? polls;
 
+  final bool? daily;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (announcements case final value?) 'announcements': value,
     if (events case final value?) 'events': value,
     if (qa case final value?) 'qa': value,
     if (polls case final value?) 'polls': value,
+    if (daily case final value?) 'daily': value,
   };
 
   @override
@@ -22682,11 +23147,12 @@ final class TayfaModules {
           announcements == other.announcements &&
           events == other.events &&
           qa == other.qa &&
-          polls == other.polls;
+          polls == other.polls &&
+          daily == other.daily;
 
   @override
   int get hashCode =>
-      Object.hashAll(<Object?>[announcements, events, qa, polls]);
+      Object.hashAll(<Object?>[announcements, events, qa, polls, daily]);
 }
 
 /// Tayfanın Keşfet vitrinindeki istatistik kartı (#267; ADR-0026 §3,

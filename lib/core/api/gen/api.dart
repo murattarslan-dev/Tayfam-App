@@ -10,6 +10,7 @@ export 'package:tayfam/core/api/gen/apis/catalog_api.dart';
 export 'package:tayfam/core/api/gen/apis/channels_api.dart';
 export 'package:tayfam/core/api/gen/apis/client_config_api.dart';
 export 'package:tayfam/core/api/gen/apis/conversion_api.dart';
+export 'package:tayfam/core/api/gen/apis/daily_api.dart';
 export 'package:tayfam/core/api/gen/apis/deletion_api.dart';
 export 'package:tayfam/core/api/gen/apis/direct_messages_api.dart';
 export 'package:tayfam/core/api/gen/apis/discover_api.dart';
