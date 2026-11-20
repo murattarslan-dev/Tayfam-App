@@ -11,6 +11,8 @@ import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_ortak.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_durumu.dart';
@@ -32,6 +34,7 @@ class YazbozMasaFormu extends ConsumerStatefulWidget {
     required this.kimlik,
     required this.yazboz,
     required this.takimAnahtarlari,
+    this.misafirler,
     this.masa,
     this.gonder,
     this.yerleriGonder,
@@ -43,6 +46,10 @@ class YazbozMasaFormu extends ConsumerStatefulWidget {
   /// Etkinliğin türündeki takım kurma bileşenleri; takım masası ilkini
   /// kullanır.
   final List<String> takimAnahtarlari;
+
+  /// Bileşen misafir alıyorsa (`guests`) misafirlerin okunduğu ve eklendiği
+  /// yer; değilse `null`. Misafir yalnızca kişi masasına oturur.
+  final MisafirKimligi? misafirler;
 
   /// Yerleri değiştirilen masa; masa açarken `null`.
   final EventScoreTable? masa;
@@ -62,8 +69,11 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
   final TextEditingController _ad = TextEditingController();
   final TextEditingController _hedef = TextEditingController();
 
-  /// Seçilen kişiler ya da takımlar, seçim sırasıyla.
+  /// Seçilen kişiler, misafirler ya da takımlar, seçim sırasıyla.
   final List<String> _secilenler = [];
+
+  /// Seçimdeki misafirlerin kimlikleri (yer isteğinde `guest_id`).
+  final Set<String> _misafirler = {};
 
   String? _onAyar;
   bool _adHazir = false;
@@ -86,7 +96,9 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
     } else {
       _onAyar = masa.presetKey;
       for (final yer in yazbozYerleri(masa)) {
-        final kimlik = yer.userId ?? yer.teamId;
+        final misafir = yer.guestId;
+        if (misafir != null) _misafirler.add(misafir);
+        final kimlik = yer.userId ?? yer.teamId ?? misafir;
         if (kimlik != null && !_secilenler.contains(kimlik)) {
           _secilenler.add(kimlik);
         }
@@ -139,6 +151,11 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
     _degisti();
   }
 
+  void _misafirSec(String kimlik, bool secili) {
+    _misafirler.add(kimlik);
+    _sec(kimlik, secili);
+  }
+
   void _sec(String kimlik, bool secili) {
     if (secili) {
       if (!_secilenler.contains(kimlik)) _secilenler.add(kimlik);
@@ -150,9 +167,12 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
 
   List<EventScorePlayerInput> _yerler() => [
     for (final kimlik in _secilenler)
-      _takimMasasi
-          ? EventScorePlayerInput(teamId: kimlik)
-          : EventScorePlayerInput(userId: kimlik),
+      if (_takimMasasi)
+        EventScorePlayerInput(teamId: kimlik)
+      else if (_misafirler.contains(kimlik))
+        EventScorePlayerInput(guestId: kimlik)
+      else
+        EventScorePlayerInput(userId: kimlik),
   ];
 
   /// Seçilen yer sayısı ön ayarın sınırları içinde mi (boş: yerler sonra).
@@ -322,6 +342,17 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
             secilenler: _secilenler,
             onSecildi: _mesgul ? null : _sec,
           ),
+        if (!_takimMasasi)
+          if (widget.misafirler case final misafirler?)
+            _MisafirSecimi(
+              kimlik: misafirler,
+              masaId: widget.masa?.id,
+              secilenler: _secilenler,
+              onSecildi: _mesgul ? null : _misafirSec,
+              onSilindi: (id) {
+                if (_secilenler.remove(id)) _degisti();
+              },
+            ),
         if (hata != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
           HataSatiri.hatadan(hata),
@@ -348,9 +379,13 @@ class _YerSatiri extends StatelessWidget {
     required this.ad,
     required this.sira,
     required this.onSecildi,
+    this.sag,
   });
 
   final Widget ad;
+
+  /// Satırın sonundaki isteğe bağlı düğme (misafiri silme).
+  final Widget? sag;
 
   /// Seçildiyse 1'den sıra; değilse `null`.
   final int? sira;
@@ -371,6 +406,7 @@ class _YerSatiri extends StatelessWidget {
           : (deger) => onSecildi(deger ?? false),
       title: ad,
       subtitle: sira == null ? null : Text(m.bilesen_scoreboard_yer_no(sira)),
+      secondary: sag,
     );
   }
 }
@@ -432,6 +468,158 @@ class _KisiSecimi extends ConsumerWidget {
                 minimumSize: const Size.square(TayfamSizes.dokunmaMin),
               ),
               child: Text(m.etkinlik_daha_fazla),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Kişi masasında misafir seçimi (ADR-0031 §4): katılımcıların altında
+/// etkinliğin misafirleri ("Misafir" etiketli, profil bağlantısız),
+/// yetkiliye "Misafir ekle" ve misafiri silme. Eklenen misafir seçime
+/// sonda girer. Yetki sunucudadır; düğmeler yalnızca sadeleştirir.
+class _MisafirSecimi extends ConsumerStatefulWidget {
+  const _MisafirSecimi({
+    required this.kimlik,
+    required this.masaId,
+    required this.secilenler,
+    required this.onSecildi,
+    required this.onSilindi,
+  });
+
+  final MisafirKimligi kimlik;
+
+  /// Yerleri değiştirilen masa: masanın hakemi misafiri bununla ekler.
+  final String? masaId;
+  final List<String> secilenler;
+  final void Function(String kimlik, bool secili)? onSecildi;
+
+  /// Silinen misafir seçimden çıkar.
+  final ValueChanged<String> onSilindi;
+
+  @override
+  ConsumerState<_MisafirSecimi> createState() => _MisafirSecimiState();
+}
+
+class _MisafirSecimiState extends ConsumerState<_MisafirSecimi> {
+  bool _mesgul = false;
+
+  MisafirNotifier get _notifier =>
+      ref.read(misafirProvider(widget.kimlik).notifier);
+
+  Future<void> _ekle(EventGuestPlayers liste) async {
+    final once = {for (final g in liste.guests) g.id};
+    final masaId = liste.callerCanAdd ? null : widget.masaId;
+    await aracFormuAc<void>(
+      context,
+      (_) => MisafirFormu(gonder: (ad) => _notifier.ekle(ad, masaId: masaId)),
+    );
+    if (!mounted) return;
+    final yeni = ref.read(misafirProvider(widget.kimlik)).value;
+    for (final g in yeni?.guests ?? const <EventGuestPlayer>[]) {
+      if (!once.contains(g.id)) widget.onSecildi?.call(g.id, true);
+    }
+  }
+
+  Future<void> _sil(EventGuestPlayer misafir) async {
+    if (_mesgul) return;
+    final m = AppLocalizations.of(context);
+    final onay = await cikarmaOnayi(
+      context,
+      baslik: m.bilesen_guest_sil_onay,
+      metin: m.bilesen_guest_sil_aciklama,
+      eylem: m.bilesen_guest_sil,
+    );
+    if (!onay || !mounted) return;
+    setState(() => _mesgul = true);
+    final hata = await _notifier.sil(misafir.id);
+    if (!mounted) return;
+    setState(() => _mesgul = false);
+    if (hata != null) {
+      hataBildir(context, hata);
+    } else {
+      widget.onSilindi(misafir.id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    final durum = ref.watch(misafirProvider(widget.kimlik));
+    final liste = durum.value;
+    final onSecildi = widget.onSecildi;
+    final baslik = Padding(
+      padding: const EdgeInsets.only(top: TayfamSpacing.s16),
+      child: Semantics(
+        header: true,
+        child: Text(m.bilesen_guest_baslik, style: context.yazi.titleSmall),
+      ),
+    );
+    if (liste == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          baslik,
+          if (durum.hasError) ...[
+            HataSatiri.hatadan(durum.error!),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: BaglantiEylemi(
+                etiket: m.etkinlik_tekrar_dene,
+                onPressed: () => unawaited(_notifier.yenile()),
+              ),
+            ),
+          ] else
+            const Center(child: TayfamYukleniyor(gecikmeli: true)),
+        ],
+      );
+    }
+    final dolu = liste.guests.length >= liste.maxGuests;
+    final ekleyebilir = liste.callerCanAdd || widget.masaId != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        baslik,
+        AracBilgisi(
+          metin: m.bilesen_guest_sayi(liste.guests.length, liste.maxGuests),
+        ),
+        for (final g in liste.guests)
+          _YerSatiri(
+            key: ValueKey('yazboz-misafir-${g.id}'),
+            ad: MisafirAdi(kimlik: widget.kimlik, misafirId: g.id),
+            sira: widget.secilenler.contains(g.id)
+                ? widget.secilenler.indexOf(g.id) + 1
+                : null,
+            onSecildi: onSecildi == null
+                ? null
+                : (secili) => onSecildi(g.id, secili),
+            sag: liste.callerCanRemove
+                ? AracIkonDugmesi(
+                    key: ValueKey('yazboz-misafir-sil-${g.id}'),
+                    ipucu: m.bilesen_guest_sil,
+                    ikon: Icons.delete_outline,
+                    onPressed: _mesgul || onSecildi == null
+                        ? null
+                        : () => unawaited(_sil(g)),
+                  )
+                : null,
+          ),
+        if (ekleyebilir && dolu)
+          AracBilgisi(metin: m.bilesen_guest_dolu(liste.maxGuests))
+        else if (ekleyebilir)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              key: const ValueKey('yazboz-misafir-ekle'),
+              onPressed: _mesgul || onSecildi == null
+                  ? null
+                  : () => unawaited(_ekle(liste)),
+              style: TextButton.styleFrom(
+                minimumSize: const Size.square(TayfamSizes.dokunmaMin),
+              ),
+              icon: const Icon(Icons.person_add_alt_outlined),
+              label: Text(m.bilesen_guest_ekle),
             ),
           ),
       ],
@@ -502,10 +690,14 @@ class YazbozElFormu extends StatefulWidget {
     required this.el,
     required this.gonder,
     this.duzeltilen,
+    this.misafirler,
   });
 
   final YazbozKimligi kimlik;
   final EventScoreTable masa;
+
+  /// Bileşen misafir alıyorsa misafirlerin okunduğu yer; değilse `null`.
+  final MisafirKimligi? misafirler;
 
   /// Elin numarası.
   final int el;
@@ -632,6 +824,7 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
                             etkinlikId: widget.kimlik.etkinlikId,
                             anahtar: takimlar,
                           ),
+                    misafirler: widget.misafirler,
                     style: context.yazi.bodyLarge,
                   ),
                   if (_sonucModu)

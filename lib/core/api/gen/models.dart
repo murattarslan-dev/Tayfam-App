@@ -8064,7 +8064,12 @@ final class EventBracket {
 
 /// Eşleşme ağacının tohumlandığı kuradaki bir yer. Boş yerde (kişi ya da takım geri çekildi) ne `user_id` ne `team_id` vardır.
 final class EventBracketEntrant {
-  const EventBracketEntrant({required this.position, this.userId, this.teamId});
+  const EventBracketEntrant({
+    required this.position,
+    this.userId,
+    this.teamId,
+    this.guestId,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -8080,6 +8085,10 @@ final class EventBracketEntrant {
           null => null,
           final Object v => _readString(v, 'EventBracketEntrant.team_id'),
         },
+        guestId: switch (json['guest_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventBracketEntrant.guest_id'),
+        },
       );
 
   /// Kısıtlar: minimum: 1; maximum: 500.
@@ -8091,11 +8100,15 @@ final class EventBracketEntrant {
   /// Takım kurasında takımın kimliği.
   final String? teamId;
 
+  /// Katılımcı kurasında misafir oyuncunun kimliği (`EventGuestPlayer.id`).
+  final String? guestId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'position': position,
     if (userId case final value?) 'user_id': value,
     if (teamId case final value?) 'team_id': value,
+    if (guestId case final value?) 'guest_id': value,
   };
 
   @override
@@ -8104,10 +8117,12 @@ final class EventBracketEntrant {
       other is EventBracketEntrant &&
           position == other.position &&
           userId == other.userId &&
-          teamId == other.teamId;
+          teamId == other.teamId &&
+          guestId == other.guestId;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[position, userId, teamId]);
+  int get hashCode =>
+      Object.hashAll(<Object?>[position, userId, teamId, guestId]);
 }
 
 /// Eleme, lig ya da İsviçre; başlamamışsa başlatılırsa alınacak olan.
@@ -9314,7 +9329,12 @@ final class EventDraw {
 
 /// Kurada bir yer. Boş yerde (kişi ya da takım geri çekildi) ne `user_id` ne `team_id` vardır.
 final class EventDrawEntry {
-  const EventDrawEntry({required this.position, this.userId, this.teamId});
+  const EventDrawEntry({
+    required this.position,
+    this.userId,
+    this.teamId,
+    this.guestId,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -9329,6 +9349,10 @@ final class EventDrawEntry {
       null => null,
       final Object v => _readString(v, 'EventDrawEntry.team_id'),
     },
+    guestId: switch (json['guest_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventDrawEntry.guest_id'),
+    },
   );
 
   /// Kısıtlar: minimum: 1; maximum: 500.
@@ -9340,11 +9364,15 @@ final class EventDrawEntry {
   /// Takım kurasında `teams_key` bileşenindeki takımın kimliği.
   final String? teamId;
 
+  /// Katılımcı kurasında misafir oyuncunun kimliği (`EventGuestPlayer.id`); misafirin yeri boşalmaz.
+  final String? guestId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'position': position,
     if (userId case final value?) 'user_id': value,
     if (teamId case final value?) 'team_id': value,
+    if (guestId case final value?) 'guest_id': value,
   };
 
   @override
@@ -9353,10 +9381,12 @@ final class EventDrawEntry {
       other is EventDrawEntry &&
           position == other.position &&
           userId == other.userId &&
-          teamId == other.teamId;
+          teamId == other.teamId &&
+          guestId == other.guestId;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[position, userId, teamId]);
+  int get hashCode =>
+      Object.hashAll(<Object?>[position, userId, teamId, guestId]);
 }
 
 /// Kuranın sıraladığı (çekilmemişse şu an çekilse sıralayacağı) giriş türü.
@@ -9687,6 +9717,172 @@ final class EventGoalTargetRequest {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[target]);
+}
+
+/// Misafir oyuncu: uygulamada hesabı olmayan, yalnızca takma adla
+/// oynayan kişi. Profili, kişisel kaydı ve iletişim alanı yoktur;
+/// istatistiğe girmez.
+final class EventGuestPlayer {
+  const EventGuestPlayer({
+    required this.id,
+    this.nickname,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventGuestPlayer.fromJson(Map<String, Object?> json) =>
+      EventGuestPlayer(
+        id: _readString(json['id'], 'EventGuestPlayer.id'),
+        nickname: switch (json['nickname']) {
+          null => null,
+          final Object v => _readString(v, 'EventGuestPlayer.nickname'),
+        },
+        createdAt: _readDateTime(
+          json['created_at'],
+          'EventGuestPlayer.created_at',
+        ),
+      );
+
+  final String id;
+
+  /// Takma ad. Etkinliğin bitiminden 30 gün sonra (ya da ekleyen hesabını silince) silinir ve alan yer almaz; istemci adsız misafir gösterir.
+  ///
+  /// Kısıtlar: maxLength: 24.
+  final String? nickname;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    if (nickname case final value?) 'nickname': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventGuestPlayer &&
+          id == other.id &&
+          nickname == other.nickname &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[id, nickname, createdAt]);
+}
+
+final class EventGuestPlayerRequest {
+  const EventGuestPlayerRequest({required this.nickname, this.tableId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventGuestPlayerRequest.fromJson(Map<String, Object?> json) =>
+      EventGuestPlayerRequest(
+        nickname: _readString(
+          json['nickname'],
+          'EventGuestPlayerRequest.nickname',
+        ),
+        tableId: switch (json['table_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventGuestPlayerRequest.table_id'),
+        },
+      );
+
+  /// Baştaki ve sondaki boşluk atılır; denetim ve biçim karakterleri reddedilir.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 24.
+  final String nickname;
+
+  /// Ekleyen masanın hakemiyse o masa (`EventScoreTable.id`); organizatör ve etkinliğin ya da bileşenin hakemi vermez.
+  final String? tableId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'nickname': nickname,
+    if (tableId case final value?) 'table_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventGuestPlayerRequest &&
+          nickname == other.nickname &&
+          tableId == other.tableId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[nickname, tableId]);
+}
+
+final class EventGuestPlayers {
+  const EventGuestPlayers({
+    required this.guests,
+    required this.maxGuests,
+    required this.callerCanAdd,
+    required this.callerCanRemove,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventGuestPlayers.fromJson(Map<String, Object?> json) =>
+      EventGuestPlayers(
+        guests: List<EventGuestPlayer>.unmodifiable(
+          _readList(json['guests'], 'EventGuestPlayers.guests').map(
+            (Object? e0) => EventGuestPlayer.fromJson(
+              _readObject(e0, 'EventGuestPlayers.guests'),
+            ),
+          ),
+        ),
+        maxGuests: _readInt(json['max_guests'], 'EventGuestPlayers.max_guests'),
+        callerCanAdd: _readBool(
+          json['caller_can_add'],
+          'EventGuestPlayers.caller_can_add',
+        ),
+        callerCanRemove: _readBool(
+          json['caller_can_remove'],
+          'EventGuestPlayers.caller_can_remove',
+        ),
+      );
+
+  /// Eklenme sırasıyla.
+  final List<EventGuestPlayer> guests;
+
+  /// Etkinlik başına en fazla misafir (30).
+  final int maxGuests;
+
+  /// Çağıran şimdi masa vermeden misafir ekleyebilir (organizatör, moderatör, yönetici ya da etkinliğin veya bileşenin hakemi). Masanın hakemi `table_id` ile ekler.
+  final bool callerCanAdd;
+
+  /// Çağıran şimdi misafir silebilir (organizatör, moderatör, yönetici).
+  final bool callerCanRemove;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'guests': <Object?>[for (final e0 in guests) e0.toJson()],
+    'max_guests': maxGuests,
+    'caller_can_add': callerCanAdd,
+    'caller_can_remove': callerCanRemove,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventGuestPlayers &&
+          _deepEquals(guests, other.guests) &&
+          maxGuests == other.maxGuests &&
+          callerCanAdd == other.callerCanAdd &&
+          callerCanRemove == other.callerCanRemove;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(guests),
+    maxGuests,
+    callerCanAdd,
+    callerCanRemove,
+  ]);
 }
 
 final class EventList {
@@ -11159,6 +11355,7 @@ final class EventScorePlayer {
     required this.position,
     this.userId,
     this.teamId,
+    this.guestId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -11176,6 +11373,10 @@ final class EventScorePlayer {
           null => null,
           final Object v => _readString(v, 'EventScorePlayer.team_id'),
         },
+        guestId: switch (json['guest_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventScorePlayer.guest_id'),
+        },
       );
 
   final String id;
@@ -11188,12 +11389,16 @@ final class EventScorePlayer {
   /// Takım masasında takım bileşeninin takımı.
   final String? teamId;
 
+  /// Misafir oyuncunun kimliği (`EventGuestPlayer.id`).
+  final String? guestId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
     'position': position,
     if (userId case final value?) 'user_id': value,
     if (teamId case final value?) 'team_id': value,
+    if (guestId case final value?) 'guest_id': value,
   };
 
   @override
@@ -11203,15 +11408,20 @@ final class EventScorePlayer {
           id == other.id &&
           position == other.position &&
           userId == other.userId &&
-          teamId == other.teamId;
+          teamId == other.teamId &&
+          guestId == other.guestId;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[id, position, userId, teamId]);
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, position, userId, teamId, guestId]);
 }
 
-/// Bir yer; `user_id` ve `team_id`'den tam olarak biri.
+/// Bir yer; `user_id`, `team_id` ve `guest_id`'den tam olarak biri.
+/// Misafir yalnızca kişi masasına ve misafir alan (`guests`) bileşene
+/// oturur (`guest-players-disabled`); etkinliğin misafiri değilse
+/// `guest-player-not-found`.
 final class EventScorePlayerInput {
-  const EventScorePlayerInput({this.userId, this.teamId});
+  const EventScorePlayerInput({this.userId, this.teamId, this.guestId});
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -11226,16 +11436,23 @@ final class EventScorePlayerInput {
           null => null,
           final Object v => _readString(v, 'EventScorePlayerInput.team_id'),
         },
+        guestId: switch (json['guest_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventScorePlayerInput.guest_id'),
+        },
       );
 
   final String? userId;
 
   final String? teamId;
 
+  final String? guestId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (userId case final value?) 'user_id': value,
     if (teamId case final value?) 'team_id': value,
+    if (guestId case final value?) 'guest_id': value,
   };
 
   @override
@@ -11243,10 +11460,11 @@ final class EventScorePlayerInput {
       identical(this, other) ||
       other is EventScorePlayerInput &&
           userId == other.userId &&
-          teamId == other.teamId;
+          teamId == other.teamId &&
+          guestId == other.guestId;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[userId, teamId]);
+  int get hashCode => Object.hashAll(<Object?>[userId, teamId, guestId]);
 }
 
 final class EventScorePlayersRequest {

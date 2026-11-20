@@ -54,9 +54,10 @@ EventBracketEntrant? agacYeri(EventBracket agac, int? sira) {
   return null;
 }
 
-/// Yer boş mu: kişi ya da takım geri çekilmiş.
+/// Yer boş mu: kişi ya da takım geri çekilmiş (misafirin yeri boşalmaz).
 bool agacYeriBos(EventBracketEntrant? yer) =>
-    yer == null || (yer.userId == null && yer.teamId == null);
+    yer == null ||
+    (yer.userId == null && yer.teamId == null && yer.guestId == null);
 
 /// Maçın oyunları numarasıyla.
 List<EventBracketGame> agacOyunlari(EventBracketMatch mac) =>

@@ -3844,6 +3844,88 @@
   "@bilesen_bracket_sonuc_yok": {
     "description": "Sonuç seçilmeden kaydedilince hata."
   },
+  "bilesen_guest_etiket": "Misafir",
+  "@bilesen_guest_etiket": {
+    "description": "Misafir oyuncunun adının yanındaki etiket: uygulamada hesabı olmayan, takma adla oynayan kişi."
+  },
+  "bilesen_guest_adsiz": "Adsız misafir",
+  "@bilesen_guest_adsiz": {
+    "description": "Takma adı silinmiş (etkinlik bitiminden 30 gün sonra) ya da okunamayan misafir oyuncu."
+  },
+  "bilesen_guest_ad_metni": "{ad} (misafir)",
+  "@bilesen_guest_ad_metni": {
+    "description": "Misafir oyuncunun adı düz metin içinde (eşleşme ağacı, şampiyon satırı).",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Deniz"
+      }
+    }
+  },
+  "bilesen_guest_baslik": "Misafirler",
+  "@bilesen_guest_baslik": {
+    "description": "Yazbozda oyuncu seçiminde misafir oyuncuların başlığı."
+  },
+  "bilesen_guest_sayi": "{sayi}/{enCok} misafir",
+  "@bilesen_guest_sayi": {
+    "description": "Etkinliğin misafir oyuncu sayısı ve en çoğu.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "bilesen_guest_dolu": "Etkinlikte en çok {enCok} misafir olur.",
+  "@bilesen_guest_dolu": {
+    "description": "Misafir sınırı dolunca “Misafir ekle” yerine görünen bilgi.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "bilesen_guest_ekle": "Misafir ekle",
+  "@bilesen_guest_ekle": {
+    "description": "Yazbozda hesabı olmayan oyuncuyu takma adla ekleme düğmesi ve formun başlığı."
+  },
+  "bilesen_guest_ekle_onay": "Ekle",
+  "@bilesen_guest_ekle_onay": {
+    "description": "Misafir ekleme formunun onay düğmesi."
+  },
+  "bilesen_guest_aciklama": "Uygulamada hesabı olmayan oyuncuyu takma adla ekle. Misafirin profili yoktur ve istatistiğe girmez; takma adı etkinlik bitiminden 30 gün sonra silinir.",
+  "@bilesen_guest_aciklama": {
+    "description": "Misafir ekleme formundaki açıklama."
+  },
+  "bilesen_guest_ad_alani": "Takma ad",
+  "@bilesen_guest_ad_alani": {
+    "description": "Misafir oyuncunun takma ad alanı."
+  },
+  "bilesen_guest_ad_ipucu": "1–24 karakter; gerçek ad gerekmez.",
+  "@bilesen_guest_ad_ipucu": {
+    "description": "Takma ad alanının yardım metni."
+  },
+  "bilesen_guest_ad_hatali": "Takma ad 1–24 karakter olmalı.",
+  "@bilesen_guest_ad_hatali": {
+    "description": "Takma ad boş ya da çok uzunken görünen hata."
+  },
+  "bilesen_guest_sil": "Misafiri sil",
+  "@bilesen_guest_sil": {
+    "description": "Misafir oyuncuyu silme düğmesinin ipucu ve onaydaki eylem."
+  },
+  "bilesen_guest_sil_onay": "Misafir silinsin mi?",
+  "@bilesen_guest_sil_onay": {
+    "description": "Misafir silme onayının başlığı."
+  },
+  "bilesen_guest_sil_aciklama": "Masada ya da kurada yeri olan misafir silinemez.",
+  "@bilesen_guest_sil_aciklama": {
+    "description": "Misafir silme onayının açıklaması."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -12489,6 +12571,18 @@
   "hata_bracket_finished": "Eşleşme ağacı sonuçlandı; eşlenecek tur kalmadı.",
   "@hata_bracket_finished": {
     "description": "Hata kodu `bracket-finished`. Sonraki tur yokken eşlenince."
+  },
+  "hata_guest_players_disabled": "Bu yazboz misafir oyuncu almıyor.",
+  "@hata_guest_players_disabled": {
+    "description": "Hata kodu `guest-players-disabled`. Bileşen misafir almıyorken ya da misafir takım masasına oturtulunca."
+  },
+  "hata_guest_player_not_found": "Misafir bulunamadı; silinmiş olabilir.",
+  "@hata_guest_player_not_found": {
+    "description": "Hata kodu `guest-player-not-found`. Etkinliğin misafiri olmayan oyuncu kullanılınca."
+  },
+  "hata_guest_player_in_use": "Masada ya da kurada yeri olan misafir silinemez.",
+  "@hata_guest_player_in_use": {
+    "description": "Hata kodu `guest-player-in-use`. Yeri olan misafir silinmek istenince."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {

@@ -566,7 +566,8 @@
                 "okey_101",
                 "backgammon",
                 "free"
-              ]
+              ],
+              "guests": true
             }
           }
         ]
@@ -651,7 +652,8 @@
             "params": {
               "side": "player",
               "rounds": "single",
-              "result": "wdl"
+              "result": "wdl",
+              "guests": true
             }
           }
         ]
