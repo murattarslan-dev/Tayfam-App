@@ -104,8 +104,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.scoreTableNotFound => m.hata_score_table_not_found,
   ProblemType.scoreTableFinished => m.hata_score_table_finished,
   ProblemType.scoreTableStarted => m.hata_score_table_started,
-  ProblemType.scorePlayerNotParticipant =>
-    m.hata_score_player_not_participant,
+  ProblemType.scorePlayerNotParticipant => m.hata_score_player_not_participant,
   ProblemType.scoreNotStarted => m.hata_score_not_started,
   ProblemType.eventTypeMismatch => m.hata_event_type_mismatch,
   ProblemType.checkInClosed => m.hata_check_in_closed,

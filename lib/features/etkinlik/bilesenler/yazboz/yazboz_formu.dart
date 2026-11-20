@@ -99,9 +99,8 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
     super.didChangeDependencies();
     if (!_duzenleme && !_adHazir) {
       _adHazir = true;
-      _ad.text = AppLocalizations.of(
-        context,
-      ).bilesen_scoreboard_ad_varsayilan(widget.yazboz.tables.length + 1);
+      _ad.text = AppLocalizations.of(context)
+          .bilesen_scoreboard_ad_varsayilan(widget.yazboz.tables.length + 1);
     }
   }
 
@@ -180,8 +179,7 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
         !_duzenleme &&
         hedefMetni.isNotEmpty &&
         (hedef == null || hedef < 1 || hedef > yazbozHedefEnCok);
-    final onAyarYok =
-        !_duzenleme && secilebilir.isNotEmpty && _on == null;
+    final onAyarYok = !_duzenleme && secilebilir.isNotEmpty && _on == null;
     final sayiHatali = !_sayiUygun();
     if (adHatali || hedefHatali || onAyarYok || sayiHatali) {
       setState(() {
@@ -739,9 +737,7 @@ class YazbozAdFormu extends StatefulWidget {
 }
 
 class _YazbozAdFormuState extends State<YazbozAdFormu> {
-  late final TextEditingController _ad = TextEditingController(
-    text: widget.ad,
-  );
+  late final TextEditingController _ad = TextEditingController(text: widget.ad);
   bool _hatali = false;
   bool _mesgul = false;
   Object? _hata;

@@ -92,7 +92,11 @@ class YazbozYerAdi extends ConsumerWidget {
 
 /// [takimlar] bileşenindeki [takimId] takımı; okunamazsa ya da yoksa
 /// `null`.
-EventTeam? yazbozTakimi(WidgetRef ref, TakimKimligi? takimlar, String? takimId) {
+EventTeam? yazbozTakimi(
+  WidgetRef ref,
+  TakimKimligi? takimlar,
+  String? takimId,
+) {
   if (takimlar == null || takimId == null) return null;
   final liste =
       ref.watch(takimProvider(takimlar)).value?.teams ?? const <EventTeam>[];

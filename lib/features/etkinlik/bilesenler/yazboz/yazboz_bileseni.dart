@@ -170,7 +170,15 @@ class _YazbozBolumuState extends ConsumerState<YazbozBolumu> {
 }
 
 /// Masa işlemleri menüsünün seçenekleri.
-enum _MasaIslemi { yerler, duzelt, sonEliSil, yenidenAc, adlandir, hakemler, sil }
+enum _MasaIslemi {
+  yerler,
+  duzelt,
+  sonEliSil,
+  yenidenAc,
+  adlandir,
+  hakemler,
+  sil,
+}
 
 /// Bir masa: adı, durumu ("Sürüyor" / "Bitti"), oyunu ve kuralları,
 /// sıralama, eller (açılır) ve yetkiliye göre işlemler.
@@ -317,7 +325,9 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
     final bitti = masa.status == EventScoreTableStatus.finished;
     final acik = masa.status == EventScoreTableStatus.open;
     final on = yazbozOnAyari(widget.yazboz, masa.presetKey);
-    final oyun = on == null ? null : katalogAdi(on.labels, katalogDili(context));
+    final oyun = on == null
+        ? null
+        : katalogAdi(on.labels, katalogDili(context));
     final ozet = [?oyun, ...yazbozKuralOzeti(m, masa.rules)].join(' · ');
     final eller = yazbozElleri(masa);
     final yonetebilir = widget.yazboz.callerCanManage;
@@ -508,10 +518,16 @@ class YazbozSiraSatiri extends ConsumerWidget {
       fontFeatures: const [FontFeature.tabularFigures()],
     );
     final bo = kural.bestOf;
+    final toplam = [
+      m.bilesen_scoreboard_puan(yazbozSayisi(m, sira.total)),
+      if (bo != null && bo > 1) m.bilesen_scoreboard_el_kazandi(sira.roundsWon),
+    ].join(' · ');
+    // Dar ekranda ve büyük yazıda taşmasın diye toplam adın altındadır.
     return MergeSemantics(
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               m.bilesen_scoreboard_sira(sira.rank),
@@ -519,42 +535,35 @@ class YazbozSiraSatiri extends ConsumerWidget {
             ),
             const SizedBox(width: TayfamSpacing.s8),
             Expanded(
-              child: Wrap(
-                spacing: TayfamSpacing.s8,
-                runSpacing: TayfamSpacing.s4,
-                crossAxisAlignment: WrapCrossAlignment.center,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  YazbozYerAdi(
-                    yer: satir.yer,
-                    takimlar: takimlar,
-                    style: satir.kazanan
-                        ? yazi.bodyMedium?.copyWith(fontWeight: FontWeight.w700)
-                        : yazi.bodyMedium,
+                  Wrap(
+                    spacing: TayfamSpacing.s8,
+                    runSpacing: TayfamSpacing.s4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      YazbozYerAdi(
+                        yer: satir.yer,
+                        takimlar: takimlar,
+                        style: satir.kazanan
+                            ? yazi.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              )
+                            : yazi.bodyMedium,
+                      ),
+                      if (satir.kazanan)
+                        Etiket(
+                          metin: m.bilesen_scoreboard_kazanan,
+                          ton: EtiketTonu.mango,
+                          ikon: Icons.emoji_events_outlined,
+                        ),
+                      if (benim) Etiket(metin: m.bilesen_scoreboard_sen),
+                    ],
                   ),
-                  if (satir.kazanan)
-                    Etiket(
-                      metin: m.bilesen_scoreboard_kazanan,
-                      ton: EtiketTonu.mango,
-                      ikon: Icons.emoji_events_outlined,
-                    ),
-                  if (benim) Etiket(metin: m.bilesen_scoreboard_sen),
+                  Text(toplam, style: rakam?.copyWith(color: r.metinGovde)),
                 ],
               ),
-            ),
-            const SizedBox(width: TayfamSpacing.s8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  m.bilesen_scoreboard_puan(yazbozSayisi(m, sira.total)),
-                  style: rakam,
-                ),
-                if (bo != null && bo > 1)
-                  Text(
-                    m.bilesen_scoreboard_el_kazandi(sira.roundsWon),
-                    style: yazi.bodySmall?.copyWith(color: r.metinGovde),
-                  ),
-              ],
             ),
           ],
         ),

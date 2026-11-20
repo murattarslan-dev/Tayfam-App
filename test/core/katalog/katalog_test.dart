@@ -50,6 +50,7 @@ void main() {
       expect(katalog.ilgiAlanininTurleri('sports').map((t) => t.key), [
         'sports',
         'dog_walk',
+        'team_sport',
       ]);
     });
 

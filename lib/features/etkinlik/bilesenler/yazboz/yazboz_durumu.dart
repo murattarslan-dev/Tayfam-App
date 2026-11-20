@@ -112,7 +112,10 @@ typedef YazbozElSonucu = ({EventScoreRoundRequest? istek, Set<String> hatali});
 /// ±1 000 000 dışındaki değer hatalıdır. Hiç skor yoksa istek de hatalı
 /// yer de yoktur (çağıran "en az bir skor" der). Yerler [sira] sırasıyla
 /// gider.
-YazbozElSonucu yazbozPuanIstegi(List<String> sira, Map<String, String> puanlar) {
+YazbozElSonucu yazbozPuanIstegi(
+  List<String> sira,
+  Map<String, String> puanlar,
+) {
   final skorlar = <EventScoreEntry>[];
   final hatali = <String>{};
   for (final yer in sira) {
@@ -163,8 +166,10 @@ const Set<ProblemType> _bayatYazbozHatalari = {
 };
 
 /// Bir yazboz işlemi: depoda çalışır, yazbozun güncel halini döner.
-typedef YazbozYazimi =
-    Future<EventScoreboard> Function(EtkinlikDeposu depo, YazbozKimligi k);
+typedef YazbozYazimi = Future<EventScoreboard> Function(
+  EtkinlikDeposu depo,
+  YazbozKimligi k,
+);
 
 /// Yazboz bileşeninin durumu (`GET …/components/{component_key}/
 /// scoreboard`; Tayfam-Api #250), çağıranın gördüğü haliyle. Bölüm açıkken
@@ -237,8 +242,7 @@ class YazbozNotifier extends AsyncNotifier<EventScoreboard> {
 
   /// Sıradaki eli girer (organizatör ya da masanın hakemi).
   Future<Object?> elGir(String masaId, EventScoreRoundRequest istek) => _yaz(
-    (d, k) =>
-        d.yazbozEliGir(k.tayfaId, k.etkinlikId, k.anahtar, masaId, istek),
+    (d, k) => d.yazbozEliGir(k.tayfaId, k.etkinlikId, k.anahtar, masaId, istek),
   );
 
   /// Girilmiş eli düzeltir.
@@ -259,14 +263,12 @@ class YazbozNotifier extends AsyncNotifier<EventScoreboard> {
 
   /// Masanın son elini siler.
   Future<Object?> sonEliSil(String masaId, int el) => _yaz(
-    (d, k) =>
-        d.yazbozEliniSil(k.tayfaId, k.etkinlikId, k.anahtar, masaId, el),
+    (d, k) => d.yazbozEliniSil(k.tayfaId, k.etkinlikId, k.anahtar, masaId, el),
   );
 
   /// Masayı bitirir (organizatör ya da masanın hakemi).
   Future<Object?> masayiBitir(String masaId) => _yaz(
-    (d, k) =>
-        d.yazbozMasasiniBitir(k.tayfaId, k.etkinlikId, k.anahtar, masaId),
+    (d, k) => d.yazbozMasasiniBitir(k.tayfaId, k.etkinlikId, k.anahtar, masaId),
   );
 
   /// Başarıda `null`, değilse hata döner; durum değişmez ve hata çağıranda

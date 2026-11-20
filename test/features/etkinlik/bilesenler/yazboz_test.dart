@@ -98,7 +98,11 @@ Map<String, Object?> _bitenMasa({bool skorGirebilir = false}) =>
         _el(1, {_yer1: 70, _yer2: 50, _yer3: 30}),
         _el(2, {_yer1: 50, _yer2: 70, _yer3: 50}),
       ],
-      siralama: [_sira(_yer1, 1, 120), _sira(_yer2, 1, 120), _sira(_yer3, 3, 80)],
+      siralama: [
+        _sira(_yer1, 1, 120),
+        _sira(_yer2, 1, 120),
+        _sira(_yer3, 3, 80),
+      ],
       kazananlar: [_yer1, _yer2],
       skorGirebilir: skorGirebilir,
     );
@@ -253,17 +257,23 @@ void main() {
           findsNWidgets(2),
         );
         expect(
-          _bolumde(find.text(m.bilesen_scoreboard_kazanan)),
+          _bolumde(find.textContaining(m.bilesen_scoreboard_kazanan)),
           findsNWidgets(2),
         );
         expect(_bolumde(find.text(m.bilesen_scoreboard_sen)), findsOneWidget);
         expect(
-          _bolumde(find.text(m.bilesen_scoreboard_durum_finished)),
+          _bolumde(find.textContaining(m.bilesen_scoreboard_durum_finished)),
           findsOneWidget,
         );
         expect(_bolumde(find.textContaining('Batak')), findsOneWidget);
-        expect(_bolumde(find.text(m.bilesen_scoreboard_sira(1))), findsNWidgets(2));
-        expect(_bolumde(find.text(m.bilesen_scoreboard_sira(3))), findsOneWidget);
+        expect(
+          _bolumde(find.text(m.bilesen_scoreboard_sira(1))),
+          findsNWidgets(2),
+        );
+        expect(
+          _bolumde(find.text(m.bilesen_scoreboard_sira(3))),
+          findsOneWidget,
+        );
         // Satır ekran okuyucuda tek öğe: sıra, ad ve toplam birlikte.
         expect(
           find.bySemanticsLabel(RegExp(r'3\.[\s\S]*80 puan')),
@@ -373,7 +383,10 @@ void main() {
           _bolumde(find.text(m.bilesen_scoreboard_puan('-101'))),
           findsOneWidget,
         );
-        expect(_bolumde(find.text(m.bilesen_scoreboard_sira(2))), findsOneWidget);
+        expect(
+          _bolumde(find.text(m.bilesen_scoreboard_sira(2))),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       });
     }
@@ -414,12 +427,18 @@ void main() {
         Finder formda(Finder f) =>
             find.descendant(of: find.byType(YazbozMasaFormu), matching: f);
 
-        await _dokun(tester, find.byKey(const ValueKey('yazboz-kisi-$katilimciId')));
+        await _dokun(
+          tester,
+          find.byKey(const ValueKey('yazboz-kisi-$katilimciId')),
+        );
         await _dokun(
           tester,
           find.byKey(const ValueKey('yazboz-kisi-$organizatorId')),
         );
-        expect(formda(find.text(m.bilesen_scoreboard_yer_no(2))), findsOneWidget);
+        expect(
+          formda(find.text(m.bilesen_scoreboard_yer_no(2))),
+          findsOneWidget,
+        );
 
         // Batak üç-dört kişiyle oynanır: iki kişiyle istek gitmez.
         await _dokun(tester, formda(find.text(m.etkinlik_kaydet)));
@@ -565,7 +584,7 @@ void main() {
         _bolumde(find.text(m.bilesen_scoreboard_durum_open)),
         findsOneWidget,
       );
-      expect(_bolumde(find.text(m.bilesen_scoreboard_kazanan)), findsNothing);
+      expect(_bolumde(find.textContaining(m.bilesen_scoreboard_kazanan)), findsNothing);
     });
 
     testWidgets('organizatör masaya hakem atar', (tester) async {
@@ -665,7 +684,7 @@ void main() {
       await _gorunurYap(tester, tekrar);
       await _dokun(tester, tekrar);
       expect(
-        _bolumde(find.text(m.bilesen_scoreboard_durum_finished)),
+        _bolumde(find.textContaining(m.bilesen_scoreboard_durum_finished)),
         findsOneWidget,
       );
     });
