@@ -43,19 +43,22 @@ class _KapState extends State<_Kap> {
   );
 }
 
-Map<String, Object?> _etiket(String key, String ad, {String? ust, int p = 10}) =>
-    {
-      'key': key,
-      'parent_key': ?ust,
-      'position': p,
-      'labels': {'tr': ad},
-      'status': 'active',
-    };
+Map<String, Object?> _etiket(
+  String key,
+  String ad, {
+  String? ust,
+  int p = 10,
+}) => {
+  'key': key,
+  'parent_key': ?ust,
+  'position': p,
+  'labels': {'tr': ad},
+  'status': 'active',
+};
 
 /// [etiketler] ders/konu listeli test kataloğu.
-Katalog _katalog(List<Map<String, Object?>> etiketler) => Katalog(
-  Catalog.fromJson({...testKataloguJson(), 'study_tags': etiketler}),
-);
+Katalog _katalog(List<Map<String, Object?>> etiketler) =>
+    Katalog(Catalog.fromJson({...testKataloguJson(), 'study_tags': etiketler}));
 
 Future<void> _ac(
   WidgetTester tester,
@@ -95,10 +98,7 @@ void main() {
     ortakTestler(
       () => const _Kap(
         kayit: [],
-        ilk: DersKonuSecimi(
-          ders: 'yks_matematik',
-          konu: 'yks_matematik_turev',
-        ),
+        ilk: DersKonuSecimi(ders: 'yks_matematik', konu: 'yks_matematik_turev'),
       ),
       overrides: () => [katalogOverride()],
     );
@@ -177,9 +177,7 @@ void main() {
     expect(kayit, isEmpty);
   });
 
-  testWidgets('emekli mevcut değer adıyla ve notla gösterilir', (
-    tester,
-  ) async {
+  testWidgets('emekli mevcut değer adıyla ve notla gösterilir', (tester) async {
     await _ac(
       tester,
       const _Kap(
@@ -196,18 +194,22 @@ void main() {
   testWidgets('emekli düzeyin dersi adıyla gösterilir', (tester) async {
     await _ac(
       tester,
-      const _Kap(kayit: [], ilk: DersKonuSecimi(ders: 'kpss_tarih')),
+      const _Kap(
+        kayit: [],
+        ilk: DersKonuSecimi(ders: 'kpss_tarih'),
+      ),
     );
     expect(find.text('KPSS'), findsOneWidget);
     expect(find.text('Tarih'), findsOneWidget);
   });
 
-  testWidgets('katalogda olmayan değer anahtarıyla gösterilir', (
-    tester,
-  ) async {
+  testWidgets('katalogda olmayan değer anahtarıyla gösterilir', (tester) async {
     await _ac(
       tester,
-      const _Kap(kayit: [], ilk: DersKonuSecimi(ders: 'bilinmeyen_ders')),
+      const _Kap(
+        kayit: [],
+        ilk: DersKonuSecimi(ders: 'bilinmeyen_ders'),
+      ),
     );
     expect(find.text('bilinmeyen_ders'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -234,7 +236,12 @@ void main() {
 
   for (final mod in temalar) {
     testWidgets('${mod.name}: boş listede sakin boş durum', (tester) async {
-      await _ac(tester, const _Kap(kayit: []), mod: mod, katalog: _katalog([]));
+      await _ac(
+        tester,
+        const _Kap(kayit: []),
+        mod: mod,
+        katalog: _katalog([]),
+      );
       expect(find.text(arbMetni('ders_konu_liste_bos')), findsOneWidget);
       expect(find.text(duzey), findsNothing);
       expect(tester.takeException(), isNull);
@@ -246,7 +253,10 @@ void main() {
     ) async {
       await _ac(
         tester,
-        const _Kap(kayit: [], ilk: DersKonuSecimi(ders: 'yks_matematik')),
+        const _Kap(
+          kayit: [],
+          ilk: DersKonuSecimi(ders: 'yks_matematik'),
+        ),
         mod: mod,
       );
       await _dokun(tester, find.text(konu));

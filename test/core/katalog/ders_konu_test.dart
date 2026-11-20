@@ -92,10 +92,7 @@ void main() {
     });
 
     test('dersin düzeyi', () {
-      expect(
-        agac.duzeyi(const DersKonuSecimi(ders: 'lgs_turkce')),
-        'lgs',
-      );
+      expect(agac.duzeyi(const DersKonuSecimi(ders: 'lgs_turkce')), 'lgs');
       expect(agac.duzeyi(const DersKonuSecimi(ders: 'yks')), isNull);
       expect(agac.duzeyi(const DersKonuSecimi(ders: 'yok')), isNull);
     });
@@ -124,7 +121,10 @@ void main() {
         ),
         isFalse,
       );
-      expect(agac.gecerli(const DersKonuSecimi(ders: 'yks_eski_ders')), isFalse);
+      expect(
+        agac.gecerli(const DersKonuSecimi(ders: 'yks_eski_ders')),
+        isFalse,
+      );
       expect(
         agac.gecerli(
           const DersKonuSecimi(
