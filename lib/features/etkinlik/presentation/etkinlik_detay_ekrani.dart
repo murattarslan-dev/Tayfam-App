@@ -37,6 +37,8 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor_bandi.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
@@ -216,6 +218,9 @@ class _Detay extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _OzetKarti(anahtar: anahtar, etkinlik: etkinlik),
+                // Açık uçlu etkinlik sürerken "Şu an sürüyor" ve Bitir
+                // (App ADR-0032 §3).
+                SuruyorBandi(anahtar: anahtar, etkinlik: etkinlik),
                 if (iptal && gerekce != null && gerekce.isNotEmpty) ...[
                   const SizedBox(height: TayfamSpacing.s16),
                   _IptalKutusu(gerekce: gerekce),
@@ -405,6 +410,23 @@ class _UstBolum extends ConsumerWidget {
                         Etiket(
                           metin: m.etkinlik_karti_iptal,
                           ton: EtiketTonu.nar,
+                        )
+                      else if (etkinlik.openEnded)
+                        // Sürerken geri sayım yerine "Sürüyor · 25 dk".
+                        SuruyorIzleyici(
+                          etkinlik: etkinlik,
+                          builder: (context, suruyor, gecen) => suruyor
+                              ? suruyorEtiketi(m, gecen)
+                              : _UstCip(
+                                  metin: detayGeriSayimi(
+                                    m,
+                                    etkinlik.startsAt,
+                                    simdi,
+                                    bitis: etkinlik.endsAt,
+                                  ),
+                                  zemin: katman,
+                                  renk: ust,
+                                ),
                         )
                       else
                         _UstCip(
@@ -652,11 +674,19 @@ class _OzetKarti extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final eylem = ref.watch(etkinlikEylemProvider(anahtar));
-    final (gun, saat) = etkinlikOzetZamani(
+    final (gun, aralik) = etkinlikOzetZamani(
       m,
       etkinlik.startsAt,
       etkinlik.endsAt,
     );
+    // Açık uçlu etkinlik sürerken bitiş planlanmış değil, en geçtir
+    // (App ADR-0032 §3): "18:30 – en geç 06:30".
+    final saat = acikUcluSuruyor(etkinlik, ref.watch(etkinlikSaatiProvider)())
+        ? m.simdi_en_gec_aralik(
+            enGecSaat(m, etkinlik.startsAt),
+            enGecSaat(m, etkinlik.endsAt),
+          )
+        : aralik;
     final (yer, bolge) = _yerSatiri(m, etkinlik);
     final organizator = etkinlik.createdByUserId;
     final ayirici = Divider(

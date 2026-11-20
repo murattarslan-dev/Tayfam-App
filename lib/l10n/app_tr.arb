@@ -13455,5 +13455,255 @@
   "rozet_bildirim_tayfa": "Tayfan yeni bir rozet kazandı",
   "@rozet_bildirim_tayfa": {
     "description": "Uygulama içi bildirim (badge_earned, tayfa rozeti; yöneticilere); rozeti adlandırmaz."
+  },
+  "simdi_baslik": "Şimdi başlat",
+  "@simdi_baslik": {
+    "description": "Şimdi başlat ekranının başlığı (App ADR-0032 §2)."
+  },
+  "simdi_baslat_dugmesi": "Şimdi başlat",
+  "@simdi_baslat_dugmesi": {
+    "description": "Tayfa ana sayfasındaki etkinlik bölümünde ve etkinlik listesinin başlığında Şimdi başlat ekranını açan düğme."
+  },
+  "simdi_arkadaslarla": "Şimdi başlat (arkadaşlarla)",
+  "@simdi_arkadaslarla": {
+    "description": "Tayfa ana sayfasının \"Oluştur\" sayfasında tayfa dışı, hemen başlayan etkinlik seçeneği."
+  },
+  "simdi_arkadaslarla_aciklama": "Tayfa dışında, hemen başlayan bir etkinlik aç.",
+  "@simdi_arkadaslarla_aciklama": {
+    "description": "\"Şimdi başlat (arkadaşlarla)\" seçeneğinin açıklaması."
+  },
+  "simdi_tur_baslik": "Ne yapıyorsunuz?",
+  "@simdi_tur_baslik": {
+    "description": "Şimdi ekranında tür seçiminin başlığı."
+  },
+  "simdi_tum_turler": "Tüm türler",
+  "@simdi_tum_turler": {
+    "description": "Şimdi ekranında bütün türleri listeleyen sayfayı açan düğme ve o sayfanın başlığı."
+  },
+  "simdi_baslik_bolumu": "Başlık",
+  "@simdi_baslik_bolumu": {
+    "description": "Şimdi ekranında başlık alanının bölüm etiketi."
+  },
+  "simdi_baslik_etiketi": "Başlık (isteğe bağlı)",
+  "@simdi_baslik_etiketi": {
+    "description": "Şimdi ekranındaki başlık alanının etiketi."
+  },
+  "simdi_baslik_ipucu": "Boş bırakırsan: {baslik}",
+  "@simdi_baslik_ipucu": {
+    "description": "Şimdi ekranındaki başlık alanının altındaki ipucu: boş bırakılırsa kullanılacak başlık.",
+    "placeholders": {
+      "baslik": {
+        "type": "String",
+        "example": "Murat'ın Masa oyunu gecesi"
+      }
+    }
+  },
+  "simdi_varsayilan_baslik": "{ad}{ek} {tur}",
+  "@simdi_varsayilan_baslik": {
+    "description": "Şimdi ekranında başlık boş bırakılınca üretilen başlık. ad: organizatörün görünen adı; ek: ada gelen ilgi eki kesme işaretiyle (\"'ın\", \"'nin\"); tur: türün katalogdaki adı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Murat"
+      },
+      "ek": {
+        "type": "String",
+        "example": "'ın"
+      },
+      "tur": {
+        "type": "String",
+        "example": "Masa oyunu gecesi"
+      }
+    }
+  },
+  "simdi_yer_baslik": "Nerede?",
+  "@simdi_yer_baslik": {
+    "description": "Şimdi ekranında yer bölümünün başlığı."
+  },
+  "simdi_nokta_sec": "Bulunduğum yeri seç",
+  "@simdi_nokta_sec": {
+    "description": "Şimdi ekranında buluşma noktası seçicisini cihaz konumuyla açan düğme. Konum izni yalnızca bu an istenir."
+  },
+  "simdi_harita_sec": "Burada buluşuyoruz",
+  "@simdi_harita_sec": {
+    "description": "Şimdi ekranından açılan harita seçicisinin seçim düğmesi."
+  },
+  "simdi_haber_tayfa": "Tayfa üyelerine haber verilecek.",
+  "@simdi_haber_tayfa": {
+    "description": "Şimdi ekranında tayfa etkinliğinde kimlerin bildirim alacağını söyleyen bilgi satırı."
+  },
+  "simdi_haber_davetli": "Seçtiğin arkadaşa haber verilecek.",
+  "@simdi_haber_davetli": {
+    "description": "Şimdi ekranında, \"Boşum\" rozetinden gelinmiş anlık etkinlikte davet edilen arkadaşa bildirim gideceğini söyleyen bilgi satırı."
+  },
+  "simdi_haber_anlik": "Etkinlik yalnızca sana görünür; açıldıktan sonra arkadaşlarını davet edebilirsin.",
+  "@simdi_haber_anlik": {
+    "description": "Şimdi ekranında, davetlisi olmayan anlık etkinlikte bilgi satırı."
+  },
+  "simdi_sure_bilgisi": "Etkinlik hemen başlar. İşin bitince Bitir'e bas; unutursan 12 saat sonra kendiliğinden biter.",
+  "@simdi_sure_bilgisi": {
+    "description": "Şimdi ekranında zamanın sunucuda belirlendiğini anlatan bilgi satırı."
+  },
+  "simdi_gonder": "Başlat",
+  "@simdi_gonder": {
+    "description": "Şimdi ekranının gönder düğmesi."
+  },
+  "simdi_gonderiliyor": "Başlatılıyor…",
+  "@simdi_gonderiliyor": {
+    "description": "Şimdi ekranının gönder düğmesi istek sürerken."
+  },
+  "simdi_sure_dakika": "{dakika, plural, other{{dakika} dk}}",
+  "@simdi_sure_dakika": {
+    "description": "Açık uçlu etkinliğin başlayalı geçen süresi, bir saatten kısa.",
+    "placeholders": {
+      "dakika": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  "simdi_sure_saat": "{saat} sa {dakika} dk",
+  "@simdi_sure_saat": {
+    "description": "Açık uçlu etkinliğin başlayalı geçen süresi, bir saat ve üstü.",
+    "placeholders": {
+      "saat": {
+        "type": "int",
+        "example": "1"
+      },
+      "dakika": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "simdi_sure_okunus_dakika": "{dakika, plural, other{{dakika} dakika}}",
+  "@simdi_sure_okunus_dakika": {
+    "description": "Geçen sürenin ekran okuyucu metni, bir saatten kısa.",
+    "placeholders": {
+      "dakika": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  "simdi_sure_okunus_saat": "{saat} saat {dakika} dakika",
+  "@simdi_sure_okunus_saat": {
+    "description": "Geçen sürenin ekran okuyucu metni, bir saat ve üstü.",
+    "placeholders": {
+      "saat": {
+        "type": "int",
+        "example": "1"
+      },
+      "dakika": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "simdi_suruyor_etiketi": "Sürüyor · {sure}",
+  "@simdi_suruyor_etiketi": {
+    "description": "Açık uçlu (Şimdi başlat) etkinlik sürerken kartta ve detayın üst bölümündeki etiket.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "25 dk"
+      }
+    }
+  },
+  "simdi_suruyor_okunus": "Sürüyor, başlayalı {sure} oldu",
+  "@simdi_suruyor_okunus": {
+    "description": "Sürüyor etiketinin ekran okuyucu metni.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "25 dakika"
+      }
+    }
+  },
+  "simdi_bant_baslik": "Şu an sürüyor",
+  "@simdi_bant_baslik": {
+    "description": "Etkinlik detayındaki sürüyor bandının başlığı."
+  },
+  "simdi_bant_alt": "Başlayalı {sure} · En geç bitiş {saat}",
+  "@simdi_bant_alt": {
+    "description": "Sürüyor bandının alt metni: geçen süre ve en geç bitiş saati.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "25 dk"
+      },
+      "saat": {
+        "type": "String",
+        "example": "06:30"
+      }
+    }
+  },
+  "simdi_bant_okunus": "Şu an sürüyor. Başlayalı {sure} oldu; en geç bitiş saati {saat}.",
+  "@simdi_bant_okunus": {
+    "description": "Sürüyor bandının ekran okuyucu metni.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "25 dakika"
+      },
+      "saat": {
+        "type": "String",
+        "example": "06:30"
+      }
+    }
+  },
+  "simdi_en_gec_aralik": "{baslangic} – en geç {bitis}",
+  "@simdi_en_gec_aralik": {
+    "description": "Açık uçlu etkinlik sürerken detaydaki özet kartının saat satırı.",
+    "placeholders": {
+      "baslangic": {
+        "type": "String",
+        "example": "18:30"
+      },
+      "bitis": {
+        "type": "String",
+        "example": "06:30"
+      }
+    }
+  },
+  "simdi_bitir": "Bitir",
+  "@simdi_bitir": {
+    "description": "Açık uçlu etkinliği bitiren düğme (organizatör) ve onay penceresindeki onay düğmesi."
+  },
+  "simdi_bitiriliyor": "Etkinlik bitiriliyor",
+  "@simdi_bitiriliyor": {
+    "description": "Bitir isteği sürerken düğmedeki yükleniyor göstergesinin ekran okuyucu metni."
+  },
+  "simdi_bitir_onay_baslik": "Etkinlik bitsin mi?",
+  "@simdi_bitir_onay_baslik": {
+    "description": "Bitir onay penceresinin başlığı."
+  },
+  "simdi_bitir_onay_metni": "Etkinlik şimdi biter. Check-in ve bileşenlerin süresi bu andan sayılır; katılımcılara bildirim gitmez.",
+  "@simdi_bitir_onay_metni": {
+    "description": "Bitir onay penceresinin metni."
+  },
+  "simdi_zaman_duzenlenemez": "Şimdi başlatılan etkinliğin zamanı değiştirilemez; organizatör Bitir ile bitirir.",
+  "@simdi_zaman_duzenlenemez": {
+    "description": "Açık uçlu etkinliğin düzenleme sihirbazında zaman kutularının altındaki not."
+  },
+  "simdi_ayar_baslik": "Şimdi başlatabilenler",
+  "@simdi_ayar_baslik": {
+    "description": "Tayfa bilgileri ayarında Şimdi başlat için gereken en düşük rol bölümünün başlığı (yalnızca yönetici görür)."
+  },
+  "simdi_ayar_aciklama": "Hemen başlayan etkinliği kimler açabilir? Tayfa üyelerine haber gider.",
+  "@simdi_ayar_aciklama": {
+    "description": "Şimdi başlatabilenler ayarının açıklaması."
+  },
+  "simdi_ayar_uyeler": "Üyeler",
+  "@simdi_ayar_uyeler": {
+    "description": "Şimdi başlatabilenler: her etkin üye."
+  },
+  "simdi_ayar_moderatorler": "Moderatörler",
+  "@simdi_ayar_moderatorler": {
+    "description": "Şimdi başlatabilenler: moderatör ve yönetici."
+  },
+  "simdi_ayar_yoneticiler": "Yalnızca yöneticiler",
+  "@simdi_ayar_yoneticiler": {
+    "description": "Şimdi başlatabilenler: yalnızca yönetici."
   }
 }

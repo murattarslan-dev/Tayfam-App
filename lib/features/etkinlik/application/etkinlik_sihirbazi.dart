@@ -59,6 +59,10 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   /// Adım sayısı.
   int get adimSayisi => anlik ? anlikAdimSayisi : etkinlikAdimSayisi;
 
+  /// Düzenlenen etkinlik açık uçlu (Şimdi başlat): zamanı düzenlenemez
+  /// (Tayfam-Api ADR-0038 §1); başlangıç ve bitiş salt okunurdur.
+  bool get zamanKilitli => anahtar.duzenlenen?.openEnded ?? false;
+
   /// Sihirbazın ilk adımı: oluşturmada tür, düzenlemede başlık ve zaman.
   int get ilkAdim => duzenleme ? 1 : 0;
 
@@ -223,7 +227,7 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   /// Başlangıcı ayarlar. Bitiş yoksa ya da başlangıçtan önceyse bitiş
   /// başlangıçtan iki saat sonraya alınır (kolaylık; kullanıcı değiştirir).
   void baslangicAyarla(DateTime baslangic) {
-    if (_kilitli) return;
+    if (_kilitli || zamanKilitli) return;
     final utc = baslangic.toUtc();
     final bitis = state.bitis;
     _ayarla(
@@ -237,7 +241,7 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   }
 
   void bitisAyarla(DateTime bitis) {
-    if (_kilitli) return;
+    if (_kilitli || zamanKilitli) return;
     _ayarla(state.kopya(bitis: bitis.toUtc()));
   }
 

@@ -202,6 +202,23 @@ void main() {
       });
     });
 
+    test('Şimdi başlatabilenler yalnızca değişince gönderilir', () {
+      TayfaUpdateRequest? istek(Role? rol) => bilgiDegisiklikleri(
+        tayfa,
+        ad: 'Klasikçiler',
+        aciklama: '',
+        ilgi: {'automotive'},
+        katilim: JoinPolicy.approval,
+        uyeEtkinlikAcar: false,
+        simdiRolu: rol,
+      );
+      expect(istek(null), isNull);
+      expect(istek(Role.member), isNull, reason: 'varsayılan üyeler');
+      expect(istek(Role.moderator)!.toJson(), {
+        'now_create_min_role': 'moderator',
+      });
+    });
+
     test('ad ve açıklama doğrulaması', () {
       expect(bilgiHatasi(ad: ' ab ', aciklama: ''), BilgiHatasi.adUzunlugu);
       expect(bilgiHatasi(ad: 'a' * 51, aciklama: ''), BilgiHatasi.adUzunlugu);

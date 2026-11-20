@@ -198,7 +198,10 @@ class _Baslik extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final tayfaAdi = ref.watch(tayfaAdiProvider(tayfaId));
-    final acabilir = ref.watch(tayfaOzetiProvider(tayfaId)).etkinlikAcabilir;
+    final ozet = ref.watch(tayfaOzetiProvider(tayfaId));
+    final acabilir = ozet.etkinlikAcabilir;
+    // Şimdi başlat (App ADR-0032 §1): tayfanın ayarındaki rol ve üstü.
+    final simdiBaslatabilir = ozet.simdiBaslatabilir;
     final geri = ModalRoute.of(context)?.impliesAppBarDismissal ?? false;
     return Row(
       children: [
@@ -232,6 +235,13 @@ class _Baslik extends ConsumerWidget {
                       ),
                   ],
                 ),
+                if (simdiBaslatabilir)
+                  CerceveliHapEylem(
+                    etiket: m.simdi_baslat_dugmesi,
+                    ikon: Icons.bolt_outlined,
+                    onPressed: () =>
+                        context.go(Adresler.simdi(tayfaId: tayfaId)),
+                  ),
                 if (acabilir)
                   OdakCercevesi(
                     koseler: TayfamRadii.hapKoseleri,

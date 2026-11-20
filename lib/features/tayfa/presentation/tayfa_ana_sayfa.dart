@@ -865,13 +865,17 @@ Future<void> _olusturmaSayfasiniAc(
   secim(context, tayfaId);
 }
 
+/// Şimdi başlat ekranını tayfasız (anlık) açar; kabuğun üstünde `go` ile.
+void _simdiAnlik(BuildContext context, String _) =>
+    context.go(Adresler.simdi());
+
 void Function(BuildContext, String) _davetEt(TayfaDaveti? davet) =>
     (context, tayfaId) {
       if (davet != null) unawaited(davet(context, tayfaId));
     };
 
 /// "Oluştur" sayfasının içeriği: modül seçenekleri iki sütunlu kartlar
-/// halinde ve altta "Tayfaya davet et".
+/// halinde, "Şimdi başlat (arkadaşlarla)" ve altta "Tayfaya davet et".
 class OlusturmaSayfasi extends StatelessWidget {
   const OlusturmaSayfasi({
     super.key,
@@ -913,11 +917,19 @@ class OlusturmaSayfasi extends StatelessWidget {
             ),
           ),
         ],
+        // Tayfa dışında, arkadaşlarla hemen başlayan etkinlik (App ADR-0032
+        // §1): Şimdi başlat ekranı tayfasız (anlık) açılır.
+        if (secenekler.isNotEmpty) ...[
+          const SizedBox(height: TayfamSpacing.s16),
+          const Divider(),
+        ],
+        MenuSatiri(
+          ikon: Icons.bolt_outlined,
+          baslik: m.simdi_arkadaslarla,
+          aciklama: m.simdi_arkadaslarla_aciklama,
+          onTap: () => onSec(_simdiAnlik),
+        ),
         if (davetVar) ...[
-          if (secenekler.isNotEmpty) ...[
-            const SizedBox(height: TayfamSpacing.s16),
-            const Divider(),
-          ],
           MenuSatiri(
             ikonKutusu: DecoratedBox(
               decoration: BoxDecoration(

@@ -616,6 +616,33 @@ void main() {
       expect(sorgu, {'gun': '2026-11-21', 'davetli': kisiId2});
     });
 
+    testWidgets('"Bir şey yapalım" bugünse Şimdi başlat açılır', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 900);
+      final tasima = _doluTasima();
+      tasima.yanitlar['GET $arkadasBosGunleriYolu'] = yanit({
+        'days': [
+          bosGunJson('2026-11-16', dilimler: ['evening']),
+        ],
+      });
+      await widgetAc(
+        tester,
+        const ArkadaslarEkrani(),
+        yonlendirici: true,
+        tayfa: [
+          ...arkadasOverridelari(tasima),
+          simdiProvider.overrideWithValue(() => _simdi),
+        ],
+      );
+      await _dokun(tester, find.textContaining('Cumartesi boş'));
+      await _dokun(tester, find.text(arbMetni('bosum_bir_sey_yapalim')));
+      expect(
+        find.text('${simdiSayfasiOneki}davetli=$kisiId2'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('güne dokununca o gün için anlık etkinlik', (tester) async {
       ekranBoyutu(tester, yukseklik: 900);
       await widgetAc(

@@ -31,6 +31,9 @@ enum BilgiHatasi {
 /// yoksa `null`. Yalnızca değişen alanlar gönderilir (sözleşme:
 /// `PATCH`'te gövdedeki alanlar değişir, en az bir alan gerekir).
 ///
+/// [simdiRolu] Şimdi başlat için gereken en düşük roldür
+/// (`now_create_min_role`; App ADR-0032 §5); verilmezse değişmez.
+///
 /// [kapak] formdaki kapak yüklemesidir (`null`: kapak yok); verilmezse
 /// kapak değişmez. Kaldırılan kapak `""` olarak gönderilir (sözleşme;
 /// ADR-0021 §6).
@@ -41,6 +44,7 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   required Set<String> ilgi,
   required JoinPolicy katilim,
   required bool uyeEtkinlikAcar,
+  Role? simdiRolu,
   Object? kapak = _kapakAyni,
 }) {
   final kapakDegisti =
@@ -64,6 +68,12 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
     membersCanCreateEvents: uyeEtkinlikAcar == eski.membersCanCreateEvents
         ? null
         : uyeEtkinlikAcar,
+    nowCreateMinRole:
+        simdiRolu == null ||
+            simdiRolu == Role.unknown ||
+            simdiRolu == eski.nowCreateMinRole
+        ? null
+        : simdiRolu,
   );
   return istek.toJson().isEmpty ? null : istek;
 }
