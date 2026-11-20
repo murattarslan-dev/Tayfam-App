@@ -13,6 +13,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/fotograf_goruntuleyici.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// [durum]'a göre albümün altındaki bilgi metni; ekleyebilen ya da iptal
@@ -57,6 +58,7 @@ class AlbumBolumu extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     final bilgi = albumBilgisi(m, durum);
+    final izinSor = albumIzniSorulur(ref, etkinlik);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -112,8 +114,9 @@ class AlbumBolumu extends ConsumerWidget {
           AracDugmesi(
             etiket: m.album_ekle,
             ikon: Icons.add_photo_alternate_outlined,
-            onPressed: () =>
-                unawaited(albumeFotografEkle(context, ref, anahtar)),
+            onPressed: () => unawaited(
+              albumeFotografEkle(context, ref, anahtar, izinSor: izinSor),
+            ),
           ),
         ] else if (bilgi != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
