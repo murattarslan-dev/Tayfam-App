@@ -182,6 +182,7 @@ Event kesfetEtkinligi({
     'description': '',
     'starts_at': bas.toIso8601String(),
     'ends_at': bas.add(sure).toIso8601String(),
+    'open_ended': false,
     'capacity': 0,
     'status': iptal ? 'cancelled' : 'scheduled',
     'discoverable': halkaAcik,

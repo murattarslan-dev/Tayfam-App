@@ -13114,6 +13114,14 @@
   "@hata_album_consent_required": {
     "description": "Hata kodu `album-consent-required`. Türü album_notice bayraklı etkinliğin albümüne izin onayı olmadan fotoğraf eklenince."
   },
+  "hata_now_limit_reached": "Zaten süren bir şimdi etkinliğin var. Yenisini başlatmak için önce onu bitir.",
+  "@hata_now_limit_reached": {
+    "description": "Hata kodu `now-limit-reached`. Kişi başına aynı anda bir açık şimdi etkinliği (Şimdi başlat) sınırı aşılınca."
+  },
+  "hata_event_not_open_ended": "Bu etkinlik planlı; bitiş saati değiştirilerek bitirilir.",
+  "@hata_event_not_open_ended": {
+    "description": "Hata kodu `event-not-open-ended`. Şimdi başlat ile açılmamış (planlı) etkinlikte Bitir istenince."
+  },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {
     "description": "Sözlüğe bağlı günlük alanında, yazılan metin sözlükteki bir değerse alanın altındaki ipucu."

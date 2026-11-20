@@ -122,6 +122,7 @@ Map<String, Object?> etkinlikJson({
   String? seri,
   String? katilim,
   Map<String, Object?>? ayrinti,
+  bool acikUclu = false,
 }) {
   final bas = baslangic ?? ornekBaslangic;
   final yuzYuze = mod == 'in_person';
@@ -135,6 +136,7 @@ Map<String, Object?> etkinlikJson({
     'description': aciklama,
     'starts_at': bas.toIso8601String(),
     'ends_at': bas.add(sure).toIso8601String(),
+    'open_ended': acikUclu,
     if (yuzYuze) 'meeting_point_name': 'Abant Gölü',
     if (yuzYuze) 'meeting_point': {'lat': 40.6, 'lng': 31.28},
     if (yuzYuze) 'city': 'Bolu',

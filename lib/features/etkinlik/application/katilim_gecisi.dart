@@ -80,6 +80,7 @@ Event etkinlikKopyasi(
   description: etkinlik.description,
   startsAt: etkinlik.startsAt,
   endsAt: etkinlik.endsAt,
+  openEnded: etkinlik.openEnded,
   meetingPointName: etkinlik.meetingPointName,
   meetingPoint: etkinlik.meetingPoint,
   city: etkinlik.city,

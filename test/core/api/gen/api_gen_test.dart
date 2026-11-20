@@ -17,6 +17,7 @@ Map<String, Object?> _tayfaJson() => {
   'status': 'active',
   'member_count': 12,
   'members_can_create_events': false,
+  'now_create_min_role': 'member',
   'created_at': '2026-11-10T09:00:00Z',
   'updated_at': '2026-11-10T12:30:00+03:00',
 };

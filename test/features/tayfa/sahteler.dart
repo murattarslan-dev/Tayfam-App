@@ -95,6 +95,7 @@ Map<String, Object?> tayfaJson({
   String tur = 'standard',
   String? anlikEtkinlikId,
   String? donusum,
+  String simdiRolu = 'member',
 }) => {
   'id': id,
   'name': ad,
@@ -112,6 +113,7 @@ Map<String, Object?> tayfaJson({
   'deletion_at': ?silinme,
   'member_count': uyeSayisi,
   'members_can_create_events': false,
+  'now_create_min_role': simdiRolu,
   'join_code': ?kod,
   'pending_join_request_count': ?bekleyen,
   'created_at': '2026-11-01T10:00:00Z',
