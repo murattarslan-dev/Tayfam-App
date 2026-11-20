@@ -2529,6 +2529,110 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin derecesi
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Hassas ölçümden (`sensitive`) hesaplanan
+  /// derece, ölçümün bütün değerlerini görebilenler (ölçümü organizatör
+  /// giriyorsa organizatör, moderatör, yönetici) dışında gizlidir
+  /// (`hidden`). Kaynak ölçüm kapalıysa (`measure_enabled: false`) derece
+  /// boştur. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/ranking`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRanking> getEventRanking({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/ranking',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRanking.fromJson(jsonObject(response, 'getEventRanking'));
+  }
+
+  /// Bir katılımcının derecesini elle yazar (organizatör, moderatör, yönetici, hakem)
+  ///
+  /// Süre sıfırdan büyük, en çok 1000000 saniye ve iki basamağa
+  /// yuvarlanır; sıra 1–10000 arası tam sayıdır (dışı `invalid-request`).
+  /// `going` cevabı vermemiş ve katılımı doğrulanmamış kişi
+  /// `ranking-not-participant`. Aynı değeri yeniden yazmak bir şey
+  /// değiştirmez. Ölçümden hesaplanan derecede `ranking-from-measure`.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/ranking/entries/{user_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRanking> setEventRankingEntry({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String userId,
+    required EventRankingValueRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/ranking/entries/{user_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'user_id': userId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRanking.fromJson(jsonObject(response, 'setEventRankingEntry'));
+  }
+
+  /// Bir katılımcının elle girilmiş derecesini kaldırır
+  ///
+  /// Değeri yazabilen kaldırır (başlangıç ve katılım denetimi olmadan).
+  /// Olmayan değeri kaldırmak hata değildir. Ölçümden hesaplanan derecede
+  /// `ranking-from-measure`.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/ranking/entries/{user_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventRanking> removeEventRankingEntry({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String userId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/ranking/entries/{user_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'user_id': userId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventRanking.fromJson(
+      jsonObject(response, 'removeEventRankingEntry'),
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

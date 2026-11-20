@@ -51,6 +51,8 @@ void main() {
         'sports',
         'dog_walk',
         'team_sport',
+        'running',
+        'swimming',
       ]);
     });
 

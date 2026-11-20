@@ -61,6 +61,8 @@ const String olcumToplamiYolu = '$olcumYolu/total';
 const String olcumKaydiYolu = '$olcumYolu/entries/{user_id}';
 const String hedefYolu = '$bilesenYolu/goal';
 const String hedefDegeriYolu = '$hedefYolu/target';
+const String dereceYolu = '$bilesenYolu/ranking';
+const String dereceKaydiYolu = '$dereceYolu/entries/{user_id}';
 const String programYolu = '$bilesenYolu/schedule';
 const String programMaddeleriYolu = '$programYolu/items';
 const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
@@ -289,6 +291,40 @@ Map<String, Object?> hedefJson({
       (hedef != null && mevcut != null && !gizli && mevcut >= hedef),
   'caller_can_edit': degistirebilir,
 };
+
+/// Örnek `EventRanking` JSON'u (derece bileşeni, #241): varsayılanı
+/// elle girilen, süreye göre (artan) ve boş derece, yazamayan üye gözüyle.
+/// [kaynak] verilirse ölçümden hesaplanır ([birim], [basamak]).
+Map<String, Object?> dereceJson({
+  String? kaynak,
+  String olcut = 'duration',
+  String yon = 'asc',
+  String? birim,
+  int? basamak,
+  List<Map<String, Object?>> kayitlar = const [],
+  bool gizli = false,
+  bool olcumAcik = true,
+  bool yazabilir = false,
+}) => {
+  'source': ?kaynak,
+  'metric': ?(kaynak == null ? olcut : null),
+  'direction': yon,
+  'unit': ?(kaynak == null ? null : birim),
+  'decimals': basamak ?? (olcut == 'rank' && kaynak == null ? 0 : 2),
+  'entries': gizli || !olcumAcik ? const <Object?>[] : kayitlar,
+  'hidden': gizli,
+  'measure_enabled': olcumAcik,
+  'caller_can_edit': yazabilir,
+};
+
+/// Örnek `EventRankingEntry` JSON'u.
+Map<String, Object?> dereceKaydiJson(String kullaniciId, num deger, int sira) =>
+    {
+      'user_id': kullaniciId,
+      'value': deger,
+      'rank': sira,
+      'updated_at': '2026-11-11T08:00:00Z',
+    };
 
 /// Örnek `EventScheduleItem` JSON'u (program akışı bileşeni, #235).
 Map<String, Object?> programMaddesiJson({
@@ -785,6 +821,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       'GET $hedefYolu',
       () =>
           (_) => hedefJson(),
+    )
+    ..putIfAbsent(
+      'GET $dereceYolu',
+      () =>
+          (_) => dereceJson(),
     )
     ..putIfAbsent(
       'GET $programYolu',

@@ -660,6 +660,79 @@
       }
     },
     {
+      "key": "running",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Koşu"
+      },
+      "icon": "directions_run",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "measure",
+            "key": "duration",
+            "labels": {
+              "tr": "Süre"
+            },
+            "params": {
+              "unit": "minute",
+              "scope": "personal",
+              "entered_by": "self",
+              "min": 0,
+              "max": 1440,
+              "decimals": 2,
+              "showcase": true
+            }
+          },
+          {
+            "kind": "ranking",
+            "optional": {
+              "default": true
+            },
+            "params": {
+              "source": "duration",
+              "direction": "asc"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "swimming",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Yüzme"
+      },
+      "icon": "pool",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "ranking",
+            "optional": {
+              "default": true
+            },
+            "params": {
+              "metric": "duration"
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

@@ -497,6 +497,48 @@ final class EtkinlikDeposu {
     userId: kullaniciId,
   );
 
+  /// `GET .../components/{component_key}/ranking`: derece bileşeni (#241),
+  /// çağıranın gördüğü haliyle (hassas ölçümden hesaplananda gizli
+  /// olabilir).
+  Future<EventRanking> derece(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventRanking(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../ranking/entries/{user_id}`: [kullaniciId]'nin elle girilen
+  /// derecesini yazar (süre saniye ya da sıra).
+  Future<EventRanking> dereceYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String kullaniciId,
+    double deger,
+  ) => _api.setEventRankingEntry(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    userId: kullaniciId,
+    body: EventRankingValueRequest(value: deger),
+  );
+
+  /// `DELETE .../ranking/entries/{user_id}`.
+  Future<EventRanking> dereceyiKaldir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String kullaniciId,
+  ) => _api.removeEventRankingEntry(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    userId: kullaniciId,
+  );
+
   /// `GET .../components/{component_key}/goal`: hedef bileşeni (#234),
   /// çağıranın gördüğü haliyle (hassas ölçümde ilerleme gizli olabilir).
   Future<EventGoal> hedef(

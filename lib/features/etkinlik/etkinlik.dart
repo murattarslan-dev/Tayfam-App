@@ -19,6 +19,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/agac/agac_bileseni.dart'
     show AgacBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/araclar/araclar_bileseni.dart'
     show AraclarBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/derece/derece_bileseni.dart'
+    show DereceBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
     show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
 export 'package:tayfam/features/etkinlik/bilesenler/gunluk/gunluk_bileseni.dart'
