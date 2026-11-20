@@ -1648,6 +1648,114 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin takımları
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Bileşen uçlarının ortak kuralları
+  /// geçerlidir (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/teams`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventTeams> getEventTeams({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/teams',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventTeams.fromJson(jsonObject(response, 'getEventTeams'));
+  }
+
+  /// Takımları elle kurar (organizatör, moderatör, yönetici)
+  ///
+  /// Her modda kullanılır; mevcut takımların yerini alır (boş liste
+  /// takımları kaldırır). En fazla `team_count` (yoksa 50) takım;
+  /// `team_count` ile `team_size` birlikte verilmişse takımda en fazla
+  /// `team_size` kişi; bir kişi en fazla bir takımda; toplam en fazla 500
+  /// kişi (aksi `invalid-request`). Katılımcı olmayan kişi
+  /// `teams-not-participant`. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/teams`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventTeams> replaceEventTeams({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventTeamsRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/teams',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventTeams.fromJson(jsonObject(response, 'replaceEventTeams'));
+  }
+
+  /// Takımları katılımcılardan kurar (organizatör, moderatör, yönetici)
+  ///
+  /// Mevcut takımların yerini alır (takım adları sırasıyla korunur).
+  /// Rastgelelik sunucuda kriptografik üreteçle sağlanır. `random` modda
+  /// katılımcılar karıştırılıp sırayla dağıtılır; `balanced` modda
+  /// gönderilen seviyelere göre (güçlüden zayıfa, yılan sırasıyla)
+  /// dağıtılır, seviyesi gönderilmeyen katılımcı 3 sayılır, eşitler
+  /// rastgele sıralanır. Seviyeler saklanmaz, loglanmaz, yanıtta dönmez.
+  /// Takım sayısı `team_count`; yoksa katılımcı sayısı / `team_size`
+  /// (artanlar takımlara katılır); ikisi de yoksa 2. `team_count` ile
+  /// `team_size` birlikte verilmişse takımlar en fazla `team_size` kişi
+  /// alır, kalanlar (rastgele) dışarıda kalır. `manual` modda
+  /// `teams-manual`; iki katılımcıdan ya da takım sayısından az
+  /// katılımcıda `teams-too-few`; 500'den çok katılımcıda `event-limit`.
+  /// Gövde zorunludur (seviyesiz istekte boş nesne). Bileşen uçlarının
+  /// ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/teams/generate`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventTeams> generateEventTeams({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventTeamsGenerateRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/teams/generate',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventTeams.fromJson(jsonObject(response, 'generateEventTeams'));
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten
