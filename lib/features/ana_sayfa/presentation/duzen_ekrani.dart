@@ -153,7 +153,7 @@ class _AnaSayfaDuzenEkraniState extends ConsumerState<AnaSayfaDuzenEkrani> {
                       child: TayfamYukleniyor(etiket: m.anasayfa_kaydediliyor),
                     )
                   : TextButton(
-                      onPressed: kaydedebilir && taslak != null
+                      onPressed: kaydedebilir
                           ? () => unawaited(_kaydet(taslak))
                           : null,
                       style: TextButton.styleFrom(

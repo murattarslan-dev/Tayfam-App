@@ -136,7 +136,7 @@ class AnaSayfaDuzeniNotifier extends AsyncNotifier<HomeWidgetLayout> {
       ref.read(anaSayfaDeposuProvider).duzen(tayfaId);
 
   /// [taslak]'ı kaydeder (`PUT`); başarıda yeni düzen durum olur ve tayfa
-  /// görünümü (ana sayfanın `home_widgets`'ı) yeniden okunur. Hata
+  /// görünümü (ana sayfanın `home_widgets`'ı) geçersiz kılınır. Hata
   /// çağırana fırlatılır; taslak ekranda kalır.
   Future<void> kaydet(DuzenTaslagi taslak) async {
     final yeni = await ref
@@ -144,8 +144,8 @@ class AnaSayfaDuzeniNotifier extends AsyncNotifier<HomeWidgetLayout> {
         .kaydet(tayfaId, taslak.girdiler());
     if (!ref.mounted) return;
     state = AsyncData(yeni);
-    final gorunum = tayfaGorunumuProvider(tayfaId);
-    if (ref.exists(gorunum)) await ref.read(gorunum.notifier).yenile();
+    // Ana sayfa açıksa `home_widgets` yeniden okunur; değilse bir şey olmaz.
+    ref.invalidate(tayfaGorunumuProvider(tayfaId));
   }
 }
 

@@ -18,19 +18,6 @@ class AnaSayfaVerisiNotifier extends AsyncNotifier<HomeWidgetData> {
   @override
   Future<HomeWidgetData> build() =>
       ref.read(anaSayfaDeposuProvider).veri(sorgu.tayfaId, sorgu.anahtar);
-
-  /// Veriyi yeniden okur (ana sayfa aşağı çekilince). Okunamazsa eldeki
-  /// veri kalır; elde veri yoksa hata gösterilir.
-  Future<void> yenile() async {
-    try {
-      final veri = await ref
-          .read(anaSayfaDeposuProvider)
-          .veri(sorgu.tayfaId, sorgu.anahtar);
-      if (ref.mounted) state = AsyncData(veri);
-    } on Exception catch (hata, yigin) {
-      if (ref.mounted && !state.hasValue) state = AsyncError(hata, yigin);
-    }
-  }
 }
 
 /// Gösterim bileşeni verisi; hata otomatik yeniden denenmez.

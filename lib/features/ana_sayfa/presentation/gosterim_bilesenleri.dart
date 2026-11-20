@@ -16,13 +16,13 @@ import 'package:tayfam/l10n/app_localizations.dart';
 abstract base class _GosterimBileseni implements AnaSayfaBileseni {
   const _GosterimBileseni();
 
+  /// Kartın verisini geçersiz kılar: kart açıksa yeniden okunur (eldeki
+  /// veri okunurken görünür kalır), değilse bir şey olmaz.
   @override
   Future<void> yenile(WidgetRef ref, String tayfaId) async {
-    final saglayici = anaSayfaVerisiProvider((
-      tayfaId: tayfaId,
-      anahtar: anahtar,
-    ));
-    if (ref.exists(saglayici)) await ref.read(saglayici.notifier).yenile();
+    ref.invalidate(
+      anaSayfaVerisiProvider((tayfaId: tayfaId, anahtar: anahtar)),
+    );
   }
 
   /// [icerik]'i bileşenin verisiyle çizen kart; veri bileşenin alanını
