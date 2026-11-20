@@ -31,7 +31,8 @@ List<KuraEslesmesi> kuraEslesmeleri(EventDraw kura) {
 }
 
 /// Yer boş mu: kişi ya da takım geri çekilmiş (bay).
-bool kuraYeriBos(EventDrawEntry yer) => yer.userId == null && yer.teamId == null;
+bool kuraYeriBos(EventDrawEntry yer) =>
+    yer.userId == null && yer.teamId == null;
 
 /// Bir etkinliğin bir kura bileşeni: bileşen uçlarındaki
 /// `{component_key}` ile.

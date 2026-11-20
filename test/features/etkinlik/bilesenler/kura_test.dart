@@ -98,9 +98,9 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe kura bileşenini kullanan tür var', () {
-    final kuralar = turBilesenleri(
-      testTuru('esports'),
-    ).where((b) => b.kind == 'draw').toList();
+    final kuralar = turBilesenleri(testTuru('esports'))
+        .where((b) => b.kind == 'draw')
+        .toList();
     expect(kuralar, hasLength(1));
     expect(bilesenAnahtari(kuralar.single), 'draw');
     expect(
@@ -171,9 +171,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          _bolumde(
-            find.textContaining(m.bilesen_draw_cekildi('').trim()),
-          ),
+          _bolumde(find.textContaining(m.bilesen_draw_cekildi('').trim())),
           findsOneWidget,
         );
         // Adlar profilden.
@@ -272,10 +270,7 @@ void main() {
           findsOneWidget,
         );
         expect(_bolumde(find.text(m.bilesen_draw_sen)), findsOneWidget);
-        expect(
-          _bolumde(find.text(m.bilesen_draw_konu_teams)),
-          findsOneWidget,
-        );
+        expect(_bolumde(find.text(m.bilesen_draw_konu_teams)), findsOneWidget);
         expect(_bolumde(find.text(m.bilesen_draw_bay)), findsNothing);
         expect(tester.takeException(), isNull);
       });
@@ -285,7 +280,9 @@ void main() {
       ekranBoyutu(tester);
       tester.platformDispatcher.accessibilityFeaturesTestValue =
           const FakeAccessibilityFeatures(disableAnimations: true);
-      addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
       final tasima = _tasima(
         kura: (_) => kuraJson(yerler: _yerler(), cekildi: _cekildi),
       );

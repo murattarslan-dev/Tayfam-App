@@ -56,12 +56,11 @@ final class KuraBileseni extends KayitliBilesen {
 }
 
 /// Kuranın neyi sıraladığı; tanınmayan türde `null`.
-String? kuraKonusu(AppLocalizations m, EventDrawSubject konu) =>
-    switch (konu) {
-      EventDrawSubject.participants => m.bilesen_draw_konu_participants,
-      EventDrawSubject.teams => m.bilesen_draw_konu_teams,
-      EventDrawSubject.unknown => null,
-    };
+String? kuraKonusu(AppLocalizations m, EventDrawSubject konu) => switch (konu) {
+  EventDrawSubject.participants => m.bilesen_draw_konu_participants,
+  EventDrawSubject.teams => m.bilesen_draw_konu_teams,
+  EventDrawSubject.unknown => null,
+};
 
 /// Kuranın çekildiği an ("20 Kasım 2026 14:05"), cihazın saat diliminde.
 String kuraZamani(AppLocalizations m, DateTime an) =>
