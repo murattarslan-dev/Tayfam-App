@@ -27,6 +27,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
     show ListeBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_bileseni.dart'
     show OlcumBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/program/program_bileseni.dart'
+    show ProgramBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
     show RotaBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/sozluk/sozluk_ekranlari.dart'

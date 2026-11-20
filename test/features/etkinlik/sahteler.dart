@@ -61,6 +61,9 @@ const String olcumToplamiYolu = '$olcumYolu/total';
 const String olcumKaydiYolu = '$olcumYolu/entries/{user_id}';
 const String hedefYolu = '$bilesenYolu/goal';
 const String hedefDegeriYolu = '$hedefYolu/target';
+const String programYolu = '$bilesenYolu/schedule';
+const String programMaddeleriYolu = '$programYolu/items';
+const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -269,6 +272,33 @@ Map<String, Object?> hedefJson({
       ulasildi ??
       (hedef != null && mevcut != null && !gizli && mevcut >= hedef),
   'caller_can_edit': degistirebilir,
+};
+
+/// Örnek `EventScheduleItem` JSON'u (program akışı bileşeni, #235).
+Map<String, Object?> programMaddesiJson({
+  required String id,
+  required DateTime baslangic,
+  DateTime? bitis,
+  String baslik = 'Varış',
+  String? not,
+}) => {
+  'id': id,
+  'starts_at': baslangic.toUtc().toIso8601String(),
+  'ends_at': ?bitis?.toUtc().toIso8601String(),
+  'title': baslik,
+  'note': ?not,
+};
+
+/// Örnek `EventSchedule` JSON'u (program akışı bileşeni, #235): verilmezse
+/// boş, 20 maddelik, düzenleyemeyen üye gözüyle.
+Map<String, Object?> programJson({
+  List<Map<String, Object?>> maddeler = const [],
+  int enCok = 20,
+  bool duzenleyebilir = false,
+}) => {
+  'items': maddeler,
+  'max_items': enCok,
+  'caller_can_edit': duzenleyebilir,
 };
 
 /// Örnek `TayfaVocabularyValue` JSON'u; [hedefId] ve [hedef] verilirse
@@ -490,6 +520,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       'GET $hedefYolu',
       () =>
           (_) => hedefJson(),
+    )
+    ..putIfAbsent(
+      'GET $programYolu',
+      () =>
+          (_) => programJson(),
     )
     ..putIfAbsent(
       'GET $sozlukYolu',

@@ -533,6 +533,60 @@ final class EtkinlikDeposu {
     componentKey: bilesenAnahtari,
   );
 
+  /// `GET .../components/{component_key}/schedule`: program akışı
+  /// bileşeni (#235); maddeler başlangıç saatine göre sıralı.
+  Future<EventSchedule> program(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventSchedule(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../schedule/items`: programa madde ekler.
+  Future<EventSchedule> programMaddesiEkle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventScheduleItemRequest istek,
+  ) => _api.addEventScheduleItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `PUT .../schedule/items/{item_id}`: maddenin bütün değerlerini
+  /// değiştirir (gönderilmeyen bitiş ve not kalkar).
+  Future<EventSchedule> programMaddesiniGuncelle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String maddeId,
+    EventScheduleItemRequest istek,
+  ) => _api.updateEventScheduleItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    itemId: maddeId,
+    body: istek,
+  );
+
+  /// `DELETE .../schedule/items/{item_id}`: maddeyi programdan çıkarır.
+  Future<EventSchedule> programMaddesiniCikar(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String maddeId,
+  ) => _api.removeEventScheduleItem(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    itemId: maddeId,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(

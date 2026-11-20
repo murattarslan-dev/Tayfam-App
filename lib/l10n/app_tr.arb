@@ -2552,6 +2552,110 @@
       }
     }
   },
+  "bilesen_schedule_ad": "Program",
+  "@bilesen_schedule_ad": {
+    "description": "Program akışı bileşeninin (`schedule`) adı; tanımda kendi adı (`labels`) yoksa bölüm başlığında görünür."
+  },
+  "bilesen_schedule_yok": "Program henüz boş.",
+  "@bilesen_schedule_yok": {
+    "description": "Program akışında madde yokken bölümde görünen metin."
+  },
+  "bilesen_schedule_ekle": "Programa ekle",
+  "@bilesen_schedule_ekle": {
+    "description": "Program akışına madde ekleme düğmesi ve formun başlığı."
+  },
+  "bilesen_schedule_duzenle": "Maddeyi düzenle",
+  "@bilesen_schedule_duzenle": {
+    "description": "Program maddesini düzenleme düğmesinin ipucu ve formun başlığı."
+  },
+  "bilesen_schedule_cikar": "Programdan çıkar",
+  "@bilesen_schedule_cikar": {
+    "description": "Program maddesini çıkarma düğmesinin ipucu."
+  },
+  "bilesen_schedule_cikar_onay": "Programdan çıkarılsın mı?",
+  "@bilesen_schedule_cikar_onay": {
+    "description": "Program maddesini çıkarma onayının başlığı; altında maddenin başlığı görünür."
+  },
+  "bilesen_schedule_simdi": "Şimdi",
+  "@bilesen_schedule_simdi": {
+    "description": "Etkinlik sürerken o an süren program maddesinin etiketi."
+  },
+  "bilesen_schedule_doluluk": "{adet}/{enCok} madde",
+  "@bilesen_schedule_doluluk": {
+    "description": "Düzenleyebilenin gördüğü program başlığı notu: madde sayısı ve sınırı.",
+    "placeholders": {
+      "adet": {
+        "type": "int",
+        "example": "4"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "bilesen_schedule_dolu": "Program dolu: en çok {enCok} madde olabilir.",
+  "@bilesen_schedule_dolu": {
+    "description": "Program madde sınırına ulaşınca ekleme düğmesinin yerinde görünen metin.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "bilesen_schedule_baslik_alani": "Başlık",
+  "@bilesen_schedule_baslik_alani": {
+    "description": "Program maddesi formunda başlık alanının etiketi (ör. Öğle yemeği)."
+  },
+  "bilesen_schedule_baslik_hata": "Başlık yaz (en çok {enCok} karakter).",
+  "@bilesen_schedule_baslik_hata": {
+    "description": "Program maddesinin başlığı boş ya da uzunken alanın hatası.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "bilesen_schedule_baslangic": "Başlangıç",
+  "@bilesen_schedule_baslangic": {
+    "description": "Program maddesi formunda başlangıç günü ve saati alanının etiketi."
+  },
+  "bilesen_schedule_baslangic_hata": "Etkinliğin başlangıcından en çok bir gün önce, bitişinden en çok bir gün sonra olmalı.",
+  "@bilesen_schedule_baslangic_hata": {
+    "description": "Program maddesinin başlangıcı izin verilen aralığın dışındayken alanın hatası."
+  },
+  "bilesen_schedule_bitis": "Bitiş",
+  "@bilesen_schedule_bitis": {
+    "description": "Program maddesi formunda isteğe bağlı bitiş günü ve saati alanının etiketi."
+  },
+  "bilesen_schedule_bitis_yok": "Yok (isteğe bağlı)",
+  "@bilesen_schedule_bitis_yok": {
+    "description": "Program maddesinin bitiş saati seçilmemişken alanda görünen değer."
+  },
+  "bilesen_schedule_bitis_hata": "Başlangıçtan sonra ve etkinliğin bitişinden en çok bir gün sonra olmalı.",
+  "@bilesen_schedule_bitis_hata": {
+    "description": "Program maddesinin bitişi geçersizken alanın hatası."
+  },
+  "bilesen_schedule_bitisi_kaldir": "Bitişi kaldır",
+  "@bilesen_schedule_bitisi_kaldir": {
+    "description": "Program maddesi formunda seçilen bitiş saatini kaldıran düğmenin ipucu."
+  },
+  "bilesen_schedule_not_alani": "Not (isteğe bağlı)",
+  "@bilesen_schedule_not_alani": {
+    "description": "Program maddesi formunda not alanının etiketi."
+  },
+  "bilesen_schedule_not_hata": "Not en çok {enCok} karakter olabilir.",
+  "@bilesen_schedule_not_hata": {
+    "description": "Program maddesinin notu uzunken alanın hatası.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."

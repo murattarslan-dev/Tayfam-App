@@ -9903,6 +9903,195 @@ final class EventRouteRequest {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(points)]);
 }
 
+/// Bir etkinliğin bir program bileşeni, isteği yapanın gördüğü haliyle (#247).
+final class EventSchedule {
+  const EventSchedule({
+    required this.items,
+    required this.maxItems,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventSchedule.fromJson(Map<String, Object?> json) => EventSchedule(
+    items: List<EventScheduleItem>.unmodifiable(
+      _readList(json['items'], 'EventSchedule.items').map(
+        (Object? e0) =>
+            EventScheduleItem.fromJson(_readObject(e0, 'EventSchedule.items')),
+      ),
+    ),
+    maxItems: _readInt(json['max_items'], 'EventSchedule.max_items'),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventSchedule.caller_can_edit',
+    ),
+  );
+
+  /// Başlangıç saatine göre; aynı saattekiler eklenme sırasıyla.
+  final List<EventScheduleItem> items;
+
+  /// Programın alabileceği madde sayısı (bileşenin `max_items` parametresi; tanım vermezse 100).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 100.
+  final int maxItems;
+
+  /// Şu an madde ekleyebilir, düzenleyebilir ve çıkarabilirsiniz (organizatör, moderatör, yönetici; susturulmamış; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'items': <Object?>[for (final e0 in items) e0.toJson()],
+    'max_items': maxItems,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventSchedule &&
+          _deepEquals(items, other.items) &&
+          maxItems == other.maxItems &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(items), maxItems, callerCanEdit]);
+}
+
+final class EventScheduleItem {
+  const EventScheduleItem({
+    required this.id,
+    required this.startsAt,
+    this.endsAt,
+    required this.title,
+    this.note,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScheduleItem.fromJson(Map<String, Object?> json) =>
+      EventScheduleItem(
+        id: _readString(json['id'], 'EventScheduleItem.id'),
+        startsAt: _readDateTime(
+          json['starts_at'],
+          'EventScheduleItem.starts_at',
+        ),
+        endsAt: switch (json['ends_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'EventScheduleItem.ends_at'),
+        },
+        title: _readString(json['title'], 'EventScheduleItem.title'),
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'EventScheduleItem.note'),
+        },
+      );
+
+  final String id;
+
+  final DateTime startsAt;
+
+  /// Bitiş saati; yoksa yoktur.
+  final DateTime? endsAt;
+
+  /// 1–120 karakter.
+  final String title;
+
+  /// En fazla 500 karakter; yoksa yoktur.
+  final String? note;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'starts_at': startsAt.toUtc().toIso8601String(),
+    if (endsAt case final value?) 'ends_at': value.toUtc().toIso8601String(),
+    'title': title,
+    if (note case final value?) 'note': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScheduleItem &&
+          id == other.id &&
+          startsAt == other.startsAt &&
+          endsAt == other.endsAt &&
+          title == other.title &&
+          note == other.note;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, startsAt, endsAt, title, note]);
+}
+
+final class EventScheduleItemRequest {
+  const EventScheduleItemRequest({
+    required this.startsAt,
+    this.endsAt,
+    required this.title,
+    this.note,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScheduleItemRequest.fromJson(Map<String, Object?> json) =>
+      EventScheduleItemRequest(
+        startsAt: _readDateTime(
+          json['starts_at'],
+          'EventScheduleItemRequest.starts_at',
+        ),
+        endsAt: switch (json['ends_at']) {
+          null => null,
+          final Object v => _readDateTime(
+            v,
+            'EventScheduleItemRequest.ends_at',
+          ),
+        },
+        title: _readString(json['title'], 'EventScheduleItemRequest.title'),
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'EventScheduleItemRequest.note'),
+        },
+      );
+
+  /// Etkinliğin başlangıcından en çok bir gün önce, bitişinden en çok bir gün sonra.
+  final DateTime startsAt;
+
+  /// İsteğe bağlı; başlangıçtan sonra, etkinliğin bitişinden en çok bir gün sonra.
+  final DateTime? endsAt;
+
+  /// Kısıtlar: minLength: 1; maxLength: 120.
+  final String title;
+
+  /// İsteğe bağlı; boş metin notu kaldırır.
+  ///
+  /// Kısıtlar: maxLength: 500.
+  final String? note;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'starts_at': startsAt.toUtc().toIso8601String(),
+    if (endsAt case final value?) 'ends_at': value.toUtc().toIso8601String(),
+    'title': title,
+    if (note case final value?) 'note': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScheduleItemRequest &&
+          startsAt == other.startsAt &&
+          endsAt == other.endsAt &&
+          title == other.title &&
+          note == other.note;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[startsAt, endsAt, title, note]);
+}
+
 final class EventSeries {
   const EventSeries({
     required this.id,
