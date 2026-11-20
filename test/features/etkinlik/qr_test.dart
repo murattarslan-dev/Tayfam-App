@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -300,7 +299,7 @@ void main() {
           isNot(contains(_ilkDeger)),
         );
 
-        await tester.pageBack();
+        Navigator.of(tester.element(find.byType(KatilimQruEkrani))).pop();
         await tester.pumpAndSettle();
         expect(find.byType(KatilimQruEkrani), findsNothing);
         expect(isik.cagrilar, [true, false]);
