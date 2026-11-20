@@ -291,7 +291,10 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(SimdiAliciSayfasi), findsOneWidget);
         expect(find.text('3 / 30 kişi seçildi'), findsOneWidget);
-        expect(find.textContaining(arbMetni('bosum_rozet_bugun')), findsOneWidget);
+        expect(
+          find.textContaining(arbMetni('bosum_rozet_bugun')),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       });
     }

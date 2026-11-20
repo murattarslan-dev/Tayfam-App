@@ -254,65 +254,65 @@ class _SimdiAliciSayfasiState extends ConsumerState<SimdiAliciSayfasi> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  TayfamSpacing.kenarMobil,
-                  TayfamSpacing.s8,
-                  TayfamSpacing.kenarMobil,
-                  TayfamSpacing.s8,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(m.simdi_bildirim_secici_aciklama, style: ikincil),
-                    if (varArkadas) ...[
-                      const SizedBox(height: TayfamSpacing.s12),
-                      TextField(
-                        controller: _ara,
-                        textInputAction: TextInputAction.search,
-                        onChanged: (metin) => setState(() => _sorgu = metin),
-                        decoration: InputDecoration(
-                          labelText: m.anlik_davet_ara,
-                          prefixIcon: const Icon(Icons.search),
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: TayfamSpacing.s12),
-                    Wrap(
-                      alignment: WrapAlignment.spaceBetween,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: TayfamSpacing.s8,
-                      runSpacing: TayfamSpacing.s4,
-                      children: [
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            m.simdi_bildirim_secilen(
-                              secili.length,
-                              simdiAliciEnCok,
-                            ),
-                            style: context.yazi.labelLarge,
+                  padding: const EdgeInsets.fromLTRB(
+                    TayfamSpacing.kenarMobil,
+                    TayfamSpacing.s8,
+                    TayfamSpacing.kenarMobil,
+                    TayfamSpacing.s8,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(m.simdi_bildirim_secici_aciklama, style: ikincil),
+                      if (varArkadas) ...[
+                        const SizedBox(height: TayfamSpacing.s12),
+                        TextField(
+                          controller: _ara,
+                          textInputAction: TextInputAction.search,
+                          onChanged: (metin) => setState(() => _sorgu = metin),
+                          decoration: InputDecoration(
+                            labelText: m.anlik_davet_ara,
+                            prefixIcon: const Icon(Icons.search),
                           ),
                         ),
-                        if (secili.isNotEmpty)
-                          TextButton(
-                            onPressed: notifier.temizle,
-                            style: TextButton.styleFrom(
-                              minimumSize: const Size.square(
-                                TayfamSizes.dokunmaMin,
-                              ),
-                            ),
-                            child: Text(m.simdi_bildirim_temizle),
-                          ),
                       ],
-                    ),
-                    if (dolu)
-                      Text(
-                        m.simdi_bildirim_sinir(simdiAliciEnCok),
-                        style: ikincil,
+                      const SizedBox(height: TayfamSpacing.s12),
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: TayfamSpacing.s8,
+                        runSpacing: TayfamSpacing.s4,
+                        children: [
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              m.simdi_bildirim_secilen(
+                                secili.length,
+                                simdiAliciEnCok,
+                              ),
+                              style: context.yazi.labelLarge,
+                            ),
+                          ),
+                          if (secili.isNotEmpty)
+                            TextButton(
+                              onPressed: notifier.temizle,
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size.square(
+                                  TayfamSizes.dokunmaMin,
+                                ),
+                              ),
+                              child: Text(m.simdi_bildirim_temizle),
+                            ),
+                        ],
                       ),
-                  ],
+                      if (dolu)
+                        Text(
+                          m.simdi_bildirim_sinir(simdiAliciEnCok),
+                          style: ikincil,
+                        ),
+                    ],
+                  ),
                 ),
-              ),
               ),
               if (sliver) govde else SliverToBoxAdapter(child: govde),
               const SliverToBoxAdapter(
