@@ -47,8 +47,8 @@ final class GununIcerigiDeposu {
       _api.restoreDailyItem(tayfaId: tayfaId, dailyItemId: icerikId);
 
   /// `PUT …/daily/order`: havuzun bütün kimlikleri, yeni sırasıyla.
-  Future<DailyOrder> sirala(String tayfaId, List<String> kimlikler) => _api
-      .reorderDailyItems(
+  Future<DailyOrder> sirala(String tayfaId, List<String> kimlikler) =>
+      _api.reorderDailyItems(
         tayfaId: tayfaId,
         body: DailyOrderRequest(itemIds: kimlikler),
       );

@@ -121,9 +121,7 @@ class _IcerikKarti extends StatelessWidget {
         children: [
           Row(
             children: [
-              ExcludeSemantics(
-                child: Icon(Icons.format_quote, color: r.marka),
-              ),
+              ExcludeSemantics(child: Icon(Icons.format_quote, color: r.marka)),
               const SizedBox(width: TayfamSpacing.s8),
               Expanded(
                 child: Align(
@@ -175,9 +173,7 @@ class _BosKart extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            yonetimde
-                ? m.gunun_icerigi_bos_yonetici
-                : m.gunun_icerigi_bos_uye,
+            yonetimde ? m.gunun_icerigi_bos_yonetici : m.gunun_icerigi_bos_uye,
             style: context.yazi.bodyMedium?.copyWith(color: r.metinGovde),
           ),
           if (yonetimde) ...[

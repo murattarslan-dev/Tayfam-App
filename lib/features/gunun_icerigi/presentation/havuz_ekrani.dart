@@ -34,8 +34,7 @@ class HavuzEkrani extends ConsumerStatefulWidget {
 class _HavuzEkraniState extends ConsumerState<HavuzEkrani> {
   bool _mesgul = false;
 
-  HavuzNotifier get _havuz =>
-      ref.read(havuzProvider(widget.tayfaId).notifier);
+  HavuzNotifier get _havuz => ref.read(havuzProvider(widget.tayfaId).notifier);
 
   Future<void> _calistir(Future<void> Function() is_) async {
     setState(() => _mesgul = true);

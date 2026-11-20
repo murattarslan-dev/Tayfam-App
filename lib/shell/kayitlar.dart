@@ -37,9 +37,10 @@ const List<TayfaModule> tayfaModulKaydi = [
   EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
   DuyuruModulu(),
   AnketModulu(),
-  SoruCevapModulu(),
-  // daily (#253): kartı ana sayfa bileşenidir, modül rotaları ve izni.
+  // daily (#253): kartı ana sayfa bileşenidir; rotalar ve "Oluştur".
   GununIcerigiModulu(),
+  // Soru-cevap son sırada kalır (ADR-0018 Genel).
+  SoruCevapModulu(),
 ];
 
 /// Uygulamanın etkinlik bileşenleri (ADR-0024 §3). Koddaki sabit listedir;

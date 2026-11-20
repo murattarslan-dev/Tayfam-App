@@ -116,7 +116,10 @@ class HavuzNotifier extends AsyncNotifier<DailyItemList> {
       final sira = await _depo.sirala(tayfaId, [for (final i in liste) i.id]);
       if (!ref.mounted) return;
       state = AsyncData(
-        DailyItemList(items: sira.items, callerCanManage: mevcut.callerCanManage),
+        DailyItemList(
+          items: sira.items,
+          callerCanManage: mevcut.callerCanManage,
+        ),
       );
       _tazele();
     } on Exception {
@@ -166,9 +169,8 @@ class SilinenlerNotifier extends AsyncNotifier<DailyItemList> {
   final String tayfaId;
 
   @override
-  Future<DailyItemList> build() => ref
-      .read(gununIcerigiDeposuProvider)
-      .liste(tayfaId, silinenler: true);
+  Future<DailyItemList> build() =>
+      ref.read(gununIcerigiDeposuProvider).liste(tayfaId, silinenler: true);
 }
 
 /// Silinenler listesi; geri alma havuz üzerinden yapılır.

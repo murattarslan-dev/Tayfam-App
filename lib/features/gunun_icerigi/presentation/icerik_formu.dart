@@ -270,14 +270,15 @@ class _IcerikFormuState extends ConsumerState<IcerikFormu> {
                 ),
               )
             else ...[
-              Row(
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: SabitlemeEtiketi(sabit: _sabit!),
+              ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: TayfamSpacing.s4,
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: SabitlemeEtiketi(sabit: _sabit!),
-                    ),
-                  ),
                   TextButton(
                     onPressed: _kaydediliyor
                         ? null

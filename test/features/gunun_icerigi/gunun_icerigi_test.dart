@@ -102,9 +102,7 @@ SahteTayfaTasima _tasima({
       },
   'GET $_listeYolu': (i) => i.sorgu['deleted'] == 'true'
       ? {
-          'items': [
-            _icerikJson(_ucuncu, silinme: '2026-11-19T10:00:00Z'),
-          ],
+          'items': [_icerikJson(_ucuncu, silinme: '2026-11-19T10:00:00Z')],
           'caller_can_manage': yonetir,
         }
       : {'items': _havuz(), 'caller_can_manage': yonetir},
@@ -183,10 +181,7 @@ void main() {
         gorunurModuller(tayfaModulKaydi, ['daily']).single,
         isA<GununIcerigiModulu>(),
       );
-      expect(
-        acikModulAnahtarlari(const TayfaModules(daily: true)),
-        {'daily'},
-      );
+      expect(acikModulAnahtarlari(const TayfaModules(daily: true)), {'daily'});
     });
 
     test('şikâyet hedefi daily_item metinleri', () {
@@ -387,9 +382,7 @@ void main() {
       );
     });
 
-    testWidgets('sıralama reddedilirse eski sıra geri geliyor', (
-      tester,
-    ) async {
+    testWidgets('sıralama reddedilirse eski sıra geri geliyor', (tester) async {
       ekranBoyutu(tester, yukseklik: 2000);
       final tasima = _tasima();
       tasima.yanitlar['PUT $_siraYolu'] = (_) =>
@@ -432,10 +425,10 @@ void main() {
 
       await tester.tap(find.text(m.gunun_icerigi_geri_al));
       await tester.pumpAndSettle();
-      expect(
-        tasima.giden('POST', _geriAlYolu).single.yolParametreleri,
-        {'tayfa_id': ornekTayfaId, 'daily_item_id': _birinci},
-      );
+      expect(tasima.giden('POST', _geriAlYolu).single.yolParametreleri, {
+        'tayfa_id': ornekTayfaId,
+        'daily_item_id': _birinci,
+      });
     });
 
     for (final mod in [ThemeMode.light, ThemeMode.dark]) {
@@ -458,7 +451,12 @@ void main() {
       DailyItem? mevcut,
       ThemeMode themeMode = ThemeMode.light,
     }) async {
-      await _ac(tester, tasima, _FormAcici(mevcut: mevcut), themeMode: themeMode);
+      await _ac(
+        tester,
+        tasima,
+        _FormAcici(mevcut: mevcut),
+        themeMode: themeMode,
+      );
       await tester.tap(find.text(_formuAc));
       await tester.pumpAndSettle();
     }
@@ -520,11 +518,7 @@ void main() {
     testWidgets('düzenleme: "Her yıl" kapanınca yıl gidiyor', (tester) async {
       ekranBoyutu(tester, yukseklik: 1600);
       final tasima = _tasima();
-      await formuAc(
-        tester,
-        tasima,
-        mevcut: DailyItem.fromJson(_havuz()[2]),
-      );
+      await formuAc(tester, tasima, mevcut: DailyItem.fromJson(_havuz()[2]));
 
       expect(
         find.textContaining(
@@ -556,11 +550,7 @@ void main() {
     ) async {
       ekranBoyutu(tester, yukseklik: 1600);
       final tasima = _tasima();
-      await formuAc(
-        tester,
-        tasima,
-        mevcut: DailyItem.fromJson(_havuz()[2]),
-      );
+      await formuAc(tester, tasima, mevcut: DailyItem.fromJson(_havuz()[2]));
 
       await tester.tap(find.byTooltip(m.gunun_icerigi_sabitleme_kaldir));
       await tester.pumpAndSettle();
@@ -577,7 +567,9 @@ void main() {
       final tasima = _tasima(cakisma: true);
       await _ac(tester, tasima, const HavuzEkrani(tayfaId: ornekTayfaId));
 
-      await tester.tap(find.bySemanticsLabel(m.gunun_icerigi_duzenle_etiketi(3)));
+      await tester.tap(
+        find.bySemanticsLabel(m.gunun_icerigi_duzenle_etiketi(3)),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.text(m.gunun_icerigi_kaydet));
       await tester.pumpAndSettle();
@@ -638,10 +630,10 @@ void main() {
       await tester.tap(find.text(m.gunun_icerigi_geri_al));
       await tester.pumpAndSettle();
 
-      expect(
-        tasima.giden('POST', _geriAlYolu).single.yolParametreleri,
-        {'tayfa_id': ornekTayfaId, 'daily_item_id': _ucuncu},
-      );
+      expect(tasima.giden('POST', _geriAlYolu).single.yolParametreleri, {
+        'tayfa_id': ornekTayfaId,
+        'daily_item_id': _ucuncu,
+      });
       expect(find.text(m.gunun_icerigi_geri_alindi), findsOneWidget);
     });
 

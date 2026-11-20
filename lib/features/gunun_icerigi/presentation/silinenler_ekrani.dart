@@ -38,9 +38,8 @@ class _SilinenlerEkraniState extends ConsumerState<SilinenlerEkrani> {
       if (kayit.pinConflict) {
         await sabitlemeCakismasiniBildir(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(m.gunun_icerigi_geri_alindi)),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(m.gunun_icerigi_geri_alindi)));
       }
     } on Exception catch (hata) {
       if (mounted) hataBildir(context, hata);
