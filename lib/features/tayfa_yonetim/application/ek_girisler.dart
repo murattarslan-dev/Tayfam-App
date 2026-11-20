@@ -21,6 +21,7 @@ class YonetimEkGirisi {
     this.ozet,
     this.bekleyenMetni,
     this.bekleyenEtiketi,
+    this.yalnizcaYonetici = false,
   });
 
   /// Girişin ikonu.
@@ -46,6 +47,11 @@ class YonetimEkGirisi {
   /// "Seni bekleyenler" satırının ekran okuyucu etiketi.
   final String Function(BuildContext context, EkGirisSayisi sayi)?
   bekleyenEtiketi;
+
+  /// Giriş yalnızca yöneticiye, "Tayfa" bölümünde gösterilir (ana sayfa
+  /// düzeni); anlık tayfada gösterilmez. Arayüz sadeleştirmesidir, yetkiyi
+  /// sunucu verir (kesin kural 5).
+  final bool yalnizcaYonetici;
 }
 
 /// Ayarlar ekranındaki ek girişler. Varsayılanı boştur; giriş ekleyen

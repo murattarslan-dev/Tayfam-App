@@ -15,8 +15,14 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/features/istatistik/presentation/tayfa_istatistik_ekrani.dart';
 
+export 'package:tayfam/features/istatistik/application/tayfa_istatistikleri.dart'
+    show tayfaIstatistikleriProvider;
+export 'package:tayfam/features/istatistik/data/istatistik_deposu.dart'
+    show tumZamanlar;
 export 'package:tayfam/features/istatistik/presentation/istatistik_listesi.dart'
-    show IstatistikBolumu;
+    show IstatistikBolumu, IstatistikNotu, IstatistikSatiri;
+export 'package:tayfam/features/istatistik/presentation/istatistik_metinleri.dart'
+    show MetrikGorunumu, istatistikSayisi, metrikGorunumuAnahtarla;
 export 'package:tayfam/features/istatistik/presentation/vitrin_istatistikleri.dart'
     show VitrinIstatistikleri;
 

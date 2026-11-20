@@ -14185,5 +14185,334 @@
   "istatistik_gorunurluk_ortak_aciklama": "Arkadaşların ve ortak tayfadaki üyeler görür.",
   "@istatistik_gorunurluk_ortak_aciklama": {
     "description": "`friends_and_mutual` seçeneğinin açıklaması."
+  },
+  "hata_home_widget_not_found": "Bu ana sayfa bileşeni artık gösterilmiyor.",
+  "@hata_home_widget_not_found": {
+    "description": "Hata kodu `home-widget-not-found`. Ana sayfanın göstermediği (kapatılmış, modülü kapalı, tarihi geçmiş geri sayım) bir bileşenin verisi istenince."
+  },
+  "anasayfa_bolum_upcoming": "Yaklaşan etkinlikler",
+  "@anasayfa_bolum_upcoming": {
+    "description": "Ana sayfa düzeni: `upcoming` bölümünün adı."
+  },
+  "anasayfa_bolum_announcements": "Duyurular",
+  "@anasayfa_bolum_announcements": {
+    "description": "Ana sayfa düzeni: `announcements` bölümünün adı."
+  },
+  "anasayfa_bolum_polls": "Açık anketler",
+  "@anasayfa_bolum_polls": {
+    "description": "Ana sayfa düzeni: `polls` bölümünün adı."
+  },
+  "anasayfa_bolum_questions": "Son sorular",
+  "@anasayfa_bolum_questions": {
+    "description": "Ana sayfa düzeni: `questions` bölümünün adı."
+  },
+  "anasayfa_bolum_genel": "Bölüm",
+  "@anasayfa_bolum_genel": {
+    "description": "Ana sayfa düzeni: adı bilinmeyen bir bölüm."
+  },
+  "anasayfa_bolum_aciklama": "Modülün son içerikleri.",
+  "@anasayfa_bolum_aciklama": {
+    "description": "Ana sayfa düzeni: bölümlerin kısa açıklaması."
+  },
+  "anasayfa_stats_ad": "İstatistikler",
+  "@anasayfa_stats_ad": {
+    "description": "Ana sayfa bileşeni `stats`: kartın ve düzen satırının adı."
+  },
+  "anasayfa_stats_aciklama": "Seçtiğin en çok dört istatistik.",
+  "@anasayfa_stats_aciklama": {
+    "description": "Ana sayfa düzeni: `stats` bileşeninin açıklaması."
+  },
+  "anasayfa_stats_bos": "Henüz sayılacak bir şey yok.",
+  "@anasayfa_stats_bos": {
+    "description": "İstatistik kartı: gösterilecek metrik yokken."
+  },
+  "anasayfa_stats_tumu": "Tüm istatistikler",
+  "@anasayfa_stats_tumu": {
+    "description": "İstatistik kartındaki \"Tümü\" bağlantısının ekran okuyucu etiketi."
+  },
+  "anasayfa_goal_ad": "Yıllık hedef",
+  "@anasayfa_goal_ad": {
+    "description": "Ana sayfa bileşeni `goal`: kartın ve düzen satırının adı."
+  },
+  "anasayfa_goal_aciklama": "Bir istatistik için bu yılın hedefi.",
+  "@anasayfa_goal_aciklama": {
+    "description": "Ana sayfa düzeni: `goal` bileşeninin açıklaması."
+  },
+  "anasayfa_goal_ilerleme": "{deger} / {hedef}",
+  "@anasayfa_goal_ilerleme": {
+    "description": "Yıllık hedef kartı: ulaşılan değer ve hedef.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "320 km"
+      },
+      "hedef": {
+        "type": "String",
+        "example": "1.000 km"
+      }
+    }
+  },
+  "anasayfa_goal_yuzde": "Yüzde {yuzde} tamamlandı",
+  "@anasayfa_goal_yuzde": {
+    "description": "Yıllık hedef çubuğunun ekran okuyucu metni.",
+    "placeholders": {
+      "yuzde": {
+        "type": "int"
+      }
+    }
+  },
+  "anasayfa_goal_ulasildi": "Hedefe ulaşıldı",
+  "@anasayfa_goal_ulasildi": {
+    "description": "Yıllık hedef kartı: hedefe ulaşılınca etiket."
+  },
+  "anasayfa_goal_hedef_alani": "Hedef",
+  "@anasayfa_goal_hedef_alani": {
+    "description": "Yıllık hedef ayarı: hedef değer alanının etiketi."
+  },
+  "anasayfa_goal_hedef_hatasi": "0'dan büyük bir sayı yaz.",
+  "@anasayfa_goal_hedef_hatasi": {
+    "description": "Yıllık hedef ayarı: hedef değer geçersizken."
+  },
+  "anasayfa_countdown_ad": "Geri sayım",
+  "@anasayfa_countdown_ad": {
+    "description": "Ana sayfa bileşeni `countdown`: kartın ve düzen satırının adı."
+  },
+  "anasayfa_countdown_aciklama": "Yaklaşan bir güne kalan süre.",
+  "@anasayfa_countdown_aciklama": {
+    "description": "Ana sayfa düzeni: `countdown` bileşeninin açıklaması."
+  },
+  "anasayfa_countdown_an": "{gun}, {saat}",
+  "@anasayfa_countdown_an": {
+    "description": "Geri sayımın tarihi ve saati.",
+    "placeholders": {
+      "gun": {
+        "type": "String",
+        "example": "20 Aralık 2026 Pazar"
+      },
+      "saat": {
+        "type": "String",
+        "example": "19:00"
+      }
+    }
+  },
+  "anasayfa_countdown_baslik_alani": "Başlık",
+  "@anasayfa_countdown_baslik_alani": {
+    "description": "Geri sayım ayarı: başlık alanının etiketi."
+  },
+  "anasayfa_countdown_an_alani": "Tarih ve saat",
+  "@anasayfa_countdown_an_alani": {
+    "description": "Geri sayım ayarı: tarih bölümünün başlığı."
+  },
+  "anasayfa_countdown_an_sec": "Tarih ve saat seç",
+  "@anasayfa_countdown_an_sec": {
+    "description": "Geri sayım ayarı: tarih seçilmemişken satır metni."
+  },
+  "anasayfa_countdown_gecmis": "Geçmiş bir an seçildi; ileri bir tarih seç.",
+  "@anasayfa_countdown_gecmis": {
+    "description": "Geri sayım ayarı: seçilen an geçmişteyken."
+  },
+  "anasayfa_champions_ad": "Şampiyonlar",
+  "@anasayfa_champions_ad": {
+    "description": "Ana sayfa bileşeni `champions`: kartın ve düzen satırının adı."
+  },
+  "anasayfa_champions_aciklama": "İlan edilen kazananlar.",
+  "@anasayfa_champions_aciklama": {
+    "description": "Ana sayfa düzeni: `champions` bileşeninin açıklaması."
+  },
+  "anasayfa_champions_bos": "Henüz ilan edilmiş bir kazanan yok.",
+  "@anasayfa_champions_bos": {
+    "description": "Şampiyonlar kartı: kazanan yokken."
+  },
+  "anasayfa_champions_etkinlik": "{baslik} · {tur}",
+  "@anasayfa_champions_etkinlik": {
+    "description": "Şampiyonlar kartı: etkinliğin başlığı ve türü.",
+    "placeholders": {
+      "baslik": {
+        "type": "String",
+        "example": "Cuma turnuvası"
+      },
+      "tur": {
+        "type": "String",
+        "example": "Satranç"
+      }
+    }
+  },
+  "anasayfa_champions_turler": "Türler",
+  "@anasayfa_champions_turler": {
+    "description": "Şampiyonlar ayarı: tür listesinin başlığı."
+  },
+  "anasayfa_champions_turler_aciklama": "Hiçbirini seçmezsen bütün türler gösterilir. En çok 10 tür.",
+  "@anasayfa_champions_turler_aciklama": {
+    "description": "Şampiyonlar ayarı: tür seçiminin açıklaması."
+  },
+  "anasayfa_log_summary_ad": "Günlük özeti",
+  "@anasayfa_log_summary_ad": {
+    "description": "Ana sayfa bileşeni `log_summary`: kartın ve düzen satırının adı."
+  },
+  "anasayfa_log_summary_aciklama": "Bir günlük istatistiği.",
+  "@anasayfa_log_summary_aciklama": {
+    "description": "Ana sayfa düzeni: `log_summary` bileşeninin açıklaması."
+  },
+  "anasayfa_log_summary_bos": "Bu tayfada henüz günlük istatistiği yok.",
+  "@anasayfa_log_summary_bos": {
+    "description": "Günlük özeti ayarı: seçilecek günlük metriği yokken."
+  },
+  "anasayfa_metrik_bilinmiyor": "Bu istatistik bu sürümde gösterilemiyor.",
+  "@anasayfa_metrik_bilinmiyor": {
+    "description": "Ana sayfa: uygulamanın tanımadığı bir metrik."
+  },
+  "anasayfa_donem_bu_yil": "Bu yıl",
+  "@anasayfa_donem_bu_yil": {
+    "description": "Ana sayfa kartı dönemi: bu yıl."
+  },
+  "anasayfa_donem_yil": "{yil} yılı",
+  "@anasayfa_donem_yil": {
+    "description": "Ana sayfa kartı dönemi: takvim yılı.",
+    "placeholders": {
+      "yil": {
+        "type": "int"
+      }
+    }
+  },
+  "anasayfa_donem_tum_zamanlar": "Tüm zamanlar",
+  "@anasayfa_donem_tum_zamanlar": {
+    "description": "Ana sayfa kartı dönemi: tüm zamanlar."
+  },
+  "anasayfa_donem_son_30_gun": "Son 30 gün",
+  "@anasayfa_donem_son_30_gun": {
+    "description": "Ana sayfa kartı dönemi: son 30 gün."
+  },
+  "anasayfa_takim_no": "Takım {sira}",
+  "@anasayfa_takim_no": {
+    "description": "Şampiyonlar kartı: adsız takım.",
+    "placeholders": {
+      "sira": {
+        "type": "int"
+      }
+    }
+  },
+  "anasayfa_misafir": "Misafir oyuncu",
+  "@anasayfa_misafir": {
+    "description": "Şampiyonlar kartı: takma adı silinmiş misafir oyuncu."
+  },
+  "anasayfa_yukleniyor": "Yükleniyor",
+  "@anasayfa_yukleniyor": {
+    "description": "Ana sayfa kartları ve düzen ekranı: yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "anasayfa_duzen_baslik": "Ana sayfa",
+  "@anasayfa_duzen_baslik": {
+    "description": "Tayfa ayarları: ana sayfa düzeni ekranının ve girişinin başlığı."
+  },
+  "anasayfa_duzen_aciklama": "Ana sayfada neyin hangi sırayla görüneceğini seç. Sıradaki etkinlik her zaman en üsttedir.",
+  "@anasayfa_duzen_aciklama": {
+    "description": "Ana sayfa düzeni ekranının açıklaması."
+  },
+  "anasayfa_duzen_yalnizca_yonetici": "Ana sayfayı yalnızca yöneticiler değiştirebilir.",
+  "@anasayfa_duzen_yalnizca_yonetici": {
+    "description": "Ana sayfa düzeni: yönetici olmayana görünen not."
+  },
+  "anasayfa_duzen_guncelle_uyarisi": "Bu tayfada uygulamanın bu sürümünün tanımadığı bir bileşen ayarı var. Değişiklik yapmak için uygulamayı güncelle.",
+  "@anasayfa_duzen_guncelle_uyarisi": {
+    "description": "Ana sayfa düzeni: tanınmayan bileşenin ayarı korunamadığı için kaydetme kapalıyken."
+  },
+  "anasayfa_bilinmeyen_ad": "Yeni bir bileşen",
+  "@anasayfa_bilinmeyen_ad": {
+    "description": "Ana sayfa düzeni: uygulamanın tanımadığı bileşenin adı."
+  },
+  "anasayfa_guncelle_etiketi": "Uygulamayı güncelle",
+  "@anasayfa_guncelle_etiketi": {
+    "description": "Ana sayfa düzeni: tanınmayan bileşenin etiketi."
+  },
+  "anasayfa_ayar_gerekli": "{aciklama} Açmadan önce ayarla.",
+  "@anasayfa_ayar_gerekli": {
+    "description": "Ana sayfa düzeni: ayarsız açılamayan bileşenin durum metni.",
+    "placeholders": {
+      "aciklama": {
+        "type": "String",
+        "example": "Bir istatistik için bu yılın hedefi."
+      }
+    }
+  },
+  "anasayfa_ayarla": "Ayarla",
+  "@anasayfa_ayarla": {
+    "description": "Ana sayfa düzeni: bileşenin ayarını açan düğme."
+  },
+  "anasayfa_yukari": "{ad}: yukarı taşı",
+  "@anasayfa_yukari": {
+    "description": "Ana sayfa düzeni: satırı bir yukarı taşıyan düğmenin ipucu.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "İstatistikler"
+      }
+    }
+  },
+  "anasayfa_asagi": "{ad}: aşağı taşı",
+  "@anasayfa_asagi": {
+    "description": "Ana sayfa düzeni: satırı bir aşağı taşıyan düğmenin ipucu.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "İstatistikler"
+      }
+    }
+  },
+  "anasayfa_surukle": "{ad}: sürükleyerek taşı",
+  "@anasayfa_surukle": {
+    "description": "Ana sayfa düzeni: sürükleme tutamacının ekran okuyucu etiketi.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "İstatistikler"
+      }
+    }
+  },
+  "anasayfa_ayar_kaydet": "Kaydet",
+  "@anasayfa_ayar_kaydet": {
+    "description": "Ana sayfa düzeni ve bileşen ayarı: kaydet düğmesi."
+  },
+  "anasayfa_kaydediliyor": "Kaydediliyor",
+  "@anasayfa_kaydediliyor": {
+    "description": "Ana sayfa düzeni: kaydederken göstergenin ekran okuyucu etiketi."
+  },
+  "anasayfa_kaydedildi": "Ana sayfa kaydedildi.",
+  "@anasayfa_kaydedildi": {
+    "description": "Ana sayfa düzeni kaydedilince bildirim."
+  },
+  "anasayfa_cikis_baslik": "Değişiklikler kaydedilmedi",
+  "@anasayfa_cikis_baslik": {
+    "description": "Ana sayfa düzeni: kaydetmeden çıkma onayının başlığı."
+  },
+  "anasayfa_cikis_metni": "Çıkarsan ana sayfada yaptığın değişiklikler kaybolur.",
+  "@anasayfa_cikis_metni": {
+    "description": "Ana sayfa düzeni: kaydetmeden çıkma onayının metni."
+  },
+  "anasayfa_cikis_onay": "Kaydetmeden çık",
+  "@anasayfa_cikis_onay": {
+    "description": "Ana sayfa düzeni: kaydetmeden çıkma onayı."
+  },
+  "anasayfa_cikis_vazgec": "Düzenlemeye dön",
+  "@anasayfa_cikis_vazgec": {
+    "description": "Ana sayfa düzeni: çıkmaktan vazgeç."
+  },
+  "anasayfa_ayar_donem": "Dönem",
+  "@anasayfa_ayar_donem": {
+    "description": "Bileşen ayarı: dönem seçiminin başlığı."
+  },
+  "anasayfa_ayar_metrik": "İstatistik",
+  "@anasayfa_ayar_metrik": {
+    "description": "Bileşen ayarı: tek metrik seçiminin başlığı."
+  },
+  "anasayfa_ayar_metrikler": "İstatistikler ({secili}/{enCok})",
+  "@anasayfa_ayar_metrikler": {
+    "description": "İstatistik ayarı: seçilen ve en çok seçilebilen metrik sayısı.",
+    "placeholders": {
+      "secili": {
+        "type": "int"
+      },
+      "enCok": {
+        "type": "int"
+      }
+    }
   }
 }

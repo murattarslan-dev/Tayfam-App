@@ -11,6 +11,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/ana_sayfa/ana_sayfa.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
@@ -180,7 +181,11 @@ List<RouteBase> rotalariOlustur(
                 // Tayfa yönetimi modül değildir; her tayfada vardır
                 // (ADR-0002, ADR-0018 §1).
                 ...tayfaYonetimRotalari(
-                  ekRotalar: [...moderasyonRotalari, ...sozlukRotalari],
+                  ekRotalar: [
+                    ...moderasyonRotalari,
+                    ...sozlukRotalari,
+                    ...anaSayfaDuzeniRotalari,
+                  ],
                 ),
               ],
             ),

@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/katalog/katalog_yenileyici.dart';
+import 'package:tayfam/core/moduller/ana_sayfa_bileseni.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/kabuk_katmanlari.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/moduller/uye_islemleri.dart';
+import 'package:tayfam/features/ana_sayfa/ana_sayfa.dart';
 import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
@@ -84,11 +86,43 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // pool_link (#256)
 ];
 
+/// Uygulamanın tayfa ana sayfası bileşenleri (App ADR-0024 §6; Tayfam-Api
+/// ADR-0027, ADR-0040). Koddaki sabit listedir; hangi bileşenin hangi
+/// sırayla gösterileceğine sunucunun `home_widgets` alanı karar verir,
+/// istemci yalnızca buradakileri çizer (kayıtta olmayan anahtar atlanır,
+/// düzenleme ekranında "Uygulamayı güncelle" etiketiyle listelenir).
+///
+/// Modül bileşenleri (`kind: module`) kendi paketlerinde
+/// `AnaSayfaBileseni`'ni uygular ve buraya, kendi anahtar yorumunun hemen
+/// altına **tek satırla** eklenir (yorum satırları yerinde kalır: paralel
+/// iş kayıtları çakışmasın). Sıra çizim sırası değildir.
+const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
+  // Bölümler (upcoming, announcements, polls, questions): modüllerin ana
+  // sayfa bölümleri (ADR-0015).
+  ...anaSayfaBolumleri,
+  // stats (#252)
+  IstatistikKartiBileseni(),
+  // goal (#252)
+  HedefKartiBileseni(),
+  // countdown (#252)
+  GeriSayimKartiBileseni(),
+  // champions (#252)
+  SampiyonlarKartiBileseni(),
+  // log_summary (#252)
+  GunlukOzetiKartiBileseni(),
+  // daily (#253)
+  // library (#255)
+  // question_pool (#256)
+  // materials (#257)
+  // garage (#258)
+];
+
 /// Kayıt listelerini `core/` ve özelliklerdeki provider'lara veren
 /// override'lar; uygulamanın kökündeki `ProviderScope`'a verilir.
 final List<Override> kayitOverridelari = [
   tayfaModulleriProvider.overrideWithValue(tayfaModulKaydi),
   etkinlikBilesenKaydiProvider.overrideWithValue(etkinlikBilesenKaydi),
+  anaSayfaBilesenKaydiProvider.overrideWithValue(anaSayfaBilesenKaydi),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Ana sayfadan davet linki ve "Silmeyi iptal et" (2026-11-13).
@@ -155,6 +189,13 @@ const List<YonetimEkGirisi> yonetimEkGirisleri = [
     ikon: sozlukGirisIkonu,
     etiket: sozlukGirisEtiketi,
     adres: sozluklerAdresi,
+  ),
+  // Ana sayfa düzeni (#252, App ADR-0024 §6; yalnızca yönetici).
+  YonetimEkGirisi(
+    ikon: anaSayfaGirisIkonu,
+    etiket: anaSayfaGirisEtiketi,
+    adres: anaSayfaDuzeniAdresi,
+    yalnizcaYonetici: true,
   ),
 ];
 

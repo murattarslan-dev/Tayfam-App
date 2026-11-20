@@ -8,7 +8,6 @@ import 'package:tayfam/core/metin/sure.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/istatistik/data/istatistik_deposu.dart';
 import 'package:tayfam/features/istatistik/istatistik.dart';
-import 'package:tayfam/features/istatistik/presentation/istatistik_listesi.dart';
 import 'package:tayfam/features/istatistik/presentation/istatistik_metinleri.dart';
 import 'package:tayfam/features/istatistik/presentation/tayfa_istatistik_ekrani.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
