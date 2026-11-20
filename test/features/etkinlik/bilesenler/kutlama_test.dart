@@ -106,15 +106,13 @@ Finder _pencerede(Finder bulucu) =>
 /// Yazboz kaynaklı, üç türden kazananı olan kutlamanın yanıtları: masa
 /// adı, takım adı ve misafirin takma adı.
 Map<String, TayfaYaniti> get _kaynakYanitlari => {
-  'GET $yazbozYolu': (_) => yazbozJson(
-    masalar: [yazbozMasasiJson(id: _masaId, bitti: true)],
-  ),
+  'GET $yazbozYolu': (_) =>
+      yazbozJson(masalar: [yazbozMasasiJson(id: _masaId, bitti: true)]),
   'GET $takimYolu': (_) => takimlarJson(
     takimlar: [takimJson(id: _takimId, sira: 1, ad: 'Kırmızılar')],
   ),
-  'GET $misafirlerYolu': (_) => misafirlerJson(
-    misafirler: [misafirJson(_misafirId, ad: 'Deniz')],
-  ),
+  'GET $misafirlerYolu': (_) =>
+      misafirlerJson(misafirler: [misafirJson(_misafirId, ad: 'Deniz')]),
 };
 
 List<Map<String, Object?>> get _ucKazanan => [
@@ -247,7 +245,10 @@ void main() {
         _bolumde(find.text(m.bilesen_celebration_ilan_notu)),
         findsOneWidget,
       );
-      expect(_bolumde(find.text(m.bilesen_celebration_kazanan)), findsOneWidget);
+      expect(
+        _bolumde(find.text(m.bilesen_celebration_kazanan)),
+        findsOneWidget,
+      );
 
       await _dokun(tester, dugme);
       expect(
@@ -268,10 +269,7 @@ void main() {
         _bolumde(find.textContaining(m.bilesen_celebration_ilan_edildi(''))),
         findsOneWidget,
       );
-      expect(
-        _bolumde(find.text(m.bilesen_celebration_ilan_et)),
-        findsNothing,
-      );
+      expect(_bolumde(find.text(m.bilesen_celebration_ilan_et)), findsNothing);
       expect(tester.takeException(), isNull);
     });
 
@@ -286,10 +284,7 @@ void main() {
       final bos = _bolumde(find.text(m.bilesen_celebration_sonuc_bekleniyor));
       await _gorunurYap(tester, bos);
       expect(bos, findsOneWidget);
-      expect(
-        _bolumde(find.text(m.bilesen_celebration_ilan_et)),
-        findsNothing,
-      );
+      expect(_bolumde(find.text(m.bilesen_celebration_ilan_et)), findsNothing);
     });
 
     testWidgets('gizli kutlamada kazanan gösterilmez, nedeni yazılır', (

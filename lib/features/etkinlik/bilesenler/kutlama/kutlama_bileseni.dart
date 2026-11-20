@@ -340,9 +340,7 @@ class KutlamaKarti extends ConsumerWidget {
                       adlar.length == 1
                           ? m.bilesen_celebration_kazanan
                           : m.bilesen_celebration_kazananlar,
-                      style: yazi.labelLarge?.copyWith(
-                        color: r.tintMangoUstu,
-                      ),
+                      style: yazi.labelLarge?.copyWith(color: r.tintMangoUstu),
                     ),
                     const SizedBox(height: TayfamSpacing.s4),
                     for (final ad in adlar)

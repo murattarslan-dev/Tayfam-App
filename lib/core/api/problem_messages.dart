@@ -124,8 +124,7 @@ String problemMetni(AppLocalizations m, ProblemType type) => switch (type) {
   ProblemType.rankingFromMeasure => m.hata_ranking_from_measure,
   ProblemType.celebrationNotStarted => m.hata_celebration_not_started,
   ProblemType.celebrationNoWinner => m.hata_celebration_no_winner,
-  ProblemType.celebrationNotParticipant =>
-    m.hata_celebration_not_participant,
+  ProblemType.celebrationNotParticipant => m.hata_celebration_not_participant,
   ProblemType.eventTypeMismatch => m.hata_event_type_mismatch,
   ProblemType.checkInClosed => m.hata_check_in_closed,
   ProblemType.checkInTooFar => m.hata_check_in_too_far,
