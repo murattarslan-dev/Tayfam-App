@@ -16,8 +16,8 @@ bool katalogAnahtariMi(String anahtar) => _anahtarBicimi.hasMatch(anahtar);
 const String genelTurAnahtari = 'general';
 
 /// Sunucudan okunan katalog (ADR-0024 §1): ilgi alanları, aktif türlerin
-/// güncel sürümleri ve ders/konu etiketleri. Yalnızca bellektedir
-/// (ADR-0006).
+/// güncel sürümleri, ders/konu etiketleri ve rozet tanımları. Yalnızca
+/// bellektedir (ADR-0006).
 ///
 /// Katalog herkese aynıdır ve kişisel veri taşımaz; yine de sunucudan
 /// gelen girdidir: biçimi geçersiz anahtar taşıyan kayıt atlanır, türler
@@ -37,6 +37,9 @@ final class Katalog {
       ),
       dersKonu = DersKonuAgaci(
         _tekil<CatalogStudyTag>(ham.studyTags, (e) => e.key),
+      ),
+      rozetler = List.unmodifiable(
+        _tekil<CatalogBadge>(ham.badges, (b) => b.key),
       );
 
   /// Kataloğun bütününün sürümü (`catalog_version`).
@@ -52,6 +55,14 @@ final class Katalog {
   /// halinde (ADR-0033 §2).
   final DersKonuAgaci dersKonu;
 
+  /// Rozet tanımları (`badges`; emekliler dahil, sunucunun sırasıyla).
+  /// Kazanılmış rozetin adı ve ikonu buradan okunur (App ADR-0033 §3).
+  final List<CatalogBadge> rozetler;
+
+  late final Map<String, CatalogBadge> _rozetler = {
+    for (final b in rozetler) b.key: b,
+  };
+
   late final Map<String, CatalogEventType> _turler = {
     for (final t in turler) t.key: t,
   };
@@ -65,6 +76,9 @@ final class Katalog {
 
   /// [anahtar] türünün güncel sürümü; katalogda yoksa `null`.
   CatalogEventType? tur(String anahtar) => _turler[anahtar];
+
+  /// [anahtar] rozetinin tanımı (emekliler dahil); katalogda yoksa `null`.
+  CatalogBadge? rozet(String anahtar) => _rozetler[anahtar];
 
   /// [anahtar] ilgi alanı; katalogda yoksa `null`.
   CatalogInterest? ilgiAlani(String anahtar) => _ilgiAlanlari[anahtar];

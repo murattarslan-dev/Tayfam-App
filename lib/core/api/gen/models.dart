@@ -1734,6 +1734,7 @@ final class Catalog {
     required this.interests,
     required this.eventTypes,
     required this.studyTags,
+    required this.badges,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -1762,6 +1763,12 @@ final class Catalog {
             CatalogStudyTag.fromJson(_readObject(e0, 'Catalog.study_tags')),
       ),
     ),
+    badges: List<CatalogBadge>.unmodifiable(
+      _readList(json['badges'], 'Catalog.badges').map(
+        (Object? e0) =>
+            CatalogBadge.fromJson(_readObject(e0, 'Catalog.badges')),
+      ),
+    ),
   );
 
   /// Kataloğun bütününün sürümü; her değişiklikte artar. `ETag` ile aynıdır.
@@ -1776,12 +1783,16 @@ final class Catalog {
   /// Ders ve konu etiketleri (emekliler dahil), `position` sırasıyla; istemci `parent_key` ile gruplar.
   final List<CatalogStudyTag> studyTags;
 
+  /// Rozet tanımları (emekliler dahil), `position` sırasıyla.
+  final List<CatalogBadge> badges;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'catalog_version': catalogVersion,
     'interests': <Object?>[for (final e0 in interests) e0.toJson()],
     'event_types': <Object?>[for (final e0 in eventTypes) e0.toJson()],
     'study_tags': <Object?>[for (final e0 in studyTags) e0.toJson()],
+    'badges': <Object?>[for (final e0 in badges) e0.toJson()],
   };
 
   @override
@@ -1791,7 +1802,8 @@ final class Catalog {
           catalogVersion == other.catalogVersion &&
           _deepEquals(interests, other.interests) &&
           _deepEquals(eventTypes, other.eventTypes) &&
-          _deepEquals(studyTags, other.studyTags);
+          _deepEquals(studyTags, other.studyTags) &&
+          _deepEquals(badges, other.badges);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -1799,7 +1811,274 @@ final class Catalog {
     _deepHash(interests),
     _deepHash(eventTypes),
     _deepHash(studyTags),
+    _deepHash(badges),
   ]);
+}
+
+/// Bir rozet tanımı (#258, ADR-0039 §1). Rozet katalog gibi veridir;
+/// adlar platform sahibinin içeriğidir ve düz metin gösterilir. `retired`
+/// rozet artık kazanılmaz, kazanılmışlar göstermeye devam eder. Hassas
+/// ölçümlerden ve katılımı hassas türlerden rozet çıkmaz. Sıralama ya da
+/// "en çok rozet" listesi yoktur.
+final class CatalogBadge {
+  const CatalogBadge({
+    required this.key,
+    required this.scope,
+    required this.position,
+    required this.labels,
+    required this.icon,
+    required this.status,
+    required this.rule,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogBadge.fromJson(Map<String, Object?> json) => CatalogBadge(
+    key: _readString(json['key'], 'CatalogBadge.key'),
+    scope: CatalogBadgeScope.fromWire(
+      _readString(json['scope'], 'CatalogBadge.scope'),
+    ),
+    position: _readInt(json['position'], 'CatalogBadge.position'),
+    labels: Map<String, String>.unmodifiable(
+      _readObject(json['labels'], 'CatalogBadge.labels').map(
+        (String k0, Object? e0) =>
+            MapEntry(k0, _readString(e0, 'CatalogBadge.labels')),
+      ),
+    ),
+    icon: _readString(json['icon'], 'CatalogBadge.icon'),
+    status: CatalogStatus.fromWire(
+      _readString(json['status'], 'CatalogBadge.status'),
+    ),
+    rule: CatalogBadgeRule.fromJson(
+      _readObject(json['rule'], 'CatalogBadge.rule'),
+    ),
+  );
+
+  /// Değişmez anahtar: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// `user` kişisel rozet (kilometre taşı ya da şampiyonluk), `tayfa`
+  /// tayfa rozeti. Tanınmayan değer `unknown`.
+  final CatalogBadgeScope scope;
+
+  /// Listeleme sırası (küçükten büyüğe).
+  final int position;
+
+  final Map<String, String> labels;
+
+  /// İstemcinin sabit ikon setinden bir anahtar.
+  final String icon;
+
+  final CatalogStatus status;
+
+  final CatalogBadgeRule rule;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'scope': scope.wire,
+    'position': position,
+    'labels': <String, Object?>{
+      for (final e0 in labels.entries) e0.key: e0.value,
+    },
+    'icon': icon,
+    'status': status.wire,
+    'rule': rule.toJson(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogBadge &&
+          key == other.key &&
+          scope == other.scope &&
+          position == other.position &&
+          _deepEquals(labels, other.labels) &&
+          icon == other.icon &&
+          status == other.status &&
+          rule == other.rule;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    scope,
+    position,
+    _deepHash(labels),
+    icon,
+    status,
+    rule,
+  ]);
+}
+
+/// Rozetin kazanılma kuralı; istemci rozeti açıklamak için kullanır.
+/// `threshold` bir metriğin toplamı `value` değerine ulaştı (`metric`,
+/// `value`, `period` yalnızca bunda vardır); `first` bir türde
+/// (`event_type`) ya da genel ilk katılım; `champion` bir etkinliğin
+/// kutlamasında kişi ya da takımı kazanan ilan edildi (`event_type`
+/// varsa yalnızca o türde). `first` ve `champion` yalnızca kişiseldir.
+/// Tanınmayan `kind` için istemci rozeti açıklamasız gösterir.
+final class CatalogBadgeRule {
+  const CatalogBadgeRule({
+    required this.kind,
+    this.metric,
+    this.value,
+    this.period,
+    this.eventType,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogBadgeRule.fromJson(Map<String, Object?> json) =>
+      CatalogBadgeRule(
+        kind: CatalogBadgeRuleKind.fromWire(
+          _readString(json['kind'], 'CatalogBadgeRule.kind'),
+        ),
+        metric: switch (json['metric']) {
+          null => null,
+          final Object v => _readString(v, 'CatalogBadgeRule.metric'),
+        },
+        value: switch (json['value']) {
+          null => null,
+          final Object v => _readDouble(v, 'CatalogBadgeRule.value'),
+        },
+        period: switch (json['period']) {
+          null => null,
+          final Object v => CatalogBadgeRulePeriod.fromWire(
+            _readString(v, 'CatalogBadgeRule.period'),
+          ),
+        },
+        eventType: switch (json['event_type']) {
+          null => null,
+          final Object v => _readString(v, 'CatalogBadgeRule.event_type'),
+        },
+      );
+
+  final CatalogBadgeRuleKind kind;
+
+  /// Ortak metrik (`events`, `attended`, `participants`, `duration`)
+  /// ya da `<tür anahtarı>.<anahtar>` (türün ortak metriği ya da bir
+  /// ölçüm veya günlük bileşeni).
+  final String? metric;
+
+  /// Eşik, metriğin biriminde (süre dakika).
+  final double? value;
+
+  /// `year` rozet her takvim yılı ayrı kazanılır.
+  final CatalogBadgeRulePeriod? period;
+
+  /// Kuralın türü; yoksa her tür.
+  final String? eventType;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'kind': kind.wire,
+    if (metric case final value?) 'metric': value,
+    if (value case final value?) 'value': value,
+    if (period case final value?) 'period': value.wire,
+    if (eventType case final value?) 'event_type': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogBadgeRule &&
+          kind == other.kind &&
+          metric == other.metric &&
+          value == other.value &&
+          period == other.period &&
+          eventType == other.eventType;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[kind, metric, value, period, eventType]);
+}
+
+enum CatalogBadgeRuleKind {
+  threshold('threshold'),
+  first('first'),
+  champion('champion'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const CatalogBadgeRuleKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('CatalogBadgeRuleKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static CatalogBadgeRuleKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `year` rozet her takvim yılı ayrı kazanılır.
+enum CatalogBadgeRulePeriod {
+  allTime('all_time'),
+  year('year'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const CatalogBadgeRulePeriod(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('CatalogBadgeRulePeriod.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static CatalogBadgeRulePeriod fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `user` kişisel rozet (kilometre taşı ya da şampiyonluk), `tayfa`
+/// tayfa rozeti. Tanınmayan değer `unknown`.
+enum CatalogBadgeScope {
+  user('user'),
+  tayfa('tayfa'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const CatalogBadgeScope(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('CatalogBadgeScope.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static CatalogBadgeScope fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 /// Bir bileşen (ADR-0025 §4, ADR-0037 §3). `kind` kapalı listedir ve
@@ -7621,6 +7900,75 @@ final class E2ESignedPreKey {
 
   @override
   int get hashCode => Object.hashAll(<Object?>[keyId, publicKey, signature]);
+}
+
+/// Kazanılmış bir rozet (#258, ADR-0039 §2). Adı ve ikonu katalogdaki
+/// aynı anahtarlı `CatalogBadge`'dedir. Rozet geri alınmaz: etkinlik ya
+/// da tayfa sonradan silinse de kalır.
+final class EarnedBadge {
+  const EarnedBadge({
+    required this.badgeKey,
+    this.year,
+    this.tayfaId,
+    this.eventId,
+    required this.earnedAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EarnedBadge.fromJson(Map<String, Object?> json) => EarnedBadge(
+    badgeKey: _readString(json['badge_key'], 'EarnedBadge.badge_key'),
+    year: switch (json['year']) {
+      null => null,
+      final Object v => _readInt(v, 'EarnedBadge.year'),
+    },
+    tayfaId: switch (json['tayfa_id']) {
+      null => null,
+      final Object v => _readString(v, 'EarnedBadge.tayfa_id'),
+    },
+    eventId: switch (json['event_id']) {
+      null => null,
+      final Object v => _readString(v, 'EarnedBadge.event_id'),
+    },
+    earnedAt: _readDateTime(json['earned_at'], 'EarnedBadge.earned_at'),
+  );
+
+  final String badgeKey;
+
+  /// Yalnızca yıllık rozette, kazanıldığı takvim yılı.
+  final int? year;
+
+  /// Yalnızca şampiyonluk rozetinde, etkinliğin tayfası (silinmiş olabilir).
+  final String? tayfaId;
+
+  /// Yalnızca şampiyonluk rozetinde, etkinlik (silinmiş olabilir).
+  final String? eventId;
+
+  final DateTime earnedAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'badge_key': badgeKey,
+    if (year case final value?) 'year': value,
+    if (tayfaId case final value?) 'tayfa_id': value,
+    if (eventId case final value?) 'event_id': value,
+    'earned_at': earnedAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EarnedBadge &&
+          badgeKey == other.badgeKey &&
+          year == other.year &&
+          tayfaId == other.tayfaId &&
+          eventId == other.eventId &&
+          earnedAt == other.earnedAt;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[badgeKey, year, tayfaId, eventId, earnedAt]);
 }
 
 /// Bir etkin üyenin gördüğü etkinlik. `type` katalog anahtarıdır;
@@ -16596,6 +16944,12 @@ final class Notification {
   /// kez, tayfanın ilan eden dışındaki etkin üyelerine. Kazananı
   /// adlandırmaz; kutlamayı bileşenin ucu verir. Yalnızca uygulama
   /// içi, push gitmez.
+  /// `badge_earned` (#258, ADR-0039 §4): bir rozet kazanıldı; rozeti
+  /// adlandırmaz, `actor_id` yoktur. Kişisel rozette alıcı rozeti
+  /// kazanan kişidir, hedef `user` kendisidir (kendi profilinizi
+  /// açın) ve `tayfa_id` yoktur; tayfa rozetinde alıcılar tayfanın
+  /// yönetici ve moderatörleridir, hedef `tayfa`'dır. Yalnızca
+  /// uygulama içi, push gitmez.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -17123,6 +17477,12 @@ enum NotificationTargetType {
 /// kez, tayfanın ilan eden dışındaki etkin üyelerine. Kazananı
 /// adlandırmaz; kutlamayı bileşenin ucu verir. Yalnızca uygulama
 /// içi, push gitmez.
+/// `badge_earned` (#258, ADR-0039 §4): bir rozet kazanıldı; rozeti
+/// adlandırmaz, `actor_id` yoktur. Kişisel rozette alıcı rozeti
+/// kazanan kişidir, hedef `user` kendisidir (kendi profilinizi
+/// açın) ve `tayfa_id` yoktur; tayfa rozetinde alıcılar tayfanın
+/// yönetici ve moderatörleridir, hedef `tayfa`'dır. Yalnızca
+/// uygulama içi, push gitmez.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -17149,6 +17509,7 @@ enum NotificationType {
   friendSuggestion('friend_suggestion'),
   safetyAlert('safety_alert'),
   celebration('celebration'),
+  badgeEarned('badge_earned'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -20849,7 +21210,11 @@ final class TayfaUpdateRequest {
 }
 
 final class TayfaView {
-  const TayfaView({required this.tayfa, required this.callerRole});
+  const TayfaView({
+    required this.tayfa,
+    required this.callerRole,
+    required this.badges,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -20859,16 +21224,26 @@ final class TayfaView {
     callerRole: Role.fromWire(
       _readString(json['caller_role'], 'TayfaView.caller_role'),
     ),
+    badges: List<EarnedBadge>.unmodifiable(
+      _readList(json['badges'], 'TayfaView.badges').map(
+        (Object? e0) =>
+            EarnedBadge.fromJson(_readObject(e0, 'TayfaView.badges')),
+      ),
+    ),
   );
 
   final Tayfa tayfa;
 
   final Role callerRole;
 
+  /// Tayfanın rozetleri, kazanılma sırasıyla (#258, ADR-0039 §3).
+  final List<EarnedBadge> badges;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'tayfa': tayfa.toJson(),
     'caller_role': callerRole.wire,
+    'badges': <Object?>[for (final e0 in badges) e0.toJson()],
   };
 
   @override
@@ -20876,10 +21251,12 @@ final class TayfaView {
       identical(this, other) ||
       other is TayfaView &&
           tayfa == other.tayfa &&
-          callerRole == other.callerRole;
+          callerRole == other.callerRole &&
+          _deepEquals(badges, other.badges);
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[tayfa, callerRole]);
+  int get hashCode =>
+      Object.hashAll(<Object?>[tayfa, callerRole, _deepHash(badges)]);
 }
 
 final class TayfaVocabularyList {
@@ -21687,6 +22064,7 @@ final class UserProfile {
     required this.mutualTayfas,
     required this.activityVisible,
     this.activityVisibility,
+    this.badges,
     this.birthday,
     this.interests,
     this.about,
@@ -21728,6 +22106,15 @@ final class UserProfile {
       null => null,
       final Object v => ActivityVisibility.fromWire(
         _readString(v, 'UserProfile.activity_visibility'),
+      ),
+    },
+    badges: switch (json['badges']) {
+      null => null,
+      final Object v => List<EarnedBadge>.unmodifiable(
+        _readList(v, 'UserProfile.badges').map(
+          (Object? e0) =>
+              EarnedBadge.fromJson(_readObject(e0, 'UserProfile.badges')),
+        ),
       ),
     },
     birthday: switch (json['birthday']) {
@@ -21797,6 +22184,13 @@ final class UserProfile {
 
   final ActivityVisibility? activityVisibility;
 
+  /// Kişisel rozetler, kazanılma sırasıyla (#258, ADR-0039 §3). Kendi
+  /// profilinizde her zaman (yoksa boş liste); başkasınınkinde
+  /// yalnızca kişinin kişisel istatistik görünürlüğü size izin
+  /// veriyorsa döner (varsayılan kapalı), yoksa alan da yoktur.
+  /// Şampiyonluk rozetleri tayfanın içinde ayrıca görünür.
+  final List<EarnedBadge>? badges;
+
   final Birthday? birthday;
 
   final List<String>? interests;
@@ -21822,6 +22216,8 @@ final class UserProfile {
     'mutual_tayfas': <Object?>[for (final e0 in mutualTayfas) e0.toJson()],
     'activity_visible': activityVisible,
     if (activityVisibility case final value?) 'activity_visibility': value.wire,
+    if (badges case final value?)
+      'badges': <Object?>[for (final e0 in value) e0.toJson()],
     if (birthday case final value?) 'birthday': value.toJson(),
     if (interests case final value?)
       'interests': <Object?>[for (final e0 in value) e0],
@@ -21846,6 +22242,7 @@ final class UserProfile {
           _deepEquals(mutualTayfas, other.mutualTayfas) &&
           activityVisible == other.activityVisible &&
           activityVisibility == other.activityVisibility &&
+          _deepEquals(badges, other.badges) &&
           birthday == other.birthday &&
           _deepEquals(interests, other.interests) &&
           about == other.about &&
@@ -21864,6 +22261,7 @@ final class UserProfile {
     _deepHash(mutualTayfas),
     activityVisible,
     activityVisibility,
+    _deepHash(badges),
     birthday,
     _deepHash(interests),
     about,

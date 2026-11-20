@@ -176,6 +176,7 @@ Map<String, Object?> gorunumJson(
   String tur = 'standard',
   String? anlikEtkinlikId,
   String? donusum,
+  List<Map<String, Object?>> rozetler = const [],
 }) => {
   'tayfa': tayfaJson(
     id: id,
@@ -191,6 +192,7 @@ Map<String, Object?> gorunumJson(
     donusum: donusum,
   ),
   'caller_role': rol,
+  'badges': rozetler,
 };
 
 /// `Membership` JSON'u.

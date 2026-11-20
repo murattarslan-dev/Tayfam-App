@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart' as api;
@@ -258,6 +258,49 @@ void main() {
       expect(sabitUyariMi(alarm(okundu: true)), isFalse);
       // Etkinlik bilgisi yoktur (güvenlik kişisi etkinliği görmez).
       expect(uyariEtkinligi(alarm()), isNull);
+    });
+  });
+
+  group('rozet (badge_earned)', () {
+    final kisisel = _bildirim(
+      tur: 'badge_earned',
+      tayfaId: null,
+      hedefTuru: 'user',
+      hedef: kisiId,
+    );
+    final tayfaRozeti = _bildirim(
+      tur: 'badge_earned',
+      hedefTuru: 'tayfa',
+      hedef: bildirimTayfaId,
+    );
+
+    test('kişisel rozet profili, tayfa rozeti tayfayı açıyor', () {
+      expect(kisisel.type, api.NotificationType.badgeEarned);
+      expect(bildirimAdresi(kisisel), Adresler.kisi(kisiId));
+      expect(bildirimAdresi(tayfaRozeti), Adresler.tayfa(bildirimTayfaId));
+      expect(bildirimKisisi(kisisel), isNull);
+    });
+
+    test('biçimsiz hedef kimliği kullanılmıyor', () {
+      expect(
+        bildirimAdresi(
+          _bildirim(
+            tur: 'badge_earned',
+            tayfaId: null,
+            hedefTuru: 'user',
+            hedef: '../v1/me',
+          ),
+        ),
+        isNull,
+      );
+    });
+
+    test('metin rozeti ve içeriği adlandırmıyor', () {
+      final m = lookupAppLocalizations(const Locale('tr'));
+      expect(bildirimMetni(m, kisisel, kisi: 'Ayşe'), m.rozet_bildirim);
+      expect(bildirimMetni(m, tayfaRozeti, kisi: 'Ayşe'), m.rozet_bildirim_tayfa);
+      expect(bildirimKategorisi(kisisel.type), BildirimKategorisi.etkinlik);
+      expect(bildirimIkonu(kisisel.type), Icons.military_tech_outlined);
     });
   });
 

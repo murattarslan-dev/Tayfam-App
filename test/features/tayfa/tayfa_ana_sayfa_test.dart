@@ -59,6 +59,52 @@ void main() {
     expect(find.text(arbMetni('tayfa_kodu_paylas')), findsNothing);
   });
 
+  group('tayfa rozetleri (issue #251)', () {
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('ad, yıl ve kuralla (${mod.name}, 2× yazı, 320 dp)', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ac(
+          tester,
+          themeMode: mod,
+          tayfa: _gorunum(
+            (_) => gorunumJson(
+              ornekTayfaId,
+              rozetler: [
+                {
+                  'badge_key': 'yilin_tayfasi',
+                  'year': 2026,
+                  'earned_at': '2026-11-01T10:00:00Z',
+                },
+              ],
+            ),
+          ),
+        );
+        expect(tester.takeException(), isNull);
+        final ad = find.text(
+          arbMetni(
+            'rozet_ad_yil',
+          ).replaceAll('{ad}', 'Yılın tayfası').replaceAll('{yil}', '2026'),
+        );
+        await tester.scrollUntilVisible(
+          ad,
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(ad, findsOneWidget);
+        expect(find.text(arbMetni('rozet_baslik')), findsOneWidget);
+      });
+    }
+
+    testWidgets('rozet yoksa bölüm yok', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(tester, tayfa: _gorunum((_) => gorunumJson(ornekTayfaId)));
+      expect(find.text(arbMetni('rozet_baslik')), findsNothing);
+    });
+  });
+
   testWidgets('ad bilinmiyorken genel başlık gösteriliyor', (tester) async {
     ekranBoyutu(tester);
     await _ac(tester, tayfa: _gorunum((_) => const ApiOffline()));

@@ -13309,5 +13309,143 @@
   "ders_konu_liste_bos": "Ders listesi henüz hazır değil.",
   "@ders_konu_liste_bos": {
     "description": "Ortak ders/konu seçicide katalogda hiç seçilebilir ders yokken seçicinin yerindeki sakin not."
+  },
+  "rozet_baslik": "Rozetler",
+  "@rozet_baslik": {
+    "description": "Profilde ve tayfa ana sayfasında rozet bölümünün başlığı (App ADR-0033 §3)."
+  },
+  "rozet_bos_kendi": "Henüz rozetin yok. Etkinliklere katıldıkça rozetlerin burada görünür.",
+  "@rozet_bos_kendi": {
+    "description": "Kendi profilinde hiç rozet yokken rozet bölümündeki sakin not."
+  },
+  "rozet_gorunurluk_notu": "Rozetlerini başkaları yalnızca kişisel istatistiklerin onlara açıksa görür.",
+  "@rozet_gorunurluk_notu": {
+    "description": "Kendi profilinde rozet bölümünün altındaki not: kişisel rozetler kişisel istatistik görünürlüğüne tabidir (Tayfam-Api ADR-0039 §3)."
+  },
+  "rozet_ad_yil": "{ad} · {yil}",
+  "@rozet_ad_yil": {
+    "description": "Yıllık rozetin görünen adı: katalogdaki rozet adı ve kazanıldığı takvim yılı.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Yılın gezgini"
+      },
+      "yil": {
+        "type": "String",
+        "example": "2026"
+      }
+    }
+  },
+  "rozet_okunus_yil": "{ad}, {yil}",
+  "@rozet_okunus_yil": {
+    "description": "Ekran okuyucunun yıllık rozeti okuyuşu: rozet adı ve yıl.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Yılın gezgini"
+      },
+      "yil": {
+        "type": "String",
+        "example": "2026"
+      }
+    }
+  },
+  "rozet_genel_ad": "Rozet",
+  "@rozet_genel_ad": {
+    "description": "Adı okunamayan (anahtarı geçersiz) rozetin genel adı."
+  },
+  "rozet_kural_ilk": "İlk etkinliğine katılınca kazanılır.",
+  "@rozet_kural_ilk": {
+    "description": "Rozetin kazanma kuralı (first, türsüz)."
+  },
+  "rozet_kural_ilk_tur": "İlk {tur} etkinliğine katılınca kazanılır.",
+  "@rozet_kural_ilk_tur": {
+    "description": "Rozetin kazanma kuralı (first, bir türde); tur katalogdaki tür adıdır.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "Satranç"
+      }
+    }
+  },
+  "rozet_kural_sampiyon": "Bir etkinlikte kazanan ilan edilince kazanılır.",
+  "@rozet_kural_sampiyon": {
+    "description": "Rozetin kazanma kuralı (champion, türsüz)."
+  },
+  "rozet_kural_sampiyon_tur": "Bir {tur} etkinliğinde kazanan ilan edilince kazanılır.",
+  "@rozet_kural_sampiyon_tur": {
+    "description": "Rozetin kazanma kuralı (champion, bir türde); tur katalogdaki tür adıdır.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "Satranç"
+      }
+    }
+  },
+  "rozet_kural_esik_toplam": "{metrik} toplamda {deger} olunca kazanılır.",
+  "@rozet_kural_esik_toplam": {
+    "description": "Rozetin kazanma kuralı (threshold, all_time): metriğin adı ve eşik değeri.",
+    "placeholders": {
+      "metrik": {
+        "type": "String",
+        "example": "Katılım sayısı"
+      },
+      "deger": {
+        "type": "String",
+        "example": "50"
+      }
+    }
+  },
+  "rozet_kural_esik_yillik": "{metrik} bir takvim yılında {deger} olunca kazanılır.",
+  "@rozet_kural_esik_yillik": {
+    "description": "Rozetin kazanma kuralı (threshold, year): metriğin adı ve eşik değeri; rozet her yıl ayrı kazanılır.",
+    "placeholders": {
+      "metrik": {
+        "type": "String",
+        "example": "Etkinlik sayısı"
+      },
+      "deger": {
+        "type": "String",
+        "example": "12"
+      }
+    }
+  },
+  "rozet_metrik_etkinlik": "Etkinlik sayısı",
+  "@rozet_metrik_etkinlik": {
+    "description": "Rozet kuralındaki ortak metrik events."
+  },
+  "rozet_metrik_katilim": "Katılım sayısı",
+  "@rozet_metrik_katilim": {
+    "description": "Rozet kuralındaki ortak metrik attended."
+  },
+  "rozet_metrik_katilimci": "Katılımcı sayısı",
+  "@rozet_metrik_katilimci": {
+    "description": "Rozet kuralındaki ortak metrik participants."
+  },
+  "rozet_metrik_sure": "Etkinlik süresi",
+  "@rozet_metrik_sure": {
+    "description": "Rozet kuralındaki ortak metrik duration."
+  },
+  "rozet_metrik_turlu": "{tur} · {metrik}",
+  "@rozet_metrik_turlu": {
+    "description": "Türe özel rozet metriğinin adı: türün adı ve metriğin ya da bileşenin adı.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "Doğa yürüyüşü"
+      },
+      "metrik": {
+        "type": "String",
+        "example": "Mesafe"
+      }
+    }
+  },
+  "rozet_bildirim": "Yeni bir rozet kazandın",
+  "@rozet_bildirim": {
+    "description": "Uygulama içi bildirim (badge_earned, kişisel rozet); rozeti adlandırmaz."
+  },
+  "rozet_bildirim_tayfa": "Tayfan yeni bir rozet kazandı",
+  "@rozet_bildirim_tayfa": {
+    "description": "Uygulama içi bildirim (badge_earned, tayfa rozeti; yöneticilere); rozeti adlandırmaz."
   }
 }

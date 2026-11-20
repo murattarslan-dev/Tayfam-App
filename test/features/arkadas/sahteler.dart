@@ -97,6 +97,7 @@ Map<String, Object?> kisiProfiliJson(
   String? durum,
   bool gecmisGorunur = false,
   List<Map<String, Object?>> ortak = const [],
+  List<Map<String, Object?>>? rozetler,
 }) => {
   'user_id': id,
   'display_name': kisiAdi(id),
@@ -104,6 +105,7 @@ Map<String, Object?> kisiProfiliJson(
   'friend_state': ?durum,
   'mutual_tayfas': ortak,
   'activity_visible': gecmisGorunur,
+  'badges': ?rozetler,
 };
 
 /// `ActivityRecord` JSON'u: üyesi olunan tayfadaki ([uye]) ya da olunmayan

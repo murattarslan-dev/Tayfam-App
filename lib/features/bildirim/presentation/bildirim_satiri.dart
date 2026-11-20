@@ -401,7 +401,8 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.eventCreated ||
   NotificationType.eventUpdated ||
   NotificationType.rsvpPromoted ||
-  NotificationType.celebration => BildirimKategorisi.etkinlik,
+  NotificationType.celebration ||
+  NotificationType.badgeEarned => BildirimKategorisi.etkinlik,
   NotificationType.dmRequest ||
   NotificationType.dmMessage => BildirimKategorisi.mesaj,
   NotificationType.friendRequest ||
@@ -462,6 +463,11 @@ String bildirimMetni(
   NotificationType.dataExportReady => m.bildirim_veri_hazir,
   // Kazananı adlandırmaz (kesin kural 7); kutlamayı etkinlik gösterir.
   NotificationType.celebration => m.bilesen_celebration_bildirim,
+  // Rozeti adlandırmaz (kesin kural 7); rozet profilde ya da tayfada.
+  NotificationType.badgeEarned =>
+    bildirim.targetType == NotificationTargetType.tayfa
+        ? m.rozet_bildirim_tayfa
+        : m.rozet_bildirim,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -491,5 +497,6 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.dmMessage => Icons.chat_bubble_outline,
   NotificationType.dataExportReady => Icons.download_outlined,
   NotificationType.celebration => Icons.emoji_events_outlined,
+  NotificationType.badgeEarned => Icons.military_tech_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };

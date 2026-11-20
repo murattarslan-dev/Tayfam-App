@@ -858,6 +858,79 @@ void main() {
       expect(find.text(arbMetni('arkadas_ortak_tayfalar')), findsNothing);
     });
 
+    group('rozetler (issue #251)', () {
+      SahteTayfaTasima tasima({List<Map<String, Object?>>? rozetler}) =>
+          arkadasTasimasi({
+            'GET $profilYolu': (i) => kisiProfiliJson(
+              i.yolParametreleri['user_id']!,
+              rozetler: rozetler,
+            ),
+          });
+
+      for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+        testWidgets('kendi profilinde rozetler ve görünürlük notu '
+            '(${mod.name}, 2× yazı, 320 dp)', (tester) async {
+          ekranBoyutu(tester, genislik: 320);
+          ikiKatYazi(tester);
+          await _ac(
+            tester,
+            const KisiProfiliEkrani(kullaniciId: benimId),
+            tasima(
+              rozetler: [
+                {
+                  'badge_key': 'ilk_adim',
+                  'earned_at': '2026-11-01T10:00:00Z',
+                },
+              ],
+            ),
+            themeMode: mod,
+          );
+          expect(tester.takeException(), isNull);
+          final ad = find.text('İlk adım');
+          await tester.scrollUntilVisible(
+            ad,
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
+          expect(find.text(arbMetni('rozet_baslik')), findsOneWidget);
+          expect(ad, findsOneWidget);
+          expect(find.text(arbMetni('rozet_gorunurluk_notu')), findsOneWidget);
+        });
+      }
+
+      testWidgets('kendi profilinde rozet yoksa sakin not', (tester) async {
+        ekranBoyutu(tester);
+        await _ac(
+          tester,
+          const KisiProfiliEkrani(kullaniciId: benimId),
+          tasima(rozetler: const []),
+        );
+        final bos = find.text(arbMetni('rozet_bos_kendi'));
+        await tester.scrollUntilVisible(
+          bos,
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(bos, findsOneWidget);
+      });
+
+      testWidgets('başkasının profilinde alan yoksa bölüm yok', (tester) async {
+        ekranBoyutu(tester);
+        await _ac(tester, const KisiProfiliEkrani(kullaniciId: kisiId1), tasima());
+        expect(find.text(arbMetni('rozet_baslik')), findsNothing);
+      });
+
+      testWidgets('başkasının profilinde boş liste: bölüm yok', (tester) async {
+        ekranBoyutu(tester);
+        await _ac(
+          tester,
+          const KisiProfiliEkrani(kullaniciId: kisiId1),
+          tasima(rozetler: const []),
+        );
+        expect(find.text(arbMetni('rozet_baslik')), findsNothing);
+      });
+    });
+
     testWidgets('kanca: başka paketin eylemi görünür', (tester) async {
       ekranBoyutu(tester);
       KisiProfiliBilgisi? gelen;
