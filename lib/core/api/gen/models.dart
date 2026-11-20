@@ -7996,6 +7996,7 @@ final class Event {
     required this.description,
     required this.startsAt,
     required this.endsAt,
+    required this.openEnded,
     this.meetingPointName,
     this.meetingPoint,
     this.city,
@@ -8040,6 +8041,7 @@ final class Event {
     description: _readString(json['description'], 'Event.description'),
     startsAt: _readDateTime(json['starts_at'], 'Event.starts_at'),
     endsAt: _readDateTime(json['ends_at'], 'Event.ends_at'),
+    openEnded: _readBool(json['open_ended'], 'Event.open_ended'),
     meetingPointName: switch (json['meeting_point_name']) {
       null => null,
       final Object v => _readString(v, 'Event.meeting_point_name'),
@@ -8129,6 +8131,14 @@ final class Event {
 
   final DateTime endsAt;
 
+  /// `starts_now` ile açılmış ve organizatörün henüz bitirmediği
+  /// etkinlik (ADR-0038 §1): `ends_at` planlanmış bitiş değil, en geç
+  /// bitiştir (başlangıçtan 12 saat sonra); etkinlik o anda
+  /// kendiliğinden biter. Kendiliğinden bittikten sonra da `true`
+  /// kalır; etkinliğin sürüp sürmediği `ends_at` ile şimdiye bakılarak
+  /// anlaşılır. Organizatör `POST …/finish` ile bitirir.
+  final bool openEnded;
+
   final String? meetingPointName;
 
   final LatLng? meetingPoint;
@@ -8195,6 +8205,7 @@ final class Event {
     'description': description,
     'starts_at': startsAt.toUtc().toIso8601String(),
     'ends_at': endsAt.toUtc().toIso8601String(),
+    'open_ended': openEnded,
     if (meetingPointName case final value?) 'meeting_point_name': value,
     if (meetingPoint case final value?) 'meeting_point': value.toJson(),
     if (city case final value?) 'city': value,
@@ -8234,6 +8245,7 @@ final class Event {
           description == other.description &&
           startsAt == other.startsAt &&
           endsAt == other.endsAt &&
+          openEnded == other.openEnded &&
           meetingPointName == other.meetingPointName &&
           meetingPoint == other.meetingPoint &&
           city == other.city &&
@@ -8269,6 +8281,7 @@ final class Event {
     description,
     startsAt,
     endsAt,
+    openEnded,
     meetingPointName,
     meetingPoint,
     city,
@@ -9680,6 +9693,8 @@ final class EventComponentState {
   ]);
 }
 
+/// `starts_at` ve `ends_at` zorunludur; `starts_now` `true` ise ikisi
+/// de gönderilmez.
 /// Yüz yüze: `meeting_point`, `city`, `district` zorunlu; `online_url`
 /// boş. Çevrimiçi: `online_url` (https) zorunlu; yer alanları boş.
 /// `type` katalogdaki aktif bir türün anahtarıdır; etkinlik türün
@@ -9701,8 +9716,9 @@ final class EventCreateRequest {
     required this.mode,
     required this.title,
     this.description,
-    required this.startsAt,
-    required this.endsAt,
+    this.startsAt,
+    this.endsAt,
+    this.startsNow,
     this.meetingPointName,
     this.meetingPoint,
     this.city,
@@ -9747,8 +9763,18 @@ final class EventCreateRequest {
       null => null,
       final Object v => _readString(v, 'EventCreateRequest.description'),
     },
-    startsAt: _readDateTime(json['starts_at'], 'EventCreateRequest.starts_at'),
-    endsAt: _readDateTime(json['ends_at'], 'EventCreateRequest.ends_at'),
+    startsAt: switch (json['starts_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventCreateRequest.starts_at'),
+    },
+    endsAt: switch (json['ends_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventCreateRequest.ends_at'),
+    },
+    startsNow: switch (json['starts_now']) {
+      null => null,
+      final Object v => _readBool(v, 'EventCreateRequest.starts_now'),
+    },
     meetingPointName: switch (json['meeting_point_name']) {
       null => null,
       final Object v => _readString(v, 'EventCreateRequest.meeting_point_name'),
@@ -9819,11 +9845,24 @@ final class EventCreateRequest {
   /// Kısıtlar: maxLength: 5000.
   final String? description;
 
-  /// Gelecekte, en fazla iki yıl ileri.
-  final DateTime startsAt;
+  /// Gelecekte, en fazla iki yıl ileri. `starts_now` ile gönderilmez.
+  final DateTime? startsAt;
 
-  /// Başlangıçtan sonra, en fazla 30 gün.
-  final DateTime endsAt;
+  /// Başlangıçtan sonra, en fazla 30 gün. `starts_now` ile gönderilmez.
+  final DateTime? endsAt;
+
+  /// Şimdi başlat (ADR-0038 §1): etkinlik sunucu saatiyle şimdi başlar
+  /// (istemci saati kullanılmaz) ve açık uçludur (`open_ended`):
+  /// `ends_at` 12 saat sonrasına yazılır, organizatör
+  /// `POST …/finish` ile bitirir. `starts_at`, `ends_at` ve
+  /// `recurrence` gönderilmez, `discoverable` `true` olamaz
+  /// (`invalid-request`). Tayfada etkinlik açma izni yerine tayfanın
+  /// `now_create_min_role` ayarı geçerlidir. Kişi başına aynı anda en
+  /// fazla bir açık şimdi etkinliği (tayfa içi ve anlık toplam):
+  /// aşılırsa `now-limit-reached`. Yüz yüzede buluşma noktası yine
+  /// zorunludur; istemcinin cihaz konumuyla önerip kullanıcının
+  /// onayladığı noktadır, cihaz konumu ayrıca gönderilmez.
+  final bool? startsNow;
 
   /// Kısıtlar: maxLength: 120.
   final String? meetingPointName;
@@ -9864,8 +9903,10 @@ final class EventCreateRequest {
     'mode': mode.wire,
     'title': title,
     if (description case final value?) 'description': value,
-    'starts_at': startsAt.toUtc().toIso8601String(),
-    'ends_at': endsAt.toUtc().toIso8601String(),
+    if (startsAt case final value?)
+      'starts_at': value.toUtc().toIso8601String(),
+    if (endsAt case final value?) 'ends_at': value.toUtc().toIso8601String(),
+    if (startsNow case final value?) 'starts_now': value,
     if (meetingPointName case final value?) 'meeting_point_name': value,
     if (meetingPoint case final value?) 'meeting_point': value.toJson(),
     if (city case final value?) 'city': value,
@@ -9890,6 +9931,7 @@ final class EventCreateRequest {
           description == other.description &&
           startsAt == other.startsAt &&
           endsAt == other.endsAt &&
+          startsNow == other.startsNow &&
           meetingPointName == other.meetingPointName &&
           meetingPoint == other.meetingPoint &&
           city == other.city &&
@@ -9911,6 +9953,7 @@ final class EventCreateRequest {
     description,
     startsAt,
     endsAt,
+    startsNow,
     meetingPointName,
     meetingPoint,
     city,
@@ -20535,6 +20578,7 @@ final class Tayfa {
     this.deletionAt,
     required this.memberCount,
     required this.membersCanCreateEvents,
+    required this.nowCreateMinRole,
     this.joinCode,
     this.pendingJoinRequestCount,
     required this.createdAt,
@@ -20586,6 +20630,9 @@ final class Tayfa {
     membersCanCreateEvents: _readBool(
       json['members_can_create_events'],
       'Tayfa.members_can_create_events',
+    ),
+    nowCreateMinRole: Role.fromWire(
+      _readString(json['now_create_min_role'], 'Tayfa.now_create_min_role'),
     ),
     joinCode: switch (json['join_code']) {
       null => null,
@@ -20641,6 +20688,11 @@ final class Tayfa {
   /// her zaman yönetir.
   final bool membersCanCreateEvents;
 
+  /// Tayfada Şimdi başlat (`starts_now`) için gereken en düşük rol;
+  /// varsayılan `member` (ADR-0038 §2). `members_can_create_events`
+  /// ayarından bağımsızdır. Yalnızca yönetici değiştirir.
+  final Role nowCreateMinRole;
+
   /// Yalnızca yöneticiye döner.
   final String? joinCode;
 
@@ -20674,6 +20726,7 @@ final class Tayfa {
       'deletion_at': value.toUtc().toIso8601String(),
     'member_count': memberCount,
     'members_can_create_events': membersCanCreateEvents,
+    'now_create_min_role': nowCreateMinRole.wire,
     if (joinCode case final value?) 'join_code': value,
     if (pendingJoinRequestCount case final value?)
       'pending_join_request_count': value,
@@ -20700,6 +20753,7 @@ final class Tayfa {
           deletionAt == other.deletionAt &&
           memberCount == other.memberCount &&
           membersCanCreateEvents == other.membersCanCreateEvents &&
+          nowCreateMinRole == other.nowCreateMinRole &&
           joinCode == other.joinCode &&
           pendingJoinRequestCount == other.pendingJoinRequestCount &&
           createdAt == other.createdAt &&
@@ -20722,6 +20776,7 @@ final class Tayfa {
     deletionAt,
     memberCount,
     membersCanCreateEvents,
+    nowCreateMinRole,
     joinCode,
     pendingJoinRequestCount,
     createdAt,
@@ -21112,6 +21167,7 @@ final class TayfaUpdateRequest {
     this.interests,
     this.joinPolicy,
     this.membersCanCreateEvents,
+    this.nowCreateMinRole,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -21155,6 +21211,12 @@ final class TayfaUpdateRequest {
             'TayfaUpdateRequest.members_can_create_events',
           ),
         },
+        nowCreateMinRole: switch (json['now_create_min_role']) {
+          null => null,
+          final Object v => Role.fromWire(
+            _readString(v, 'TayfaUpdateRequest.now_create_min_role'),
+          ),
+        },
       );
 
   /// Kendi hazır `cover` yüklemeniz (bu tayfa için açılmış); `""` kapağı
@@ -21175,6 +21237,9 @@ final class TayfaUpdateRequest {
   /// `true`: her etkin üye etkinlik açabilir. `false`: yalnızca moderatör ve yönetici.
   final bool? membersCanCreateEvents;
 
+  /// Şimdi başlat (`starts_now`) için gereken en düşük rol (ADR-0038 §2).
+  final Role? nowCreateMinRole;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (coverUploadId case final value?) 'cover_upload_id': value,
@@ -21185,6 +21250,7 @@ final class TayfaUpdateRequest {
     if (joinPolicy case final value?) 'join_policy': value.wire,
     if (membersCanCreateEvents case final value?)
       'members_can_create_events': value,
+    if (nowCreateMinRole case final value?) 'now_create_min_role': value.wire,
   };
 
   @override
@@ -21196,7 +21262,8 @@ final class TayfaUpdateRequest {
           description == other.description &&
           _deepEquals(interests, other.interests) &&
           joinPolicy == other.joinPolicy &&
-          membersCanCreateEvents == other.membersCanCreateEvents;
+          membersCanCreateEvents == other.membersCanCreateEvents &&
+          nowCreateMinRole == other.nowCreateMinRole;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -21206,6 +21273,7 @@ final class TayfaUpdateRequest {
     _deepHash(interests),
     joinPolicy,
     membersCanCreateEvents,
+    nowCreateMinRole,
   ]);
 }
 
