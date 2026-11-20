@@ -95,7 +95,7 @@ final class DersKonuAgaci {
     );
   }
 
-  DersKonuAgaci._(this._kayitlar, this._seviyeler, this._altlar);
+  const DersKonuAgaci._(this._kayitlar, this._seviyeler, this._altlar);
 
   final Map<String, CatalogStudyTag> _kayitlar;
   final Map<String, DersKonuSeviyesi> _seviyeler;
