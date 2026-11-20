@@ -18,6 +18,9 @@ library;
 // Anlık etkinlikte arkadaş seçimi (ADR-0026).
 export 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart'
     show ArkadaslarNotifier, arkadaslarProvider;
+// Şimdi başlatta arkadaş seçici: bugün "Boşum" diyenler önce (App ADR-0032 §4).
+export 'package:tayfam/features/arkadas/application/bos_vakit.dart'
+    show rozetGunu;
 export 'package:tayfam/features/arkadas/data/arkadas_deposu.dart'
     show ArkadasDeposu, arkadasDeposuProvider;
 export 'package:tayfam/features/arkadas/application/bildirim_yanitlari.dart'

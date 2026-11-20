@@ -27,13 +27,21 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - `badge_earned` (rozet kazanıldı): kişisel rozette kendi profilin
 ///   (`target_id`), tayfa rozetinde tayfanın ana sayfası; rozet bildirimde
 ///   adlandırılmaz.
+/// - `now_started` (Şimdi başlat; Tayfam-Api ADR-0038 §4): etkinliğin
+///   detayı. Anlık etkinlikte bildirim bir davettir: alıcı tayfanın etkin
+///   üyesi değilse ([simdiDavetiMi]) gelen tayfa davetleri açılır.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
-/// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını
-/// ilgili ekran gösterir (kesin kural 5).
-String? bildirimAdresi(Notification bildirim) {
+/// [etkinUyeMi] tayfalarım listesinden kurulur ([etkinUyelik]); liste
+/// okunmadıysa `null` ve üyelik varsayılır. Erişim kararı sunucudadır:
+/// adres açılır, üyelik ve varlık hatasını ilgili ekran gösterir (kesin
+/// kural 5).
+String? bildirimAdresi(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
   final tayfaId = _gecerli(bildirim.tayfaId);
   final hedefId = _gecerli(bildirim.targetId);
+  if (simdiDavetiMi(bildirim, etkinUyeMi: etkinUyeMi)) {
+    return Adresler.tayfaDavetleri;
+  }
   final arkadaslik = switch ((bildirim.type, bildirim.targetType, hedefId)) {
     (
       NotificationType.friendRequest ||
@@ -88,16 +96,43 @@ String? bildirimKisisi(Notification bildirim) {
     NotificationType.friendSuggestion ||
     NotificationType.safetyAlert => bildirim.targetId,
     NotificationType.hikeOverdue => bildirim.subjectUserId,
-    NotificationType.tayfaInvitation => bildirim.actorId,
+    NotificationType.tayfaInvitation ||
+    NotificationType.nowStarted => bildirim.actorId,
     _ => null,
   };
   return _gecerli(kimlik);
 }
 
+/// Kullanıcı [tayfaId]'nin etkin üyesi mi.
+typedef EtkinUyeMi = bool Function(String tayfaId);
+
+/// Tayfalarım listesinden ([tayfalar]) etkin üyelik sorgusu; liste henüz
+/// okunmadıysa `null`.
+EtkinUyeMi? etkinUyelik(List<MyTayfa>? tayfalar) => tayfalar == null
+    ? null
+    : (tayfaId) => tayfalar.any(
+        (t) => t.tayfaId == tayfaId && t.status == MyTayfaStatus.active,
+      );
+
+/// `now_started` bir davet mi (anlık etkinlik; Tayfam-Api ADR-0038 §4):
+/// tayfası geçerli ve kullanıcı o tayfanın etkin üyesi değil. Üyelik
+/// bilinmiyorsa ([etkinUyeMi] `null`) davet sayılmaz.
+bool simdiDavetiMi(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
+  if (bildirim.type != NotificationType.nowStarted || etkinUyeMi == null) {
+    return false;
+  }
+  final tayfa = _gecerli(bildirim.tayfaId);
+  return tayfa != null && !etkinUyeMi(tayfa);
+}
+
 /// Tayfa davetinin (`tayfa_invitation`) tayfası: bildirimin `tayfa_id`'si,
-/// yoksa hedefi `tayfa` olan `target_id`. Biçimsizse ya da başka türse
-/// `null`.
+/// yoksa hedefi `tayfa` olan `target_id`. Şimdi bildiriminde (`now_started`,
+/// anlık etkinlik daveti) yalnızca `tayfa_id`. Biçimsizse ya da başka
+/// türse `null`.
 String? davetTayfasi(Notification bildirim) {
+  if (bildirim.type == NotificationType.nowStarted) {
+    return _gecerli(bildirim.tayfaId);
+  }
   if (bildirim.type != NotificationType.tayfaInvitation) return null;
   final tayfa = _gecerli(bildirim.tayfaId);
   if (tayfa != null) return tayfa;
@@ -123,14 +158,22 @@ enum SatirIciIslem {
 }
 
 /// [bildirim]'in satır içi işlemi; yoksa ya da gereken kimlik
-/// doğrulanamazsa `null`. Yetki kararı sunucudadır (kesin kural 5):
-/// işlem reddedilirse hata gösterilir.
-SatirIciIslem? satirIciIslem(Notification bildirim) {
+/// doğrulanamazsa `null`. Anlık etkinliğin şimdi bildirimi bir davettir
+/// (Notion Faz 3 §D: bildirimden "Katıl" doğrudan katılım); [etkinUyeMi]
+/// [bildirimAdresi]'ndeki gibidir. Yetki kararı sunucudadır (kesin kural
+/// 5): işlem reddedilirse hata gösterilir.
+SatirIciIslem? satirIciIslem(
+  Notification bildirim, {
+  EtkinUyeMi? etkinUyeMi,
+}) {
   final tayfa = _gecerli(bildirim.tayfaId);
   return switch (bildirim.type) {
     NotificationType.friendRequest when bildirimKisisi(bildirim) != null =>
       SatirIciIslem.arkadaslik,
     NotificationType.tayfaInvitation when davetTayfasi(bildirim) != null =>
+      SatirIciIslem.davet,
+    NotificationType.nowStarted
+        when simdiDavetiMi(bildirim, etkinUyeMi: etkinUyeMi) =>
       SatirIciIslem.davet,
     NotificationType.joinRequest when tayfa != null =>
       SatirIciIslem.katilimIstegi,

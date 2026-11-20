@@ -20,6 +20,7 @@ import 'package:tayfam/features/bildirim/application/sekme_durumu.dart';
 import 'package:tayfam/features/bildirim/presentation/bildirim_satiri.dart';
 import 'package:tayfam/features/bildirim/presentation/bildirim_yenileyici.dart';
 import 'package:tayfam/features/bildirim/presentation/sekme_kartlari.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Bildirimler ekranı (`/bildirimler`; ADR-0018 §3, 2026-11-13 tasarım:
@@ -207,7 +208,13 @@ class _BildirimlerEkraniState extends ConsumerState<BildirimlerEkrani> {
     unawaited(
       ref.read(bildirimListesiProvider.notifier).okunduIsaretle(bildirim.id),
     );
-    _git(bildirimAdresi(bildirim));
+    // Şimdi bildiriminde üye değilse davetler açılır (anlık etkinlik).
+    _git(
+      bildirimAdresi(
+        bildirim,
+        etkinUyeMi: etkinUyelik(ref.read(tayfalarimProvider).value),
+      ),
+    );
   }
 
   /// Katılım isteğinde "İncele": okundu işaretlenir ve tayfanın katılım

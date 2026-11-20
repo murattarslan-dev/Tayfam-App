@@ -36,15 +36,18 @@ const String sosyalAyarlarYolu = 'GET /v1/me/social-settings';
 const String sosyalAyarlarDegistirYolu = 'PATCH /v1/me/social-settings';
 
 /// `SocialSettings` JSON'u; varsayılanlar sözleşmedeki gibi (profilleme
-/// açık, "Beni önerme" kapalı, "Keşfet'te arkadaşlarım görebilsin" açık).
+/// açık, "Beni önerme" kapalı, "Keşfet'te arkadaşlarım görebilsin" açık,
+/// şimdi bildirimi bütün arkadaşlardan).
 Map<String, Object?> sosyalAyarlarJson({
   bool profilleme = true,
   bool gizle = false,
   bool kesfet = true,
+  String simdiKimden = 'all',
 }) => {
   'profiling_enabled': profilleme,
   'hide_from_suggestions': gizle,
   'discover_visible_to_friends': kesfet,
+  'now_from_friends': simdiKimden,
 };
 
 /// Testlerde kullanılan, biçimi geçerli örnek oturum kimlikleri.

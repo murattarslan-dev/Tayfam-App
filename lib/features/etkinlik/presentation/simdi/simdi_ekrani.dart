@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
@@ -21,6 +23,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/simdi_baslat.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_formu.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/simdi_alici_secici.dart';
 import 'package:tayfam/features/etkinlik/presentation/tur_secici.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -36,7 +39,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   yoksa seçici elle çalışır. Çevrimiçide bağlantı alanı.
 /// - Türün zorunlu katalog alanları ve `optional` bileşenlerin aç/kapa
 ///   satırları; `organizer_choice` parametreleri varsayılanla gider.
-/// - "Kimler duysun" bilgi satırı. Arkadaş seçici ayrı iştir (#249).
+/// - "Kimler duysun": tayfada bilgi satırı; anlıkta önceden dolu arkadaş
+///   seçici ([SimdiAlicilariBolumu], ADR-0032 §4). Günlük şimdi yayını
+///   sınırı aşılırsa ekran bunu söyler ve "Bildirimsiz başlat"ı önerir.
 ///
 /// Başarıda etkinliğin detayı açılır.
 class SimdiEkrani extends ConsumerStatefulWidget {
@@ -199,10 +204,16 @@ class _SimdiEkraniState extends ConsumerState<SimdiEkrani> {
                     onSecim: (_, _, _) {},
                   ),
                   const SizedBox(height: TayfamSpacing.s20),
-                  SihirbazBilgiKutusu(
-                    metin: _haberMetni(m, t),
-                    ikon: Icons.notifications_none,
-                  ),
+                  if (widget.anahtar.tayfaId == null)
+                    SimdiAlicilariBolumu(
+                      anahtar: widget.anahtar,
+                      etkin: !kilitli,
+                    )
+                  else
+                    SihirbazBilgiKutusu(
+                      metin: m.simdi_haber_tayfa,
+                      ikon: Icons.notifications_none,
+                    ),
                   const SizedBox(height: TayfamSpacing.s12),
                   SihirbazBilgiKutusu(
                     metin: m.simdi_sure_bilgisi,
@@ -211,6 +222,23 @@ class _SimdiEkraniState extends ConsumerState<SimdiEkrani> {
                   if (t.hata case final hata?) ...[
                     const SizedBox(height: TayfamSpacing.s16),
                     HataSatiri.hatadan(hata),
+                    if (_yayinSiniri(hata)) ...[
+                      const SizedBox(height: TayfamSpacing.s8),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: CerceveliHapEylem(
+                          etiket: m.simdi_bildirim_bildirimsiz,
+                          ikon: Icons.notifications_off_outlined,
+                          onPressed: kilitli
+                              ? null
+                              : () => unawaited(
+                                  _n.bildirimsizGonder(
+                                    varsayilanBaslik: varsayilan,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
                   ],
                 ],
               ),
@@ -227,10 +255,12 @@ class _SimdiEkraniState extends ConsumerState<SimdiEkrani> {
     );
   }
 
-  String _haberMetni(AppLocalizations m, EtkinlikTaslagi t) {
-    if (widget.anahtar.tayfaId != null) return m.simdi_haber_tayfa;
-    return t.davetliler.isEmpty ? m.simdi_haber_anlik : m.simdi_haber_davetli;
-  }
+  /// Günlük şimdi yayını sınırı (`now-broadcast-limit-reached`): hiçbir
+  /// şey açılmadı; etkinlik bildirimsiz başlatılabilir (sözleşme).
+  bool _yayinSiniri(Object hata) =>
+      widget.anahtar.tayfaId == null &&
+      hata is ApiProblem &&
+      hata.type == ProblemType.nowBroadcastLimitReached;
 
   // --- Tür -------------------------------------------------------------------
 

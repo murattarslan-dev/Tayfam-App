@@ -67,6 +67,51 @@ final class NotificationPreferencesApi {
     );
   }
 
+  /// Bir tayfanın şimdi bildirimlerini kapatır ya da açar
+  ///
+  /// "Şimdi bildirimleri" (ADR-0038 §4): tayfada biri Şimdi başlat ile
+  /// etkinlik açınca gelen `now_started` bildirimi. Etkin üyesi
+  /// olduğunuz tayfa için (`tayfa-not-found`). Seviye yalnızca `all` ya
+  /// da `none` (`mentions` `invalid-request`); `none` isteğe bağlı
+  /// olarak `mute_until`'e kadar sürer (en fazla bir yıl); `all` ile
+  /// `mute_until` verilemez, `all` tercihi kaldırır. Tercih listede
+  /// `scope_type: tayfa_now` olarak görünür. Tayfanın genel seviyesi
+  /// `none` ise şimdi bildirimi de gitmez. Sessize alma bildirimleri
+  /// listeden gizlemez; yalnızca anlık bildirim (push) gitmez.
+  ///
+  /// `PUT /v1/notification-preferences/tayfas/{tayfa_id}/now`
+  Future<NotificationPreference> setTayfaNowNotificationPreference({
+    required String tayfaId,
+    required NowNotificationPreferenceRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/notification-preferences/tayfas/{tayfa_id}/now',
+      pathParams: {'tayfa_id': tayfaId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return NotificationPreference.fromJson(
+      jsonObject(response, 'setTayfaNowNotificationPreference'),
+    );
+  }
+
+  /// Tayfanın şimdi bildirimlerini varsayılana (`all`) döndürür
+  ///
+  /// `DELETE /v1/notification-preferences/tayfas/{tayfa_id}/now`
+  Future<void> resetTayfaNowNotificationPreference({
+    required String tayfaId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/notification-preferences/tayfas/{tayfa_id}/now',
+      pathParams: {'tayfa_id': tayfaId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
   /// Bir birebir konuşmayı sessize alır ya da seviyesini değiştirir
   ///
   /// Yalnızca tarafı olduğunuz ve gördüğünüz konuşma için (konuşmayı

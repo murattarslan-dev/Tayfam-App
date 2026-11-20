@@ -13,6 +13,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
+import 'package:tayfam/features/etkinlik/application/simdi_alicilari.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -261,6 +262,11 @@ class SimdiNotifier extends Notifier<EtkinlikTaslagi> {
   /// gösterilir. Sürerken ikinci çağrı yok sayılır; tekrar denemede aynı
   /// `client_request_id` gönderilir. [varsayilanBaslik] başlık boşsa
   /// kullanılır (ARB'den, ekran üretir).
+  ///
+  /// Anlık etkinlikte seçili arkadaşlar `now_recipient_ids` ile gider
+  /// ([simdiAlicilariProvider]). Günlük şimdi yayını sınırı aşılırsa
+  /// (`now-broadcast-limit-reached`) sunucu hiçbir şey açmaz; hata
+  /// gösterilir ve ekran [bildirimsizGonder]'i önerir.
   Future<void> gonder({required String varsayilanBaslik}) async {
     final mevcut = state;
     if (_kilitli) return;
@@ -286,10 +292,20 @@ class SimdiNotifier extends Notifier<EtkinlikTaslagi> {
             .toSet()
             .take(anlikDavetliEnCok)
             .toList();
+        // Şimdi bildirimi alıcıları (ADR-0032 §4): davetlilerle kesişmez,
+        // en çok [simdiAliciEnCok].
+        final alicilar = ref
+            .read(simdiAlicilariProvider(anahtar))
+            .secili
+            .where((id) => !davetliler.contains(id))
+            .toSet()
+            .take(simdiAliciEnCok)
+            .toList();
         anlikSonuc = await depo.anlikOlustur(
           InstantEventCreateRequest(
             event: istek,
             inviteeUserIds: davetliler.isEmpty ? null : davetliler,
+            nowRecipientIds: alicilar.isEmpty ? null : alicilar,
           ),
         );
         etkinlikId = anlikSonuc.event.id;
@@ -310,6 +326,15 @@ class SimdiNotifier extends Notifier<EtkinlikTaslagi> {
       _anlikTayfayiEkle(anlikSonuc.tayfa);
     }
     state = mevcut.kopya(sonuc: etkinlikId, anlikSonuc: anlikSonuc);
+  }
+
+  /// Şimdi yayını sınırı aşılınca: alıcı seçimi boşaltılır ve etkinlik
+  /// bildirimsiz başlatılır. Sınır hatasında hiçbir şey açılmadığı için
+  /// aynı `client_request_id` güvenle yeniden kullanılır (sözleşme).
+  Future<void> bildirimsizGonder({required String varsayilanBaslik}) async {
+    if (_kilitli || anahtar.tayfaId != null) return;
+    ref.read(simdiAlicilariProvider(anahtar).notifier).temizle();
+    await gonder(varsayilanBaslik: varsayilanBaslik);
   }
 
   /// Anlık etkinliğin gizli tayfası tayfa listesine eklenir (etkinlik

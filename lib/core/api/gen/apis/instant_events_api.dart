@@ -28,6 +28,20 @@ final class InstantEventsApi {
   /// sınıra hem kişi başı 1 açık şimdi etkinliği sınırına
   /// (`now-limit-reached`) sayılır.
   ///
+  /// **Şimdi bildirimi** (ADR-0038 §4): `starts_now` ile
+  /// `now_recipient_ids`'de organizatörün seçtiği arkadaşlar (en fazla
+  /// 30) etkinliğin başladığını `now_started` bildirimiyle öğrenir ve
+  /// doğrudan davet edilir (`/v1/me/invitations/{tayfa_id}/acceptance`
+  /// ile kabul edince etkin üye olur). Sunucu
+  /// her alıcıyı yeniden denetler; kabul edilmiş arkadaşınız olmayan,
+  /// aranızda iki yönden engel olan, hesabı silinmiş ya da banlı olan ve
+  /// "Şimdi bildirimi kimden" ayarı (`now_from_friends`) sizi kabul
+  /// etmeyen kişi sessizce düşer; kimin düştüğü söylenmez. Günde en
+  /// fazla 2 şimdi yayını (İstanbul günü; kimse kalmasa da sayılır):
+  /// aşılırsa hiçbir şey açılmaz, `now-broadcast-limit-reached`
+  /// (`now_recipient_ids` olmadan açılabilir). Şimdi yayını günlük 10
+  /// doğrudan davet sınırına sayılmaz.
+  ///
   /// Etkinlik bitince (iptalde iptal anından) 7 gün sonra tayfa
   /// arşivlenir. Davet linkiyle gelen her zaman katılım isteği bırakır,
   /// organizatör onaylar; katılım koduyla katılım yoktur. Etkinlik

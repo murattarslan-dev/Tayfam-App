@@ -14941,7 +14941,11 @@ final class InstantEvent {
 }
 
 final class InstantEventCreateRequest {
-  const InstantEventCreateRequest({required this.event, this.inviteeUserIds});
+  const InstantEventCreateRequest({
+    required this.event,
+    this.inviteeUserIds,
+    this.nowRecipientIds,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -14960,6 +14964,17 @@ final class InstantEventCreateRequest {
             ),
           ),
         },
+        nowRecipientIds: switch (json['now_recipient_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'InstantEventCreateRequest.now_recipient_ids').map(
+              (Object? e0) => _readString(
+                e0,
+                'InstantEventCreateRequest.now_recipient_ids',
+              ),
+            ),
+          ),
+        },
       );
 
   /// Etkinlik; kuralları tayfa etkinliğiyle aynı. `recurrence` ve
@@ -14972,11 +14987,21 @@ final class InstantEventCreateRequest {
   /// Kısıtlar: maxItems: 10; uniqueItems: true.
   final List<String>? inviteeUserIds;
 
+  /// Yalnızca `event.starts_now` ile (yoksa `invalid-request`):
+  /// etkinliğin başladığını öğrenecek ve davet edilecek
+  /// arkadaşlarınız (en fazla 30; siz ve `invitee_user_ids`'deki
+  /// kişiler değil). Bildirimde başlık, tür, yer ya da ad yoktur.
+  ///
+  /// Kısıtlar: maxItems: 30; uniqueItems: true.
+  final List<String>? nowRecipientIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'event': event.toJson(),
     if (inviteeUserIds case final value?)
       'invitee_user_ids': <Object?>[for (final e0 in value) e0],
+    if (nowRecipientIds case final value?)
+      'now_recipient_ids': <Object?>[for (final e0 in value) e0],
   };
 
   @override
@@ -14984,11 +15009,15 @@ final class InstantEventCreateRequest {
       identical(this, other) ||
       other is InstantEventCreateRequest &&
           event == other.event &&
-          _deepEquals(inviteeUserIds, other.inviteeUserIds);
+          _deepEquals(inviteeUserIds, other.inviteeUserIds) &&
+          _deepEquals(nowRecipientIds, other.nowRecipientIds);
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[event, _deepHash(inviteeUserIds)]);
+  int get hashCode => Object.hashAll(<Object?>[
+    event,
+    _deepHash(inviteeUserIds),
+    _deepHash(nowRecipientIds),
+  ]);
 }
 
 final class Invitation {
@@ -17098,6 +17127,16 @@ final class Notification {
   /// açın) ve `tayfa_id` yoktur; tayfa rozetinde alıcılar tayfanın
   /// yönetici ve moderatörleridir, hedef `tayfa`'dır. Yalnızca
   /// uygulama içi, push gitmez.
+  /// `now_started` (#265, ADR-0038 §4): organizatör (`actor_id`)
+  /// hedef etkinliği Şimdi başlat ile açtı. Tayfa etkinliğinde
+  /// alıcılar tayfanın etkin üyeleridir (tayfa başına günde en fazla
+  /// 3); anlık etkinlikte organizatörün seçtiği arkadaşlardır ve
+  /// bildirim bir davettir: `tayfa_id` anlık etkinliğin tayfasıdır,
+  /// daveti `GET /v1/me/invitations` gösterir, kabul edince etkin üye
+  /// olursunuz. Başlık, tür, yer ya da ad taşımaz; push yalnızca
+  /// `push_now_started_title` / `push_now_started_body` anahtarlarıdır.
+  /// Tayfa seviyesi `none` ya da tayfanın şimdi tercihi (`tayfa_now`)
+  /// `none` ise push gitmez.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -17286,7 +17325,7 @@ final class NotificationPreference {
     ),
   );
 
-  /// `tayfa` ya da `dm_conversation` (birebir konuşma); kanal sonra gelir.
+  /// `tayfa`, `tayfa_now` (tayfanın şimdi bildirimleri) ya da `dm_conversation` (birebir konuşma); kanal sonra gelir.
   final NotificationPreferenceScopeType scopeType;
 
   final String scopeId;
@@ -17469,9 +17508,10 @@ enum NotificationPreferenceRequestLevel {
   }
 }
 
-/// `tayfa` ya da `dm_conversation` (birebir konuşma); kanal sonra gelir.
+/// `tayfa`, `tayfa_now` (tayfanın şimdi bildirimleri) ya da `dm_conversation` (birebir konuşma); kanal sonra gelir.
 enum NotificationPreferenceScopeType {
   tayfa('tayfa'),
+  tayfaNow('tayfa_now'),
   channel('channel'),
   dmConversation('dm_conversation'),
 
@@ -17631,6 +17671,16 @@ enum NotificationTargetType {
 /// açın) ve `tayfa_id` yoktur; tayfa rozetinde alıcılar tayfanın
 /// yönetici ve moderatörleridir, hedef `tayfa`'dır. Yalnızca
 /// uygulama içi, push gitmez.
+/// `now_started` (#265, ADR-0038 §4): organizatör (`actor_id`)
+/// hedef etkinliği Şimdi başlat ile açtı. Tayfa etkinliğinde
+/// alıcılar tayfanın etkin üyeleridir (tayfa başına günde en fazla
+/// 3); anlık etkinlikte organizatörün seçtiği arkadaşlardır ve
+/// bildirim bir davettir: `tayfa_id` anlık etkinliğin tayfasıdır,
+/// daveti `GET /v1/me/invitations` gösterir, kabul edince etkin üye
+/// olursunuz. Başlık, tür, yer ya da ad taşımaz; push yalnızca
+/// `push_now_started_title` / `push_now_started_body` anahtarlarıdır.
+/// Tayfa seviyesi `none` ya da tayfanın şimdi tercihi (`tayfa_now`)
+/// `none` ise push gitmez.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -17658,6 +17708,7 @@ enum NotificationType {
   safetyAlert('safety_alert'),
   celebration('celebration'),
   badgeEarned('badge_earned'),
+  nowStarted('now_started'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -17702,6 +17753,82 @@ enum NotificationWarningReason {
 
   /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
   static NotificationWarningReason fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Tayfanın şimdi bildirimleri; `mentions` yoktur.
+final class NowNotificationPreferenceRequest {
+  const NowNotificationPreferenceRequest({required this.level, this.muteUntil});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory NowNotificationPreferenceRequest.fromJson(
+    Map<String, Object?> json,
+  ) => NowNotificationPreferenceRequest(
+    level: NowNotificationPreferenceRequestLevel.fromWire(
+      _readString(json['level'], 'NowNotificationPreferenceRequest.level'),
+    ),
+    muteUntil: switch (json['mute_until']) {
+      null => null,
+      final Object v => _readDateTime(
+        v,
+        'NowNotificationPreferenceRequest.mute_until',
+      ),
+    },
+  );
+
+  final NowNotificationPreferenceRequestLevel level;
+
+  /// Yalnızca `none` ile; en fazla bir yıl sonrası.
+  final DateTime? muteUntil;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'level': level.wire,
+    if (muteUntil case final value?)
+      'mute_until': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NowNotificationPreferenceRequest &&
+          level == other.level &&
+          muteUntil == other.muteUntil;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[level, muteUntil]);
+}
+
+enum NowNotificationPreferenceRequestLevel {
+  all('all'),
+  none('none'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const NowNotificationPreferenceRequestLevel(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError(
+        'NowNotificationPreferenceRequestLevel.unknown gönderilemez',
+      ));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static NowNotificationPreferenceRequestLevel fromWire(String wire) {
     for (final value in values) {
       if (value._wire == wire) {
         return value;
@@ -20355,6 +20482,7 @@ final class SocialSettings {
     required this.profilingEnabled,
     required this.hideFromSuggestions,
     required this.discoverVisibleToFriends,
+    required this.nowFromFriends,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -20373,6 +20501,9 @@ final class SocialSettings {
       json['discover_visible_to_friends'],
       'SocialSettings.discover_visible_to_friends',
     ),
+    nowFromFriends: SocialSettingsNowFromFriends.fromWire(
+      _readString(json['now_from_friends'], 'SocialSettings.now_from_friends'),
+    ),
   );
 
   /// "Profilleme": ortak katılımdan arkadaşlık puanı hesaplanır ve öneri yapılır.
@@ -20387,11 +20518,20 @@ final class SocialSettings {
   /// ayar açık olsa da gösterilmez.
   final bool discoverVisibleToFriends;
 
+  /// "Şimdi bildirimi kimden" (ADR-0038 §4; varsayılan `all`):
+  /// arkadaşlarınızın anlık şimdi etkinliklerinden hangilerinin size
+  /// bildirileceği. `close`: yalnızca arkadaş listenizin ilk 20'sindeki
+  /// arkadaşlarınızdan (`GET /v1/me/friends` sırası); profilleme
+  /// kapalıyken sıra puansız olduğu için `all` gibi davranır. `off`:
+  /// hiçbirinden; gönderene söylenmez. Tanınmayan değer `unknown`.
+  final SocialSettingsNowFromFriends nowFromFriends;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'profiling_enabled': profilingEnabled,
     'hide_from_suggestions': hideFromSuggestions,
     'discover_visible_to_friends': discoverVisibleToFriends,
+    'now_from_friends': nowFromFriends.wire,
   };
 
   @override
@@ -20400,14 +20540,51 @@ final class SocialSettings {
       other is SocialSettings &&
           profilingEnabled == other.profilingEnabled &&
           hideFromSuggestions == other.hideFromSuggestions &&
-          discoverVisibleToFriends == other.discoverVisibleToFriends;
+          discoverVisibleToFriends == other.discoverVisibleToFriends &&
+          nowFromFriends == other.nowFromFriends;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
     profilingEnabled,
     hideFromSuggestions,
     discoverVisibleToFriends,
+    nowFromFriends,
   ]);
+}
+
+/// "Şimdi bildirimi kimden" (ADR-0038 §4; varsayılan `all`):
+/// arkadaşlarınızın anlık şimdi etkinliklerinden hangilerinin size
+/// bildirileceği. `close`: yalnızca arkadaş listenizin ilk 20'sindeki
+/// arkadaşlarınızdan (`GET /v1/me/friends` sırası); profilleme
+/// kapalıyken sıra puansız olduğu için `all` gibi davranır. `off`:
+/// hiçbirinden; gönderene söylenmez. Tanınmayan değer `unknown`.
+enum SocialSettingsNowFromFriends {
+  all('all'),
+  close('close'),
+  off('off'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const SocialSettingsNowFromFriends(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('SocialSettingsNowFromFriends.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static SocialSettingsNowFromFriends fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 /// Kısıtlar: minProperties: 1.
@@ -20416,6 +20593,7 @@ final class SocialSettingsUpdate {
     this.profilingEnabled,
     this.hideFromSuggestions,
     this.discoverVisibleToFriends,
+    this.nowFromFriends,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -20444,6 +20622,12 @@ final class SocialSettingsUpdate {
             'SocialSettingsUpdate.discover_visible_to_friends',
           ),
         },
+        nowFromFriends: switch (json['now_from_friends']) {
+          null => null,
+          final Object v => SocialSettingsUpdateNowFromFriends.fromWire(
+            _readString(v, 'SocialSettingsUpdate.now_from_friends'),
+          ),
+        },
       );
 
   final bool? profilingEnabled;
@@ -20452,12 +20636,15 @@ final class SocialSettingsUpdate {
 
   final bool? discoverVisibleToFriends;
 
+  final SocialSettingsUpdateNowFromFriends? nowFromFriends;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (profilingEnabled case final value?) 'profiling_enabled': value,
     if (hideFromSuggestions case final value?) 'hide_from_suggestions': value,
     if (discoverVisibleToFriends case final value?)
       'discover_visible_to_friends': value,
+    if (nowFromFriends case final value?) 'now_from_friends': value.wire,
   };
 
   @override
@@ -20466,14 +20653,48 @@ final class SocialSettingsUpdate {
       other is SocialSettingsUpdate &&
           profilingEnabled == other.profilingEnabled &&
           hideFromSuggestions == other.hideFromSuggestions &&
-          discoverVisibleToFriends == other.discoverVisibleToFriends;
+          discoverVisibleToFriends == other.discoverVisibleToFriends &&
+          nowFromFriends == other.nowFromFriends;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
     profilingEnabled,
     hideFromSuggestions,
     discoverVisibleToFriends,
+    nowFromFriends,
   ]);
+}
+
+enum SocialSettingsUpdateNowFromFriends {
+  all('all'),
+  close('close'),
+  off('off'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const SocialSettingsUpdateNowFromFriends(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError(
+        'SocialSettingsUpdateNowFromFriends.unknown gönderilemez',
+      ));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static SocialSettingsUpdateNowFromFriends fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class Status {

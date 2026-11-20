@@ -188,6 +188,45 @@ class TayfaSessizNotifier extends AsyncNotifier<bool> {
       });
 }
 
+/// Kullanıcının bu tayfada şimdi bildirimleri kapalı mı (`tayfa_now`;
+/// App ADR-0032 §5). Tayfanın genel sessizliğinden ayrıdır; genel seviye
+/// `none` ise şimdi bildirimi zaten gitmez (sözleşme).
+class TayfaSimdiKapaliNotifier extends AsyncNotifier<bool> {
+  TayfaSimdiKapaliNotifier(this.tayfaId);
+
+  /// Adresteki tayfa kimliği.
+  final String tayfaId;
+
+  @override
+  Future<bool> build() async {
+    ref.watch(oturumDurumuProvider);
+    final depo = ref.watch(yonetimDeposuProvider);
+    final tercihler = await depo.bildirimTercihleri();
+    return tayfaSimdiKapali(tercihler, tayfaId, ref.read(saatProvider)());
+  }
+
+  /// [kapali] `true` ise şimdi bildirimlerini süresiz kapatır, değilse
+  /// varsayılana (açık) döndürür.
+  Future<Object?> ayarla({required bool kapali}) =>
+      yonetimIslemi(ref, () async {
+        final depo = ref.read(yonetimDeposuProvider);
+        if (kapali) {
+          await depo.simdiBildiriminiKapat(tayfaId);
+        } else {
+          await depo.simdiBildiriminiAc(tayfaId);
+        }
+        if (ref.mounted) state = AsyncData(kapali);
+      });
+}
+
+/// Bir tayfanın şimdi bildirimleri kapalı mı.
+final tayfaSimdiKapaliProvider = AsyncNotifierProvider.autoDispose
+    .family<TayfaSimdiKapaliNotifier, bool, String>(
+      TayfaSimdiKapaliNotifier.new,
+      name: 'tayfaSimdiKapaliProvider',
+      retry: yenidenDenemeYok,
+    );
+
 /// Bir tayfanın bildirimleri sessizde mi.
 final tayfaSessizProvider = AsyncNotifierProvider.autoDispose
     .family<TayfaSessizNotifier, bool, String>(
