@@ -27,7 +27,10 @@ import io.flutter.plugin.common.MethodChannel
  * - `tayfam/butunluk` (istemci ADR-0023): Play Integrity köprüsü.
  * - `tayfam/kronometre` (istemci ADR-0031 §3): kronometre ekranı açıkken
  *   ekranın kapanmasını engeller (yalnızca bu pencere bayrağı; izin
- *   gerekmez) ve süre dolunca kısa bir uyarı sesi çalar.
+ *   gerekmez) ve süre dolunca kısa bir uyarı sesi çalar. QR ile katılım
+ *   ekranı (istemci ADR-0032 §3) aynı kanalla ekranı açık tutar ve
+ *   `parlaklik` ile bu pencerenin parlaklığını en yükseğe çıkarır (sistem
+ *   ayarı değişmez, izin gerekmez).
  */
 class MainActivity : FlutterActivity() {
     private var signalKoprusu: SignalKoprusu? = null
@@ -59,6 +62,10 @@ class MainActivity : FlutterActivity() {
                         uyariSesi()
                         result.success(null)
                     }
+                    "parlaklik" -> {
+                        parlaklik(call.arguments == true)
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -72,6 +79,22 @@ class MainActivity : FlutterActivity() {
             } else {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
+        }
+    }
+
+    /**
+     * QR ekranı açıkken yalnızca bu pencerenin parlaklığı en yükseğe çıkar;
+     * kapanınca sistem ayarına döner.
+     */
+    private fun parlaklik(artir: Boolean) {
+        runOnUiThread {
+            val ayar = window.attributes
+            ayar.screenBrightness = if (artir) {
+                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+            } else {
+                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+            }
+            window.attributes = ayar
         }
     }
 

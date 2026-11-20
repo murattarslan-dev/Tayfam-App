@@ -21,6 +21,7 @@ export 'package:tayfam/core/api/gen/apis/invite_joins_api.dart';
 export 'package:tayfam/core/api/gen/apis/invite_previews_api.dart';
 export 'package:tayfam/core/api/gen/apis/invites_api.dart';
 export 'package:tayfam/core/api/gen/apis/join_code_api.dart';
+export 'package:tayfam/core/api/gen/apis/join_qr_api.dart';
 export 'package:tayfam/core/api/gen/apis/join_requests_api.dart';
 export 'package:tayfam/core/api/gen/apis/me_api.dart';
 export 'package:tayfam/core/api/gen/apis/media_api.dart';

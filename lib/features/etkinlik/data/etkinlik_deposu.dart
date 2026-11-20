@@ -142,6 +142,12 @@ final class EtkinlikDeposu {
   Future<Event> bitir(String tayfaId, String etkinlikId) =>
       _api.finishEvent(tayfaId: tayfaId, eventId: etkinlikId);
 
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/join-qr`: QR ile
+  /// katılımın 2 dakikalık token'ı (Tayfam-Api ADR-0038 §3). Token yalnızca
+  /// bellekte tutulur; yazılmaz, loglanmaz (kesin kural 9).
+  Future<JoinQrToken> katilimQruAl(String tayfaId, String etkinlikId) =>
+      _api.createEventJoinQr(tayfaId: tayfaId, eventId: etkinlikId);
+
   /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/cancellation`.
   Future<Event> iptalEt(String tayfaId, String etkinlikId, String? gerekce) =>
       _api.cancelEvent(

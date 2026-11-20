@@ -183,6 +183,35 @@ final class EventsApi {
     return Event.fromJson(jsonObject(response, 'finishEvent'));
   }
 
+  /// Etkinliğin QR'ı için kısa ömürlü katılım token'ı
+  ///
+  /// QR ile katılım (ADR-0038 §3). Organizatör kendi etkinliği için,
+  /// tayfanın yöneticileri her etkinlik için alır. Yalnızca yüz yüze ve
+  /// bitmemiş etkinlik; çevrimiçi etkinlik `invalid-request`, bitmiş
+  /// etkinlik `event-ended`, iptal edilmiş etkinlik `event-cancelled`
+  /// alır. Token 128 bit rastgele değerdir ve yalnızca bu yanıtta
+  /// döner; sunucu yalnızca özetini saklar. Ömrü 2 dakikadır
+  /// (`expires_at`): istemci süre dolmadan yenisini ister; eski token
+  /// süresi dolana kadar geçerli kalır. QR yalnızca token'ı taşır
+  /// (`https://tayfam.app/q#<token>`, token fragment'ta). Etkinlik 30
+  /// QR katılımına ulaştıysa `join-qr-limit-reached`. IP başına sınır
+  /// vardır.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/join-qr`
+  Future<JoinQrToken> createEventJoinQr({
+    required String tayfaId,
+    required String eventId,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/join-qr',
+      pathParams: {'tayfa_id': tayfaId, 'event_id': eventId},
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return JoinQrToken.fromJson(jsonObject(response, 'createEventJoinQr'));
+  }
+
   /// Etkinliği takvime eklemek için iCalendar (.ics) dosyası
   ///
   /// RFC 5545. `UID` etkinlik kimliğidir; dosya tekrar içe aktarılırsa

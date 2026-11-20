@@ -18,6 +18,7 @@ import 'package:tayfam/shell/derin_link/derin_link.dart';
 final class DerinLinkKutusu {
   String? _davetToken;
   String? _referansKodu;
+  String? _qrToken;
 
   /// Bekleyen davetin token'ı; yoksa `null`. Yalnızca istek gövdesine
   /// konur.
@@ -25,6 +26,18 @@ final class DerinLinkKutusu {
 
   /// Bekleyen davet var mı.
   bool get davetBekliyor => _davetToken != null;
+
+  /// QR ile katılım linki bekliyor mu (App ADR-0032 §3). Token'ın kendisi
+  /// yalnızca [qrTokeniAl] ile, bir kez alınır.
+  bool get qrBekliyor => _qrToken != null;
+
+  /// Bekleyen QR token'ını verir ve kutudan bırakır (QR ekranı işler);
+  /// yoksa `null`. Token yalnızca istek gövdesine konur.
+  String? qrTokeniAl() {
+    final token = _qrToken;
+    _qrToken = null;
+    return token;
+  }
 
   /// Kayıt formunu dolduracak referans kodu; yoksa `null`.
   String? get referansKodu => _referansKodu;
@@ -35,6 +48,8 @@ final class DerinLinkKutusu {
   /// - Uygulama içi adres olduğu gibi döner.
   /// - Davet linki saklanır (yenisi eskisinin yerine geçer); kök adres
   ///   döner, token adreste kalmaz.
+  /// - QR ile katılım linki saklanır (yenisi eskisinin yerine geçer); kök
+  ///   adres döner, token adreste kalmaz.
   /// - Referans linki yalnızca oturum açık değilken saklanır (açık
   ///   oturumda kayıt formu yoktur); kök adres döner.
   /// - Geçersiz link işlenmez; kök adres döner.
@@ -44,6 +59,8 @@ final class DerinLinkKutusu {
         return konum;
       case DavetLinki(:final token):
         _davetToken = token;
+      case QrKatilimLinki(:final token):
+        _qrToken = token;
       case ReferansLinki(:final kod):
         if (!oturumAcik) _referansKodu = kod;
       case GecersizLink():

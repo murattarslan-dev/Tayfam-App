@@ -37,6 +37,7 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/qr_dugmesi.dart';
 import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor.dart';
 import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor_bandi.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
@@ -221,6 +222,8 @@ class _Detay extends ConsumerWidget {
                 // Açık uçlu etkinlik sürerken "Şu an sürüyor" ve Bitir
                 // (App ADR-0032 §3).
                 SuruyorBandi(anahtar: anahtar, etkinlik: etkinlik),
+                // Yüz yüze katılım QR'ı: göster ya da okut (App ADR-0032 §3).
+                QrKatilimDugmesi(anahtar: anahtar, etkinlik: etkinlik),
                 if (iptal && gerekce != null && gerekce.isNotEmpty) ...[
                   const SizedBox(height: TayfamSpacing.s16),
                   _IptalKutusu(gerekce: gerekce),

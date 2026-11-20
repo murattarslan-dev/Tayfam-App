@@ -88,6 +88,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
         tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
         tanitim: ref.read(tanitimProvider),
         davetBekliyor: kutu.davetBekliyor,
+        qrBekliyor: kutu.qrBekliyor,
         kayitKarsilamasi: ref.read(kayitKarsilamasiProvider) != null,
         yasEngeli: ref.read(hesapEngeliProvider) == HesapEngeli.yasSiniri,
       );

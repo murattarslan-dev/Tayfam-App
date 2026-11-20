@@ -213,6 +213,21 @@ abstract final class Adresler {
     ).toString();
   }
 
+  /// QR ile katılım ekranı (App ADR-0032 §3): `https://tayfam.app/q#<token>`
+  /// derin linkinin işlendiği ve uygulama içinden QR okutulan ekran. Bu
+  /// adreste token yoktur; derin linkle gelen token bellekteki kutudadır
+  /// (`shell/derin_link/`, kesin kural 9).
+  static const qrKatilim = '/q';
+
+  /// QR'a çizilen katılım linki: token fragment'tadır, sunucuya URL ile
+  /// gitmez (kesin kural 9). Yalnızca QR'a çizilir; loglanmaz, saklanmaz.
+  static String qrKatilimLinki(String token) => Uri(
+    scheme: 'https',
+    host: 'tayfam.app',
+    path: qrKatilim,
+    fragment: token,
+  ).toString();
+
   /// Anlık tayfayı kalıcı tayfaya dönüştürme sihirbazının yolu
   /// ("Bu ekiple tayfa kur"; ADR-0026). Tam ekran; kimlik girdi kabul
   /// edilir.

@@ -280,6 +280,7 @@ IconData _kaynakIkonu(JoinRequestSource kaynak) => switch (kaynak) {
   JoinRequestSource.directInvite => Icons.person_add_alt_outlined,
   JoinRequestSource.code => Icons.vpn_key_outlined,
   JoinRequestSource.discover => Icons.explore_outlined,
+  JoinRequestSource.qr => Icons.qr_code_2,
   JoinRequestSource.unknown => Icons.how_to_reg_outlined,
 };
 
@@ -290,5 +291,6 @@ String kaynakMetni(AppLocalizations m, JoinRequestSource kaynak) =>
       JoinRequestSource.directInvite => m.yonetim_istek_kaynak_dogrudan,
       JoinRequestSource.code => m.yonetim_istek_kaynak_kod,
       JoinRequestSource.discover => m.yonetim_istek_kaynak_kesfet,
+      JoinRequestSource.qr => m.simdi_qr_istek_kaynagi,
       JoinRequestSource.unknown => m.yonetim_istek_kaynak_bilinmiyor,
     };
