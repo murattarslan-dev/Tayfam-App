@@ -91,6 +91,8 @@ enum ProblemType {
   teamsManual('teams-manual'),
   teamsTooFew('teams-too-few'),
   teamsNotParticipant('teams-not-participant'),
+  drawAlreadyMade('draw-already-made'),
+  drawTooFew('draw-too-few'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),

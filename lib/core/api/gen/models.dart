@@ -8410,6 +8410,171 @@ final class EventCreateRequest {
   ]);
 }
 
+/// Bir etkinliğin bir kura bileşeni, isteği yapanın gördüğü haliyle (#249).
+final class EventDraw {
+  const EventDraw({
+    required this.drawn,
+    required this.subject,
+    this.teamsKey,
+    this.drawnAt,
+    required this.entries,
+    required this.callerCanDraw,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventDraw.fromJson(Map<String, Object?> json) => EventDraw(
+    drawn: _readBool(json['drawn'], 'EventDraw.drawn'),
+    subject: EventDrawSubject.fromWire(
+      _readString(json['subject'], 'EventDraw.subject'),
+    ),
+    teamsKey: switch (json['teams_key']) {
+      null => null,
+      final Object v => _readString(v, 'EventDraw.teams_key'),
+    },
+    drawnAt: switch (json['drawn_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventDraw.drawn_at'),
+    },
+    entries: List<EventDrawEntry>.unmodifiable(
+      _readList(json['entries'], 'EventDraw.entries').map(
+        (Object? e0) =>
+            EventDrawEntry.fromJson(_readObject(e0, 'EventDraw.entries')),
+      ),
+    ),
+    callerCanDraw: _readBool(
+      json['caller_can_draw'],
+      'EventDraw.caller_can_draw',
+    ),
+  );
+
+  /// Kura çekildi.
+  final bool drawn;
+
+  /// Kuranın sıraladığı (çekilmemişse şu an çekilse sıralayacağı) giriş türü.
+  final EventDrawSubject subject;
+
+  /// Yalnızca `teams` kurasında, takım bileşeninin anahtarı.
+  final String? teamsKey;
+
+  /// Yalnızca çekilmiş kurada.
+  final DateTime? drawnAt;
+
+  /// Sıraya göre; kura çekilmemişse boş. Ardışık iki yer bir eşleşmedir.
+  final List<EventDrawEntry> entries;
+
+  /// Şu an kurayı çekebilirsiniz (kura çekilmemiş; organizatör, moderatör, yönetici; susturulmamış; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanDraw;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'drawn': drawn,
+    'subject': subject.wire,
+    if (teamsKey case final value?) 'teams_key': value,
+    if (drawnAt case final value?) 'drawn_at': value.toUtc().toIso8601String(),
+    'entries': <Object?>[for (final e0 in entries) e0.toJson()],
+    'caller_can_draw': callerCanDraw,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventDraw &&
+          drawn == other.drawn &&
+          subject == other.subject &&
+          teamsKey == other.teamsKey &&
+          drawnAt == other.drawnAt &&
+          _deepEquals(entries, other.entries) &&
+          callerCanDraw == other.callerCanDraw;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    drawn,
+    subject,
+    teamsKey,
+    drawnAt,
+    _deepHash(entries),
+    callerCanDraw,
+  ]);
+}
+
+/// Kurada bir yer. Boş yerde (kişi ya da takım geri çekildi) ne `user_id` ne `team_id` vardır.
+final class EventDrawEntry {
+  const EventDrawEntry({required this.position, this.userId, this.teamId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventDrawEntry.fromJson(Map<String, Object?> json) => EventDrawEntry(
+    position: _readInt(json['position'], 'EventDrawEntry.position'),
+    userId: switch (json['user_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventDrawEntry.user_id'),
+    },
+    teamId: switch (json['team_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventDrawEntry.team_id'),
+    },
+  );
+
+  /// Kısıtlar: minimum: 1; maximum: 500.
+  final int position;
+
+  /// Katılımcı kurasında kişinin kullanıcı kimliği.
+  final String? userId;
+
+  /// Takım kurasında `teams_key` bileşenindeki takımın kimliği.
+  final String? teamId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'position': position,
+    if (userId case final value?) 'user_id': value,
+    if (teamId case final value?) 'team_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventDrawEntry &&
+          position == other.position &&
+          userId == other.userId &&
+          teamId == other.teamId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[position, userId, teamId]);
+}
+
+/// Kuranın sıraladığı (çekilmemişse şu an çekilse sıralayacağı) giriş türü.
+enum EventDrawSubject {
+  participants('participants'),
+  teams('teams'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventDrawSubject(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventDrawSubject.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventDrawSubject fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
 final class EventFeedback {
   const EventFeedback({this.answer, this.updatedAt});
 

@@ -1756,6 +1756,70 @@ final class EventsApi {
     return EventTeams.fromJson(jsonObject(response, 'generateEventTeams'));
   }
 
+  /// Etkinliğin kurası
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Kura çekilmemişse `drawn` false,
+  /// `entries` boştur; `subject` çekilecek kuranın neyi sıralayacağını
+  /// gösterir. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/draw`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventDraw> getEventDraw({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/draw',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventDraw.fromJson(jsonObject(response, 'getEventDraw'));
+  }
+
+  /// Kurayı çeker (organizatör, moderatör, yönetici)
+  ///
+  /// Gövde almaz. Sıra sunucuda kriptografik üreteçle belirlenir ve
+  /// sabitlenir. Kura daha önce çekildiyse `draw-already-made`; ikiden
+  /// az katılımcıda (takım kurasında üyesi olan ikiden az takımda)
+  /// `draw-too-few`; 500'den çok katılımcıda `event-limit`. Bileşen
+  /// uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/draw`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventDraw> makeEventDraw({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/draw',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventDraw.fromJson(jsonObject(response, 'makeEventDraw'));
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten
