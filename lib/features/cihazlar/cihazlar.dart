@@ -9,6 +9,14 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/features/cihazlar/presentation/bu_cihazi_bagla_ekrani.dart';
 import 'package:tayfam/features/cihazlar/presentation/cihaz_bagla_ekrani.dart';
 
+// QR altyapısı (ADR-0020 §7): QR ile etkinliğe katılma da aynı tarayıcıyı
+// ve QR çizicisini kullanır (App ADR-0032 §3; yeni paket yok).
+export 'package:tayfam/features/cihazlar/data/ayarlar_acici.dart'
+    show AyarlarAcici, ayarlarAciciProvider;
+export 'package:tayfam/features/cihazlar/presentation/cihaz_bagla_ekrani.dart'
+    show TaramaGorunumu;
+export 'package:tayfam/features/cihazlar/presentation/cihaz_ortak.dart'
+    show CihazIkincilEylem, CihazSonucEkrani, CihazSonucTonu;
 export 'package:tayfam/features/cihazlar/presentation/cihaz_uyarilari.dart'
     show
         CihazBaglamaGirisi,
@@ -17,6 +25,9 @@ export 'package:tayfam/features/cihazlar/presentation/cihaz_uyarilari.dart'
         TekCihazBilgisi,
         tekCihazCikisOnayi,
         tekCihazCikisUyarisi;
+export 'package:tayfam/features/cihazlar/presentation/qr_kodu.dart' show QrKodu;
+export 'package:tayfam/features/cihazlar/presentation/qr_tarayici.dart'
+    show QrTarayiciKurucu, qrTarayiciProvider;
 
 /// Profil sekmesinin kökü (`/profil`) altındaki eşleştirme rotaları.
 final List<RouteBase> cihazlarRotalari = [

@@ -97,7 +97,8 @@
             </intent-filter>
             <!-- Uygulama linkleri (Android App Links, ADR-0018 §6, kesin
                  kural 9): yalnızca https://tayfam.app ve yalnızca davet
-                 (/davet#<token>) ile referans (/r/<KOD>) yolları. Alan adı
+                 (/davet#<token>), QR ile katılım (/q#<token>; ADR-0032 §3)
+                 ile referans (/r/<KOD>) yolları. Alan adı
                  site/.well-known/assetlinks.json ile doğrulanır
                  (autoVerify); doğrulanmazsa Android linki tarayıcıda açar.
                  Adres yönlendiricide yeniden doğrulanır. -->
@@ -108,6 +109,7 @@
                 <data android:scheme="https"/>
                 <data android:host="tayfam.app"/>
                 <data android:path="/davet"/>
+                <data android:path="/q"/>
                 <data android:pathPrefix="/r/"/>
             </intent-filter>
             <!-- Gelen link Flutter'ın yönlendiricisine (go_router) verilir;

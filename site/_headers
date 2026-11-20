@@ -6,9 +6,14 @@
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin
 
-# Davet ve referans karşılama sayfaları arama motorlarında görünmez. Davet
-# token'ı adresin # kısmındadır; tarayıcı onu Referer'a ve sunucuya koymaz.
+# Davet, QR ve referans karşılama sayfaları arama motorlarında görünmez.
+# Davet ve QR token'ı adresin # kısmındadır; tarayıcı onu Referer'a ve
+# sunucuya koymaz.
 /davet*
   X-Robots-Tag: noindex
 /r/*
+  X-Robots-Tag: noindex
+/q
+  X-Robots-Tag: noindex
+/q/
   X-Robots-Tag: noindex

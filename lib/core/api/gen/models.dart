@@ -1093,12 +1093,14 @@ final class AnswerUpdateRequest {
 
 /// `location`: buluşma noktasına 300 m içinde check-in. `online`:
 /// çevrimiçi etkinlikte "Katıldım". `hike_start`: yoklamada çıkış (`roll_call`).
-/// `organizer`: organizatör düzeltmesi.
+/// `organizer`: organizatör düzeltmesi. `qr`: üye organizatörün
+/// QR'ını okuttu (ADR-0038 §3).
 enum AttendanceMethod {
   location('location'),
   online('online'),
   hikeStart('hike_start'),
   organizer('organizer'),
+  qr('qr'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -15442,6 +15444,108 @@ enum JoinPolicy {
   }
 }
 
+final class JoinQrResult {
+  const JoinQrResult({
+    required this.tayfaId,
+    required this.eventId,
+    required this.pending,
+    this.rsvp,
+    this.attendance,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory JoinQrResult.fromJson(Map<String, Object?> json) => JoinQrResult(
+    tayfaId: _readString(json['tayfa_id'], 'JoinQrResult.tayfa_id'),
+    eventId: _readString(json['event_id'], 'JoinQrResult.event_id'),
+    pending: _readBool(json['pending'], 'JoinQrResult.pending'),
+    rsvp: switch (json['rsvp']) {
+      null => null,
+      final Object v => RsvpStatus.fromWire(
+        _readString(v, 'JoinQrResult.rsvp'),
+      ),
+    },
+    attendance: switch (json['attendance']) {
+      null => null,
+      final Object v => AttendanceStatus.fromWire(
+        _readString(v, 'JoinQrResult.attendance'),
+      ),
+    },
+  );
+
+  final String tayfaId;
+
+  final String eventId;
+
+  /// Onaylı tayfada katılım isteği bırakıldı (ya da zaten bekliyordu); `rsvp` ve `attendance` yok.
+  final bool pending;
+
+  final RsvpStatus? rsvp;
+
+  final AttendanceStatus? attendance;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'tayfa_id': tayfaId,
+    'event_id': eventId,
+    'pending': pending,
+    if (rsvp case final value?) 'rsvp': value.wire,
+    if (attendance case final value?) 'attendance': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JoinQrResult &&
+          tayfaId == other.tayfaId &&
+          eventId == other.eventId &&
+          pending == other.pending &&
+          rsvp == other.rsvp &&
+          attendance == other.attendance;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[tayfaId, eventId, pending, rsvp, attendance]);
+}
+
+/// QR ile katılım token'ı (ADR-0038 §3). Log'a yazılmaz.
+final class JoinQrToken {
+  const JoinQrToken({required this.token, required this.expiresAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory JoinQrToken.fromJson(Map<String, Object?> json) => JoinQrToken(
+    token: _readString(json['token'], 'JoinQrToken.token'),
+    expiresAt: _readDateTime(json['expires_at'], 'JoinQrToken.expires_at'),
+  );
+
+  /// base64url, 128 bit. QR `https://tayfam.app/q#<token>` taşır.
+  ///
+  /// Kısıtlar: minLength: 22; maxLength: 22.
+  final String token;
+
+  /// Oluşturmadan 2 dakika sonra.
+  final DateTime expiresAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'token': token,
+    'expires_at': expiresAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JoinQrToken &&
+          token == other.token &&
+          expiresAt == other.expiresAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[token, expiresAt]);
+}
+
 final class JoinRequest {
   const JoinRequest({
     required this.userId,
@@ -15562,6 +15666,7 @@ enum JoinRequestSource {
   directInvite('direct_invite'),
   code('code'),
   discover('discover'),
+  qr('qr'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

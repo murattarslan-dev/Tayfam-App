@@ -13118,6 +13118,14 @@
   "@hata_now_limit_reached": {
     "description": "Hata kodu `now-limit-reached`. Kişi başına aynı anda bir açık şimdi etkinliği (Şimdi başlat) sınırı aşılınca."
   },
+  "hata_invalid_join_qr": "Bu QR geçersiz ya da süresi dolmuş. Organizatörden QR'ı yeniden göstermesini iste.",
+  "@hata_invalid_join_qr": {
+    "description": "Hata kodu `invalid-join-qr`. QR ile katılımda token bozuk, bilinmiyor ya da süresi dolmuş; etkinlik bitmiş, iptal ya da çevrimiçi; ya da hesap katılamıyor (sunucu nedenini ayırt etmez)."
+  },
+  "hata_join_qr_limit_reached": "Bu etkinliğe QR ile katılım sınırına ulaşıldı.",
+  "@hata_join_qr_limit_reached": {
+    "description": "Hata kodu `join-qr-limit-reached`. Etkinlik başına 30 QR katılımı sınırı aşılınca (QR alırken ya da okuturken)."
+  },
   "hata_event_not_open_ended": "Bu etkinlik planlı; bitiş saati değiştirilerek bitirilir.",
   "@hata_event_not_open_ended": {
     "description": "Hata kodu `event-not-open-ended`. Şimdi başlat ile açılmamış (planlı) etkinlikte Bitir istenince."
@@ -13705,5 +13713,137 @@
   "simdi_ayar_yoneticiler": "Yalnızca yöneticiler",
   "@simdi_ayar_yoneticiler": {
     "description": "Şimdi başlatabilenler: yalnızca yönetici."
+  },
+  "simdi_qr_istek_kaynagi": "QR ile geldi",
+  "@simdi_qr_istek_kaynagi": {
+    "description": "Katılım isteğinin kaynağı: organizatörün QR'ı okutuldu (App ADR-0032 §3)."
+  },
+  "simdi_qr_goster": "QR göster",
+  "@simdi_qr_goster": {
+    "description": "Etkinlik detayında organizatöre ve yöneticilere: katılım QR'ı ekranını açan düğme."
+  },
+  "simdi_qr_okut": "QR okut",
+  "@simdi_qr_okut": {
+    "description": "Etkinlik detayında katılımcılara: QR okutma ekranını açan düğme."
+  },
+  "simdi_qr_baslik": "Katılım QR'ı",
+  "@simdi_qr_baslik": {
+    "description": "Katılım QR'ı ekranının başlığı."
+  },
+  "simdi_qr_aciklama": "Yanındakiler bu QR'ı telefon kamerasıyla ya da Tayfam'daki “QR okut” ile okutsun; etkinliğe katılırlar.",
+  "@simdi_qr_aciklama": {
+    "description": "Katılım QR'ı ekranında QR'ın altındaki açıklama."
+  },
+  "simdi_qr_gizlilik": "QR yalnızca bu ekran açıkken yenilenir ve kısa sürede geçersiz olur.",
+  "@simdi_qr_gizlilik": {
+    "description": "Katılım QR'ı ekranında QR'ın ömrüne dair kısa not."
+  },
+  "simdi_qr_etiketi": "Etkinliğe katılım QR kodu",
+  "@simdi_qr_etiketi": {
+    "description": "Ekran okuyucu: QR görseli. İçerik okunmaz."
+  },
+  "simdi_qr_hazirlaniyor": "QR hazırlanıyor",
+  "@simdi_qr_hazirlaniyor": {
+    "description": "Katılım QR'ı ilk kez istenirken."
+  },
+  "simdi_qr_yenilenir": "Kendiliğinden yenilenir",
+  "@simdi_qr_yenilenir": {
+    "description": "QR kartının altındaki hap: QR süresi dolmadan yenilenir."
+  },
+  "simdi_qr_okut_baslik": "QR ile katıl",
+  "@simdi_qr_okut_baslik": {
+    "description": "QR okutma ekranının üst başlığı."
+  },
+  "simdi_qr_okut_talimat_baslik": "Etkinliğin QR'ını okut",
+  "@simdi_qr_okut_talimat_baslik": {
+    "description": "QR okutma ekranında çerçevenin altındaki başlık."
+  },
+  "simdi_qr_okut_talimat": "Organizatörün ekranındaki QR'ı çerçeveye getir.",
+  "@simdi_qr_okut_talimat": {
+    "description": "QR okutma ekranında talimat."
+  },
+  "simdi_qr_katiliniyor": "Katılıyorsun…",
+  "@simdi_qr_katiliniyor": {
+    "description": "QR okunduktan sonra istek gönderilirken."
+  },
+  "simdi_qr_kamera_gizlilik": "Kamera yalnızca QR'ı okumak için açılır; görüntü kaydedilmez ve gönderilmez.",
+  "@simdi_qr_kamera_gizlilik": {
+    "description": "QR okutma ekranındaki kamera gizlilik notu."
+  },
+  "simdi_qr_kamera_izin_baslik": "Kamera izni gerekli",
+  "@simdi_qr_kamera_izin_baslik": {
+    "description": "QR okutmak için kamera izni verilmediğinde başlık."
+  },
+  "simdi_qr_kamera_izin_aciklama": "QR'ı okutmak için Tayfam'a kamera izni ver. İzin yalnızca okuturken kullanılır. Android'de: Ayarlar > Uygulamalar > Tayfam > İzinler.",
+  "@simdi_qr_kamera_izin_aciklama": {
+    "description": "Kamera izni ekranının açıklaması."
+  },
+  "simdi_qr_ayarlari_ac": "Ayarları aç",
+  "@simdi_qr_ayarlari_ac": {
+    "description": "Kamera izni ekranında (iOS) uygulama ayarlarını açan düğme."
+  },
+  "simdi_qr_kamera_hatasi": "Kamera açılamadı. Tekrar dene ya da QR'ı telefonunun kamerasıyla okut.",
+  "@simdi_qr_kamera_hatasi": {
+    "description": "Kamera izin dışı bir nedenle açılamadığında."
+  },
+  "simdi_qr_taninmadi": "Bu bir Tayfam etkinlik QR'ı değil.",
+  "@simdi_qr_taninmadi": {
+    "description": "Okunan QR beklenen tayfam.app/q linki olmadığında."
+  },
+  "simdi_qr_hata_baslik": "Katılınamadı",
+  "@simdi_qr_hata_baslik": {
+    "description": "QR ile katılım olmadığında sonuç ekranının başlığı."
+  },
+  "simdi_qr_tekrar_okut": "Tekrar okut",
+  "@simdi_qr_tekrar_okut": {
+    "description": "Yeniden QR okutmaya dönen düğme."
+  },
+  "simdi_qr_tekrar_dene": "Tekrar dene",
+  "@simdi_qr_tekrar_dene": {
+    "description": "Bağlantı hatasında aynı QR'la yeniden deneyen düğme."
+  },
+  "simdi_qr_kapat": "Kapat",
+  "@simdi_qr_kapat": {
+    "description": "QR ekranını kapatan düğme."
+  },
+  "simdi_qr_tamam": "Tamam",
+  "@simdi_qr_tamam": {
+    "description": "Sonuç ekranını kapatan düğme."
+  },
+  "simdi_qr_katildin_baslik": "Katıldın",
+  "@simdi_qr_katildin_baslik": {
+    "description": "QR ile etkinliğe katılınca başlık."
+  },
+  "simdi_qr_katildin_aciklama": "Etkinliğe katıldın. Ayrıntılar etkinlik sayfasında.",
+  "@simdi_qr_katildin_aciklama": {
+    "description": "QR ile etkinliğe katılınca açıklama."
+  },
+  "simdi_qr_dogrulandi_baslik": "Buradasın",
+  "@simdi_qr_dogrulandi_baslik": {
+    "description": "QR ile katılım doğrulanınca (check-in) başlık."
+  },
+  "simdi_qr_dogrulandi_aciklama": "Etkinlikte olduğun QR ile doğrulandı.",
+  "@simdi_qr_dogrulandi_aciklama": {
+    "description": "QR ile katılım doğrulanınca açıklama."
+  },
+  "simdi_qr_bekleme_baslik": "Bekleme listesindesin",
+  "@simdi_qr_bekleme_baslik": {
+    "description": "QR ile katılımda etkinlik doluysa başlık."
+  },
+  "simdi_qr_bekleme_aciklama": "Etkinlik dolu; yer açılınca katılacaksın.",
+  "@simdi_qr_bekleme_aciklama": {
+    "description": "QR ile katılımda etkinlik doluysa açıklama."
+  },
+  "simdi_qr_istek_baslik": "İsteğin gönderildi",
+  "@simdi_qr_istek_baslik": {
+    "description": "Onaylı tayfada QR ile katılım isteği bırakılınca başlık."
+  },
+  "simdi_qr_istek_aciklama": "Bu tayfa katılım isteklerini onaylıyor. Yönetici onaylayınca tayfaya ve etkinliğe katılabilirsin.",
+  "@simdi_qr_istek_aciklama": {
+    "description": "Onaylı tayfada QR ile katılım isteği bırakılınca açıklama."
+  },
+  "simdi_qr_etkinlige_git": "Etkinliğe git",
+  "@simdi_qr_etkinlige_git": {
+    "description": "QR ile katıldıktan sonra etkinlik detayını açan düğme."
   }
 }

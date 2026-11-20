@@ -122,6 +122,8 @@ enum ProblemType {
   albumConsentRequired('album-consent-required'),
   nowLimitReached('now-limit-reached'),
   eventNotOpenEnded('event-not-open-ended'),
+  invalidJoinQr('invalid-join-qr'),
+  joinQrLimitReached('join-qr-limit-reached'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),
