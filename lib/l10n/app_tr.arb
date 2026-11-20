@@ -2832,6 +2832,80 @@
       }
     }
   },
+  "bilesen_draw_ad": "Kura",
+  "@bilesen_draw_ad": {
+    "description": "Kura bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
+  },
+  "bilesen_draw_konu_participants": "Katılımcılar",
+  "@bilesen_draw_konu_participants": {
+    "description": "Kuranın katılımcıları sıraladığını söyleyen, bölüm başlığının sağındaki not."
+  },
+  "bilesen_draw_konu_teams": "Takımlar",
+  "@bilesen_draw_konu_teams": {
+    "description": "Kuranın takımları sıraladığını söyleyen, bölüm başlığının sağındaki not."
+  },
+  "bilesen_draw_yok": "Kura henüz çekilmedi.",
+  "@bilesen_draw_yok": {
+    "description": "Kura çekilmemişken bölümdeki boş durum metni."
+  },
+  "bilesen_draw_cek": "Kurayı çek",
+  "@bilesen_draw_cek": {
+    "description": "Kurayı çeken düğme (organizatör, moderatör, yönetici) ve onay penceresinin onay düğmesi."
+  },
+  "bilesen_draw_onay": "Kura çekilsin mi?",
+  "@bilesen_draw_onay": {
+    "description": "Kurayı çekmeden önceki onay penceresinin başlığı."
+  },
+  "bilesen_draw_onay_participants": "Kura bir kez çekilir: sonra değiştirilemez ve yeniden çekilemez. Şu an etkinliğe katılanlar rastgele sıraya dizilir; ardışık iki kişi eşleşir.",
+  "@bilesen_draw_onay_participants": {
+    "description": "Katılımcı kurasında onay metni: kuranın geri alınamadığını söyler."
+  },
+  "bilesen_draw_onay_teams": "Kura bir kez çekilir: sonra değiştirilemez ve yeniden çekilemez. Üyesi olan takımlar rastgele sıraya dizilir; ardışık iki takım eşleşir.",
+  "@bilesen_draw_onay_teams": {
+    "description": "Takım kurasında onay metni: kuranın geri alınamadığını söyler."
+  },
+  "bilesen_draw_cekildi": "Kura çekildi: {zaman}",
+  "@bilesen_draw_cekildi": {
+    "description": "Çekilmiş kuranın üstündeki bilgi; zaman tarih ve saattir.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "20 Kasım 2026 14:05"
+      }
+    }
+  },
+  "bilesen_draw_eslesme": "Eşleşme {no}",
+  "@bilesen_draw_eslesme": {
+    "description": "Kurada ardışık iki yerin oluşturduğu eşleşmenin başlığı.",
+    "placeholders": {
+      "no": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_draw_sira": "{sira}.",
+  "@bilesen_draw_sira": {
+    "description": "Kurada yerin sıra numarası.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_draw_bay": "Bay",
+  "@bilesen_draw_bay": {
+    "description": "Boş ya da rakipsiz kalan yer: karşısındaki tur atlar."
+  },
+  "bilesen_draw_takim": "Takım",
+  "@bilesen_draw_takim": {
+    "description": "Takım kurasında takımın adı okunamadığında yerine yazılan metin."
+  },
+  "bilesen_draw_sen": "Sen",
+  "@bilesen_draw_sen": {
+    "description": "Kurada çağıranın (ya da takımının) yerini işaretleyen etiket."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -11405,6 +11479,14 @@
   "hata_teams_not_participant": "Etkinliğe katılmayan biri takıma eklenemez.",
   "@hata_teams_not_participant": {
     "description": "Hata kodu `teams-not-participant`. Elle kurmada katılımcı olmayan biri takıma eklenince görünen hata."
+  },
+  "hata_draw_already_made": "Kura zaten çekilmiş; yeniden çekilemez.",
+  "@hata_draw_already_made": {
+    "description": "Hata kodu `draw-already-made`. Çekilmiş kura yeniden çekilmeye çalışınca görünen hata."
+  },
+  "hata_draw_too_few": "Kura için en az iki katılımcı (takım kurasında üyesi olan iki takım) gerekir.",
+  "@hata_draw_too_few": {
+    "description": "Hata kodu `draw-too-few`. İkiden az katılımcıyla ya da takımla kura çekilmeye çalışınca görünen hata."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {
