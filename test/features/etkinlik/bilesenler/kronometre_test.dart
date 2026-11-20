@@ -342,7 +342,7 @@ void main() {
           tester.getSemantics(
             find.byKey(const ValueKey('kronometre-rakamlar')),
           ),
-          containsSemantics(label: 'Kalan süre: 1 dakika', isLiveRegion: false),
+          isSemantics(label: 'Kalan süre: 1 dakika', isLiveRegion: false),
         );
 
         await _dokun(tester, find.widgetWithText(ChoiceChip, '1:30'));
@@ -364,7 +364,7 @@ void main() {
         expect(_rakam('0:00'), findsOneWidget);
         expect(
           tester.getSemantics(find.text('Süre doldu.')),
-          containsSemantics(label: 'Süre doldu.', isLiveRegion: true),
+          isSemantics(label: 'Süre doldu.', isLiveRegion: true),
         );
         expect(s.uyarici.uyari, 1);
         expect(find.text('Başlat'), findsNothing);
@@ -416,7 +416,7 @@ void main() {
         expect(_tarafta(0, '4:58'), findsOneWidget);
         expect(
           tester.getSemantics(find.byKey(const ValueKey('kronometre-taraf-0'))),
-          containsSemantics(
+          isSemantics(
             label: 'Üstteki oyuncu, kalan süre 4 dakika 58 saniye',
             value: 'Sıra sende',
             isButton: true,
