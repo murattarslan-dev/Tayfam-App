@@ -301,10 +301,7 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
                     const SizedBox(height: TayfamSpacing.s8),
                   _SecimKarti(
                     secili: _simdiRolu == rol,
-                    child: RadioListTile<Role>(
-                      value: rol,
-                      title: Text(etiket),
-                    ),
+                    child: RadioListTile<Role>(value: rol, title: Text(etiket)),
                   ),
                 ],
               ],

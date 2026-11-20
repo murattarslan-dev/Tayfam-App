@@ -22,7 +22,11 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// sadeleştirir: organizatör olmayan da isteği gönderse karar sunucunundur
 /// (`permission-denied`, `event-ended`; kesin kural 5).
 class SuruyorBandi extends ConsumerWidget {
-  const SuruyorBandi({super.key, required this.anahtar, required this.etkinlik});
+  const SuruyorBandi({
+    super.key,
+    required this.anahtar,
+    required this.etkinlik,
+  });
 
   final EtkinlikAnahtari anahtar;
   final Event etkinlik;
@@ -56,7 +60,9 @@ class SuruyorBandi extends ConsumerWidget {
 
   Future<void> _bitir(BuildContext context, WidgetRef ref) async {
     if (!await bitirmeOnayiSor(context) || !context.mounted) return;
-    final hata = await ref.read(etkinlikEylemProvider(anahtar).notifier).bitir();
+    final hata = await ref
+        .read(etkinlikEylemProvider(anahtar).notifier)
+        .bitir();
     if (!context.mounted) return;
     if (hata != null) {
       hataBildir(context, hata);

@@ -80,12 +80,9 @@ List<CatalogField> simdiAlanlari(CatalogEventType? tanim) => [
 Set<TaslakHatasi> simdiHatalari(EtkinlikTaslagi t, {required DateTime simdi}) {
   final tanim = t.turTanimi;
   return {
-    if (t.tur == null ||
-        tanim == null ||
-        !alanlarTaniniyor(turAlanlari(tanim)))
+    if (t.tur == null || tanim == null || !alanlarTaniniyor(turAlanlari(tanim)))
       TaslakHatasi.tur,
-    if (t.baslik.trim().runes.length > etkinlikBaslikEnCok)
-      TaslakHatasi.baslik,
+    if (t.baslik.trim().runes.length > etkinlikBaslikEnCok) TaslakHatasi.baslik,
     ...adimHatalari(SihirbazAdimi.yer, t, simdi: simdi),
     if (alanHatalari(simdiAlanlari(tanim), t.alanlar).isNotEmpty)
       TaslakHatasi.alanlar,

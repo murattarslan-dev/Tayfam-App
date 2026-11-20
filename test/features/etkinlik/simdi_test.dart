@@ -95,7 +95,10 @@ void main() {
 
     test('adres: /simdi, sorgu parametreleriyle', () {
       expect(Adresler.simdi(), '/simdi');
-      expect(Adresler.simdi(tayfaId: ornekTayfaId), '/simdi?tayfa=$ornekTayfaId');
+      expect(
+        Adresler.simdi(tayfaId: ornekTayfaId),
+        '/simdi?tayfa=$ornekTayfaId',
+      );
       expect(Adresler.simdi(davetli: _davetliId), '/simdi?davetli=$_davetliId');
     });
   });
@@ -221,7 +224,9 @@ void main() {
 
     test('tayfasız: POST /v1/instant-events, event.starts_now; gizli tayfa '
         'listeye eklenir', () async {
-      final tasima = etkinlikTasimasi({'POST $_anlikYolu': (_) => _anlikJson()});
+      final tasima = etkinlikTasimasi({
+        'POST $_anlikYolu': (_) => _anlikJson(),
+      });
       final c = _kapsayici(tasima);
       final n = _doldur(c, _anlik);
       await n.gonder(varsayilanBaslik: 'Genel');
@@ -240,7 +245,9 @@ void main() {
     });
 
     test('"Boşum"dan gelen davetli invitee_user_ids ile gider', () async {
-      final tasima = etkinlikTasimasi({'POST $_anlikYolu': (_) => _anlikJson()});
+      final tasima = etkinlikTasimasi({
+        'POST $_anlikYolu': (_) => _anlikJson(),
+      });
       final c = _kapsayici(tasima);
       const SimdiAnahtari anahtar = (tayfaId: null, davetli: _davetliId);
       final n = _doldur(c, anahtar);
@@ -380,30 +387,30 @@ void main() {
           zamanlayiciProvider.overrideWithValue(SahteZamanlayici().kur),
         ],
       );
-      yonlendiriciyiAl(
-        tester,
-      ).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
+      yonlendiriciyiAl(tester)
+          .go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
       await tester.pumpAndSettle();
       return tasima;
     }
 
     for (final tema in _temalar) {
-      testWidgets('organizatöre bant ve Bitir (${tema.name}, 2× yazı, 320 dp)', (
-        tester,
-      ) async {
-        ekranBoyutu(tester, genislik: 320, yukseklik: 2400);
-        ikiKatYazi(tester);
-        await ac(tester, ben: organizatorId, tema: tema);
-        expect(tester.takeException(), isNull);
-        expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
-        expect(find.text(arbMetni('simdi_bant_baslik')), findsOneWidget);
-        expect(find.text(arbMetni('simdi_bitir')), findsOneWidget);
-        expect(
-          find.textContaining(tr.simdi_suruyor_etiketi('25 dk')),
-          findsOneWidget,
-        );
-        expect(find.textContaining('en geç'), findsOneWidget);
-      });
+      testWidgets(
+        'organizatöre bant ve Bitir (${tema.name}, 2× yazı, 320 dp)',
+        (tester) async {
+          ekranBoyutu(tester, genislik: 320, yukseklik: 2400);
+          ikiKatYazi(tester);
+          await ac(tester, ben: organizatorId, tema: tema);
+          expect(tester.takeException(), isNull);
+          expect(find.byType(EtkinlikDetayEkrani), findsOneWidget);
+          expect(find.text(arbMetni('simdi_bant_baslik')), findsOneWidget);
+          expect(find.text(arbMetni('simdi_bitir')), findsOneWidget);
+          expect(
+            find.textContaining(tr.simdi_suruyor_etiketi('25 dk')),
+            findsOneWidget,
+          );
+          expect(find.textContaining('en geç'), findsOneWidget);
+        },
+      );
     }
 
     testWidgets('Bitir onayla gönderilir; bant kalkar', (tester) async {

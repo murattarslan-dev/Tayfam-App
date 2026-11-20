@@ -637,10 +637,7 @@ void main() {
       );
       await _dokun(tester, find.textContaining('Cumartesi boş'));
       await _dokun(tester, find.text(arbMetni('bosum_bir_sey_yapalim')));
-      expect(
-        find.text('${simdiSayfasiOneki}davetli=$kisiId2'),
-        findsOneWidget,
-      );
+      expect(find.text('${simdiSayfasiOneki}davetli=$kisiId2'), findsOneWidget);
     });
 
     testWidgets('güne dokununca o gün için anlık etkinlik', (tester) async {
