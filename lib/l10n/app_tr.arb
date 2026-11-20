@@ -3926,6 +3926,146 @@
   "@bilesen_guest_sil_aciklama": {
     "description": "Misafir silme onayının açıklaması."
   },
+  "bilesen_ranking_ad": "Derece",
+  "@bilesen_ranking_ad": {
+    "description": "Derece / sıralama bileşeninin adı (katalogda adı yoksa bölüm başlığı)."
+  },
+  "bilesen_ranking_yok": "Henüz derece girilmedi.",
+  "@bilesen_ranking_yok": {
+    "description": "Elle girilen derecede hiç satır yokken."
+  },
+  "bilesen_ranking_olcum_yok": "Ölçüm değerleri girildikçe derece oluşur.",
+  "@bilesen_ranking_olcum_yok": {
+    "description": "Ölçümden hesaplanan derecede hiç değer yokken."
+  },
+  "bilesen_ranking_baslamadi": "Derece etkinlik başlayınca oluşur.",
+  "@bilesen_ranking_baslamadi": {
+    "description": "Etkinlik başlamadan derece boşken."
+  },
+  "bilesen_ranking_olcumden": "Derece ölçüm değerlerinden hesaplanır; ayrıca girilmez.",
+  "@bilesen_ranking_olcumden": {
+    "description": "Ölçümden hesaplanan derecenin altındaki açıklama."
+  },
+  "bilesen_ranking_gizli": "Bu derece hassas bir ölçümden hesaplandığı için gösterilmiyor; herkes yalnızca kendi değerini görür.",
+  "@bilesen_ranking_gizli": {
+    "description": "Hassas ölçümden hesaplanan derece gizliyken (`hidden`) dereceyi göstermemenin nedeni."
+  },
+  "bilesen_ranking_olcum_kapali": "Derecenin hesaplandığı ölçüm bu etkinlikte kapalı.",
+  "@bilesen_ranking_olcum_kapali": {
+    "description": "Kaynak ölçüm kapalıyken (`measure_enabled: false`)."
+  },
+  "bilesen_ranking_guncelle": "Bu dereceyi görmek için uygulamayı güncelle.",
+  "@bilesen_ranking_guncelle": {
+    "description": "Derecenin ölçütü uygulamanın bu sürümünce tanınmadığında."
+  },
+  "bilesen_ranking_sira": "{sira}.",
+  "@bilesen_ranking_sira": {
+    "description": "Derecede satırın sırası; eşitler aynı sırayı paylaşır.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_ranking_sira_okunus": "{sira}. sıra",
+  "@bilesen_ranking_sira_okunus": {
+    "description": "Satırın sırasının ekran okuyucu metni.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_ranking_sen": "Sen",
+  "@bilesen_ranking_sen": {
+    "description": "Kişinin kendi satırını işaretleyen etiket (yalnızca renkle değil)."
+  },
+  "bilesen_ranking_saat": "{sayi} saat",
+  "@bilesen_ranking_saat": {
+    "description": "Sürenin ekran okuyucu metnindeki saat parçası.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_ranking_dakika": "{sayi} dakika",
+  "@bilesen_ranking_dakika": {
+    "description": "Sürenin ekran okuyucu metnindeki dakika parçası.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_ranking_saniye": "{sayi} saniye",
+  "@bilesen_ranking_saniye": {
+    "description": "Sürenin ekran okuyucu metnindeki saniye parçası (Türkçe ondalık ayracıyla).",
+    "placeholders": {
+      "sayi": {
+        "type": "String",
+        "example": "3,45"
+      }
+    }
+  },
+  "bilesen_ranking_kisi_ekle": "Kişi için derece gir",
+  "@bilesen_ranking_kisi_ekle": {
+    "description": "Organizatör ya da hakemin bir katılımcının derecesini girme düğmesi ve form başlığı."
+  },
+  "bilesen_ranking_duzelt": "Düzelt",
+  "@bilesen_ranking_duzelt": {
+    "description": "Bir satırın derecesini düzeltme düğmesi ve form başlığı."
+  },
+  "bilesen_ranking_kaldir": "Dereceyi kaldır",
+  "@bilesen_ranking_kaldir": {
+    "description": "Bir satırın elle girilmiş derecesini kaldırma düğmesi."
+  },
+  "bilesen_ranking_kaldir_onay": "Derece kaldırılsın mı?",
+  "@bilesen_ranking_kaldir_onay": {
+    "description": "Dereceyi kaldırmadan önceki onay sorusu."
+  },
+  "bilesen_ranking_kisi_sec": "Kimin derecesi?",
+  "@bilesen_ranking_kisi_sec": {
+    "description": "Derece formunda kişi seçiminin başlığı."
+  },
+  "bilesen_ranking_kisi_sec_hata": "Bir kişi seç.",
+  "@bilesen_ranking_kisi_sec_hata": {
+    "description": "Derece formunda kişi seçilmeden kaydedilince."
+  },
+  "bilesen_ranking_gelen_yok": "Henüz \"Geliyorum\" diyen yok.",
+  "@bilesen_ranking_gelen_yok": {
+    "description": "Derece formunda seçilecek katılımcı yokken."
+  },
+  "bilesen_ranking_sure_alani": "Süre",
+  "@bilesen_ranking_sure_alani": {
+    "description": "Derece formunda süre alanının etiketi."
+  },
+  "bilesen_ranking_sira_alani": "Sıra",
+  "@bilesen_ranking_sira_alani": {
+    "description": "Derece formunda elle girilen sıra alanının etiketi."
+  },
+  "bilesen_ranking_sure_ornek": "saat:dakika:saniye, ör. 1:02:03,45 ya da 45:10",
+  "@bilesen_ranking_sure_ornek": {
+    "description": "Süre alanının yardım metni."
+  },
+  "bilesen_ranking_sure_bicim": "Süreyi saat:dakika:saniye biçiminde yaz (ör. 1:02:03,45).",
+  "@bilesen_ranking_sure_bicim": {
+    "description": "Süre girdisi okunamayınca."
+  },
+  "bilesen_ranking_sure_aralik": "Süre sıfırdan büyük ve en çok {enCok} olmalı.",
+  "@bilesen_ranking_sure_aralik": {
+    "description": "Süre sınır dışındayken.",
+    "placeholders": {
+      "enCok": {
+        "type": "String",
+        "example": "277:46:40"
+      }
+    }
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -12583,6 +12723,18 @@
   "hata_guest_player_in_use": "Masada ya da kurada yeri olan misafir silinemez.",
   "@hata_guest_player_in_use": {
     "description": "Hata kodu `guest-player-in-use`. Yeri olan misafir silinmek istenince."
+  },
+  "hata_ranking_not_started": "Derece etkinlik başlayınca girilir.",
+  "@hata_ranking_not_started": {
+    "description": "Hata kodu `ranking-not-started`. Etkinlik başlamadan derece girilmek istenince."
+  },
+  "hata_ranking_not_participant": "Bu kişi etkinliğe katılmıyor; derecesi girilemez.",
+  "@hata_ranking_not_participant": {
+    "description": "Hata kodu `ranking-not-participant`. Gelmeyen ya da katılımı doğrulanmamış kişiye derece girilince."
+  },
+  "hata_ranking_from_measure": "Bu derece ölçümden hesaplanır; elle girilmez.",
+  "@hata_ranking_from_measure": {
+    "description": "Hata kodu `ranking-from-measure`. Ölçümden hesaplanan dereceye elle yazılmak istenince."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {
