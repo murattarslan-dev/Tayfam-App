@@ -66,6 +66,7 @@ const String programMaddeleriYolu = '$programYolu/items';
 const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
 const String takimYolu = '$bilesenYolu/teams';
 const String takimKurmaYolu = '$takimYolu/generate';
+const String kuraYolu = '$bilesenYolu/draw';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -325,6 +326,31 @@ Map<String, Object?> takimlarJson({
   'team_count': ?takimSayisi,
   'team_size': ?takimBuyuklugu,
   'caller_can_edit': duzenleyebilir,
+};
+
+/// Örnek `EventDrawEntry` JSON'u (kura bileşeni, #237): [kisi] ya da
+/// [takim] verilmezse boş yer (bay).
+Map<String, Object?> kuraYeriJson(int sira, {String? kisi, String? takim}) => {
+  'position': sira,
+  'user_id': ?kisi,
+  'team_id': ?takim,
+};
+
+/// Örnek `EventDraw` JSON'u (kura bileşeni, #237): verilmezse çekilmemiş
+/// katılımcı kurası, çekemeyen üye gözüyle.
+Map<String, Object?> kuraJson({
+  List<Map<String, Object?>> yerler = const [],
+  String konu = 'participants',
+  String? takimAnahtari,
+  String? cekildi,
+  bool cekebilir = false,
+}) => {
+  'drawn': cekildi != null,
+  'subject': konu,
+  'teams_key': ?takimAnahtari,
+  'drawn_at': ?cekildi,
+  'entries': yerler,
+  'caller_can_draw': cekebilir,
 };
 
 /// Örnek `TayfaVocabularyValue` JSON'u; [hedefId] ve [hedef] verilirse

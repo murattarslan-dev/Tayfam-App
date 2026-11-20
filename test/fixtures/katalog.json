@@ -512,6 +512,35 @@
       }
     },
     {
+      "key": "esports",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Espor turnuvası"
+      },
+      "icon": "sports_esports",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": "manual"
+            }
+          },
+          {
+            "kind": "draw"
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

@@ -628,6 +628,30 @@ final class EtkinlikDeposu {
     body: istek,
   );
 
+  /// `GET .../components/{component_key}/draw`: kura bileşeni (#237);
+  /// çekilmemişse `drawn` false, yerler boş.
+  Future<EventDraw> kura(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventDraw(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../draw`: kurayı çeker. Kura bir kez çekilir; sonra
+  /// değiştirilemez ve yeniden çekilemez.
+  Future<EventDraw> kurayiCek(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.makeEventDraw(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(
