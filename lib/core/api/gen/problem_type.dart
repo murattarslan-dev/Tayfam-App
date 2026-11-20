@@ -126,6 +126,8 @@ enum ProblemType {
   joinQrLimitReached('join-qr-limit-reached'),
   nowBroadcastLimitReached('now-broadcast-limit-reached'),
   homeWidgetNotFound('home-widget-not-found'),
+  dailyItemNotFound('daily-item-not-found'),
+  dailyItemLimit('daily-item-limit'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),
