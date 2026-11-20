@@ -58,9 +58,7 @@ class RozetBolumu extends StatelessWidget {
               return ListeKarti(
                 children: [
                   for (final rozet in rozetler)
-                    RozetSatiri(
-                      gorunum: rozetGorunumu(m, rozet, katalog, dil),
-                    ),
+                    RozetSatiri(gorunum: rozetGorunumu(m, rozet, katalog, dil)),
                 ],
               );
             },
@@ -122,9 +120,7 @@ class RozetSatiri extends StatelessWidget {
                     excludeSemantics: true,
                     child: Text(
                       rozetAdMetni(m, gorunum),
-                      style: context.yazi.titleSmall?.copyWith(
-                        color: r.metin,
-                      ),
+                      style: context.yazi.titleSmall?.copyWith(color: r.metin),
                     ),
                   ),
                   if (kural != null) ...[

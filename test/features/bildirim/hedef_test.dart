@@ -298,7 +298,10 @@ void main() {
     test('metin rozeti ve içeriği adlandırmıyor', () {
       final m = lookupAppLocalizations(const Locale('tr'));
       expect(bildirimMetni(m, kisisel, kisi: 'Ayşe'), m.rozet_bildirim);
-      expect(bildirimMetni(m, tayfaRozeti, kisi: 'Ayşe'), m.rozet_bildirim_tayfa);
+      expect(
+        bildirimMetni(m, tayfaRozeti, kisi: 'Ayşe'),
+        m.rozet_bildirim_tayfa,
+      );
       expect(bildirimKategorisi(kisisel.type), BildirimKategorisi.etkinlik);
       expect(bildirimIkonu(kisisel.type), Icons.military_tech_outlined);
     });

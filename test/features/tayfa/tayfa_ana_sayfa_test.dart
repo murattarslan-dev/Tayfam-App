@@ -84,9 +84,9 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         final ad = find.text(
-          arbMetni(
-            'rozet_ad_yil',
-          ).replaceAll('{ad}', 'Yılın tayfası').replaceAll('{yil}', '2026'),
+          arbMetni('rozet_ad_yil')
+              .replaceAll('{ad}', 'Yılın tayfası')
+              .replaceAll('{yil}', '2026'),
         );
         await tester.scrollUntilVisible(
           ad,

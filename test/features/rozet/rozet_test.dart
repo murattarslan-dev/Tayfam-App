@@ -30,9 +30,7 @@ Future<void> _bolumuAc(
   bool dur = true,
 }) => widgetAc(
   tester,
-  Scaffold(
-    body: ListView(children: [bolum]),
-  ),
+  Scaffold(body: ListView(children: [bolum])),
   themeMode: themeMode,
   tayfa: tayfaOverridelari(katalog: katalog),
   dur: dur,
@@ -213,7 +211,10 @@ void main() {
       expect(g.ikon, rozetGenelIkonu);
       expect(g.kural, isNull);
       // Katalog gelmediyse de aynı.
-      expect(rozetGorunumu(m, _rozet('yeni_rozet'), null, 'tr').ad, 'yeni_rozet');
+      expect(
+        rozetGorunumu(m, _rozet('yeni_rozet'), null, 'tr').ad,
+        'yeni_rozet',
+      );
     });
 
     test('biçimsiz anahtar ve yıl gösterilmez', () {
@@ -244,7 +245,10 @@ void main() {
         expect(find.text(m.rozet_baslik), findsOneWidget);
         expect(find.text('İlk adım'), findsOneWidget);
         expect(find.text(m.rozet_kural_ilk), findsOneWidget);
-        expect(find.text(m.rozet_ad_yil('Yılın tayfası', '2026')), findsOneWidget);
+        expect(
+          find.text(m.rozet_ad_yil('Yılın tayfası', '2026')),
+          findsOneWidget,
+        );
         expect(find.text('yeni_rozet'), findsOneWidget);
         // Ekran okuyucu "ad, yıl" ve ardından kuralı okur.
         expect(

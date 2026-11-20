@@ -151,8 +151,7 @@ String? rozetKuralMetni(
   }
   // Türün ölçüm ya da günlük bileşeni: ad bileşenin `labels`'ından, birim
   // ölçümün `unit` parametresinden.
-  for (final b
-      in tanim.definition.components ?? const <CatalogComponent>[]) {
+  for (final b in tanim.definition.components ?? const <CatalogComponent>[]) {
     if (b.key != anahtar) continue;
     final ad = katalogAdi(b.labels, dil);
     if (ad == null) return null;

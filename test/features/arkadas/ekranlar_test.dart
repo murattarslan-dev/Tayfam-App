@@ -877,10 +877,7 @@ void main() {
             const KisiProfiliEkrani(kullaniciId: benimId),
             tasima(
               rozetler: [
-                {
-                  'badge_key': 'ilk_adim',
-                  'earned_at': '2026-11-01T10:00:00Z',
-                },
+                {'badge_key': 'ilk_adim', 'earned_at': '2026-11-01T10:00:00Z'},
               ],
             ),
             themeMode: mod,
@@ -916,7 +913,11 @@ void main() {
 
       testWidgets('başkasının profilinde alan yoksa bölüm yok', (tester) async {
         ekranBoyutu(tester);
-        await _ac(tester, const KisiProfiliEkrani(kullaniciId: kisiId1), tasima());
+        await _ac(
+          tester,
+          const KisiProfiliEkrani(kullaniciId: kisiId1),
+          tasima(),
+        );
         expect(find.text(arbMetni('rozet_baslik')), findsNothing);
       });
 
