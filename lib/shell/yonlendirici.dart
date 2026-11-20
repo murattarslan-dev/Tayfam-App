@@ -18,6 +18,7 @@ import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/istatistik/istatistik.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
@@ -174,6 +175,8 @@ List<RouteBase> rotalariOlustur(
               ),
               routes: [
                 for (final modul in moduller) ...modul.rotalar,
+                // Tayfa istatistikleri her tayfada vardır (#250).
+                ...istatistikRotalari,
                 // Tayfa yönetimi modül değildir; her tayfada vardır
                 // (ADR-0002, ADR-0018 §1).
                 ...tayfaYonetimRotalari(

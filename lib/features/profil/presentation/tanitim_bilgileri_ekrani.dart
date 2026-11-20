@@ -12,6 +12,7 @@ import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart';
 import 'package:tayfam/features/profil/application/profil_tamamlama.dart';
+import 'package:tayfam/features/profil/presentation/istatistik_gorunurlugu.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/features/profil/presentation/tanitim_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -136,6 +137,17 @@ class _Icerik extends ConsumerWidget {
               aciklama: dogumGunuAciklamasi(m, hesap.birthdayVisibility),
               sag: const SatirOku(),
               onTap: () => unawaited(dogumGunuSec(context, ref, hesap)),
+            ),
+            // Kişisel istatistikler ve rozetler (#250; Tayfam-Api
+            // ADR-0026 §4, ADR-0039 §3).
+            MenuSatiri.kartta(
+              key: const ValueKey('tanitim-istatistik'),
+              ikon: Icons.insights_outlined,
+              baslik: m.istatistik_gorunurluk_baslik,
+              aciklama: istatistikGorunurlukAdi(m, hesap.statsVisibility),
+              sag: const SatirOku(),
+              onTap: () =>
+                  unawaited(istatistikGorunurlukSec(context, ref, hesap)),
             ),
           ],
         ),

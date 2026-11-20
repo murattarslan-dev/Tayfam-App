@@ -189,6 +189,29 @@ class TayfaAnaSayfa extends ConsumerWidget {
                       ],
                     ),
             ),
+            // Tayfa istatistikleri (#250; Tayfam-Api ADR-0026); anlık
+            // tayfada yoktur.
+            if (!anlik)
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  TayfamSpacing.kenarMobil,
+                  TayfamSpacing.s24,
+                  TayfamSpacing.kenarMobil,
+                  0,
+                ),
+                child: ListeKarti(
+                  children: [
+                    MenuSatiri.kartta(
+                      ikon: Icons.insights_outlined,
+                      baslik: metinler.istatistik_baslik,
+                      aciklama: metinler.istatistik_giris_aciklama,
+                      sag: const SatirOku(),
+                      onTap: () =>
+                          context.go(Adresler.tayfaIstatistikleri(tayfaId)),
+                    ),
+                  ],
+                ),
+              ),
             if (rozetler.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(

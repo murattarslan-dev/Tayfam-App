@@ -50,6 +50,16 @@ final class KesfetDeposu {
     body: TayfaDiscoverInput(enabled: acik),
   );
 
+  /// `PUT /v1/tayfas/{tayfa_id}/discover/stats-showcase` (yönetici;
+  /// #250, Tayfam-Api ADR-0026 §3).
+  Future<TayfaDiscover> vitrinAyariniDegistir(
+    String tayfaId, {
+    required bool goster,
+  }) => _kesfet.setTayfaStatsShowcase(
+    tayfaId: tayfaId,
+    body: TayfaStatsShowcaseInput(statsShowcase: goster),
+  );
+
   /// `GET …/events/{event_id}/feedback`: cevap yoksa `answer` yok.
   Future<EventFeedback> geriBildirim(String tayfaId, String etkinlikId) =>
       _etkinlik.getEventFeedback(tayfaId: tayfaId, eventId: etkinlikId);

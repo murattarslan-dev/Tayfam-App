@@ -21,6 +21,7 @@ const String elifId = '00000000-0000-4000-8000-0000000000a3';
 const String akisYolu = '/v1/discover/events';
 const String kesfetKatilYolu = '/v1/discover/tayfas/{tayfa_id}/join';
 const String tayfaKesfetYolu = '/v1/tayfas/{tayfa_id}/discover';
+const String vitrinYolu = '/v1/tayfas/{tayfa_id}/discover/stats-showcase';
 const String geriBildirimYolu =
     '/v1/tayfas/{tayfa_id}/events/{event_id}/feedback';
 const String guvenlikYolu =
@@ -54,6 +55,7 @@ Map<String, Object?> kesfetOgesiJson({
   String? aciklama = 'Her pazar sabahı kolay ve orta parkurlar.',
   int etkinlikSayisi = 42,
   int katilimSayisi = 318,
+  Map<String, Object?>? vitrin,
 }) => {
   'event': {
     'id': etkinlikId,
@@ -72,6 +74,7 @@ Map<String, Object?> kesfetOgesiJson({
     'created_at': '2024-03-10T10:00:00Z',
     'event_count': etkinlikSayisi,
     'attendance_count': katilimSayisi,
+    'showcase': ?vitrin,
   },
   'friends': [
     if (arkadasSayisi > 0) kisiJson(ayseId, 'Ayşe'),

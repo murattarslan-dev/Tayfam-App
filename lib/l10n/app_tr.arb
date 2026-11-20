@@ -14003,5 +14003,187 @@
   "push_now_started_body": "Şu an başlayan bir etkinlik var. Ayrıntı için uygulamayı aç.",
   "@push_now_started_body": {
     "description": "Push bildirimi gövdesi (`now_started`, Android body_loc_key): içerik, isim, konum yazılmaz; argüman yoktur."
+  },
+  "istatistik_baslik": "İstatistikler",
+  "@istatistik_baslik": {
+    "description": "Tayfa istatistik ekranının başlığı ve profildeki istatistik bölümünün başlığı (Tayfam-Api ADR-0026)."
+  },
+  "istatistik_giris_aciklama": "Tayfanın toplamları ve kişisel katkılar",
+  "@istatistik_giris_aciklama": {
+    "description": "Tayfa ana sayfasındaki \"İstatistikler\" satırının açıklaması."
+  },
+  "istatistik_donem": "Dönem",
+  "@istatistik_donem": {
+    "description": "Tayfa istatistik ekranında yıl seçicisinin başlığı."
+  },
+  "istatistik_tum_zamanlar": "Tüm zamanlar",
+  "@istatistik_tum_zamanlar": {
+    "description": "Yıl seçicisinde bütün yılların toplamı seçeneği."
+  },
+  "istatistik_toplamlar": "Tayfa toplamları",
+  "@istatistik_toplamlar": {
+    "description": "Tayfa istatistik ekranında tayfanın toplamlarının bölüm başlığı."
+  },
+  "istatistik_katkilar": "Kişisel katkılar",
+  "@istatistik_katkilar": {
+    "description": "Tayfa istatistik ekranında üyelerin ölçüm ve günlük metriklerindeki katkılarının bölüm başlığı. Yalnızca tayfanın etkin üyelerine görünür."
+  },
+  "istatistik_bos": "Henüz istatistik yok. Etkinlikler bittikten 7 gün sonra burada sayılır.",
+  "@istatistik_bos": {
+    "description": "Seçili dönemde tayfanın hiç istatistiği yokken gösterilen sakin not."
+  },
+  "istatistik_not": "Etkinlikler bittikten 7 gün sonra sayılır; iptal edilen etkinlikler sayılmaz.",
+  "@istatistik_not": {
+    "description": "Tayfa istatistik ekranının altındaki açıklama: istatistik donmuş etkinliklerden hesaplanır (Tayfam-Api ADR-0026 §1)."
+  },
+  "istatistik_yukleniyor": "İstatistikler yükleniyor",
+  "@istatistik_yukleniyor": {
+    "description": "Tayfa istatistikleri okunurken yükleme göstergesinin ekran okuyucu etiketi."
+  },
+  "istatistik_etkinlik_sayisi": "{sayi, plural, other{{sayi} etkinlikten}}",
+  "@istatistik_etkinlik_sayisi": {
+    "description": "Bir istatistik satırının altında değere katkı veren etkinlik sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "istatistik_metrik_events": "Etkinlik",
+  "@istatistik_metrik_events": {
+    "description": "Ortak metrik `events`: sayılan etkinlik sayısı."
+  },
+  "istatistik_metrik_attended": "Katılım",
+  "@istatistik_metrik_attended": {
+    "description": "Ortak metrik `attended`: doğrulanmış katılım sayısı."
+  },
+  "istatistik_metrik_participants": "Farklı katılımcı",
+  "@istatistik_metrik_participants": {
+    "description": "Ortak metrik `participants`: farklı katılımcı sayısı."
+  },
+  "istatistik_metrik_duration": "Etkinlik süresi",
+  "@istatistik_metrik_duration": {
+    "description": "Ortak metrik `duration`: etkinliklerin toplam süresi (saat:dakika:saniye biçiminde yazılır)."
+  },
+  "istatistik_metrik_turlu": "{tur} · {metrik}",
+  "@istatistik_metrik_turlu": {
+    "description": "Bir etkinlik türüne ait metriğin adı: katalogdaki tür adı ve metrik adı.",
+    "placeholders": {
+      "tur": {
+        "type": "String",
+        "example": "Doğa yürüyüşü"
+      },
+      "metrik": {
+        "type": "String",
+        "example": "Mesafe"
+      }
+    }
+  },
+  "istatistik_gunluk_kayit": "{gunluk} · kayıt sayısı",
+  "@istatistik_gunluk_kayit": {
+    "description": "Günlük bileşeninin `count` istatistiği: kayıt sayısı. gunluk katalogdaki günlük adıdır.",
+    "placeholders": {
+      "gunluk": {
+        "type": "String",
+        "example": "Av günlüğü"
+      }
+    }
+  },
+  "istatistik_gunluk_farkli": "{gunluk} · {alan} çeşidi",
+  "@istatistik_gunluk_farkli": {
+    "description": "Günlük bileşeninin `distinct_<alan>` istatistiği: alandaki farklı değer sayısı. gunluk ve alan katalog adlarıdır.",
+    "placeholders": {
+      "gunluk": {
+        "type": "String",
+        "example": "Av günlüğü"
+      },
+      "alan": {
+        "type": "String",
+        "example": "Tür"
+      }
+    }
+  },
+  "istatistik_gunluk_toplam": "{gunluk} · {alan} toplamı",
+  "@istatistik_gunluk_toplam": {
+    "description": "Günlük bileşeninin `sum_<alan>` istatistiği: alandaki değerlerin toplamı. gunluk ve alan katalog adlarıdır.",
+    "placeholders": {
+      "gunluk": {
+        "type": "String",
+        "example": "Av günlüğü"
+      },
+      "alan": {
+        "type": "String",
+        "example": "Ağırlık"
+      }
+    }
+  },
+  "istatistik_profil_bos_kendi": "Henüz istatistiğin yok. Etkinliklere katıldıkça burada görünür.",
+  "@istatistik_profil_bos_kendi": {
+    "description": "Kendi profilinde hiç kişisel istatistik yokken istatistik bölümündeki sakin not."
+  },
+  "istatistik_profil_notu": "Bütün tayfalarındaki tüm zamanlar toplamıdır. Başkaları yalnızca kişisel istatistiklerin onlara açıksa görür.",
+  "@istatistik_profil_notu": {
+    "description": "Kendi profilinde istatistik bölümünün altındaki not (Tayfam-Api ADR-0026 §4)."
+  },
+  "istatistik_vitrin_baslik": "Tayfanın istatistikleri",
+  "@istatistik_vitrin_baslik": {
+    "description": "Keşfet kartındaki istatistik vitrininin başlığı: tayfanın tüm zamanlar toplamları."
+  },
+  "istatistik_vitrin_rozetler": "Rozetler",
+  "@istatistik_vitrin_rozetler": {
+    "description": "Keşfet kartındaki istatistik vitrininde tayfa rozetlerinin başlığı."
+  },
+  "istatistik_vitrin_goster": "İstatistikleri vitrinde göster",
+  "@istatistik_vitrin_goster": {
+    "description": "Tayfa ayarlarındaki Keşfet bölümünde istatistik vitrini anahtarı (yönetici)."
+  },
+  "istatistik_vitrin_aciklama": "Tayfa Keşfet'te görünüyorsa ve en az 3 etkinliği varsa kartında tüm zamanlar toplamları ve rozetler görünür. Kişi, tarih ve yer gösterilmez.",
+  "@istatistik_vitrin_aciklama": {
+    "description": "İstatistik vitrini anahtarının açıklaması (Tayfam-Api ADR-0026 §3)."
+  },
+  "istatistik_vitrin_acildi": "İstatistikler vitrinde gösteriliyor",
+  "@istatistik_vitrin_acildi": {
+    "description": "İstatistik vitrini açılınca kısa bildirim."
+  },
+  "istatistik_vitrin_kapandi": "İstatistikler vitrinden kaldırıldı",
+  "@istatistik_vitrin_kapandi": {
+    "description": "İstatistik vitrini kapatılınca kısa bildirim."
+  },
+  "istatistik_gorunurluk_baslik": "Kişisel istatistiklerin",
+  "@istatistik_gorunurluk_baslik": {
+    "description": "Profil gizlilik ayarlarında kişisel istatistik ve rozet görünürlüğü satırının başlığı."
+  },
+  "istatistik_gorunurluk_soru": "İstatistiklerini ve rozetlerini kim görsün?",
+  "@istatistik_gorunurluk_soru": {
+    "description": "Kişisel istatistik görünürlüğü alttan sayfasının başlığı."
+  },
+  "istatistik_gorunurluk_aciklama": "Kendi profilinde her zaman görürsün. Tarih, yer ve tayfa gösterilmez.",
+  "@istatistik_gorunurluk_aciklama": {
+    "description": "Kişisel istatistik görünürlüğü alttan sayfasındaki açıklama."
+  },
+  "istatistik_gorunurluk_none": "Yalnızca ben",
+  "@istatistik_gorunurluk_none": {
+    "description": "Kişisel istatistik görünürlüğü seçeneği `none` (varsayılan)."
+  },
+  "istatistik_gorunurluk_none_aciklama": "Başka kimse görmez.",
+  "@istatistik_gorunurluk_none_aciklama": {
+    "description": "`none` seçeneğinin açıklaması."
+  },
+  "istatistik_gorunurluk_friends": "Arkadaşlarım",
+  "@istatistik_gorunurluk_friends": {
+    "description": "Kişisel istatistik görünürlüğü seçeneği `friends`."
+  },
+  "istatistik_gorunurluk_friends_aciklama": "Yalnızca arkadaşların görür.",
+  "@istatistik_gorunurluk_friends_aciklama": {
+    "description": "`friends` seçeneğinin açıklaması."
+  },
+  "istatistik_gorunurluk_ortak": "Arkadaşlarım ve tayfa üyeleri",
+  "@istatistik_gorunurluk_ortak": {
+    "description": "Kişisel istatistik görünürlüğü seçeneği `friends_and_mutual`."
+  },
+  "istatistik_gorunurluk_ortak_aciklama": "Arkadaşların ve ortak tayfadaki üyeler görür.",
+  "@istatistik_gorunurluk_ortak_aciklama": {
+    "description": "`friends_and_mutual` seçeneğinin açıklaması."
   }
 }

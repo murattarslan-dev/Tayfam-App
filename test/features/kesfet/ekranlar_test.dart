@@ -151,6 +151,50 @@ void main() {
       expect(find.textContaining('kefil olmaz'), findsOneWidget);
     });
 
+    testWidgets('vitrin alanı yoksa istatistik kartı yok (#250)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ac(tester, const KesfetEkrani(), kesfetTasimasi());
+      expect(find.text(arbMetni('istatistik_vitrin_baslik')), findsNothing);
+      expect(find.text(arbMetni('rozet_baslik')), findsNothing);
+    });
+
+    testWidgets('vitrin: tayfa toplamları ve rozetler (#250)', (tester) async {
+      ekranBoyutu(tester);
+      await _ac(
+        tester,
+        const KesfetEkrani(),
+        kesfetTasimasi({
+          'GET $akisYolu': yanit({
+            'items': [
+              kesfetOgesiJson(
+                vitrin: {
+                  'stats': [
+                    {
+                      'metric_key': 'hike.distance',
+                      'source': 'measure',
+                      'value': 240,
+                      'event_count': 18,
+                    },
+                  ],
+                  'badges': [
+                    {
+                      'badge_key': 'ilk_adim',
+                      'earned_at': '2026-11-01T10:00:00Z',
+                    },
+                  ],
+                },
+              ),
+            ],
+          }),
+        }),
+      );
+      expect(find.text(arbMetni('istatistik_vitrin_baslik')), findsOneWidget);
+      expect(find.text('Doğa yürüyüşü · Mesafe'), findsOneWidget);
+      expect(find.text('İlk adım'), findsOneWidget);
+    });
+
     testWidgets('tek arkadaş', (tester) async {
       ekranBoyutu(tester);
       await _ac(
@@ -530,7 +574,7 @@ void main() {
         tasima,
       );
       expect(find.text(arbMetni('yonetim_kesfet_off')), findsOneWidget);
-      await _dokun(tester, find.byType(Switch));
+      await _dokun(tester, find.byType(Switch).first);
       expect(find.text(arbMetni('yonetim_kesfet_ac_baslik')), findsOneWidget);
       await _dokun(tester, find.text(arbMetni('yonetim_kesfet_ac_onay')));
       expect(tasima.giden('PUT', tayfaKesfetYolu).single.govde, {
@@ -539,6 +583,35 @@ void main() {
       expect(
         find.text(arbMetni('yonetim_kesfet_pending_etiket')),
         findsOneWidget,
+      );
+    });
+
+    testWidgets('istatistik vitrini anahtarı PUT gönderir (#250)', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = kesfetTasimasi({
+        'GET $tayfaKesfetYolu': yanit(
+          kesfetAyariJson(durum: 'listed', acik: true),
+        ),
+        'PUT $vitrinYolu': yanit(
+          kesfetAyariJson(durum: 'listed', acik: true, vitrin: false),
+        ),
+      });
+      await _ac(
+        tester,
+        const Scaffold(body: TayfaKesfetBolumu(tayfaId: kesfetTayfaId)),
+        tasima,
+      );
+      expect(find.text(arbMetni('istatistik_vitrin_goster')), findsOneWidget);
+      await _dokun(tester, find.byType(Switch).last);
+      expect(tasima.giden('PUT', vitrinYolu).single.govde, {
+        'stats_showcase': false,
+      });
+      expect(tasima.giden('PUT', tayfaKesfetYolu), isEmpty);
+      expect(
+        tester.widget<Switch>(find.byType(Switch).last).value,
+        isFalse,
       );
     });
 
