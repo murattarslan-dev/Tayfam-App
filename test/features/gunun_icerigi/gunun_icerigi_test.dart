@@ -19,7 +19,6 @@ import 'package:tayfam/features/gunun_icerigi/presentation/icerik_formu.dart';
 import 'package:tayfam/features/gunun_icerigi/presentation/ortak.dart';
 import 'package:tayfam/features/gunun_icerigi/presentation/silinenler_ekrani.dart';
 import 'package:tayfam/features/sikayet/presentation/sikayet_metinleri.dart';
-import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/kayitlar.dart';
 
