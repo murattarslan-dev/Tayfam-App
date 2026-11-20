@@ -156,12 +156,8 @@ class HedefNotifier extends AsyncNotifier<EventGoal> {
 
   /// Etkinliğin hedefini [deger] yapar.
   Future<Object?> hedefiKoy(double deger) => _yaz(
-    (d) => d.hedefiKoy(
-      kimlik.tayfaId,
-      kimlik.etkinlikId,
-      kimlik.anahtar,
-      deger,
-    ),
+    (d) =>
+        d.hedefiKoy(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, deger),
   );
 
   /// Etkinliğin hedefini kaldırır (tanımdaki varsayılan geri gelir).

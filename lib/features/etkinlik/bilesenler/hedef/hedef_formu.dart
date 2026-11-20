@@ -18,11 +18,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Değer sıfırdan büyük olmalı; ölçümün üst sınırını sunucu denetler ve
 /// hatası (`invalid-request` vb.) formda gösterilir, form açık kalır.
 class HedefFormu extends StatefulWidget {
-  const HedefFormu({
-    super.key,
-    required this.hedef,
-    required this.gonder,
-  });
+  const HedefFormu({super.key, required this.hedef, required this.gonder});
 
   final EventGoal hedef;
 

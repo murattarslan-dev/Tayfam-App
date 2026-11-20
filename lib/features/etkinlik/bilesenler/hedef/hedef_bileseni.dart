@@ -150,9 +150,7 @@ class _HedefBolumuState extends ConsumerState<HedefBolumu> {
           ipucu: hedef.defaultTarget == null
               ? m.bilesen_goal_kaldir
               : m.bilesen_goal_varsayilana_don,
-          ikon: hedef.defaultTarget == null
-              ? Icons.delete_outline
-              : Icons.undo,
+          ikon: hedef.defaultTarget == null ? Icons.delete_outline : Icons.undo,
           onPressed: _mesgul ? null : () => unawaited(_kaldir(hedef)),
         ),
     ];
@@ -288,7 +286,10 @@ class HedefCubugu extends StatelessWidget {
             children: [
               Expanded(child: Text(ilerleme, style: context.yazi.bodyLarge)),
               const SizedBox(width: TayfamSpacing.s12),
-              Text(m.bilesen_goal_yuzde(yuzde), style: context.yazi.titleMedium),
+              Text(
+                m.bilesen_goal_yuzde(yuzde),
+                style: context.yazi.titleMedium,
+              ),
             ],
           ),
           const SizedBox(height: TayfamSpacing.s8),

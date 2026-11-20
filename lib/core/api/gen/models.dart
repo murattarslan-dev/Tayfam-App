@@ -8536,6 +8536,181 @@ enum EventFeedbackInputAnswer {
   }
 }
 
+/// Bir etkinliğin bir hedef bileşeni, isteği yapanın gördüğü haliyle (#246).
+final class EventGoal {
+  const EventGoal({
+    required this.measureKey,
+    required this.unit,
+    required this.decimals,
+    this.target,
+    required this.targetSet,
+    this.targetUpdatedAt,
+    this.defaultTarget,
+    this.current,
+    required this.progressHidden,
+    required this.measureEnabled,
+    required this.reached,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventGoal.fromJson(Map<String, Object?> json) => EventGoal(
+    measureKey: _readString(json['measure_key'], 'EventGoal.measure_key'),
+    unit: _readString(json['unit'], 'EventGoal.unit'),
+    decimals: _readInt(json['decimals'], 'EventGoal.decimals'),
+    target: switch (json['target']) {
+      null => null,
+      final Object v => _readDouble(v, 'EventGoal.target'),
+    },
+    targetSet: _readBool(json['target_set'], 'EventGoal.target_set'),
+    targetUpdatedAt: switch (json['target_updated_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventGoal.target_updated_at'),
+    },
+    defaultTarget: switch (json['default_target']) {
+      null => null,
+      final Object v => _readDouble(v, 'EventGoal.default_target'),
+    },
+    current: switch (json['current']) {
+      null => null,
+      final Object v => _readDouble(v, 'EventGoal.current'),
+    },
+    progressHidden: _readBool(
+      json['progress_hidden'],
+      'EventGoal.progress_hidden',
+    ),
+    measureEnabled: _readBool(
+      json['measure_enabled'],
+      'EventGoal.measure_enabled',
+    ),
+    reached: _readBool(json['reached'], 'EventGoal.reached'),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventGoal.caller_can_edit',
+    ),
+  );
+
+  /// Hedefin bağlı olduğu ölçümün anahtarı (`EventMeasure`).
+  final String measureKey;
+
+  /// Bağlı ölçümün birimi (kapalı liste, `CatalogComponent`); adı istemcinin çeviri dosyasında.
+  final String unit;
+
+  /// Bağlı ölçümün ondalık basamağı.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 3.
+  final int decimals;
+
+  /// Etkinliğin hedefi: organizatörün koyduğu, yoksa tanımdaki varsayılan; ikisi de yoksa yoktur.
+  final double? target;
+
+  /// Hedefi organizatör koydu (`false` ise varsayılan ya da hedef yok).
+  final bool targetSet;
+
+  /// Organizatörün hedefi son yazdığı an; yoksa yoktur.
+  final DateTime? targetUpdatedAt;
+
+  /// Tanımdaki varsayılan hedef; yoksa yoktur.
+  final double? defaultTarget;
+
+  /// Bağlı ölçümün kaydedilmiş değeri (toplam ölçüm) ya da değerlerinin
+  /// toplamı (kişisel ölçüm); değer yoksa 0. Önerilen değer sayılmaz.
+  /// `progress_hidden` ya da ölçüm kapalıysa yoktur.
+  final double? current;
+
+  /// İlerlemeyi göremezsiniz (hassas kişisel ölçüm).
+  final bool progressHidden;
+
+  /// Bağlı ölçüm bu etkinlikte açık (isteğe bağlı ölçüm kapalıysa ilerleme yoktur).
+  final bool measureEnabled;
+
+  /// `current` hedefe ulaştı.
+  final bool reached;
+
+  /// Şu an hedefi koyabilirsiniz (organizatör, moderatör, yönetici; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'measure_key': measureKey,
+    'unit': unit,
+    'decimals': decimals,
+    if (target case final value?) 'target': value,
+    'target_set': targetSet,
+    if (targetUpdatedAt case final value?)
+      'target_updated_at': value.toUtc().toIso8601String(),
+    if (defaultTarget case final value?) 'default_target': value,
+    if (current case final value?) 'current': value,
+    'progress_hidden': progressHidden,
+    'measure_enabled': measureEnabled,
+    'reached': reached,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventGoal &&
+          measureKey == other.measureKey &&
+          unit == other.unit &&
+          decimals == other.decimals &&
+          target == other.target &&
+          targetSet == other.targetSet &&
+          targetUpdatedAt == other.targetUpdatedAt &&
+          defaultTarget == other.defaultTarget &&
+          current == other.current &&
+          progressHidden == other.progressHidden &&
+          measureEnabled == other.measureEnabled &&
+          reached == other.reached &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    measureKey,
+    unit,
+    decimals,
+    target,
+    targetSet,
+    targetUpdatedAt,
+    defaultTarget,
+    current,
+    progressHidden,
+    measureEnabled,
+    reached,
+    callerCanEdit,
+  ]);
+}
+
+final class EventGoalTargetRequest {
+  const EventGoalTargetRequest({required this.target});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventGoalTargetRequest.fromJson(Map<String, Object?> json) =>
+      EventGoalTargetRequest(
+        target: _readDouble(json['target'], 'EventGoalTargetRequest.target'),
+      );
+
+  /// Bağlı ölçümün biriminde; ondalık basamağına yuvarlanır.
+  ///
+  /// Kısıtlar: maximum: 1000000000; exclusiveMinimum: 0.
+  final double target;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'target': target};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventGoalTargetRequest && target == other.target;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[target]);
+}
+
 final class EventList {
   const EventList({required this.events, this.nextPageToken});
 

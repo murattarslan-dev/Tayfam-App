@@ -105,9 +105,9 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe hedef bileşenini kullanan tür var', () {
-    final hedefler = turBilesenleri(
-      testTuru('hike'),
-    ).where((b) => b.kind == 'goal').toList();
+    final hedefler = turBilesenleri(testTuru('hike'))
+        .where((b) => b.kind == 'goal')
+        .toList();
     expect(hedefler, hasLength(1));
     expect(bilesenAnahtari(hedefler.single), 'goal');
     final params = BilesenParametreleri(hedefler.single.params);
@@ -174,7 +174,10 @@ void main() {
         await _detayiAc(tester, tasima, themeMode: tema);
 
         await _gorunurYap(tester, find.text('%45'));
-        expect(_bolumde(find.text(arbMetni('bilesen_goal_ad'))), findsOneWidget);
+        expect(
+          _bolumde(find.text(arbMetni('bilesen_goal_ad'))),
+          findsOneWidget,
+        );
         expect(find.text('Hedef: 10 km'), findsOneWidget);
         expect(find.text('4,5 / 10 km'), findsOneWidget);
         expect(
@@ -186,14 +189,11 @@ void main() {
           findsOneWidget,
         );
         expect(find.text(arbMetni('bilesen_goal_ulasildi')), findsNothing);
-        expect(
-          tasima.giden('GET', hedefYolu).single.yolParametreleri,
-          {
-            'tayfa_id': ornekTayfaId,
-            'event_id': ornekEtkinlikId,
-            'component_key': 'goal',
-          },
-        );
+        expect(tasima.giden('GET', hedefYolu).single.yolParametreleri, {
+          'tayfa_id': ornekTayfaId,
+          'event_id': ornekEtkinlikId,
+          'component_key': 'goal',
+        });
         // Varsayılan hedef kaldırılamaz, yalnızca değiştirilir.
         expect(
           find.byTooltip(arbMetni('bilesen_goal_varsayilana_don')),
@@ -260,10 +260,7 @@ void main() {
         expect(find.text('Hedef: 10 km'), findsOneWidget);
         expect(find.byType(HedefCubugu), findsNothing);
         expect(_bolumde(find.textContaining('%')), findsNothing);
-        expect(
-          find.byTooltip(arbMetni('bilesen_goal_degistir')),
-          findsNothing,
-        );
+        expect(find.byTooltip(arbMetni('bilesen_goal_degistir')), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }
@@ -383,14 +380,12 @@ void main() {
       await c.read(hedefProvider(_kimlik).future);
     }
 
-    void degisti(String anahtar) => soketler.single.cerceve(
-      'event.component_changed',
-      {
-        'tayfa_id': ornekTayfaId,
-        'event_id': ornekEtkinlikId,
-        'component_key': anahtar,
-      },
-    );
+    void degisti(String anahtar) =>
+        soketler.single.cerceve('event.component_changed', {
+          'tayfa_id': ornekTayfaId,
+          'event_id': ornekEtkinlikId,
+          'component_key': anahtar,
+        });
 
     final durum = c.listen(hedefProvider(_kimlik), (_, _) {});
     await bekle();
