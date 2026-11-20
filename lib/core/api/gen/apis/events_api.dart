@@ -2169,6 +2169,262 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin eşleşme ağacı
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Başlamamışsa `started` false; kurallar
+  /// ve kuranın alanları başlatılırsa alınacak olanlardır. Bileşen
+  /// uçlarının ortak kuralları geçerlidir (`component-not-found`,
+  /// `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventBracket> getEventBracket({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(jsonObject(response, 'getEventBracket'));
+  }
+
+  /// Eşleşme ağacını başlatır (organizatör, moderatör, yönetici)
+  ///
+  /// Gövde almaz. Kuradan ilk turu (ligde tüm turları) eşler. Başlamışsa
+  /// `bracket-started`; kura çekilmemişse ya da türde kura yoksa
+  /// `bracket-draw-required`; kurada ikiden az dolu yer varsa
+  /// `bracket-too-few`; elemede 128 yerden, ligde 20 ve İsviçre'de 64
+  /// katılımcıdan fazlası `event-limit`. Bileşen uçlarının ortak
+  /// kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventBracket> startEventBracket({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(jsonObject(response, 'startEventBracket'));
+  }
+
+  /// Eşleşme ağacını sıfırlar (organizatör, moderatör, yönetici)
+  ///
+  /// Maçları, oyunları ve maçlara atanmış hakemleri siler; kura kalır.
+  /// Başlamamışsa `bracket-not-started`. Bileşen uçlarının ortak
+  /// kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventBracket> resetEventBracket({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(jsonObject(response, 'resetEventBracket'));
+  }
+
+  /// Sonraki turu eşler (organizatör, moderatör, yönetici)
+  ///
+  /// Gövde almaz. Elemede ve İsviçre'de, mevcut turun tüm maçları
+  /// sonuçlanınca sonraki turu eşler. Sonuçlanmamış maç varsa
+  /// `bracket-round-open`; sonraki tur yoksa (ligde turların hepsi
+  /// başlangıçta eşlenir) `bracket-finished`; başlamamışsa
+  /// `bracket-not-started`. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/rounds`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventBracket> pairEventBracketRound({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/rounds',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(jsonObject(response, 'pairEventBracketRound'));
+  }
+
+  /// Maça sonraki oyunu girer (organizatör, moderatör, yönetici, hakem)
+  ///
+  /// `points` kuralında iki tarafın puanı (`a_points`, `b_points`),
+  /// `wdl` kuralında A tarafının sonucu (`a_outcome`); kurala uymayan
+  /// gövde `invalid-request`. Maçı sonuçlandıran oyunla maç biter.
+  /// Etkinlik başlamadıysa `score-not-started`; maç yoksa
+  /// `bracket-match-not-found`; sonuçlanmış maçta ya da bayda
+  /// `bracket-match-decided`; sonraki tur eşlenmişse
+  /// `bracket-round-closed`; 9 oyundan sonra `event-limit`. Bileşen
+  /// uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/matches/{match_id}/games`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [matchId]: Eşleşme ağacındaki maçın kimliği (`EventBracketMatch.id`).
+  Future<EventBracket> addEventBracketGame({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String matchId,
+    required EventBracketGameRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/matches/{match_id}/games',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'match_id': matchId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(jsonObject(response, 'addEventBracketGame'));
+  }
+
+  /// Girilmiş bir oyunu düzeltir (organizatör, moderatör, yönetici)
+  ///
+  /// Sonuçlanmış maçta da oyunun yerini alır. Girilmemiş oyun
+  /// `bracket-game-not-found`; sonraki tur bu maçın turundan eşlenmişse
+  /// `bracket-round-closed` (gerekirse eşleşme ağacı sıfırlanır). Gövde
+  /// kuralları oyun girmedeki gibidir. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/matches/{match_id}/games/{game}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [matchId]: Eşleşme ağacındaki maçın kimliği (`EventBracketMatch.id`).
+  ///
+  /// [game]: Maçtaki oyunun numarası (1–9).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 9.
+  Future<EventBracket> correctEventBracketGame({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String matchId,
+    required int game,
+    required EventBracketGameRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/matches/{match_id}/games/{game}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'match_id': matchId,
+        'game': '$game',
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(
+      jsonObject(response, 'correctEventBracketGame'),
+    );
+  }
+
+  /// Maçın son oyununu siler (organizatör, moderatör, yönetici)
+  ///
+  /// Yalnızca son oyun silinir (aksi `bracket-game-not-found`); sonraki
+  /// tur eşlenmişse `bracket-round-closed`. Bileşen uçlarının ortak
+  /// kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/matches/{match_id}/games/{game}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [matchId]: Eşleşme ağacındaki maçın kimliği (`EventBracketMatch.id`).
+  ///
+  /// [game]: Maçtaki oyunun numarası (1–9).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 9.
+  Future<EventBracket> deleteEventBracketGame({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String matchId,
+    required int game,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/bracket/matches/{match_id}/games/{game}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'match_id': matchId,
+        'game': '$game',
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventBracket.fromJson(
+      jsonObject(response, 'deleteEventBracketGame'),
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten
