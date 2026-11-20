@@ -62,10 +62,7 @@ void main() {
           Adresler.tayfaDavetleri,
         );
         expect(simdiDavetiMi(_simdi(), etkinUyeMi: sorgu), isTrue);
-        expect(
-          satirIciIslem(_simdi(), etkinUyeMi: sorgu),
-          SatirIciIslem.davet,
-        );
+        expect(satirIciIslem(_simdi(), etkinUyeMi: sorgu), SatirIciIslem.davet);
       }
       expect(davetTayfasi(_simdi()), bildirimTayfaId);
     });

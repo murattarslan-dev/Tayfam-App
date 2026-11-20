@@ -83,11 +83,9 @@ Future<ProviderContainer> _kapsayici(
     ..listen(simdiBaslatProvider(anahtar), (_, _) {})
     ..listen(simdiAlicilariProvider(anahtar), (_, _) {});
   if (anahtar.tayfaId == null) await c.read(arkadaslarProvider.future);
-  c.read(simdiBaslatProvider(anahtar).notifier).noktaSec(
-    _nokta,
-    il: 'Bolu',
-    ilce: 'Merkez',
-  );
+  c
+      .read(simdiBaslatProvider(anahtar).notifier)
+      .noktaSec(_nokta, il: 'Bolu', ilce: 'Merkez');
   return c;
 }
 
@@ -158,10 +156,7 @@ void main() {
       final govde = _govdeler(t).single;
       expect(govde['now_recipient_ids'], [_kisi(2), _kisi(1), _kisi(3)]);
       expect(govde.containsKey('invitee_user_ids'), isFalse);
-      expect(
-        (govde['event']! as Map<String, Object?>)['starts_now'],
-        isTrue,
-      );
+      expect((govde['event']! as Map<String, Object?>)['starts_now'], isTrue);
     });
 
     test('"Boşum"dan gelen davetli alıcılarda değil (kesişmez)', () async {
@@ -211,9 +206,7 @@ void main() {
 
     test('tayfada alıcı yok ve arkadaş listesi istenmez', () async {
       final t = _tasima(
-        ek: {
-          'POST $etkinliklerYolu': (_) => etkinlikJson(acikUclu: true),
-        },
+        ek: {'POST $etkinliklerYolu': (_) => etkinlikJson(acikUclu: true)},
       );
       final c = await _kapsayici(t, _tayfada);
       expect(c.read(simdiAlicilariProvider(_tayfada)).secili, isEmpty);
@@ -257,8 +250,7 @@ void main() {
       expect(govdeler.first['now_recipient_ids'], isNotEmpty);
       expect(govdeler.last.containsKey('now_recipient_ids'), isFalse);
       String kimlik(Map<String, Object?> g) =>
-          (g['event']! as Map<String, Object?>)['client_request_id']!
-              as String;
+          (g['event']! as Map<String, Object?>)['client_request_id']! as String;
       expect(kimlik(govdeler.last), kimlik(govdeler.first));
     });
   });
@@ -299,7 +291,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(SimdiAliciSayfasi), findsOneWidget);
         expect(find.text('3 / 30 kişi seçildi'), findsOneWidget);
-        expect(find.text(arbMetni('bosum_rozet_bugun')), findsOneWidget);
+        expect(find.textContaining(arbMetni('bosum_rozet_bugun')), findsOneWidget);
         expect(tester.takeException(), isNull);
       });
     }

@@ -119,7 +119,10 @@ class _SimdiAliciSayfasiState extends ConsumerState<SimdiAliciSayfasi> {
       color: context.renkler.metinIkincil,
     );
 
+    // Üst bölüm ve liste tek kaydırmadadır: büyük yazıda üst bölüm uzasa da
+    // ekran taşmaz. Liste dışındaki durumlar kutu olarak eklenir.
     final Widget govde;
+    var sliver = false;
     if (liste == null && hata != null) {
       govde = Padding(
         padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
@@ -142,7 +145,10 @@ class _SimdiAliciSayfasiState extends ConsumerState<SimdiAliciSayfasi> {
         ),
       );
     } else if (liste == null) {
-      govde = const Center(child: TayfamYukleniyor(gecikmeli: true));
+      govde = const Padding(
+        padding: EdgeInsets.all(TayfamSpacing.s16),
+        child: Center(child: TayfamYukleniyor(gecikmeli: true)),
+      );
     } else {
       final sirali = simdiArkadasSirasi(
         liste.ogeler,
@@ -181,8 +187,8 @@ class _SimdiAliciSayfasiState extends ConsumerState<SimdiAliciSayfasi> {
           ),
         );
       } else {
-        govde = ListView.builder(
-          padding: const EdgeInsets.only(bottom: TayfamSpacing.s16),
+        sliver = true;
+        govde = SliverList.builder(
           itemCount: gorunen.length + 1 + (daha ? 1 : 0),
           itemBuilder: (context, i) {
             if (i == 0) {
@@ -244,10 +250,10 @@ class _SimdiAliciSayfasiState extends ConsumerState<SimdiAliciSayfasi> {
           constraints: const BoxConstraints(
             maxWidth: TayfamSizes.okumaGenisligi,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
                 padding: const EdgeInsets.fromLTRB(
                   TayfamSpacing.kenarMobil,
                   TayfamSpacing.s8,
@@ -307,7 +313,11 @@ class _SimdiAliciSayfasiState extends ConsumerState<SimdiAliciSayfasi> {
                   ],
                 ),
               ),
-              Expanded(child: govde),
+              ),
+              if (sliver) govde else SliverToBoxAdapter(child: govde),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: TayfamSpacing.s16),
+              ),
             ],
           ),
         ),

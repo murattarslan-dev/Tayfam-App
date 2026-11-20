@@ -152,16 +152,11 @@ void main() {
       );
     });
 
-    testWidgets('şimdi bildirimlerini kapat ve aç (tayfa_now)', (
-      tester,
-    ) async {
+    testWidgets('şimdi bildirimlerini kapat ve aç (tayfa_now)', (tester) async {
       ekranBoyutu(tester);
       const simdiYolu = '$tercihYolu/now';
       final tasima = _uygulamaTasimasi('member', {
-        'PUT $simdiYolu': yanit({
-          ...tercihJson(),
-          'scope_type': 'tayfa_now',
-        }),
+        'PUT $simdiYolu': yanit({...tercihJson(), 'scope_type': 'tayfa_now'}),
         'DELETE $simdiYolu': yanit(null),
       });
       await _uygulamayiAc(tester, tasima);
@@ -182,7 +177,10 @@ void main() {
       await _dokun(tester, _menu);
       await _dokun(tester, find.text(arbMetni('simdi_bildirim_tayfa_ac')));
       expect(tasima.giden('DELETE', simdiYolu), hasLength(1));
-      expect(find.text(arbMetni('simdi_bildirim_tayfa_acildi')), findsOneWidget);
+      expect(
+        find.text(arbMetni('simdi_bildirim_tayfa_acildi')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ayrıl: onaydan sonra üyelik silinir', (tester) async {
