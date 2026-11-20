@@ -1820,6 +1820,355 @@ final class EventsApi {
     return EventDraw.fromJson(jsonObject(response, 'makeEventDraw'));
   }
 
+  /// Etkinliğin yazbozu
+  ///
+  /// Masalar, yerleri, elleri, sıralama ve (biten masada) kazananlar ile
+  /// bileşenin sunduğu ve masaların kullandığı ön ayarlar. Her etkin
+  /// üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve donmuş
+  /// etkinlikte de okunur. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventScoreboard> getEventScoreboard({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(jsonObject(response, 'getEventScoreboard'));
+  }
+
+  /// Masa kurar (organizatör, moderatör, yönetici)
+  ///
+  /// Yerler şimdi ya da ilk elden önce (`…/players`) verilir. Bileşen ön
+  /// ayar sunuyorsa `preset_key` onlardan biri olmalı, sunmuyorsa
+  /// verilmez (aksi ya da emekli ön ayar `score-preset-unavailable`).
+  /// `first_to` ya da `first` kuralında hedef puan yoksa, etiket 1–30
+  /// karakter değilse, yer tam olarak bir kişi ya da takım değilse, bir
+  /// kişi ya da takım iki kez geçerse, ön ayarın oyuncu sayısı dışındaysa,
+  /// oyuncu masasına takım ya da takım masasına kişi verilirse, takım
+  /// masasında `teams_key` etkinliğin türündeki bir `teams` bileşeni
+  /// değilse `invalid-request`. Katılımcı olmayan kişi ya da takım
+  /// bileşeninde olmayan takım `score-player-not-participant`; masalar
+  /// doluysa `event-limit`. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventScoreboard> createEventScoreTable({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventScoreTableRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'createEventScoreTable'),
+    );
+  }
+
+  /// Masanın adını ya da durumunu değiştirir (organizatör, moderatör, yönetici)
+  ///
+  /// `status` ile masa yeniden açılır (`open`) ya da bitirilir
+  /// (`finished`). En az bir alan verilir. Masa yoksa
+  /// `score-table-not-found`. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PATCH /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  Future<EventScoreboard> updateEventScoreTable({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+    required EventScoreTableUpdate body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PATCH',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'updateEventScoreTable'),
+    );
+  }
+
+  /// Masayı siler (organizatör, moderatör, yönetici)
+  ///
+  /// Masa yerleri, elleri ve hakem atamalarıyla silinir. Masa yoksa
+  /// `score-table-not-found`. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  Future<EventScoreboard> deleteEventScoreTable({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'deleteEventScoreTable'),
+    );
+  }
+
+  /// Masanın yerlerini belirler (organizatör, moderatör, yönetici)
+  ///
+  /// Sırasıyla yerlerin yerini alır (boş liste yerleri boşaltır). İlk el
+  /// girildikten sonra `score-table-started`. Yer kuralları ve hataları
+  /// masa kurmadaki gibidir. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/players`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  Future<EventScoreboard> setEventScorePlayers({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+    required EventScorePlayersRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/players',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'setEventScorePlayers'),
+    );
+  }
+
+  /// Masanın sıradaki elini girer (organizatör, moderatör, yönetici, hakem)
+  ///
+  /// Hakem masaya, bileşene ya da etkinliğe atanmış olmalıdır. Oyunu
+  /// bitiren el masayı bitirir. Skor masanın yerleri için verilir, her yer
+  /// en fazla bir kez; `points` modunda `points` (−1000000…1000000),
+  /// `wdl` modunda `outcome` verilir ve el en az iki yerde ya birinin
+  /// galibiyeti ile diğerlerinin mağlubiyeti ya da herkesin
+  /// beraberliğidir (aksi `invalid-request`). Biten masada
+  /// `score-table-finished`; 200 elden sonra `event-limit`; etkinlik
+  /// başlamadıysa `score-not-started`. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/rounds`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  Future<EventScoreboard> addEventScoreRound({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+    required EventScoreRoundRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/rounds',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(jsonObject(response, 'addEventScoreRound'));
+  }
+
+  /// Girilmiş bir eli düzeltir (organizatör, moderatör, yönetici)
+  ///
+  /// Açık ya da biten masada elin skorlarının yerini alır. Oyunu bitiren
+  /// düzeltme açık masayı bitirir; biten masa bitmiş kalır (yeniden açmak
+  /// için `PATCH`). Girilmemiş el `invalid-request`; skor kuralları el
+  /// girmedeki gibidir. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/rounds/{round}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  ///
+  /// [round]: Elin numarası (1–200).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 200.
+  Future<EventScoreboard> correctEventScoreRound({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+    required int round,
+    required EventScoreRoundRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/rounds/{round}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+        'round': '$round',
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'correctEventScoreRound'),
+    );
+  }
+
+  /// Masanın son elini siler (organizatör, moderatör, yönetici)
+  ///
+  /// Yalnızca son el silinir (aksi `invalid-request`); masanın durumu
+  /// değişmez. Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/rounds/{round}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  ///
+  /// [round]: Elin numarası (1–200).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 200.
+  Future<EventScoreboard> deleteEventScoreRound({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+    required int round,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/rounds/{round}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+        'round': '$round',
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'deleteEventScoreRound'),
+    );
+  }
+
+  /// Masayı bitirir (organizatör, moderatör, yönetici, hakem)
+  ///
+  /// Gövde almaz. Biten masayı bitirmek bir şey değiştirmez. Etkinlik
+  /// başlamadıysa `score-not-started`. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/finish`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [tableId]: Yazboz masasının kimliği (`EventScoreTable.id`).
+  Future<EventScoreboard> finishEventScoreTable({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String tableId,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/scoreboard/tables/{table_id}/finish',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'table_id': tableId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventScoreboard.fromJson(
+      jsonObject(response, 'finishEventScoreTable'),
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

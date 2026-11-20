@@ -10257,6 +10257,1090 @@ final class EventScheduleItemRequest {
   int get hashCode => Object.hashAll(<Object?>[startsAt, endsAt, title, note]);
 }
 
+/// Bir yerin bir eldeki skoru.
+final class EventScoreEntry {
+  const EventScoreEntry({required this.playerId, this.points, this.outcome});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreEntry.fromJson(Map<String, Object?> json) =>
+      EventScoreEntry(
+        playerId: _readString(json['player_id'], 'EventScoreEntry.player_id'),
+        points: switch (json['points']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScoreEntry.points'),
+        },
+        outcome: switch (json['outcome']) {
+          null => null,
+          final Object v => EventScoreEntryOutcome.fromWire(
+            _readString(v, 'EventScoreEntry.outcome'),
+          ),
+        },
+      );
+
+  /// Yer (`EventScorePlayer.id`).
+  final String playerId;
+
+  /// Yalnızca `points` modunda.
+  final int? points;
+
+  /// Yalnızca `wdl` modunda.
+  final EventScoreEntryOutcome? outcome;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'player_id': playerId,
+    if (points case final value?) 'points': value,
+    if (outcome case final value?) 'outcome': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreEntry &&
+          playerId == other.playerId &&
+          points == other.points &&
+          outcome == other.outcome;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[playerId, points, outcome]);
+}
+
+/// Yalnızca `wdl` modunda.
+enum EventScoreEntryOutcome {
+  win('win'),
+  draw('draw'),
+  loss('loss'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreEntryOutcome(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('EventScoreEntryOutcome.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreEntryOutcome fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Masadaki bir yer. Kişi ya da takım; ikisi de yoksa kişi hesabını
+/// silmiştir ("Silinmiş kullanıcı") ya da takım kaldırılmıştır.
+final class EventScorePlayer {
+  const EventScorePlayer({
+    required this.id,
+    required this.position,
+    this.userId,
+    this.teamId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScorePlayer.fromJson(Map<String, Object?> json) =>
+      EventScorePlayer(
+        id: _readString(json['id'], 'EventScorePlayer.id'),
+        position: _readInt(json['position'], 'EventScorePlayer.position'),
+        userId: switch (json['user_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventScorePlayer.user_id'),
+        },
+        teamId: switch (json['team_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventScorePlayer.team_id'),
+        },
+      );
+
+  final String id;
+
+  /// Kısıtlar: minimum: 1; maximum: 50.
+  final int position;
+
+  final String? userId;
+
+  /// Takım masasında takım bileşeninin takımı.
+  final String? teamId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'position': position,
+    if (userId case final value?) 'user_id': value,
+    if (teamId case final value?) 'team_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScorePlayer &&
+          id == other.id &&
+          position == other.position &&
+          userId == other.userId &&
+          teamId == other.teamId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[id, position, userId, teamId]);
+}
+
+/// Bir yer; `user_id` ve `team_id`'den tam olarak biri.
+final class EventScorePlayerInput {
+  const EventScorePlayerInput({this.userId, this.teamId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScorePlayerInput.fromJson(Map<String, Object?> json) =>
+      EventScorePlayerInput(
+        userId: switch (json['user_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventScorePlayerInput.user_id'),
+        },
+        teamId: switch (json['team_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventScorePlayerInput.team_id'),
+        },
+      );
+
+  final String? userId;
+
+  final String? teamId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (userId case final value?) 'user_id': value,
+    if (teamId case final value?) 'team_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScorePlayerInput &&
+          userId == other.userId &&
+          teamId == other.teamId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, teamId]);
+}
+
+final class EventScorePlayersRequest {
+  const EventScorePlayersRequest({required this.players});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScorePlayersRequest.fromJson(Map<String, Object?> json) =>
+      EventScorePlayersRequest(
+        players: List<EventScorePlayerInput>.unmodifiable(
+          _readList(json['players'], 'EventScorePlayersRequest.players').map(
+            (Object? e0) => EventScorePlayerInput.fromJson(
+              _readObject(e0, 'EventScorePlayersRequest.players'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: maxItems: 50.
+  final List<EventScorePlayerInput> players;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'players': <Object?>[for (final e0 in players) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScorePlayersRequest && _deepEquals(players, other.players);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(players)]);
+}
+
+/// Katalogdaki bir yazboz ön ayarı (Batak, 101 Okey …;
+final class EventScorePreset {
+  const EventScorePreset({
+    required this.key,
+    required this.labels,
+    this.playersMin,
+    this.playersMax,
+    required this.rules,
+    required this.retired,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScorePreset.fromJson(Map<String, Object?> json) =>
+      EventScorePreset(
+        key: _readString(json['key'], 'EventScorePreset.key'),
+        labels: Map<String, String>.unmodifiable(
+          _readObject(json['labels'], 'EventScorePreset.labels').map(
+            (String k0, Object? e0) =>
+                MapEntry(k0, _readString(e0, 'EventScorePreset.labels')),
+          ),
+        ),
+        playersMin: switch (json['players_min']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScorePreset.players_min'),
+        },
+        playersMax: switch (json['players_max']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScorePreset.players_max'),
+        },
+        rules: EventScoreRules.fromJson(
+          _readObject(json['rules'], 'EventScorePreset.rules'),
+        ),
+        retired: _readBool(json['retired'], 'EventScorePreset.retired'),
+      );
+
+  /// Değişmez anahtar: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  final Map<String, String> labels;
+
+  /// Masanın en az yer sayısı; yoksa alan yok.
+  final int? playersMin;
+
+  /// Masanın en çok yer sayısı; yoksa alan yok.
+  final int? playersMax;
+
+  final EventScoreRules rules;
+
+  /// Emekli ön ayar eski masalarda görünür; yeni masa kullanamaz.
+  final bool retired;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    'labels': <String, Object?>{
+      for (final e0 in labels.entries) e0.key: e0.value,
+    },
+    if (playersMin case final value?) 'players_min': value,
+    if (playersMax case final value?) 'players_max': value,
+    'rules': rules.toJson(),
+    'retired': retired,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScorePreset &&
+          key == other.key &&
+          _deepEquals(labels, other.labels) &&
+          playersMin == other.playersMin &&
+          playersMax == other.playersMax &&
+          rules == other.rules &&
+          retired == other.retired;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    _deepHash(labels),
+    playersMin,
+    playersMax,
+    rules,
+    retired,
+  ]);
+}
+
+final class EventScoreRound {
+  const EventScoreRound({required this.number, required this.scores});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreRound.fromJson(Map<String, Object?> json) =>
+      EventScoreRound(
+        number: _readInt(json['number'], 'EventScoreRound.number'),
+        scores: List<EventScoreEntry>.unmodifiable(
+          _readList(json['scores'], 'EventScoreRound.scores').map(
+            (Object? e0) => EventScoreEntry.fromJson(
+              _readObject(e0, 'EventScoreRound.scores'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: minimum: 1; maximum: 200.
+  final int number;
+
+  final List<EventScoreEntry> scores;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'number': number,
+    'scores': <Object?>[for (final e0 in scores) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreRound &&
+          number == other.number &&
+          _deepEquals(scores, other.scores);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[number, _deepHash(scores)]);
+}
+
+final class EventScoreRoundRequest {
+  const EventScoreRoundRequest({required this.scores});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreRoundRequest.fromJson(Map<String, Object?> json) =>
+      EventScoreRoundRequest(
+        scores: List<EventScoreEntry>.unmodifiable(
+          _readList(json['scores'], 'EventScoreRoundRequest.scores').map(
+            (Object? e0) => EventScoreEntry.fromJson(
+              _readObject(e0, 'EventScoreRoundRequest.scores'),
+            ),
+          ),
+        ),
+      );
+
+  /// Kısıtlar: minItems: 1; maxItems: 50.
+  final List<EventScoreEntry> scores;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'scores': <Object?>[for (final e0 in scores) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreRoundRequest && _deepEquals(scores, other.scores);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(scores)]);
+}
+
+/// Yazboz kuralları (#250). Ön ayarda verilmeyen kural boştur ve
+/// bileşenden gelir; masada ve bileşende hepsi doludur.
+final class EventScoreRules {
+  const EventScoreRules({
+    this.side,
+    this.rounds,
+    this.winner,
+    this.result,
+    this.target,
+    this.bestOf,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreRules.fromJson(Map<String, Object?> json) =>
+      EventScoreRules(
+        side: switch (json['side']) {
+          null => null,
+          final Object v => EventScoreRulesSide.fromWire(
+            _readString(v, 'EventScoreRules.side'),
+          ),
+        },
+        rounds: switch (json['rounds']) {
+          null => null,
+          final Object v => EventScoreRulesRounds.fromWire(
+            _readString(v, 'EventScoreRules.rounds'),
+          ),
+        },
+        winner: switch (json['winner']) {
+          null => null,
+          final Object v => EventScoreRulesWinner.fromWire(
+            _readString(v, 'EventScoreRules.winner'),
+          ),
+        },
+        result: switch (json['result']) {
+          null => null,
+          final Object v => EventScoreRulesResult.fromWire(
+            _readString(v, 'EventScoreRules.result'),
+          ),
+        },
+        target: switch (json['target']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScoreRules.target'),
+        },
+        bestOf: switch (json['best_of']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScoreRules.best_of'),
+        },
+      );
+
+  /// Oyuncular kişiler (`player`) ya da takımlar (`team`).
+  final EventScoreRulesSide? side;
+
+  /// El el, tek maç ya da hedefe ilk ulaşana kadar.
+  final EventScoreRulesRounds? rounds;
+
+  /// Yüksek, düşük toplam ya da hedefe ilk ulaşan kazanır.
+  final EventScoreRulesWinner? winner;
+
+  /// Puan ya da galibiyet (1) / beraberlik (½) / mağlubiyet (0).
+  final EventScoreRulesResult? result;
+
+  /// Hedef puan; yoksa alan yok.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 100000.
+  final int? target;
+
+  /// BO maçı; yarıdan fazlasını kazanan kazanır. Yoksa alan yok.
+  final int? bestOf;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (side case final value?) 'side': value.wire,
+    if (rounds case final value?) 'rounds': value.wire,
+    if (winner case final value?) 'winner': value.wire,
+    if (result case final value?) 'result': value.wire,
+    if (target case final value?) 'target': value,
+    if (bestOf case final value?) 'best_of': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreRules &&
+          side == other.side &&
+          rounds == other.rounds &&
+          winner == other.winner &&
+          result == other.result &&
+          target == other.target &&
+          bestOf == other.bestOf;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[side, rounds, winner, result, target, bestOf]);
+}
+
+/// Puan ya da galibiyet (1) / beraberlik (½) / mağlubiyet (0).
+enum EventScoreRulesResult {
+  points('points'),
+  wdl('wdl'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreRulesResult(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventScoreRulesResult.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreRulesResult fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// El el, tek maç ya da hedefe ilk ulaşana kadar.
+enum EventScoreRulesRounds {
+  round('round'),
+  single('single'),
+  firstTo('first_to'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreRulesRounds(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventScoreRulesRounds.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreRulesRounds fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Oyuncular kişiler (`player`) ya da takımlar (`team`).
+enum EventScoreRulesSide {
+  player('player'),
+  team('team'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreRulesSide(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventScoreRulesSide.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreRulesSide fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Yüksek, düşük toplam ya da hedefe ilk ulaşan kazanır.
+enum EventScoreRulesWinner {
+  high('high'),
+  low('low'),
+  first('first'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreRulesWinner(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventScoreRulesWinner.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreRulesWinner fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventScoreStanding {
+  const EventScoreStanding({
+    required this.playerId,
+    required this.total,
+    required this.roundsWon,
+    required this.rank,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreStanding.fromJson(
+    Map<String, Object?> json,
+  ) => EventScoreStanding(
+    playerId: _readString(json['player_id'], 'EventScoreStanding.player_id'),
+    total: _readDouble(json['total'], 'EventScoreStanding.total'),
+    roundsWon: _readInt(json['rounds_won'], 'EventScoreStanding.rounds_won'),
+    rank: _readInt(json['rank'], 'EventScoreStanding.rank'),
+  );
+
+  final String playerId;
+
+  /// Puan toplamı; `wdl` modunda galibiyet 1, beraberlik 0.5.
+  final double total;
+
+  /// Tek başına kazanılan el sayısı; BO maçında kazananı belirler.
+  final int roundsWon;
+
+  /// 1'den başlar; eşitler aynı sırayı paylaşır.
+  final int rank;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'player_id': playerId,
+    'total': total,
+    'rounds_won': roundsWon,
+    'rank': rank,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreStanding &&
+          playerId == other.playerId &&
+          total == other.total &&
+          roundsWon == other.roundsWon &&
+          rank == other.rank;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[playerId, total, roundsWon, rank]);
+}
+
+/// Yazbozun bir masası (#250).
+final class EventScoreTable {
+  const EventScoreTable({
+    required this.id,
+    required this.label,
+    this.presetKey,
+    required this.rules,
+    this.teamsKey,
+    required this.status,
+    this.finishedAt,
+    required this.createdAt,
+    required this.players,
+    required this.rounds,
+    required this.standings,
+    required this.winnerIds,
+    required this.callerCanScore,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreTable.fromJson(
+    Map<String, Object?> json,
+  ) => EventScoreTable(
+    id: _readString(json['id'], 'EventScoreTable.id'),
+    label: _readString(json['label'], 'EventScoreTable.label'),
+    presetKey: switch (json['preset_key']) {
+      null => null,
+      final Object v => _readString(v, 'EventScoreTable.preset_key'),
+    },
+    rules: EventScoreRules.fromJson(
+      _readObject(json['rules'], 'EventScoreTable.rules'),
+    ),
+    teamsKey: switch (json['teams_key']) {
+      null => null,
+      final Object v => _readString(v, 'EventScoreTable.teams_key'),
+    },
+    status: EventScoreTableStatus.fromWire(
+      _readString(json['status'], 'EventScoreTable.status'),
+    ),
+    finishedAt: switch (json['finished_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventScoreTable.finished_at'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'EventScoreTable.created_at'),
+    players: List<EventScorePlayer>.unmodifiable(
+      _readList(json['players'], 'EventScoreTable.players').map(
+        (Object? e0) => EventScorePlayer.fromJson(
+          _readObject(e0, 'EventScoreTable.players'),
+        ),
+      ),
+    ),
+    rounds: List<EventScoreRound>.unmodifiable(
+      _readList(json['rounds'], 'EventScoreTable.rounds').map(
+        (Object? e0) =>
+            EventScoreRound.fromJson(_readObject(e0, 'EventScoreTable.rounds')),
+      ),
+    ),
+    standings: List<EventScoreStanding>.unmodifiable(
+      _readList(json['standings'], 'EventScoreTable.standings').map(
+        (Object? e0) => EventScoreStanding.fromJson(
+          _readObject(e0, 'EventScoreTable.standings'),
+        ),
+      ),
+    ),
+    winnerIds: List<String>.unmodifiable(
+      _readList(
+        json['winner_ids'],
+        'EventScoreTable.winner_ids',
+      ).map((Object? e0) => _readString(e0, 'EventScoreTable.winner_ids')),
+    ),
+    callerCanScore: _readBool(
+      json['caller_can_score'],
+      'EventScoreTable.caller_can_score',
+    ),
+  );
+
+  final String id;
+
+  /// Kısıtlar: minLength: 1; maxLength: 30.
+  final String label;
+
+  /// Masanın ön ayarı; yoksa alan yok.
+  final String? presetKey;
+
+  final EventScoreRules rules;
+
+  /// Yalnızca takım masasında, takım bileşeninin anahtarı.
+  final String? teamsKey;
+
+  final EventScoreTableStatus status;
+
+  /// Yalnızca biten masada.
+  final DateTime? finishedAt;
+
+  final DateTime createdAt;
+
+  /// Sıraya göre.
+  ///
+  /// Kısıtlar: maxItems: 50.
+  final List<EventScorePlayer> players;
+
+  /// El numarasına göre.
+  ///
+  /// Kısıtlar: maxItems: 200.
+  final List<EventScoreRound> rounds;
+
+  /// Sıralamaya, sonra yer sırasına göre.
+  final List<EventScoreStanding> standings;
+
+  /// Biten masada birinci sıradaki yerler (beraberlikte birden çok); açık masada boş.
+  final List<String> winnerIds;
+
+  /// Şu an el girebilir ve masayı bitirebilirsiniz (organizatör, moderatör, yönetici ya da masanın hakemi; susturulmamış; masa açık; etkinlik başlamış, iptal değil, donmamış; tayfa salt okunur değil).
+  final bool callerCanScore;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'label': label,
+    if (presetKey case final value?) 'preset_key': value,
+    'rules': rules.toJson(),
+    if (teamsKey case final value?) 'teams_key': value,
+    'status': status.wire,
+    if (finishedAt case final value?)
+      'finished_at': value.toUtc().toIso8601String(),
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'players': <Object?>[for (final e0 in players) e0.toJson()],
+    'rounds': <Object?>[for (final e0 in rounds) e0.toJson()],
+    'standings': <Object?>[for (final e0 in standings) e0.toJson()],
+    'winner_ids': <Object?>[for (final e0 in winnerIds) e0],
+    'caller_can_score': callerCanScore,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreTable &&
+          id == other.id &&
+          label == other.label &&
+          presetKey == other.presetKey &&
+          rules == other.rules &&
+          teamsKey == other.teamsKey &&
+          status == other.status &&
+          finishedAt == other.finishedAt &&
+          createdAt == other.createdAt &&
+          _deepEquals(players, other.players) &&
+          _deepEquals(rounds, other.rounds) &&
+          _deepEquals(standings, other.standings) &&
+          _deepEquals(winnerIds, other.winnerIds) &&
+          callerCanScore == other.callerCanScore;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    label,
+    presetKey,
+    rules,
+    teamsKey,
+    status,
+    finishedAt,
+    createdAt,
+    _deepHash(players),
+    _deepHash(rounds),
+    _deepHash(standings),
+    _deepHash(winnerIds),
+    callerCanScore,
+  ]);
+}
+
+final class EventScoreTableRequest {
+  const EventScoreTableRequest({
+    required this.label,
+    this.presetKey,
+    this.target,
+    this.teamsKey,
+    this.players,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreTableRequest.fromJson(Map<String, Object?> json) =>
+      EventScoreTableRequest(
+        label: _readString(json['label'], 'EventScoreTableRequest.label'),
+        presetKey: switch (json['preset_key']) {
+          null => null,
+          final Object v => _readString(v, 'EventScoreTableRequest.preset_key'),
+        },
+        target: switch (json['target']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScoreTableRequest.target'),
+        },
+        teamsKey: switch (json['teams_key']) {
+          null => null,
+          final Object v => _readString(v, 'EventScoreTableRequest.teams_key'),
+        },
+        players: switch (json['players']) {
+          null => null,
+          final Object v => List<EventScorePlayerInput>.unmodifiable(
+            _readList(v, 'EventScoreTableRequest.players').map(
+              (Object? e0) => EventScorePlayerInput.fromJson(
+                _readObject(e0, 'EventScoreTableRequest.players'),
+              ),
+            ),
+          ),
+        },
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 30.
+  final String label;
+
+  /// Bileşen ön ayar sunuyorsa zorunlu; sunmuyorsa verilmez.
+  final String? presetKey;
+
+  /// Hedef puanı değiştirir; 0 ya da yok kuraldakini korur.
+  ///
+  /// Kısıtlar: minimum: 0; maximum: 100000.
+  final int? target;
+
+  /// Takım masasında zorunlu: etkinliğin türündeki `teams` bileşeninin anahtarı.
+  final String? teamsKey;
+
+  /// Sırasıyla; boş ya da yoksa yerler sonra verilir.
+  ///
+  /// Kısıtlar: maxItems: 50.
+  final List<EventScorePlayerInput>? players;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'label': label,
+    if (presetKey case final value?) 'preset_key': value,
+    if (target case final value?) 'target': value,
+    if (teamsKey case final value?) 'teams_key': value,
+    if (players case final value?)
+      'players': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreTableRequest &&
+          label == other.label &&
+          presetKey == other.presetKey &&
+          target == other.target &&
+          teamsKey == other.teamsKey &&
+          _deepEquals(players, other.players);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    label,
+    presetKey,
+    target,
+    teamsKey,
+    _deepHash(players),
+  ]);
+}
+
+enum EventScoreTableStatus {
+  open('open'),
+  finished('finished'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreTableStatus(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventScoreTableStatus.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreTableStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// En az bir alan.
+final class EventScoreTableUpdate {
+  const EventScoreTableUpdate({this.label, this.status});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreTableUpdate.fromJson(Map<String, Object?> json) =>
+      EventScoreTableUpdate(
+        label: switch (json['label']) {
+          null => null,
+          final Object v => _readString(v, 'EventScoreTableUpdate.label'),
+        },
+        status: switch (json['status']) {
+          null => null,
+          final Object v => EventScoreTableUpdateStatus.fromWire(
+            _readString(v, 'EventScoreTableUpdate.status'),
+          ),
+        },
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 30.
+  final String? label;
+
+  final EventScoreTableUpdateStatus? status;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (label case final value?) 'label': value,
+    if (status case final value?) 'status': value.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreTableUpdate &&
+          label == other.label &&
+          status == other.status;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[label, status]);
+}
+
+enum EventScoreTableUpdateStatus {
+  open('open'),
+  finished('finished'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventScoreTableUpdateStatus(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('EventScoreTableUpdateStatus.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventScoreTableUpdateStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Bir etkinliğin bir yazboz bileşeni, isteği yapanın gördüğü haliyle (#250).
+final class EventScoreboard {
+  const EventScoreboard({
+    required this.tables,
+    required this.presets,
+    required this.rules,
+    required this.maxTables,
+    required this.callerCanManage,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventScoreboard.fromJson(Map<String, Object?> json) =>
+      EventScoreboard(
+        tables: List<EventScoreTable>.unmodifiable(
+          _readList(json['tables'], 'EventScoreboard.tables').map(
+            (Object? e0) => EventScoreTable.fromJson(
+              _readObject(e0, 'EventScoreboard.tables'),
+            ),
+          ),
+        ),
+        presets: List<EventScorePreset>.unmodifiable(
+          _readList(json['presets'], 'EventScoreboard.presets').map(
+            (Object? e0) => EventScorePreset.fromJson(
+              _readObject(e0, 'EventScoreboard.presets'),
+            ),
+          ),
+        ),
+        rules: EventScoreRules.fromJson(
+          _readObject(json['rules'], 'EventScoreboard.rules'),
+        ),
+        maxTables: _readInt(json['max_tables'], 'EventScoreboard.max_tables'),
+        callerCanManage: _readBool(
+          json['caller_can_manage'],
+          'EventScoreboard.caller_can_manage',
+        ),
+      );
+
+  /// Kuruluş sırasıyla.
+  ///
+  /// Kısıtlar: maxItems: 20.
+  final List<EventScoreTable> tables;
+
+  /// Bileşenin sunduğu ve masaların kullandığı ön ayarlar, katalog sırasıyla.
+  final List<EventScorePreset> presets;
+
+  final EventScoreRules rules;
+
+  /// 20; bileşenin `tables` parametresi kapalıysa 1.
+  final int maxTables;
+
+  /// Şu an masaları yönetebilir ve skor düzeltebilirsiniz (organizatör, moderatör, yönetici; susturulmamış; etkinlik iptal değil, donmamış; tayfa salt okunur değil).
+  final bool callerCanManage;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'tables': <Object?>[for (final e0 in tables) e0.toJson()],
+    'presets': <Object?>[for (final e0 in presets) e0.toJson()],
+    'rules': rules.toJson(),
+    'max_tables': maxTables,
+    'caller_can_manage': callerCanManage,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventScoreboard &&
+          _deepEquals(tables, other.tables) &&
+          _deepEquals(presets, other.presets) &&
+          rules == other.rules &&
+          maxTables == other.maxTables &&
+          callerCanManage == other.callerCanManage;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(tables),
+    _deepHash(presets),
+    rules,
+    maxTables,
+    callerCanManage,
+  ]);
+}
+
 final class EventSeries {
   const EventSeries({
     required this.id,
