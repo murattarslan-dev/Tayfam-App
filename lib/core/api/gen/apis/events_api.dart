@@ -2705,6 +2705,231 @@ final class EventsApi {
     );
   }
 
+  /// Bileşenin soruları
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Cevaplanmamışlar önce, sonra çok oy
+  /// alan, sonra eski. Bileşen uçlarının ortak kuralları geçerlidir
+  /// (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventQuestionList> listEventQuestions({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventQuestionList.fromJson(
+      jsonObject(response, 'listEventQuestions'),
+    );
+  }
+
+  /// Soru sorar
+  ///
+  /// Etkinliğe `going` cevabı vermiş ya da katılımı doğrulanmış olmalısınız
+  /// (`event-not-going`); susturulmuş üye soramaz. Metin kırpılır, iç
+  /// boşlukları teke indirilir; 1–500 karakter, denetim ve biçim
+  /// karakteri olmadan (`invalid-request`, alan `body`). `anonymous`
+  /// yalnızca bileşen izin veriyorsa (`anonymous_allowed`; alan
+  /// `anonymous`). Kişi başına en fazla 20, bileşende en fazla 500 soru
+  /// (`event-limit`). Aynı `client_request_id` ile tekrar gönderim ilk
+  /// soruyu döndürür. Bitişten 7 gün sonra donar (`component-frozen`);
+  /// iptal edilmiş etkinliğe yazılmaz.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventQuestion> askEventQuestion({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventQuestionCreateRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventQuestion.fromJson(jsonObject(response, 'askEventQuestion'));
+  }
+
+  /// Soruyu kaldırır
+  ///
+  /// Kendi sorunuzu yazma penceresi içinde (`component-frozen`);
+  /// moderatör ve yönetici herkesinkini, anonim soruyu da yazarını
+  /// görmeden, her zaman (iptal edilmiş ve donmuş etkinlikte de). Soru 30
+  /// gün sonra oylarıyla kalıcı silinir. Bilinmeyen soru
+  /// `event-item-not-found`.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<void> removeEventQuestion({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String questionId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'question_id': questionId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Soruya oy verir
+  ///
+  /// Soru sorabilenler oy verir (`event-not-going`); kişi başına soru
+  /// başına bir oy, zaten verilmiş oy hata değildir. Yazma penceresi
+  /// içinde. Bilinmeyen soru `event-item-not-found`.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/vote`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<void> voteEventQuestion({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String questionId,
+  }) async {
+    await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/vote',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'question_id': questionId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Sorudaki oyunuzu geri alır
+  ///
+  /// Verilmemiş oyu geri almak hata değildir. Yazma penceresi içinde;
+  /// susturulmuş üye geri alamaz.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/vote`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<void> unvoteEventQuestion({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String questionId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/vote',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'question_id': questionId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Soruyu cevaplandı işaretler
+  ///
+  /// Organizatör, moderatör ve yönetici; yazma penceresi içinde. Zaten
+  /// işaretli soru hata değildir (ilk işaret zamanı kalır).
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/answered`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<void> markEventQuestionAnswered({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String questionId,
+  }) async {
+    await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/answered',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'question_id': questionId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
+  /// Cevaplandı işaretini kaldırır
+  ///
+  /// Organizatör, moderatör ve yönetici; yazma penceresi içinde.
+  /// İşaretsiz soru hata değildir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/answered`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<void> unmarkEventQuestionAnswered({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String questionId,
+  }) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/questions/{question_id}/answered',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'question_id': questionId,
+      },
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

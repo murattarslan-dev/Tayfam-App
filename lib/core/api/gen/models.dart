@@ -10965,6 +10965,268 @@ final class EventPhotoList {
       Object.hashAll(<Object?>[_deepHash(photos), nextPageToken]);
 }
 
+/// Bir etkinlik sorusu, isteği yapanın gördüğü haliyle (#256).
+final class EventQuestion {
+  const EventQuestion({
+    required this.id,
+    required this.body,
+    required this.anonymous,
+    this.authorId,
+    required this.callerIsAuthor,
+    required this.voteCount,
+    required this.callerVoted,
+    this.answeredAt,
+    required this.createdAt,
+    required this.callerCanRemove,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventQuestion.fromJson(Map<String, Object?> json) => EventQuestion(
+    id: _readString(json['id'], 'EventQuestion.id'),
+    body: _readString(json['body'], 'EventQuestion.body'),
+    anonymous: _readBool(json['anonymous'], 'EventQuestion.anonymous'),
+    authorId: switch (json['author_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventQuestion.author_id'),
+    },
+    callerIsAuthor: _readBool(
+      json['caller_is_author'],
+      'EventQuestion.caller_is_author',
+    ),
+    voteCount: _readInt(json['vote_count'], 'EventQuestion.vote_count'),
+    callerVoted: _readBool(json['caller_voted'], 'EventQuestion.caller_voted'),
+    answeredAt: switch (json['answered_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventQuestion.answered_at'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'EventQuestion.created_at'),
+    callerCanRemove: _readBool(
+      json['caller_can_remove'],
+      'EventQuestion.caller_can_remove',
+    ),
+  );
+
+  final String id;
+
+  /// Kısıtlar: minLength: 1; maxLength: 500.
+  final String body;
+
+  /// Anonim soru; `author_id` hiçbir zaman verilmez.
+  final bool anonymous;
+
+  /// Soran; anonim soruda yoktur (yazara ve yönetime de).
+  final String? authorId;
+
+  /// Soruyu siz sordunuz.
+  final bool callerIsAuthor;
+
+  /// Kısıtlar: minimum: 0.
+  final int voteCount;
+
+  /// Bu soruya oy verdiniz.
+  final bool callerVoted;
+
+  /// Yalnızca cevaplandı işaretliyse.
+  final DateTime? answeredAt;
+
+  final DateTime createdAt;
+
+  /// Soruyu şu an kaldırabilirsiniz.
+  final bool callerCanRemove;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'body': body,
+    'anonymous': anonymous,
+    if (authorId case final value?) 'author_id': value,
+    'caller_is_author': callerIsAuthor,
+    'vote_count': voteCount,
+    'caller_voted': callerVoted,
+    if (answeredAt case final value?)
+      'answered_at': value.toUtc().toIso8601String(),
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'caller_can_remove': callerCanRemove,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventQuestion &&
+          id == other.id &&
+          body == other.body &&
+          anonymous == other.anonymous &&
+          authorId == other.authorId &&
+          callerIsAuthor == other.callerIsAuthor &&
+          voteCount == other.voteCount &&
+          callerVoted == other.callerVoted &&
+          answeredAt == other.answeredAt &&
+          createdAt == other.createdAt &&
+          callerCanRemove == other.callerCanRemove;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    body,
+    anonymous,
+    authorId,
+    callerIsAuthor,
+    voteCount,
+    callerVoted,
+    answeredAt,
+    createdAt,
+    callerCanRemove,
+  ]);
+}
+
+final class EventQuestionCreateRequest {
+  const EventQuestionCreateRequest({
+    required this.body,
+    this.anonymous,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventQuestionCreateRequest.fromJson(Map<String, Object?> json) =>
+      EventQuestionCreateRequest(
+        body: _readString(json['body'], 'EventQuestionCreateRequest.body'),
+        anonymous: switch (json['anonymous']) {
+          null => null,
+          final Object v => _readBool(
+            v,
+            'EventQuestionCreateRequest.anonymous',
+          ),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'EventQuestionCreateRequest.client_request_id',
+        ),
+      );
+
+  /// Soru; kırpıldıktan ve iç boşluklar teke indirildikten sonra 1–500 karakter.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 2256.
+  final String body;
+
+  /// Yalnızca `anonymous_allowed` bileşende.
+  ///
+  /// Kısıtlar: varsayılan (sunucu): false.
+  final bool? anonymous;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'body': body,
+    if (anonymous case final value?) 'anonymous': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventQuestionCreateRequest &&
+          body == other.body &&
+          anonymous == other.anonymous &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[body, anonymous, clientRequestId]);
+}
+
+/// Bir etkinliğin bir soru toplama bileşeninin soruları (#256).
+final class EventQuestionList {
+  const EventQuestionList({
+    required this.questions,
+    required this.anonymousAllowed,
+    required this.callerCanAsk,
+    required this.callerCanMarkAnswered,
+    required this.maxQuestionsPerPerson,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventQuestionList.fromJson(Map<String, Object?> json) =>
+      EventQuestionList(
+        questions: List<EventQuestion>.unmodifiable(
+          _readList(json['questions'], 'EventQuestionList.questions').map(
+            (Object? e0) => EventQuestion.fromJson(
+              _readObject(e0, 'EventQuestionList.questions'),
+            ),
+          ),
+        ),
+        anonymousAllowed: _readBool(
+          json['anonymous_allowed'],
+          'EventQuestionList.anonymous_allowed',
+        ),
+        callerCanAsk: _readBool(
+          json['caller_can_ask'],
+          'EventQuestionList.caller_can_ask',
+        ),
+        callerCanMarkAnswered: _readBool(
+          json['caller_can_mark_answered'],
+          'EventQuestionList.caller_can_mark_answered',
+        ),
+        maxQuestionsPerPerson: _readInt(
+          json['max_questions_per_person'],
+          'EventQuestionList.max_questions_per_person',
+        ),
+      );
+
+  /// Cevaplanmamışlar önce, sonra çok oy alan, sonra eski.
+  ///
+  /// Kısıtlar: maxItems: 500.
+  final List<EventQuestion> questions;
+
+  /// Bileşenin `anonymous` parametresi; açıksa soru anonim sorulabilir.
+  final bool anonymousAllowed;
+
+  /// Şu an soru sorabilir ve oy verebilirsiniz (`going` ya da katılımı doğrulanmış, susturulmamış; etkinlik iptal değil, donmamış, tayfa salt okunur değil). Sayı sınırları ayrıca denetlenir.
+  final bool callerCanAsk;
+
+  /// Şu an soruları cevaplandı işaretleyebilirsiniz.
+  final bool callerCanMarkAnswered;
+
+  /// Kişi başına en fazla soru.
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int maxQuestionsPerPerson;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'questions': <Object?>[for (final e0 in questions) e0.toJson()],
+    'anonymous_allowed': anonymousAllowed,
+    'caller_can_ask': callerCanAsk,
+    'caller_can_mark_answered': callerCanMarkAnswered,
+    'max_questions_per_person': maxQuestionsPerPerson,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventQuestionList &&
+          _deepEquals(questions, other.questions) &&
+          anonymousAllowed == other.anonymousAllowed &&
+          callerCanAsk == other.callerCanAsk &&
+          callerCanMarkAnswered == other.callerCanMarkAnswered &&
+          maxQuestionsPerPerson == other.maxQuestionsPerPerson;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(questions),
+    anonymousAllowed,
+    callerCanAsk,
+    callerCanMarkAnswered,
+    maxQuestionsPerPerson,
+  ]);
+}
+
 /// Bir etkinliğin bir derece bileşeni, isteği yapanın gördüğü haliyle (#253).
 final class EventRanking {
   const EventRanking({
@@ -15467,7 +15729,7 @@ final class ModerationReport {
 
   final String targetId;
 
-  /// Şikâyet edilen üye ya da içeriğin yazarı; hesap silindiyse yoktur.
+  /// Şikâyet edilen üye ya da içeriğin yazarı; hesap silindiyse ve anonim etkinlik sorusunda (`event_question`) yoktur. Yazarı gizli şikâyet `member_sanctioned` ile kapatılamaz.
   final String? subjectUserId;
 
   final ReportReason reason;
@@ -18511,7 +18773,10 @@ enum ReportResolveRequestResolution {
 /// `dm_message` (birebir mesaj) yalnızca `POST /v1/me/reports` ile;
 /// diğerleri yalnızca tayfa ucuyla. `channel_message` kanal mesajıdır
 /// (metin, fotoğraf ya da yer; #205). `log_entry` bir günlük bileşeni
-/// kaydıdır (#243; eskiden `fishing_catch`).
+/// kaydıdır (#243; eskiden `fishing_catch`). `event_question` soru
+/// toplama bileşenindeki bir sorudur (#256); anonim sorunun yazarı
+/// tayfa kuyruğunda yer almaz (`subject_user_id` yoktur), yalnızca
+/// platform yönetimine görünür.
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -18524,6 +18789,7 @@ enum ReportTargetType {
   dmMessage('dm_message'),
   eventPhoto('event_photo'),
   channelMessage('channel_message'),
+  eventQuestion('event_question'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
