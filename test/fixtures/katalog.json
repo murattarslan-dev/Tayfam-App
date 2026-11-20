@@ -1462,5 +1462,96 @@
       },
       "status": "active"
     }
+  ],
+  "badges": [
+    {
+      "key": "ilk_adim",
+      "scope": "user",
+      "position": 10,
+      "labels": {
+        "tr": "İlk adım",
+        "en": "First step"
+      },
+      "icon": "stars",
+      "status": "active",
+      "rule": {
+        "kind": "first"
+      }
+    },
+    {
+      "key": "yuruyus_100_km",
+      "scope": "tayfa",
+      "position": 20,
+      "labels": {
+        "tr": "Yüz kilometre"
+      },
+      "icon": "hiking",
+      "status": "active",
+      "rule": {
+        "kind": "threshold",
+        "metric": "hike.distance",
+        "value": 100,
+        "period": "all_time"
+      }
+    },
+    {
+      "key": "yilin_tayfasi",
+      "scope": "tayfa",
+      "position": 30,
+      "labels": {
+        "tr": "Yılın tayfası"
+      },
+      "icon": "workspace_premium",
+      "status": "active",
+      "rule": {
+        "kind": "threshold",
+        "metric": "events",
+        "value": 12,
+        "period": "year"
+      }
+    },
+    {
+      "key": "satranc_sampiyonu",
+      "scope": "user",
+      "position": 40,
+      "labels": {
+        "tr": "Satranç şampiyonu"
+      },
+      "icon": "emoji_events",
+      "status": "active",
+      "rule": {
+        "kind": "champion",
+        "event_type": "chess"
+      }
+    },
+    {
+      "key": "eski_rozet",
+      "scope": "user",
+      "position": 50,
+      "labels": {
+        "tr": "Eski rozet"
+      },
+      "icon": "military_tech",
+      "status": "retired",
+      "rule": {
+        "kind": "threshold",
+        "metric": "duration",
+        "value": 600,
+        "period": "all_time"
+      }
+    },
+    {
+      "key": "gelecek_kural",
+      "scope": "user",
+      "position": 60,
+      "labels": {
+        "tr": "Gelecek kural"
+      },
+      "icon": "bilinmeyen_ikon",
+      "status": "active",
+      "rule": {
+        "kind": "streak"
+      }
+    }
   ]
 }

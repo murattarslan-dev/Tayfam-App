@@ -53,10 +53,12 @@ const Map<String, IconData> katalogIkonlari = {
   'landscape': Icons.landscape,
   'lightbulb': Icons.lightbulb,
   'local_dining': Icons.local_dining,
+  'local_fire_department': Icons.local_fire_department,
   'local_florist': Icons.local_florist,
   'map': Icons.map,
   'menu_book': Icons.menu_book,
   'mic': Icons.mic,
+  'military_tech': Icons.military_tech,
   'museum': Icons.museum,
   'music_note': Icons.music_note,
   'nightlight': Icons.nightlight,
@@ -84,6 +86,7 @@ const Map<String, IconData> katalogIkonlari = {
   'sports_tennis': Icons.sports_tennis,
   'sports_volleyball': Icons.sports_volleyball,
   'star': Icons.star,
+  'stars': Icons.stars,
   'surfing': Icons.surfing,
   'terrain': Icons.terrain,
   'theater_comedy': Icons.theater_comedy,
@@ -94,6 +97,7 @@ const Map<String, IconData> katalogIkonlari = {
   'videogame_asset': Icons.videogame_asset,
   'volunteer_activism': Icons.volunteer_activism,
   'water': Icons.water,
+  'workspace_premium': Icons.workspace_premium,
 };
 
 /// Haritada olmayan anahtarların ve henüz gelmemiş kataloğun genel ikonu.

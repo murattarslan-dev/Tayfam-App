@@ -24,6 +24,9 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 ///   etkinlikler ekranı.
 /// - `celebration` (kazanan ilan edildi): hedef etkinliğin detayı; kutlamayı
 ///   orada bileşen gösterir, bildirim kazananı adlandırmaz.
+/// - `badge_earned` (rozet kazanıldı): kişisel rozette kendi profilin
+///   (`target_id`), tayfa rozetinde tayfanın ana sayfası; rozet bildirimde
+///   adlandırılmaz.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını
@@ -44,6 +47,16 @@ String? bildirimAdresi(Notification bildirim) {
     // Güvenlik kişisi alarmı (Tayfam-Api ADR-0033 §10): etkinlik ve tayfa
     // bildirimde yoktur; durum paylaşımlar ekranından okunur.
     (NotificationType.safetyAlert, _, _) => Adresler.guvenlikPaylasimlari,
+    // Rozet kazanıldı (Tayfam-Api ADR-0039 §4): kişisel rozette hedef
+    // kişinin kendisidir (profilinde rozetler), tayfa rozetinde tayfa.
+    (NotificationType.badgeEarned, NotificationTargetType.user, final kisi?) =>
+      Adresler.kisi(kisi),
+    (
+      NotificationType.badgeEarned,
+      NotificationTargetType.tayfa,
+      final tayfa?,
+    ) =>
+      Adresler.tayfa(tayfa),
     // KVKK veri dışa aktarma hazır (ADR-0022): talep listesi açılır.
     (_, NotificationTargetType.dataExport, _?) => Adresler.veriDisaAktarma,
     _ => null,

@@ -14,6 +14,7 @@ import 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart';
 import 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart';
 import 'package:tayfam/features/arkadas/presentation/katilim_gecmisi.dart';
 import 'package:tayfam/features/arkadas/presentation/kisi_hakkinda.dart';
+import 'package:tayfam/features/rozet/rozet.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
@@ -22,8 +23,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Kişi profili (`/kisi/<kullaniciId>`; ADR-0018 §7; 2026-11-13 tasarım:
 /// Kisi-Profili, Kisi-Profili-Yabanci, Kisi-Profili-Tanitim): büyük avatar,
 /// ad, arkadaşlık durumu ve eylemleri, "Hakkında" (tanıtım bilgileri ve
-/// doğum günü; issue #185, #186), ortak tayfalar ve katılım geçmişi
-/// (görünürlüğe göre). Başka paketler eylem satırına düğme ekleyebilir
+/// doğum günü; issue #185, #186), rozetler (sunucu döndürürse; issue
+/// #251), ortak tayfalar ve katılım geçmişi (görünürlüğe göre). Başka
+/// paketler eylem satırına düğme ekleyebilir
 /// ([kisiProfiliEylemleriProvider]; ör. "Mesaj gönder").
 ///
 /// ⋯ menüsü alttan sayfadır: arkadaşlıktan çıkar (arkadaşsa), şikâyet et
@@ -88,6 +90,14 @@ class KisiProfiliEkrani extends ConsumerWidget {
                 children: [
                   _Ust(profil: p),
                   KisiHakkinda(profil: p),
+                  // Rozetler (App ADR-0033 §3): alan yoksa sunucu
+                  // göstermiyordur, bölüm de yoktur.
+                  if (p.badges case final rozetler?)
+                    RozetBolumu(
+                      rozetler: rozetler,
+                      bosMetin: p.self ? m.rozet_bos_kendi : null,
+                      not: p.self ? m.rozet_gorunurluk_notu : null,
+                    ),
                   if (!p.self) _OrtakTayfalar(profil: p),
                   BolumEtiketi(baslik: m.arkadas_gecmis_baslik),
                   if (p.activityVisible)

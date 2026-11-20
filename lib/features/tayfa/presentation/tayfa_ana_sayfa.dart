@@ -12,6 +12,7 @@ import 'package:tayfam/core/gezinme/bildirim_zili.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/rozet/rozet.dart';
 import 'package:tayfam/features/tayfa/application/kurulum.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
@@ -72,6 +73,10 @@ class TayfaAnaSayfa extends ConsumerWidget {
     final kural = kuralGosterilsin(ozet, simdi: simdi);
     final durum = tayfa == null ? null : tayfaDurumu(tayfa);
     final bekleyen = ozet.bekleyenIstekSayisi;
+    // Tayfa rozetleri (App ADR-0033 §3); yoksa bölüm çizilmez.
+    final rozetler =
+        ref.watch(tayfaGorunumuProvider(tayfaId)).value?.badges ??
+        const <EarnedBadge>[];
     // Anlık tayfada (ADR-0026) "Oluştur" yoktur: tek etkinlik, diğer
     // modüller kapalı; davetler anlık etkinlik kartındadır.
     final anlik = ozet.anlik;
@@ -184,6 +189,13 @@ class TayfaAnaSayfa extends ConsumerWidget {
                       ],
                     ),
             ),
+            if (rozetler.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: TayfamSpacing.kenarMobil,
+                ),
+                child: RozetBolumu(rozetler: rozetler),
+              ),
           ],
         ),
       ),

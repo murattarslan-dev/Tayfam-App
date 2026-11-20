@@ -30,6 +30,10 @@ final class CatalogApi {
   /// `study_tags` Eğitim modüllerinin ders ve konu etiket listesidir
   /// (`CatalogStudyTag`); emekliye ayrılanlar dahil hepsi döner.
   ///
+  /// `badges` rozet tanımlarıdır (`CatalogBadge`, #258, ADR-0039);
+  /// kazanılmış rozetin adı ve ikonu buradan okunduğu için emekliye
+  /// ayrılanlar dahil hepsi döner.
+  ///
   /// `GET /v1/catalog`
   ///
   /// Koşullu istek: sunucu `304` dönerse (değişmedi) `null` döner.

@@ -83,6 +83,7 @@ void main() {
       'catalog_version': 7,
       'interests': const <Object?>[],
       'study_tags': const <Object?>[],
+      'badges': const <Object?>[],
       'event_types': [
         {
           'key': 'hike',
