@@ -96,8 +96,7 @@ class SorularNotifier extends AsyncNotifier<EventQuestionList> {
 
   /// Soru sorar.
   Future<Object?> sor(EventQuestionCreateRequest istek) => _yaz(
-    (d) =>
-        d.soruSor(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, istek),
+    (d) => d.soruSor(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, istek),
   );
 
   /// [ver] ise oy verir, değilse oyu geri alır.
@@ -135,9 +134,7 @@ class SorularNotifier extends AsyncNotifier<EventQuestionList> {
   /// Başarıda liste yeniden okunur ve `null` döner; değilse hata döner ve
   /// çağıranda gösterilir. Liste bayatlamışsa (soru kaldırıldı, etkinlik
   /// bitti, sınır doldu) yeniden okunur.
-  Future<Object?> _yaz(
-    Future<void> Function(EtkinlikDeposu depo) islem,
-  ) async {
+  Future<Object?> _yaz(Future<void> Function(EtkinlikDeposu depo) islem) async {
     try {
       await islem(ref.read(etkinlikDeposuProvider));
       if (ref.mounted) ref.invalidateSelf();

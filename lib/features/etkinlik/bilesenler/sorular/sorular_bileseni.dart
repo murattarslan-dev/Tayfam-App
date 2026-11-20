@@ -429,9 +429,7 @@ class _OyDugmesi extends StatelessWidget {
                         const SizedBox(width: TayfamSpacing.s4),
                         Text(
                           etkinlikSayi(m, sayi),
-                          style: context.yazi.labelLarge?.copyWith(
-                            color: renk,
-                          ),
+                          style: context.yazi.labelLarge?.copyWith(color: renk),
                         ),
                       ],
                     ),

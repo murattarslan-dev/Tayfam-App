@@ -18,11 +18,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// tekrar gönderim aynı soruyu iki kez oluşturmaz. Sunucu hatası formda
 /// gösterilir, form açık kalır.
 class SoruFormu extends StatefulWidget {
-  const SoruFormu({
-    super.key,
-    required this.anonimAcik,
-    required this.gonder,
-  });
+  const SoruFormu({super.key, required this.anonimAcik, required this.gonder});
 
   /// Bileşenin `anonymous` parametresi (`anonymous_allowed`).
   final bool anonimAcik;

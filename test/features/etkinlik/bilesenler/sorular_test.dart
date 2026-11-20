@@ -137,12 +137,7 @@ List<Map<String, Object?>> _ucSoru({int ikinciOy = 1, bool oyVerdim = true}) =>
         oy: ikinciOy,
         oyVerdim: oyVerdim,
       ),
-      soruJson(
-        id: _soru3,
-        metin: 'Sunum dosyası nerede?',
-        benim: true,
-        oy: 4,
-      ),
+      soruJson(id: _soru3, metin: 'Sunum dosyası nerede?', benim: true, oy: 4),
       soruJson(
         id: _soru1,
         metin: 'Soru-cevap kaç dakika?',
@@ -163,35 +158,43 @@ void main() {
     expect(BilesenParametreleri(bilesen.params).mantik('anonymous'), isTrue);
   });
 
-  test('soru isteği: metin kırpılır, boşluklar teke iner, sınır denetlenir',
-      () {
-    const kimlik = '7b8c9d0e-1f20-4a31-8b42-5c6d7e8f9012';
-    final istek = soruIstegi(
-      metin: '  Rota\n\nne   kadar?  ',
-      anonim: false,
-      istekKimligi: kimlik,
-    )!;
-    expect(istek.toJson(), {
-      'body': 'Rota ne kadar?',
-      'client_request_id': kimlik,
-    });
-    expect(
-      soruIstegi(metin: 'Soru', anonim: true, istekKimligi: kimlik)!.anonymous,
-      isTrue,
-    );
-    expect(soruIstegi(metin: '  \n ', anonim: false, istekKimligi: kimlik),
-        isNull);
-    expect(
-      soruIstegi(metin: 'a' * 500, anonim: false, istekKimligi: kimlik),
-      isNotNull,
-    );
-    expect(
-      soruIstegi(metin: 'a' * 501, anonim: false, istekKimligi: kimlik),
-      isNull,
-    );
-    final liste = EventQuestionList.fromJson(sorularJson(sorular: _ucSoru()));
-    expect(kendiSorularim(liste), 1);
-  });
+  test(
+    'soru isteği: metin kırpılır, boşluklar teke iner, sınır denetlenir',
+    () {
+      const kimlik = '7b8c9d0e-1f20-4a31-8b42-5c6d7e8f9012';
+      final istek = soruIstegi(
+        metin: '  Rota\n\nne   kadar?  ',
+        anonim: false,
+        istekKimligi: kimlik,
+      )!;
+      expect(istek.toJson(), {
+        'body': 'Rota ne kadar?',
+        'client_request_id': kimlik,
+      });
+      expect(
+        soruIstegi(
+          metin: 'Soru',
+          anonim: true,
+          istekKimligi: kimlik,
+        )!.anonymous,
+        isTrue,
+      );
+      expect(
+        soruIstegi(metin: '  \n ', anonim: false, istekKimligi: kimlik),
+        isNull,
+      );
+      expect(
+        soruIstegi(metin: 'a' * 500, anonim: false, istekKimligi: kimlik),
+        isNotNull,
+      );
+      expect(
+        soruIstegi(metin: 'a' * 501, anonim: false, istekKimligi: kimlik),
+        isNull,
+      );
+      final liste = EventQuestionList.fromJson(sorularJson(sorular: _ucSoru()));
+      expect(kendiSorularim(liste), 1);
+    },
+  );
 
   test('anonim sorunun yazarı modelde yoktur; yazarı gizli şikâyette '
       'yaptırım seçilemez', () {
@@ -256,7 +259,10 @@ void main() {
         final ilk = _bolumde(find.text('Kayıt paylaşılacak mı?'));
         await _gorunurYap(tester, ilk);
         expect(ilk, findsOneWidget);
-        expect(_bolumde(find.text(m.bilesen_questions_sayi(3))), findsOneWidget);
+        expect(
+          _bolumde(find.text(m.bilesen_questions_sayi(3))),
+          findsOneWidget,
+        );
         // Adlı sorunun yazarı görünür; anonim sorunun yazarı yoktur.
         expect(_bolumde(find.text('Ayşe')), findsOneWidget);
         expect(
@@ -374,10 +380,7 @@ void main() {
       final bilgi = _bolumde(find.text(m.bilesen_questions_sinir(1)));
       await _gorunurYap(tester, bilgi);
       expect(bilgi, findsOneWidget);
-      expect(
-        _sorDugmesi(m),
-        findsNothing,
-      );
+      expect(_sorDugmesi(m), findsNothing);
     });
 
     testWidgets('başkasının sorusunu şikâyet eder; kendi sorusunu kaldırır', (
@@ -433,8 +436,9 @@ void main() {
       expect(find.text(m.bilesen_questions_sikayet_sorusu), findsOneWidget);
     });
 
-    testWidgets('soru kaldırılmışsa hata bildirilir ve liste yeniden okunur',
-        (tester) async {
+    testWidgets('soru kaldırılmışsa hata bildirilir ve liste yeniden okunur', (
+      tester,
+    ) async {
       ekranBoyutu(tester);
       final tasima = _tasima(
         sorular: (_) => sorularJson(
@@ -480,10 +484,7 @@ void main() {
       final bilgi = _bolumde(find.text(m.bilesen_questions_katil_bilgi));
       await _gorunurYap(tester, bilgi);
       expect(bilgi, findsOneWidget);
-      expect(
-        _sorDugmesi(m),
-        findsNothing,
-      );
+      expect(_sorDugmesi(m), findsNothing);
       final oy = find.bySemanticsLabel(m.bilesen_questions_oy_anlam(3));
       expect(oy, findsOneWidget);
       await tester.tap(oy, warnIfMissed: false);
@@ -500,9 +501,7 @@ void main() {
       final tasima = _tasima(
         ben: organizatorId,
         sorular: (_) => sorularJson(
-          sorular: [
-            soruJson(id: _soru1, anonim: true, cevaplandi: cevaplandi),
-          ],
+          sorular: [soruJson(id: _soru1, anonim: true, cevaplandi: cevaplandi)],
           sorabilir: true,
           isaretleyebilir: true,
         ),
@@ -528,10 +527,7 @@ void main() {
       );
 
       await _dokun(tester, _menu(_soru1));
-      await _dokun(
-        tester,
-        find.text(m.bilesen_questions_cevaplandi_isaretle),
-      );
+      await _dokun(tester, find.text(m.bilesen_questions_cevaplandi_isaretle));
       final isaret = tasima.giden('PUT', soruCevaplandiYolu).single;
       expect(isaret.yolParametreleri['question_id'], _soru1);
       expect(
@@ -569,9 +565,7 @@ void main() {
   });
 
   test('sorular canlı değişince yeniden okunur', () async {
-    final tasima = etkinlikTasimasi({
-      'GET $sorularYolu': (_) => sorularJson(),
-    });
+    final tasima = etkinlikTasimasi({'GET $sorularYolu': (_) => sorularJson()});
     final zaman = SahteZamanlayici();
     final soketler = <SahteSoket>[];
     final realtime = RealtimeIstemcisi(
