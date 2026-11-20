@@ -1511,6 +1511,143 @@ final class EventsApi {
     return EventGoal.fromJson(jsonObject(response, 'removeEventGoalTarget'));
   }
 
+  /// Etkinliğin programı
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Bileşen uçlarının ortak kuralları
+  /// geçerlidir (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventSchedule> getEventSchedule({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventSchedule.fromJson(jsonObject(response, 'getEventSchedule'));
+  }
+
+  /// Programa madde ekler (organizatör, moderatör, yönetici)
+  ///
+  /// En fazla `max_items` madde (`event-limit`). Saatler etkinliğin
+  /// başlangıcından en çok bir gün önce, bitişinden en çok bir gün sonra
+  /// olabilir; bitiş saati başlangıçtan sonra olmalıdır (aksi
+  /// `invalid-request`). Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule/items`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventSchedule> addEventScheduleItem({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventScheduleItemRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule/items',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventSchedule.fromJson(jsonObject(response, 'addEventScheduleItem'));
+  }
+
+  /// Program maddesini düzenler (organizatör, moderatör, yönetici)
+  ///
+  /// Maddenin bütün değerlerini değiştirir (gönderilmeyen `ends_at` ve
+  /// `note` kaldırılır); kurallar eklemedekiyle aynıdır. Bilinmeyen
+  /// madde `event-item-not-found`. Bileşen uçlarının ortak kuralları
+  /// geçerlidir.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule/items/{item_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [itemId]: Programdaki maddenin kimliği (`EventScheduleItem.id`).
+  Future<EventSchedule> updateEventScheduleItem({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String itemId,
+    required EventScheduleItemRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule/items/{item_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'item_id': itemId,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventSchedule.fromJson(
+      jsonObject(response, 'updateEventScheduleItem'),
+    );
+  }
+
+  /// Programdan madde çıkarır (organizatör, moderatör, yönetici)
+  ///
+  /// Bilinmeyen madde `event-item-not-found`. Bileşen uçlarının ortak
+  /// kuralları geçerlidir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule/items/{item_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [itemId]: Programdaki maddenin kimliği (`EventScheduleItem.id`).
+  Future<EventSchedule> removeEventScheduleItem({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String itemId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/schedule/items/{item_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'item_id': itemId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventSchedule.fromJson(
+      jsonObject(response, 'removeEventScheduleItem'),
+    );
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

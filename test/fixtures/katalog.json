@@ -110,6 +110,34 @@
       }
     },
     {
+      "key": "auto_show",
+      "interest_keys": [
+        "automotive"
+      ],
+      "labels": {
+        "tr": "Fuar / müze gezisi"
+      },
+      "icon": "museum",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "meeting_point"
+          },
+          {
+            "kind": "schedule",
+            "params": {
+              "max_items": 30
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "hike",
       "interest_keys": [
         "nature"
