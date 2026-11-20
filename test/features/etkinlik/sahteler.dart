@@ -366,12 +366,12 @@ Map<String, Object?> kuraJson({
 
 /// Örnek `EventBracketGame` JSON'u (eşleşme ağacı, #239): puan kuralında
 /// [a] ve [b], galibiyet/beraberlik/mağlubiyette [sonuc].
-Map<String, Object?> agacOyunuJson(
-  int no, {
-  int? a,
-  int? b,
-  String? sonuc,
-}) => {'number': no, 'a_points': ?a, 'b_points': ?b, 'a_outcome': ?sonuc};
+Map<String, Object?> agacOyunuJson(int no, {int? a, int? b, String? sonuc}) => {
+  'number': no,
+  'a_points': ?a,
+  'b_points': ?b,
+  'a_outcome': ?sonuc,
+};
 
 /// Örnek `EventBracketMatch` JSON'u (eşleşme ağacı, #239).
 Map<String, Object?> agacMaciJson({

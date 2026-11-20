@@ -133,8 +133,10 @@ const Set<ProblemType> _bayatAgacHatalari = {
 };
 
 /// Bir ağaç işlemi: depoda çalışır, ağacın güncel halini döner.
-typedef AgacYazimi =
-    Future<EventBracket> Function(EtkinlikDeposu depo, AgacKimligi k);
+typedef AgacYazimi = Future<EventBracket> Function(
+  EtkinlikDeposu depo,
+  AgacKimligi k,
+);
 
 /// Eşleşme ağacı bileşeninin durumu (`GET …/components/{component_key}/
 /// bracket`; Tayfam-Api #251), çağıranın gördüğü haliyle. Bölüm açıkken
@@ -174,19 +176,16 @@ class AgacNotifier extends AsyncNotifier<EventBracket> {
   }
 
   /// Ağacı kuradan başlatır (organizatör, moderatör, yönetici).
-  Future<Object?> baslat() => _yaz(
-    (d, k) => d.agaciBaslat(k.tayfaId, k.etkinlikId, k.anahtar),
-  );
+  Future<Object?> baslat() =>
+      _yaz((d, k) => d.agaciBaslat(k.tayfaId, k.etkinlikId, k.anahtar));
 
   /// Ağacı sıfırlar; kura kalır.
-  Future<Object?> sifirla() => _yaz(
-    (d, k) => d.agaciSifirla(k.tayfaId, k.etkinlikId, k.anahtar),
-  );
+  Future<Object?> sifirla() =>
+      _yaz((d, k) => d.agaciSifirla(k.tayfaId, k.etkinlikId, k.anahtar));
 
   /// Sonraki turu eşler.
-  Future<Object?> sonrakiTur() => _yaz(
-    (d, k) => d.agactaSonrakiTur(k.tayfaId, k.etkinlikId, k.anahtar),
-  );
+  Future<Object?> sonrakiTur() =>
+      _yaz((d, k) => d.agactaSonrakiTur(k.tayfaId, k.etkinlikId, k.anahtar));
 
   /// Maça sonraki oyunu girer (organizatör ya da hakem).
   Future<Object?> oyunGir(String macId, EventBracketGameRequest istek) => _yaz(
@@ -211,8 +210,7 @@ class AgacNotifier extends AsyncNotifier<EventBracket> {
 
   /// Maçın son oyununu siler.
   Future<Object?> sonOyunuSil(String macId, int oyun) => _yaz(
-    (d, k) =>
-        d.agacOyununuSil(k.tayfaId, k.etkinlikId, k.anahtar, macId, oyun),
+    (d, k) => d.agacOyununuSil(k.tayfaId, k.etkinlikId, k.anahtar, macId, oyun),
   );
 
   /// Başarıda `null`, değilse hata döner; durum değişmez ve hata çağıranda

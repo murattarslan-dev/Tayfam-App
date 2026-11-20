@@ -273,7 +273,9 @@ void main() {
         expect(
           _bolumde(
             find.text(
-              m.bilesen_bracket_oyunlar(m.bilesen_bracket_oyun_skoru('21', '18')),
+              m.bilesen_bracket_oyunlar(
+                m.bilesen_bracket_oyun_skoru('21', '18'),
+              ),
             ),
           ),
           findsOneWidget,

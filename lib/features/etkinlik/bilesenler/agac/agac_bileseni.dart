@@ -600,8 +600,9 @@ class _AgacMaciState extends ConsumerState<AgacMaci> {
     final aSkor = agacSkorMetni(m, agac, mac, a: true);
     final bSkor = agacSkorMetni(m, agac, mac, a: false);
     final kazanan = mac.winnerPosition;
-    final aKazandi = kazanan != null && kazanan == mac.aPosition;
-    final bKazandi = kazanan != null && kazanan == mac.bPosition;
+    // Bayda kazanan etiketi yok: "Bay" satırı tur atladığını söyler.
+    final aKazandi = !mac.bye && kazanan != null && kazanan == mac.aPosition;
+    final bKazandi = !mac.bye && kazanan != null && kazanan == mac.bPosition;
     final sonuc = switch (mac) {
       EventBracketMatch(bye: true) => m.bilesen_bracket_ozet_bay(
         mac.aPosition == null ? bAd : aAd,
