@@ -584,7 +584,10 @@ void main() {
         _bolumde(find.text(m.bilesen_scoreboard_durum_open)),
         findsOneWidget,
       );
-      expect(_bolumde(find.textContaining(m.bilesen_scoreboard_kazanan)), findsNothing);
+      expect(
+        _bolumde(find.textContaining(m.bilesen_scoreboard_kazanan)),
+        findsNothing,
+      );
     });
 
     testWidgets('organizatör masaya hakem atar', (tester) async {
