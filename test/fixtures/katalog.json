@@ -166,6 +166,13 @@
               "showcase": true,
               "prefill_from": "planned_elevation"
             }
+          },
+          {
+            "kind": "goal",
+            "params": {
+              "measure": "distance",
+              "default_target": 10
+            }
           }
         ]
       }

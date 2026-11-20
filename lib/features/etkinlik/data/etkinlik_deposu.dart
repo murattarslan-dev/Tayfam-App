@@ -497,6 +497,42 @@ final class EtkinlikDeposu {
     userId: kullaniciId,
   );
 
+  /// `GET .../components/{component_key}/goal`: hedef bileşeni (#234),
+  /// çağıranın gördüğü haliyle (hassas ölçümde ilerleme gizli olabilir).
+  Future<EventGoal> hedef(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventGoal(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../goal/target`: etkinliğin hedefini koyar.
+  Future<EventGoal> hedefiKoy(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    double deger,
+  ) => _api.setEventGoalTarget(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventGoalTargetRequest(target: deger),
+  );
+
+  /// `DELETE .../goal/target`: tanımdaki varsayılan hedef geri gelir.
+  Future<EventGoal> hedefiKaldir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.removeEventGoalTarget(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(

@@ -1417,6 +1417,100 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin hedefi ve ilerlemesi
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Bağlı ölçüm hassassa (`sensitive`,
+  /// kişisel) ilerlemeyi yalnızca bütün değerleri görebilenler görür
+  /// (organizatörün girdiği ölçümde organizatör, moderatör, yönetici);
+  /// diğerlerine `progress_hidden` döner. Bileşen uçlarının ortak
+  /// kuralları geçerlidir (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/goal`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventGoal> getEventGoal({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/goal',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventGoal.fromJson(jsonObject(response, 'getEventGoal'));
+  }
+
+  /// Etkinliğin hedefini koyar (organizatör, moderatör, yönetici)
+  ///
+  /// Hedef ölçümün ondalık basamağına yuvarlanır; sıfırdan büyük olmalı,
+  /// toplam ölçümde ölçümün üst sınırını aşamaz (`invalid-request`). Aynı
+  /// hedefi yeniden yazmak bir şey değiştirmez.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/goal/target`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventGoal> setEventGoalTarget({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventGoalTargetRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/goal/target',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventGoal.fromJson(jsonObject(response, 'setEventGoalTarget'));
+  }
+
+  /// Etkinliğin hedefini kaldırır (organizatör, moderatör, yönetici)
+  ///
+  /// Tanımdaki varsayılan hedef yeniden geçerli olur. Olmayan hedefi
+  /// kaldırmak hata değildir.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/goal/target`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventGoal> removeEventGoalTarget({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/goal/target',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventGoal.fromJson(jsonObject(response, 'removeEventGoalTarget'));
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

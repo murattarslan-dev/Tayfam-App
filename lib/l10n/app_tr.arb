@@ -2432,6 +2432,126 @@
   "@bilesen_measure_guncelle": {
     "description": "Ölçümün kapsamı uygulamanın bu sürümünce tanınmadığında görünen metin."
   },
+  "bilesen_goal_ad": "Hedef",
+  "@bilesen_goal_ad": {
+    "description": "Hedef çubuğu bileşeninin (`goal`) adı; tanımda kendi adı (`labels`) yoksa bölüm başlığında görünür."
+  },
+  "bilesen_goal_hedef": "Hedef: {deger}",
+  "@bilesen_goal_hedef": {
+    "description": "Hedef kartındaki hedef, bağlı ölçümün birimiyle.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "100 kg"
+      }
+    }
+  },
+  "bilesen_goal_yok": "Henüz hedef konmadı.",
+  "@bilesen_goal_yok": {
+    "description": "Etkinliğin hedefi de türün varsayılan hedefi de yokken hedef kartındaki metin."
+  },
+  "bilesen_goal_koy": "Hedef koy",
+  "@bilesen_goal_koy": {
+    "description": "Hedefi olmayan etkinlikte hedef koyma düğmesi ve formun başlığı (organizatör, moderatör, yönetici)."
+  },
+  "bilesen_goal_degistir": "Hedefi değiştir",
+  "@bilesen_goal_degistir": {
+    "description": "Hedef kartındaki düzeltme düğmesinin ipucu ve formun başlığı."
+  },
+  "bilesen_goal_kaldir": "Hedefi kaldır",
+  "@bilesen_goal_kaldir": {
+    "description": "Varsayılan hedefi olmayan türde organizatörün koyduğu hedefi kaldırma düğmesi."
+  },
+  "bilesen_goal_kaldir_onay": "Hedef kaldırılsın mı?",
+  "@bilesen_goal_kaldir_onay": {
+    "description": "Hedefi kaldırma onayının başlığı."
+  },
+  "bilesen_goal_varsayilana_don": "Varsayılan hedefe dön",
+  "@bilesen_goal_varsayilana_don": {
+    "description": "Organizatörün koyduğu hedefi kaldırıp türün varsayılan hedefine dönme düğmesi."
+  },
+  "bilesen_goal_varsayilana_don_onay": "Varsayılan hedefe ({deger}) dönülsün mü?",
+  "@bilesen_goal_varsayilana_don_onay": {
+    "description": "Varsayılan hedefe dönme onayının başlığı.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "100 kg"
+      }
+    }
+  },
+  "bilesen_goal_varsayilan_notu": "Etkinlik türünün varsayılan hedefi.",
+  "@bilesen_goal_varsayilan_notu": {
+    "description": "Hedef organizatörce konmamış, türün varsayılanıyken kartta görünen bilgi."
+  },
+  "bilesen_goal_ilerleme": "{mevcut} / {hedef}",
+  "@bilesen_goal_ilerleme": {
+    "description": "İlerleme çubuğunun üstündeki yazı: bağlı ölçümün kaydedilmiş değeri ve birimiyle hedef.",
+    "placeholders": {
+      "mevcut": {
+        "type": "String",
+        "example": "40"
+      },
+      "hedef": {
+        "type": "String",
+        "example": "100 kg"
+      }
+    }
+  },
+  "bilesen_goal_yuzde": "%{yuzde}",
+  "@bilesen_goal_yuzde": {
+    "description": "İlerlemenin yüzdesi (aşağı yuvarlanmış).",
+    "placeholders": {
+      "yuzde": {
+        "type": "int",
+        "example": "40"
+      }
+    }
+  },
+  "bilesen_goal_cubuk_anlam": "Hedefe ilerleme: {ilerleme}, yüzde {yuzde}",
+  "@bilesen_goal_cubuk_anlam": {
+    "description": "İlerleme çubuğunun ekran okuyucu etiketi.",
+    "placeholders": {
+      "ilerleme": {
+        "type": "String",
+        "example": "40 / 100 kg"
+      },
+      "yuzde": {
+        "type": "int",
+        "example": "40"
+      }
+    }
+  },
+  "bilesen_goal_ulasildi": "Hedefe ulaşıldı",
+  "@bilesen_goal_ulasildi": {
+    "description": "Bağlı ölçüm hedefe ulaşınca kartta ikonla birlikte görünen metin."
+  },
+  "bilesen_goal_gizli": "İlerleme gizli: bağlı ölçüm hassas, değerleri yalnızca organizatör ve yöneticiler görür.",
+  "@bilesen_goal_gizli": {
+    "description": "Hassas ölçüme bağlı hedefte ilerlemeyi göremeyene gösterilen neden (`progress_hidden`)."
+  },
+  "bilesen_goal_olcum_kapali": "Bağlı ölçüm bu etkinlikte kapalı; ilerleme gösterilmez.",
+  "@bilesen_goal_olcum_kapali": {
+    "description": "İsteğe bağlı ölçüm kapalıyken hedef kartındaki bilgi (`measure_enabled: false`)."
+  },
+  "bilesen_goal_deger_alani": "Hedef",
+  "@bilesen_goal_deger_alani": {
+    "description": "Hedef formundaki sayı alanının etiketi."
+  },
+  "bilesen_goal_hedef_pozitif": "Sıfırdan büyük bir değer gir.",
+  "@bilesen_goal_hedef_pozitif": {
+    "description": "Hedef formunda değer sıfır ya da geçersiz aralıktayken hata ve yardım metni."
+  },
+  "bilesen_goal_varsayilan_ipucu": "Sıfırdan büyük olmalı. Varsayılan hedef: {deger}",
+  "@bilesen_goal_varsayilan_ipucu": {
+    "description": "Türün varsayılan hedefi varken hedef formundaki yardım metni.",
+    "placeholders": {
+      "deger": {
+        "type": "String",
+        "example": "100 kg"
+      }
+    }
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
