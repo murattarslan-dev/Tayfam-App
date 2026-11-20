@@ -112,9 +112,9 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe takım kurma bileşenini kullanan tür var', () {
-    final takimlar = turBilesenleri(
-      testTuru('quiz_night'),
-    ).where((b) => b.kind == 'teams').toList();
+    final takimlar = turBilesenleri(testTuru('quiz_night'))
+        .where((b) => b.kind == 'teams')
+        .toList();
     expect(takimlar, hasLength(1));
     expect(bilesenAnahtari(takimlar.single), 'teams');
     final mod = secimliParametreler(takimlar.single).single;
@@ -144,9 +144,11 @@ void main() {
         ],
       });
       expect(
-        takimIstegi(adlar: const [], atama: const {}, kisiSirasi: const [])
-            .istek!
-            .toJson(),
+        takimIstegi(
+          adlar: const [],
+          atama: const {},
+          kisiSirasi: const [],
+        ).istek!.toJson(),
         {'teams': <Object?>[]},
       );
     });
@@ -175,10 +177,7 @@ void main() {
 
     test('taslak: takım yoksa takım sayısı kadar (yoksa 2) boş takım; '
         'varsa sırasıyla', () {
-      expect(
-        takimTaslagi(EventTeams.fromJson(takimlarJson())),
-        hasLength(2),
-      );
+      expect(takimTaslagi(EventTeams.fromJson(takimlarJson())), hasLength(2));
       expect(
         takimTaslagi(EventTeams.fromJson(takimlarJson(takimSayisi: 4))),
         hasLength(4),
@@ -194,14 +193,11 @@ void main() {
 
     test('dengeli kurma: yalnızca 3 olmayan geçerli seviyeler gider', () {
       expect(takimSeviyeIstegi(const {}).toJson(), isEmpty);
-      expect(
-        takimSeviyeIstegi({katilimciId: 3, organizatorId: 5}).toJson(),
-        {
-          'levels': [
-            {'user_id': organizatorId, 'level': 5},
-          ],
-        },
-      );
+      expect(takimSeviyeIstegi({katilimciId: 3, organizatorId: 5}).toJson(), {
+        'levels': [
+          {'user_id': organizatorId, 'level': 5},
+        ],
+      });
       expect(
         takimSeviyeIstegi({katilimciId: 0, organizatorId: 6}).levels,
         isNull,
@@ -251,10 +247,7 @@ void main() {
         expect(_bolumde(find.text('Mert')), findsNWidgets(2));
         expect(_bolumde(find.text(m.bilesen_teams_kur)), findsNothing);
         expect(_bolumde(find.text(m.bilesen_teams_yeniden_kur)), findsNothing);
-        expect(
-          _bolumde(find.text(m.bilesen_teams_elle_duzenle)),
-          findsNothing,
-        );
+        expect(_bolumde(find.text(m.bilesen_teams_elle_duzenle)), findsNothing);
         expect(tasima.giden('GET', takimYolu).single.yolParametreleri, {
           'tayfa_id': ornekTayfaId,
           'event_id': ornekEtkinlikId,
@@ -339,7 +332,10 @@ void main() {
           findsOneWidget,
         );
         // Takım sayısı sınırda: "Takım ekle" yok.
-        expect(_elleFormda(find.text(m.bilesen_teams_takim_ekle)), findsNothing);
+        expect(
+          _elleFormda(find.text(m.bilesen_teams_takim_ekle)),
+          findsNothing,
+        );
         await tester.enterText(
           find.byKey(const ValueKey('takim-adi-0')),
           'Şimşekler',
@@ -454,14 +450,8 @@ void main() {
         _elleFormda(find.text(m.bilesen_teams_ad_alani(2))),
         findsOneWidget,
       );
-      await _dokun(
-        tester,
-        find.byTooltip(m.bilesen_teams_takim_cikar(2)),
-      );
-      await _dokun(
-        tester,
-        find.byTooltip(m.bilesen_teams_takim_cikar(1)),
-      );
+      await _dokun(tester, find.byTooltip(m.bilesen_teams_takim_cikar(2)));
+      await _dokun(tester, find.byTooltip(m.bilesen_teams_takim_cikar(1)));
       expect(
         _elleFormda(find.text(m.bilesen_teams_hepsi_kalkar)),
         findsOneWidget,

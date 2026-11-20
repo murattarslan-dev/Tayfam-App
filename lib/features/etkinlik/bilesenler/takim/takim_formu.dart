@@ -148,7 +148,8 @@ class _TakimElleFormuState extends ConsumerState<TakimElleFormu> {
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final durum = ref.watch(katilimcilarProvider(widget.katilimcilar));
-    final gelenler = durum.value?.ogeler.map((k) => k.userId) ?? const <String>[];
+    final gelenler =
+        durum.value?.ogeler.map((k) => k.userId) ?? const <String>[];
     final kisiler = <String>[
       ...{...gelenler, ..._mevcutUyeler},
     ];

@@ -215,9 +215,7 @@ class _TakimBolumuState extends ConsumerState<TakimBolumu> {
                       ? m.bilesen_teams_yeniden_kur
                       : m.bilesen_teams_kur,
                   ikon: Icons.shuffle,
-                  onPressed: _mesgul
-                      ? null
-                      : () => unawaited(_kur(takimlar)),
+                  onPressed: _mesgul ? null : () => unawaited(_kur(takimlar)),
                 ),
               AracDugmesi(
                 etiket: m.bilesen_teams_elle_duzenle,

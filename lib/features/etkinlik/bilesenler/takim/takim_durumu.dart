@@ -38,8 +38,7 @@ List<({String ad, List<String> uyeler})> takimTaslagi(EventTeams takimlar) {
   final sirali = [...takimlar.teams]
     ..sort((a, b) => a.position.compareTo(b.position));
   return [
-    for (final takim in sirali)
-      (ad: takim.name ?? '', uyeler: takim.memberIds),
+    for (final takim in sirali) (ad: takim.name ?? '', uyeler: takim.memberIds),
   ];
 }
 
