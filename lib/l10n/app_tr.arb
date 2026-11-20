@@ -4172,6 +4172,140 @@
   "@bilesen_celebration_bildirim": {
     "description": "Uygulama içi bildirim (celebration); kazananı ve içeriği adlandırmaz."
   },
+  "bilesen_questions_ad": "Soru toplama",
+  "@bilesen_questions_ad": {
+    "description": "Soru toplama bileşeninin adı (katalogda adı yoksa bölüm başlığı)."
+  },
+  "bilesen_questions_sayi": "{sayi, plural, other{{sayi} soru}}",
+  "@bilesen_questions_sayi": {
+    "description": "Soru toplama başlığının yanında: sorulan soru sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "bilesen_questions_yok": "Henüz soru sorulmadı.",
+  "@bilesen_questions_yok": {
+    "description": "Soru toplama bileşeninde soru yokken."
+  },
+  "bilesen_questions_sor": "Soru sor",
+  "@bilesen_questions_sor": {
+    "description": "Soru toplama: soru sorma düğmesi ve formun başlığı."
+  },
+  "bilesen_questions_gonder": "Gönder",
+  "@bilesen_questions_gonder": {
+    "description": "Soru formunun onay düğmesi."
+  },
+  "bilesen_questions_metin_alani": "Sorun",
+  "@bilesen_questions_metin_alani": {
+    "description": "Soru formundaki metin alanının etiketi."
+  },
+  "bilesen_questions_metin_hata": "Soru boş olamaz ve en fazla {enCok} karakter olabilir.",
+  "@bilesen_questions_metin_hata": {
+    "description": "Soru metni boş ya da çok uzunken alanın altındaki hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
+  "bilesen_questions_anonim_sor": "Anonim sor",
+  "@bilesen_questions_anonim_sor": {
+    "description": "Soru formundaki anonim soru anahtarı (yalnızca bileşen izin veriyorsa)."
+  },
+  "bilesen_questions_anonim_aciklama": "Adın soruda kimseye gösterilmez; organizatör ve tayfa yöneticileri de göremez. Soru şikâyet edilirse yalnızca Tayfam ekibi görür.",
+  "@bilesen_questions_anonim_aciklama": {
+    "description": "Anonim soru anahtarının altındaki açıklama."
+  },
+  "bilesen_questions_sinir": "Bu etkinlikte sorabileceğin {enCok} sorunun hepsini sordun.",
+  "@bilesen_questions_sinir": {
+    "description": "Kişi başı soru sınırı dolunca \"Soru sor\" yerine gösterilir.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "bilesen_questions_katil_bilgi": "Soru sormak ve oy vermek için \"Geliyorum\" de.",
+  "@bilesen_questions_katil_bilgi": {
+    "description": "Etkinliğe gelmeyen üyeye soru toplama bölümünde gösterilir."
+  },
+  "bilesen_questions_sen_sordun": "Sen sordun",
+  "@bilesen_questions_sen_sordun": {
+    "description": "Soru satırında: soruyu çağıran sordu (anonim olsa da yalnızca kendisi görür)."
+  },
+  "bilesen_questions_soran": "Soruyu soran",
+  "@bilesen_questions_soran": {
+    "description": "Soran kişinin adına dokununca ekran okuyucunun okuduğu ek bağlam."
+  },
+  "bilesen_questions_anonim": "Anonim",
+  "@bilesen_questions_anonim": {
+    "description": "Soru satırında anonim soru etiketi."
+  },
+  "bilesen_questions_cevaplandi": "Cevaplandı",
+  "@bilesen_questions_cevaplandi": {
+    "description": "Soru satırında cevaplandı etiketi."
+  },
+  "bilesen_questions_cevaplandi_isaretle": "Cevaplandı olarak işaretle",
+  "@bilesen_questions_cevaplandi_isaretle": {
+    "description": "Soru menüsünde organizatörün işlemi."
+  },
+  "bilesen_questions_isareti_kaldir": "Cevaplandı işaretini kaldır",
+  "@bilesen_questions_isareti_kaldir": {
+    "description": "Soru menüsünde organizatörün işlemi (cevaplandı soruda)."
+  },
+  "bilesen_questions_kaldir": "Soruyu kaldır",
+  "@bilesen_questions_kaldir": {
+    "description": "Soru menüsündeki kaldırma işlemi ve onay düğmesi."
+  },
+  "bilesen_questions_kaldir_onay": "Soru kaldırılsın mı?",
+  "@bilesen_questions_kaldir_onay": {
+    "description": "Soru kaldırma onayının başlığı."
+  },
+  "bilesen_questions_sikayet_et": "Şikâyet et",
+  "@bilesen_questions_sikayet_et": {
+    "description": "Soru menüsünde başkasının sorusunu şikâyet etme."
+  },
+  "bilesen_questions_islemler": "Soru işlemleri",
+  "@bilesen_questions_islemler": {
+    "description": "Soru satırındaki menü düğmesinin ipucu."
+  },
+  "bilesen_questions_oy_anlam": "{sayi, plural, =0{Henüz oy yok} other{{sayi} oy}}",
+  "@bilesen_questions_oy_anlam": {
+    "description": "Oy düğmesinin ekran okuyucuda okunan anlamı (oy verilmemişken). Ekranda görünmez.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_questions_oy_anlam_verdin": "{sayi, plural, other{{sayi} oy, senin oyun dahil}}",
+  "@bilesen_questions_oy_anlam_verdin": {
+    "description": "Oy düğmesinin ekran okuyucuda okunan anlamı (çağıran oy verdiyse). Ekranda görünmez.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_questions_oy_ipucu": "Oy vermek ya da oyunu geri almak için dokun",
+  "@bilesen_questions_oy_ipucu": {
+    "description": "Oy düğmesinin ekran okuyucu ipucu."
+  },
+  "bilesen_questions_sikayet_turu": "Etkinlik sorusu",
+  "@bilesen_questions_sikayet_turu": {
+    "description": "Moderasyon kuyruğunda şikâyet edilen şeyin türü: soru toplama bileşenindeki soru."
+  },
+  "bilesen_questions_sikayet_sorusu": "Bu soruyu neden şikâyet ediyorsun?",
+  "@bilesen_questions_sikayet_sorusu": {
+    "description": "Etkinlik sorusunu şikâyet ederken sayfanın sorusu."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."

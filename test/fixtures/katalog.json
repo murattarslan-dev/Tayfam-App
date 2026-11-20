@@ -797,6 +797,32 @@
       }
     },
     {
+      "key": "talk",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Söyleşi / seminer"
+      },
+      "icon": "mic",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "questions",
+            "params": {
+              "anonymous": true
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

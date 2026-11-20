@@ -377,7 +377,10 @@ class _SikayetKartiState extends ConsumerState<_SikayetKarti> {
     final m = AppLocalizations.of(context);
     final sonuc = await altSayfaAc<ModerationReportResolution>(
       context,
-      builder: (_) => _SonucSecimi(icerik: icerikMi(widget.sikayet.targetType)),
+      builder: (_) => _SonucSecimi(
+        icerik: icerikMi(widget.sikayet.targetType),
+        yaptirim: yaptirimSecilebilir(widget.sikayet),
+      ),
     );
     if (sonuc == null || !mounted) return;
     await _calistir(
@@ -754,9 +757,12 @@ class _OncelikEtiketi extends StatelessWidget {
 /// `report-action-missing` döndürür. "İçerik kaldırıldı" üye ve tayfa
 /// şikâyetinde gösterilmez (sözleşme). Seçilmeden "Sonuçlandır" pasiftir.
 class _SonucSecimi extends StatefulWidget {
-  const _SonucSecimi({required this.icerik});
+  const _SonucSecimi({required this.icerik, required this.yaptirim});
 
   final bool icerik;
+
+  /// `member_sanctioned` seçilebilir (yazarı gizli şikâyette değil).
+  final bool yaptirim;
 
   @override
   State<_SonucSecimi> createState() => _SonucSecimiState();
@@ -777,11 +783,12 @@ class _SonucSecimiState extends State<_SonucSecimi> {
           m.sikayet_sonuc_kaldirildi,
           m.sikayet_sonuc_kaldirildi_aciklama,
         ),
-      (
-        ModerationReportResolution.memberSanctioned,
-        m.sikayet_sonuc_yaptirim,
-        m.sikayet_sonuc_yaptirim_aciklama,
-      ),
+      if (widget.yaptirim)
+        (
+          ModerationReportResolution.memberSanctioned,
+          m.sikayet_sonuc_yaptirim,
+          m.sikayet_sonuc_yaptirim_aciklama,
+        ),
       (
         ModerationReportResolution.dismissed,
         m.sikayet_sonuc_islem_yok,
