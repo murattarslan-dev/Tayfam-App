@@ -34,8 +34,7 @@ bool kutlamaKaynagiTanindi(EventCelebration kutlama) =>
 
 /// Kazanan elle seçilen kişilerin kimlikleri (formun ilk seçimi).
 List<String> kutlamaKisileri(EventCelebration kutlama) => [
-  for (final k in kutlama.winners)
-    if (k.userId case final id?) id,
+  for (final k in kutlama.winners) ?k.userId,
 ];
 
 /// Kutlamanın yeniden okunmasını gerektiren hatalar: durumu etkinlikle,
