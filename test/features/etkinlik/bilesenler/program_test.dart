@@ -117,9 +117,9 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe program bileşenini kullanan tür var', () {
-    final programlar = turBilesenleri(
-      testTuru('auto_show'),
-    ).where((b) => b.kind == 'schedule').toList();
+    final programlar = turBilesenleri(testTuru('auto_show'))
+        .where((b) => b.kind == 'schedule')
+        .toList();
     expect(programlar, hasLength(1));
     expect(bilesenAnahtari(programlar.single), 'schedule');
     expect(
@@ -494,7 +494,10 @@ void main() {
         _bolumde(find.text(etkinlikKisaGun(m, _baslangic))),
         findsOneWidget,
       );
-      expect(_bolumde(find.text(etkinlikKisaGun(m, ertesiGun))), findsOneWidget);
+      expect(
+        _bolumde(find.text(etkinlikKisaGun(m, ertesiGun))),
+        findsOneWidget,
+      );
       expect(
         find.byTooltip(arbMetni('bilesen_schedule_duzenle')),
         findsNothing,
@@ -521,11 +524,8 @@ void main() {
     testWidgets('madde sınırında ekleme yerine bilgi', (tester) async {
       ekranBoyutu(tester);
       final tasima = _tasima(
-        program: (_) => programJson(
-          maddeler: _maddeler(),
-          enCok: 2,
-          duzenleyebilir: true,
-        ),
+        program: (_) =>
+            programJson(maddeler: _maddeler(), enCok: 2, duzenleyebilir: true),
       );
       await _detayiAc(tester, tasima);
       final dolu = find.text(m.bilesen_schedule_dolu(2));
