@@ -27,6 +27,9 @@ final class CatalogApi {
   /// ikon setinden bir anahtardır; bilinmeyen anahtar için ilgi alanının
   /// ikonu, o da yoksa genel ikon gösterilir.
   ///
+  /// `study_tags` Eğitim modüllerinin ders ve konu etiket listesidir
+  /// (`CatalogStudyTag`); emekliye ayrılanlar dahil hepsi döner.
+  ///
   /// `GET /v1/catalog`
   ///
   /// Koşullu istek: sunucu `304` dönerse (değişmedi) `null` döner.

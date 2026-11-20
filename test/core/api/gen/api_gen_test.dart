@@ -82,6 +82,7 @@ void main() {
     Map<String, Object?> katalogJson() => {
       'catalog_version': 7,
       'interests': const <Object?>[],
+      'study_tags': const <Object?>[],
       'event_types': [
         {
           'key': 'hike',

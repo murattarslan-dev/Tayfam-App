@@ -1733,6 +1733,7 @@ final class Catalog {
     required this.catalogVersion,
     required this.interests,
     required this.eventTypes,
+    required this.studyTags,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -1755,6 +1756,12 @@ final class Catalog {
             CatalogEventType.fromJson(_readObject(e0, 'Catalog.event_types')),
       ),
     ),
+    studyTags: List<CatalogStudyTag>.unmodifiable(
+      _readList(json['study_tags'], 'Catalog.study_tags').map(
+        (Object? e0) =>
+            CatalogStudyTag.fromJson(_readObject(e0, 'Catalog.study_tags')),
+      ),
+    ),
   );
 
   /// Kataloğun bütününün sürümü; her değişiklikte artar. `ETag` ile aynıdır.
@@ -1766,11 +1773,15 @@ final class Catalog {
   /// Aktif türlerin güncel sürümleri, listeleme sırasıyla.
   final List<CatalogEventType> eventTypes;
 
+  /// Ders ve konu etiketleri (emekliler dahil), `position` sırasıyla; istemci `parent_key` ile gruplar.
+  final List<CatalogStudyTag> studyTags;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'catalog_version': catalogVersion,
     'interests': <Object?>[for (final e0 in interests) e0.toJson()],
     'event_types': <Object?>[for (final e0 in eventTypes) e0.toJson()],
+    'study_tags': <Object?>[for (final e0 in studyTags) e0.toJson()],
   };
 
   @override
@@ -1779,13 +1790,15 @@ final class Catalog {
       other is Catalog &&
           catalogVersion == other.catalogVersion &&
           _deepEquals(interests, other.interests) &&
-          _deepEquals(eventTypes, other.eventTypes);
+          _deepEquals(eventTypes, other.eventTypes) &&
+          _deepEquals(studyTags, other.studyTags);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
     catalogVersion,
     _deepHash(interests),
     _deepHash(eventTypes),
+    _deepHash(studyTags),
   ]);
 }
 
@@ -2461,6 +2474,90 @@ enum CatalogStatus {
     }
     return unknown;
   }
+}
+
+/// Eğitim modüllerinin (materyal kütüphanesi, soru havuzu) içeriği
+/// etiketlediği ders ve konu listesinin bir kaydı (#259, ADR-0040 §5):
+/// sınav/düzey → ders → konu, en fazla üç seviye. Böyle içerikte ders
+/// (ikinci seviye) zorunlu, konu (üçüncü seviye, o dersin altında)
+/// isteğe bağlıdır. Her düzeyin ve dersin altında anahtarı
+/// `<üst anahtar>_other` olan bir "Diğer" kaydı vardır. `retired` kayıt
+/// (ya da emekli bir kaydın altındaki kayıt) yeni içerikte seçilemez,
+/// eski içerik göstermeye devam eder. Adlar platform sahibinin
+/// içeriğidir ve düz metin gösterilir.
+final class CatalogStudyTag {
+  const CatalogStudyTag({
+    required this.key,
+    this.parentKey,
+    required this.position,
+    required this.labels,
+    required this.status,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory CatalogStudyTag.fromJson(Map<String, Object?> json) =>
+      CatalogStudyTag(
+        key: _readString(json['key'], 'CatalogStudyTag.key'),
+        parentKey: switch (json['parent_key']) {
+          null => null,
+          final Object v => _readString(v, 'CatalogStudyTag.parent_key'),
+        },
+        position: _readInt(json['position'], 'CatalogStudyTag.position'),
+        labels: Map<String, String>.unmodifiable(
+          _readObject(json['labels'], 'CatalogStudyTag.labels').map(
+            (String k0, Object? e0) =>
+                MapEntry(k0, _readString(e0, 'CatalogStudyTag.labels')),
+          ),
+        ),
+        status: CatalogStatus.fromWire(
+          _readString(json['status'], 'CatalogStudyTag.status'),
+        ),
+      );
+
+  /// Değişmez, bütün listede tekil anahtar: `^[a-z][a-z0-9_]{1,39}$`.
+  final String key;
+
+  /// Üst kaydın anahtarı; düzeyde yoktur. Değişmez.
+  final String? parentKey;
+
+  /// Aynı üst kaydın altındaki sıra (küçükten büyüğe).
+  final int position;
+
+  final Map<String, String> labels;
+
+  final CatalogStatus status;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key': key,
+    if (parentKey case final value?) 'parent_key': value,
+    'position': position,
+    'labels': <String, Object?>{
+      for (final e0 in labels.entries) e0.key: e0.value,
+    },
+    'status': status.wire,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CatalogStudyTag &&
+          key == other.key &&
+          parentKey == other.parentKey &&
+          position == other.position &&
+          _deepEquals(labels, other.labels) &&
+          status == other.status;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    key,
+    parentKey,
+    position,
+    _deepHash(labels),
+    status,
+  ]);
 }
 
 /// Tür bayrakları (ADR-0037 §1). Olmayan bayrak `false`tur.

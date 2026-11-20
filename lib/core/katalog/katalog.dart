@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/katalog/ders_konu.dart';
 
 /// Katalog anahtarının biçimi (sözleşme: `EventTypeKey`, `InterestKey`).
 /// Sunucudan, adresten ya da başka bir yerden gelen anahtar girdi kabul
@@ -14,8 +15,9 @@ bool katalogAnahtariMi(String anahtar) => _anahtarBicimi.hasMatch(anahtar);
 /// bileşeni olmayan sade etkinlik.
 const String genelTurAnahtari = 'general';
 
-/// Sunucudan okunan katalog (ADR-0024 §1): ilgi alanları ve aktif türlerin
-/// güncel sürümleri. Yalnızca bellektedir (ADR-0006).
+/// Sunucudan okunan katalog (ADR-0024 §1): ilgi alanları, aktif türlerin
+/// güncel sürümleri ve ders/konu etiketleri. Yalnızca bellektedir
+/// (ADR-0006).
 ///
 /// Katalog herkese aynıdır ve kişisel veri taşımaz; yine de sunucudan
 /// gelen girdidir: biçimi geçersiz anahtar taşıyan kayıt atlanır, türler
@@ -32,6 +34,9 @@ final class Katalog {
           ham.eventTypes.where((t) => t.version >= 1),
           (t) => t.key,
         ),
+      ),
+      dersKonu = DersKonuAgaci(
+        _tekil<CatalogStudyTag>(ham.studyTags, (e) => e.key),
       );
 
   /// Kataloğun bütününün sürümü (`catalog_version`).
@@ -42,6 +47,10 @@ final class Katalog {
 
   /// Sunucunun döndürdüğü türler (güncel sürümleri), sunucunun sırasıyla.
   final List<CatalogEventType> turler;
+
+  /// Eğitim içeriğinin ders ve konu etiketleri (`study_tags`), ağaç
+  /// halinde (ADR-0033 §2).
+  final DersKonuAgaci dersKonu;
 
   late final Map<String, CatalogEventType> _turler = {
     for (final t in turler) t.key: t,

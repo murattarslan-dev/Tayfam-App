@@ -1262,5 +1262,175 @@
       "version": 1,
       "definition": {}
     }
+  ],
+  "study_tags": [
+    {
+      "key": "yks",
+      "position": 10,
+      "labels": {
+        "tr": "YKS"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs",
+      "position": 20,
+      "labels": {
+        "tr": "LGS"
+      },
+      "status": "active"
+    },
+    {
+      "key": "kpss",
+      "position": 30,
+      "labels": {
+        "tr": "KPSS"
+      },
+      "status": "retired"
+    },
+    {
+      "key": "yks_other",
+      "parent_key": "yks",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_fizik",
+      "parent_key": "yks",
+      "position": 20,
+      "labels": {
+        "tr": "Fizik"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_matematik",
+      "parent_key": "yks",
+      "position": 10,
+      "labels": {
+        "tr": "Matematik"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_eski_ders",
+      "parent_key": "yks",
+      "position": 30,
+      "labels": {
+        "tr": "Eski ders"
+      },
+      "status": "retired"
+    },
+    {
+      "key": "yks_matematik_integral",
+      "parent_key": "yks_matematik",
+      "position": 20,
+      "labels": {
+        "tr": "İntegral"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_matematik_turev",
+      "parent_key": "yks_matematik",
+      "position": 10,
+      "labels": {
+        "tr": "Türev"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_matematik_eski",
+      "parent_key": "yks_matematik",
+      "position": 30,
+      "labels": {
+        "tr": "Eski konu"
+      },
+      "status": "retired"
+    },
+    {
+      "key": "yks_matematik_other",
+      "parent_key": "yks_matematik",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_fizik_other",
+      "parent_key": "yks_fizik",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_eski_ders_ozet",
+      "parent_key": "yks_eski_ders",
+      "position": 10,
+      "labels": {
+        "tr": "Eski dersin konusu"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_eski_ders_other",
+      "parent_key": "yks_eski_ders",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs_turkce",
+      "parent_key": "lgs",
+      "position": 10,
+      "labels": {
+        "tr": "Türkçe"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs_turkce_other",
+      "parent_key": "lgs_turkce",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs_other",
+      "parent_key": "lgs",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "kpss_tarih",
+      "parent_key": "kpss",
+      "position": 10,
+      "labels": {
+        "tr": "Tarih"
+      },
+      "status": "active"
+    },
+    {
+      "key": "kpss_other",
+      "parent_key": "kpss",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    }
   ]
 }
