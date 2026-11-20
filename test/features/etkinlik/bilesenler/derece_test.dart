@@ -104,14 +104,14 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe derece bileşenini kullanan türler var', () {
-    final kosu = turBilesenleri(
-      testTuru('running'),
-    ).where((b) => b.kind == 'ranking').single;
+    final kosu = turBilesenleri(testTuru('running'))
+        .where((b) => b.kind == 'ranking')
+        .single;
     expect(bilesenAnahtari(kosu), 'ranking');
     expect(BilesenParametreleri(kosu.params).metin('source'), 'duration');
-    final yuzme = turBilesenleri(
-      testTuru('swimming'),
-    ).where((b) => b.kind == 'ranking').single;
+    final yuzme = turBilesenleri(testTuru('swimming'))
+        .where((b) => b.kind == 'ranking')
+        .single;
     expect(BilesenParametreleri(yuzme.params).metin('metric'), 'duration');
   });
 
@@ -205,7 +205,10 @@ void main() {
         final not = _bolumde(find.text(m.bilesen_ranking_olcumden));
         await _gorunurYap(tester, not);
         expect(not, findsOneWidget);
-        expect(_bolumde(find.text(m.bilesen_ranking_sira(1))), findsNWidgets(2));
+        expect(
+          _bolumde(find.text(m.bilesen_ranking_sira(1))),
+          findsNWidgets(2),
+        );
         final deger = m.katalog_birimli_deger('30,5', m.katalog_birim_minute);
         expect(_bolumde(find.text(deger)), findsNWidgets(2));
         expect(_bolumde(find.text(m.bilesen_ranking_sen)), findsOneWidget);
@@ -287,14 +290,14 @@ void main() {
         expect(_bolumde(find.text(m.bilesen_ranking_sen)), findsNothing);
 
         await _dokun(tester, find.byTooltip(m.bilesen_ranking_duzelt));
-        expect(
-          _formda(find.text(m.bilesen_ranking_kisi_sec)),
-          findsNothing,
-        );
+        expect(_formda(find.text(m.bilesen_ranking_kisi_sec)), findsNothing);
         expect(_formda(find.text('1:02:03,45')), findsOneWidget);
         await tester.enterText(_degerAlani, '1:75');
         await _dokun(tester, _kaydet);
-        expect(_formda(find.text(m.bilesen_ranking_sure_bicim)), findsOneWidget);
+        expect(
+          _formda(find.text(m.bilesen_ranking_sure_bicim)),
+          findsOneWidget,
+        );
         expect(tasima.giden('PUT', dereceKaydiYolu), isEmpty);
 
         await tester.enterText(_degerAlani, '62:03,4');

@@ -69,9 +69,7 @@ DereceGirdisi sureGirdisiniOku(String metin) {
   if (temiz.isEmpty) return (deger: null, hata: DereceHatasi.zorunlu);
   final parcalar = temiz.split(':');
   if (parcalar.length > 3) return (deger: null, hata: DereceHatasi.bicim);
-  final son = RegExp(
-    r'^(\d+)(?:[.,](\d*))?$',
-  ).firstMatch(parcalar.last);
+  final son = RegExp(r'^(\d+)(?:[.,](\d*))?$').firstMatch(parcalar.last);
   if (son == null) return (deger: null, hata: DereceHatasi.bicim);
   final tamKisim = son.group(1)!;
   final kesir = son.group(2) ?? '';
@@ -186,11 +184,7 @@ String? dereceDegeriMetni(AppLocalizations m, EventRanking derece, double v) {
       _ => null,
     };
   }
-  final sayi = olcumSayisi(
-    m,
-    v,
-    derece.decimals.clamp(0, olcumBasamakEnCok),
-  );
+  final sayi = olcumSayisi(m, v, derece.decimals.clamp(0, olcumBasamakEnCok));
   final birim = katalogBirimAdi(m, derece.unit);
   return birim == null ? sayi : m.katalog_birimli_deger(sayi, birim);
 }

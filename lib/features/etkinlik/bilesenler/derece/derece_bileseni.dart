@@ -7,7 +7,6 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/kullanici/kendi_kimligim.dart';
-import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
@@ -242,11 +241,12 @@ class _DereceBolumuState extends ConsumerState<DereceBolumu> {
   }
 }
 
-/// Derecede bir satır: sıra, ad (dokununca profili), kişinin kendisiyse
+/// Derecede bir satır: sıra, ad, kişinin kendisiyse
 /// "Sen" etiketi ve değer; [degisebilir] ise "Düzelt" ve "Dereceyi
 /// kaldır". Sıra, ad ve değer ekran okuyucuda tek öğe okunur ("1. sıra,
-/// Ayşe, 1 saat 2 dakika 3,45 saniye"). Dar ekranda ve büyük yazıda değer
-/// adın altına iner.
+/// Ayşe, 1 saat 2 dakika 3,45 saniye"); bu yüzden ad profile dokunma alanı
+/// değildir (ayrı ekran okuyucu öğesi olurdu). Dar ekranda ve büyük yazıda
+/// değer adın altına iner.
 class DereceSatiri extends StatelessWidget {
   const DereceSatiri({
     super.key,
@@ -321,12 +321,9 @@ class DereceSatiri extends StatelessWidget {
                           runSpacing: TayfamSpacing.s4,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            KisiyeDokun(
+                            KullaniciAdiMetni(
                               kullaniciId: kullaniciId,
-                              child: KullaniciAdiMetni(
-                                kullaniciId: kullaniciId,
-                                style: yazi.bodyLarge,
-                              ),
+                              style: yazi.bodyLarge,
                             ),
                             if (benim) Etiket(metin: m.bilesen_ranking_sen),
                           ],
