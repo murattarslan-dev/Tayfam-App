@@ -539,6 +539,32 @@ final class EtkinlikDeposu {
     userId: kullaniciId,
   );
 
+  /// `GET .../components/{component_key}/celebration`: kutlama bileşeni
+  /// (#243), çağıranın gördüğü haliyle (gizliyse kazanan yok).
+  Future<EventCelebration> kutlama(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventCelebration(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../celebration`: kazananı ilan eder. Kaynaklı kutlamada
+  /// [kazananlar] `null`dır (gövde boş nesne); elle seçilende 1–10 kişi.
+  Future<EventCelebration> kutlamayiIlanEt(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    List<String>? kazananlar,
+  ) => _api.announceEventCelebration(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventCelebrationRequest(winnerIds: kazananlar),
+  );
+
   /// `GET .../components/{component_key}/goal`: hedef bileşeni (#234),
   /// çağıranın gördüğü haliyle (hassas ölçümde ilerleme gizli olabilir).
   Future<EventGoal> hedef(

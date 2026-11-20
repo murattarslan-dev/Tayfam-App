@@ -4066,6 +4066,112 @@
       }
     }
   },
+  "bilesen_celebration_ad": "Kutlama",
+  "@bilesen_celebration_ad": {
+    "description": "Kutlama bileşeninin adı (katalogda adı yoksa bölüm başlığı)."
+  },
+  "bilesen_celebration_kazanan": "Kazanan",
+  "@bilesen_celebration_kazanan": {
+    "description": "Kutlama kartında tek kazananın üstündeki başlık."
+  },
+  "bilesen_celebration_kazananlar": "Kazananlar",
+  "@bilesen_celebration_kazananlar": {
+    "description": "Kutlama kartında birden çok kazananın üstündeki başlık."
+  },
+  "bilesen_celebration_masada": "{ad} · {masa}",
+  "@bilesen_celebration_masada": {
+    "description": "Yazboz kaynağında kazananın adı ve kazandığı masa.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      },
+      "masa": {
+        "type": "String",
+        "example": "Masa 1"
+      }
+    }
+  },
+  "bilesen_celebration_takim": "Takım",
+  "@bilesen_celebration_takim": {
+    "description": "Adı okunamayan kazanan takım."
+  },
+  "bilesen_celebration_ilan_edildi": "İlan edildi: {zaman}",
+  "@bilesen_celebration_ilan_edildi": {
+    "description": "Kutlama kartında ilk ilanın zamanı; zaman tarih ve saattir.",
+    "placeholders": {
+      "zaman": {
+        "type": "String",
+        "example": "20 Kasım 2026 14:05"
+      }
+    }
+  },
+  "bilesen_celebration_baslamadi": "Kazanan, etkinlik başladıktan sonra ilan edilir.",
+  "@bilesen_celebration_baslamadi": {
+    "description": "Etkinlik başlamadan kutlama bölümündeki metin."
+  },
+  "bilesen_celebration_sonuc_bekleniyor": "Sonuç belli olunca kazanan burada görünür.",
+  "@bilesen_celebration_sonuc_bekleniyor": {
+    "description": "Kaynaklı kutlamada kaynak henüz sonuçlanmadıysa."
+  },
+  "bilesen_celebration_ilan_bekleniyor": "Organizatör kazananı ilan edince burada görünür.",
+  "@bilesen_celebration_ilan_bekleniyor": {
+    "description": "Elle seçilen kutlamada henüz ilan yoksa."
+  },
+  "bilesen_celebration_gizli": "Bu etkinliğin sonucu gizli tutuluyor (hassas bir ölçümden hesaplanıyor ya da katılım gizli); kazanan gösterilmez.",
+  "@bilesen_celebration_gizli": {
+    "description": "Gizli kutlamada (hidden) kazanan yerine nedeni."
+  },
+  "bilesen_celebration_guncelle": "Bu kutlamayı göstermek için uygulamayı güncelle.",
+  "@bilesen_celebration_guncelle": {
+    "description": "Kutlamanın kaynağı uygulamanın bu sürümünce tanınmıyorsa."
+  },
+  "bilesen_celebration_ilan_notu": "İlan edince tayfanın üyelerine bildirim gider; ilan geri alınamaz.",
+  "@bilesen_celebration_ilan_notu": {
+    "description": "İlan edebilen kişiye ilan düğmesinin üstündeki not."
+  },
+  "bilesen_celebration_ilan_et": "Kazananı ilan et",
+  "@bilesen_celebration_ilan_et": {
+    "description": "Kaynaklı kutlamada ilan düğmesi ve ilan onayının eylemi."
+  },
+  "bilesen_celebration_sec": "Kazananı seç ve ilan et",
+  "@bilesen_celebration_sec": {
+    "description": "Elle seçilen kutlamada ilk ilan düğmesi ve form başlığı."
+  },
+  "bilesen_celebration_degistir": "Kazananları değiştir",
+  "@bilesen_celebration_degistir": {
+    "description": "İlan edilmiş elle seçilen kutlamada seçimi değiştirme düğmesi ve form başlığı."
+  },
+  "bilesen_celebration_ilan_onay": "Kazanan ilan edilsin mi?",
+  "@bilesen_celebration_ilan_onay": {
+    "description": "İlan onayının başlığı."
+  },
+  "bilesen_celebration_ilan_onay_aciklama": "İlan geri alınamaz. Tayfanın üyelerine uygulama içi bildirim gider; bildirimde kazananın adı yazmaz.",
+  "@bilesen_celebration_ilan_onay_aciklama": {
+    "description": "İlan onayının açıklaması."
+  },
+  "bilesen_celebration_sec_aciklama": "Etkinliğe gelenlerden en fazla {enCok} kişi seç.",
+  "@bilesen_celebration_sec_aciklama": {
+    "description": "Kazanan seçme formunun açıklaması.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "bilesen_celebration_sec_hata": "En az bir kişi seç.",
+  "@bilesen_celebration_sec_hata": {
+    "description": "Kazanan seçmeden gönderilince."
+  },
+  "bilesen_celebration_gelen_yok": "Etkinliğe \"Geliyorum\" diyen kimse yok.",
+  "@bilesen_celebration_gelen_yok": {
+    "description": "Kazanan seçme formunda seçilecek kişi yoksa."
+  },
+  "bilesen_celebration_bildirim": "Bir etkinlikte kazanan ilan edildi",
+  "@bilesen_celebration_bildirim": {
+    "description": "Uygulama içi bildirim (celebration); kazananı ve içeriği adlandırmaz."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -12735,6 +12841,18 @@
   "hata_ranking_from_measure": "Bu derece ölçümden hesaplanır; elle girilmez.",
   "@hata_ranking_from_measure": {
     "description": "Hata kodu `ranking-from-measure`. Ölçümden hesaplanan dereceye elle yazılmak istenince."
+  },
+  "hata_celebration_not_started": "Kazanan, etkinlik başladıktan sonra ilan edilir.",
+  "@hata_celebration_not_started": {
+    "description": "Hata kodu `celebration-not-started`. Etkinlik başlamadan ilan edilmek istenince."
+  },
+  "hata_celebration_no_winner": "Henüz kazanan yok; sonuç belli olunca ilan edebilirsin.",
+  "@hata_celebration_no_winner": {
+    "description": "Hata kodu `celebration-no-winner`. Kaynaklı kutlamada kaynağın kazananı yokken ilan edilince."
+  },
+  "hata_celebration_not_participant": "Seçtiğin kişilerden biri etkinliğe katılmıyor.",
+  "@hata_celebration_not_participant": {
+    "description": "Hata kodu `celebration-not-participant`. Gelmeyen ya da katılımı doğrulanmamış kişi kazanan seçilince."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {

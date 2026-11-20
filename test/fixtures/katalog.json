@@ -733,6 +733,70 @@
       }
     },
     {
+      "key": "car_meet",
+      "interest_keys": [
+        "automotive"
+      ],
+      "labels": {
+        "tr": "Araç buluşması"
+      },
+      "icon": "directions_car",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "celebration"
+          }
+        ]
+      }
+    },
+    {
+      "key": "games_other",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Oyun (diğer)"
+      },
+      "icon": "sports_esports",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": "manual"
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "player",
+              "tables": true,
+              "presets": [
+                "free"
+              ],
+              "guests": true
+            }
+          },
+          {
+            "kind": "celebration",
+            "params": {
+              "source": "scoreboard"
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

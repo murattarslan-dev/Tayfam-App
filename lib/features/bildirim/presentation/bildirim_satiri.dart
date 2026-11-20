@@ -400,7 +400,8 @@ enum BildirimKategorisi {
 BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.eventCreated ||
   NotificationType.eventUpdated ||
-  NotificationType.rsvpPromoted => BildirimKategorisi.etkinlik,
+  NotificationType.rsvpPromoted ||
+  NotificationType.celebration => BildirimKategorisi.etkinlik,
   NotificationType.dmRequest ||
   NotificationType.dmMessage => BildirimKategorisi.mesaj,
   NotificationType.friendRequest ||
@@ -459,6 +460,8 @@ String bildirimMetni(
   NotificationType.dmRequest => m.bildirim_mesaj_istegi,
   NotificationType.dmMessage => m.bildirim_mesaj,
   NotificationType.dataExportReady => m.bildirim_veri_hazir,
+  // Kazananı adlandırmaz (kesin kural 7); kutlamayı etkinlik gösterir.
+  NotificationType.celebration => m.bilesen_celebration_bildirim,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -487,5 +490,6 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.dmRequest ||
   NotificationType.dmMessage => Icons.chat_bubble_outline,
   NotificationType.dataExportReady => Icons.download_outlined,
+  NotificationType.celebration => Icons.emoji_events_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };

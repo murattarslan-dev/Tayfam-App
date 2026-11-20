@@ -22,6 +22,8 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - `data_export` (veri dışa aktarma hazır): "Verilerimi indir" ekranı.
 /// - `safety_alert` (güvenlik kişisi alarmı): güvenlik kişisi olduğun
 ///   etkinlikler ekranı.
+/// - `celebration` (kazanan ilan edildi): hedef etkinliğin detayı; kutlamayı
+///   orada bileşen gösterir, bildirim kazananı adlandırmaz.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını

@@ -1,8 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart' as api;
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_hedefi.dart';
+import 'package:tayfam/features/bildirim/presentation/bildirim_satiri.dart';
+import 'package:tayfam/l10n/app_localizations.dart';
 
 import 'sahteler.dart';
 
@@ -255,6 +258,28 @@ void main() {
       expect(sabitUyariMi(alarm(okundu: true)), isFalse);
       // Etkinlik bilgisi yoktur (güvenlik kişisi etkinliği görmez).
       expect(uyariEtkinligi(alarm()), isNull);
+    });
+  });
+
+  group('kutlama (celebration)', () {
+    final kutlama = _bildirim(tur: 'celebration', aktor: kisiId);
+
+    test('etkinliğin detayını açıyor; kişi adı kullanılmıyor', () {
+      expect(kutlama.type, api.NotificationType.celebration);
+      expect(
+        bildirimAdresi(kutlama),
+        Adresler.etkinlik(bildirimTayfaId, hedefId),
+      );
+      expect(bildirimKisisi(kutlama), isNull);
+    });
+
+    test('metin kazananı ve içeriği adlandırmıyor', () {
+      final m = lookupAppLocalizations(const Locale('tr'));
+      expect(
+        bildirimMetni(m, kutlama, kisi: 'Ayşe'),
+        m.bilesen_celebration_bildirim,
+      );
+      expect(bildirimKategorisi(kutlama.type), BildirimKategorisi.etkinlik);
     });
   });
 }

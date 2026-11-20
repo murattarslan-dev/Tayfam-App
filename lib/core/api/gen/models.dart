@@ -8707,6 +8707,246 @@ final class EventCancelRequest {
   int get hashCode => Object.hashAll(<Object?>[reason]);
 }
 
+/// Bir etkinliğin bir kutlama bileşeni, isteği yapanın gördüğü haliyle (#255).
+final class EventCelebration {
+  const EventCelebration({
+    this.source,
+    this.sourceKind,
+    required this.winners,
+    required this.hidden,
+    required this.announced,
+    this.announcedAt,
+    required this.callerCanAnnounce,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventCelebration.fromJson(Map<String, Object?> json) =>
+      EventCelebration(
+        source: switch (json['source']) {
+          null => null,
+          final Object v => _readString(v, 'EventCelebration.source'),
+        },
+        sourceKind: switch (json['source_kind']) {
+          null => null,
+          final Object v => EventCelebrationSourceKind.fromWire(
+            _readString(v, 'EventCelebration.source_kind'),
+          ),
+        },
+        winners: List<EventCelebrationWinner>.unmodifiable(
+          _readList(json['winners'], 'EventCelebration.winners').map(
+            (Object? e0) => EventCelebrationWinner.fromJson(
+              _readObject(e0, 'EventCelebration.winners'),
+            ),
+          ),
+        ),
+        hidden: _readBool(json['hidden'], 'EventCelebration.hidden'),
+        announced: _readBool(json['announced'], 'EventCelebration.announced'),
+        announcedAt: switch (json['announced_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'EventCelebration.announced_at'),
+        },
+        callerCanAnnounce: _readBool(
+          json['caller_can_announce'],
+          'EventCelebration.caller_can_announce',
+        ),
+      );
+
+  /// Kazananların okunduğu bileşenin anahtarı; elle seçilen kazananlarda yoktur.
+  final String? source;
+
+  /// Kaynak bileşenin türü; elle seçilen kazananlarda yoktur.
+  final EventCelebrationSourceKind? sourceKind;
+
+  /// Kazananlar; kaynağın sırasıyla (masalar sırayla, eşitlikte yer sırası) ya da elle verilen sırayla. Kaynak sonuçlanmadıysa, elle seçilmediyse ve gizliyken boş.
+  final List<EventCelebrationWinner> winners;
+
+  /// Kaynak sonucunu herkesten gizliyor (hassas ölçüm) ya da türün katılımı hassas.
+  final bool hidden;
+
+  /// Organizatör kazananı ilan etti.
+  final bool announced;
+
+  /// Yalnızca ilan edildiyse; ilk ilan zamanı.
+  final DateTime? announcedAt;
+
+  /// Şu an ilan edebilirsiniz (organizatör, moderatör, yönetici; etkinlik başlamış, iptal değil, donmamış, tayfa salt okunur değil). Kazanan olup olmadığı `winners`'tadır.
+  final bool callerCanAnnounce;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (source case final value?) 'source': value,
+    if (sourceKind case final value?) 'source_kind': value.wire,
+    'winners': <Object?>[for (final e0 in winners) e0.toJson()],
+    'hidden': hidden,
+    'announced': announced,
+    if (announcedAt case final value?)
+      'announced_at': value.toUtc().toIso8601String(),
+    'caller_can_announce': callerCanAnnounce,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventCelebration &&
+          source == other.source &&
+          sourceKind == other.sourceKind &&
+          _deepEquals(winners, other.winners) &&
+          hidden == other.hidden &&
+          announced == other.announced &&
+          announcedAt == other.announcedAt &&
+          callerCanAnnounce == other.callerCanAnnounce;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    source,
+    sourceKind,
+    _deepHash(winners),
+    hidden,
+    announced,
+    announcedAt,
+    callerCanAnnounce,
+  ]);
+}
+
+final class EventCelebrationRequest {
+  const EventCelebrationRequest({this.winnerIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventCelebrationRequest.fromJson(Map<String, Object?> json) =>
+      EventCelebrationRequest(
+        winnerIds: switch (json['winner_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'EventCelebrationRequest.winner_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'EventCelebrationRequest.winner_ids'),
+            ),
+          ),
+        },
+      );
+
+  /// Yalnızca kaynaksız kutlamada, elle seçilen kazananlar (etkinliğin katılımcıları, 1–10 farklı kişi).
+  ///
+  /// Kısıtlar: maxItems: 10.
+  final List<String>? winnerIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (winnerIds case final value?)
+      'winner_ids': <Object?>[for (final e0 in value) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventCelebrationRequest &&
+          _deepEquals(winnerIds, other.winnerIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(winnerIds)]);
+}
+
+/// Kaynak bileşenin türü; elle seçilen kazananlarda yoktur.
+enum EventCelebrationSourceKind {
+  scoreboard('scoreboard'),
+  bracket('bracket'),
+  ranking('ranking'),
+  vote('vote'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventCelebrationSourceKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('EventCelebrationSourceKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventCelebrationSourceKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Bir kazanan: `user_id`, `team_id` ve `guest_id`'den tam olarak biri vardır.
+final class EventCelebrationWinner {
+  const EventCelebrationWinner({
+    this.userId,
+    this.teamId,
+    this.guestId,
+    this.tableId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventCelebrationWinner.fromJson(Map<String, Object?> json) =>
+      EventCelebrationWinner(
+        userId: switch (json['user_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventCelebrationWinner.user_id'),
+        },
+        teamId: switch (json['team_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventCelebrationWinner.team_id'),
+        },
+        guestId: switch (json['guest_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventCelebrationWinner.guest_id'),
+        },
+        tableId: switch (json['table_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventCelebrationWinner.table_id'),
+        },
+      );
+
+  final String? userId;
+
+  /// Kaynağın oturttuğu takım bileşenindeki takım.
+  final String? teamId;
+
+  /// Etkinliğin misafir oyuncusu; takma adı etkinliğin misafirlerinden okunur.
+  final String? guestId;
+
+  /// Yalnızca yazboz kaynağında; kazanılan masa.
+  final String? tableId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (userId case final value?) 'user_id': value,
+    if (teamId case final value?) 'team_id': value,
+    if (guestId case final value?) 'guest_id': value,
+    if (tableId case final value?) 'table_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventCelebrationWinner &&
+          userId == other.userId &&
+          teamId == other.teamId &&
+          guestId == other.guestId &&
+          tableId == other.tableId;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[userId, teamId, guestId, tableId]);
+}
+
 final class EventComponentChoiceState {
   const EventComponentChoiceState({
     required this.param,
@@ -15978,6 +16218,11 @@ final class Notification {
   /// halde "Döndüm" demedi; `tayfa_id` ve `actor_id` yoktur, içerik ve
   /// konum taşımaz; etkinliği `GET /v1/me/safety-shares` verir.
   /// Susturma uygulanmaz, push gider.
+  /// `celebration` (#255): organizatör (`actor_id`) hedef etkinliğin
+  /// bir kutlama bileşeninde kazananı ilan etti; kutlama başına bir
+  /// kez, tayfanın ilan eden dışındaki etkin üyelerine. Kazananı
+  /// adlandırmaz; kutlamayı bileşenin ucu verir. Yalnızca uygulama
+  /// içi, push gitmez.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -16500,6 +16745,11 @@ enum NotificationTargetType {
 /// halde "Döndüm" demedi; `tayfa_id` ve `actor_id` yoktur, içerik ve
 /// konum taşımaz; etkinliği `GET /v1/me/safety-shares` verir.
 /// Susturma uygulanmaz, push gider.
+/// `celebration` (#255): organizatör (`actor_id`) hedef etkinliğin
+/// bir kutlama bileşeninde kazananı ilan etti; kutlama başına bir
+/// kez, tayfanın ilan eden dışındaki etkin üyelerine. Kazananı
+/// adlandırmaz; kutlamayı bileşenin ucu verir. Yalnızca uygulama
+/// içi, push gitmez.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -16525,6 +16775,7 @@ enum NotificationType {
   dataExportReady('data_export_ready'),
   friendSuggestion('friend_suggestion'),
   safetyAlert('safety_alert'),
+  celebration('celebration'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
