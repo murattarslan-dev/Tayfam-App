@@ -494,7 +494,21 @@
       "definition": {
         "flags": {
           "album_notice": true
-        }
+        },
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": {
+                "organizer_choice": [
+                  "manual",
+                  "random"
+                ],
+                "default": "random"
+              }
+            }
+          }
+        ]
       }
     },
     {

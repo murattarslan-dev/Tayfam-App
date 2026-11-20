@@ -587,6 +587,47 @@ final class EtkinlikDeposu {
     itemId: maddeId,
   );
 
+  /// `GET .../components/{component_key}/teams`: takım kurma bileşeni
+  /// (#236); takımlar sırasıyla.
+  Future<EventTeams> takimlar(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventTeams(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../teams`: takımları elle kurar; mevcut takımların yerini alır
+  /// (boş liste takımları kaldırır).
+  Future<EventTeams> takimlariElleKur(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventTeamsRequest istek,
+  ) => _api.replaceEventTeams(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
+  /// `POST .../teams/generate`: takımları katılımcılardan sunucu kurar
+  /// (rastgele ya da gönderilen seviyelere göre dengeli). Seviyeler
+  /// saklanmaz.
+  Future<EventTeams> takimlariOlustur(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    EventTeamsGenerateRequest istek,
+  ) => _api.generateEventTeams(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: istek,
+  );
+
   /// `GET .../photos`: albümün bir sayfası, eskiden yeniye (Tayfam-Api
   /// ADR-0028 §3). Yanıt link taşımaz; linkler `POST /v1/media/urls`.
   Future<Sayfa<EventPhoto>> albumFotograflari(

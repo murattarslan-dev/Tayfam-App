@@ -2656,6 +2656,182 @@
       }
     }
   },
+  "bilesen_teams_ad": "Takımlar",
+  "@bilesen_teams_ad": {
+    "description": "Takım kurma bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
+  },
+  "bilesen_teams_mod_baslik": "Takımlar nasıl kurulsun?",
+  "@bilesen_teams_mod_baslik": {
+    "description": "Sihirbazda takım kurma modunun seçimi (organizatöre bırakılmışsa)."
+  },
+  "bilesen_teams_mod_random": "Rastgele",
+  "@bilesen_teams_mod_random": {
+    "description": "Takım kurma modu `random`: sihirbazdaki seçenek ve detaydaki bölüm başlığının sağındaki not."
+  },
+  "bilesen_teams_mod_balanced": "Dengeli",
+  "@bilesen_teams_mod_balanced": {
+    "description": "Takım kurma modu `balanced` (organizatörün verdiği seviyelere göre): seçenek ve bölüm notu."
+  },
+  "bilesen_teams_mod_manual": "Elle",
+  "@bilesen_teams_mod_manual": {
+    "description": "Takım kurma modu `manual` (organizatör kendisi kurar): seçenek ve bölüm notu."
+  },
+  "bilesen_teams_yok": "Takımlar henüz kurulmadı.",
+  "@bilesen_teams_yok": {
+    "description": "Takım kurulmamışken bölümdeki boş durum metni."
+  },
+  "bilesen_teams_kur": "Takımları kur",
+  "@bilesen_teams_kur": {
+    "description": "Takımları sunucunun kurduğu düğme (rastgele ve dengeli mod) ve seviye formunun onay düğmesi."
+  },
+  "bilesen_teams_yeniden_kur": "Yeniden kur",
+  "@bilesen_teams_yeniden_kur": {
+    "description": "Takımlar kuruluyken yeniden kurma düğmesi ve onay penceresinin onay düğmesi."
+  },
+  "bilesen_teams_yeniden_onay": "Takımlar yeniden kurulsun mu?",
+  "@bilesen_teams_yeniden_onay": {
+    "description": "Rastgele modda takımlar kuruluyken yeniden kurma onayının başlığı."
+  },
+  "bilesen_teams_yeniden_aciklama": "Yeni takımlar şimdikilerin yerini alır; takım adları sırasıyla korunur.",
+  "@bilesen_teams_yeniden_aciklama": {
+    "description": "Yeniden kurmanın mevcut takımların yerini aldığını anlatan metin (onay penceresi ve seviye formu)."
+  },
+  "bilesen_teams_elle_duzenle": "Elle düzenle",
+  "@bilesen_teams_elle_duzenle": {
+    "description": "Takımları elle kurma formunu açan düğme."
+  },
+  "bilesen_teams_elle_baslik": "Takımları düzenle",
+  "@bilesen_teams_elle_baslik": {
+    "description": "Elle kurma formunun başlığı."
+  },
+  "bilesen_teams_takimlar": "Takımlar",
+  "@bilesen_teams_takimlar": {
+    "description": "Elle kurma formundaki takımlar bölümünün başlığı."
+  },
+  "bilesen_teams_kisi_siniri": "Bir takımda en çok {enCok} kişi olabilir.",
+  "@bilesen_teams_kisi_siniri": {
+    "description": "Elle kurma formunda takım başına kişi sınırı (tanımda takım sayısı ve büyüklüğü birlikte verilmişse).",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_teams_hepsi_kalkar": "Takım yok: kaydedersen takımlar kaldırılır.",
+  "@bilesen_teams_hepsi_kalkar": {
+    "description": "Elle kurma formunda bütün takımlar çıkarılınca görünen bilgi."
+  },
+  "bilesen_teams_ad_alani": "Takım {sira} adı (isteğe bağlı)",
+  "@bilesen_teams_ad_alani": {
+    "description": "Elle kurma formunda takımın adı alanı.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_teams_takim_no": "Takım {sira}",
+  "@bilesen_teams_takim_no": {
+    "description": "Adı olmayan takımın sırasıyla görünen adı; adı olan takımda numarası.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_teams_takim_cikar": "Takımı çıkar (Takım {sira})",
+  "@bilesen_teams_takim_cikar": {
+    "description": "Elle kurma formunda takımı çıkaran ikon düğmesinin ipucu; üyeleri takımsız kalır.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_teams_takim_dolu": "Bu takımda en çok {enCok} kişi olabilir; birini başka takıma al.",
+  "@bilesen_teams_takim_dolu": {
+    "description": "Elle kurma formunda kişi sınırını aşan takımın hatası.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_teams_takim_ekle": "Takım ekle",
+  "@bilesen_teams_takim_ekle": {
+    "description": "Elle kurma formunda yeni takım ekleyen düğme."
+  },
+  "bilesen_teams_kisiler": "Kişiler",
+  "@bilesen_teams_kisiler": {
+    "description": "Elle kurma formundaki kişiler bölümünün başlığı."
+  },
+  "bilesen_teams_kisinin_takimi": "Takımı",
+  "@bilesen_teams_kisinin_takimi": {
+    "description": "Elle kurma formunda kişinin takım seçiminin ekran okuyucu etiketi."
+  },
+  "bilesen_teams_takimsiz": "Takımsız",
+  "@bilesen_teams_takimsiz": {
+    "description": "Elle kurma formunda kişinin hiçbir takımda olmadığı seçenek."
+  },
+  "bilesen_teams_seviye_baslik": "Seviyeleri ver",
+  "@bilesen_teams_seviye_baslik": {
+    "description": "Dengeli kurma formunun başlığı."
+  },
+  "bilesen_teams_seviye_aciklama": "1 başlangıç, 5 en güçlü. Seçmediğin kişi 3 sayılır. Seviyeler yalnızca bu kurulumda kullanılır, hiçbir yerde saklanmaz.",
+  "@bilesen_teams_seviye_aciklama": {
+    "description": "Dengeli kurma formunun açıklaması."
+  },
+  "bilesen_teams_seviye_alani": "Seviyesi",
+  "@bilesen_teams_seviye_alani": {
+    "description": "Dengeli kurma formunda kişinin seviye seçiminin ekran okuyucu etiketi."
+  },
+  "bilesen_teams_seviye": "Seviye {seviye}",
+  "@bilesen_teams_seviye": {
+    "description": "Dengeli kurma formunda seviye seçeneği (1–5).",
+    "placeholders": {
+      "seviye": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_teams_gelen_yok": "Henüz kimse \"Geliyorum\" demedi.",
+  "@bilesen_teams_gelen_yok": {
+    "description": "Takım formlarında katılımcı yokken görünen bilgi."
+  },
+  "bilesen_teams_senin": "Senin takımın",
+  "@bilesen_teams_senin": {
+    "description": "Çağıranın takımını işaretleyen etiket (yalnızca renkle anlatılmaz)."
+  },
+  "bilesen_teams_kisi_sayisi": "{adet, plural, =0{Kimse yok} other{{adet} kişi}}",
+  "@bilesen_teams_kisi_sayisi": {
+    "description": "Takımdaki kişi sayısı.",
+    "placeholders": {
+      "adet": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_teams_ozet": "{takim} · {kisi}",
+  "@bilesen_teams_ozet": {
+    "description": "Adı olan takımda numarası ve kişi sayısı: \"Takım 2 · 3 kişi\".",
+    "placeholders": {
+      "takim": {
+        "type": "String",
+        "example": "Takım 2"
+      },
+      "kisi": {
+        "type": "String",
+        "example": "3 kişi"
+      }
+    }
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."
@@ -11217,6 +11393,18 @@
   "hata_measurement_scope": "Bu ölçüm bu şekilde girilemez. Sayfayı yenileyip tekrar dene.",
   "@hata_measurement_scope": {
     "description": "Hata kodu `measurement-scope`. Toplam ölçüme kişisel değer (ya da tersi) yazılmaya çalışılınca görünen hata."
+  },
+  "hata_teams_manual": "Bu etkinlikte takımlar elle kuruluyor. Sayfayı yenileyip tekrar dene.",
+  "@hata_teams_manual": {
+    "description": "Hata kodu `teams-manual`. Elle kurulan takım bileşeninde takımları sunucuya kurdurmaya çalışınca görünen hata."
+  },
+  "hata_teams_too_few": "Takım kurmak için yeterli katılımcı yok.",
+  "@hata_teams_too_few": {
+    "description": "Hata kodu `teams-too-few`. İki katılımcıdan ya da takım sayısından az katılımcıyla takım kurulmaya çalışınca görünen hata."
+  },
+  "hata_teams_not_participant": "Etkinliğe katılmayan biri takıma eklenemez.",
+  "@hata_teams_not_participant": {
+    "description": "Hata kodu `teams-not-participant`. Elle kurmada katılımcı olmayan biri takıma eklenince görünen hata."
   },
   "bilesen_vocab_sozlukten": "Tayfanın sözlüğünden",
   "@bilesen_vocab_sozlukten": {

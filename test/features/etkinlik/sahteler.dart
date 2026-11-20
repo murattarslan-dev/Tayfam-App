@@ -64,6 +64,8 @@ const String hedefDegeriYolu = '$hedefYolu/target';
 const String programYolu = '$bilesenYolu/schedule';
 const String programMaddeleriYolu = '$programYolu/items';
 const String programMaddesiYolu = '$programMaddeleriYolu/{item_id}';
+const String takimYolu = '$bilesenYolu/teams';
+const String takimKurmaYolu = '$takimYolu/generate';
 
 /// Tayfa sözlüğü uçları (#232, Tayfam-Api #244).
 const String sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
@@ -298,6 +300,30 @@ Map<String, Object?> programJson({
 }) => {
   'items': maddeler,
   'max_items': enCok,
+  'caller_can_edit': duzenleyebilir,
+};
+
+/// Örnek `EventTeam` JSON'u (takım kurma bileşeni, #236).
+Map<String, Object?> takimJson({
+  required String id,
+  required int sira,
+  List<String> uyeler = const [],
+  String? ad,
+}) => {'id': id, 'position': sira, 'name': ?ad, 'member_ids': uyeler};
+
+/// Örnek `EventTeams` JSON'u (takım kurma bileşeni, #236): verilmezse
+/// takımsız, rastgele modda, düzenleyemeyen üye gözüyle.
+Map<String, Object?> takimlarJson({
+  List<Map<String, Object?>> takimlar = const [],
+  String mod = 'random',
+  int? takimSayisi,
+  int? takimBuyuklugu,
+  bool duzenleyebilir = false,
+}) => {
+  'teams': takimlar,
+  'mode': mod,
+  'team_count': ?takimSayisi,
+  'team_size': ?takimBuyuklugu,
   'caller_can_edit': duzenleyebilir,
 };
 

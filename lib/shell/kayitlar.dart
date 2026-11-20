@@ -65,6 +65,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // schedule (#235)
   ProgramBileseni(),
   // teams (#236)
+  TakimBileseni(),
   // draw (#237)
   // scoreboard (#238)
   // bracket (#239)

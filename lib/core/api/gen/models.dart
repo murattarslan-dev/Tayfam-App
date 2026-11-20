@@ -10260,6 +10260,348 @@ enum EventStatus {
   }
 }
 
+final class EventTeam {
+  const EventTeam({
+    required this.id,
+    required this.position,
+    this.name,
+    required this.memberIds,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventTeam.fromJson(Map<String, Object?> json) => EventTeam(
+    id: _readString(json['id'], 'EventTeam.id'),
+    position: _readInt(json['position'], 'EventTeam.position'),
+    name: switch (json['name']) {
+      null => null,
+      final Object v => _readString(v, 'EventTeam.name'),
+    },
+    memberIds: List<String>.unmodifiable(
+      _readList(
+        json['member_ids'],
+        'EventTeam.member_ids',
+      ).map((Object? e0) => _readString(e0, 'EventTeam.member_ids')),
+    ),
+  );
+
+  final String id;
+
+  /// Takımın sırası; adsız takımı istemci sırasıyla adlandırır.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 50.
+  final int position;
+
+  /// 1–40 karakter; adsız takımda yoktur.
+  final String? name;
+
+  /// Takımdaki ve hâlâ katılımcı olan kişilerin kullanıcı kimlikleri.
+  final List<String> memberIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'position': position,
+    if (name case final value?) 'name': value,
+    'member_ids': <Object?>[for (final e0 in memberIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventTeam &&
+          id == other.id &&
+          position == other.position &&
+          name == other.name &&
+          _deepEquals(memberIds, other.memberIds);
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[id, position, name, _deepHash(memberIds)]);
+}
+
+/// Bir etkinliğin bir takım bileşeni, isteği yapanın gördüğü haliyle (#248).
+final class EventTeams {
+  const EventTeams({
+    required this.teams,
+    required this.mode,
+    this.teamCount,
+    this.teamSize,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventTeams.fromJson(Map<String, Object?> json) => EventTeams(
+    teams: List<EventTeam>.unmodifiable(
+      _readList(json['teams'], 'EventTeams.teams').map(
+        (Object? e0) => EventTeam.fromJson(_readObject(e0, 'EventTeams.teams')),
+      ),
+    ),
+    mode: EventTeamsMode.fromWire(_readString(json['mode'], 'EventTeams.mode')),
+    teamCount: switch (json['team_count']) {
+      null => null,
+      final Object v => _readInt(v, 'EventTeams.team_count'),
+    },
+    teamSize: switch (json['team_size']) {
+      null => null,
+      final Object v => _readInt(v, 'EventTeams.team_size'),
+    },
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventTeams.caller_can_edit',
+    ),
+  );
+
+  /// Sıraya göre; takım kurulmamışsa boş.
+  final List<EventTeam> teams;
+
+  /// Bu etkinlikte geçerli mod (organizatörün seçimi ya da tanımdaki değer; tanım vermezse random).
+  final EventTeamsMode mode;
+
+  /// Bileşenin `team_count` parametresi; tanım vermezse yoktur.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 50.
+  final int? teamCount;
+
+  /// Bileşenin `team_size` parametresi; tanım vermezse yoktur.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 50.
+  final int? teamSize;
+
+  /// Şu an takımları kurabilirsiniz (organizatör, moderatör, yönetici; susturulmamış; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'teams': <Object?>[for (final e0 in teams) e0.toJson()],
+    'mode': mode.wire,
+    if (teamCount case final value?) 'team_count': value,
+    if (teamSize case final value?) 'team_size': value,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventTeams &&
+          _deepEquals(teams, other.teams) &&
+          mode == other.mode &&
+          teamCount == other.teamCount &&
+          teamSize == other.teamSize &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(teams),
+    mode,
+    teamCount,
+    teamSize,
+    callerCanEdit,
+  ]);
+}
+
+final class EventTeamsGenerateRequest {
+  const EventTeamsGenerateRequest({this.levels});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventTeamsGenerateRequest.fromJson(Map<String, Object?> json) =>
+      EventTeamsGenerateRequest(
+        levels: switch (json['levels']) {
+          null => null,
+          final Object v =>
+            List<EventTeamsGenerateRequestLevelsItem>.unmodifiable(
+              _readList(v, 'EventTeamsGenerateRequest.levels').map(
+                (Object? e0) => EventTeamsGenerateRequestLevelsItem.fromJson(
+                  _readObject(e0, 'EventTeamsGenerateRequest.levels'),
+                ),
+              ),
+            ),
+        },
+      );
+
+  /// Yalnızca `balanced` modda kullanılır; kişi başına en fazla bir. Saklanmaz.
+  ///
+  /// Kısıtlar: maxItems: 500.
+  final List<EventTeamsGenerateRequestLevelsItem>? levels;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (levels case final value?)
+      'levels': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventTeamsGenerateRequest && _deepEquals(levels, other.levels);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(levels)]);
+}
+
+final class EventTeamsGenerateRequestLevelsItem {
+  const EventTeamsGenerateRequestLevelsItem({
+    required this.userId,
+    required this.level,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventTeamsGenerateRequestLevelsItem.fromJson(
+    Map<String, Object?> json,
+  ) => EventTeamsGenerateRequestLevelsItem(
+    userId: _readString(
+      json['user_id'],
+      'EventTeamsGenerateRequestLevelsItem.user_id',
+    ),
+    level: _readInt(json['level'], 'EventTeamsGenerateRequestLevelsItem.level'),
+  );
+
+  final String userId;
+
+  /// 1 (başlangıç) – 5 (en güçlü).
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 5.
+  final int level;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'level': level,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventTeamsGenerateRequestLevelsItem &&
+          userId == other.userId &&
+          level == other.level;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, level]);
+}
+
+/// Bu etkinlikte geçerli mod (organizatörün seçimi ya da tanımdaki değer; tanım vermezse random).
+enum EventTeamsMode {
+  random('random'),
+  balanced('balanced'),
+  manual('manual'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventTeamsMode(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventTeamsMode.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventTeamsMode fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class EventTeamsRequest {
+  const EventTeamsRequest({required this.teams});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventTeamsRequest.fromJson(Map<String, Object?> json) =>
+      EventTeamsRequest(
+        teams: List<EventTeamsRequestTeamsItem>.unmodifiable(
+          _readList(json['teams'], 'EventTeamsRequest.teams').map(
+            (Object? e0) => EventTeamsRequestTeamsItem.fromJson(
+              _readObject(e0, 'EventTeamsRequest.teams'),
+            ),
+          ),
+        ),
+      );
+
+  /// Sırasıyla; boş liste takımları kaldırır.
+  ///
+  /// Kısıtlar: maxItems: 50.
+  final List<EventTeamsRequestTeamsItem> teams;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'teams': <Object?>[for (final e0 in teams) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventTeamsRequest && _deepEquals(teams, other.teams);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(teams)]);
+}
+
+final class EventTeamsRequestTeamsItem {
+  const EventTeamsRequestTeamsItem({this.name, this.memberIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventTeamsRequestTeamsItem.fromJson(Map<String, Object?> json) =>
+      EventTeamsRequestTeamsItem(
+        name: switch (json['name']) {
+          null => null,
+          final Object v => _readString(v, 'EventTeamsRequestTeamsItem.name'),
+        },
+        memberIds: switch (json['member_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'EventTeamsRequestTeamsItem.member_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'EventTeamsRequestTeamsItem.member_ids'),
+            ),
+          ),
+        },
+      );
+
+  /// İsteğe bağlı; boş metin adsız takım.
+  ///
+  /// Kısıtlar: maxLength: 40.
+  final String? name;
+
+  /// Katılımcıların kullanıcı kimlikleri; bir kişi en fazla bir takımda.
+  final List<String>? memberIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (name case final value?) 'name': value,
+    if (memberIds case final value?)
+      'member_ids': <Object?>[for (final e0 in value) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventTeamsRequestTeamsItem &&
+          name == other.name &&
+          _deepEquals(memberIds, other.memberIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[name, _deepHash(memberIds)]);
+}
+
 /// Kurallar açmadakiyle aynıdır; tür ve tür sürümü değişmez. `fields`
 /// verilirse alan değerlerinin TAMAMI yerine geçer (etkinliğin kendi tür
 /// sürümüne göre doğrulanır); `{}` bütün değerleri kaldırır.
