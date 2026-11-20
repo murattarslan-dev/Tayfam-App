@@ -40,7 +40,11 @@ Future<void> kronometreAc(
 ///   saniye") ama her saniye anons etmez; yalnızca süre dolunca "Süre
 ///   doldu." duyurulur. Durum renkle birlikte metinle de söylenir.
 class KronometreEkrani extends ConsumerStatefulWidget {
-  const KronometreEkrani({super.key, required this.baslik, required this.tanim});
+  const KronometreEkrani({
+    super.key,
+    required this.baslik,
+    required this.tanim,
+  });
 
   final String baslik;
 
@@ -395,7 +399,9 @@ class _SatrancSaati extends StatelessWidget {
                 ),
             ],
           ),
-          Expanded(child: _Taraf(d: d, n: n, taraf: 1)),
+          Expanded(
+            child: _Taraf(d: d, n: n, taraf: 1),
+          ),
         ],
       ),
     );

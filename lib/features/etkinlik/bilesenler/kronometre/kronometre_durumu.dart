@@ -47,9 +47,10 @@ final class KronometreTanimi {
   factory KronometreTanimi.oku(BilesenParametreleri p) {
     final mod =
         KronometreModu.oku(
-          p.metin('mode', izinli: {
-            for (final m in KronometreModu.values) m.wire,
-          }),
+          p.metin(
+            'mode',
+            izinli: {for (final m in KronometreModu.values) m.wire},
+          ),
         ) ??
         KronometreModu.geriSayim;
     final onAyarlar = <int>[];

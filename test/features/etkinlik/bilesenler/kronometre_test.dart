@@ -531,9 +531,8 @@ void main() {
     testWidgets('organizatöre bırakılan mod sihirbazda seçilir', (
       tester,
     ) async {
-      final bilesen = turBilesenleri(
-        testTuru('ornek_bilesenler'),
-      ).firstWhere((b) => b.kind == 'timer');
+      final bilesen = turBilesenleri(testTuru('ornek_bilesenler'))
+          .firstWhere((b) => b.kind == 'timer');
       (String, String)? secilen;
       final form = const KronometreBileseni().formBolumu(
         BilesenBaglami(
