@@ -80,6 +80,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // questions (#244)
   SorularBileseni(),
   // timer (#245)
+  KronometreBileseni(),
   // pool_link (#256)
 ];
 

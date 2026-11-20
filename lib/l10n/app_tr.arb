@@ -4306,6 +4306,124 @@
   "@bilesen_questions_sikayet_sorusu": {
     "description": "Etkinlik sorusunu şikâyet ederken sayfanın sorusu."
   },
+  "bilesen_timer_ad": "Kronometre",
+  "@bilesen_timer_ad": {
+    "description": "Kronometre bileşeninin (timer) adı; katalogda adı yoksa bölüm başlığı ve ekran başlığı."
+  },
+  "bilesen_timer_mod_baslik": "Kronometre nasıl çalışsın?",
+  "@bilesen_timer_mod_baslik": {
+    "description": "Sihirbazda kronometre modunun seçim başlığı."
+  },
+  "bilesen_timer_mod_countdown": "Geri sayım",
+  "@bilesen_timer_mod_countdown": {
+    "description": "Kronometre modu: belirli süreden sıfıra sayar."
+  },
+  "bilesen_timer_mod_stopwatch": "İleri sayım",
+  "@bilesen_timer_mod_stopwatch": {
+    "description": "Kronometre modu: sıfırdan yukarı sayar."
+  },
+  "bilesen_timer_mod_chess_clock": "Satranç saati",
+  "@bilesen_timer_mod_chess_clock": {
+    "description": "Kronometre modu: iki oyunculu satranç saati."
+  },
+  "bilesen_timer_giris_aciklama": "Yalnızca bu cihazda çalışır; dokununca tam ekran açılır.",
+  "@bilesen_timer_giris_aciklama": {
+    "description": "Etkinlik detayındaki kronometre giriş kartının açıklaması."
+  },
+  "bilesen_timer_baslat": "Başlat",
+  "@bilesen_timer_baslat": {
+    "description": "Kronometreyi başlatan düğme."
+  },
+  "bilesen_timer_duraklat": "Duraklat",
+  "@bilesen_timer_duraklat": {
+    "description": "Çalışan kronometreyi duraklatan düğme."
+  },
+  "bilesen_timer_devam": "Devam et",
+  "@bilesen_timer_devam": {
+    "description": "Duraklatılmış kronometreyi sürdüren düğme."
+  },
+  "bilesen_timer_sifirla": "Sıfırla",
+  "@bilesen_timer_sifirla": {
+    "description": "Kronometreyi başa döndüren düğme."
+  },
+  "bilesen_timer_sure": "Süre",
+  "@bilesen_timer_sure": {
+    "description": "Kronometrede süre seçiminin başlığı."
+  },
+  "bilesen_timer_sure_degistir": "Süreyi değiştir",
+  "@bilesen_timer_sure_degistir": {
+    "description": "Satranç saatinde süre seçimini açan ikon düğmesinin ekran okuyucu adı."
+  },
+  "bilesen_timer_elle": "Süreyi elle gir",
+  "@bilesen_timer_elle": {
+    "description": "Kronometrede elle süre girme bağlantısı ve formun başlığı."
+  },
+  "bilesen_timer_elle_alani": "Süre",
+  "@bilesen_timer_elle_alani": {
+    "description": "Elle süre girme alanının etiketi."
+  },
+  "bilesen_timer_elle_ornek": "Örneğin 1:30 ya da 90 (saniye).",
+  "@bilesen_timer_elle_ornek": {
+    "description": "Elle süre girme alanının yardım metni."
+  },
+  "bilesen_timer_elle_hata": "Süreyi 1:30 ya da 90 gibi yaz; 1 saniye ile 24 saat arasında olsun.",
+  "@bilesen_timer_elle_hata": {
+    "description": "Elle girilen süre okunamadığında alanın altındaki hata."
+  },
+  "bilesen_timer_bitti": "Süre doldu.",
+  "@bilesen_timer_bitti": {
+    "description": "Geri sayım ya da satranç saatinde süre dolunca gösterilen ve ekran okuyucuda duyurulan metin."
+  },
+  "bilesen_timer_kalan": "Kalan süre: {sure}",
+  "@bilesen_timer_kalan": {
+    "description": "Geri sayımdaki büyük rakamların ekran okuyucu metni.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "4 dakika 3 saniye"
+      }
+    }
+  },
+  "bilesen_timer_gecen": "Geçen süre: {sure}",
+  "@bilesen_timer_gecen": {
+    "description": "İleri sayımdaki büyük rakamların ekran okuyucu metni.",
+    "placeholders": {
+      "sure": {
+        "type": "String",
+        "example": "4 dakika 3 saniye"
+      }
+    }
+  },
+  "bilesen_timer_ust_oyuncu": "Üstteki oyuncu",
+  "@bilesen_timer_ust_oyuncu": {
+    "description": "Satranç saatinde ekranın üst yarısındaki (ters dönen) oyuncu."
+  },
+  "bilesen_timer_alt_oyuncu": "Alttaki oyuncu",
+  "@bilesen_timer_alt_oyuncu": {
+    "description": "Satranç saatinde ekranın alt yarısındaki oyuncu."
+  },
+  "bilesen_timer_taraf_okunusu": "{oyuncu}, kalan süre {sure}",
+  "@bilesen_timer_taraf_okunusu": {
+    "description": "Satranç saatinde bir oyuncunun dokunma alanının ekran okuyucu metni.",
+    "placeholders": {
+      "oyuncu": {
+        "type": "String",
+        "example": "Alttaki oyuncu"
+      },
+      "sure": {
+        "type": "String",
+        "example": "4 dakika 3 saniye"
+      }
+    }
+  },
+  "bilesen_timer_sira_sende": "Sıra sende",
+  "@bilesen_timer_sira_sende": {
+    "description": "Satranç saatinde saati işleyen oyuncunun alanındaki durum."
+  },
+  "bilesen_timer_hamle_ipucu": "Hamleni bitirince kendi tarafına dokun.",
+  "@bilesen_timer_hamle_ipucu": {
+    "description": "Satranç saati başlamadan iki alanda da gösterilen ipucu."
+  },
   "bilesen_vehicles_ad": "Araçlar",
   "@bilesen_vehicles_ad": {
     "description": "Araçlar bileşeninin adı (katalogda adı yoksa): etkinlik detayındaki bölüm başlığı."

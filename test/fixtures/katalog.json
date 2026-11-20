@@ -797,6 +797,36 @@
       }
     },
     {
+      "key": "word_guess",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Kelime tahmin oyunu"
+      },
+      "icon": "timer",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "timer",
+            "params": {
+              "mode": "countdown",
+              "presets": [
+                60,
+                90,
+                120
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "talk",
       "interest_keys": [
         "general"

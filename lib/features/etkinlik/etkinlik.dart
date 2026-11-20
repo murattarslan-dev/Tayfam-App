@@ -27,6 +27,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/gunluk/gunluk_bileseni.dart'
     show GunlukBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/hedef/hedef_bileseni.dart'
     show HedefBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/kronometre/kronometre_bileseni.dart'
+    show KronometreBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/kura/kura_bileseni.dart'
     show KuraBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/kutlama/kutlama_bileseni.dart'
