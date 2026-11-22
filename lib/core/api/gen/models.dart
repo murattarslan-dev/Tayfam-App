@@ -921,6 +921,7 @@ final class Answer {
     required this.voted,
     required this.createdAt,
     required this.updatedAt,
+    required this.photoUploadIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -939,6 +940,12 @@ final class Answer {
     voted: _readBool(json['voted'], 'Answer.voted'),
     createdAt: _readDateTime(json['created_at'], 'Answer.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Answer.updated_at'),
+    photoUploadIds: List<String>.unmodifiable(
+      _readList(
+        json['photo_upload_ids'],
+        'Answer.photo_upload_ids',
+      ).map((Object? e0) => _readString(e0, 'Answer.photo_upload_ids')),
+    ),
   );
 
   final String id;
@@ -963,6 +970,11 @@ final class Answer {
   /// Her düzenleme ve geri almada değişir; oylar değiştirmez.
   final DateTime updatedAt;
 
+  /// Soru havuzunda 0–2 fotoğraf (`question_pool` yüklemesi), sırasıyla. Soru-Cevap'ta boştur.
+  ///
+  /// Kısıtlar: maxItems: 2.
+  final List<String> photoUploadIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -974,6 +986,7 @@ final class Answer {
     'voted': voted,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
+    'photo_upload_ids': <Object?>[for (final e0 in photoUploadIds) e0],
   };
 
   @override
@@ -988,7 +1001,8 @@ final class Answer {
           voteCount == other.voteCount &&
           voted == other.voted &&
           createdAt == other.createdAt &&
-          updatedAt == other.updatedAt;
+          updatedAt == other.updatedAt &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -1001,6 +1015,7 @@ final class Answer {
     voted,
     createdAt,
     updatedAt,
+    _deepHash(photoUploadIds),
   ]);
 }
 
@@ -1008,6 +1023,7 @@ final class AnswerCreateRequest {
   const AnswerCreateRequest({
     required this.body,
     required this.clientRequestId,
+    this.photoUploadIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -1020,19 +1036,35 @@ final class AnswerCreateRequest {
           json['client_request_id'],
           'AnswerCreateRequest.client_request_id',
         ),
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'AnswerCreateRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'AnswerCreateRequest.photo_upload_ids'),
+            ),
+          ),
+        },
       );
 
-  /// Boşluklar atıldıktan sonra 1–10000 karakter; satır sonu olabilir.
+  /// Boşluklar atıldıktan sonra 1–10000 karakter; satır sonu olabilir. Soru havuzunda fotoğraf varsa boş olabilir.
   ///
-  /// Kısıtlar: minLength: 1; maxLength: 10000.
+  /// Kısıtlar: maxLength: 10000.
   final String body;
 
   final String clientRequestId;
+
+  /// Yalnızca soru havuzunda; 0–2 fotoğraf (`question_pool` yüklemesi).
+  ///
+  /// Kısıtlar: maxItems: 2.
+  final List<String>? photoUploadIds;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'body': body,
     'client_request_id': clientRequestId,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
   };
 
   @override
@@ -1040,10 +1072,15 @@ final class AnswerCreateRequest {
       identical(this, other) ||
       other is AnswerCreateRequest &&
           body == other.body &&
-          clientRequestId == other.clientRequestId;
+          clientRequestId == other.clientRequestId &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[body, clientRequestId]);
+  int get hashCode => Object.hashAll(<Object?>[
+    body,
+    clientRequestId,
+    _deepHash(photoUploadIds),
+  ]);
 }
 
 final class AnswerList {
@@ -1086,8 +1123,9 @@ final class AnswerList {
       Object.hashAll(<Object?>[_deepHash(answers), nextPageToken]);
 }
 
+/// Cevabın içeriğinin yeni hali; soru havuzunda `photo_upload_ids` yoksa ya da `[]` ise fotoğraflar kalkar (dosyaları silinir).
 final class AnswerUpdateRequest {
-  const AnswerUpdateRequest({required this.body});
+  const AnswerUpdateRequest({required this.body, this.photoUploadIds});
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -1095,21 +1133,42 @@ final class AnswerUpdateRequest {
   factory AnswerUpdateRequest.fromJson(Map<String, Object?> json) =>
       AnswerUpdateRequest(
         body: _readString(json['body'], 'AnswerUpdateRequest.body'),
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'AnswerUpdateRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'AnswerUpdateRequest.photo_upload_ids'),
+            ),
+          ),
+        },
       );
 
-  /// Kısıtlar: minLength: 1; maxLength: 10000.
+  /// Boşluklar atıldıktan sonra 1–10000 karakter; soru havuzunda fotoğraf varsa boş olabilir.
+  ///
+  /// Kısıtlar: maxLength: 10000.
   final String body;
 
+  /// Kısıtlar: maxItems: 2.
+  final List<String>? photoUploadIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
-  Map<String, Object?> toJson() => <String, Object?>{'body': body};
+  Map<String, Object?> toJson() => <String, Object?>{
+    'body': body,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
+  };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AnswerUpdateRequest && body == other.body;
+      other is AnswerUpdateRequest &&
+          body == other.body &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[body]);
+  int get hashCode =>
+      Object.hashAll(<Object?>[body, _deepHash(photoUploadIds)]);
 }
 
 /// `location`: buluşma noktasına 300 m içinde check-in. `online`:
@@ -12195,6 +12254,102 @@ final class EventPhotoList {
       Object.hashAll(<Object?>[_deepHash(photos), nextPageToken]);
 }
 
+/// Bir etkinliğin soru havuzu bağlantısı bileşeni (#271).
+final class EventPoolLinks {
+  const EventPoolLinks({
+    required this.questions,
+    required this.maxLinks,
+    required this.callerCanEdit,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPoolLinks.fromJson(Map<String, Object?> json) => EventPoolLinks(
+    questions: List<PoolLinkedQuestion>.unmodifiable(
+      _readList(json['questions'], 'EventPoolLinks.questions').map(
+        (Object? e0) => PoolLinkedQuestion.fromJson(
+          _readObject(e0, 'EventPoolLinks.questions'),
+        ),
+      ),
+    ),
+    maxLinks: _readInt(json['max_links'], 'EventPoolLinks.max_links'),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'EventPoolLinks.caller_can_edit',
+    ),
+  );
+
+  /// Kısıtlar: maxItems: 50.
+  final List<PoolLinkedQuestion> questions;
+
+  /// Bileşenin bağlayabileceği en fazla soru.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 50.
+  final int maxLinks;
+
+  /// Listeyi şu an değiştirebilirsiniz (organizatör yetkisi; etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanEdit;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'questions': <Object?>[for (final e0 in questions) e0.toJson()],
+    'max_links': maxLinks,
+    'caller_can_edit': callerCanEdit,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPoolLinks &&
+          _deepEquals(questions, other.questions) &&
+          maxLinks == other.maxLinks &&
+          callerCanEdit == other.callerCanEdit;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(questions), maxLinks, callerCanEdit]);
+}
+
+final class EventPoolLinksRequest {
+  const EventPoolLinksRequest({required this.questionIds});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventPoolLinksRequest.fromJson(Map<String, Object?> json) =>
+      EventPoolLinksRequest(
+        questionIds: List<String>.unmodifiable(
+          _readList(
+            json['question_ids'],
+            'EventPoolLinksRequest.question_ids',
+          ).map(
+            (Object? e0) =>
+                _readString(e0, 'EventPoolLinksRequest.question_ids'),
+          ),
+        ),
+      );
+
+  /// Bağlı soruların yeni hali, sırasıyla; boş dizi bütün bağları kaldırır.
+  ///
+  /// Kısıtlar: maxItems: 50; uniqueItems: true.
+  final List<String> questionIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'question_ids': <Object?>[for (final e0 in questionIds) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventPoolLinksRequest &&
+          _deepEquals(questionIds, other.questionIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(questionIds)]);
+}
+
 /// Bir etkinlik sorusu, isteği yapanın gördüğü haliyle (#256).
 final class EventQuestion {
   const EventQuestion({
@@ -15894,7 +16049,8 @@ final class HomeMetricValue {
 /// Ana sayfa bileşeni. `kind` istemciye bilgi içindir; anahtar
 /// listesi sunucunundur ve büyüyebilir (bugün `upcoming`,
 /// `announcements`, `polls`, `questions`, `stats`, `goal`,
-/// `countdown`, `champions`, `log_summary`, `daily`, `library`).
+/// `countdown`, `champions`, `log_summary`, `daily`, `library`,
+/// `question_pool`).
 final class HomeWidget {
   const HomeWidget({
     required this.key,
@@ -18804,7 +18960,7 @@ enum ModerationReportStatus {
   }
 }
 
-/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270).
+/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270). `question_pool` Eğitim soru havuzudur (#271): soruları `pool: question_pool` ile Soru-Cevap uçlarından, ana sayfa bileşeni ve `pool_link` etkinlik bileşeni.
 enum Module {
   announcements('announcements'),
   events('events'),
@@ -18812,6 +18968,7 @@ enum Module {
   polls('polls'),
   daily('daily'),
   library_('library'),
+  questionPool('question_pool'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -20721,6 +20878,119 @@ final class PollVoterList {
       Object.hashAll(<Object?>[_deepHash(voters), nextPageToken]);
 }
 
+/// Etkinliğe bağlı bir soru havuzu sorusu (#271).
+final class PoolLinkedQuestion {
+  const PoolLinkedQuestion({
+    required this.questionId,
+    this.authorUserId,
+    required this.body,
+    required this.subjectKey,
+    this.topicKey,
+    required this.photoUploadIds,
+    required this.answerCount,
+    required this.createdAt,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory PoolLinkedQuestion.fromJson(Map<String, Object?> json) =>
+      PoolLinkedQuestion(
+        questionId: _readString(
+          json['question_id'],
+          'PoolLinkedQuestion.question_id',
+        ),
+        authorUserId: switch (json['author_user_id']) {
+          null => null,
+          final Object v => _readString(v, 'PoolLinkedQuestion.author_user_id'),
+        },
+        body: _readString(json['body'], 'PoolLinkedQuestion.body'),
+        subjectKey: _readString(
+          json['subject_key'],
+          'PoolLinkedQuestion.subject_key',
+        ),
+        topicKey: switch (json['topic_key']) {
+          null => null,
+          final Object v => _readString(v, 'PoolLinkedQuestion.topic_key'),
+        },
+        photoUploadIds: List<String>.unmodifiable(
+          _readList(
+            json['photo_upload_ids'],
+            'PoolLinkedQuestion.photo_upload_ids',
+          ).map(
+            (Object? e0) =>
+                _readString(e0, 'PoolLinkedQuestion.photo_upload_ids'),
+          ),
+        ),
+        answerCount: _readInt(
+          json['answer_count'],
+          'PoolLinkedQuestion.answer_count',
+        ),
+        createdAt: _readDateTime(
+          json['created_at'],
+          'PoolLinkedQuestion.created_at',
+        ),
+      );
+
+  final String questionId;
+
+  /// Yazarın hesabı silindiyse yoktur ("Silinmiş kullanıcı").
+  final String? authorUserId;
+
+  /// Sorunun metni; fotoğrafı varsa boş olabilir.
+  final String body;
+
+  final String subjectKey;
+
+  /// Konu yoksa alan yoktur.
+  final String? topicKey;
+
+  /// Kısıtlar: maxItems: 2.
+  final List<String> photoUploadIds;
+
+  /// Görünen cevap sayısı.
+  final int answerCount;
+
+  final DateTime createdAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'question_id': questionId,
+    if (authorUserId case final value?) 'author_user_id': value,
+    'body': body,
+    'subject_key': subjectKey,
+    if (topicKey case final value?) 'topic_key': value,
+    'photo_upload_ids': <Object?>[for (final e0 in photoUploadIds) e0],
+    'answer_count': answerCount,
+    'created_at': createdAt.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PoolLinkedQuestion &&
+          questionId == other.questionId &&
+          authorUserId == other.authorUserId &&
+          body == other.body &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey &&
+          _deepEquals(photoUploadIds, other.photoUploadIds) &&
+          answerCount == other.answerCount &&
+          createdAt == other.createdAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    questionId,
+    authorUserId,
+    body,
+    subjectKey,
+    topicKey,
+    _deepHash(photoUploadIds),
+    answerCount,
+    createdAt,
+  ]);
+}
+
 final class Problem {
   const Problem({
     required this.type,
@@ -20966,6 +21236,10 @@ final class Question {
     required this.answerCount,
     required this.createdAt,
     required this.updatedAt,
+    required this.pool,
+    this.subjectKey,
+    this.topicKey,
+    required this.photoUploadIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -20989,6 +21263,21 @@ final class Question {
     answerCount: _readInt(json['answer_count'], 'Question.answer_count'),
     createdAt: _readDateTime(json['created_at'], 'Question.created_at'),
     updatedAt: _readDateTime(json['updated_at'], 'Question.updated_at'),
+    pool: QuestionPool.fromWire(_readString(json['pool'], 'Question.pool')),
+    subjectKey: switch (json['subject_key']) {
+      null => null,
+      final Object v => _readString(v, 'Question.subject_key'),
+    },
+    topicKey: switch (json['topic_key']) {
+      null => null,
+      final Object v => _readString(v, 'Question.topic_key'),
+    },
+    photoUploadIds: List<String>.unmodifiable(
+      _readList(
+        json['photo_upload_ids'],
+        'Question.photo_upload_ids',
+      ).map((Object? e0) => _readString(e0, 'Question.photo_upload_ids')),
+    ),
   );
 
   final String id;
@@ -20998,10 +21287,12 @@ final class Question {
   /// Yazarın hesabı silindiyse yoktur ("Silinmiş kullanıcı").
   final String? authorUserId;
 
+  /// Soru havuzunda boştur.
   final String title;
 
   final String body;
 
+  /// Soru havuzunda boştur.
   final List<Tag> tags;
 
   /// Görünen cevap sayısı.
@@ -21011,6 +21302,19 @@ final class Question {
 
   /// Her düzenleme ve geri almada değişir.
   final DateTime updatedAt;
+
+  final QuestionPool pool;
+
+  /// Soru havuzunda ders anahtarı (her zaman var); etiket sonradan emekliye ayrılmış olabilir.
+  final String? subjectKey;
+
+  /// Soru havuzunda konu anahtarı; yoksa alan yoktur.
+  final String? topicKey;
+
+  /// Soru havuzunda 0–2 fotoğraf (`question_pool` yüklemesi), sırasıyla; adreslerini `POST /v1/media/urls` verir. Soru-Cevap'ta boştur.
+  ///
+  /// Kısıtlar: maxItems: 2.
+  final List<String> photoUploadIds;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
@@ -21023,6 +21327,10 @@ final class Question {
     'answer_count': answerCount,
     'created_at': createdAt.toUtc().toIso8601String(),
     'updated_at': updatedAt.toUtc().toIso8601String(),
+    'pool': pool.wire,
+    if (subjectKey case final value?) 'subject_key': value,
+    if (topicKey case final value?) 'topic_key': value,
+    'photo_upload_ids': <Object?>[for (final e0 in photoUploadIds) e0],
   };
 
   @override
@@ -21037,7 +21345,11 @@ final class Question {
           _deepEquals(tags, other.tags) &&
           answerCount == other.answerCount &&
           createdAt == other.createdAt &&
-          updatedAt == other.updatedAt;
+          updatedAt == other.updatedAt &&
+          pool == other.pool &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -21050,15 +21362,23 @@ final class Question {
     answerCount,
     createdAt,
     updatedAt,
+    pool,
+    subjectKey,
+    topicKey,
+    _deepHash(photoUploadIds),
   ]);
 }
 
 final class QuestionCreateRequest {
   const QuestionCreateRequest({
-    required this.title,
+    this.pool,
+    this.title,
     this.body,
     this.tags,
     required this.clientRequestId,
+    this.subjectKey,
+    this.topicKey,
+    this.photoUploadIds,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -21066,7 +21386,16 @@ final class QuestionCreateRequest {
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory QuestionCreateRequest.fromJson(Map<String, Object?> json) =>
       QuestionCreateRequest(
-        title: _readString(json['title'], 'QuestionCreateRequest.title'),
+        pool: switch (json['pool']) {
+          null => null,
+          final Object v => QuestionPool.fromWire(
+            _readString(v, 'QuestionCreateRequest.pool'),
+          ),
+        },
+        title: switch (json['title']) {
+          null => null,
+          final Object v => _readString(v, 'QuestionCreateRequest.title'),
+        },
         body: switch (json['body']) {
           null => null,
           final Object v => _readString(v, 'QuestionCreateRequest.body'),
@@ -21083,19 +21412,39 @@ final class QuestionCreateRequest {
           json['client_request_id'],
           'QuestionCreateRequest.client_request_id',
         ),
+        subjectKey: switch (json['subject_key']) {
+          null => null,
+          final Object v => _readString(v, 'QuestionCreateRequest.subject_key'),
+        },
+        topicKey: switch (json['topic_key']) {
+          null => null,
+          final Object v => _readString(v, 'QuestionCreateRequest.topic_key'),
+        },
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'QuestionCreateRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'QuestionCreateRequest.photo_upload_ids'),
+            ),
+          ),
+        },
       );
 
-  /// Baştaki ve sondaki boşluklar atıldıktan sonra 10–150 karakter, tek satır.
-  ///
-  /// Kısıtlar: minLength: 10; maxLength: 150.
-  final String title;
+  /// Yoksa `qa`.
+  final QuestionPool? pool;
 
-  /// En fazla 10000 karakter; satır sonu olabilir.
+  /// `qa`'da zorunlu: baştaki ve sondaki boşluklar atıldıktan sonra 10–150 karakter, tek satır. Soru havuzunda verilmez.
+  ///
+  /// Kısıtlar: maxLength: 150.
+  final String? title;
+
+  /// En fazla 10000 karakter; satır sonu olabilir. Soru havuzunda metin ya da fotoğraftan biri zorunludur.
   ///
   /// Kısıtlar: maxLength: 10000.
   final String? body;
 
-  /// Etiket adları; her biri 1–30 karakter, tek satır, iç boşluklar teke iner.
+  /// Etiket adları; her biri 1–30 karakter, tek satır, iç boşluklar teke iner. Soru havuzunda verilmez.
   ///
   /// Kısıtlar: maxItems: 5.
   final List<String>? tags;
@@ -21103,26 +21452,58 @@ final class QuestionCreateRequest {
   /// İstemcinin her deneme için bir kez ürettiği, tekrar gönderimde aynen kullandığı UUID.
   final String clientRequestId;
 
+  /// Soru havuzunda zorunlu; seçilebilir (etkin) bir ders.
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? subjectKey;
+
+  /// Soru havuzunda isteğe bağlı; dersin altındaki seçilebilir bir konu.
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? topicKey;
+
+  /// Soru havuzunda 0–2 fotoğraf (`question_pool` yüklemesi).
+  ///
+  /// Kısıtlar: maxItems: 2.
+  final List<String>? photoUploadIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
-    'title': title,
+    if (pool case final value?) 'pool': value.wire,
+    if (title case final value?) 'title': value,
     if (body case final value?) 'body': value,
     if (tags case final value?) 'tags': <Object?>[for (final e0 in value) e0],
     'client_request_id': clientRequestId,
+    if (subjectKey case final value?) 'subject_key': value,
+    if (topicKey case final value?) 'topic_key': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
   };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is QuestionCreateRequest &&
+          pool == other.pool &&
           title == other.title &&
           body == other.body &&
           _deepEquals(tags, other.tags) &&
-          clientRequestId == other.clientRequestId;
+          clientRequestId == other.clientRequestId &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[title, body, _deepHash(tags), clientRequestId]);
+  int get hashCode => Object.hashAll(<Object?>[
+    pool,
+    title,
+    body,
+    _deepHash(tags),
+    clientRequestId,
+    subjectKey,
+    topicKey,
+    _deepHash(photoUploadIds),
+  ]);
 }
 
 final class QuestionList {
@@ -21166,9 +21547,54 @@ final class QuestionList {
       Object.hashAll(<Object?>[_deepHash(questions), nextPageToken]);
 }
 
+/// Sorunun havuzu (#271, ADR-0040 §2): `qa` tayfanın Soru-Cevap'ı
+/// (`qa` modülü), `question_pool` Eğitim soru havuzu (`question_pool`
+/// modülü). Sorunun havuzu değişmez; soru ve cevap uçları havuzun
+/// modülü kapalıyken `module-disabled` döner.
+enum QuestionPool {
+  qa('qa'),
+  questionPool('question_pool'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const QuestionPool(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('QuestionPool.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static QuestionPool fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Verilen alanlar değişir. `title` ve `tags` yalnızca Soru-Cevap'ta;
+/// `subject_key` (`topic_key` ile birlikte; `topic_key` yoksa konu
+/// kalkar) ve `photo_upload_ids` (fotoğrafların yeni hali; `[]` hepsini
+/// kaldırır, kaldırılan dosya silinir) yalnızca soru havuzunda
+/// geçerlidir; öbür havuzun alanı `invalid-request` döner.
+///
 /// Kısıtlar: minProperties: 1.
 final class QuestionUpdateRequest {
-  const QuestionUpdateRequest({this.title, this.body, this.tags});
+  const QuestionUpdateRequest({
+    this.title,
+    this.body,
+    this.tags,
+    this.subjectKey,
+    this.topicKey,
+    this.photoUploadIds,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -21191,6 +21617,23 @@ final class QuestionUpdateRequest {
             ),
           ),
         },
+        subjectKey: switch (json['subject_key']) {
+          null => null,
+          final Object v => _readString(v, 'QuestionUpdateRequest.subject_key'),
+        },
+        topicKey: switch (json['topic_key']) {
+          null => null,
+          final Object v => _readString(v, 'QuestionUpdateRequest.topic_key'),
+        },
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'QuestionUpdateRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'QuestionUpdateRequest.photo_upload_ids'),
+            ),
+          ),
+        },
       );
 
   /// Kısıtlar: minLength: 10; maxLength: 150.
@@ -21202,11 +21645,24 @@ final class QuestionUpdateRequest {
   /// Kısıtlar: maxItems: 5.
   final List<String>? tags;
 
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? subjectKey;
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? topicKey;
+
+  /// Kısıtlar: maxItems: 2.
+  final List<String>? photoUploadIds;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (title case final value?) 'title': value,
     if (body case final value?) 'body': value,
     if (tags case final value?) 'tags': <Object?>[for (final e0 in value) e0],
+    if (subjectKey case final value?) 'subject_key': value,
+    if (topicKey case final value?) 'topic_key': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
   };
 
   @override
@@ -21215,10 +21671,20 @@ final class QuestionUpdateRequest {
       other is QuestionUpdateRequest &&
           title == other.title &&
           body == other.body &&
-          _deepEquals(tags, other.tags);
+          _deepEquals(tags, other.tags) &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[title, body, _deepHash(tags)]);
+  int get hashCode => Object.hashAll(<Object?>[
+    title,
+    body,
+    _deepHash(tags),
+    subjectKey,
+    topicKey,
+    _deepHash(photoUploadIds),
+  ]);
 }
 
 final class Recurrence {
@@ -21656,6 +22122,8 @@ final class ReportCreateRequest {
 /// Topluluk Kuralları'na göre. `child_safety` (çocuk/genç güvenliği)
 /// kuyrukta öne geçer ve hemen platforma da gider; `staff_conduct`
 /// (yönetici/moderatörün yetkisini kullanımı) yalnızca platforma gider.
+/// `paid_tutoring` ücretli özel ders teklifi ya da reklamıdır (#271,
+/// ADR-0040 §2).
 enum ReportReason {
   harassment('harassment'),
   hateSpeech('hate_speech'),
@@ -21673,6 +22141,7 @@ enum ReportReason {
   copyright('copyright'),
   staffConduct('staff_conduct'),
   other('other'),
+  paidTutoring('paid_tutoring'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -24771,7 +25240,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 1; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover`, `log_photo`, `event_photo`, `chat_photo` ve `library_item` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
+  /// `cover`, `log_photo`, `event_photo`, `chat_photo`, `library_item` ve `question_pool` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -24844,7 +25313,9 @@ final class UploadCreated {
 }
 
 /// `library_item` ortak kütüphane kaleminin fotoğrafıdır (#270; kalem
-/// başına bir).
+/// başına bir). `question_pool` soru havuzundaki bir sorunun ya da
+/// cevabın fotoğrafıdır (#271; her birine en fazla iki; kişinin kendi
+/// notu ya da takıldığı soru).
 /// `cover` tayfa ya da etkinlik kapağıdır. `event_photo` etkinlik
 /// albümünün fotoğrafıdır (`POST .../events/{event_id}/photos`); kapak
 /// olarak kullanılamaz. `chat_photo` kanal mesajı fotoğrafı,
@@ -24859,6 +25330,7 @@ enum UploadPurpose {
   dmAttachment('dm_attachment'),
   reportEvidence('report_evidence'),
   libraryItem('library_item'),
+  questionPool('question_pool'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

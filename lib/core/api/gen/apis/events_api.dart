@@ -2992,6 +2992,73 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğe bağlı havuz soruları
+  ///
+  /// Bağlı ve görünen sorular, organizatörün sırasıyla. Silinen soru
+  /// listede görünmez (geri alınırsa yeniden görünür). Sorunun tamamı ve
+  /// cevapları `GET /v1/tayfas/{tayfa_id}/questions/{question_id}`
+  /// uçlarından okunur. Her etkin üyeye açıktır (susturulmuş üye de
+  /// okur). Bileşen uçlarının ortak kuralları geçerlidir.
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/pool-links`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventPoolLinks> getEventPoolLinks({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/pool-links',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventPoolLinks.fromJson(jsonObject(response, 'getEventPoolLinks'));
+  }
+
+  /// Bağlı soruları yazar (organizatör, moderatör, yönetici)
+  ///
+  /// Listenin tamamı değişir, verilen sırayla; boş `question_ids` bütün
+  /// bağları kaldırır. En fazla bileşenin `max_links` değeri (1–50)
+  /// kadar, tekrarsız (`invalid-request`, alan `question_ids`). Her soru
+  /// bu tayfanın soru havuzunda görünen bir soru olmalıdır
+  /// (`question-not-found`). Aynı liste hiçbir şeyi değiştirmez. Yazma
+  /// penceresi içinde (bitişten 7 gün sonra `component-frozen`).
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/pool-links`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventPoolLinks> setEventPoolLinks({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventPoolLinksRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/pool-links',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventPoolLinks.fromJson(jsonObject(response, 'setEventPoolLinks'));
+  }
+
   /// "Her şey yolunda mıydı?" cevabınız
   ///
   /// Cevap yoksa `answer` yoktur. Geri bildirim uçları, tayfaya Keşfet'ten

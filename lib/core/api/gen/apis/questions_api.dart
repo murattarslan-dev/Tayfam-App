@@ -11,17 +11,30 @@ final class QuestionsApi {
 
   /// Soruları listeler ve arar
   ///
-  /// `q` yoksa yeniden eskiye; `q` varsa başlıkta ve gövdede Türkçe tam
-  /// metin arama yapar (İ/ı doğru: "IŞIK" "ışık"ı, "izmir" "İzmir"i
-  /// bulur) ve en ilgiliden başlar. `tag_id` ikisiyle de süzer. Arama
-  /// metni gateway'de ve core'da log'a yazılmaz; `next_page_token`
-  /// metni taşımaz ve yalnızca aynı `q` ve `tag_id` ile geçerlidir.
+  /// Bir havuzun (`pool`) soruları: `qa` Soru-Cevap'tır (varsayılan),
+  /// `question_pool` Eğitim soru havuzudur (#271, ADR-0040 §2; modülü
+  /// `question_pool`, kapalıysa `module-disabled`). `q` yoksa yeniden
+  /// eskiye; `q` varsa başlıkta ve gövdede Türkçe tam metin arama yapar
+  /// (İ/ı doğru: "IŞIK" "ışık"ı, "izmir" "İzmir"i bulur) ve en ilgiliden
+  /// başlar. `tag_id` (yalnızca `qa`) ve `subject_key` / `topic_key`
+  /// (yalnızca `question_pool`; emekliye ayrılmış etiket de olur) ikisiyle
+  /// de süzer. Arama metni gateway'de ve core'da log'a yazılmaz;
+  /// `next_page_token` metni taşımaz ve yalnızca aynı havuz ve süzgeçlerle
+  /// geçerlidir.
   ///
   /// `GET /v1/tayfas/{tayfa_id}/questions`
   ///
   /// [q]: Arama metni; en fazla 100 karakter, tek satır.
   ///
   /// Kısıtlar: maxLength: 100.
+  ///
+  /// [subjectKey]: Ders anahtarı (`GET /v1/catalog` → `study_tags`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  ///
+  /// [topicKey]: Konu anahtarı; `subject_key` ile birlikte verilir.
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
   ///
   /// [pageSize]: Kısıtlar: minimum: 0; maximum: 100; varsayılan (sunucu): 0.
   ///
@@ -30,8 +43,11 @@ final class QuestionsApi {
   /// Kısıtlar: maxLength: 1024.
   Future<QuestionList> listQuestions({
     required String tayfaId,
+    QuestionPool? pool,
     String? q,
     String? tagId,
+    String? subjectKey,
+    String? topicKey,
     int? pageSize,
     String? pageToken,
   }) async {
@@ -40,8 +56,11 @@ final class QuestionsApi {
       pathTemplate: '/v1/tayfas/{tayfa_id}/questions',
       pathParams: {'tayfa_id': tayfaId},
       query: {
+        if (pool != null) 'pool': pool.wire,
         if (q != null) 'q': q,
         if (tagId != null) 'tag_id': tagId,
+        if (subjectKey != null) 'subject_key': subjectKey,
+        if (topicKey != null) 'topic_key': topicKey,
         if (pageSize != null) 'page_size': '$pageSize',
         if (pageToken != null) 'page_token': pageToken,
       },
@@ -58,6 +77,15 @@ final class QuestionsApi {
   /// Tayfada en fazla 200 etiket olabilir (`tag-limit`). Aynı
   /// `client_request_id` ile tekrar gönderilen istek yeni soru açmaz,
   /// ilk soruyu döndürür.
+  ///
+  /// Soru havuzunda (`pool: question_pool`, #271) başlık ve etiket
+  /// yoktur; ders (`subject_key`) zorunlu, konu (`topic_key`) isteğe
+  /// bağlıdır ve seçilebilir (etkin) olmalıdır (yoksa `invalid-request`,
+  /// alan adıyla). Metin ve/veya en fazla 2 fotoğraf (`question_pool`
+  /// yüklemesi; çağıranın, bu tayfanın, hazır ve başka içeriğe bağlı
+  /// olmayan) gerekir. Dosya/PDF ve bağlantı alanı yoktur; "çözüldü"
+  /// işareti yoktur. Yükleme hataları: `upload-not-found`,
+  /// `upload-not-ready`, `upload-in-use`.
   ///
   /// `POST /v1/tayfas/{tayfa_id}/questions`
   Future<Question> createQuestion({
