@@ -414,6 +414,7 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.friendSuggestion ||
   NotificationType.tayfaInvitation => BildirimKategorisi.arkadaslik,
   NotificationType.eventCancelled ||
+  NotificationType.libraryLoanOrphaned ||
   NotificationType.hikeOverdue ||
   NotificationType.safetyAlert ||
   NotificationType.tayfaWarned ||
@@ -427,6 +428,7 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.tayfaUnsuspended ||
   NotificationType.reportResolved ||
   NotificationType.dataExportReady ||
+  NotificationType.libraryDue ||
   NotificationType.unknown => BildirimKategorisi.marka,
 };
 
@@ -474,6 +476,9 @@ String bildirimMetni(
         : m.rozet_bildirim,
   // Başlık, tür ve yer yazılmaz (Tayfam-Api ADR-0038 §4).
   NotificationType.nowStarted => m.simdi_bildirim_satir(kisi),
+  // Kalemi ve karşı tarafı adlandırmaz; ayrıntı "Ödünçlerim"de.
+  NotificationType.libraryDue => m.kutuphane_bildirim_iade,
+  NotificationType.libraryLoanOrphaned => m.kutuphane_bildirim_sahipsiz,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -505,5 +510,7 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.celebration => Icons.emoji_events_outlined,
   NotificationType.badgeEarned => Icons.military_tech_outlined,
   NotificationType.nowStarted => Icons.bolt,
+  NotificationType.libraryDue ||
+  NotificationType.libraryLoanOrphaned => Icons.inventory_2_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };
