@@ -109,7 +109,8 @@ final class SoruHavuzuBileseni implements AnaSayfaBileseni {
   IconData get ikon => Icons.school_outlined;
 
   @override
-  String ad(BuildContext context) => AppLocalizations.of(context).soru_havuzu_ad;
+  String ad(BuildContext context) =>
+      AppLocalizations.of(context).soru_havuzu_ad;
 
   @override
   String aciklama(BuildContext context) =>

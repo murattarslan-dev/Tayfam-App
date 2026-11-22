@@ -853,6 +853,32 @@
       }
     },
     {
+      "key": "problem_session",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Soru çözüm oturumu"
+      },
+      "icon": "mic",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "pool_link",
+            "params": {
+              "max_links": 2
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

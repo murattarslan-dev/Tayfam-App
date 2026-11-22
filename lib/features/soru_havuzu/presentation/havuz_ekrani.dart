@@ -274,29 +274,28 @@ class _SuzgecSayfasiState extends State<_SuzgecSayfasi> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-              DersKonuSecici(
-                secim: _secim,
-                onDegisti: (yeni) => setState(() => _secim = yeni),
-              ),
-              const SizedBox(height: TayfamSpacing.s24),
-              Wrap(
-                alignment: WrapAlignment.end,
-                spacing: TayfamSpacing.s8,
-                runSpacing: TayfamSpacing.s8,
-                children: [
-                  IkincilEylem(
-                    etiket: m.soru_havuzu_suzgec_temizle,
-                    onPressed: () =>
-                        Navigator.of(context).pop<_SuzgecSonucu>((secim: null)),
-                  ),
-                  BirincilEylem(
-                    etiket: m.soru_havuzu_suzgec_uygula,
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).pop<_SuzgecSonucu>((secim: _secim)),
-                  ),
-                ],
-              ),
+            DersKonuSecici(
+              secim: _secim,
+              onDegisti: (yeni) => setState(() => _secim = yeni),
+            ),
+            const SizedBox(height: TayfamSpacing.s24),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: TayfamSpacing.s8,
+              runSpacing: TayfamSpacing.s8,
+              children: [
+                IkincilEylem(
+                  etiket: m.soru_havuzu_suzgec_temizle,
+                  onPressed: () =>
+                      Navigator.of(context).pop<_SuzgecSonucu>((secim: null)),
+                ),
+                BirincilEylem(
+                  etiket: m.soru_havuzu_suzgec_uygula,
+                  onPressed: () =>
+                      Navigator.of(context).pop<_SuzgecSonucu>((secim: _secim)),
+                ),
+              ],
+            ),
           ],
         ),
       ],

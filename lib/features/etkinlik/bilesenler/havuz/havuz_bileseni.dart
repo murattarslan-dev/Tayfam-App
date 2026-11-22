@@ -310,9 +310,8 @@ class _HavuzSecimSayfasiState extends ConsumerState<HavuzSecimSayfasi> {
                     Center(
                       child: BaglantiEylemi(
                         etiket: m.tayfa_ana_daha_fazla,
-                        onPressed: () => unawaited(
-                          ref.read(saglayici.notifier).dahaFazla(),
-                        ),
+                        onPressed: () =>
+                            unawaited(ref.read(saglayici.notifier).dahaFazla()),
                       ),
                     ),
                   ],

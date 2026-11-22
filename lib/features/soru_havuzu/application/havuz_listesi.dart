@@ -67,10 +67,7 @@ class HavuzListesiNotifier extends SayfaliListeNotifier<Question> {
   void guncelle(Question soru) => ogeleriDegistir(
     (ogeler) => [
       for (final s in ogeler)
-        if (s.id != soru.id)
-          s
-        else if (suzgeceUyar(anahtar.suzgec, soru))
-          soru,
+        if (s.id != soru.id) s else if (suzgeceUyar(anahtar.suzgec, soru)) soru,
     ],
   );
 
@@ -164,10 +161,7 @@ Set<HavuzListesiAnahtari> _acikAnahtarlar(
 
 /// Yeni sorulan [soru]'yu açık havuz listelerinin başına ekler (süzgece
 /// uyuyorsa).
-void havuzSorusunuEkle(Ref ref, Question soru) => havuzListelerineUygula(
-  ref,
-  soru.tayfaId,
-  (liste) {
-    if (suzgeceUyar(liste.anahtar.suzgec, soru)) liste.ekle(soru);
-  },
-);
+void havuzSorusunuEkle(Ref ref, Question soru) =>
+    havuzListelerineUygula(ref, soru.tayfaId, (liste) {
+      if (suzgeceUyar(liste.anahtar.suzgec, soru)) liste.ekle(soru);
+    });

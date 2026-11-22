@@ -118,7 +118,10 @@ mixin _HavuzFormu on Notifier<HavuzFormuDurumu> {
   /// Metni günceller.
   void metinAyarla(String metin) {
     if (state.gonderiliyor) return;
-    state = state._degistir(metin: metin, hatalar: _hatalarDustu(metin: metin));
+    state = state._degistir(
+      metin: metin,
+      hatalar: _hatalarDustu(metin: metin),
+    );
   }
 
   /// [sira]'daki fotoğraf yerini [uploadId] yapar (`null`: kaldır).
@@ -197,7 +200,9 @@ class HavuzSoruFormuNotifier extends Notifier<HavuzFormuDurumu>
     final ders = d?.subjectKey;
     return HavuzFormuDurumu(
       istekKimligi: ref.read(istekKimligiUreticisiProvider)(),
-      secim: ders == null ? null : DersKonuSecimi(ders: ders, konu: d?.topicKey),
+      secim: ders == null
+          ? null
+          : DersKonuSecimi(ders: ders, konu: d?.topicKey),
       metin: d?.body ?? '',
       fotograflar: List.unmodifiable(
         fotografYerleri(d?.photoUploadIds ?? const []),
@@ -232,8 +237,7 @@ class HavuzSoruFormuNotifier extends Notifier<HavuzFormuDurumu>
     // katalog yoksa karar sunucunundur.
     final agac = ref.read(katalogProvider).value?.dersKonu;
     final dersGecerli =
-        secim != null &&
-        (!secimDegisti || agac == null || agac.gecerli(secim));
+        secim != null && (!secimDegisti || agac == null || agac.gecerli(secim));
     final hatalar = {
       ..._icerikHatalari(),
       if (!dersGecerli) HavuzFormHatasi.ders,
@@ -266,10 +270,7 @@ class HavuzSoruFormuNotifier extends Notifier<HavuzFormuDurumu>
       return;
     }
     final metinDegisti = metin != duzenlenen.body;
-    final fotografDegisti = !listEquals(
-      fotograflar,
-      duzenlenen.photoUploadIds,
-    );
+    final fotografDegisti = !listEquals(fotograflar, duzenlenen.photoUploadIds);
     if (!metinDegisti && !secimDegisti && !fotografDegisti) {
       state = mevcut._degistir(tamamlandi: true, soru: duzenlenen);
       return;

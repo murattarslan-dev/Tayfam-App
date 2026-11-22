@@ -19,11 +19,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Kabuğun üstünde tam ekran açılır; başarıda `true` ile kapanır.
 /// Bağlantı yoksa form açık kalır, girilenler korunur.
 class HavuzCevapFormuEkrani extends ConsumerStatefulWidget {
-  const HavuzCevapFormuEkrani({
-    super.key,
-    required this.soru,
-    this.duzenlenen,
-  });
+  const HavuzCevapFormuEkrani({super.key, required this.soru, this.duzenlenen});
 
   /// Cevaplanan havuz sorusu.
   final Question soru;
@@ -74,9 +70,7 @@ class _HavuzCevapFormuEkraniState extends ConsumerState<HavuzCevapFormuEkrani> {
     final yeni = widget.duzenlenen == null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          yeni ? m.soru_cevap_form_yeni : m.soru_cevap_form_duzenle,
-        ),
+        title: Text(yeni ? m.soru_cevap_form_yeni : m.soru_cevap_form_duzenle),
         actions: [
           FormUstEylemi(
             etiket: yeni ? m.soru_cevap_form_gonder : m.soru_form_kaydet,
