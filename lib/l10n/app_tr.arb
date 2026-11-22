@@ -15373,6 +15373,10 @@
   "@soru_havuzu_ad": {
     "description": "Soru havuzu modülünün ve ana sayfa kartının adı; liste ekranının başlığı."
   },
+  "soru_havuzu_modul_aciklama": "Üyeler takıldıkları ders sorularını sorar, birbirine çözüm yazar.",
+  "@soru_havuzu_modul_aciklama": {
+    "description": "Tayfa ayarları, Modüller kartı: soru havuzu modülünün açıklaması."
+  },
   "soru_havuzu_aciklama": "Üyeler takıldıkları soruları paylaşır, birlikte çözer.",
   "@soru_havuzu_aciklama": {
     "description": "Ana sayfa düzenleme ekranında soru havuzu bileşeninin kısa açıklaması."

@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 
 /// Tayfa başına açılıp kapanan bir modül (ADR-0002): `announcements`,
-/// `events`, `qa`, `polls`, `daily`, `library`. Sohbet ve tayfa yönetimi
+/// `events`, `qa`, `polls`, `daily`, `library`,
+/// `question_pool`. Sohbet ve tayfa yönetimi
 /// modül değildir.
 ///
 /// Modülü görünür yapan sunucudan gelen `modules` alanıdır
@@ -142,6 +143,7 @@ Set<String> acikModulAnahtarlari(TayfaModules moduller) => {
   if (moduller.polls == true) Module.polls.wire,
   if (moduller.daily == true) Module.daily.wire,
   if (moduller.library_ == true) Module.library_.wire,
+  if (moduller.questionPool == true) Module.questionPool.wire,
 };
 
 /// Uygulamaya kayıtlı tayfa modülleri.

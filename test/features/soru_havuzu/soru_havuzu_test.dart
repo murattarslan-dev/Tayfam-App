@@ -155,6 +155,22 @@ void main() {
         gorunurModuller(tayfaModulKaydi, ['question_pool']).single,
         isA<SoruHavuzuModulu>(),
       );
+      expect(acikModulAnahtarlari(const TayfaModules(questionPool: true)), {
+        'question_pool',
+      });
+      // Modül açıkken "Oluştur" sayfasında soru sorma seçeneği vardır.
+      final acik = gorunurModuller(
+        tayfaModulKaydi,
+        acikModulAnahtarlari(const TayfaModules(questionPool: true)),
+      );
+      expect(acik.single.olusturmaSecenegi, isNotNull);
+      expect(
+        gorunurModuller(
+          tayfaModulKaydi,
+          acikModulAnahtarlari(const TayfaModules(questionPool: false)),
+        ),
+        isEmpty,
+      );
       // Soru-cevap son sırada kalır (ADR-0018 Genel).
       expect(tayfaModulKaydi.last, isA<SoruCevapModulu>());
       expect(
