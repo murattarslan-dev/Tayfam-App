@@ -121,9 +121,9 @@ void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
 
   test('katalog fikstüründe pool_link kullanan tür var', () {
-    final bilesenler = turBilesenleri(
-      testTuru('problem_session'),
-    ).where((b) => b.kind == 'pool_link').toList();
+    final bilesenler = turBilesenleri(testTuru('problem_session'))
+        .where((b) => b.kind == 'pool_link')
+        .toList();
     expect(bilesenler, hasLength(1));
     expect(bilesenAnahtari(bilesenler.single), 'pool_link');
   });
@@ -136,7 +136,13 @@ void main() {
       baglantilar: (_) => _baglantilar(
         sorular: [
           _bagli(_soru2, cevap: 3),
-          _bagli(_soru1, govde: '', ders: 'yks_fizik', konu: null, fotograflar: [_foto]),
+          _bagli(
+            _soru1,
+            govde: '',
+            ders: 'yks_fizik',
+            konu: null,
+            fotograflar: [_foto],
+          ),
         ],
       ),
     );
@@ -169,7 +175,10 @@ void main() {
           ],
         },
         'PUT $_baglantiYolu': (_) => _baglantilar(
-          sorular: [_bagli(_soru1), _bagli(_soru2, govde: 'Kuvvet ve hareket')],
+          sorular: [
+            _bagli(_soru1),
+            _bagli(_soru2, govde: 'Kuvvet ve hareket'),
+          ],
           duzenleyebilir: true,
         ),
       },
@@ -179,7 +188,10 @@ void main() {
     await _dokun(tester, find.text(m.bilesen_pool_link_sec));
 
     expect(find.byType(HavuzSecimSayfasi), findsOneWidget);
-    expect(tasima.giden('GET', _havuzYolu).single.sorgu['pool'], 'question_pool');
+    expect(
+      tasima.giden('GET', _havuzYolu).single.sorgu['pool'],
+      'question_pool',
+    );
     expect(find.text(m.bilesen_pool_link_sayac(1, 2)), findsOneWidget);
 
     await _dokun(tester, find.text('Kuvvet ve hareket'));
@@ -251,7 +263,8 @@ void main() {
           sorular: [
             _bagli(
               _soru1,
-              govde: 'Uzun bir soru metni ki iki satırı rahatça doldursun ve '
+              govde:
+                  'Uzun bir soru metni ki iki satırı rahatça doldursun ve '
                   'kesilsin; satır büyük yazıda da taşmamalı.',
               fotograflar: [_foto],
               cevap: 12,
@@ -262,7 +275,11 @@ void main() {
         yanitlar: {
           'GET $_havuzYolu': (_) => {
             'questions': [
-              _havuzSorusu(_soru1, 'Limit sorusunda takıldım.', 'yks_matematik'),
+              _havuzSorusu(
+                _soru1,
+                'Limit sorusunda takıldım.',
+                'yks_matematik',
+              ),
             ],
           },
         },

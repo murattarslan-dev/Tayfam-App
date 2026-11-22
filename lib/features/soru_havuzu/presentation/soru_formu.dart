@@ -72,6 +72,7 @@ class _HavuzSoruFormuEkraniState extends ConsumerState<HavuzSoruFormuEkrani> {
     final durum = ref.watch(saglayici);
     final kilitli = durum.gonderiliyor;
     final yeni = widget.duzenlenen == null;
+    final dersHatali = durum.hatalar.contains(HavuzFormHatasi.ders);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -104,10 +105,16 @@ class _HavuzSoruFormuEkraniState extends ConsumerState<HavuzSoruFormuEkrani> {
                   DersKonuSecici(
                     secim: durum.secim,
                     onDegisti: kilitli ? null : _notifier.secimAyarla,
-                    dersHatasi: durum.hatalar.contains(HavuzFormHatasi.ders)
+                    dersHatasi: dersHatali && durum.secim != null
                         ? m.soru_havuzu_ders_hatasi
                         : null,
                   ),
+                  // Ders alanı düzey seçilene kadar görünmez; hata o
+                  // zaman seçicinin altında durur.
+                  if (dersHatali && durum.secim == null) ...[
+                    const SizedBox(height: TayfamSpacing.s8),
+                    HataSatiri(metin: m.soru_havuzu_ders_hatasi),
+                  ],
                   const SizedBox(height: TayfamSpacing.s24),
                   TextField(
                     controller: _metin,

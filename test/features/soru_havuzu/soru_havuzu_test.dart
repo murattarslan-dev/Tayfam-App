@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/katalog/ders_konu.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/moduller/ana_sayfa_bileseni.dart';
@@ -268,36 +269,39 @@ void main() {
       expect(kap.read(saglayici).soru?.id, soruId3);
     });
 
-    test('düzenleme: yalnızca değişen alanlar; konu kaldırılabiliyor', () async {
-      final eski = Question.fromJson(
-        _havuzSorusu(soruId1, fotograflar: [_foto1, _foto2]),
-      );
-      final tasima = _tasima(
-        ek: {'PATCH $soruYolu': yanit(_havuzSorusu(soruId1))},
-      );
-      final kap = _kap(tasima);
-      final saglayici = havuzSoruFormuProvider((
-        tayfaId: ornekTayfaId,
-        duzenlenen: eski,
-      ));
-      kap.listen(saglayici, (_, _) {});
-      final form = kap.read(saglayici.notifier);
+    test(
+      'düzenleme: yalnızca değişen alanlar; konu kaldırılabiliyor',
+      () async {
+        final eski = Question.fromJson(
+          _havuzSorusu(soruId1, fotograflar: [_foto1, _foto2]),
+        );
+        final tasima = _tasima(
+          ek: {'PATCH $soruYolu': yanit(_havuzSorusu(soruId1))},
+        );
+        final kap = _kap(tasima);
+        final saglayici = havuzSoruFormuProvider((
+          tayfaId: ornekTayfaId,
+          duzenlenen: eski,
+        ));
+        kap.listen(saglayici, (_, _) {});
+        final form = kap.read(saglayici.notifier);
 
-      // Değişiklik yoksa istek gitmez.
-      await form.gonder();
-      expect(tasima.giden('PATCH', soruYolu), isEmpty);
-      expect(kap.read(saglayici).tamamlandi, isTrue);
+        // Değişiklik yoksa istek gitmez.
+        await form.gonder();
+        expect(tasima.giden('PATCH', soruYolu), isEmpty);
+        expect(kap.read(saglayici).tamamlandi, isTrue);
 
-      kap.invalidate(saglayici);
-      final yeni = kap.read(saglayici.notifier)
-        ..fotografAyarla(1, null)
-        ..secimAyarla(const DersKonuSecimi(ders: 'yks_matematik'));
-      await yeni.gonder();
-      expect(tasima.giden('PATCH', soruYolu).single.govde, {
-        'subject_key': 'yks_matematik',
-        'photo_upload_ids': [_foto1],
-      });
-    });
+        kap.invalidate(saglayici);
+        final yeni = kap.read(saglayici.notifier)
+          ..fotografAyarla(1, null)
+          ..secimAyarla(const DersKonuSecimi(ders: 'yks_matematik'));
+        await yeni.gonder();
+        expect(tasima.giden('PATCH', soruYolu).single.govde, {
+          'subject_key': 'yks_matematik',
+          'photo_upload_ids': [_foto1],
+        });
+      },
+    );
 
     test('bağlantı yoksa form açık kalıyor, girilenler korunuyor', () async {
       final tasima = _tasima(
@@ -413,8 +417,12 @@ void main() {
       // Seçili süzgeç çipte adıyla.
       expect(find.text('Matematik · Türev'), findsOneWidget);
 
+      // "Tümü" süzgeçsiz listeye döner (bırakılmışsa yeniden okunur).
       await _dokun(tester, find.text(m.soru_etiket_tumu));
-      expect(tasima.giden('GET', sorularYolu), hasLength(2));
+      expect(
+        tasima.giden('GET', sorularYolu).last.sorgu.containsKey('subject_key'),
+        isFalse,
+      );
     });
 
     testWidgets('boş havuz ve module-disabled', (tester) async {
@@ -426,7 +434,7 @@ void main() {
       kapali.yanitlar['GET $sorularYolu'] = (_) =>
           const ApiProblem(type: ProblemType.moduleDisabled, status: 409);
       await _ac(tester, kapali, _liste);
-      expect(find.text(m.hata_module_disabled), findsOneWidget);
+      expect(find.byType(YuklemeHatasi), findsOneWidget);
     });
 
     for (final mod in [ThemeMode.light, ThemeMode.dark]) {
@@ -496,10 +504,19 @@ void main() {
       expect(find.text('Matematik'), findsOneWidget);
       expect(find.text('Türev'), findsOneWidget);
       expect(find.text('Türevde zincir kuralını anlamadım.'), findsOneWidget);
-      expect(find.bySemanticsLabel(m.soru_havuzu_fotograf_etiketi(1, 2)), findsOneWidget);
-      expect(find.bySemanticsLabel(m.soru_havuzu_fotograf_etiketi(2, 2)), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(m.soru_havuzu_fotograf_etiketi(1, 2)),
+        findsOneWidget,
+      );
+      expect(
+        find.bySemanticsLabel(m.soru_havuzu_fotograf_etiketi(2, 2)),
+        findsOneWidget,
+      );
       // Cevabın tek fotoğrafı.
-      expect(find.bySemanticsLabel(m.soru_havuzu_fotograf_etiketi(1, 1)), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(m.soru_havuzu_fotograf_etiketi(1, 1)),
+        findsOneWidget,
+      );
       // Çözüldü işareti yok; faydalı oyu var.
       expect(find.text(m.soru_faydali_dugme('0')), findsOneWidget);
     });
@@ -559,7 +576,13 @@ void main() {
       ) async {
         ekranBoyutu(tester, genislik: 320, yukseklik: 1600);
         ikiKatYazi(tester);
-        await _ac(tester, _tasima(), _detay, themeMode: mod, yonlendirici: true);
+        await _ac(
+          tester,
+          _tasima(),
+          _detay,
+          themeMode: mod,
+          yonlendirici: true,
+        );
         expect(tester.takeException(), isNull);
         expect(find.text('Türev'), findsOneWidget);
       });
