@@ -134,9 +134,8 @@ class _Icerik extends StatelessWidget {
           for (final kalem in kalemler.take(kartKalemSayisi))
             InkWell(
               key: ValueKey(kalem.id),
-              onTap: () => unawaited(
-                context.push(kalemAdresi(tayfaId, kalem.id)),
-              ),
+              onTap: () =>
+                  unawaited(context.push(kalemAdresi(tayfaId, kalem.id))),
               borderRadius: TayfamRadii.dugmeKoseleri,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(

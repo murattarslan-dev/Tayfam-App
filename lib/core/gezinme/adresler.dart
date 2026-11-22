@@ -330,8 +330,7 @@ abstract final class Adresler {
 
   /// Ortak kütüphane (ortak eşya) listesi; kütüphane bildirimleri de buraya
   /// açılır (Tayfam-Api ADR-0040 §1).
-  static String kutuphane(String tayfaId) =>
-      '${tayfa(tayfaId)}/$kutuphaneYolu';
+  static String kutuphane(String tayfaId) => '${tayfa(tayfaId)}/$kutuphaneYolu';
 
   static const katilimIstekleriYolu = 'istekler';
 

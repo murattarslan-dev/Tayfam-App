@@ -65,9 +65,9 @@ class _KalemEkraniState extends ConsumerState<KalemEkrani> {
     }
   }
 
-  void _bildir(String metin) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(metin)));
+  void _bildir(String metin) =>
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(metin)));
 
   Future<void> _iste() {
     final m = AppLocalizations.of(context);
@@ -248,10 +248,7 @@ class _Icerik extends StatelessWidget {
           ),
           const SizedBox(height: TayfamSpacing.s16),
         ],
-        Text(
-          kalem.name,
-          style: yazi.titleLarge?.copyWith(color: r.metin),
-        ),
+        Text(kalem.name, style: yazi.titleLarge?.copyWith(color: r.metin)),
         const SizedBox(height: TayfamSpacing.s8),
         Wrap(
           spacing: TayfamSpacing.s8,

@@ -49,9 +49,8 @@ class _OduncAdimlariState extends ConsumerState<OduncAdimlari> {
     try {
       await is_();
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(basari)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(basari)));
     } on Exception catch (hata) {
       if (mounted) hataBildir(context, hata);
     } finally {
@@ -232,38 +231,40 @@ class _OduncAdimlariState extends ConsumerState<OduncAdimlari> {
       ];
     }
     final dugmeler = <Widget>[
-      if (odunc.callerIsOwner) ...switch (odunc.state) {
-        LibraryLoanState.requested => [
-          IkincilEylem(
-            etiket: m.kutuphane_reddet,
-            onPressed: () => unawaited(_reddet()),
-          ),
-          BirincilEylem(
-            etiket: m.kutuphane_onayla,
-            ikon: Icons.check,
-            onPressed: () => unawaited(_onayla()),
-          ),
-        ],
-        LibraryLoanState.approved => [
-          IkincilEylem(
-            etiket: m.kutuphane_reddet,
-            onPressed: () => unawaited(_reddet()),
-          ),
-          BirincilEylem(
-            etiket: m.kutuphane_teslim_ettim,
-            ikon: Icons.outbox_outlined,
-            onPressed: () => unawaited(_teslimEt()),
-          ),
-        ],
-        LibraryLoanState.handedOver => [
-          BirincilEylem(
-            etiket: m.kutuphane_iade_aldim,
-            ikon: Icons.move_to_inbox_outlined,
-            onPressed: () => unawaited(_iadeAl()),
-          ),
-        ],
-        _ => const <Widget>[],
-      } else if (odunc.state == LibraryLoanState.requested ||
+      if (odunc.callerIsOwner)
+        ...switch (odunc.state) {
+          LibraryLoanState.requested => [
+            IkincilEylem(
+              etiket: m.kutuphane_reddet,
+              onPressed: () => unawaited(_reddet()),
+            ),
+            BirincilEylem(
+              etiket: m.kutuphane_onayla,
+              ikon: Icons.check,
+              onPressed: () => unawaited(_onayla()),
+            ),
+          ],
+          LibraryLoanState.approved => [
+            IkincilEylem(
+              etiket: m.kutuphane_reddet,
+              onPressed: () => unawaited(_reddet()),
+            ),
+            BirincilEylem(
+              etiket: m.kutuphane_teslim_ettim,
+              ikon: Icons.outbox_outlined,
+              onPressed: () => unawaited(_teslimEt()),
+            ),
+          ],
+          LibraryLoanState.handedOver => [
+            BirincilEylem(
+              etiket: m.kutuphane_iade_aldim,
+              ikon: Icons.move_to_inbox_outlined,
+              onPressed: () => unawaited(_iadeAl()),
+            ),
+          ],
+          _ => const <Widget>[],
+        }
+      else if (odunc.state == LibraryLoanState.requested ||
           odunc.state == LibraryLoanState.approved)
         IkincilEylem(
           etiket: m.kutuphane_istegi_geri_al,

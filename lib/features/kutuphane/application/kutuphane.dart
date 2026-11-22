@@ -42,9 +42,8 @@ class KalemNotifier extends AsyncNotifier<LibraryItem> {
   final KalemAnahtari anahtar;
 
   @override
-  Future<LibraryItem> build() => ref
-      .read(kutuphaneDeposuProvider)
-      .kalem(anahtar.tayfaId, anahtar.kalemId);
+  Future<LibraryItem> build() =>
+      ref.read(kutuphaneDeposuProvider).kalem(anahtar.tayfaId, anahtar.kalemId);
 }
 
 /// Kalem detayı; ekrandan kalkınca bırakılır.

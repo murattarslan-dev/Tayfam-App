@@ -43,9 +43,8 @@ class _KutuphaneListeEkraniState extends ConsumerState<KutuphaneListeEkrani> {
     final m = AppLocalizations.of(context);
     final kalem = await kalemFormunuAc(context, widget.tayfaId);
     if (kalem == null || !mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(m.kutuphane_eklendi)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(m.kutuphane_eklendi)));
   }
 
   @override
@@ -242,10 +241,7 @@ class KalemSatiri extends StatelessWidget {
               ),
             )
           else
-            TurKutusu(
-              tur: kalem.kind,
-              boyut: TayfamSizes.fotografKucukResim,
-            ),
+            TurKutusu(tur: kalem.kind, boyut: TayfamSizes.fotografKucukResim),
           const SizedBox(width: TayfamSpacing.s12),
           Expanded(
             child: Column(

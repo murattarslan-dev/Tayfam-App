@@ -36,7 +36,8 @@ const String _kalemYolu =
 const String _istekYolu =
     '/v1/tayfas/{tayfa_id}/library/items/{library_item_id}/request';
 const String _odunclerYolu = '/v1/tayfas/{tayfa_id}/library/loans';
-const String _oduncYolu = '/v1/tayfas/{tayfa_id}/library/loans/{library_loan_id}';
+const String _oduncYolu =
+    '/v1/tayfas/{tayfa_id}/library/loans/{library_loan_id}';
 const String _sozlukYolu = '/v1/tayfas/{tayfa_id}/vocabulary/{namespace}';
 
 const String _benim = '00000000-0000-4000-8000-0000000000aa';
@@ -201,9 +202,8 @@ class _Acici extends StatelessWidget {
     body: Center(
       child: TextButton(
         onPressed: () => unawaited(
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute<void>(builder: (_) => ekran)),
+          Navigator.of(context)
+              .push(MaterialPageRoute<void>(builder: (_) => ekran)),
         ),
         child: const Text(_acDugmesi),
       ),
@@ -229,8 +229,11 @@ const Widget _liste = KutuphaneListeEkrani(tayfaId: ornekTayfaId);
 const Widget _detay = KalemEkrani(tayfaId: ornekTayfaId, kalemId: _kitap);
 const Widget _odunclerim = OdunclerimEkrani(tayfaId: ornekTayfaId);
 
-Iterable<TayfaIstegi> _istekler(SahteTayfaTasima t, String yontem, String yol) =>
-    t.istekler.where((i) => i.method == yontem && i.yol == yol);
+Iterable<TayfaIstegi> _istekler(
+  SahteTayfaTasima t,
+  String yontem,
+  String yol,
+) => t.istekler.where((i) => i.method == yontem && i.yol == yol);
 
 void main() {
   final m = lookupAppLocalizations(const Locale('tr'));
@@ -527,7 +530,10 @@ void main() {
         ),
       );
       await _ac(tester, tasima, _detay);
-      expect(find.text(m.kutuphane_iade_tarihi('5 Aralık 2099')), findsOneWidget);
+      expect(
+        find.text(m.kutuphane_iade_tarihi('5 Aralık 2099')),
+        findsOneWidget,
+      );
       expect(find.text(m.kutuphane_odunc_sahipsiz), findsOneWidget);
       await tester.tap(find.text(m.kutuphane_iade_aldim));
       await tester.pumpAndSettle();
@@ -552,9 +558,7 @@ void main() {
     testWidgets('sahibi geri çekerken onay veriyor; ekran kapanıyor', (
       tester,
     ) async {
-      final tasima = _tasima(
-        kalem: (_) => _kalemJson(_kitap, sahip: _benim),
-      );
+      final tasima = _tasima(kalem: (_) => _kalemJson(_kitap, sahip: _benim));
       await _acarakAc(tester, tasima, _detay);
       await tester.tap(find.byTooltip(m.kutuphane_secenekler));
       await tester.pumpAndSettle();
@@ -591,8 +595,10 @@ void main() {
       tester,
     ) async {
       final tasima = _tasima(
-        kalem: (_) =>
-            const ApiProblem(type: ProblemType.libraryItemNotFound, status: 404),
+        kalem: (_) => const ApiProblem(
+          type: ProblemType.libraryItemNotFound,
+          status: 404,
+        ),
       );
       await _ac(tester, tasima, _detay);
       expect(find.text(m.hata_library_item_not_found), findsOneWidget);
@@ -634,11 +640,7 @@ void main() {
   group('kalem formu', () {
     testWidgets('alet: tür, ad ve not gönderiliyor', (tester) async {
       final tasima = _tasima();
-      await _acarakAc(
-        tester,
-        tasima,
-        const _FormAcici(),
-      );
+      await _acarakAc(tester, tasima, const _FormAcici());
       await tester.tap(find.text(_formuAc));
       await tester.pumpAndSettle();
 
