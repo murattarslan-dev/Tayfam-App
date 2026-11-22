@@ -150,7 +150,7 @@ SahteTayfaTasima _tasima({
       sahip: _benim,
     );
   },
-  'GET $_kalemYolu': kalem ?? (i) => _kalemJson(_kitap),
+  'GET $_kalemYolu': kalem ?? (_) => _kalemler().first,
   'PUT $_kalemYolu': (i) => _kalemJson(_matkap, sahip: _benim),
   'DELETE $_kalemYolu': (_) => null,
   'POST $_istekYolu': (_) => _kalemJson(
