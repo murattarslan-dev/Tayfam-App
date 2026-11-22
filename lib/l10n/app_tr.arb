@@ -15552,5 +15552,311 @@
   "bilesen_pool_link_havuz_bos": "Soru havuzunda henüz soru yok.",
   "@bilesen_pool_link_havuz_bos": {
     "description": "Seçim sayfasında havuz boşken gösterilen metin."
+  },
+  "hata_material_not_found": "Materyal bulunamadı. Silinmiş ya da kaldırılmış olabilir.",
+  "@hata_material_not_found": {
+    "description": "Hata kodu `material-not-found`. Materyal silinmiş, kaldırılmış, engelli alan adına bağlanıyor ya da bilinmiyor."
+  },
+  "hata_blocked_link": "Bu bağlantı Tayfam'da paylaşılamıyor. Başka bir kaynak dene.",
+  "@hata_blocked_link": {
+    "description": "Hata kodu `blocked-link`. Bağlantının alan adı engelli listede ya da biçimi uygun değil."
+  },
+  "hata_material_limit": "En fazla 200 materyal ekleyebilirsin. Yenisi için önce birini sil.",
+  "@hata_material_limit": {
+    "description": "Hata kodu `material-limit`. Üye başına materyal sınırı doldu."
+  },
+  "materyal_ad": "Materyaller",
+  "@materyal_ad": {
+    "description": "Materyal kütüphanesi modülünün ve ana sayfa kartının adı; liste ekranının başlığı."
+  },
+  "materyal_aciklama": "Üyelerin paylaştığı ders bağlantıları ve not fotoğrafları.",
+  "@materyal_aciklama": {
+    "description": "Ana sayfa bileşen düzenleme ekranında materyal kartının açıklaması."
+  },
+  "materyal_modul": "Materyaller",
+  "@materyal_modul": {
+    "description": "Tayfa ayarları, Modüller kartı: materyal kütüphanesi modülünün adı."
+  },
+  "materyal_modul_aciklama": "Üyeler ders bağlantılarını ve kendi not fotoğraflarını paylaşır.",
+  "@materyal_modul_aciklama": {
+    "description": "Tayfa ayarları, Modüller kartı: materyal kütüphanesi modülünün açıklaması."
+  },
+  "materyal_olustur": "Materyal ekle",
+  "@materyal_olustur": {
+    "description": "Oluştur sayfasında materyal ekleme seçeneğinin başlığı."
+  },
+  "materyal_olustur_aciklama": "Ders bağlantısı ya da not fotoğrafı",
+  "@materyal_olustur_aciklama": {
+    "description": "Oluştur sayfasında materyal ekleme seçeneğinin kısa açıklaması."
+  },
+  "materyal_tumu": "Tümü",
+  "@materyal_tumu": {
+    "description": "Ana sayfa kartının başlığındaki, listeyi açan bağlantı."
+  },
+  "materyal_ekle": "Materyal ekle",
+  "@materyal_ekle": {
+    "description": "Liste ekranındaki ve boş karttaki ekleme düğmesi."
+  },
+  "materyal_eklendi": "Materyal eklendi.",
+  "@materyal_eklendi": {
+    "description": "Materyal eklenince gösterilen kısa bildirim."
+  },
+  "materyal_kaydedildi": "Değişiklikler kaydedildi.",
+  "@materyal_kaydedildi": {
+    "description": "Materyal düzenlenince gösterilen kısa bildirim."
+  },
+  "materyal_yukleniyor": "Materyaller yükleniyor",
+  "@materyal_yukleniyor": {
+    "description": "Yükleme göstergesinin ekran okuyucu etiketi."
+  },
+  "materyal_bos": "Henüz materyal yok. Bir ders bağlantısı ya da not fotoğrafı paylaşan ilk kişi sen ol.",
+  "@materyal_bos": {
+    "description": "Materyal kütüphanesi boşken gösterilen metin."
+  },
+  "materyal_bos_suzgec": "Bu süzgece uyan materyal yok.",
+  "@materyal_bos_suzgec": {
+    "description": "Süzgeç seçiliyken liste boşsa gösterilen metin."
+  },
+  "materyal_suzgec": "Süzgeç",
+  "@materyal_suzgec": {
+    "description": "Liste ekranındaki süzgeç çiplerinin ekran okuyucu etiketi."
+  },
+  "materyal_suzgec_tumu": "Tümü",
+  "@materyal_suzgec_tumu": {
+    "description": "Süzgeç: bütün materyaller."
+  },
+  "materyal_benimkiler": "Benimkiler",
+  "@materyal_benimkiler": {
+    "description": "Süzgeç: yalnızca çağıranın eklediği materyaller."
+  },
+  "materyal_ders_sec": "Ders seç",
+  "@materyal_ders_sec": {
+    "description": "Süzgeç: ders/konu seçilmemişken ders çipinin metni."
+  },
+  "materyal_ders_suzgeci": "Ders ve konu",
+  "@materyal_ders_suzgeci": {
+    "description": "Ders/konu süzgeci alt sayfasının başlığı."
+  },
+  "materyal_suzgec_temizle": "Temizle",
+  "@materyal_suzgec_temizle": {
+    "description": "Ders/konu süzgecini kaldıran düğme."
+  },
+  "materyal_suzgec_uygula": "Uygula",
+  "@materyal_suzgec_uygula": {
+    "description": "Ders/konu süzgecini uygulayan düğme."
+  },
+  "materyal_tur_baglanti": "Bağlantı",
+  "@materyal_tur_baglanti": {
+    "description": "Materyal türü: https bağlantı."
+  },
+  "materyal_tur_not": "Not fotoğrafı",
+  "@materyal_tur_not": {
+    "description": "Materyal türü: kişinin kendi not fotoğrafları."
+  },
+  "materyal_tur_bilinmiyor": "Materyal",
+  "@materyal_tur_bilinmiyor": {
+    "description": "Uygulamanın tanımadığı materyal türü."
+  },
+  "materyal_tur_alani": "Tür",
+  "@materyal_tur_alani": {
+    "description": "Materyal formu: tür seçiminin başlığı."
+  },
+  "materyal_tur_degismez": "Tür kaydedildikten sonra değiştirilemez.",
+  "@materyal_tur_degismez": {
+    "description": "Materyal formu (düzenleme): türün değişmediğini söyleyen not."
+  },
+  "materyal_form_yeni": "Materyal ekle",
+  "@materyal_form_yeni": {
+    "description": "Materyal formunun başlığı (yeni)."
+  },
+  "materyal_form_duzenle": "Materyali düzenle",
+  "@materyal_form_duzenle": {
+    "description": "Materyal formunun başlığı (düzenleme)."
+  },
+  "materyal_kaydet": "Kaydet",
+  "@materyal_kaydet": {
+    "description": "Materyal formunun kaydet düğmesi."
+  },
+  "materyal_kaydediliyor": "Kaydediliyor",
+  "@materyal_kaydediliyor": {
+    "description": "Kaydederken gösterilen yükleme göstergesinin ekran okuyucu etiketi."
+  },
+  "materyal_baslik_alani": "Başlık",
+  "@materyal_baslik_alani": {
+    "description": "Materyal formu: başlık alanının etiketi."
+  },
+  "materyal_baslik_bos": "Bir başlık yaz.",
+  "@materyal_baslik_bos": {
+    "description": "Materyal formu: başlık boşken hata."
+  },
+  "materyal_baslik_uzun": "Başlık en fazla {sinir} karakter olabilir.",
+  "@materyal_baslik_uzun": {
+    "description": "Materyal formu: başlık uzunken hata.",
+    "placeholders": {
+      "sinir": {
+        "type": "int",
+        "example": "80"
+      }
+    }
+  },
+  "materyal_baglanti_alani": "Bağlantı adresi",
+  "@materyal_baglanti_alani": {
+    "description": "Materyal formu: bağlantı alanının etiketi."
+  },
+  "materyal_baglanti_ipucu": "Yalnızca https ile başlayan bağlantılar. Tayfam bağlantıyı açmaz, önizleme almaz.",
+  "@materyal_baglanti_ipucu": {
+    "description": "Materyal formu: bağlantı alanının yardım metni."
+  },
+  "materyal_baglanti_bos": "Bir bağlantı yaz.",
+  "@materyal_baglanti_bos": {
+    "description": "Materyal formu: bağlantı boşken hata."
+  },
+  "materyal_baglanti_gecersiz": "Bağlantı https ile başlamalı ve bir alan adı içermeli.",
+  "@materyal_baglanti_gecersiz": {
+    "description": "Materyal formu: bağlantı https değilken ya da biçimi uygun değilken hata."
+  },
+  "materyal_fotograflar": "Not fotoğrafları",
+  "@materyal_fotograflar": {
+    "description": "Materyal formu: fotoğraf alanlarının başlığı."
+  },
+  "materyal_fotograf_yok": "En az bir not fotoğrafı ekle.",
+  "@materyal_fotograf_yok": {
+    "description": "Materyal formu: not fotoğrafı türünde fotoğraf yokken hata."
+  },
+  "materyal_fotograf_etiketi": "Fotoğraf {sira} / {toplam}",
+  "@materyal_fotograf_etiketi": {
+    "description": "Materyalin fotoğrafının ve formdaki fotoğraf alanının ekran okuyucu etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "materyal_fotograf_sayaci": "{sira} / {toplam}",
+  "@materyal_fotograf_sayaci": {
+    "description": "Tam ekran görüntüleyicinin üstünde kaçıncı fotoğrafta olunduğu.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "materyal_fotograf_sayisi": "{sayi, plural, other{{sayi} fotoğraf}}",
+  "@materyal_fotograf_sayisi": {
+    "description": "Liste satırında not fotoğrafının fotoğraf sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "materyal_ders_hatasi": "Bir ders seç.",
+  "@materyal_ders_hatasi": {
+    "description": "Materyal formu: ders seçilmemişken ya da seçilen ders/konu artık seçilemiyorken hata."
+  },
+  "materyal_kural_notu": "Yalnızca kendi notlarını ve herkese açık kaynakları paylaş. Ücretli ders teklifi ve iletişim bilgisi paylaşmak yasak.",
+  "@materyal_kural_notu": {
+    "description": "Materyal formunun altındaki topluluk kuralı notu."
+  },
+  "materyal_detay_baslik": "Materyal",
+  "@materyal_detay_baslik": {
+    "description": "Materyal detay ekranının başlığı."
+  },
+  "materyal_secenekler": "Seçenekler",
+  "@materyal_secenekler": {
+    "description": "Detay ekranındaki menü düğmesinin ipucu."
+  },
+  "materyal_duzenle": "Düzenle",
+  "@materyal_duzenle": {
+    "description": "Detay menüsü: düzenle."
+  },
+  "materyal_sil": "Sil",
+  "@materyal_sil": {
+    "description": "Detay menüsü (yazar) ve onay penceresi: sil."
+  },
+  "materyal_kaldir": "Kaldır",
+  "@materyal_kaldir": {
+    "description": "Detay menüsü (moderatör) ve onay penceresi: kaldır."
+  },
+  "materyal_sikayet_et": "Şikâyet et",
+  "@materyal_sikayet_et": {
+    "description": "Detay menüsü: şikâyet et."
+  },
+  "materyal_sil_baslik": "Materyali sil?",
+  "@materyal_sil_baslik": {
+    "description": "Yazarın silme onay penceresinin başlığı."
+  },
+  "materyal_kaldir_baslik": "Materyali kaldır?",
+  "@materyal_kaldir_baslik": {
+    "description": "Moderatörün kaldırma onay penceresinin başlığı."
+  },
+  "materyal_sil_metni": "Bu işlem geri alınamaz.",
+  "@materyal_sil_metni": {
+    "description": "Silme ya da kaldırma onay penceresinin metni."
+  },
+  "materyal_silindi": "Materyal silindi.",
+  "@materyal_silindi": {
+    "description": "Yazar silince gösterilen kısa bildirim."
+  },
+  "materyal_kaldirildi": "Materyal kaldırıldı.",
+  "@materyal_kaldirildi": {
+    "description": "Moderatör kaldırınca gösterilen kısa bildirim."
+  },
+  "materyal_vazgec": "Vazgeç",
+  "@materyal_vazgec": {
+    "description": "Onay penceresi ve dış bağlantı uyarısında vazgeç düğmesi."
+  },
+  "materyal_onizleme_yok": "Önizleme yok: Tayfam bu bağlantıyı açmadı.",
+  "@materyal_onizleme_yok": {
+    "description": "Detay ekranında bağlantı kartının altındaki not."
+  },
+  "materyal_baglantiyi_ac": "Bağlantıyı aç",
+  "@materyal_baglantiyi_ac": {
+    "description": "Detay ekranında bağlantıyı (önce uyarıyla) açan düğme."
+  },
+  "materyal_baglanti_acilamaz": "Bu bağlantı açılamıyor.",
+  "@materyal_baglanti_acilamaz": {
+    "description": "Bağlantı güvenli bir https adresi değilse gösterilen kısa bildirim."
+  },
+  "materyal_disari_baslik": "Tayfam dışına çıkıyorsun",
+  "@materyal_disari_baslik": {
+    "description": "Dış bağlantı uyarısı alt sayfasının başlığı."
+  },
+  "materyal_disari_aciklama": "Bu bağlantıyı Tayfam denetlemez. Açılan sitede şifre ya da kişisel bilgi isteniyorsa dikkatli ol.",
+  "@materyal_disari_aciklama": {
+    "description": "Dış bağlantı uyarısının açıklaması."
+  },
+  "materyal_alan_adi_etiketi": "Alan adı: {alan}",
+  "@materyal_alan_adi_etiketi": {
+    "description": "Dış bağlantı uyarısında alan adının ekran okuyucu etiketi.",
+    "placeholders": {
+      "alan": {
+        "type": "String",
+        "example": "ornek.com"
+      }
+    }
+  },
+  "materyal_ac": "Aç",
+  "@materyal_ac": {
+    "description": "Dış bağlantı uyarısında bağlantıyı sistem tarayıcısında açan düğme."
+  },
+  "materyal_sikayet_turu": "Materyal",
+  "@materyal_sikayet_turu": {
+    "description": "Şikâyet edilen şeyin türü: materyal."
+  },
+  "materyal_sikayet_sorusu": "Bu materyalde sorun ne?",
+  "@materyal_sikayet_sorusu": {
+    "description": "Materyal şikâyet sayfasının sorusu."
   }
 }

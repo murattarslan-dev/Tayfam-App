@@ -22,6 +22,7 @@ import 'package:tayfam/features/gunun_icerigi/gunun_icerigi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/kutuphane/kutuphane.dart';
+import 'package:tayfam/features/materyal/materyal.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
@@ -45,6 +46,8 @@ const List<TayfaModule> tayfaModulKaydi = [
   KutuphaneModulu(),
   // question_pool (#256): kartı ana sayfa bileşenidir; liste ve soru rotaları.
   SoruHavuzuModulu(),
+  // materials (#257): kartı ana sayfa bileşenidir; liste ve detay rotaları.
+  MateryalModulu(),
   // Soru-cevap son sırada kalır (ADR-0018 Genel).
   SoruCevapModulu(),
 ];
@@ -128,6 +131,7 @@ const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
   // question_pool (#256)
   SoruHavuzuBileseni(),
   // materials (#257)
+  MateryalBileseni(),
   // garage (#258)
 ];
 

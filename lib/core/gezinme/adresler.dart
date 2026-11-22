@@ -344,6 +344,17 @@ abstract final class Adresler {
   static String havuzSorusu(String tayfaId, String soruId) =>
       '${soruHavuzu(tayfaId)}/$soruId';
 
+  /// Materyal kütüphanesinin tayfa altındaki yolu (#257).
+  static const materyalYolu = 'materyal';
+
+  /// Materyal kütüphanesi (Eğitim; Tayfam-Api ADR-0040 §3): süzgeçli
+  /// materyal listesi.
+  static String materyal(String tayfaId) => '${tayfa(tayfaId)}/$materyalYolu';
+
+  /// Materyal kütüphanesindeki bir materyal.
+  static String materyalDetayi(String tayfaId, String materyalId) =>
+      '${materyal(tayfaId)}/$materyalId';
+
   static const katilimIstekleriYolu = 'istekler';
 
   /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).

@@ -26,6 +26,7 @@ export 'package:tayfam/core/api/gen/apis/join_code_api.dart';
 export 'package:tayfam/core/api/gen/apis/join_qr_api.dart';
 export 'package:tayfam/core/api/gen/apis/join_requests_api.dart';
 export 'package:tayfam/core/api/gen/apis/library_api.dart';
+export 'package:tayfam/core/api/gen/apis/materials_api.dart';
 export 'package:tayfam/core/api/gen/apis/me_api.dart';
 export 'package:tayfam/core/api/gen/apis/media_api.dart';
 export 'package:tayfam/core/api/gen/apis/members_api.dart';

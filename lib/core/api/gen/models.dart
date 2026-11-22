@@ -16050,7 +16050,7 @@ final class HomeMetricValue {
 /// listesi sunucunundur ve büyüyebilir (bugün `upcoming`,
 /// `announcements`, `polls`, `questions`, `stats`, `goal`,
 /// `countdown`, `champions`, `log_summary`, `daily`, `library`,
-/// `question_pool`).
+/// `question_pool`, `materials`).
 final class HomeWidget {
   const HomeWidget({
     required this.key,
@@ -18282,6 +18282,475 @@ final class LogSummaryWidgetData {
       Object.hashAll(<Object?>[metricKey, period, year, value, eventCount]);
 }
 
+final class Material {
+  const Material({
+    required this.id,
+    required this.kind,
+    required this.title,
+    this.url,
+    this.domain,
+    this.photoUploadIds,
+    required this.subjectKey,
+    this.topicKey,
+    this.authorUserId,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.callerCanEdit,
+    required this.callerCanDelete,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory Material.fromJson(Map<String, Object?> json) => Material(
+    id: _readString(json['id'], 'Material.id'),
+    kind: MaterialKind.fromWire(_readString(json['kind'], 'Material.kind')),
+    title: _readString(json['title'], 'Material.title'),
+    url: switch (json['url']) {
+      null => null,
+      final Object v => _readString(v, 'Material.url'),
+    },
+    domain: switch (json['domain']) {
+      null => null,
+      final Object v => _readString(v, 'Material.domain'),
+    },
+    photoUploadIds: switch (json['photo_upload_ids']) {
+      null => null,
+      final Object v => List<String>.unmodifiable(
+        _readList(
+          v,
+          'Material.photo_upload_ids',
+        ).map((Object? e0) => _readString(e0, 'Material.photo_upload_ids')),
+      ),
+    },
+    subjectKey: _readString(json['subject_key'], 'Material.subject_key'),
+    topicKey: switch (json['topic_key']) {
+      null => null,
+      final Object v => _readString(v, 'Material.topic_key'),
+    },
+    authorUserId: switch (json['author_user_id']) {
+      null => null,
+      final Object v => _readString(v, 'Material.author_user_id'),
+    },
+    createdAt: _readDateTime(json['created_at'], 'Material.created_at'),
+    updatedAt: _readDateTime(json['updated_at'], 'Material.updated_at'),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'Material.caller_can_edit',
+    ),
+    callerCanDelete: _readBool(
+      json['caller_can_delete'],
+      'Material.caller_can_delete',
+    ),
+  );
+
+  final String id;
+
+  final MaterialKind kind;
+
+  /// 1–80 karakter, tek satır.
+  final String title;
+
+  /// Yalnızca `link`; sunucunun normalleştirdiği https adresi (en
+  /// fazla 500 karakter). Sunucu bu adresi hiç açmadı; istemci
+  /// önizleme çekmez, açmadan önce uyarır.
+  final String? url;
+
+  /// Yalnızca `link`; sunucunun adresten ayrıştırdığı alan adı (küçük
+  /// harf; Türkçe karakterli alan adı punycode). Bağlantıyla birlikte
+  /// gösterilir.
+  final String? domain;
+
+  /// Yalnızca `note_photo`; yazarın fotoğrafları (`material_note`
+  /// yüklemesi), sırasıyla; adreslerini `POST /v1/media/urls` verir.
+  /// Yazarın hesabı silinince boşalabilir.
+  ///
+  /// Kısıtlar: maxItems: 3.
+  final List<String>? photoUploadIds;
+
+  /// Ders anahtarı (her zaman var); etiket sonradan emekliye ayrılmış olabilir.
+  final String subjectKey;
+
+  /// Konu anahtarı; yoksa alan yoktur.
+  final String? topicKey;
+
+  /// Yazar; hesabı silindiyse alan yoktur.
+  final String? authorUserId;
+
+  final DateTime createdAt;
+
+  final DateTime updatedAt;
+
+  /// Çağıran şimdi düzenleyebilir mi (yazarı).
+  final bool callerCanEdit;
+
+  /// Çağıran şimdi silebilir mi (yazarı, moderatör).
+  final bool callerCanDelete;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'kind': kind.wire,
+    'title': title,
+    if (url case final value?) 'url': value,
+    if (domain case final value?) 'domain': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
+    'subject_key': subjectKey,
+    if (topicKey case final value?) 'topic_key': value,
+    if (authorUserId case final value?) 'author_user_id': value,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+    'caller_can_edit': callerCanEdit,
+    'caller_can_delete': callerCanDelete,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Material &&
+          id == other.id &&
+          kind == other.kind &&
+          title == other.title &&
+          url == other.url &&
+          domain == other.domain &&
+          _deepEquals(photoUploadIds, other.photoUploadIds) &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey &&
+          authorUserId == other.authorUserId &&
+          createdAt == other.createdAt &&
+          updatedAt == other.updatedAt &&
+          callerCanEdit == other.callerCanEdit &&
+          callerCanDelete == other.callerCanDelete;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    kind,
+    title,
+    url,
+    domain,
+    _deepHash(photoUploadIds),
+    subjectKey,
+    topicKey,
+    authorUserId,
+    createdAt,
+    updatedAt,
+    callerCanEdit,
+    callerCanDelete,
+  ]);
+}
+
+final class MaterialCreateRequest {
+  const MaterialCreateRequest({
+    required this.kind,
+    required this.title,
+    this.url,
+    this.photoUploadIds,
+    required this.subjectKey,
+    this.topicKey,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MaterialCreateRequest.fromJson(Map<String, Object?> json) =>
+      MaterialCreateRequest(
+        kind: MaterialCreateRequestKind.fromWire(
+          _readString(json['kind'], 'MaterialCreateRequest.kind'),
+        ),
+        title: _readString(json['title'], 'MaterialCreateRequest.title'),
+        url: switch (json['url']) {
+          null => null,
+          final Object v => _readString(v, 'MaterialCreateRequest.url'),
+        },
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'MaterialCreateRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'MaterialCreateRequest.photo_upload_ids'),
+            ),
+          ),
+        },
+        subjectKey: _readString(
+          json['subject_key'],
+          'MaterialCreateRequest.subject_key',
+        ),
+        topicKey: switch (json['topic_key']) {
+          null => null,
+          final Object v => _readString(v, 'MaterialCreateRequest.topic_key'),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'MaterialCreateRequest.client_request_id',
+        ),
+      );
+
+  final MaterialCreateRequestKind kind;
+
+  /// Kısıtlar: minLength: 1; maxLength: 1024.
+  final String title;
+
+  /// Yalnızca `link`; zorunlu.
+  ///
+  /// Kısıtlar: maxLength: 2048.
+  final String? url;
+
+  /// Yalnızca `note_photo`; 1–3 fotoğraf.
+  ///
+  /// Kısıtlar: maxItems: 3.
+  final List<String>? photoUploadIds;
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String subjectKey;
+
+  /// İsteğe bağlı; dersin altında bir konu.
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? topicKey;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'kind': kind.wire,
+    'title': title,
+    if (url case final value?) 'url': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
+    'subject_key': subjectKey,
+    if (topicKey case final value?) 'topic_key': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MaterialCreateRequest &&
+          kind == other.kind &&
+          title == other.title &&
+          url == other.url &&
+          _deepEquals(photoUploadIds, other.photoUploadIds) &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    kind,
+    title,
+    url,
+    _deepHash(photoUploadIds),
+    subjectKey,
+    topicKey,
+    clientRequestId,
+  ]);
+}
+
+enum MaterialCreateRequestKind {
+  link('link'),
+  notePhoto('note_photo'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const MaterialCreateRequestKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ??
+      (throw StateError('MaterialCreateRequestKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static MaterialCreateRequestKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `link` https bağlantı, `note_photo` kişinin kendi not fotoğrafları. Tanınmayan değer `unknown`.
+enum MaterialKind {
+  link('link'),
+  notePhoto('note_photo'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const MaterialKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('MaterialKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static MaterialKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class MaterialList {
+  const MaterialList({
+    required this.materials,
+    this.nextPageToken,
+    required this.callerCanAdd,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MaterialList.fromJson(Map<String, Object?> json) => MaterialList(
+    materials: List<Material>.unmodifiable(
+      _readList(json['materials'], 'MaterialList.materials').map(
+        (Object? e0) =>
+            Material.fromJson(_readObject(e0, 'MaterialList.materials')),
+      ),
+    ),
+    nextPageToken: switch (json['next_page_token']) {
+      null => null,
+      final Object v => _readString(v, 'MaterialList.next_page_token'),
+    },
+    callerCanAdd: _readBool(
+      json['caller_can_add'],
+      'MaterialList.caller_can_add',
+    ),
+  );
+
+  final List<Material> materials;
+
+  /// Yoksa son sayfa.
+  final String? nextPageToken;
+
+  /// Çağıran şimdi materyal ekleyebilir mi.
+  final bool callerCanAdd;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'materials': <Object?>[for (final e0 in materials) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+    'caller_can_add': callerCanAdd,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MaterialList &&
+          _deepEquals(materials, other.materials) &&
+          nextPageToken == other.nextPageToken &&
+          callerCanAdd == other.callerCanAdd;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(materials),
+    nextPageToken,
+    callerCanAdd,
+  ]);
+}
+
+final class MaterialUpdateRequest {
+  const MaterialUpdateRequest({
+    required this.title,
+    this.url,
+    this.photoUploadIds,
+    required this.subjectKey,
+    this.topicKey,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MaterialUpdateRequest.fromJson(Map<String, Object?> json) =>
+      MaterialUpdateRequest(
+        title: _readString(json['title'], 'MaterialUpdateRequest.title'),
+        url: switch (json['url']) {
+          null => null,
+          final Object v => _readString(v, 'MaterialUpdateRequest.url'),
+        },
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'MaterialUpdateRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'MaterialUpdateRequest.photo_upload_ids'),
+            ),
+          ),
+        },
+        subjectKey: _readString(
+          json['subject_key'],
+          'MaterialUpdateRequest.subject_key',
+        ),
+        topicKey: switch (json['topic_key']) {
+          null => null,
+          final Object v => _readString(v, 'MaterialUpdateRequest.topic_key'),
+        },
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 1024.
+  final String title;
+
+  /// `link` için zorunlu; `note_photo` için verilmez.
+  ///
+  /// Kısıtlar: maxLength: 2048.
+  final String? url;
+
+  /// `note_photo` için 1–3 fotoğraf (kalanlar ve yeniler); listede olmayan silinir.
+  ///
+  /// Kısıtlar: maxItems: 3.
+  final List<String>? photoUploadIds;
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String subjectKey;
+
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  final String? topicKey;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'title': title,
+    if (url case final value?) 'url': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
+    'subject_key': subjectKey,
+    if (topicKey case final value?) 'topic_key': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MaterialUpdateRequest &&
+          title == other.title &&
+          url == other.url &&
+          _deepEquals(photoUploadIds, other.photoUploadIds) &&
+          subjectKey == other.subjectKey &&
+          topicKey == other.topicKey;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    title,
+    url,
+    _deepHash(photoUploadIds),
+    subjectKey,
+    topicKey,
+  ]);
+}
+
 final class MediaUrls {
   const MediaUrls({
     required this.uploadId,
@@ -18960,7 +19429,7 @@ enum ModerationReportStatus {
   }
 }
 
-/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270). `question_pool` Eğitim soru havuzudur (#271): soruları `pool: question_pool` ile Soru-Cevap uçlarından, ana sayfa bileşeni ve `pool_link` etkinlik bileşeni.
+/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270). `question_pool` Eğitim soru havuzudur (#271): soruları `pool: question_pool` ile Soru-Cevap uçlarından, ana sayfa bileşeni ve `pool_link` etkinlik bileşeni. `materials` Eğitim materyal kütüphanesidir (#261).
 enum Module {
   announcements('announcements'),
   events('events'),
@@ -18969,6 +19438,7 @@ enum Module {
   daily('daily'),
   library_('library'),
   questionPool('question_pool'),
+  materials('materials'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -22235,7 +22705,9 @@ enum ReportResolveRequestResolution {
 /// platform yönetimine görünür. `daily_item` günün içeriği havuzundaki
 /// bir içeriktir (#269); `daily` modülü açık olmalıdır. `library_item`
 /// ortak kütüphanedeki bir kalemdir (#270; konusu sahibidir); `library`
-/// modülü açık, kalem geri çekilmemiş olmalıdır.
+/// modülü açık, kalem geri çekilmemiş olmalıdır. `material` materyal
+/// kütüphanesindeki bir materyaldir (#261; konusu yazarıdır);
+/// `materials` modülü açık, materyal görünür olmalıdır.
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -22251,6 +22723,7 @@ enum ReportTargetType {
   eventQuestion('event_question'),
   dailyItem('daily_item'),
   libraryItem('library_item'),
+  material('material'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -24281,6 +24754,7 @@ final class TayfaModules {
     this.daily,
     this.library_,
     this.questionPool,
+    this.materials,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -24315,6 +24789,10 @@ final class TayfaModules {
       null => null,
       final Object v => _readBool(v, 'TayfaModules.question_pool'),
     },
+    materials: switch (json['materials']) {
+      null => null,
+      final Object v => _readBool(v, 'TayfaModules.materials'),
+    },
   );
 
   final bool? announcements;
@@ -24331,6 +24809,8 @@ final class TayfaModules {
 
   final bool? questionPool;
 
+  final bool? materials;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (announcements case final value?) 'announcements': value,
@@ -24340,6 +24820,7 @@ final class TayfaModules {
     if (daily case final value?) 'daily': value,
     if (library_ case final value?) 'library': value,
     if (questionPool case final value?) 'question_pool': value,
+    if (materials case final value?) 'materials': value,
   };
 
   @override
@@ -24352,7 +24833,8 @@ final class TayfaModules {
           polls == other.polls &&
           daily == other.daily &&
           library_ == other.library_ &&
-          questionPool == other.questionPool;
+          questionPool == other.questionPool &&
+          materials == other.materials;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -24363,6 +24845,7 @@ final class TayfaModules {
     daily,
     library_,
     questionPool,
+    materials,
   ]);
 }
 
@@ -25250,7 +25733,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 1; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover`, `log_photo`, `event_photo`, `chat_photo`, `library_item` ve `question_pool` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
+  /// `cover`, `log_photo`, `event_photo`, `chat_photo`, `library_item`, `question_pool` ve `material_note` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -25322,6 +25805,8 @@ final class UploadCreated {
   int get hashCode => Object.hashAll(<Object?>[upload, _deepHash(targets)]);
 }
 
+/// `material_note` materyal kütüphanesindeki kişinin kendi not
+/// fotoğrafıdır (#261; materyal başına en fazla üç).
 /// `library_item` ortak kütüphane kaleminin fotoğrafıdır (#270; kalem
 /// başına bir). `question_pool` soru havuzundaki bir sorunun ya da
 /// cevabın fotoğrafıdır (#271; her birine en fazla iki; kişinin kendi
@@ -25341,6 +25826,7 @@ enum UploadPurpose {
   reportEvidence('report_evidence'),
   libraryItem('library_item'),
   questionPool('question_pool'),
+  materialNote('material_note'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

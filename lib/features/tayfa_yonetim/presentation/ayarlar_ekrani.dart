@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
@@ -595,6 +595,12 @@ class _ModullerKarti extends ConsumerWidget {
         m.soru_havuzu_ad,
         m.soru_havuzu_modul_aciklama,
         moduller.questionPool == true,
+      ),
+      (
+        Module.materials,
+        m.materyal_modul,
+        m.materyal_modul_aciklama,
+        moduller.materials == true,
       ),
     ];
     return ListeKarti(
