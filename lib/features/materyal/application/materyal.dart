@@ -143,7 +143,7 @@ final materyalIslemleriProvider = Provider<MateryalIslemleri>(
 String? baglantiyiTemizle(String girdi) {
   final metin = girdi.trim();
   if (metin.isEmpty || metin.length > baglantiEnCok) return null;
-  if (_bosluk.hasMatch(metin)) return null;
+  if (_gorunmezVar(metin)) return null;
   final String aday;
   if (metin.contains('://')) {
     aday = metin;
@@ -161,7 +161,20 @@ String? baglantiyiTemizle(String girdi) {
 /// En çok bağlantı uzunluğu (sözleşme: sunucu normalleştirince 500).
 const int baglantiEnCok = 500;
 
-final RegExp _bosluk = RegExp(r'[\s\u0000-\u001F\u007F­​-‏ -‮⁠-⁤﻿]');
+/// Boşluk, kontrol ya da görünmez karakter var mı (yön işaretleri, sıfır
+/// genişlikli boşluklar, yumuşak tire dahil).
+bool _gorunmezVar(String metin) => metin.runes.any(
+  (c) =>
+      c <= 0x20 ||
+      (c >= 0x7F && c <= 0xA0) ||
+      c == 0xAD ||
+      c == 0x1680 ||
+      (c >= 0x2000 && c <= 0x200F) ||
+      (c >= 0x2028 && c <= 0x202F) ||
+      (c >= 0x205F && c <= 0x2064) ||
+      c == 0x3000 ||
+      c == 0xFEFF,
+);
 
 final RegExp _ipv4 = RegExp(r'^[0-9]+(\.[0-9]+){3}$');
 
@@ -179,7 +192,7 @@ bool guvenliBaglanti(Uri adres) =>
 /// Sunucudan gelen materyal bağlantısı açılabilir mi; açılabilirse adresi.
 /// Sunucu doğrulasa da istemci yeniden doğrular (girdi kabul edilir).
 Uri? acilabilirBaglanti(String? url) {
-  if (url == null || _bosluk.hasMatch(url)) return null;
+  if (url == null || _gorunmezVar(url)) return null;
   final adres = Uri.tryParse(url);
   if (adres == null || !guvenliBaglanti(adres)) return null;
   return adres;

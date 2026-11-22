@@ -8,7 +8,6 @@ import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/bilesenler/ders_konu_etiketi.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
-import 'package:tayfam/core/katalog/ders_konu.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/tema/tema.dart';
