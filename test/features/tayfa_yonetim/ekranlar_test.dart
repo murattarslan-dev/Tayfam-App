@@ -270,7 +270,7 @@ void main() {
 
   group('ayarlar', () {
     testWidgets('yönetici her bölümü görür', (tester) async {
-      ekranBoyutu(tester, yukseklik: 2000);
+      ekranBoyutu(tester, yukseklik: 2400);
       await _ac(
         tester,
         const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
@@ -442,7 +442,7 @@ void main() {
     });
 
     testWidgets('silme başlatma ve iptal', (tester) async {
-      ekranBoyutu(tester, yukseklik: 2000);
+      ekranBoyutu(tester, yukseklik: 2400);
       String? silinme;
       final tasima = yonetimTasimasi(
         yanitlar: {

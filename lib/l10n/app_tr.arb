@@ -15699,7 +15699,7 @@
       }
     }
   },
-  "materyal_baglanti_alani": "Bağlantı",
+  "materyal_baglanti_alani": "Bağlantı adresi",
   "@materyal_baglanti_alani": {
     "description": "Materyal formu: bağlantı alanının etiketi."
   },

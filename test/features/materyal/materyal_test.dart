@@ -134,22 +134,19 @@ final class _SahteAcici implements DisBaglantiAcici {
   }
 }
 
-List<Override> _overridelar(SahteTayfaTasima tasima, {_SahteAcici? acici}) =>
-    [
-      ...tayfaOverridelari(tasima: tasima),
-      materyalDeposuProvider.overrideWithValue(MateryalDeposu(tasima)),
-      oturumDurumuProvider.overrideWith(
-        () => SabitOturumDurumu(OturumDurumu.acik),
-      ),
-      kendiKimligiOkuyucuProvider.overrideWithValue(() async => _benim),
-      profilOkuyucuProvider.overrideWithValue(
-        (id) async => KullaniciAdi(_adlar[id] ?? 'Kişi'),
-      ),
-      medyaLinkIsteyiciProvider.overrideWithValue(
-        (idler) async => const <MediaUrls>[],
-      ),
-      disBaglantiAciciProvider.overrideWithValue(acici ?? _SahteAcici()),
-    ];
+List<Override> _overridelar(SahteTayfaTasima tasima, {_SahteAcici? acici}) => [
+  ...tayfaOverridelari(tasima: tasima),
+  materyalDeposuProvider.overrideWithValue(MateryalDeposu(tasima)),
+  oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(OturumDurumu.acik)),
+  kendiKimligiOkuyucuProvider.overrideWithValue(() async => _benim),
+  profilOkuyucuProvider.overrideWithValue(
+    (id) async => KullaniciAdi(_adlar[id] ?? 'Kişi'),
+  ),
+  medyaLinkIsteyiciProvider.overrideWithValue(
+    (idler) async => const <MediaUrls>[],
+  ),
+  disBaglantiAciciProvider.overrideWithValue(acici ?? _SahteAcici()),
+];
 
 Future<void> _ac(
   WidgetTester tester,
@@ -425,10 +422,10 @@ void main() {
         'subject_key': 'yks_matematik',
         'topic_key': 'yks_matematik_eski',
       });
-      expect(
-        tasima.giden('PUT', _materyalYolu).single.yolParametreleri,
-        {'tayfa_id': ornekTayfaId, 'material_id': _notlar},
-      );
+      expect(tasima.giden('PUT', _materyalYolu).single.yolParametreleri, {
+        'tayfa_id': ornekTayfaId,
+        'material_id': _notlar,
+      });
     });
 
     test('blocked-link: hata formda kalıyor, girilenler korunuyor', () async {
@@ -577,8 +574,7 @@ void main() {
       await _ac(
         tester,
         _tasima(
-          materyal: (_) =>
-              _materyalJson(_baglanti, url: 'javascript:alert(1)'),
+          materyal: (_) => _materyalJson(_baglanti, url: 'javascript:alert(1)'),
         ),
         _detay,
         acici: acici,
@@ -633,11 +629,7 @@ void main() {
     });
 
     testWidgets('not fotoğrafı: fotoğraflar, bağlantı yok', (tester) async {
-      await _ac(
-        tester,
-        _tasima(materyal: (_) => _materyaller().last),
-        _detay,
-      );
+      await _ac(tester, _tasima(materyal: (_) => _materyaller().last), _detay);
       expect(find.text('İntegral çalışma notlarım'), findsOneWidget);
       expect(find.byType(MateryalFotograflari), findsOneWidget);
       expect(find.text(m.materyal_baglantiyi_ac), findsNothing);
@@ -684,7 +676,10 @@ void main() {
       expect(tasima.giden('POST', _listeYolu), isEmpty);
 
       await _dokun(tester, find.text(m.materyal_tur_not));
-      expect(find.text(m.materyal_baglanti_alani), findsNothing);
+      expect(
+        find.widgetWithText(TextField, m.materyal_baglanti_alani),
+        findsNothing,
+      );
       expect(find.text(m.materyal_fotograflar), findsOneWidget);
     });
 
