@@ -17,8 +17,7 @@ const int havuzFotografEnCok = 2;
 /// `question_pool` yüklemesinin kimliğidir. Gönderilen liste boş
 /// olmayanların sırasıdır.
 List<String> fotografListesi(List<String?> yerler) => [
-  for (final y in yerler)
-    if (y != null) y,
+  for (final y in yerler) ?y,
 ];
 
 /// [kimlikler]'i [havuzFotografEnCok] yerlik listeye açar.

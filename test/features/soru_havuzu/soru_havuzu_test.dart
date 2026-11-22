@@ -8,7 +8,6 @@ import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/katalog/ders_konu.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/moduller/ana_sayfa_bileseni.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
@@ -425,11 +424,14 @@ void main() {
       );
     });
 
-    testWidgets('boş havuz ve module-disabled', (tester) async {
+    testWidgets('boş havuz', (tester) async {
       ekranBoyutu(tester);
       await _ac(tester, _tasima(sorular: const []), _liste);
       expect(find.text(m.soru_havuzu_bos), findsOneWidget);
+    });
 
+    testWidgets('module-disabled: hata ve "Tekrar dene"', (tester) async {
+      ekranBoyutu(tester);
       final kapali = _tasima();
       kapali.yanitlar['GET $sorularYolu'] = (_) =>
           const ApiProblem(type: ProblemType.moduleDisabled, status: 409);
