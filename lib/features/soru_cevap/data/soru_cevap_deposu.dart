@@ -28,17 +28,27 @@ final class SoruCevapDeposu {
   /// `GET /v1/tayfas/{tayfa_id}/questions`. [arama] boşsa yeniden eskiye;
   /// doluysa arama sunucuda yapılır (Türkçe büyük-küçük harf duyarsız) ve
   /// en ilgiliden başlar. [etiketId] ikisini de süzer. [sayfaToken] opaktır
-  /// ve yalnızca aynı arama ve etiketle geçerlidir.
+  /// ve yalnızca aynı arama ve süzgeçlerle geçerlidir.
+  ///
+  /// [havuz] verilmezse Soru-Cevap'tır (`qa`); soru havuzunda
+  /// (`question_pool`, Tayfam-Api #271) [dersAnahtari] ve [konuAnahtari]
+  /// süzer, etiket yoktur.
   Future<Sayfa<Question>> sorular(
     String tayfaId, {
+    QuestionPool? havuz,
     String arama = '',
     String? etiketId,
+    String? dersAnahtari,
+    String? konuAnahtari,
     String? sayfaToken,
   }) async {
     final liste = await _sorular.listQuestions(
       tayfaId: tayfaId,
+      pool: havuz,
       q: arama.isEmpty ? null : arama,
       tagId: etiketId,
+      subjectKey: dersAnahtari,
+      topicKey: konuAnahtari,
       pageSize: soruCevapSayfaBoyutu,
       pageToken: sayfaToken,
     );

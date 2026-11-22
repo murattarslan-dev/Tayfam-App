@@ -61,6 +61,8 @@ Map<String, Object?> soruJson(
   'answer_count': cevapSayisi,
   'created_at': zaman,
   'updated_at': zaman,
+  'pool': 'qa',
+  'photo_upload_ids': const <String>[],
 };
 
 /// `GET …/questions` yanıtı.
@@ -88,6 +90,7 @@ Map<String, Object?> cevapJson(
   'voted': oyladim,
   'created_at': zaman,
   'updated_at': zaman,
+  'photo_upload_ids': const <String>[],
 };
 
 /// `GET …/answers` yanıtı.

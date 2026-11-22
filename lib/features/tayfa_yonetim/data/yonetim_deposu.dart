@@ -217,6 +217,7 @@ const List<ReportReason> banGerekceleri = [
   ReportReason.drugs,
   ReportReason.gambling,
   ReportReason.dangerousActivity,
+  ReportReason.paidTutoring,
   ReportReason.spam,
   ReportReason.copyright,
   ReportReason.other,

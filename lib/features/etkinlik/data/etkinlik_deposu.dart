@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/gen/apis/events_api.dart';
 import 'package:tayfam/core/api/gen/apis/instant_events_api.dart';
+import 'package:tayfam/core/api/gen/apis/questions_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/sayfalama/sayfali_liste.dart';
@@ -24,10 +25,12 @@ const int albumSayfaBoyutu = 60;
 final class EtkinlikDeposu {
   EtkinlikDeposu(ApiTransport istemci)
     : _api = EventsApi(istemci),
-      _anlik = InstantEventsApi(istemci);
+      _anlik = InstantEventsApi(istemci),
+      _sorular = QuestionsApi(istemci);
 
   final EventsApi _api;
   final InstantEventsApi _anlik;
+  final QuestionsApi _sorular;
 
   /// `POST /v1/instant-events`: gizli, tek etkinlikli tayfa ve etkinliği
   /// açar (Tayfam-Api ADR-0032). Aynı `event.client_request_id` ile tekrar
@@ -695,6 +698,48 @@ final class EtkinlikDeposu {
     eventId: etkinlikId,
     componentKey: bilesenAnahtari,
   );
+
+  /// `GET .../components/{component_key}/pool-links`: soru havuzu
+  /// bağlantısı bileşeni (#256); bağlı ve görünen sorular, organizatörün
+  /// sırasıyla.
+  Future<EventPoolLinks> havuzBaglantilari(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventPoolLinks(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../pool-links`: bağlı soruların yeni hali, verilen sırayla (boş
+  /// liste bütün bağları kaldırır).
+  Future<EventPoolLinks> havuzBaglantilariniYaz(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    List<String> soruIdleri,
+  ) => _api.setEventPoolLinks(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventPoolLinksRequest(questionIds: soruIdleri),
+  );
+
+  /// `GET /v1/tayfas/{tayfa_id}/questions?pool=question_pool`: bağlanacak
+  /// soruları seçmek için tayfanın soru havuzu (yeniden eskiye, sayfalı).
+  Future<Sayfa<Question>> havuzSorulari(
+    String tayfaId, {
+    String? sayfaToken,
+  }) async {
+    final liste = await _sorular.listQuestions(
+      tayfaId: tayfaId,
+      pool: QuestionPool.questionPool,
+      pageSize: etkinlikSayfaBoyutu,
+      pageToken: sayfaToken,
+    );
+    return (ogeler: liste.questions, sonraki: liste.nextPageToken);
+  }
 
   /// `GET .../components/{component_key}/schedule`: program akışı
   /// bileşeni (#235); maddeler başlangıç saatine göre sıralı.

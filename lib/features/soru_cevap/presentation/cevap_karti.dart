@@ -25,6 +25,7 @@ class CevapKarti extends ConsumerWidget {
     required this.onOyla,
     required this.onIslem,
     this.enFaydali = false,
+    this.ek,
   });
 
   final Answer cevap;
@@ -40,6 +41,10 @@ class CevapKarti extends ConsumerWidget {
 
   /// Menüden bir işlem seçilince.
   final ValueChanged<IcerikIslemi> onIslem;
+
+  /// Metnin altındaki ek (soru havuzunda cevabın fotoğrafları); yoksa
+  /// `null`.
+  final Widget? ek;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,17 +78,31 @@ class CevapKarti extends ConsumerWidget {
                     : null,
               ),
             ),
-            const SizedBox(height: TayfamSpacing.s12),
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: TayfamSpacing.s8),
-              // Düz metin: biçim ve bağlantı yorumlanmaz (ADR-0018 §4).
-              child: SelectableText(
-                cevap.body,
-                style: context.yazi.bodyLarge?.copyWith(
-                  color: context.renkler.metin,
+            // Soru havuzunda fotoğraflı cevabın metni boş olabilir.
+            if (cevap.body.trim().isNotEmpty) ...[
+              const SizedBox(height: TayfamSpacing.s12),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  end: TayfamSpacing.s8,
+                ),
+                // Düz metin: biçim ve bağlantı yorumlanmaz (ADR-0018 §4).
+                child: SelectableText(
+                  cevap.body,
+                  style: context.yazi.bodyLarge?.copyWith(
+                    color: context.renkler.metin,
+                  ),
                 ),
               ),
-            ),
+            ],
+            if (ek case final ek?) ...[
+              const SizedBox(height: TayfamSpacing.s12),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  end: TayfamSpacing.s8,
+                ),
+                child: ek,
+              ),
+            ],
             const SizedBox(height: TayfamSpacing.s12),
             Row(
               children: [

@@ -26,6 +26,7 @@ import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
+import 'package:tayfam/features/soru_havuzu/soru_havuzu.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/shell/derin_link/kayit_davet.dart';
 import 'package:tayfam/shell/okunmamis.dart';
@@ -42,6 +43,8 @@ const List<TayfaModule> tayfaModulKaydi = [
   GununIcerigiModulu(),
   // library (#255): kartı ana sayfa bileşenidir; liste ve ödünç rotaları.
   KutuphaneModulu(),
+  // question_pool (#256): kartı ana sayfa bileşenidir; liste ve soru rotaları.
+  SoruHavuzuModulu(),
   // Soru-cevap son sırada kalır (ADR-0018 Genel).
   SoruCevapModulu(),
 ];
@@ -91,6 +94,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // timer (#245)
   KronometreBileseni(),
   // pool_link (#256)
+  HavuzBaglantisiBileseni(),
 ];
 
 /// Uygulamanın tayfa ana sayfası bileşenleri (App ADR-0024 §6; Tayfam-Api
@@ -122,6 +126,7 @@ const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
   // library (#255)
   KutuphaneBileseni(),
   // question_pool (#256)
+  SoruHavuzuBileseni(),
   // materials (#257)
   // garage (#258)
 ];
@@ -132,6 +137,8 @@ final List<Override> kayitOverridelari = [
   tayfaModulleriProvider.overrideWithValue(tayfaModulKaydi),
   etkinlikBilesenKaydiProvider.overrideWithValue(etkinlikBilesenKaydi),
   anaSayfaBilesenKaydiProvider.overrideWithValue(anaSayfaBilesenKaydi),
+  // Soru havuzu sorusu Soru-Cevap ekranlarında havuz görünümüyle (#256).
+  soruHavuzuGorunumuProvider.overrideWithValue(const HavuzGorunumu()),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Ana sayfadan davet linki ve "Silmeyi iptal et" (2026-11-13).
