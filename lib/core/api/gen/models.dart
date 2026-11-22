@@ -24280,6 +24280,7 @@ final class TayfaModules {
     this.polls,
     this.daily,
     this.library_,
+    this.questionPool,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -24310,6 +24311,10 @@ final class TayfaModules {
       null => null,
       final Object v => _readBool(v, 'TayfaModules.library'),
     },
+    questionPool: switch (json['question_pool']) {
+      null => null,
+      final Object v => _readBool(v, 'TayfaModules.question_pool'),
+    },
   );
 
   final bool? announcements;
@@ -24324,6 +24329,8 @@ final class TayfaModules {
 
   final bool? library_;
 
+  final bool? questionPool;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (announcements case final value?) 'announcements': value,
@@ -24332,6 +24339,7 @@ final class TayfaModules {
     if (polls case final value?) 'polls': value,
     if (daily case final value?) 'daily': value,
     if (library_ case final value?) 'library': value,
+    if (questionPool case final value?) 'question_pool': value,
   };
 
   @override
@@ -24343,7 +24351,8 @@ final class TayfaModules {
           qa == other.qa &&
           polls == other.polls &&
           daily == other.daily &&
-          library_ == other.library_;
+          library_ == other.library_ &&
+          questionPool == other.questionPool;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -24353,6 +24362,7 @@ final class TayfaModules {
     polls,
     daily,
     library_,
+    questionPool,
   ]);
 }
 

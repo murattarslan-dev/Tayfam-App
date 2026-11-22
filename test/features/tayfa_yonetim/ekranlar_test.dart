@@ -387,6 +387,35 @@ void main() {
       expect(tasima.giden('GET', tayfaYolu), hasLength(2));
     });
 
+    testWidgets('soru havuzu modülünü açma', (tester) async {
+      ekranBoyutu(tester, yukseklik: 2400);
+      final tasima = yonetimTasimasi(yanitlar: {'PUT $modulYolu': yanit(null)});
+      await _ac(
+        tester,
+        const TayfaAyarlariEkrani(tayfaId: ornekTayfaId),
+        tasima,
+      );
+
+      final satir = find.widgetWithText(
+        SwitchListTile,
+        arbMetni('soru_havuzu_ad'),
+      );
+      expect(
+        find.descendant(
+          of: satir,
+          matching: find.text(arbMetni('soru_havuzu_modul_aciklama')),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.widget<SwitchListTile>(satir).value, isFalse);
+      await _dokun(tester, satir);
+
+      final istek = tasima.giden('PUT', modulYolu).single;
+      expect(istek.yolParametreleri['module'], 'question_pool');
+      expect(istek.govde, {'enabled': true});
+      expect(find.text(arbMetni('yonetim_modul_acildi')), findsOneWidget);
+    });
+
     testWidgets('kod yenileme onaylıdır', (tester) async {
       ekranBoyutu(tester, yukseklik: 2000);
       final tasima = yonetimTasimasi(

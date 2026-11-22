@@ -590,6 +590,12 @@ class _ModullerKarti extends ConsumerWidget {
         m.kutuphane_modul_aciklama,
         moduller.library_ == true,
       ),
+      (
+        Module.questionPool,
+        m.soru_havuzu_ad,
+        m.soru_havuzu_modul_aciklama,
+        moduller.questionPool == true,
+      ),
     ];
     return ListeKarti(
       children: [
