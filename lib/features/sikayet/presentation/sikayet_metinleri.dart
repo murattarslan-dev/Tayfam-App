@@ -48,6 +48,7 @@ String hedefTuruMetni(AppLocalizations m, ReportTargetType tur) =>
       ReportTargetType.channelMessage => m.sikayet_tur_kanal_mesaji,
       ReportTargetType.eventQuestion => m.bilesen_questions_sikayet_turu,
       ReportTargetType.dailyItem => m.gunun_icerigi_sikayet_turu,
+      ReportTargetType.libraryItem => m.kutuphane_sikayet_turu,
       ReportTargetType.unknown => m.sikayet_tur_bilinmiyor,
     };
 
@@ -66,6 +67,7 @@ String sikayetSorusu(AppLocalizations m, ReportTargetType tur) => switch (tur) {
   ReportTargetType.channelMessage => m.sikayet_soru_mesaj,
   ReportTargetType.eventQuestion => m.bilesen_questions_sikayet_sorusu,
   ReportTargetType.dailyItem => m.gunun_icerigi_sikayet_sorusu,
+  ReportTargetType.libraryItem => m.kutuphane_sikayet_sorusu,
   ReportTargetType.unknown => m.sikayet_soru_genel,
 };
 

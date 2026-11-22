@@ -325,6 +325,13 @@ abstract final class Adresler {
   static String tayfaIstatistikleri(String tayfaId) =>
       '${tayfa(tayfaId)}/$istatistikYolu';
 
+  /// Ortak kütüphanenin tayfa altındaki yolu (#255).
+  static const kutuphaneYolu = 'kutuphane';
+
+  /// Ortak kütüphane (ortak eşya) listesi; kütüphane bildirimleri de buraya
+  /// açılır (Tayfam-Api ADR-0040 §1).
+  static String kutuphane(String tayfaId) => '${tayfa(tayfaId)}/$kutuphaneYolu';
+
   static const katilimIstekleriYolu = 'istekler';
 
   /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).

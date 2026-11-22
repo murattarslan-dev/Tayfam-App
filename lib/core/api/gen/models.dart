@@ -15894,7 +15894,7 @@ final class HomeMetricValue {
 /// Ana sayfa bileşeni. `kind` istemciye bilgi içindir; anahtar
 /// listesi sunucunundur ve büyüyebilir (bugün `upcoming`,
 /// `announcements`, `polls`, `questions`, `stats`, `goal`,
-/// `countdown`, `champions`, `log_summary`, `daily`).
+/// `countdown`, `champions`, `log_summary`, `daily`, `library`).
 final class HomeWidget {
   const HomeWidget({
     required this.key,
@@ -17166,6 +17166,703 @@ final class LatLng {
   int get hashCode => Object.hashAll(<Object?>[lat, lng]);
 }
 
+final class LibraryHandOverRequest {
+  const LibraryHandOverRequest({this.dueAt});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryHandOverRequest.fromJson(Map<String, Object?> json) =>
+      LibraryHandOverRequest(
+        dueAt: switch (json['due_at']) {
+          null => null,
+          final Object v => _readDateTime(v, 'LibraryHandOverRequest.due_at'),
+        },
+      );
+
+  /// İsteğe bağlı iade tarihi; şimdiden sonra, en fazla 90 gün.
+  final DateTime? dueAt;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (dueAt case final value?) 'due_at': value.toUtc().toIso8601String(),
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryHandOverRequest && dueAt == other.dueAt;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[dueAt]);
+}
+
+final class LibraryItem {
+  const LibraryItem({
+    required this.id,
+    required this.kind,
+    required this.name,
+    this.vocabularyId,
+    this.note,
+    this.photoUploadId,
+    this.ownerUserId,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.queueLength,
+    this.callerQueueRank,
+    this.activeLoan,
+    this.queue,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryItem.fromJson(Map<String, Object?> json) => LibraryItem(
+    id: _readString(json['id'], 'LibraryItem.id'),
+    kind: LibraryItemKind.fromWire(
+      _readString(json['kind'], 'LibraryItem.kind'),
+    ),
+    name: _readString(json['name'], 'LibraryItem.name'),
+    vocabularyId: switch (json['vocabulary_id']) {
+      null => null,
+      final Object v => _readString(v, 'LibraryItem.vocabulary_id'),
+    },
+    note: switch (json['note']) {
+      null => null,
+      final Object v => _readString(v, 'LibraryItem.note'),
+    },
+    photoUploadId: switch (json['photo_upload_id']) {
+      null => null,
+      final Object v => _readString(v, 'LibraryItem.photo_upload_id'),
+    },
+    ownerUserId: switch (json['owner_user_id']) {
+      null => null,
+      final Object v => _readString(v, 'LibraryItem.owner_user_id'),
+    },
+    status: LibraryItemStatus.fromWire(
+      _readString(json['status'], 'LibraryItem.status'),
+    ),
+    createdAt: _readDateTime(json['created_at'], 'LibraryItem.created_at'),
+    updatedAt: _readDateTime(json['updated_at'], 'LibraryItem.updated_at'),
+    queueLength: _readInt(json['queue_length'], 'LibraryItem.queue_length'),
+    callerQueueRank: switch (json['caller_queue_rank']) {
+      null => null,
+      final Object v => _readInt(v, 'LibraryItem.caller_queue_rank'),
+    },
+    activeLoan: switch (json['active_loan']) {
+      null => null,
+      final Object v => LibraryLoan.fromJson(
+        _readObject(v, 'LibraryItem.active_loan'),
+      ),
+    },
+    queue: switch (json['queue']) {
+      null => null,
+      final Object v => List<LibraryQueueEntry>.unmodifiable(
+        _readList(v, 'LibraryItem.queue').map(
+          (Object? e0) =>
+              LibraryQueueEntry.fromJson(_readObject(e0, 'LibraryItem.queue')),
+        ),
+      ),
+    },
+  );
+
+  final String id;
+
+  final LibraryItemKind kind;
+
+  /// 1–80 karakter, tek satır (kitapta 1–60, tayfa sözlüğündeki adı).
+  final String name;
+
+  /// Yalnızca kitapta, tayfa sözlüğündeki değer (ad alanı `book`).
+  final String? vocabularyId;
+
+  /// En fazla 300 karakter; satırlar `\n` ile ayrılır. Yoksa alan yoktur.
+  final String? note;
+
+  /// Sahibinin fotoğrafı (`library_item` yüklemesi); adresini `POST /v1/media/urls` verir.
+  final String? photoUploadId;
+
+  final String? ownerUserId;
+
+  /// `available` ya da `on_loan` (teslim edildi). Tanınmayan değer `unknown`.
+  final LibraryItemStatus status;
+
+  final DateTime createdAt;
+
+  final DateTime updatedAt;
+
+  /// Sırada bekleyen kişi sayısı.
+  final int queueLength;
+
+  /// Çağıranın sıradaki yeri (1 sıradaki); beklemiyorsa alan yoktur.
+  final int? callerQueueRank;
+
+  final LibraryLoan? activeLoan;
+
+  /// Sıra; yalnızca sahibine ve yalnızca `GET …/items/{library_item_id}` ile.
+  final List<LibraryQueueEntry>? queue;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'kind': kind.wire,
+    'name': name,
+    if (vocabularyId case final value?) 'vocabulary_id': value,
+    if (note case final value?) 'note': value,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+    if (ownerUserId case final value?) 'owner_user_id': value,
+    'status': status.wire,
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+    'queue_length': queueLength,
+    if (callerQueueRank case final value?) 'caller_queue_rank': value,
+    if (activeLoan case final value?) 'active_loan': value.toJson(),
+    if (queue case final value?)
+      'queue': <Object?>[for (final e0 in value) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryItem &&
+          id == other.id &&
+          kind == other.kind &&
+          name == other.name &&
+          vocabularyId == other.vocabularyId &&
+          note == other.note &&
+          photoUploadId == other.photoUploadId &&
+          ownerUserId == other.ownerUserId &&
+          status == other.status &&
+          createdAt == other.createdAt &&
+          updatedAt == other.updatedAt &&
+          queueLength == other.queueLength &&
+          callerQueueRank == other.callerQueueRank &&
+          activeLoan == other.activeLoan &&
+          _deepEquals(queue, other.queue);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    kind,
+    name,
+    vocabularyId,
+    note,
+    photoUploadId,
+    ownerUserId,
+    status,
+    createdAt,
+    updatedAt,
+    queueLength,
+    callerQueueRank,
+    activeLoan,
+    _deepHash(queue),
+  ]);
+}
+
+final class LibraryItemCreateRequest {
+  const LibraryItemCreateRequest({
+    required this.kind,
+    required this.name,
+    this.note,
+    this.photoUploadId,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryItemCreateRequest.fromJson(Map<String, Object?> json) =>
+      LibraryItemCreateRequest(
+        kind: LibraryItemKind.fromWire(
+          _readString(json['kind'], 'LibraryItemCreateRequest.kind'),
+        ),
+        name: _readString(json['name'], 'LibraryItemCreateRequest.name'),
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'LibraryItemCreateRequest.note'),
+        },
+        photoUploadId: switch (json['photo_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'LibraryItemCreateRequest.photo_upload_id',
+          ),
+        },
+        clientRequestId: _readString(
+          json['client_request_id'],
+          'LibraryItemCreateRequest.client_request_id',
+        ),
+      );
+
+  final LibraryItemKind kind;
+
+  /// Kısıtlar: minLength: 1; maxLength: 1024.
+  final String name;
+
+  /// Boş: yok.
+  ///
+  /// Kısıtlar: maxLength: 4096.
+  final String? note;
+
+  final String? photoUploadId;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'kind': kind.wire,
+    'name': name,
+    if (note case final value?) 'note': value,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryItemCreateRequest &&
+          kind == other.kind &&
+          name == other.name &&
+          note == other.note &&
+          photoUploadId == other.photoUploadId &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    kind,
+    name,
+    note,
+    photoUploadId,
+    clientRequestId,
+  ]);
+}
+
+/// Kalemin türü: kitap, kamp malzemesi, masa oyunu, alet, diğer.
+enum LibraryItemKind {
+  book('book'),
+  campingGear('camping_gear'),
+  boardGame('board_game'),
+  tool('tool'),
+  other('other'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const LibraryItemKind(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('LibraryItemKind.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static LibraryItemKind fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class LibraryItemList {
+  const LibraryItemList({required this.items, required this.callerCanAdd});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryItemList.fromJson(Map<String, Object?> json) =>
+      LibraryItemList(
+        items: List<LibraryItem>.unmodifiable(
+          _readList(json['items'], 'LibraryItemList.items').map(
+            (Object? e0) =>
+                LibraryItem.fromJson(_readObject(e0, 'LibraryItemList.items')),
+          ),
+        ),
+        callerCanAdd: _readBool(
+          json['caller_can_add'],
+          'LibraryItemList.caller_can_add',
+        ),
+      );
+
+  final List<LibraryItem> items;
+
+  /// Çağıran şimdi kalem ekleyebilir mi.
+  final bool callerCanAdd;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'items': <Object?>[for (final e0 in items) e0.toJson()],
+    'caller_can_add': callerCanAdd,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryItemList &&
+          _deepEquals(items, other.items) &&
+          callerCanAdd == other.callerCanAdd;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(items), callerCanAdd]);
+}
+
+/// `available` ya da `on_loan` (teslim edildi). Tanınmayan değer `unknown`.
+enum LibraryItemStatus {
+  available('available'),
+  onLoan('on_loan'),
+  withdrawn('withdrawn'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const LibraryItemStatus(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('LibraryItemStatus.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static LibraryItemStatus fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class LibraryItemUpdateRequest {
+  const LibraryItemUpdateRequest({
+    required this.name,
+    this.note,
+    this.photoUploadId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryItemUpdateRequest.fromJson(Map<String, Object?> json) =>
+      LibraryItemUpdateRequest(
+        name: _readString(json['name'], 'LibraryItemUpdateRequest.name'),
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'LibraryItemUpdateRequest.note'),
+        },
+        photoUploadId: switch (json['photo_upload_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'LibraryItemUpdateRequest.photo_upload_id',
+          ),
+        },
+      );
+
+  /// Kısıtlar: minLength: 1; maxLength: 1024.
+  final String name;
+
+  /// Boş: yok.
+  ///
+  /// Kısıtlar: maxLength: 4096.
+  final String? note;
+
+  /// Yoksa fotoğraf kalkar.
+  final String? photoUploadId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'name': name,
+    if (note case final value?) 'note': value,
+    if (photoUploadId case final value?) 'photo_upload_id': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryItemUpdateRequest &&
+          name == other.name &&
+          note == other.note &&
+          photoUploadId == other.photoUploadId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[name, note, photoUploadId]);
+}
+
+/// Bir ödünç; yalnızca iki tarafı görür. `state`: `requested` (istendi),
+/// `approved` (sahibi onayladı), `handed_over` (teslim edildi),
+/// `returned` (iade alındı), `declined` (reddedildi), `cancelled`
+/// (borç alan geri aldı, kalem geri çekildi ya da taraf ayrıldı),
+/// `closed` (teslimdeyken taraflardan biri tayfadan ayrıldı, kayıt 30
+/// gün sonra iade alınmadan kapandı). Tanınmayan değer `unknown`.
+final class LibraryLoan {
+  const LibraryLoan({
+    required this.id,
+    required this.itemId,
+    required this.itemName,
+    required this.itemKind,
+    this.ownerUserId,
+    this.borrowerUserId,
+    required this.state,
+    required this.requestedAt,
+    this.approvedAt,
+    this.handedOverAt,
+    this.dueAt,
+    this.orphanedAt,
+    this.endedAt,
+    required this.callerIsOwner,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryLoan.fromJson(Map<String, Object?> json) => LibraryLoan(
+    id: _readString(json['id'], 'LibraryLoan.id'),
+    itemId: _readString(json['item_id'], 'LibraryLoan.item_id'),
+    itemName: _readString(json['item_name'], 'LibraryLoan.item_name'),
+    itemKind: LibraryItemKind.fromWire(
+      _readString(json['item_kind'], 'LibraryLoan.item_kind'),
+    ),
+    ownerUserId: switch (json['owner_user_id']) {
+      null => null,
+      final Object v => _readString(v, 'LibraryLoan.owner_user_id'),
+    },
+    borrowerUserId: switch (json['borrower_user_id']) {
+      null => null,
+      final Object v => _readString(v, 'LibraryLoan.borrower_user_id'),
+    },
+    state: LibraryLoanState.fromWire(
+      _readString(json['state'], 'LibraryLoan.state'),
+    ),
+    requestedAt: _readDateTime(
+      json['requested_at'],
+      'LibraryLoan.requested_at',
+    ),
+    approvedAt: switch (json['approved_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'LibraryLoan.approved_at'),
+    },
+    handedOverAt: switch (json['handed_over_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'LibraryLoan.handed_over_at'),
+    },
+    dueAt: switch (json['due_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'LibraryLoan.due_at'),
+    },
+    orphanedAt: switch (json['orphaned_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'LibraryLoan.orphaned_at'),
+    },
+    endedAt: switch (json['ended_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'LibraryLoan.ended_at'),
+    },
+    callerIsOwner: _readBool(
+      json['caller_is_owner'],
+      'LibraryLoan.caller_is_owner',
+    ),
+  );
+
+  final String id;
+
+  final String itemId;
+
+  /// Kalemin adı (kitapta tayfa sözlüğündeki adı).
+  final String itemName;
+
+  final LibraryItemKind itemKind;
+
+  /// Kalemin sahibi; hesabı silindiyse yoktur.
+  final String? ownerUserId;
+
+  /// Borç alan; hesabı silindiyse yoktur.
+  final String? borrowerUserId;
+
+  final LibraryLoanState state;
+
+  final DateTime requestedAt;
+
+  final DateTime? approvedAt;
+
+  final DateTime? handedOverAt;
+
+  /// İade tarihi; yoksa alan yoktur.
+  final DateTime? dueAt;
+
+  /// Teslimdeyken taraflardan biri tayfadan ayrıldı; kayıt 30 gün sonra kapanır.
+  final DateTime? orphanedAt;
+
+  final DateTime? endedAt;
+
+  /// Çağıran kalemin sahibi mi (değilse borç alandır).
+  final bool callerIsOwner;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'item_id': itemId,
+    'item_name': itemName,
+    'item_kind': itemKind.wire,
+    if (ownerUserId case final value?) 'owner_user_id': value,
+    if (borrowerUserId case final value?) 'borrower_user_id': value,
+    'state': state.wire,
+    'requested_at': requestedAt.toUtc().toIso8601String(),
+    if (approvedAt case final value?)
+      'approved_at': value.toUtc().toIso8601String(),
+    if (handedOverAt case final value?)
+      'handed_over_at': value.toUtc().toIso8601String(),
+    if (dueAt case final value?) 'due_at': value.toUtc().toIso8601String(),
+    if (orphanedAt case final value?)
+      'orphaned_at': value.toUtc().toIso8601String(),
+    if (endedAt case final value?) 'ended_at': value.toUtc().toIso8601String(),
+    'caller_is_owner': callerIsOwner,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryLoan &&
+          id == other.id &&
+          itemId == other.itemId &&
+          itemName == other.itemName &&
+          itemKind == other.itemKind &&
+          ownerUserId == other.ownerUserId &&
+          borrowerUserId == other.borrowerUserId &&
+          state == other.state &&
+          requestedAt == other.requestedAt &&
+          approvedAt == other.approvedAt &&
+          handedOverAt == other.handedOverAt &&
+          dueAt == other.dueAt &&
+          orphanedAt == other.orphanedAt &&
+          endedAt == other.endedAt &&
+          callerIsOwner == other.callerIsOwner;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    itemId,
+    itemName,
+    itemKind,
+    ownerUserId,
+    borrowerUserId,
+    state,
+    requestedAt,
+    approvedAt,
+    handedOverAt,
+    dueAt,
+    orphanedAt,
+    endedAt,
+    callerIsOwner,
+  ]);
+}
+
+final class LibraryLoanList {
+  const LibraryLoanList({required this.loans});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryLoanList.fromJson(Map<String, Object?> json) =>
+      LibraryLoanList(
+        loans: List<LibraryLoan>.unmodifiable(
+          _readList(json['loans'], 'LibraryLoanList.loans').map(
+            (Object? e0) =>
+                LibraryLoan.fromJson(_readObject(e0, 'LibraryLoanList.loans')),
+          ),
+        ),
+      );
+
+  final List<LibraryLoan> loans;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'loans': <Object?>[for (final e0 in loans) e0.toJson()],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryLoanList && _deepEquals(loans, other.loans);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[_deepHash(loans)]);
+}
+
+enum LibraryLoanState {
+  requested('requested'),
+  approved('approved'),
+  handedOver('handed_over'),
+  returned('returned'),
+  declined('declined'),
+  cancelled('cancelled'),
+  closed('closed'),
+
+  /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
+  unknown('unknown');
+
+  const LibraryLoanState(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('LibraryLoanState.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static LibraryLoanState fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+final class LibraryQueueEntry {
+  const LibraryQueueEntry({required this.userId, required this.rank});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory LibraryQueueEntry.fromJson(Map<String, Object?> json) =>
+      LibraryQueueEntry(
+        userId: _readString(json['user_id'], 'LibraryQueueEntry.user_id'),
+        rank: _readInt(json['rank'], 'LibraryQueueEntry.rank'),
+      );
+
+  final String userId;
+
+  /// 1 sıradaki.
+  final int rank;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'user_id': userId,
+    'rank': rank,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LibraryQueueEntry &&
+          userId == other.userId &&
+          rank == other.rank;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[userId, rank]);
+}
+
 /// Kısıtlar: varsayılan (sunucu): `going`.
 enum ListEventAttendeesStatus {
   going('going'),
@@ -18107,13 +18804,14 @@ enum ModerationReportStatus {
   }
 }
 
-/// `daily` günün içeriğidir (#269).
+/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270).
 enum Module {
   announcements('announcements'),
   events('events'),
   qa('qa'),
   polls('polls'),
   daily('daily'),
+  library_('library'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -18663,6 +19361,13 @@ final class Notification {
   /// `push_now_started_title` / `push_now_started_body` anahtarlarıdır.
   /// Tayfa seviyesi `none` ya da tayfanın şimdi tercihi (`tayfa_now`)
   /// `none` ise push gitmez.
+  /// `library_due` (#270, ADR-0040 §1): ödüncün iade tarihi geçti;
+  /// borç alana tek hatırlatma. `library_loan_orphaned`: teslim
+  /// edilmiş bir ödünçte taraflardan biri tayfadan ayrıldı; iki tarafa
+  /// (ayrılana da) uyarı, kayıt 30 gün sonra kapanır. İkisinde de hedef
+  /// ödüncün tayfasıdır (`tayfa`), `actor_id` yoktur; eşyayı ve kişileri
+  /// adlandırmaz, ödünçleri `GET /v1/tayfas/{tayfa_id}/library/loans`
+  /// verir. Yalnızca uygulama içi, push gitmez.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -19207,6 +19912,13 @@ enum NotificationTargetType {
 /// `push_now_started_title` / `push_now_started_body` anahtarlarıdır.
 /// Tayfa seviyesi `none` ya da tayfanın şimdi tercihi (`tayfa_now`)
 /// `none` ise push gitmez.
+/// `library_due` (#270, ADR-0040 §1): ödüncün iade tarihi geçti;
+/// borç alana tek hatırlatma. `library_loan_orphaned`: teslim
+/// edilmiş bir ödünçte taraflardan biri tayfadan ayrıldı; iki tarafa
+/// (ayrılana da) uyarı, kayıt 30 gün sonra kapanır. İkisinde de hedef
+/// ödüncün tayfasıdır (`tayfa`), `actor_id` yoktur; eşyayı ve kişileri
+/// adlandırmaz, ödünçleri `GET /v1/tayfas/{tayfa_id}/library/loans`
+/// verir. Yalnızca uygulama içi, push gitmez.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -19235,6 +19947,8 @@ enum NotificationType {
   celebration('celebration'),
   badgeEarned('badge_earned'),
   nowStarted('now_started'),
+  libraryDue('library_due'),
+  libraryLoanOrphaned('library_loan_orphaned'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -21050,7 +21764,9 @@ enum ReportResolveRequestResolution {
 /// toplama bileşenindeki bir sorudur (#256); anonim sorunun yazarı
 /// tayfa kuyruğunda yer almaz (`subject_user_id` yoktur), yalnızca
 /// platform yönetimine görünür. `daily_item` günün içeriği havuzundaki
-/// bir içeriktir (#269); `daily` modülü açık olmalıdır.
+/// bir içeriktir (#269); `daily` modülü açık olmalıdır. `library_item`
+/// ortak kütüphanedeki bir kalemdir (#270; konusu sahibidir); `library`
+/// modülü açık, kalem geri çekilmemiş olmalıdır.
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -21065,6 +21781,7 @@ enum ReportTargetType {
   channelMessage('channel_message'),
   eventQuestion('event_question'),
   dailyItem('daily_item'),
+  libraryItem('library_item'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -23093,6 +23810,7 @@ final class TayfaModules {
     this.qa,
     this.polls,
     this.daily,
+    this.library_,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -23119,6 +23837,10 @@ final class TayfaModules {
       null => null,
       final Object v => _readBool(v, 'TayfaModules.daily'),
     },
+    library_: switch (json['library']) {
+      null => null,
+      final Object v => _readBool(v, 'TayfaModules.library'),
+    },
   );
 
   final bool? announcements;
@@ -23131,6 +23853,8 @@ final class TayfaModules {
 
   final bool? daily;
 
+  final bool? library_;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (announcements case final value?) 'announcements': value,
@@ -23138,6 +23862,7 @@ final class TayfaModules {
     if (qa case final value?) 'qa': value,
     if (polls case final value?) 'polls': value,
     if (daily case final value?) 'daily': value,
+    if (library_ case final value?) 'library': value,
   };
 
   @override
@@ -23148,11 +23873,18 @@ final class TayfaModules {
           events == other.events &&
           qa == other.qa &&
           polls == other.polls &&
-          daily == other.daily;
+          daily == other.daily &&
+          library_ == other.library_;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[announcements, events, qa, polls, daily]);
+  int get hashCode => Object.hashAll(<Object?>[
+    announcements,
+    events,
+    qa,
+    polls,
+    daily,
+    library_,
+  ]);
 }
 
 /// Tayfanın Keşfet vitrinindeki istatistik kartı (#267; ADR-0026 §3,
@@ -24039,7 +24771,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 1; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover`, `log_photo`, `event_photo` ve `chat_photo` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
+  /// `cover`, `log_photo`, `event_photo`, `chat_photo` ve `library_item` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -24111,6 +24843,8 @@ final class UploadCreated {
   int get hashCode => Object.hashAll(<Object?>[upload, _deepHash(targets)]);
 }
 
+/// `library_item` ortak kütüphane kaleminin fotoğrafıdır (#270; kalem
+/// başına bir).
 /// `cover` tayfa ya da etkinlik kapağıdır. `event_photo` etkinlik
 /// albümünün fotoğrafıdır (`POST .../events/{event_id}/photos`); kapak
 /// olarak kullanılamaz. `chat_photo` kanal mesajı fotoğrafı,
@@ -24124,6 +24858,7 @@ enum UploadPurpose {
   chatPhoto('chat_photo'),
   dmAttachment('dm_attachment'),
   reportEvidence('report_evidence'),
+  libraryItem('library_item'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

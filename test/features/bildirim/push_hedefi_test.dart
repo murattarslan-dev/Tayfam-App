@@ -134,6 +134,12 @@ void main() {
         if (tur == NotificationType.celebration) continue;
         // Rozet bildirimi de yalnızca uygulama içidir (Tayfam-Api #258).
         if (tur == NotificationType.badgeEarned) continue;
+        // Kütüphane bildirimleri de yalnızca uygulama içidir (Tayfam-Api
+        // #270).
+        if (tur == NotificationType.libraryDue ||
+            tur == NotificationType.libraryLoanOrphaned) {
+          continue;
+        }
         expect(arb['push_${tur.wire}_title'], isA<String>(), reason: tur.wire);
         expect(arb['push_${tur.wire}_body'], isA<String>(), reason: tur.wire);
       }

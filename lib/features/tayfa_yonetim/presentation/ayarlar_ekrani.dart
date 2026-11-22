@@ -584,6 +584,12 @@ class _ModullerKarti extends ConsumerWidget {
         m.gunun_icerigi_modul_aciklama,
         moduller.daily == true,
       ),
+      (
+        Module.library_,
+        m.kutuphane_modul,
+        m.kutuphane_modul_aciklama,
+        moduller.library_ == true,
+      ),
     ];
     return ListeKarti(
       children: [

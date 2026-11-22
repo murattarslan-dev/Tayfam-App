@@ -30,6 +30,9 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - `now_started` (Şimdi başlat; Tayfam-Api ADR-0038 §4): etkinliğin
 ///   detayı. Anlık etkinlikte bildirim bir davettir: alıcı tayfanın etkin
 ///   üyesi değilse ([simdiDavetiMi]) gelen tayfa davetleri açılır.
+/// - `library_due` (iade tarihi geçti) ve `library_loan_orphaned` (ödünçteki
+///   kalemin karşı tarafı ayrıldı; Tayfam-Api ADR-0040 §1): tayfanın ortak
+///   kütüphanesi; bildirim kalemi ve kişiyi adlandırmaz.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// [etkinUyeMi] tayfalarım listesinden kurulur ([etkinUyelik]); liste
@@ -65,6 +68,17 @@ String? bildirimAdresi(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
       final tayfa?,
     ) =>
       Adresler.tayfa(tayfa),
+    // Ortak kütüphane (Tayfam-Api ADR-0040 §1): hedef tayfadır; bildirim
+    // içeriksizdir, kütüphane açılır.
+    (
+      NotificationType.libraryDue || NotificationType.libraryLoanOrphaned,
+      _,
+      _,
+    ) =>
+      switch (tayfaId ?? _tayfaHedefi(bildirim)) {
+        final tayfa? => Adresler.kutuphane(tayfa),
+        null => null,
+      },
     // KVKK veri dışa aktarma hazır (ADR-0022): talep listesi açılır.
     (_, NotificationTargetType.dataExport, _?) => Adresler.veriDisaAktarma,
     _ => null,
@@ -102,6 +116,12 @@ String? bildirimKisisi(Notification bildirim) {
   };
   return _gecerli(kimlik);
 }
+
+/// Hedefi `tayfa` olan bildirimin tayfası; biçimsizse `null`.
+String? _tayfaHedefi(Notification bildirim) =>
+    bildirim.targetType == NotificationTargetType.tayfa
+    ? _gecerli(bildirim.targetId)
+    : null;
 
 /// Kullanıcı [tayfaId]'nin etkin üyesi mi.
 typedef EtkinUyeMi = bool Function(String tayfaId);
