@@ -107,8 +107,7 @@ class _MateryalDetayEkraniState extends ConsumerState<MateryalDetayEkrani> {
     final islemler = materyal == null
         ? const <_Islem>[]
         : [
-            if (materyal.callerCanEdit &&
-                materyal.kind != MaterialKind.unknown)
+            if (materyal.callerCanEdit && materyal.kind != MaterialKind.unknown)
               _Islem.duzenle,
             if (materyal.callerCanDelete) benim ? _Islem.sil : _Islem.kaldir,
             if (!benim) _Islem.sikayet,

@@ -118,7 +118,9 @@ class _MateryalListeEkraniState extends ConsumerState<MateryalListeEkrani> {
                 else if (liste.ogeler.isEmpty)
                   TayfamKart(
                     child: Text(
-                      suzgecBos(_suzgec) ? m.materyal_bos : m.materyal_bos_suzgec,
+                      suzgecBos(_suzgec)
+                          ? m.materyal_bos
+                          : m.materyal_bos_suzgec,
                       style: context.yazi.bodyMedium?.copyWith(
                         color: context.renkler.metinGovde,
                       ),
@@ -303,15 +305,15 @@ class _DersSuzgeciSayfasiState extends State<_DersSuzgeciSayfasi> {
               children: [
                 IkincilEylem(
                   etiket: m.materyal_suzgec_temizle,
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).pop<({DersKonuSecimi? secim})>((secim: null)),
+                  onPressed: () =>
+                      Navigator.of(context)
+                          .pop<({DersKonuSecimi? secim})>((secim: null)),
                 ),
                 BirincilEylem(
                   etiket: m.materyal_suzgec_uygula,
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).pop<({DersKonuSecimi? secim})>((secim: _secim)),
+                  onPressed: () =>
+                      Navigator.of(context)
+                          .pop<({DersKonuSecimi? secim})>((secim: _secim)),
                 ),
               ],
             ),

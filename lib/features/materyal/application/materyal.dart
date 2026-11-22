@@ -161,9 +161,7 @@ String? baglantiyiTemizle(String girdi) {
 /// En çok bağlantı uzunluğu (sözleşme: sunucu normalleştirince 500).
 const int baglantiEnCok = 500;
 
-final RegExp _bosluk = RegExp(
-  r'[\s\u0000-\u001F\u007F­​-‏ -‮⁠-⁤﻿]',
-);
+final RegExp _bosluk = RegExp(r'[\s\u0000-\u001F\u007F­​-‏ -‮⁠-⁤﻿]');
 
 final RegExp _ipv4 = RegExp(r'^[0-9]+(\.[0-9]+){3}$');
 

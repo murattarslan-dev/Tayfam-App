@@ -87,9 +87,7 @@ class MateryalKarti extends ConsumerWidget {
                   materyal: materyal,
                   etiketler: false,
                   onTap: () => unawaited(
-                    context.push(
-                      Adresler.materyalDetayi(tayfaId, materyal.id),
-                    ),
+                    context.push(Adresler.materyalDetayi(tayfaId, materyal.id)),
                   ),
                 ),
             ],

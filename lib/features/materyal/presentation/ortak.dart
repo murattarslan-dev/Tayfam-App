@@ -14,8 +14,7 @@ import 'package:tayfam/features/hesap/hesap.dart' show disBaglantiyiAc;
 import 'package:tayfam/features/materyal/application/materyal.dart';
 import 'package:tayfam/features/materyal/application/materyal_formu.dart';
 import 'package:tayfam/features/materyal/presentation/materyal_formu_ekrani.dart';
-import 'package:tayfam/features/soru_cevap/soru_cevap.dart'
-    show bildirimGoster;
+import 'package:tayfam/features/soru_cevap/soru_cevap.dart' show bildirimGoster;
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Materyal türünün ikonu.
@@ -292,8 +291,7 @@ class MateryalFotograflari extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, kisit) {
         final kenar =
-            ((kisit.maxWidth -
-                        TayfamSpacing.s8 * (materyalFotografEnCok - 1)) /
+            ((kisit.maxWidth - TayfamSpacing.s8 * (materyalFotografEnCok - 1)) /
                     materyalFotografEnCok)
                 .clamp(TayfamSizes.dokunmaMin, TayfamSizes.okumaGenisligi / 2)
                 .toDouble();

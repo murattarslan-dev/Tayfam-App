@@ -9,8 +9,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/materyal/application/materyal_formu.dart';
 import 'package:tayfam/features/materyal/presentation/ortak.dart';
-import 'package:tayfam/features/soru_cevap/soru_cevap.dart'
-    show FormUstEylemi;
+import 'package:tayfam/features/soru_cevap/soru_cevap.dart' show FormUstEylemi;
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Materyal ekleme ve düzenleme formu (Tayfam-Api ADR-0040 §3): tür
