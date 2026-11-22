@@ -596,6 +596,12 @@ class _ModullerKarti extends ConsumerWidget {
         m.soru_havuzu_modul_aciklama,
         moduller.questionPool == true,
       ),
+      (
+        Module.materials,
+        m.materyal_modul,
+        m.materyal_modul_aciklama,
+        moduller.materials == true,
+      ),
     ];
     return ListeKarti(
       children: [
