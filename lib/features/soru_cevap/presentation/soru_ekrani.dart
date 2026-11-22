@@ -13,6 +13,7 @@ import 'package:tayfam/features/soru_cevap/application/cevap_listesi_notifier.da
 import 'package:tayfam/features/soru_cevap/application/en_faydali.dart';
 import 'package:tayfam/features/soru_cevap/application/soru_notifier.dart';
 import 'package:tayfam/features/soru_cevap/presentation/cevap_karti.dart';
+import 'package:tayfam/features/soru_cevap/presentation/havuz_gorunumu.dart';
 import 'package:tayfam/features/soru_cevap/presentation/soru_cevap_ortak.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -27,6 +28,10 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// gönderilmez, "bulunamadı" gösterilir. ⋯ menüsünde yazar ile yönetime
 /// Düzenle ve (onaylı) Sil, diğerlerine Şikâyet et; kararı sunucu verir
 /// (kesin kural 5).
+///
+/// Soru havuzu sorusu (`pool: question_pool`) aynı ekranla açılır; sorunun
+/// içeriği, cevap fotoğrafları ve formlar kayıtlı [SoruHavuzuGorunumu]'nden
+/// gelir.
 class SoruEkrani extends ConsumerWidget {
   const SoruEkrani({super.key, required this.tayfaId, required this.soruId});
 
@@ -55,6 +60,17 @@ class SoruEkrani extends ConsumerWidget {
     final yonetimde = ref.watch(tayfaOzetiProvider(tayfaId)).yonetimde;
     final soru = durum.value;
     final hata = durum.error;
+    final gorunum = soru != null && havuzSorusuMu(soru)
+        ? ref.watch(soruHavuzuGorunumuProvider)
+        : null;
+    if (gorunum != null) {
+      ref.listen(saglayici, (onceki, sonraki) {
+        final yeni = sonraki.value;
+        if (yeni != null && !identical(yeni, onceki?.value)) {
+          gorunum.soruDegisti(ref, yeni);
+        }
+      });
+    }
     final yazarId = soru?.authorUserId;
     final kendisi = yazarId != null && ref.watch(kendisiMiProvider(yazarId));
     return Scaffold(
@@ -74,6 +90,7 @@ class SoruEkrani extends ConsumerWidget {
                   soru,
                   kendisi: kendisi,
                   yonetimde: yonetimde,
+                  gorunum: gorunum,
                 ),
               ),
             ),
@@ -84,12 +101,14 @@ class SoruEkrani extends ConsumerWidget {
           ? null
           : _CevapYazCubugu(
               onPressed: () => unawaited(
-                cevapFormunuAc(
-                  context,
-                  tayfaId: tayfaId,
-                  soruId: soruId,
-                  soruBasligi: soru.title,
-                ),
+                gorunum != null
+                    ? gorunum.cevapFormunuAc(context, soru)
+                    : cevapFormunuAc(
+                        context,
+                        tayfaId: tayfaId,
+                        soruId: soruId,
+                        soruBasligi: soru.title,
+                      ),
               ),
             ),
       body: SafeArea(
@@ -112,11 +131,15 @@ class SoruEkrani extends ConsumerWidget {
                 ),
                 children: [
                   if (soru != null) ...[
-                    _SoruIcerigi(soru: soru),
+                    if (gorunum != null)
+                      gorunum.soruIcerigi(context, soru)
+                    else
+                      _SoruIcerigi(soru: soru),
                     _Cevaplar(
                       anahtar: _anahtar,
                       soru: soru,
                       yonetimde: yonetimde,
+                      gorunum: gorunum,
                     ),
                   ] else if (hata != null)
                     YuklemeHatasi(
@@ -162,6 +185,7 @@ class SoruEkrani extends ConsumerWidget {
     Question soru, {
     required bool kendisi,
     required bool yonetimde,
+    required SoruHavuzuGorunumu? gorunum,
   }) async {
     final metinler = AppLocalizations.of(context);
     final islem = await icerikIslemiSec(
@@ -172,7 +196,11 @@ class SoruEkrani extends ConsumerWidget {
     if (islem == null || !context.mounted) return;
     switch (islem) {
       case IcerikIslemi.duzenle:
-        await soruFormunuAc(context, tayfaId: tayfaId, duzenlenen: soru);
+        if (gorunum != null) {
+          await gorunum.soruyuDuzenle(context, soru);
+        } else {
+          await soruFormunuAc(context, tayfaId: tayfaId, duzenlenen: soru);
+        }
       case IcerikIslemi.sil:
         final onay = await silmeyiOnayla(
           context,
@@ -189,6 +217,7 @@ class SoruEkrani extends ConsumerWidget {
           islemHatasiniBildir(context, hata);
           return;
         }
+        gorunum?.soruSilindi(ref, soru);
         bildirimGoster(bildirim, metinler.soru_silindi);
         await Navigator.of(context).maybePop();
       case IcerikIslemi.sikayet:
@@ -252,11 +281,15 @@ class _Cevaplar extends ConsumerWidget {
     required this.anahtar,
     required this.soru,
     required this.yonetimde,
+    required this.gorunum,
   });
 
   final SoruAnahtari anahtar;
   final Question soru;
   final bool yonetimde;
+
+  /// Soru havuzu sorusunda kayıtlı görünüm; Soru-Cevap'ta `null`.
+  final SoruHavuzuGorunumu? gorunum;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -321,6 +354,7 @@ class _Cevaplar extends ConsumerWidget {
                   cevap: cevap,
                   yonetimde: yonetimde,
                   enFaydali: cevap.id == enFaydali,
+                  ek: gorunum?.cevapEki(context, cevap),
                   onOyla: (oy) => unawaited(_oyla(context, ref, cevap, oy)),
                   onIslem: (islem) =>
                       unawaited(_cevapIslemi(context, ref, cevap, islem)),
@@ -373,13 +407,18 @@ class _Cevaplar extends ConsumerWidget {
     final metinler = AppLocalizations.of(context);
     switch (islem) {
       case IcerikIslemi.duzenle:
-        await cevapFormunuAc(
-          context,
-          tayfaId: anahtar.tayfaId,
-          soruId: anahtar.soruId,
-          soruBasligi: soru.title,
-          duzenlenen: cevap,
-        );
+        final gorunum = this.gorunum;
+        if (gorunum != null) {
+          await gorunum.cevapFormunuAc(context, soru, duzenlenen: cevap);
+        } else {
+          await cevapFormunuAc(
+            context,
+            tayfaId: anahtar.tayfaId,
+            soruId: anahtar.soruId,
+            soruBasligi: soru.title,
+            duzenlenen: cevap,
+          );
+        }
       case IcerikIslemi.sil:
         final yazarId = cevap.authorUserId;
         final kendisi = yazarId != null && ref.read(kendisiMiProvider(yazarId));

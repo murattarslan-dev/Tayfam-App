@@ -809,6 +809,7 @@ void main() {
           'voted': false,
           'created_at': '2026-11-10T10:00:00Z',
           'updated_at': '2026-11-10T10:00:00Z',
+          'photo_upload_ids': <String>[],
         }),
       });
       await _kuyruguAc(tester, tasima, themeMode: ThemeMode.dark);

@@ -20,6 +20,7 @@ String gerekceMetni(AppLocalizations m, ReportReason gerekce) =>
       ReportReason.spam => m.sikayet_gerekce_spam,
       ReportReason.copyright => m.sikayet_gerekce_telif,
       ReportReason.staffConduct => m.sikayet_gerekce_yonetim,
+      ReportReason.paidTutoring => m.soru_havuzu_gerekce_ucretli_ders,
       ReportReason.other || ReportReason.unknown => m.sikayet_gerekce_diger,
     };
 

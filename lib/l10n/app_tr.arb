@@ -15368,5 +15368,185 @@
   "kutuphane_fotograf_alani": "Eşyanın fotoğrafı",
   "@kutuphane_fotograf_alani": {
     "description": "Kalem formunda fotoğraf bölümünün başlığı; fotoğrafın ekran okuyucu etiketi."
+  },
+  "soru_havuzu_ad": "Soru havuzu",
+  "@soru_havuzu_ad": {
+    "description": "Soru havuzu modülünün ve ana sayfa kartının adı; liste ekranının başlığı."
+  },
+  "soru_havuzu_aciklama": "Üyeler takıldıkları soruları paylaşır, birlikte çözer.",
+  "@soru_havuzu_aciklama": {
+    "description": "Ana sayfa düzenleme ekranında soru havuzu bileşeninin kısa açıklaması."
+  },
+  "soru_havuzu_tumu": "Tümü",
+  "@soru_havuzu_tumu": {
+    "description": "Ana sayfadaki soru havuzu kartından bütün listeye giden bağlantı."
+  },
+  "soru_havuzu_yukleniyor": "Sorular yükleniyor",
+  "@soru_havuzu_yukleniyor": {
+    "description": "Soru havuzu okunurken yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "soru_havuzu_bos": "Havuzda henüz soru yok. Takıldığın ilk soruyu sen sor.",
+  "@soru_havuzu_bos": {
+    "description": "Soru havuzu boşken gösterilen metin."
+  },
+  "soru_havuzu_suzgec_bos": "Bu derste ya da konuda soru yok.",
+  "@soru_havuzu_suzgec_bos": {
+    "description": "Ders/konu süzgecine uyan soru yokken gösterilen metin."
+  },
+  "soru_havuzu_suzgec": "Ders ve konu süzgeci",
+  "@soru_havuzu_suzgec": {
+    "description": "Soru havuzu listesindeki ders/konu süzgecinin ekran okuyucu etiketi ve süzgeç sayfasının başlığı."
+  },
+  "soru_havuzu_ders_sec": "Ders seç",
+  "@soru_havuzu_ders_sec": {
+    "description": "Süzgeçte ders seçilmemişken çipin metni."
+  },
+  "soru_havuzu_suzgec_temizle": "Temizle",
+  "@soru_havuzu_suzgec_temizle": {
+    "description": "Süzgeç sayfasında ders/konu süzgecini kaldıran düğme."
+  },
+  "soru_havuzu_suzgec_uygula": "Uygula",
+  "@soru_havuzu_suzgec_uygula": {
+    "description": "Süzgeç sayfasında seçilen ders/konuyla listeyi süzen düğme."
+  },
+  "soru_havuzu_olustur": "Soru havuzuna sor",
+  "@soru_havuzu_olustur": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında soru havuzu seçeneği."
+  },
+  "soru_havuzu_olustur_aciklama": "Takıldığın soruyu tayfana sor",
+  "@soru_havuzu_olustur_aciklama": {
+    "description": "Ana sayfadaki \"Oluştur\" sayfasında soru havuzu seçeneğinin açıklaması."
+  },
+  "soru_havuzu_soruldu": "Soru havuza eklendi.",
+  "@soru_havuzu_soruldu": {
+    "description": "Soru havuzuna soru sorulunca kısa bildirim."
+  },
+  "soru_havuzu_form_yeni": "Havuza soru sor",
+  "@soru_havuzu_form_yeni": {
+    "description": "Soru havuzu soru formunun başlığı (yeni soru)."
+  },
+  "soru_havuzu_form_duzenle": "Soruyu düzenle",
+  "@soru_havuzu_form_duzenle": {
+    "description": "Soru havuzu soru formunun başlığı (düzenleme)."
+  },
+  "soru_havuzu_ders_hatasi": "Bir ders seç.",
+  "@soru_havuzu_ders_hatasi": {
+    "description": "Soru havuzu formunda ders seçilmemişken ya da seçilen ders/konu artık seçilemezken ders alanının altındaki hata."
+  },
+  "soru_havuzu_metin_etiketi": "Soru",
+  "@soru_havuzu_metin_etiketi": {
+    "description": "Soru havuzu formundaki metin alanının etiketi."
+  },
+  "soru_havuzu_metin_ipucu": "Sorunu yaz ya da fotoğrafını ekle; ikisini birlikte de ekleyebilirsin.",
+  "@soru_havuzu_metin_ipucu": {
+    "description": "Soru havuzu formundaki metin alanının yardım metni."
+  },
+  "soru_havuzu_metin_uzun": "Metin en çok 10.000 karakter olabilir.",
+  "@soru_havuzu_metin_uzun": {
+    "description": "Soru havuzu formunda metin çok uzunken alanın altındaki hata."
+  },
+  "soru_havuzu_icerik_yok": "Bir metin yaz ya da en az bir fotoğraf ekle.",
+  "@soru_havuzu_icerik_yok": {
+    "description": "Soru havuzu formunda ne metin ne fotoğraf varken alanın altındaki hata."
+  },
+  "soru_havuzu_fotograflar": "Fotoğraflar (en çok 2)",
+  "@soru_havuzu_fotograflar": {
+    "description": "Soru havuzu soru ve cevap formlarında fotoğraf bölümünün başlığı."
+  },
+  "soru_havuzu_kural_notu": "Ücretli özel ders teklifi ve reklamı yasaktır. Telefon, adres ya da sosyal medya hesabı gibi iletişim bilgilerini paylaşma.",
+  "@soru_havuzu_kural_notu": {
+    "description": "Soru havuzu formunun altındaki topluluk kuralı notu (genç kullanıcı güvenliği)."
+  },
+  "soru_havuzu_fotografli_soru": "Fotoğraflı soru",
+  "@soru_havuzu_fotografli_soru": {
+    "description": "Metni olmayan (yalnızca fotoğraflı) havuz sorusunun satırda ve alıntıda görünen metni."
+  },
+  "soru_havuzu_fotograf_sayisi": "{sayi, plural, other{{sayi} fotoğraf}}",
+  "@soru_havuzu_fotograf_sayisi": {
+    "description": "Havuz sorusu satırında sorunun fotoğraf sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "soru_havuzu_fotograf_etiketi": "Fotoğraf {sira} / {toplam}",
+  "@soru_havuzu_fotograf_etiketi": {
+    "description": "Havuz sorusu ya da cevabındaki fotoğrafın ekran okuyucu etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "soru_havuzu_fotograf_sayaci": "{sira} / {toplam}",
+  "@soru_havuzu_fotograf_sayaci": {
+    "description": "Tam ekran görüntüleyicinin üstünde kaçıncı fotoğrafta olunduğu.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "soru_havuzu_gerekce_ucretli_ders": "Ücretli özel ders teklifi ya da reklamı",
+  "@soru_havuzu_gerekce_ucretli_ders": {
+    "description": "Şikâyet ve ban gerekçesi: ücretli özel ders teklifi ya da reklamı (`paid_tutoring`)."
+  },
+  "bilesen_pool_link_ad": "Soru havuzundan sorular",
+  "@bilesen_pool_link_ad": {
+    "description": "Soru havuzu bağlantısı bileşeninin (`pool_link`) adı; tanımda kendi adı (`labels`) yoksa bölüm başlığında görünür."
+  },
+  "bilesen_pool_link_bos": "Henüz soru bağlanmadı.",
+  "@bilesen_pool_link_bos": {
+    "description": "Etkinliğe bağlı havuz sorusu yokken bölümdeki metin."
+  },
+  "bilesen_pool_link_modul_kapali": "Bu tayfada soru havuzu kapalı.",
+  "@bilesen_pool_link_modul_kapali": {
+    "description": "Tayfanın soru havuzu modülü kapalıyken bölümdeki metin."
+  },
+  "bilesen_pool_link_sec": "Soruları seç",
+  "@bilesen_pool_link_sec": {
+    "description": "Organizatörün etkinliğe bağlanacak havuz sorularını seçtiği düğme ve seçim sayfasının başlığı."
+  },
+  "bilesen_pool_link_kaydet": "Kaydet",
+  "@bilesen_pool_link_kaydet": {
+    "description": "Seçim sayfasında bağlı soruları kaydeden düğme."
+  },
+  "bilesen_pool_link_kaydedildi": "Bağlı sorular güncellendi.",
+  "@bilesen_pool_link_kaydedildi": {
+    "description": "Bağlı sorular kaydedilince kısa bildirim."
+  },
+  "bilesen_pool_link_sayac": "{secili} / {enCok} soru seçildi",
+  "@bilesen_pool_link_sayac": {
+    "description": "Seçim sayfasında seçilen soru sayısı ve en çok sayı.",
+    "placeholders": {
+      "secili": {
+        "type": "int",
+        "example": "3"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "bilesen_pool_link_yukleniyor": "Havuz soruları yükleniyor",
+  "@bilesen_pool_link_yukleniyor": {
+    "description": "Seçim sayfasında havuz soruları okunurken yükleniyor göstergesinin ekran okuyucu etiketi."
+  },
+  "bilesen_pool_link_havuz_bos": "Soru havuzunda henüz soru yok.",
+  "@bilesen_pool_link_havuz_bos": {
+    "description": "Seçim sayfasında havuz boşken gösterilen metin."
   }
 }

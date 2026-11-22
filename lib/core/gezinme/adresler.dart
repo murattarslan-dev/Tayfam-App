@@ -332,6 +332,18 @@ abstract final class Adresler {
   /// açılır (Tayfam-Api ADR-0040 §1).
   static String kutuphane(String tayfaId) => '${tayfa(tayfaId)}/$kutuphaneYolu';
 
+  /// Soru havuzunun tayfa altındaki yolu (#256).
+  static const soruHavuzuYolu = 'soru-havuzu';
+
+  /// Soru havuzu (Eğitim; Tayfam-Api ADR-0040 §2): ders/konu süzgeçli
+  /// soru listesi.
+  static String soruHavuzu(String tayfaId) =>
+      '${tayfa(tayfaId)}/$soruHavuzuYolu';
+
+  /// Soru havuzundaki bir soru ve cevapları.
+  static String havuzSorusu(String tayfaId, String soruId) =>
+      '${soruHavuzu(tayfaId)}/$soruId';
+
   static const katilimIstekleriYolu = 'istekler';
 
   /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).

@@ -26,6 +26,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
     show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
 export 'package:tayfam/features/etkinlik/bilesenler/gunluk/gunluk_bileseni.dart'
     show GunlukBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/havuz/havuz_bileseni.dart'
+    show HavuzBaglantisiBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/hedef/hedef_bileseni.dart'
     show HedefBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/kronometre/kronometre_bileseni.dart'
