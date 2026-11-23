@@ -4066,6 +4066,198 @@
       }
     }
   },
+  "bilesen_vote_ad": "Oylama",
+  "@bilesen_vote_ad": {
+    "description": "Oylama bileşeninin adı (katalogda adı yoksa bölüm başlığı)."
+  },
+  "bilesen_vote_acik": "Açık",
+  "@bilesen_vote_acik": {
+    "description": "Oylama açıkken durum etiketi."
+  },
+  "bilesen_vote_kapandi": "Kapandı",
+  "@bilesen_vote_kapandi": {
+    "description": "Oylama kapatıldıktan sonra durum etiketi."
+  },
+  "bilesen_vote_oy_veren": "{sayi, plural, =0{Henüz kimse oy vermedi} other{{sayi} kişi oy verdi}}",
+  "@bilesen_vote_oy_veren": {
+    "description": "Oylamada oy veren kişi sayısı; her zaman görünür. Kimin oy verdiği yazılmaz.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "bilesen_vote_sonuc_gizli": "Oy sayıları ve kazanan, oylama kapanınca görünür. Kimin neye oy verdiği hiçbir zaman gösterilmez.",
+  "@bilesen_vote_sonuc_gizli": {
+    "description": "Sonuçlar henüz görünmüyorken (`results_visible: false`) açıklama."
+  },
+  "bilesen_vote_guncelle": "Bu oylamayı göstermek için uygulamayı güncelle.",
+  "@bilesen_vote_guncelle": {
+    "description": "Oylamanın seçenek kaynağı uygulamanın bu sürümünce tanınmadığında."
+  },
+  "bilesen_vote_bos_serbest": "Henüz seçenek eklenmedi.",
+  "@bilesen_vote_bos_serbest": {
+    "description": "Serbest oylamada hiç seçenek yokken (üye gözüyle)."
+  },
+  "bilesen_vote_bos_serbest_yonetici": "Henüz seçenek yok; oylamayı başlatmak için seçenek ekle.",
+  "@bilesen_vote_bos_serbest_yonetici": {
+    "description": "Serbest oylamada hiç seçenek yokken (seçenek ekleyebilen gözüyle)."
+  },
+  "bilesen_vote_bos_katilimci": "Henüz \"Geliyorum\" diyen yok; gelenler burada seçenek olur.",
+  "@bilesen_vote_bos_katilimci": {
+    "description": "Katılımcı kaynaklı oylamada seçenek yokken."
+  },
+  "bilesen_vote_bos_arac": "Bu etkinliğe henüz araç eklenmedi; araçlar burada seçenek olur.",
+  "@bilesen_vote_bos_arac": {
+    "description": "Araç kaynaklı oylamada seçenek yokken."
+  },
+  "bilesen_vote_bos_album": "Albümde henüz fotoğraf yok; fotoğraflar burada seçenek olur.",
+  "@bilesen_vote_bos_album": {
+    "description": "Albüm kaynaklı oylamada seçenek yokken."
+  },
+  "bilesen_vote_oyun": "Oyun",
+  "@bilesen_vote_oyun": {
+    "description": "Kendi oyunun verildiği seçeneğin etiketi."
+  },
+  "bilesen_vote_sen": "Sen",
+  "@bilesen_vote_sen": {
+    "description": "Seçeneğin arkasındaki kişi sensin (kendine, kendi aracına ya da fotoğrafına oy verilmez)."
+  },
+  "bilesen_vote_kazanan": "Kazanan",
+  "@bilesen_vote_kazanan": {
+    "description": "Sonuçlar görünürken en çok oy alan seçeneğin etiketi."
+  },
+  "bilesen_vote_oy_sayisi": "{sayi, plural, other{{sayi} oy}}",
+  "@bilesen_vote_oy_sayisi": {
+    "description": "Sonuçlar görünürken seçeneğe verilen oy sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_vote_fotograf": "Fotoğraf {sira}",
+  "@bilesen_vote_fotograf": {
+    "description": "Albüm kaynaklı oylamada fotoğraf seçeneğinin adı (listedeki sırası).",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "bilesen_vote_fotograf_genel": "Fotoğraf",
+  "@bilesen_vote_fotograf_genel": {
+    "description": "Albüm kaynaklı seçeneğin kısa adı (kutlama kartında)."
+  },
+  "bilesen_vote_fotograf_etiketi": "Seçenek fotoğrafı",
+  "@bilesen_vote_fotograf_etiketi": {
+    "description": "Oylamadaki fotoğraf küçük resminin ekran okuyucu etiketi."
+  },
+  "bilesen_vote_yukleyen": "Yükleyen: {ad}",
+  "@bilesen_vote_yukleyen": {
+    "description": "Albüm kaynaklı seçenekte fotoğrafı yükleyen.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_vote_sahibi": "Sahibi: {ad}",
+  "@bilesen_vote_sahibi": {
+    "description": "Araç kaynaklı seçenekte aracın sahibi.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_vote_sahipli": "{ad} · {sahip}",
+  "@bilesen_vote_sahipli": {
+    "description": "Kutlama kartında oylama kazananı: araç ya da fotoğraf ve arkasındaki kişi.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "Ford Mustang"
+      },
+      "sahip": {
+        "type": "String",
+        "example": "Ayşe"
+      }
+    }
+  },
+  "bilesen_vote_secenek_genel": "Seçenek",
+  "@bilesen_vote_secenek_genel": {
+    "description": "Adı okunamayan oylama seçeneği."
+  },
+  "bilesen_vote_geri_al": "Oyumu geri al",
+  "@bilesen_vote_geri_al": {
+    "description": "Kendi oyunu geri alma eylemi."
+  },
+  "bilesen_vote_katil": "Oy vermek için etkinliğe \"Geliyorum\" demelisin.",
+  "@bilesen_vote_katil": {
+    "description": "Etkinliğe gelmeyen üye oylamayı görürken."
+  },
+  "bilesen_vote_secenek_ekle": "Seçenek ekle",
+  "@bilesen_vote_secenek_ekle": {
+    "description": "Serbest oylamaya seçenek ekleme düğmesi ve formun başlığı."
+  },
+  "bilesen_vote_ekle": "Ekle",
+  "@bilesen_vote_ekle": {
+    "description": "Seçenek formunun onay düğmesi."
+  },
+  "bilesen_vote_secenek_alani": "Seçenek",
+  "@bilesen_vote_secenek_alani": {
+    "description": "Seçenek formundaki metin alanının etiketi."
+  },
+  "bilesen_vote_secenek_hata": "Seçenek boş olamaz ve en fazla {enCok} karakter olabilir.",
+  "@bilesen_vote_secenek_hata": {
+    "description": "Seçenek metni boş ya da çok uzunken alanın altındaki hata.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "100"
+      }
+    }
+  },
+  "bilesen_vote_secenek_sinir": "En fazla {enCok} seçenek eklenebilir.",
+  "@bilesen_vote_secenek_sinir": {
+    "description": "Serbest oylamada seçenek sınırı dolunca.",
+    "placeholders": {
+      "enCok": {
+        "type": "int",
+        "example": "20"
+      }
+    }
+  },
+  "bilesen_vote_kaldir": "Seçeneği kaldır",
+  "@bilesen_vote_kaldir": {
+    "description": "Serbest seçeneği kaldırma düğmesi."
+  },
+  "bilesen_vote_kaldir_onay": "Seçenek kaldırılsın mı?",
+  "@bilesen_vote_kaldir_onay": {
+    "description": "Seçenek kaldırma onayının başlığı."
+  },
+  "bilesen_vote_kaldir_aciklama": "Bu seçeneğe verilen oylar da silinir.",
+  "@bilesen_vote_kaldir_aciklama": {
+    "description": "Seçenek kaldırma onayının açıklaması."
+  },
+  "bilesen_vote_kapat": "Oylamayı kapat",
+  "@bilesen_vote_kapat": {
+    "description": "Oylamayı kapatma düğmesi."
+  },
+  "bilesen_vote_kapat_onay": "Oylama kapatılsın mı?",
+  "@bilesen_vote_kapat_onay": {
+    "description": "Oylamayı kapatma onayının başlığı."
+  },
+  "bilesen_vote_kapat_aciklama": "Kapanış geri alınmaz: oy ve seçenek değişikliği biter, oy sayıları ve kazanan herkese görünür.",
+  "@bilesen_vote_kapat_aciklama": {
+    "description": "Oylamayı kapatma onayının açıklaması."
+  },
   "bilesen_celebration_ad": "Kutlama",
   "@bilesen_celebration_ad": {
     "description": "Kutlama bileşeninin adı (katalogda adı yoksa bölüm başlığı)."
@@ -13105,6 +13297,22 @@
   "hata_celebration_not_participant": "Seçtiğin kişilerden biri etkinliğe katılmıyor.",
   "@hata_celebration_not_participant": {
     "description": "Hata kodu `celebration-not-participant`. Gelmeyen ya da katılımı doğrulanmamış kişi kazanan seçilince."
+  },
+  "hata_vote_closed": "Oylama kapandı; oy ve seçenekler artık değişmez.",
+  "@hata_vote_closed": {
+    "description": "Hata kodu `vote-closed`. Kapatılmış oylamada oy ya da seçenek değiştirilmek istenince."
+  },
+  "hata_vote_own_option": "Kendine, kendi aracına ya da kendi fotoğrafına oy veremezsin.",
+  "@hata_vote_own_option": {
+    "description": "Hata kodu `vote-own-option`. Kişi kendi seçeneğine oy vermek isteyince."
+  },
+  "hata_vote_options_fixed": "Bu oylamanın seçenekleri kaynağından gelir; elle eklenip kaldırılmaz.",
+  "@hata_vote_options_fixed": {
+    "description": "Hata kodu `vote-options-fixed`. Serbest olmayan oylamada seçenek değiştirilmek istenince."
+  },
+  "hata_vote_option_exists": "Bu seçenek zaten var.",
+  "@hata_vote_option_exists": {
+    "description": "Hata kodu `vote-option-exists`. Aynı etiketli seçenek eklenmek istenince."
   },
   "hata_attendees_hidden": "Bu etkinliğin katılımcı listesi gizli; yalnızca sayılar görünür.",
   "@hata_attendees_hidden": {

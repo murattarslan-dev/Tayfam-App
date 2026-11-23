@@ -579,6 +579,81 @@ final class EtkinlikDeposu {
     body: EventCelebrationRequest(winnerIds: kazananlar),
   );
 
+  /// `GET .../components/{component_key}/vote`: oylama bileşeni (#242),
+  /// çağıranın gördüğü haliyle. Kimin neye oy verdiği hiçbir zaman yoktur;
+  /// yalnızca kendi oyun (`caller_option_id`) döner.
+  Future<EventVote> oylama(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.getEventVote(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `PUT .../vote`: [secenekId]'ye oy verir; önceki oyun yerine geçer.
+  Future<EventVote> oyVer(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String secenekId,
+  ) => _api.castEventVote(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventVoteCastRequest(optionId: secenekId),
+  );
+
+  /// `DELETE .../vote`: oyunu geri alır (oyu olmayan için hata değildir).
+  Future<EventVote> oyuGeriAl(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.withdrawEventVote(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
+  /// `POST .../vote/options`: serbest oylamaya seçenek ekler.
+  Future<EventVote> oylamaSecenegiEkle(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String etiket,
+  ) => _api.addEventVoteOption(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    body: EventVoteOptionRequest(label: etiket),
+  );
+
+  /// `DELETE .../vote/options/{option_id}`: serbest seçeneği ve ona
+  /// verilen oyları kaldırır.
+  Future<EventVote> oylamaSeceneginiKaldir(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+    String secenekId,
+  ) => _api.removeEventVoteOption(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+    optionId: secenekId,
+  );
+
+  /// `POST .../vote/close`: oylamayı kapatır; geri alınmaz.
+  Future<EventVote> oylamayiKapat(
+    String tayfaId,
+    String etkinlikId,
+    String bilesenAnahtari,
+  ) => _api.closeEventVote(
+    tayfaId: tayfaId,
+    eventId: etkinlikId,
+    componentKey: bilesenAnahtari,
+  );
+
   /// `GET .../components/{component_key}/questions`: soru toplama
   /// bileşeninin soruları (#244), çağıranın gördüğü haliyle. Anonim
   /// sorunun yazarı hiçbir yanıtta yoktur.

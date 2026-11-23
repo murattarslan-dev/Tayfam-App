@@ -93,6 +93,7 @@ const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
   // ranking (#241)
   DereceBileseni(),
   // vote (#242)
+  OylamaBileseni(),
   // celebration (#243)
   KutlamaBileseni(),
   // questions (#244)
