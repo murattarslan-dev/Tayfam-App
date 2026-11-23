@@ -2697,6 +2697,199 @@ final class EventsApi {
     );
   }
 
+  /// Etkinliğin oylaması
+  ///
+  /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
+  /// donmuş etkinlikte de okunur. Bileşen uçlarının ortak kuralları
+  /// geçerlidir (`component-not-found`, `component-disabled`).
+  ///
+  /// `GET /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVote> getEventVote({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVote.fromJson(jsonObject(response, 'getEventVote'));
+  }
+
+  /// Oy verir ya da oyunuzu değiştirir
+  ///
+  /// Etkinliğe `going` cevabı vermiş ya da katılımı doğrulanmış olmalısınız
+  /// (`event-not-going`); susturulmuş üye oy veremez. Kişi başına bir oy;
+  /// yeni oy öncekinin yerine geçer, aynı oyu yeniden vermek bir şey
+  /// değiştirmez. Kendinize, kendi aracınıza ya da kendi fotoğrafınıza oy
+  /// veremezsiniz (`vote-own-option`). Oylamanın şu anki seçeneği
+  /// olmayan `option_id` `event-item-not-found`. Kapatılmış oylamada
+  /// `vote-closed`; bitişten 7 gün sonra donar (`component-frozen`); iptal
+  /// edilmiş etkinlikte oy verilmez.
+  ///
+  /// `PUT /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVote> castEventVote({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventVoteCastRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVote.fromJson(jsonObject(response, 'castEventVote'));
+  }
+
+  /// Oyunuzu geri alır
+  ///
+  /// Oyu olmayan için hata değildir. Oylama açıkken ve yazma penceresi
+  /// içinde (`vote-closed`, `component-frozen`); susturulmuş üye geri
+  /// alamaz.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVote> withdrawEventVote({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVote.fromJson(jsonObject(response, 'withdrawEventVote'));
+  }
+
+  /// Serbest seçenek ekler (organizatör, moderatör, yönetici)
+  ///
+  /// Yalnızca `free` kaynaklı oylamada (`vote-options-fixed`) ve oylama
+  /// açıkken (`vote-closed`). Etiket kırpılır, iç boşlukları teke
+  /// indirilir; 1–100 karakter, denetim ve biçim karakteri olmadan
+  /// (`invalid-request`, alan `label`). Aynı etiket (Türkçe küçük harfle)
+  /// `vote-option-exists`; en fazla 20 seçenek (`event-limit`).
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote/options`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVote> addEventVoteOption({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required EventVoteOptionRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote/options',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVote.fromJson(jsonObject(response, 'addEventVoteOption'));
+  }
+
+  /// Serbest seçeneği ve ona verilen oyları kaldırır (organizatör, moderatör, yönetici)
+  ///
+  /// Yalnızca `free` kaynaklı oylamada (`vote-options-fixed`) ve oylama
+  /// açıkken (`vote-closed`). Bilinmeyen seçenek `event-item-not-found`.
+  ///
+  /// `DELETE /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote/options/{option_id}`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVote> removeEventVoteOption({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+    required String optionId,
+  }) async {
+    final response = await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote/options/{option_id}',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+        'option_id': optionId,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVote.fromJson(jsonObject(response, 'removeEventVoteOption'));
+  }
+
+  /// Oylamayı kapatır (organizatör, moderatör, yönetici)
+  ///
+  /// Kapanış geri alınmaz: oy ve seçenek değişikliği biter, seçenek başına
+  /// oy sayıları ve kazananlar herkese görünür. Yazma penceresi içinde
+  /// (`component-frozen`). Kapalı oylamayı yeniden kapatmak bir şey
+  /// değiştirmez.
+  ///
+  /// `POST /v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote/close`
+  ///
+  /// [componentKey]: Bileşenin, etkinliğin tür sürümündeki anahtarı (`CatalogComponent.key`; yoksa `kind`).
+  ///
+  /// Kısıtlar: pattern: `^[a-z][a-z0-9_]{1,39}$`.
+  Future<EventVote> closeEventVote({
+    required String tayfaId,
+    required String eventId,
+    required String componentKey,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/tayfas/{tayfa_id}/events/{event_id}/components/{component_key}/vote/close',
+      pathParams: {
+        'tayfa_id': tayfaId,
+        'event_id': eventId,
+        'component_key': componentKey,
+      },
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return EventVote.fromJson(jsonObject(response, 'closeEventVote'));
+  }
+
   /// Etkinliğin kutlaması
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur); iptal edilmiş ve
