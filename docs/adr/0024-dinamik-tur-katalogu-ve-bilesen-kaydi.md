@@ -207,6 +207,9 @@ kapalıdır.
     tür ana ilgi alanının, o da yoksa genel rengi alır
     (`core/katalog/katalog_renkleri.dart`). Yeni ilgi alanlarının rengi
     platform sahibinin kararıdır (açık soru; Tasarım Standartları).
+    **2026-11-23:** platform sahibi bu eşlemeyi Faz 3 ayrıntı kararlarıyla
+    birlikte sohbette onayladı (Tayfam-Api #323); Notion Tasarım
+    Standartları'na işlendi.
   - **Katalogsuz ekranlar.** Giriş, hoş geldin ve karşılamadaki örnek tür
     hapları katalog gelmeden çizildiği için adları ARB'de kalır
     (`TanitimTuru`); yalnızca tanıtımdır.

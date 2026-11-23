@@ -11,6 +11,8 @@
   [ADR-0024](0024-dinamik-tur-katalogu-ve-bilesen-kaydi.md),
   [ADR-0031](0031-katalog-bilesen-ekleri.md); Tayfam-Api ADR-0039,
   ADR-0040, ADR-0041
+- **Uygulama notları:** 2026-11-23 (platform sahibi, sohbette; Tayfam-Api
+  #323): aşağıda "Notlar".
 - **Değiştirdiği:** ADR-0024 Sonuçlar (geçiş dönemi yok). ADR-0024'e
   revizyon notu düşüldü.
 
@@ -91,3 +93,33 @@ dosyaları ve ARB'dir.
 
 - **Modülleri tek "v3 modülleri" klasöründe toplamak:** Reddedildi;
   paralel çalışmayı ve ADR-0002'deki sınırları bozar.
+
+## Notlar
+
+Platform sahibi 2026-11-23'te sohbette Faz 3 PR'larındaki ayrıntı
+kararlarını onayladı (Tayfam-Api #323). Bu ADR'nin kararını değiştirmez.
+
+- **Ödünç adımı bildirimleri (#298; sunucu Tayfam-Api #321):** beş tür
+  (`library_loan_requested`, `library_queue_joined`,
+  `library_loan_approved`, `library_loan_declined`,
+  `library_loan_handed_over`) listede ve push'ta içeriksizdir; eşya adı,
+  kişi adı (aktör dahil) ve tarih yazılmaz, aktörün profili okunmaz. İkon
+  kütüphaneninki, renk kategorisi marka; ret de marka rengindedir (uyarı
+  ya da nar değil: olağan bir ödünç adımı). Hedef `library_item` ise kalem
+  detayı (`Adresler.kutuphaneKalemi`), biçimsiz kalemde tayfanın
+  kütüphanesi açılır. Geri çekilmiş kalemde "Bu eşya artık kütüphanede
+  değil" ve "Kütüphaneye git". `tayfam_general` kanal açıklaması
+  değişmedi.
+- **Tayfa istatistiğinde yalnızca kendi katkın (#299; Tayfam-Api #322):**
+  `KatkiBolumu` yalnızca `own_contributions`'ı "Senin katkın" başlığıyla
+  ve "Katkını yalnızca sen görürsün" notuyla çizer; kişi adı ve gruplama
+  yoktur. Gösterilecek satır yoksa bölüm çizilmez. Eski `contributions`
+  okunmaz (#250'deki herkesin katkısını listeleyen ilk uygulamanın
+  yerini alır).
+- **Profilde kendi rozetlerin ve istatistiklerin (#300):** Profil
+  sekmesinde Arkadaşlar ve Garaj girişlerinden sonra, "Katılım geçmişin"in
+  üstünde `KendiBasarilarin` (mevcut `RozetBolumu` ve `IstatistikBolumu`).
+  Kendi verisi olduğu için `stats_visibility`'den bağımsız gösterilir; veri
+  `GET /v1/users/{kendi id}/profile`'dan, "Başkaları nasıl görüyor" ile
+  aynı provider'la ve yalnızca bellekte. Yanıt `self: false` ise hiçbir şey
+  çizilmez.

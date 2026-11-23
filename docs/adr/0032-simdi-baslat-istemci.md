@@ -135,3 +135,8 @@ Adres `/simdi?tayfa=<id>` (tayfa yoksa anlık), kabuğun üstünde tam ekran.
   (`/v1/me/invitations/{tayfa_id}/acceptance`) ve dokununca gelen davetler
   açılır; üyeyse etkinlik detayı. Şimdi bildirimleri kapalı tayfalar
   Profil → Bildirim ayarları'nda ayrıca listelenir ve oradan açılır.
+- **#247 (uygulama; platform sahibi 2026-11-23'te sohbette onayladı,
+  Tayfam-Api #323):** §2'deki varsayılan başlık "{ad}'ın {tür}" sabit ekle
+  yanlış Türkçe üreteceği için ("Ayşe'ın") ek ünlü uyumuyla üretilir
+  (`core/metin/turkce.dart` `ilgiEki`): "{ad}{ek} {tür}". Ad bilinmiyorsa
+  başlık türün adıdır.
