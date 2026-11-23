@@ -185,4 +185,55 @@ void main() {
       expect(a.secilebilirDersVar, isFalse);
     });
   });
+
+  group('tür alanı (study_tags, Tayfam-Api ADR-0043)', () {
+    test('yol kökten etikete; listede olmayan anahtar boş', () {
+      expect(agac.yol('yks_matematik_turev'), [
+        'yks',
+        'yks_matematik',
+        'yks_matematik_turev',
+      ]);
+      expect(agac.yol('yks_fizik'), ['yks', 'yks_fizik']);
+      expect(agac.yol('lgs'), ['lgs']);
+      // Emekli etiketin yolu da çıkar (adıyla gösterilir).
+      expect(agac.yol('yks_matematik_eski'), [
+        'yks',
+        'yks_matematik',
+        'yks_matematik_eski',
+      ]);
+      expect(agac.yol('bilinmeyen'), isEmpty);
+    });
+
+    test('derinlik aralığı', () {
+      const duzey = DersKonuSeviyesi.duzey;
+      const ders = DersKonuSeviyesi.ders;
+      const konu = DersKonuSeviyesi.konu;
+      expect(agac.aralikta('yks', duzey, ders), isTrue);
+      expect(agac.aralikta('yks', ders, konu), isFalse);
+      expect(agac.aralikta('yks_fizik', duzey, ders), isTrue);
+      expect(agac.aralikta('yks_matematik_turev', duzey, ders), isFalse);
+      expect(agac.aralikta('yks_matematik_turev', ders, konu), isTrue);
+      expect(agac.aralikta('bilinmeyen', duzey, konu), isFalse);
+    });
+
+    test('seçici çıktısı [konu ?? ders] olarak yazılır ve geri okunur', () {
+      expect(dersKonuDegeri(null), isEmpty);
+      expect(dersKonuDegeri(const DersKonuSecimi(ders: 'yks_fizik')), [
+        'yks_fizik',
+      ]);
+      const konulu = DersKonuSecimi(
+        ders: 'yks_matematik',
+        konu: 'yks_matematik_turev',
+      );
+      expect(dersKonuDegeri(konulu), ['yks_matematik_turev']);
+      expect(agac.secimOku('yks_matematik_turev'), konulu);
+      expect(
+        agac.secimOku('yks_fizik'),
+        const DersKonuSecimi(ders: 'yks_fizik'),
+      );
+      // Düzey ve listede olmayan anahtar ortak seçicinin seçimi değildir.
+      expect(agac.secimOku('yks'), isNull);
+      expect(agac.secimOku('bilinmeyen'), isNull);
+    });
+  });
 }
