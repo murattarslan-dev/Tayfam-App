@@ -173,10 +173,7 @@ final class DersKonuAgaci {
   /// ya da konu ise seçim, düzey ise ya da listede yoksa `null`.
   DersKonuSecimi? secimOku(String anahtar) => switch (seviye(anahtar)) {
     DersKonuSeviyesi.ders => DersKonuSecimi(ders: anahtar),
-    DersKonuSeviyesi.konu => DersKonuSecimi(
-      ders: ust(anahtar)!,
-      konu: anahtar,
-    ),
+    DersKonuSeviyesi.konu => DersKonuSecimi(ders: ust(anahtar)!, konu: anahtar),
     _ => null,
   };
 

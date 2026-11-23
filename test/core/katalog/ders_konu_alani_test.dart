@@ -61,9 +61,10 @@ String _yol(List<String> adlar) => adlar
     .skip(1)
     .fold<String>(
       adlar.first,
-      (ust, alt) => arbMetni(
-        'ders_konu_yol',
-      ).replaceAll('{ust}', ust).replaceAll('{alt}', alt),
+      (ust, alt) =>
+          arbMetni('ders_konu_yol')
+              .replaceAll('{ust}', ust)
+              .replaceAll('{alt}', alt),
     );
 
 void main() {
@@ -107,9 +108,7 @@ void main() {
     );
   });
 
-  testWidgets('tek seçim: ortak seçici, değer [konu ?? ders]', (
-    tester,
-  ) async {
+  testWidgets('tek seçim: ortak seçici, değer [konu ?? ders]', (tester) async {
     await _ac(tester, _Form(alanlar: [konu]));
     expect(find.text('konu'), findsOneWidget, reason: 'alanın adı');
 
@@ -206,9 +205,8 @@ void main() {
     expect(find.text('2 / 2'), findsOneWidget);
     expect(
       find.byTooltip(
-        arbMetni(
-          'ders_konu_alan_kaldir',
-        ).replaceAll('{ad}', _yol(['YKS', 'Fizik'])),
+        arbMetni('ders_konu_alan_kaldir')
+            .replaceAll('{ad}', _yol(['YKS', 'Fizik'])),
       ),
       findsOneWidget,
     );

@@ -26,10 +26,9 @@ void main() {
     // `study_tags` katalog fikstüründe değil, aşağıdaki ders/konu
     // testlerinde (Tayfam-Api ADR-0043).
     final hepsi = [...alanlar, dersAlani('dersler')];
-    expect(
-      {for (final a in hepsi) AlanTuru.coz(a.kind)},
-      AlanTuru.values.toSet(),
-    );
+    expect({
+      for (final a in hepsi) AlanTuru.coz(a.kind),
+    }, AlanTuru.values.toSet());
   });
 
   group('alan türü', () {
@@ -342,7 +341,10 @@ void main() {
         ['yks_fizik', 7],
       ]) {
         expect(
-          alanHatalari(ders, {'konu': ['yks_fizik'], 'dersler': kotu}),
+          alanHatalari(ders, {
+            'konu': ['yks_fizik'],
+            'dersler': kotu,
+          }),
           {'dersler': AlanHatasi.secim},
           reason: '$kotu',
         );

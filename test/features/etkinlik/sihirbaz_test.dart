@@ -524,11 +524,7 @@ void main() {
           'subjects': ['yks_matematik_eski', 'yks_fizik'],
         },
       });
-      final t = duzenlemeTaslagi(
-        eski,
-        sahteEtkinlikIstekKimligi,
-        tanim: tanim,
-      );
+      final t = duzenlemeTaslagi(eski, sahteEtkinlikIstekKimligi, tanim: tanim);
       expect(t.alanlar, {
         'subjects': ['yks_matematik_eski', 'yks_fizik'],
       });
