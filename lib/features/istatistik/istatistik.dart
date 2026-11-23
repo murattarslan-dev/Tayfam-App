@@ -1,7 +1,7 @@
 /// İstatistik özelliğinin dışa açık dosyası (Tayfam-Api ADR-0026, #250):
 ///
 /// - [istatistikRotalari] tayfa rotasının (`/t/<tayfaId>`) altına eklenir:
-///   tayfa istatistikleri ekranı (yıl seçimi, toplamlar, kişisel katkılar).
+///   tayfa istatistikleri ekranı (yıl seçimi, toplamlar, "Senin katkın").
 /// - [IstatistikBolumu] profildeki kişisel istatistikler (arkadaşlık
 ///   paketi), [VitrinIstatistikleri] Keşfet kartındaki vitrin (Keşfet
 ///   paketi) içindir.

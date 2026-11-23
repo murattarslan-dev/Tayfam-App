@@ -65,7 +65,7 @@ MetrikGorunumu? metrikGorunumu(
   dil: dil,
 );
 
-/// Anahtar, kaynak ve değerle [metrikGorunumu] (kişisel katkılar için).
+/// Anahtar, kaynak ve değerle [metrikGorunumu] (ana sayfa kartları için).
 ///
 /// Anahtar biçimleri (sözleşme: `TayfaStatMetricKey`): ortak metrik
 /// (`events`, `attended`, `participants`, `duration` dakika), türün ortak

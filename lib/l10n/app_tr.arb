@@ -14256,7 +14256,7 @@
   "@istatistik_baslik": {
     "description": "Tayfa istatistik ekranının başlığı ve profildeki istatistik bölümünün başlığı (Tayfam-Api ADR-0026)."
   },
-  "istatistik_giris_aciklama": "Tayfanın toplamları ve kişisel katkılar",
+  "istatistik_giris_aciklama": "Tayfanın toplamları ve senin katkın",
   "@istatistik_giris_aciklama": {
     "description": "Tayfa ana sayfasındaki \"İstatistikler\" satırının açıklaması."
   },
@@ -14272,9 +14272,13 @@
   "@istatistik_toplamlar": {
     "description": "Tayfa istatistik ekranında tayfanın toplamlarının bölüm başlığı."
   },
-  "istatistik_katkilar": "Kişisel katkılar",
-  "@istatistik_katkilar": {
-    "description": "Tayfa istatistik ekranında üyelerin ölçüm ve günlük metriklerindeki katkılarının bölüm başlığı. Yalnızca tayfanın etkin üyelerine görünür."
+  "istatistik_kendi_katkin": "Senin katkın",
+  "@istatistik_kendi_katkin": {
+    "description": "Tayfa istatistik ekranında çağıranın kendi ölçüm ve günlük katkısının bölüm başlığı. Yalnızca kişinin kendisine görünür; başka üyelerin katkısı listelenmez (Tayfam-Api #322)."
+  },
+  "istatistik_kendi_katkin_notu": "Katkını yalnızca sen görürsün; tayfa toplamlarına dahildir.",
+  "@istatistik_kendi_katkin_notu": {
+    "description": "\"Senin katkın\" bölümünün altındaki küçük not: bu sayıları yalnızca kişinin kendisi görür, tayfa toplamı onları da içerir."
   },
   "istatistik_bos": "Henüz istatistik yok. Etkinlikler bittikten 7 gün sonra burada sayılır.",
   "@istatistik_bos": {

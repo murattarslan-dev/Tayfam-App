@@ -302,6 +302,7 @@ void main() {
       'GET $_istatistikYolu': yanit({
         'years': [2026],
         'totals': const <Object?>[],
+        'own_contributions': const <Object?>[],
         'contributions': const <Object?>[],
       }),
     });

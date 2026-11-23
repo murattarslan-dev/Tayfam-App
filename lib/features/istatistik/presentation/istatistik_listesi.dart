@@ -81,7 +81,6 @@ class IstatistikSatiri extends StatelessWidget {
     super.key,
     required this.gorunum,
     this.etkinlikSayisi,
-    this.kisi,
   });
 
   final MetrikGorunumu gorunum;
@@ -89,24 +88,19 @@ class IstatistikSatiri extends StatelessWidget {
   /// Değere katkı veren etkinlik sayısı; `null` ise yazılmaz.
   final int? etkinlikSayisi;
 
-  /// Adın yerine gösterilen öğe (kişisel katkıda kişinin adı); verilirse
-  /// metrik adı yazılmaz.
-  final Widget? kisi;
-
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final yazi = context.yazi;
     final sayi = etkinlikSayisi;
-    final kisi = this.kisi;
     return MergeSemantics(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DefaultTextStyle.merge(
+          Text(
+            gorunum.ad,
             style: yazi.bodyMedium?.copyWith(color: r.metinGovde),
-            child: kisi ?? Text(gorunum.ad),
           ),
           const SizedBox(height: TayfamSpacing.s4),
           Semantics(

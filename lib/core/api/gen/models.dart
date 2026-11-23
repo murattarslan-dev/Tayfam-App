@@ -25957,7 +25957,9 @@ final class TayfaStat {
       Object.hashAll(<Object?>[metricKey, source, value, eventCount]);
 }
 
-/// Etkin bir üyenin ölçüm ya da günlük metriğindeki katkısı.
+/// Kullanılmıyor (#322): üye katkıları artık listelenmez. Yalnızca
+/// eski istemciler için `TayfaStats.contributions`'ın öğe türü olarak
+/// durur.
 final class TayfaStatContribution {
   const TayfaStatContribution({
     required this.userId,
@@ -26048,6 +26050,7 @@ final class TayfaStats {
     this.year,
     required this.years,
     required this.totals,
+    required this.ownContributions,
     required this.contributions,
     this.computedAt,
   });
@@ -26072,6 +26075,12 @@ final class TayfaStats {
             TayfaStat.fromJson(_readObject(e0, 'TayfaStats.totals')),
       ),
     ),
+    ownContributions: List<TayfaStat>.unmodifiable(
+      _readList(json['own_contributions'], 'TayfaStats.own_contributions').map(
+        (Object? e0) =>
+            TayfaStat.fromJson(_readObject(e0, 'TayfaStats.own_contributions')),
+      ),
+    ),
     contributions: List<TayfaStatContribution>.unmodifiable(
       _readList(json['contributions'], 'TayfaStats.contributions').map(
         (Object? e0) => TayfaStatContribution.fromJson(
@@ -26091,8 +26100,19 @@ final class TayfaStats {
   /// İstatistiği olan yıllar, yeniden eskiye.
   final List<int> years;
 
+  /// Tayfa toplamları; her üyeye açık.
   final List<TayfaStat> totals;
 
+  /// Çağıranın bu tayfadaki kendi katkısı: ölçüm ve günlük metrikleri
+  /// (`source` `measure` ya da `log`; hassas ölçüm yok), `metric_key`
+  /// sırasıyla. Başka üyenin katkısı hiçbir zaman yoktur (#322).
+  final List<TayfaStat> ownContributions;
+
+  /// Kullanılmıyor (#322): her zaman boş dizi. Yalnızca eski
+  /// istemciler bozulmasın diye durur; `own_contributions`'ı okuyun.
+  /// Sonraki bir sürümde kalkacak.
+  ///
+  /// Kısıtlar: maxItems: 0.
   final List<TayfaStatContribution> contributions;
 
   /// Son hesaplama; henüz hesaplanmadıysa yoktur.
@@ -26103,6 +26123,9 @@ final class TayfaStats {
     if (year case final value?) 'year': value,
     'years': <Object?>[for (final e0 in years) e0],
     'totals': <Object?>[for (final e0 in totals) e0.toJson()],
+    'own_contributions': <Object?>[
+      for (final e0 in ownContributions) e0.toJson(),
+    ],
     'contributions': <Object?>[for (final e0 in contributions) e0.toJson()],
     if (computedAt case final value?)
       'computed_at': value.toUtc().toIso8601String(),
@@ -26115,6 +26138,7 @@ final class TayfaStats {
           year == other.year &&
           _deepEquals(years, other.years) &&
           _deepEquals(totals, other.totals) &&
+          _deepEquals(ownContributions, other.ownContributions) &&
           _deepEquals(contributions, other.contributions) &&
           computedAt == other.computedAt;
 
@@ -26123,6 +26147,7 @@ final class TayfaStats {
     year,
     _deepHash(years),
     _deepHash(totals),
+    _deepHash(ownContributions),
     _deepHash(contributions),
     computedAt,
   ]);
