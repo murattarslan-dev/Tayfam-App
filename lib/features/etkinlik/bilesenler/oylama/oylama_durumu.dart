@@ -93,9 +93,8 @@ class OylamaNotifier extends AsyncNotifier<EventVote> {
     final etkinlik = (tayfaId: kimlik.tayfaId, etkinlikId: kimlik.etkinlikId);
     bilesenDegisiminiIzle(ref, etkinlik, kimlik.anahtar);
     ref.watch(
-      etkinlikDetayProvider(
-        etkinlik,
-      ).select((d) => (d.value?.status, d.value?.callerRsvp)),
+      etkinlikDetayProvider(etkinlik)
+          .select((d) => (d.value?.status, d.value?.callerRsvp)),
     );
     return ref
         .read(etkinlikDeposuProvider)
@@ -114,7 +113,8 @@ class OylamaNotifier extends AsyncNotifier<EventVote> {
 
   /// [secenekId]'ye oy verir (önceki oyun yerine geçer).
   Future<Object?> oyVer(String secenekId) => _yaz(
-    (d) => d.oyVer(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, secenekId),
+    (d) =>
+        d.oyVer(kimlik.tayfaId, kimlik.etkinlikId, kimlik.anahtar, secenekId),
   );
 
   /// Oyunu geri alır.
@@ -149,7 +149,9 @@ class OylamaNotifier extends AsyncNotifier<EventVote> {
 
   /// Başarıda `null`, değilse hata döner; durum değişmez ve hata çağıranda
   /// gösterilir. Oylama bayatlamışsa yeniden okunur.
-  Future<Object?> _yaz(Future<EventVote> Function(EtkinlikDeposu depo) islem) async {
+  Future<Object?> _yaz(
+    Future<EventVote> Function(EtkinlikDeposu depo) islem,
+  ) async {
     try {
       final oylama = await islem(ref.read(etkinlikDeposuProvider));
       if (ref.mounted) state = AsyncData(oylama);

@@ -174,17 +174,17 @@ void main() {
             ),
           );
       expect(oylamaSecenekEklenebilir(oylama(kaynak: 'free')), isTrue);
-      expect(oylamaSecenekEklenebilir(oylama(kaynak: 'free', enCok: 2)), isFalse);
+      expect(
+        oylamaSecenekEklenebilir(oylama(kaynak: 'free', enCok: 2)),
+        isFalse,
+      );
       expect(oylamaSecenekEklenebilir(oylama(kaynak: 'album')), isFalse);
     });
 
     test('tanınmayan kaynak', () {
       final oylama = EventVote.fromJson(oylamaJson(kaynak: 'route_stops'));
       expect(oylamaKaynagiTanindi(oylama), isFalse);
-      expect(
-        oylamaKaynagiTanindi(EventVote.fromJson(oylamaJson())),
-        isTrue,
-      );
+      expect(oylamaKaynagiTanindi(EventVote.fromJson(oylamaJson())), isTrue);
     });
   });
 
@@ -222,10 +222,7 @@ void main() {
         final orman = _bolumde(find.text('Orman yolu'));
         await _gorunurYap(tester, orman);
         expect(_bolumde(find.text(m.bilesen_vote_oy_veren(4))), findsOneWidget);
-        expect(
-          _bolumde(find.text(m.bilesen_vote_sonuc_gizli)),
-          findsOneWidget,
-        );
+        expect(_bolumde(find.text(m.bilesen_vote_sonuc_gizli)), findsOneWidget);
         // Açıkken seçenek başına sayı ve kazanan gösterilmez.
         expect(_bolumde(find.text(m.bilesen_vote_oy_sayisi(0))), findsNothing);
         expect(
@@ -437,12 +434,15 @@ void main() {
           _bolumde(find.textContaining(m.bilesen_vote_kapandi)),
           findsOneWidget,
         );
-        expect(_bolumde(find.text(m.bilesen_vote_oy_sayisi(3))), findsOneWidget);
-        expect(_bolumde(find.text(m.bilesen_vote_oy_sayisi(1))), findsOneWidget);
         expect(
-          _bolumde(find.text(m.bilesen_vote_sonuc_gizli)),
-          findsNothing,
+          _bolumde(find.text(m.bilesen_vote_oy_sayisi(3))),
+          findsOneWidget,
         );
+        expect(
+          _bolumde(find.text(m.bilesen_vote_oy_sayisi(1))),
+          findsOneWidget,
+        );
+        expect(_bolumde(find.text(m.bilesen_vote_sonuc_gizli)), findsNothing);
         // Kendi oyun işaretli kalır; geri alınamaz.
         expect(
           _bolumde(find.textContaining(m.bilesen_vote_oyun)),
@@ -490,10 +490,8 @@ void main() {
               duzenleyebilir: true,
               kapatabilir: true,
             ),
-            'POST $oylamaKapatYolu': (_) => oylamaJson(
-              secenekler: [_serbest().last],
-              kapali: true,
-            ),
+            'POST $oylamaKapatYolu': (_) =>
+                oylamaJson(secenekler: [_serbest().last], kapali: true),
           },
         );
         await _detayiAc(tester, tasima, themeMode: tema);
@@ -571,11 +569,8 @@ void main() {
       ekranBoyutu(tester);
       final tasima = _tasima(
         ben: organizatorId,
-        oylama: (_) => oylamaJson(
-          secenekler: _serbest(),
-          duzenleyebilir: true,
-          enCok: 2,
-        ),
+        oylama: (_) =>
+            oylamaJson(secenekler: _serbest(), duzenleyebilir: true, enCok: 2),
       );
       await _detayiAc(tester, tasima);
       final sinir = _bolumde(find.text(m.bilesen_vote_secenek_sinir(2)));
@@ -591,7 +586,11 @@ void main() {
         oylama: (_) => oylamaJson(
           kaynak: 'album',
           secenekler: [
-            oylamaSecenegiJson(_yukleme1, yukleme: _yukleme1, kisi: katilimciId),
+            oylamaSecenegiJson(
+              _yukleme1,
+              yukleme: _yukleme1,
+              kisi: katilimciId,
+            ),
           ],
           kapatabilir: true,
         ),

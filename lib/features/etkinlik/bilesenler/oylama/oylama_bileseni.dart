@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/kullanici/kendi_kimligim.dart';
@@ -68,10 +68,8 @@ String oylamaKisiAdi(WidgetRef ref, AppLocalizations m, String kullaniciId) {
 }
 
 /// Aracın adı: marka ve (varsa) model.
-String oylamaAracAdi(EventVoteVehicle arac) => [
-  arac.make,
-  ?arac.model,
-].where((p) => p.trim().isNotEmpty).join(' ');
+String oylamaAracAdi(EventVoteVehicle arac) =>
+    [arac.make, ?arac.model].where((p) => p.trim().isNotEmpty).join(' ');
 
 /// Aracın ayrıntısı: model yılı ve renk (yoksa boş).
 String oylamaAracAyrintisi(EventVoteVehicle arac) {
