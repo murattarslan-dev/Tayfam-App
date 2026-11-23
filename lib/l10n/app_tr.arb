@@ -3850,7 +3850,7 @@
   },
   "bilesen_guest_adsiz": "Adsız misafir",
   "@bilesen_guest_adsiz": {
-    "description": "Takma adı silinmiş (etkinlik bitiminden 30 gün sonra) ya da okunamayan misafir oyuncu."
+    "description": "Takma adı silinmiş (ekleyen hesabını sildi) ya da okunamayan misafir oyuncu."
   },
   "bilesen_guest_ad_metni": "{ad} (misafir)",
   "@bilesen_guest_ad_metni": {
@@ -3898,7 +3898,7 @@
   "@bilesen_guest_ekle_onay": {
     "description": "Misafir ekleme formunun onay düğmesi."
   },
-  "bilesen_guest_aciklama": "Uygulamada hesabı olmayan oyuncuyu takma adla ekle. Misafirin profili yoktur ve istatistiğe girmez; takma adı etkinlik bitiminden 30 gün sonra silinir.",
+  "bilesen_guest_aciklama": "Uygulamada hesabı olmayan oyuncuyu takma adla ekle. Misafirin profili yoktur ve istatistiğe girmez; takma adı etkinlikle birlikte silinir.",
   "@bilesen_guest_aciklama": {
     "description": "Misafir ekleme formundaki açıklama."
   },

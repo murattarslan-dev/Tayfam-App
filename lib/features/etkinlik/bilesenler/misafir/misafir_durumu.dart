@@ -69,8 +69,8 @@ typedef MisafirYazimi = Future<EventGuestPlayers> Function(
 
 /// Etkinliğin misafir oyuncuları (`GET …/components/{component_key}/
 /// guests`; Tayfam-Api #252). Misafir hesabı olmayan, yalnızca takma adla
-/// oynayan kişidir; profili yoktur. Takma ad etkinliğin bitiminden 30 gün
-/// sonra sunucuda silinir (alan gelmez). Liste yalnızca bellektedir
+/// oynayan kişidir; profili yoktur. Takma ad etkinlikle birlikte silinir;
+/// ekleyen hesabını silince sunucuda boşalır (alan gelmez). Liste yalnızca bellektedir
 /// (ADR-0006) ve takma ad log'a yazılmaz; bileşen canlı değişince yeniden
 /// okunur (ADR-0024 §5). Yetki sunucudadır (kesin kural 5).
 class MisafirNotifier extends AsyncNotifier<EventGuestPlayers> {
