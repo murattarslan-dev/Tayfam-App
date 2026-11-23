@@ -118,10 +118,10 @@ class _OlcumFormuState extends ConsumerState<OlcumFormu> {
     final olcum = widget.olcum;
     final basamak = olcumBasamagi(olcum);
     final alanHatasi = _alanHatasi;
-    // Hata metni ana metin rengindedir (ADR-0004); hatayı kenar rengi ve
-    // metin taşır.
+    // Alan hata metni kontrastı sağlayan nar tonundadır (`hataMetni`,
+    // ADR-0004 Notlar 2026-11-23); hatayı kenar rengi ve metin taşır.
     final hataStili = context.yazi.bodySmall?.copyWith(
-      color: context.renkler.metin,
+      color: context.renkler.hataMetni,
     );
     final kisiSecimi = widget.kisiSecimi;
     final hata = _hata;

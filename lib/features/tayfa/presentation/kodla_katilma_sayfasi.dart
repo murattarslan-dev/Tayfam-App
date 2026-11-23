@@ -119,11 +119,17 @@ class _KodGirisi extends StatelessWidget {
     final hata = durum.hata;
     final Widget? hataSatiri;
     if (durum.kodHatali) {
-      hataSatiri = HataSatiri(metin: metinler.katilim_kod_hata);
+      hataSatiri = HataSatiri(
+        metin: metinler.katilim_kod_hata,
+        renk: r.hataMetni,
+      );
     } else if (hata is ApiProblem && hata.type == ProblemType.invalidJoinCode) {
-      hataSatiri = HataSatiri(metin: metinler.katilim_kod_gecersiz);
+      hataSatiri = HataSatiri(
+        metin: metinler.katilim_kod_gecersiz,
+        renk: r.hataMetni,
+      );
     } else if (hata != null) {
-      hataSatiri = HataSatiri.hatadan(hata);
+      hataSatiri = HataSatiri.hatadan(hata, renk: r.hataMetni);
     } else {
       hataSatiri = null;
     }

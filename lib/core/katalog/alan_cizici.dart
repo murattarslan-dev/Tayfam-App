@@ -249,10 +249,10 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
     final m = AppLocalizations.of(context);
     final dil = katalogDili(context);
     final acik = widget.onDegisti != null;
-    // Hata metni ana metin rengindedir (ADR-0004: nar metin rengi olmaz;
-    // açık zeminde 4.5:1'i tutmaz). Hatayı kenar rengi ve metin taşır.
+    // Alan hata metni kontrastı sağlayan nar tonundadır (`hataMetni`,
+    // ADR-0004 Notlar 2026-11-23); hatayı kenar rengi ve metin taşır.
     final hataStili = context.yazi.bodySmall?.copyWith(
-      color: context.renkler.metin,
+      color: context.renkler.hataMetni,
     );
     final cocuklar = <Widget>[];
     for (final alan in widget.alanlar) {

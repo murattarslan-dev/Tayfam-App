@@ -51,8 +51,10 @@ abstract final class TayfamTheme {
       onTertiary: r.vurguUstu,
       tertiaryContainer: r.tintMango,
       onTertiaryContainer: r.tintMangoUstu,
-      // Nar yalnızca zemin ve kenar olarak kullanılır; hata metni
-      // ana metin rengindedir (vurgu renkleri metin rengi olmaz).
+      // Nar zemin ve kenar olarak kullanılır (hata kenarı nar, 3:1). Alan
+      // hata metni nar değil, kontrastı sağlayan `hataMetni` tonudur
+      // (aşağıda `inputDecorationTheme.errorStyle`; ADR-0004 Notlar,
+      // 2026-11-23).
       error: r.nar,
       onError: r.vurguUstu,
       errorContainer: r.nar,
@@ -123,6 +125,10 @@ abstract final class TayfamTheme {
       filledButtonTheme: FilledButtonThemeData(style: dugmeStili),
       outlinedButtonTheme: OutlinedButtonThemeData(style: dugmeStili),
       textButtonTheme: TextButtonThemeData(style: dugmeStili),
+      // Alan hata metni: nar tonunda, iki temada da ≥4.5:1 (issue #308).
+      inputDecorationTheme: InputDecorationThemeData(
+        errorStyle: metinTemasi.bodySmall?.copyWith(color: r.hataMetni),
+      ),
     );
   }
 }
