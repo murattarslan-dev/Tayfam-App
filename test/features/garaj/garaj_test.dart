@@ -33,7 +33,8 @@ const String _garajimYolu = '/v1/me/garage';
 const String _aracimYolu = '/v1/me/garage/{garage_vehicle_id}';
 const String _tayfaYolu = '/v1/tayfas/{tayfa_id}/garage';
 const String _gorunurlukYolu = '/v1/tayfas/{tayfa_id}/garage/visibility';
-const String _tayfaAracYolu = '/v1/tayfas/{tayfa_id}/garage/{garage_vehicle_id}';
+const String _tayfaAracYolu =
+    '/v1/tayfas/{tayfa_id}/garage/{garage_vehicle_id}';
 
 const String _benim = '00000000-0000-4000-8000-0000000000aa';
 const String _baskasi = '00000000-0000-4000-8000-0000000000bb';
@@ -138,12 +139,8 @@ Future<void> _ac(
   SahteTayfaTasima tasima,
   Widget ekran, {
   ThemeMode themeMode = ThemeMode.light,
-}) => widgetAc(
-  tester,
-  ekran,
-  themeMode: themeMode,
-  tayfa: _overridelar(tasima),
-);
+}) =>
+    widgetAc(tester, ekran, themeMode: themeMode, tayfa: _overridelar(tasima));
 
 Future<void> _dokun(WidgetTester tester, Finder hedef) async {
   await tester.ensureVisible(hedef);
@@ -250,11 +247,9 @@ void main() {
         },
       );
       for (final yil in ['1899', '2028', 'yetmiş']) {
-        expect(
-          garajAlanlariniDogrula(alanlar(yil: yil), buYil: 2026).hatalar,
-          {GarajFormHatasi.yil},
-          reason: yil,
-        );
+        expect(garajAlanlariniDogrula(alanlar(yil: yil), buYil: 2026).hatalar, {
+          GarajFormHatasi.yil,
+        }, reason: yil);
       }
       expect(
         garajAlanlariniDogrula(alanlar(yil: '2027'), buYil: 2026).deger!.yil,
@@ -304,9 +299,13 @@ void main() {
       final kap = _kap(tasima);
       final saglayici = garajFormuProvider(null);
       kap.listen(saglayici, (_, _) {});
-      await kap
-          .read(saglayici.notifier)
-          .gonder((marka: '', model: '', yil: '', renk: '', not: ''));
+      await kap.read(saglayici.notifier).gonder((
+        marka: '',
+        model: '',
+        yil: '',
+        renk: '',
+        not: '',
+      ));
       expect(kap.read(saglayici).hatalar, {GarajFormHatasi.marka});
       expect(tasima.giden('POST', _garajimYolu), isEmpty);
     });
@@ -343,9 +342,13 @@ void main() {
       final kap = _kap(tasima);
       final saglayici = garajFormuProvider(null);
       kap.listen(saglayici, (_, _) {});
-      await kap
-          .read(saglayici.notifier)
-          .gonder((marka: 'Anadol', model: '', yil: '', renk: '', not: ''));
+      await kap.read(saglayici.notifier).gonder((
+        marka: 'Anadol',
+        model: '',
+        yil: '',
+        renk: '',
+        not: '',
+      ));
       expect(kap.read(saglayici).hata, isA<ApiProblem>());
       expect(kap.read(saglayici).tamamlandi, isFalse);
     });
@@ -430,14 +433,10 @@ void main() {
       expect(find.text('Ayşe Kaya'), findsOneWidget);
       expect(find.text('Anadol A1'), findsOneWidget);
       expect(
-        tester
-            .widget<SwitchListTile>(find.byType(SwitchListTile))
-            .value,
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
         isTrue,
       );
-      expect(tasima.giden('GET', _tayfaYolu).single.sorgu, {
-        'page_size': '20',
-      });
+      expect(tasima.giden('GET', _tayfaYolu).single.sorgu, {'page_size': '20'});
     });
 
     testWidgets('gizleyince PUT visibility', (tester) async {

@@ -186,9 +186,7 @@ class _TayfaGarajiEkraniState extends ConsumerState<TayfaGarajiEkrani> {
                     ),
                   ] else if (liste.dahaYukleniyor) ...[
                     const SizedBox(height: TayfamSpacing.s16),
-                    Center(
-                      child: TayfamYukleniyor(etiket: m.garaj_yukleniyor),
-                    ),
+                    Center(child: TayfamYukleniyor(etiket: m.garaj_yukleniyor)),
                   ] else if (liste.dahaVar) ...[
                     const SizedBox(height: TayfamSpacing.s8),
                     Center(

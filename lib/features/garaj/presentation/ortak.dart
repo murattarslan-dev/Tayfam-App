@@ -186,10 +186,7 @@ class GarajAraci extends StatelessWidget {
           ),
           if (!ozet && not != null && not.isNotEmpty) ...[
             const SizedBox(height: TayfamSpacing.s8),
-            Text(
-              not,
-              style: yazi.bodyMedium?.copyWith(color: r.metinGovde),
-            ),
+            Text(not, style: yazi.bodyMedium?.copyWith(color: r.metinGovde)),
           ],
           if (!ozet && fotograflar.isNotEmpty) ...[
             const SizedBox(height: TayfamSpacing.s12),
