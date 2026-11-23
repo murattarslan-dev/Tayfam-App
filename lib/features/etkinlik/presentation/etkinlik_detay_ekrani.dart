@@ -10,7 +10,6 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/katalog/alan_cizici.dart';
-import 'package:tayfam/core/katalog/ders_konu.dart';
 import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/katalog/katalog_notifier.dart';
