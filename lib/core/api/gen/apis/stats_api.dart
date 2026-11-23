@@ -9,11 +9,13 @@ final class StatsApi {
 
   final ApiTransport _transport;
 
-  /// Tayfanın istatistikleri ve kişisel katkılar
+  /// Tayfanın istatistikleri ve sizin katkınız
   ///
   /// Her etkin üyeye açıktır (susturulmuş üye de okur). `year` yoksa tüm
-  /// zamanlar. Kişisel katkılar yalnızca ölçüm ve günlük metrikleridir,
-  /// yalnızca tayfanın etkin üyelerininki.
+  /// zamanlar. Tayfa toplamları herkese açıktır; kişisel katkıdan
+  /// yalnızca çağıranın kendi katkısı döner (`own_contributions`, ölçüm
+  /// ve günlük metrikleri). Başka üyelerin katkısı yönetici ve moderatör
+  /// dahil kimseye listelenmez (#322).
   ///
   /// `GET /v1/tayfas/{tayfa_id}/stats`
   ///
