@@ -15247,6 +15247,7 @@ final class EventVehicle {
     required this.seats,
     required this.riderUserIds,
     required this.pendingUserIds,
+    this.garageVehicleId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -15285,6 +15286,10 @@ final class EventVehicle {
         'EventVehicle.pending_user_ids',
       ).map((Object? e0) => _readString(e0, 'EventVehicle.pending_user_ids')),
     ),
+    garageVehicleId: switch (json['garage_vehicle_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventVehicle.garage_vehicle_id'),
+    },
   );
 
   final String id;
@@ -15315,6 +15320,9 @@ final class EventVehicle {
   /// Onay bekleyen kişiler. Aracın sahibi hepsini, başkası yalnızca kendisini görür.
   final List<String> pendingUserIds;
 
+  /// Aracın kopyalandığı üye garajı aracı (#272); elle yazıldıysa ya da garajdaki araç kalıcı silindiyse yoktur.
+  final String? garageVehicleId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -15327,6 +15335,7 @@ final class EventVehicle {
     'seats': seats,
     'rider_user_ids': <Object?>[for (final e0 in riderUserIds) e0],
     'pending_user_ids': <Object?>[for (final e0 in pendingUserIds) e0],
+    if (garageVehicleId case final value?) 'garage_vehicle_id': value,
   };
 
   @override
@@ -15342,7 +15351,8 @@ final class EventVehicle {
           plate == other.plate &&
           seats == other.seats &&
           _deepEquals(riderUserIds, other.riderUserIds) &&
-          _deepEquals(pendingUserIds, other.pendingUserIds);
+          _deepEquals(pendingUserIds, other.pendingUserIds) &&
+          garageVehicleId == other.garageVehicleId;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -15356,12 +15366,18 @@ final class EventVehicle {
     seats,
     _deepHash(riderUserIds),
     _deepHash(pendingUserIds),
+    garageVehicleId,
   ]);
 }
 
+/// Araç ya elle yazılır (`make` zorunlu) ya da çağıranın garajından
+/// seçilir (`garage_vehicle_id`; #272): o zaman `make`, `model`,
+/// `model_year` ve `color` verilmez, garajdaki araçtan kopyalanır.
+/// Plaka garajda yoktur; yalnızca bu etkinlik kaydına yazılır.
 final class EventVehicleRequest {
   const EventVehicleRequest({
-    required this.make,
+    this.garageVehicleId,
+    this.make,
     this.model,
     this.modelYear,
     this.color,
@@ -15374,7 +15390,17 @@ final class EventVehicleRequest {
   /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
   factory EventVehicleRequest.fromJson(Map<String, Object?> json) =>
       EventVehicleRequest(
-        make: _readString(json['make'], 'EventVehicleRequest.make'),
+        garageVehicleId: switch (json['garage_vehicle_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'EventVehicleRequest.garage_vehicle_id',
+          ),
+        },
+        make: switch (json['make']) {
+          null => null,
+          final Object v => _readString(v, 'EventVehicleRequest.make'),
+        },
         model: switch (json['model']) {
           null => null,
           final Object v => _readString(v, 'EventVehicleRequest.model'),
@@ -15397,8 +15423,13 @@ final class EventVehicleRequest {
         },
       );
 
-  /// Kısıtlar: minLength: 1; maxLength: 40.
-  final String make;
+  /// Çağıranın garajındaki bir araç (`GarageVehicle.id`). Başkasının ya da silinmiş araç `garage-vehicle-not-found`.
+  final String? garageVehicleId;
+
+  /// `garage_vehicle_id` yoksa zorunlu (1–40 karakter).
+  ///
+  /// Kısıtlar: maxLength: 40.
+  final String? make;
 
   /// Kısıtlar: maxLength: 40.
   final String? model;
@@ -15423,7 +15454,8 @@ final class EventVehicleRequest {
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
-    'make': make,
+    if (garageVehicleId case final value?) 'garage_vehicle_id': value,
+    if (make case final value?) 'make': value,
     if (model case final value?) 'model': value,
     if (modelYear case final value?) 'model_year': value,
     if (color case final value?) 'color': value,
@@ -15435,6 +15467,7 @@ final class EventVehicleRequest {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is EventVehicleRequest &&
+          garageVehicleId == other.garageVehicleId &&
           make == other.make &&
           model == other.model &&
           modelYear == other.modelYear &&
@@ -15443,8 +15476,15 @@ final class EventVehicleRequest {
           seats == other.seats;
 
   @override
-  int get hashCode =>
-      Object.hashAll(<Object?>[make, model, modelYear, color, plate, seats]);
+  int get hashCode => Object.hashAll(<Object?>[
+    garageVehicleId,
+    make,
+    model,
+    modelYear,
+    color,
+    plate,
+    seats,
+  ]);
 }
 
 /// Bir etkinliğin araçlar bileşeninin araçları, isteği yapanın gördüğü haliyle (#240).
@@ -15791,6 +15831,402 @@ final class FriendSuggestionList {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(suggestions)]);
 }
 
+/// Üye garajındaki bir araç (#272). Plaka alanı yoktur.
+final class GarageVehicle {
+  const GarageVehicle({
+    required this.id,
+    required this.ownerUserId,
+    required this.make,
+    this.model,
+    this.modelYear,
+    this.color,
+    this.note,
+    required this.photoUploadIds,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.callerCanEdit,
+    required this.callerCanRemove,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory GarageVehicle.fromJson(Map<String, Object?> json) => GarageVehicle(
+    id: _readString(json['id'], 'GarageVehicle.id'),
+    ownerUserId: _readString(
+      json['owner_user_id'],
+      'GarageVehicle.owner_user_id',
+    ),
+    make: _readString(json['make'], 'GarageVehicle.make'),
+    model: switch (json['model']) {
+      null => null,
+      final Object v => _readString(v, 'GarageVehicle.model'),
+    },
+    modelYear: switch (json['model_year']) {
+      null => null,
+      final Object v => _readInt(v, 'GarageVehicle.model_year'),
+    },
+    color: switch (json['color']) {
+      null => null,
+      final Object v => _readString(v, 'GarageVehicle.color'),
+    },
+    note: switch (json['note']) {
+      null => null,
+      final Object v => _readString(v, 'GarageVehicle.note'),
+    },
+    photoUploadIds: List<String>.unmodifiable(
+      _readList(
+        json['photo_upload_ids'],
+        'GarageVehicle.photo_upload_ids',
+      ).map((Object? e0) => _readString(e0, 'GarageVehicle.photo_upload_ids')),
+    ),
+    createdAt: _readDateTime(json['created_at'], 'GarageVehicle.created_at'),
+    updatedAt: _readDateTime(json['updated_at'], 'GarageVehicle.updated_at'),
+    callerCanEdit: _readBool(
+      json['caller_can_edit'],
+      'GarageVehicle.caller_can_edit',
+    ),
+    callerCanRemove: _readBool(
+      json['caller_can_remove'],
+      'GarageVehicle.caller_can_remove',
+    ),
+  );
+
+  final String id;
+
+  /// Aracın sahibi.
+  final String ownerUserId;
+
+  /// 1–40 karakter, tek satır.
+  final String make;
+
+  /// En fazla 40 karakter; yoksa alan yoktur.
+  final String? model;
+
+  /// Verilmemişse yoktur.
+  final int? modelYear;
+
+  /// En fazla 30 karakter; yoksa alan yoktur.
+  final String? color;
+
+  /// En fazla 200 karakter, tek satır; yoksa alan yoktur.
+  final String? note;
+
+  /// Sahibinin fotoğrafları (`garage_vehicle` yüklemesi), sırasıyla; adreslerini `POST /v1/media/urls` verir.
+  ///
+  /// Kısıtlar: maxItems: 3.
+  final List<String> photoUploadIds;
+
+  final DateTime createdAt;
+
+  final DateTime updatedAt;
+
+  /// Çağıran aracın sahibi mi (düzenler ve siler; `/v1/me/garage`).
+  final bool callerCanEdit;
+
+  /// Çağıran aracı tayfanın garajından şimdi kaldırabilir mi (moderatör; yalnızca tayfa garajı listesinde).
+  final bool callerCanRemove;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'owner_user_id': ownerUserId,
+    'make': make,
+    if (model case final value?) 'model': value,
+    if (modelYear case final value?) 'model_year': value,
+    if (color case final value?) 'color': value,
+    if (note case final value?) 'note': value,
+    'photo_upload_ids': <Object?>[for (final e0 in photoUploadIds) e0],
+    'created_at': createdAt.toUtc().toIso8601String(),
+    'updated_at': updatedAt.toUtc().toIso8601String(),
+    'caller_can_edit': callerCanEdit,
+    'caller_can_remove': callerCanRemove,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GarageVehicle &&
+          id == other.id &&
+          ownerUserId == other.ownerUserId &&
+          make == other.make &&
+          model == other.model &&
+          modelYear == other.modelYear &&
+          color == other.color &&
+          note == other.note &&
+          _deepEquals(photoUploadIds, other.photoUploadIds) &&
+          createdAt == other.createdAt &&
+          updatedAt == other.updatedAt &&
+          callerCanEdit == other.callerCanEdit &&
+          callerCanRemove == other.callerCanRemove;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    ownerUserId,
+    make,
+    model,
+    modelYear,
+    color,
+    note,
+    _deepHash(photoUploadIds),
+    createdAt,
+    updatedAt,
+    callerCanEdit,
+    callerCanRemove,
+  ]);
+}
+
+final class GarageVehicleCreateRequest {
+  const GarageVehicleCreateRequest({
+    required this.make,
+    this.model,
+    this.modelYear,
+    this.color,
+    this.note,
+    this.photoUploadIds,
+    required this.clientRequestId,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory GarageVehicleCreateRequest.fromJson(
+    Map<String, Object?> json,
+  ) => GarageVehicleCreateRequest(
+    make: _readString(json['make'], 'GarageVehicleCreateRequest.make'),
+    model: switch (json['model']) {
+      null => null,
+      final Object v => _readString(v, 'GarageVehicleCreateRequest.model'),
+    },
+    modelYear: switch (json['model_year']) {
+      null => null,
+      final Object v => _readInt(v, 'GarageVehicleCreateRequest.model_year'),
+    },
+    color: switch (json['color']) {
+      null => null,
+      final Object v => _readString(v, 'GarageVehicleCreateRequest.color'),
+    },
+    note: switch (json['note']) {
+      null => null,
+      final Object v => _readString(v, 'GarageVehicleCreateRequest.note'),
+    },
+    photoUploadIds: switch (json['photo_upload_ids']) {
+      null => null,
+      final Object v => List<String>.unmodifiable(
+        _readList(v, 'GarageVehicleCreateRequest.photo_upload_ids').map(
+          (Object? e0) =>
+              _readString(e0, 'GarageVehicleCreateRequest.photo_upload_ids'),
+        ),
+      ),
+    },
+    clientRequestId: _readString(
+      json['client_request_id'],
+      'GarageVehicleCreateRequest.client_request_id',
+    ),
+  );
+
+  /// 1–40 karakter; boşluklar tekleştirilir.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 1024.
+  final String make;
+
+  /// En fazla 40 karakter.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? model;
+
+  /// 0 ya da 1900 – gelecek yıl.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int? modelYear;
+
+  /// En fazla 30 karakter.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? color;
+
+  /// En fazla 200 karakter, tek satır.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? note;
+
+  /// 0–3 fotoğraf (çağıranın hazır `garage_vehicle` yüklemeleri), sırasıyla.
+  ///
+  /// Kısıtlar: maxItems: 3.
+  final List<String>? photoUploadIds;
+
+  final String clientRequestId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'make': make,
+    if (model case final value?) 'model': value,
+    if (modelYear case final value?) 'model_year': value,
+    if (color case final value?) 'color': value,
+    if (note case final value?) 'note': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
+    'client_request_id': clientRequestId,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GarageVehicleCreateRequest &&
+          make == other.make &&
+          model == other.model &&
+          modelYear == other.modelYear &&
+          color == other.color &&
+          note == other.note &&
+          _deepEquals(photoUploadIds, other.photoUploadIds) &&
+          clientRequestId == other.clientRequestId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    make,
+    model,
+    modelYear,
+    color,
+    note,
+    _deepHash(photoUploadIds),
+    clientRequestId,
+  ]);
+}
+
+/// Araç bir bütün olarak yazılır (kısmi güncelleme yok).
+final class GarageVehicleRequest {
+  const GarageVehicleRequest({
+    required this.make,
+    this.model,
+    this.modelYear,
+    this.color,
+    this.note,
+    this.photoUploadIds,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory GarageVehicleRequest.fromJson(Map<String, Object?> json) =>
+      GarageVehicleRequest(
+        make: _readString(json['make'], 'GarageVehicleRequest.make'),
+        model: switch (json['model']) {
+          null => null,
+          final Object v => _readString(v, 'GarageVehicleRequest.model'),
+        },
+        modelYear: switch (json['model_year']) {
+          null => null,
+          final Object v => _readInt(v, 'GarageVehicleRequest.model_year'),
+        },
+        color: switch (json['color']) {
+          null => null,
+          final Object v => _readString(v, 'GarageVehicleRequest.color'),
+        },
+        note: switch (json['note']) {
+          null => null,
+          final Object v => _readString(v, 'GarageVehicleRequest.note'),
+        },
+        photoUploadIds: switch (json['photo_upload_ids']) {
+          null => null,
+          final Object v => List<String>.unmodifiable(
+            _readList(v, 'GarageVehicleRequest.photo_upload_ids').map(
+              (Object? e0) =>
+                  _readString(e0, 'GarageVehicleRequest.photo_upload_ids'),
+            ),
+          ),
+        },
+      );
+
+  /// 1–40 karakter; boşluklar tekleştirilir.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 1024.
+  final String make;
+
+  /// En fazla 40 karakter.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? model;
+
+  /// 0 ya da 1900 – gelecek yıl.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int? modelYear;
+
+  /// En fazla 30 karakter.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? color;
+
+  /// En fazla 200 karakter, tek satır.
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? note;
+
+  /// 0–3 fotoğraf (çağıranın hazır `garage_vehicle` yüklemeleri), sırasıyla; düzenlemede listede olmayan silinir.
+  ///
+  /// Kısıtlar: maxItems: 3.
+  final List<String>? photoUploadIds;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'make': make,
+    if (model case final value?) 'model': value,
+    if (modelYear case final value?) 'model_year': value,
+    if (color case final value?) 'color': value,
+    if (note case final value?) 'note': value,
+    if (photoUploadIds case final value?)
+      'photo_upload_ids': <Object?>[for (final e0 in value) e0],
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GarageVehicleRequest &&
+          make == other.make &&
+          model == other.model &&
+          modelYear == other.modelYear &&
+          color == other.color &&
+          note == other.note &&
+          _deepEquals(photoUploadIds, other.photoUploadIds);
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    make,
+    model,
+    modelYear,
+    color,
+    note,
+    _deepHash(photoUploadIds),
+  ]);
+}
+
+final class GarageVisibility {
+  const GarageVisibility({required this.visible});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory GarageVisibility.fromJson(Map<String, Object?> json) =>
+      GarageVisibility(
+        visible: _readBool(json['visible'], 'GarageVisibility.visible'),
+      );
+
+  /// Garajınız bu tayfada görünsün mü.
+  final bool visible;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'visible': visible};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GarageVisibility && visible == other.visible;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[visible]);
+}
+
 /// Yıllık hedef: tayfa istatistiğinden bir metrik ve hedef değer.
 /// İlerleme yalnızca istatistikten dolar, elle artırılmaz.
 final class GoalWidgetConfig {
@@ -16050,7 +16486,7 @@ final class HomeMetricValue {
 /// listesi sunucunundur ve büyüyebilir (bugün `upcoming`,
 /// `announcements`, `polls`, `questions`, `stats`, `goal`,
 /// `countdown`, `champions`, `log_summary`, `daily`, `library`,
-/// `question_pool`, `materials`).
+/// `question_pool`, `materials`, `garage`).
 final class HomeWidget {
   const HomeWidget({
     required this.key,
@@ -18969,6 +19405,50 @@ final class MediaUrlsRequest {
   int get hashCode => Object.hashAll(<Object?>[_deepHash(uploadIds)]);
 }
 
+/// Çağıranın kendi garajı (#272).
+final class MemberGarage {
+  const MemberGarage({required this.vehicles, required this.callerCanAdd});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory MemberGarage.fromJson(Map<String, Object?> json) => MemberGarage(
+    vehicles: List<GarageVehicle>.unmodifiable(
+      _readList(json['vehicles'], 'MemberGarage.vehicles').map(
+        (Object? e0) =>
+            GarageVehicle.fromJson(_readObject(e0, 'MemberGarage.vehicles')),
+      ),
+    ),
+    callerCanAdd: _readBool(
+      json['caller_can_add'],
+      'MemberGarage.caller_can_add',
+    ),
+  );
+
+  /// Eklenme sırasıyla; en fazla 10.
+  final List<GarageVehicle> vehicles;
+
+  /// 10'dan az araç var mı.
+  final bool callerCanAdd;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'vehicles': <Object?>[for (final e0 in vehicles) e0.toJson()],
+    'caller_can_add': callerCanAdd,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MemberGarage &&
+          _deepEquals(vehicles, other.vehicles) &&
+          callerCanAdd == other.callerCanAdd;
+
+  @override
+  int get hashCode =>
+      Object.hashAll(<Object?>[_deepHash(vehicles), callerCanAdd]);
+}
+
 final class MemberList {
   const MemberList({required this.members, this.nextPageToken});
 
@@ -19429,7 +19909,7 @@ enum ModerationReportStatus {
   }
 }
 
-/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270). `question_pool` Eğitim soru havuzudur (#271): soruları `pool: question_pool` ile Soru-Cevap uçlarından, ana sayfa bileşeni ve `pool_link` etkinlik bileşeni. `materials` Eğitim materyal kütüphanesidir (#261).
+/// `daily` günün içeriğidir (#269). `library` ortak kütüphanedir (#270). `question_pool` Eğitim soru havuzudur (#271): soruları `pool: question_pool` ile Soru-Cevap uçlarından, ana sayfa bileşeni ve `pool_link` etkinlik bileşeni. `materials` Eğitim materyal kütüphanesidir (#261). `garage` üye garajıdır (#272): üyelerin bu tayfada gösterdiği garajlar ve ana sayfa bileşeni.
 enum Module {
   announcements('announcements'),
   events('events'),
@@ -19439,6 +19919,7 @@ enum Module {
   library_('library'),
   questionPool('question_pool'),
   materials('materials'),
+  garage('garage'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -22708,6 +23189,8 @@ enum ReportResolveRequestResolution {
 /// modülü açık, kalem geri çekilmemiş olmalıdır. `material` materyal
 /// kütüphanesindeki bir materyaldir (#261; konusu yazarıdır);
 /// `materials` modülü açık, materyal görünür olmalıdır.
+/// `garage_vehicle` üye garajındaki bir araçtır (#272; konusu
+/// sahibidir); `garage` modülü açık, araç bu tayfada görünür olmalıdır.
 enum ReportTargetType {
   user('user'),
   tayfa('tayfa'),
@@ -22724,6 +23207,7 @@ enum ReportTargetType {
   dailyItem('daily_item'),
   libraryItem('library_item'),
   material('material'),
+  garageVehicle('garage_vehicle'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -24713,6 +25197,66 @@ enum TayfaDiscoverState {
   }
 }
 
+/// Tayfada görünen garaj araçları (#272).
+final class TayfaGarage {
+  const TayfaGarage({
+    required this.vehicles,
+    this.nextPageToken,
+    required this.callerVisible,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory TayfaGarage.fromJson(Map<String, Object?> json) => TayfaGarage(
+    vehicles: List<GarageVehicle>.unmodifiable(
+      _readList(json['vehicles'], 'TayfaGarage.vehicles').map(
+        (Object? e0) =>
+            GarageVehicle.fromJson(_readObject(e0, 'TayfaGarage.vehicles')),
+      ),
+    ),
+    nextPageToken: switch (json['next_page_token']) {
+      null => null,
+      final Object v => _readString(v, 'TayfaGarage.next_page_token'),
+    },
+    callerVisible: _readBool(
+      json['caller_visible'],
+      'TayfaGarage.caller_visible',
+    ),
+  );
+
+  /// En yeni önce.
+  final List<GarageVehicle> vehicles;
+
+  /// Yoksa son sayfa.
+  final String? nextPageToken;
+
+  /// Çağıranın kendi garajı bu tayfada görünüyor mu.
+  final bool callerVisible;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'vehicles': <Object?>[for (final e0 in vehicles) e0.toJson()],
+    if (nextPageToken case final value?) 'next_page_token': value,
+    'caller_visible': callerVisible,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TayfaGarage &&
+          _deepEquals(vehicles, other.vehicles) &&
+          nextPageToken == other.nextPageToken &&
+          callerVisible == other.callerVisible;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    _deepHash(vehicles),
+    nextPageToken,
+    callerVisible,
+  ]);
+}
+
 /// `standard`: tayfa. `instant`: anlık etkinliğin gizli, tek etkinlikli
 /// tayfası; Keşfet'e çıkmaz, etkinlik bitince 7 gün sonra arşivlenir
 /// (ADR-0032).
@@ -24755,6 +25299,7 @@ final class TayfaModules {
     this.library_,
     this.questionPool,
     this.materials,
+    this.garage,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -24793,6 +25338,10 @@ final class TayfaModules {
       null => null,
       final Object v => _readBool(v, 'TayfaModules.materials'),
     },
+    garage: switch (json['garage']) {
+      null => null,
+      final Object v => _readBool(v, 'TayfaModules.garage'),
+    },
   );
 
   final bool? announcements;
@@ -24811,6 +25360,8 @@ final class TayfaModules {
 
   final bool? materials;
 
+  final bool? garage;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (announcements case final value?) 'announcements': value,
@@ -24821,6 +25372,7 @@ final class TayfaModules {
     if (library_ case final value?) 'library': value,
     if (questionPool case final value?) 'question_pool': value,
     if (materials case final value?) 'materials': value,
+    if (garage case final value?) 'garage': value,
   };
 
   @override
@@ -24834,7 +25386,8 @@ final class TayfaModules {
           daily == other.daily &&
           library_ == other.library_ &&
           questionPool == other.questionPool &&
-          materials == other.materials;
+          materials == other.materials &&
+          garage == other.garage;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -24846,6 +25399,7 @@ final class TayfaModules {
     library_,
     questionPool,
     materials,
+    garage,
   ]);
 }
 
@@ -25733,7 +26287,7 @@ final class UploadCreateRequest {
   /// Kısıtlar: minItems: 1; maxItems: 2.
   final List<UploadVariant> variants;
 
-  /// `cover`, `log_photo`, `event_photo`, `chat_photo`, `library_item`, `question_pool` ve `material_note` için zorunlu; `avatar`, `dm_attachment` ve `report_evidence`'ta verilmez.
+  /// `cover`, `log_photo`, `event_photo`, `chat_photo`, `library_item`, `question_pool` ve `material_note` için zorunlu; `avatar`, `dm_attachment`, `report_evidence` ve `garage_vehicle`'da verilmez.
   final String? tayfaId;
 
   /// Her yükleme denemesi için bir kez üretilen, tekrar gönderimde aynen kullanılan UUID.
@@ -25805,6 +26359,8 @@ final class UploadCreated {
   int get hashCode => Object.hashAll(<Object?>[upload, _deepHash(targets)]);
 }
 
+/// `garage_vehicle` üye garajındaki bir aracın fotoğrafıdır (#272;
+/// araç başına en fazla üç). Garaj kişiye aittir: `tayfa_id` verilmez.
 /// `material_note` materyal kütüphanesindeki kişinin kendi not
 /// fotoğrafıdır (#261; materyal başına en fazla üç).
 /// `library_item` ortak kütüphane kaleminin fotoğrafıdır (#270; kalem
@@ -25827,6 +26383,7 @@ enum UploadPurpose {
   libraryItem('library_item'),
   questionPool('question_pool'),
   materialNote('material_note'),
+  garageVehicle('garage_vehicle'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

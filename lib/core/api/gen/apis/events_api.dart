@@ -722,7 +722,9 @@ final class EventsApi {
   /// bileşenin `plate` parametresi açıksa, sıfırdan büyük `seats`
   /// yalnızca `seats` parametresi açıksa kabul edilir (`plate_enabled`,
   /// `seats_enabled`). Koltuk sayısı onaylanmış yolcu sayısının altına
-  /// inemez (`vehicle-seats-taken`). Araç yazan kişinin başka bir araca
+  /// inemez (`vehicle-seats-taken`). `garage_vehicle_id` ile çağıranın
+  /// garajındaki araç seçilir (#272): marka, model, yıl ve renk
+  /// kopyalanır; plaka yalnızca bu kayda yazılır. Araç yazan kişinin başka bir araca
   /// yazdığı koltuk isteği silinir. Bileşen uçlarının ortak kuralları
   /// geçerlidir.
   ///

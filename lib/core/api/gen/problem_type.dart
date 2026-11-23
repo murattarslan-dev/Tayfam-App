@@ -138,6 +138,8 @@ enum ProblemType {
   materialNotFound('material-not-found'),
   blockedLink('blocked-link'),
   materialLimit('material-limit'),
+  garageVehicleNotFound('garage-vehicle-not-found'),
+  garageLimit('garage-limit'),
   eventSeriesNotFound('event-series-not-found'),
   eventSeriesEnded('event-series-ended'),
   questionNotFound('question-not-found'),
