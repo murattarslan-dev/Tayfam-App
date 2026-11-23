@@ -217,10 +217,7 @@ void main() {
 
   // Alan hata metni (issue #308): temanın `errorStyle` rengi `hataMetni`
   // token'ıdır ve sayfa zemininde de kartta da metin eşiğini geçer.
-  final hataTemalari = {
-    'açık': TayfamTheme.acik(),
-    'koyu': TayfamTheme.koyu(),
-  };
+  final hataTemalari = {'açık': TayfamTheme.acik(), 'koyu': TayfamTheme.koyu()};
   for (final MapEntry(key: tema, value: t) in hataTemalari.entries) {
     group('$tema tema alan hata metni', () {
       final r = t.extension<TayfamColors>()!;
