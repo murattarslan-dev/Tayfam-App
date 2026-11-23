@@ -145,6 +145,7 @@ Set<String> acikModulAnahtarlari(TayfaModules moduller) => {
   if (moduller.library_ == true) Module.library_.wire,
   if (moduller.questionPool == true) Module.questionPool.wire,
   if (moduller.materials == true) Module.materials.wire,
+  if (moduller.garage == true) Module.garage.wire,
 };
 
 /// Uygulamaya kayıtlı tayfa modülleri.

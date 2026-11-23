@@ -17,6 +17,7 @@ import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/features/kesfet/data/kesfet_deposu.dart';
 import 'package:tayfam/features/arkadas/presentation/kisi_profili_ekrani.dart';
+import 'package:tayfam/features/garaj/data/garaj_deposu.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 import 'package:tayfam/shell/okunmamis.dart';
@@ -101,7 +102,8 @@ final class SahteSurumDenetleyici implements SurumDenetleyici {
 /// (verilmezse bildirim yok); birebir mesaj uçları [birebir] ile
 /// (verilmezse konuşma yok). Hoş geldin tanıtımı [tanitim] ile başlar
 /// (`null` ise override edilmez; varsayılan: gösterildi); cihaz ayarları
-/// [cihazAyarlari] deposundadır (verilmezse boş bellek deposu). Gerçek
+/// [cihazAyarlari] deposundadır (verilmezse boş bellek deposu); kendi
+/// garajın [garaj] deposundan (verilmezse boş garaj). Gerçek
 /// güvenli depo ve ağ kullanılmaz.
 Future<void> uygulamayiAc(
   WidgetTester tester, {
@@ -115,6 +117,7 @@ Future<void> uygulamayiAc(
   KesfetDeposu? kesfet,
   TanitimDurumu? tanitim = TanitimDurumu.gosterildi,
   CihazAyarlariDeposu? cihazAyarlari,
+  GarajDeposu? garaj,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -138,6 +141,19 @@ Future<void> uygulamayiAc(
               KesfetDeposu(
                 SahteTayfaTasima({
                   'GET /v1/discover/events': (_) => {'items': <Object?>[]},
+                }),
+              ),
+        ),
+        // Profildeki Garajım ve araç formundaki "Garajımdan seç": boş
+        // garaj; gerçek ağ yok.
+        garajDeposuProvider.overrideWithValue(
+          garaj ??
+              GarajDeposu(
+                SahteTayfaTasima({
+                  'GET /v1/me/garage': (_) => {
+                    'vehicles': <Object?>[],
+                    'caller_can_add': true,
+                  },
                 }),
               ),
         ),

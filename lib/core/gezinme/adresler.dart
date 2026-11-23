@@ -355,6 +355,19 @@ abstract final class Adresler {
   static String materyalDetayi(String tayfaId, String materyalId) =>
       '${materyal(tayfaId)}/$materyalId';
 
+  /// Profildeki Garajım'ın profil altındaki yolu (#258).
+  static const garajimYolu = 'garaj';
+
+  /// Kişinin kendi garajı (Tayfam-Api ADR-0040 §4).
+  static const garajim = '$profil/$garajimYolu';
+
+  /// Tayfa garajının tayfa altındaki yolu (#258).
+  static const tayfaGarajiYolu = 'garaj';
+
+  /// Tayfanın garajı: üyelerin bu tayfada gösterdiği araçlar.
+  static String tayfaGaraji(String tayfaId) =>
+      '${tayfa(tayfaId)}/$tayfaGarajiYolu';
+
   static const katilimIstekleriYolu = 'istekler';
 
   /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).

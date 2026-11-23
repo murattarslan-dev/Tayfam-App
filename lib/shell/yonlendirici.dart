@@ -17,6 +17,7 @@ import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/garaj/garaj.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
 import 'package:tayfam/features/istatistik/istatistik.dart';
@@ -207,6 +208,8 @@ List<RouteBase> rotalariOlustur(
                 ...arkadasRotalari,
                 // QR ile cihaz eşleştirme (ADR-0020).
                 ...cihazlarRotalari,
+                // Üye garajı: Garajım (App ADR-0033 §2).
+                ...garajRotalari,
                 // Güvenlik kişisi olduğun etkinlikler (ADR-0027).
                 ...guvenlikPaylasimlariRotalari,
               ],
