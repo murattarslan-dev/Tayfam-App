@@ -7,6 +7,8 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bolum_etiketi.dart';
 import 'package:tayfam/core/bilesenler/hata_satiri.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
+import 'package:tayfam/core/katalog/ders_konu.dart';
+import 'package:tayfam/core/katalog/ders_konu_alani.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -79,11 +81,16 @@ String katalogAlanHataMetni(
 /// Bir alanın detayda gösterilen değeri (sunucudan gelen JSON değeri);
 /// gösterilecek bir şey yoksa `null`. Değer girdidir: türüne uymayan
 /// değer gösterilmez.
+///
+/// `study_tags` alanı katalogdaki ders/konu listesiyle ([dersKonu])
+/// yazılır: her etiket üst zinciriyle, emekli de adıyla; liste yoksa ya da
+/// etiket listede hiç yoksa gösterilmez (Tayfam-Api ADR-0043 §4).
 String? katalogAlanDegeriMetni(
   BuildContext context,
   CatalogField alan,
-  Object? deger,
-) {
+  Object? deger, {
+  DersKonuAgaci? dersKonu,
+}) {
   final m = AppLocalizations.of(context);
   final dil = katalogDili(context);
   final tur = AlanTuru.coz(alan.kind);
@@ -117,6 +124,13 @@ String? katalogAlanDegeriMetni(
           if (secenek is String) katalogSecenekAdi(alan, secenek, dil),
       ];
       return adlar.isEmpty ? null : adlar.join(', ');
+    case AlanTuru.dersKonu:
+      if (deger is! List<Object?> || dersKonu == null) return null;
+      final yollar = [
+        for (final anahtar in deger)
+          if (anahtar is String) ?dersKonuYolMetni(m, dersKonu, anahtar, dil),
+      ];
+      return yollar.isEmpty ? null : yollar.join(', ');
     case AlanTuru.evetHayir:
       return deger is bool ? (deger ? m.katalog_evet : m.katalog_hayir) : null;
     case AlanTuru.tarih:
@@ -130,7 +144,8 @@ String? katalogAlanDegeriMetni(
 /// Tek alan çizici (ADR-0024 §3): katalogdaki tür alanlarını (ve `log`
 /// bileşeninin kayıt alanlarını) tanımdan çizer. Kapalı alan türü listesi:
 /// `text`, `long_text`, `integer`, `decimal`, `choice`, `multi_choice`,
-/// `boolean`, `date`, `duration`.
+/// `boolean`, `date`, `duration`, `study_tags` (Tayfam-Api ADR-0043;
+/// [DersKonuAlani]).
 ///
 /// - Alan adları ve seçenek adları katalog metnidir: düz metin gösterilir,
 ///   yerel ayara göre seçilir (ADR-0024 §2). Birimler ve hatalar çeviri
@@ -242,7 +257,7 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
     final cocuklar = <Widget>[];
     for (final alan in widget.alanlar) {
       final tur = AlanTuru.coz(alan.kind);
-      if (tur == null) continue;
+      if (tur == null || !alanTaniniyor(alan)) continue;
       final ad = katalogAlanAdi(alan, dil);
       final etiket = alan.required_ == true
           ? ad
@@ -262,6 +277,19 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
         continue;
       }
       switch (tur) {
+        case AlanTuru.dersKonu:
+          cocuklar.add(
+            DersKonuAlani(
+              key: ValueKey('katalog-alan-${alan.key}'),
+              alan: alan,
+              etiket: etiket,
+              deger: deger is List<Object?>
+                  ? deger.whereType<String>().toList()
+                  : const <String>[],
+              hataMetni: hataMetni,
+              onDegisti: acik ? (yeni) => _ayarla(alan.key, yeni) : null,
+            ),
+          );
         case AlanTuru.metin || AlanTuru.uzunMetin:
           final uzun = tur == AlanTuru.uzunMetin;
           cocuklar
@@ -455,14 +483,16 @@ class _KatalogAlanlariState extends State<KatalogAlanlari> {
               ),
             );
       }
-      // Metin alanları hatayı kendi altında gösterir; diğerlerinde satır.
-      final metinAlani =
+      // Metin alanları ve ders/konu alanı hatayı kendisi gösterir;
+      // diğerlerinde satır.
+      final kendiHatasi =
+          tur == AlanTuru.dersKonu ||
           tur == AlanTuru.metin ||
           tur == AlanTuru.uzunMetin ||
           tur == AlanTuru.tamSayi ||
           tur == AlanTuru.ondalik ||
           tur == AlanTuru.sure;
-      if (hataMetni != null && !metinAlani) {
+      if (hataMetni != null && !kendiHatasi) {
         cocuklar
           ..add(const SizedBox(height: TayfamSpacing.s8))
           ..add(HataSatiri(metin: hataMetni));

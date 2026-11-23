@@ -124,7 +124,7 @@ class _GunlukBolumuState extends ConsumerState<GunlukBolumu> {
     final liste = okunan.value;
     final bilgi = _notifier.bilgi;
     final alanlarTanindi =
-        widget.alanlar.isNotEmpty && alanlarTaniniyor(widget.alanlar);
+        widget.alanlar.isNotEmpty && kayitAlanlariTaniniyor(widget.alanlar);
     final baslik = AracBasligi(
       metin:
           katalogAdi(widget.tanim.labels, katalogDili(context)) ??

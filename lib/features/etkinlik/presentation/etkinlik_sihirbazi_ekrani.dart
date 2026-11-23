@@ -1120,6 +1120,7 @@ class _OnizlemeAdimi extends ConsumerWidget {
             ].where((p) => p.isNotEmpty).join(', '),
           ].where((p) => p.isNotEmpty).join(ozetAyraci);
     final alanDegerleri = alanGovdesi(turAlanlari(t.turTanimi), t.alanlar);
+    final dersKonu = ref.watch(katalogProvider).value?.dersKonu;
     final satirlar = <(String, String, int)>[
       (
         m.etkinlik_onizleme_ne_zaman,
@@ -1144,7 +1145,12 @@ class _OnizlemeAdimi extends ConsumerWidget {
         ),
       // Katalogdaki tür alanlarından değeri girilenler.
       for (final alan in turAlanlari(t.turTanimi))
-        if (katalogAlanDegeriMetni(context, alan, alanDegerleri[alan.key])
+        if (katalogAlanDegeriMetni(
+              context,
+              alan,
+              alanDegerleri[alan.key],
+              dersKonu: dersKonu,
+            )
             case final deger?)
           (
             katalogAlanAdi(alan, katalogDili(context)),

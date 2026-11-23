@@ -10,6 +10,7 @@ import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/katalog/alan_cizici.dart';
+import 'package:tayfam/core/katalog/ders_konu.dart';
 import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/katalog/katalog_notifier.dart';
@@ -197,6 +198,7 @@ class _Detay extends ConsumerWidget {
       context,
       tanim?.version == etkinlik.typeVersion ? tanim : null,
       etkinlik,
+      ref.watch(katalogProvider).value?.dersKonu,
     );
     final cevrimici = etkinlik.mode == EventMode.online;
     final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
@@ -1222,13 +1224,19 @@ List<(String, String)> _alanSatirlari(
   BuildContext context,
   CatalogEventType? tanim,
   Event e,
+  DersKonuAgaci? dersKonu,
 ) {
   final degerler = e.fields;
   if (tanim == null || degerler == null) return const [];
   final dil = katalogDili(context);
   return [
     for (final alan in tanim.definition.fields ?? const <CatalogField>[])
-      if (katalogAlanDegeriMetni(context, alan, degerler[alan.key])
+      if (katalogAlanDegeriMetni(
+            context,
+            alan,
+            degerler[alan.key],
+            dersKonu: dersKonu,
+          )
           case final deger?)
         (katalogAlanAdi(alan, dil), deger),
   ];
