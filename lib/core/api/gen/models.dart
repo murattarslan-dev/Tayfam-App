@@ -20880,6 +20880,21 @@ final class Notification {
   /// ödüncün tayfasıdır (`tayfa`), `actor_id` yoktur; eşyayı ve kişileri
   /// adlandırmaz, ödünçleri `GET /v1/tayfas/{tayfa_id}/library/loans`
   /// verir. Yalnızca uygulama içi, push gitmez.
+  /// Ortak kütüphane ödünç adımları (#321, ADR-0040 §1): hedef
+  /// `library_item` (kalem; `GET /v1/tayfas/{tayfa_id}/library/items/{library_item_id}`),
+  /// `actor_id` adımı atan üyedir; alıcı yalnızca öbür taraftır ve
+  /// aktörle arasında iki yönden engel varsa bildirim hiç yazılmaz.
+  /// Kalemin sahibine: `library_loan_requested` (bir üye istedi,
+  /// ödünç isteği onda; onay bekliyor), `library_queue_joined` (bir
+  /// üye sıraya girdi). İsteyene: `library_loan_approved` (sahibi
+  /// onayladı), `library_loan_declined` (sahibi reddetti),
+  /// `library_loan_handed_over` (sahibi teslim etti; varsa iade
+  /// tarihi ödünçtedir). Eşyayı ve kişileri adlandırmaz. Push gider:
+  /// yalnızca `push_<tür>_title` / `push_<tür>_body` anahtarları ve
+  /// kimlikler; tayfanın bildirim tercihi geçerlidir, kişisel
+  /// sayıldığı için `mentions` seviyesinde de gider, `none` durdurur.
+  /// Kalem bu arada geri çekildiyse ya da üyeliğiniz bittiyse kalem
+  /// ucu `library-item-not-found` ya da tayfa hatası döner.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -20894,7 +20909,9 @@ final class Notification {
   /// `user` için bir kullanıcının kimliği (profilini açın); `report`
   /// için kendi şikâyetinizin kimliği; `dm_conversation` için
   /// konuşmanızın kimliği; `data_export` için kendi veri dışa
-  /// aktarma talebinizin kimliği (`GET /v1/me/data-exports/{data_export_id}`).
+  /// aktarma talebinizin kimliği (`GET /v1/me/data-exports/{data_export_id}`);
+  /// `library_item` için bildirimin tayfasındaki bir ortak kütüphane
+  /// kaleminin kimliği (`GET /v1/tayfas/{tayfa_id}/library/items/{library_item_id}`).
   final NotificationTargetType targetType;
 
   final String targetId;
@@ -21333,7 +21350,9 @@ enum NotificationResolution {
 /// `user` için bir kullanıcının kimliği (profilini açın); `report`
 /// için kendi şikâyetinizin kimliği; `dm_conversation` için
 /// konuşmanızın kimliği; `data_export` için kendi veri dışa
-/// aktarma talebinizin kimliği (`GET /v1/me/data-exports/{data_export_id}`).
+/// aktarma talebinizin kimliği (`GET /v1/me/data-exports/{data_export_id}`);
+/// `library_item` için bildirimin tayfasındaki bir ortak kütüphane
+/// kaleminin kimliği (`GET /v1/tayfas/{tayfa_id}/library/items/{library_item_id}`).
 enum NotificationTargetType {
   tayfa('tayfa'),
   membership('membership'),
@@ -21344,6 +21363,7 @@ enum NotificationTargetType {
   report('report'),
   dmConversation('dm_conversation'),
   dataExport('data_export'),
+  libraryItem('library_item'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
@@ -21431,6 +21451,21 @@ enum NotificationTargetType {
 /// ödüncün tayfasıdır (`tayfa`), `actor_id` yoktur; eşyayı ve kişileri
 /// adlandırmaz, ödünçleri `GET /v1/tayfas/{tayfa_id}/library/loans`
 /// verir. Yalnızca uygulama içi, push gitmez.
+/// Ortak kütüphane ödünç adımları (#321, ADR-0040 §1): hedef
+/// `library_item` (kalem; `GET /v1/tayfas/{tayfa_id}/library/items/{library_item_id}`),
+/// `actor_id` adımı atan üyedir; alıcı yalnızca öbür taraftır ve
+/// aktörle arasında iki yönden engel varsa bildirim hiç yazılmaz.
+/// Kalemin sahibine: `library_loan_requested` (bir üye istedi,
+/// ödünç isteği onda; onay bekliyor), `library_queue_joined` (bir
+/// üye sıraya girdi). İsteyene: `library_loan_approved` (sahibi
+/// onayladı), `library_loan_declined` (sahibi reddetti),
+/// `library_loan_handed_over` (sahibi teslim etti; varsa iade
+/// tarihi ödünçtedir). Eşyayı ve kişileri adlandırmaz. Push gider:
+/// yalnızca `push_<tür>_title` / `push_<tür>_body` anahtarları ve
+/// kimlikler; tayfanın bildirim tercihi geçerlidir, kişisel
+/// sayıldığı için `mentions` seviyesinde de gider, `none` durdurur.
+/// Kalem bu arada geri çekildiyse ya da üyeliğiniz bittiyse kalem
+/// ucu `library-item-not-found` ya da tayfa hatası döner.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -21461,6 +21496,11 @@ enum NotificationType {
   nowStarted('now_started'),
   libraryDue('library_due'),
   libraryLoanOrphaned('library_loan_orphaned'),
+  libraryLoanRequested('library_loan_requested'),
+  libraryQueueJoined('library_queue_joined'),
+  libraryLoanApproved('library_loan_approved'),
+  libraryLoanDeclined('library_loan_declined'),
+  libraryLoanHandedOver('library_loan_handed_over'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
