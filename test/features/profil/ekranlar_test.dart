@@ -12,14 +12,19 @@ import 'package:tayfam/features/profil/presentation/profil_ekrani.dart';
 
 import '../../core/medya/sahteler.dart';
 import '../../yardimcilar.dart';
+import '../arkadas/sahteler.dart' show arkadasTasimasi;
+import '../tayfa/sahteler.dart' show SahteTayfaTasima;
 import 'sahteler.dart';
 
 /// Ekran testinin sahte bağımlılıkları.
 final class _Ortam {
-  _Ortam([Map<String, Object? Function()> yanitlar = const {}])
+  _Ortam([Map<String, Object? Function()> yanitlar = const {}, this.arkadas])
     : tasima = SahteTasima(profilYanitlari(yanitlar));
 
   final SahteTasima tasima;
+
+  /// Arkadaşlık uçlarının (kendi kişi profilin dahil) sahte taşıması.
+  final SahteTayfaTasima? arkadas;
   final SahteOturum sahteOturum = SahteOturum();
   final SahteGoogle google = SahteGoogle(sonuc: ornekKimlik);
   final SahteAcici acici = SahteAcici();
@@ -42,6 +47,7 @@ final class _Ortam {
         ...profilOverridelari(
           tasima: tasima,
           oturum: sahteOturum,
+          arkadas: arkadas,
           google: google,
           acici: acici,
           tema: tema,
@@ -718,6 +724,168 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(o.google.cagri, 0);
+    });
+  });
+
+  group('kendi rozetlerin ve istatistiklerin (issue #300)', () {
+    const kendiProfilYolu = '/v1/users/{user_id}/profile';
+
+    /// Kendi kişi profilin (`self: true`). Sözleşmeye göre sunucu kendi
+    /// profilinde `badges` ve `stats`'ı görünürlük ayarından bağımsız
+    /// döndürür; hesap varsayılanında `stats_visibility: none`.
+    Map<String, Object?> kendiProfilim({
+      List<Map<String, Object?>> rozetler = const [],
+      List<Map<String, Object?>> istatistikler = const [],
+    }) => {
+      'user_id': benimKimligim,
+      'display_name': 'Deniz Örnek',
+      'self': true,
+      'mutual_tayfas': const <Object?>[],
+      'activity_visible': true,
+      'badges': rozetler,
+      'stats': istatistikler,
+    };
+
+    final doluProfil = kendiProfilim(
+      rozetler: [
+        {'badge_key': 'ilk_adim', 'earned_at': '2026-11-01T10:00:00Z'},
+      ],
+      istatistikler: [
+        {
+          'metric_key': 'attended',
+          'source': 'common',
+          'value': 23,
+          'event_count': 23,
+        },
+      ],
+    );
+
+    SahteTayfaTasima tasima(Object? Function() profil) =>
+        arkadasTasimasi({'GET $kendiProfilYolu': (_) => profil()});
+
+    Future<void> kaydir(WidgetTester tester, Finder hedef) =>
+        tester.scrollUntilVisible(
+          hedef,
+          200,
+          scrollable: find.byType(Scrollable).first,
+          maxScrolls: 100,
+        );
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${mod.name} tema, 2× yazı, 320 dp: rozet ve istatistik '
+          'görünüyor, taşmıyor', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final arkadas = tasima(() => doluProfil);
+        await _Ortam(const {}, arkadas).ac(
+          tester,
+          const ProfilEkrani(),
+          themeMode: mod,
+        );
+        expect(tester.takeException(), isNull);
+
+        final rozet = find.text('İlk adım');
+        await kaydir(tester, rozet);
+        expect(_metin('rozet_baslik'), findsOneWidget);
+        expect(rozet, findsOneWidget);
+        expect(_metin('rozet_gorunurluk_notu'), findsOneWidget);
+
+        final not = _metin('istatistik_profil_notu');
+        await kaydir(tester, not);
+        expect(_metin('istatistik_baslik'), findsOneWidget);
+        expect(find.text('23'), findsOneWidget);
+        expect(not, findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        // Kendi kimliğinle tek istek.
+        final istekler = arkadas.giden('GET', kendiProfilYolu);
+        expect(istekler, hasLength(1));
+        expect(istekler.single.yolParametreleri['user_id'], benimKimligim);
+      });
+
+      testWidgets('${mod.name} tema, 2× yazı, 320 dp: boşken sakin notlar', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _Ortam(const {}, tasima(kendiProfilim)).ac(
+          tester,
+          const ProfilEkrani(),
+          themeMode: mod,
+        );
+        final rozetBos = _metin('rozet_bos_kendi');
+        await kaydir(tester, rozetBos);
+        expect(rozetBos, findsOneWidget);
+        final istatistikBos = _metin('istatistik_profil_bos_kendi');
+        await kaydir(tester, istatistikBos);
+        expect(istatistikBos, findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('kendi profilinde alan gelmezse de boş not gösteriliyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final profil = {...kendiProfilim()}
+        ..remove('badges')
+        ..remove('stats');
+      await _Ortam(const {}, tasima(() => profil)).ac(
+        tester,
+        const ProfilEkrani(),
+      );
+      final rozetBos = _metin('rozet_bos_kendi');
+      await kaydir(tester, rozetBos);
+      expect(rozetBos, findsOneWidget);
+      final istatistikBos = _metin('istatistik_profil_bos_kendi');
+      await kaydir(tester, istatistikBos);
+      expect(istatistikBos, findsOneWidget);
+    });
+
+    testWidgets('yanıt kendi profili değilse bölümler yok', (tester) async {
+      ekranBoyutu(tester);
+      await _Ortam(
+        const {},
+        tasima(() => {...doluProfil, 'self': false}),
+      ).ac(tester, const ProfilEkrani());
+      await kaydir(tester, _metin('profil_hesabi_sil'));
+      expect(_metin('rozet_baslik'), findsNothing);
+      expect(_metin('istatistik_baslik'), findsNothing);
+    });
+
+    testWidgets('okunamazsa hata ve "Tekrar dene" yeniden okuyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      var hata = true;
+      final arkadas = tasima(
+        () => hata ? problem(ProblemType.unavailable, 503) : doluProfil,
+      );
+      await _Ortam(const {}, arkadas).ac(tester, const ProfilEkrani());
+      final tekrar = _metin('profil_tekrar_dene');
+      await kaydir(tester, tekrar);
+      expect(tekrar, findsOneWidget);
+      expect(_metin('rozet_baslik'), findsNothing);
+
+      hata = false;
+      await tester.tap(tekrar);
+      await tester.pumpAndSettle();
+      expect(arkadas.giden('GET', kendiProfilYolu), hasLength(2));
+      expect(tekrar, findsNothing);
+      await kaydir(tester, find.text('İlk adım'));
+      expect(find.text('İlk adım'), findsOneWidget);
+    });
+
+    testWidgets('hesap okunamazsa bölümler yok, profil istenmiyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final arkadas = tasima(() => doluProfil);
+      await _Ortam({
+        hesapYolu: () => problem(ProblemType.unavailable),
+      }, arkadas).ac(tester, const ProfilEkrani());
+      expect(arkadas.giden('GET', kendiProfilYolu), isEmpty);
+      expect(_metin('rozet_baslik'), findsNothing);
     });
   });
 }

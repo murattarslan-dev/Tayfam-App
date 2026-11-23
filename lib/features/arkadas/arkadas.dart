@@ -33,8 +33,10 @@ export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'
         katilimGorunurlukSatiriProvider,
         kisiProfiliEylemleriProvider,
         referansPaylasimiProvider;
+// Profil sekmesindeki kendi rozetlerin ve istatistiklerin (issue #300):
+// "Başkaları nasıl görüyor" ile aynı sağlayıcı.
 export 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart'
-    show sonKatilimlarProvider;
+    show kisiProfiliProvider, sonKatilimlarProvider;
 export 'package:tayfam/features/arkadas/application/oneriler_notifier.dart'
     show OneriEklemeSonucu;
 export 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart'
