@@ -14252,6 +14252,14 @@
   "@push_library_loan_handed_over_body": {
     "description": "Push bildirimi gövdesi (`library_loan_handed_over`, Android body_loc_key): isteyene: sahibi teslimi kaydetti. Eşya, kişi, tarih yazılmaz; argüman yoktur."
   },
+  "push_library_queue_turn_title": "Sıra sende",
+  "@push_library_queue_turn_title": {
+    "description": "Push bildirimi başlığı (`library_queue_turn`, Android title_loc_key): sırası gelen üyeye: kalemin önceki ödüncü bitti, ödünç isteği açıldı. Uygulama kapalıyken Android gösterir. Eşya, kişi, tarih yazılmaz; argüman yoktur."
+  },
+  "push_library_queue_turn_body": "Ödünç isteğin açıldı, sahibinin onayını bekliyor.",
+  "@push_library_queue_turn_body": {
+    "description": "Push bildirimi gövdesi (`library_queue_turn`, Android body_loc_key): sırası gelen üyeye: ödünç isteği açıldı, sahibinin onayını bekliyor. Eşya, kişi (sıranın gelmesine yol açan üye dahil), tarih yazılmaz; argüman yoktur."
+  },
   "istatistik_baslik": "İstatistikler",
   "@istatistik_baslik": {
     "description": "Tayfa istatistik ekranının başlığı ve profildeki istatistik bölümünün başlığı (Tayfam-Api ADR-0026)."
@@ -15572,6 +15580,10 @@
   "kutuphane_bildirim_teslim": "Ödünç istediğin eşyanın teslimi kaydedildi.",
   "@kutuphane_bildirim_teslim": {
     "description": "Bildirim listesi: `library_loan_handed_over` (isteyene; sahibi teslim etti). Eşya, kişi (adımı atan üye dahil) ve tarih adlandırılmaz."
+  },
+  "kutuphane_bildirim_sira_sende": "Sıra sende: ödünç isteğin açıldı.",
+  "@kutuphane_bildirim_sira_sende": {
+    "description": "Bildirim listesi: `library_queue_turn` (sırası gelen üyeye; Tayfam-Api #332). Aktör yoktur; eşya, kişi (sıranın gelmesine yol açan üye ve sahibi dahil) ve tarih adlandırılmaz."
   },
   "kutuphane_form_yeni": "Eşya ekle",
   "@kutuphane_form_yeni": {

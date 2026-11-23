@@ -82,6 +82,8 @@ void main() {
       'library_loan_approved',
       'library_loan_declined',
       'library_loan_handed_over',
+      // Sıra sende (#332): aktör yok, hedef yine kalem.
+      'library_queue_turn',
     ];
 
     test('ödünç adımı: kalemin detayı açılır (hedef library_item)', () {
@@ -145,6 +147,13 @@ void main() {
         'type': 'library_loan_requested',
         'target_type': 'library_item',
         'target_id': '../../ayarlar',
+        'tayfa_id': _tayfa,
+      },
+      'sıra sende kalem kimliği biçimsiz': {
+        'notification_id': _bildirim,
+        'type': 'library_queue_turn',
+        'target_type': 'library_item',
+        'target_id': 'javascript:alert(1)',
         'tayfa_id': _tayfa,
       },
       'tayfa kimliği biçimsiz': {

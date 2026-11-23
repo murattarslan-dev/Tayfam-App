@@ -434,6 +434,7 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.libraryLoanApproved ||
   NotificationType.libraryLoanDeclined ||
   NotificationType.libraryLoanHandedOver ||
+  NotificationType.libraryQueueTurn ||
   NotificationType.unknown => BildirimKategorisi.marka,
 };
 
@@ -490,6 +491,8 @@ String bildirimMetni(
   NotificationType.libraryLoanApproved => m.kutuphane_bildirim_onay,
   NotificationType.libraryLoanDeclined => m.kutuphane_bildirim_ret,
   NotificationType.libraryLoanHandedOver => m.kutuphane_bildirim_teslim,
+  // Sıra sende (#332): sıranın gelme sebebi olan üye ve eşya yazılmaz.
+  NotificationType.libraryQueueTurn => m.kutuphane_bildirim_sira_sende,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -527,6 +530,7 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.libraryQueueJoined ||
   NotificationType.libraryLoanApproved ||
   NotificationType.libraryLoanDeclined ||
-  NotificationType.libraryLoanHandedOver => Icons.inventory_2_outlined,
+  NotificationType.libraryLoanHandedOver ||
+  NotificationType.libraryQueueTurn => Icons.inventory_2_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };

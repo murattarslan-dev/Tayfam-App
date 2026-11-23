@@ -33,11 +33,11 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - `library_due` (iade tarihi geçti) ve `library_loan_orphaned` (ödünçteki
 ///   kalemin karşı tarafı ayrıldı; Tayfam-Api ADR-0040 §1): tayfanın ortak
 ///   kütüphanesi; bildirim kalemi ve kişiyi adlandırmaz.
-/// - Ödünç adımları ([oduncAdimiMi]: istek, sıra, onay, ret, teslim;
-///   Tayfam-Api ADR-0040 §1 "Uygulama notları (#321)"): hedef `library_item`
-///   ise kalemin detayı (sahibi sırayı ve ödüncü, borç alan kendi ödüncünü
-///   görür), hedef beklenenden farklı ya da kimliği biçimsizse tayfanın
-///   ortak kütüphanesi. Kalem geri çekildiyse detay ekranı bunu söyler.
+/// - Ödünç adımları ([oduncAdimiMi]: istek, sıra, onay, ret, teslim, sıra
+///   sende; Tayfam-Api ADR-0040 §1 "Uygulama notları (#321, #332)"): hedef
+///   `library_item` ise kalemin detayı (sahibi sırayı ve ödüncü, borç alan
+///   kendi ödüncünü görür), hedef beklenenden farklı ya da kimliği
+///   biçimsizse tayfanın ortak kütüphanesi. Kalem geri çekildiyse detay ekranı bunu söyler.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// [etkinUyeMi] tayfalarım listesinden kurulur ([etkinUyelik]); liste
@@ -135,14 +135,15 @@ String? bildirimKisisi(Notification bildirim) {
 }
 
 /// [tur] ortak kütüphanede bir ödünç adımı bildirimi mi (Tayfam-Api
-/// ADR-0040 §1, #321). Hepsi içeriksizdir: eşya, kişi ve tarih
-/// adlandırılmaz (kesin kural 7).
+/// ADR-0040 §1, #321; "sıra sende" #332). Hepsi içeriksizdir: eşya, kişi
+/// ve tarih adlandırılmaz (kesin kural 7).
 bool oduncAdimiMi(NotificationType tur) => switch (tur) {
   NotificationType.libraryLoanRequested ||
   NotificationType.libraryQueueJoined ||
   NotificationType.libraryLoanApproved ||
   NotificationType.libraryLoanDeclined ||
-  NotificationType.libraryLoanHandedOver => true,
+  NotificationType.libraryLoanHandedOver ||
+  NotificationType.libraryQueueTurn => true,
   _ => false,
 };
 

@@ -38,6 +38,8 @@
     <string name="push_library_loan_requested_title">Yeni ödünç isteği</string>
     <string name="push_library_queue_joined_body">Bir üye eşyan için sıraya girdi.</string>
     <string name="push_library_queue_joined_title">Eşyan için sıra var</string>
+    <string name="push_library_queue_turn_body">Ödünç isteğin açıldı, sahibinin onayını bekliyor.</string>
+    <string name="push_library_queue_turn_title">Sıra sende</string>
     <string name="push_now_started_body">Şu an başlayan bir etkinlik var. Ayrıntı için uygulamayı aç.</string>
     <string name="push_now_started_title">Şimdi başladı</string>
     <string name="push_report_resolved_body">Gönderdiğin şikâyet incelendi.</string>

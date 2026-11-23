@@ -156,6 +156,15 @@ List<Map<String, Object?>> _oduncBildirimleri() => [
     ),
 ];
 
+/// "Sıra sende" bildirimi (Tayfam-Api #332): hedef kalem, aktör yoktur;
+/// içerik alanı yoktur.
+Map<String, Object?> _siraSende() => bildirimJson(
+  'cccccccc-0000-4000-8000-000000000010',
+  tur: 'library_queue_turn',
+  hedefTuru: 'library_item',
+  zaman: _zaman(DateTime(2026, 11, 13, 14, 55)),
+);
+
 void main() {
   group('liste', () {
     testWidgets('metin türden, tayfa adı ve kişi adıyla kuruluyor', (
@@ -624,6 +633,49 @@ void main() {
         );
         expect(tester.takeException(), isNull);
         expect(find.text(arbMetni('kutuphane_bildirim_istek')), findsOneWidget);
+        await tester.drag(find.byType(ListView), const Offset(0, -4000));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      });
+    }
+  });
+
+  group('sıra sende bildirimi', () {
+    testWidgets('içeriksiz metin; aktör yok, profil istenmiyor', (
+      tester,
+    ) async {
+      final istenen = <String>[];
+      await _ekraniAc(
+        tester,
+        _liste([_siraSende()], okunmamis: 1),
+        istenenProfiller: istenen,
+      );
+      expect(find.byType(BildirimSatiri), findsOneWidget);
+      expect(
+        find.text(arbMetni('kutuphane_bildirim_sira_sende')),
+        findsOneWidget,
+      );
+      expect(istenen, isEmpty);
+      expect(find.text('Ayşe'), findsNothing);
+      expect(find.text('Klasikçiler'), findsOneWidget);
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${mod.name} temada 2× yazıda 320 dp genişlikte taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ekraniAc(
+          tester,
+          _liste([_siraSende(), ..._oduncBildirimleri()], okunmamis: 6),
+          themeMode: mod,
+        );
+        expect(tester.takeException(), isNull);
+        expect(
+          find.text(arbMetni('kutuphane_bildirim_sira_sende')),
+          findsOneWidget,
+        );
         await tester.drag(find.byType(ListView), const Offset(0, -4000));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
