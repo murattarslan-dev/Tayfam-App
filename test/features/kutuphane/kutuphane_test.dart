@@ -328,6 +328,30 @@ void main() {
       expect(oduncAdimiMi(NotificationType.libraryDue), isFalse);
     });
 
+    test('sıra sende: aktörsüz, içeriksiz, kalemi açıyor (#332)', () {
+      const tur = NotificationType.libraryQueueTurn;
+      final bildirim = api.Notification(
+        id: _odunc,
+        type: tur,
+        tayfaId: ornekTayfaId,
+        targetType: NotificationTargetType.libraryItem,
+        targetId: _kitap,
+        read: false,
+        createdAt: DateTime.utc(2026, 11, 23),
+      );
+      expect(oduncAdimiMi(tur), isTrue);
+      expect(bildirimKisisi(bildirim), isNull);
+      final metni = bildirimMetni(m, bildirim, kisi: 'Ayşe');
+      expect(metni, m.kutuphane_bildirim_sira_sende);
+      expect(metni, isNot(contains('Ayşe')));
+      expect(
+        bildirimAdresi(bildirim),
+        Adresler.kutuphaneKalemi(ornekTayfaId, _kitap),
+      );
+      expect(bildirimIkonu(tur), Icons.inventory_2_outlined);
+      expect(bildirimKategorisi(tur), BildirimKategorisi.marka);
+    });
+
     test('ödünç adımı: kalem doğrulanamazsa kütüphane, tayfasız null', () {
       api.Notification bildirim({
         String? tayfa = ornekTayfaId,
