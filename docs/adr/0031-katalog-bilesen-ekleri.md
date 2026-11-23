@@ -1,7 +1,7 @@
 # ADR-0031: Katalog bileşen ekleri — kronometre, masa, misafir, sözlük ve seçimler (istemci, v3)
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-18, sohbette)
-- **Tarih:** 2026-11-18
+- **Tarih:** 2026-11-18 (revizyon 2026-11-23: §7 `vote` kaynakları)
 - **Karar veren:** Murat Arslan (2026-11-18 katalog oturumu). Ürün kararları
   Notion "Faz 3 — Katalog ayrıntıları ve şema ekleri (2026-11-18)"
   sayfasındadır.
@@ -96,8 +96,15 @@ Onaylanmamış öneri istatistik ve ana sayfa kartlarında gösterilmez.
 - **`vehicles` + `seats`:** araç kartında "2 boş koltuk"; katılımcı "Bu
   araçla gelmek istiyorum" der, araç sahibi onaylar. Masraf alanı yok.
 - **`vote`:** seçenek kaynağı `album` ise seçenekler albüm küçük
-  resimleri, `route_stops` ise rota durakları, `vehicles` ise araç
-  kartlarıdır.
+  resimleri, `vehicles` ise araç kartları (plakasız), `participants` ise
+  kişiler, `free` ise organizatörün yazdığı etiketlerdir. (`route_stops`
+  platform sahibinin 2026-11-23 kararıyla kaldırıldı; durak kartı yoktur,
+  Tayfam-Api ADR-0037 §3, #242.) Oy gizlidir: kimin neye oy verdiği hiçbir
+  yerde gösterilmez, yalnızca kendi oyun işaretlenir; `results_visible`
+  değilken seçenek başına sayı ve kazanan gösterilmez, yalnızca oy veren
+  sayısı. Seçenek ekleme/kaldırma yalnızca `free`'de; düğmeler
+  `caller_can_vote` / `caller_can_edit_options` / `caller_can_close`'a
+  göre.
 - **`pool_link`:** soru havuzu modülünün ADR'siyle gelir; o zamana kadar
   kayıtta yoktur ("Uygulamayı güncelle" davranışı geçerlidir).
 

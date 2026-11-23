@@ -18,6 +18,8 @@ import 'package:tayfam/features/etkinlik/bilesenler/kutlama/kutlama_durumu.dart'
 import 'package:tayfam/features/etkinlik/bilesenler/kutlama/kutlama_formu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_ortak.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/oylama/oylama_bileseni.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/oylama/oylama_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_durumu.dart';
@@ -87,14 +89,24 @@ List<TakimKimligi> kutlamaTakimBilesenleri(WidgetRef ref, KutlamaKimligi k) {
 
 /// Kazananın metin olarak adı: kişinin adı (hesabını silmişse "Silinmiş
 /// kullanıcı"), takımın adı ya da numarası, misafirin takma adı ("Deniz
-/// (misafir)"). Takım bulunamazsa "Takım".
+/// (misafir)"). Oylama kaynağında kazanan seçeneğin adı ([oylamaSecenekleri]
+/// seçenek kimliği → seçenek; serbest seçenekte etiket, araçta "araç ·
+/// sahibi"); seçenek okunamadıysa kişinin adı ya da "Seçenek". Takım
+/// bulunamazsa "Takım".
 String kutlamaKazananAdi(
   WidgetRef ref,
   AppLocalizations m,
   EventCelebrationWinner kazanan, {
   required List<TakimKimligi> takimlar,
   MisafirKimligi? misafirler,
+  Map<String, EventVoteOption> oylamaSecenekleri = const {},
 }) {
+  final secenekId = kazanan.voteOptionId;
+  if (secenekId != null) {
+    final secenek = oylamaSecenekleri[secenekId];
+    if (secenek != null) return oylamaSecenekAdi(ref, m, secenek);
+    if (kazanan.userId == null) return m.bilesen_vote_secenek_genel;
+  }
   final misafir = kazanan.guestId;
   if (misafir != null) return misafirAdiMetni(ref, m, misafirler, misafir);
   final kisi = kazanan.userId;
@@ -301,6 +313,7 @@ class KutlamaKarti extends ConsumerWidget {
         ? etkinlikMisafirleri(ref, kimlik.tayfaId, kimlik.etkinlikId)
         : null;
     final masalar = _masaAdlari(ref);
+    final oylamaSecenekleri = _oylamaSecenekleri(ref);
     final adlar = [
       for (final k in kutlama.winners)
         _satir(
@@ -311,6 +324,7 @@ class KutlamaKarti extends ConsumerWidget {
             k,
             takimlar: takimlar,
             misafirler: misafirler,
+            oylamaSecenekleri: oylamaSecenekleri,
           ),
           masalar[k.tableId],
         ),
@@ -385,6 +399,29 @@ class KutlamaKarti extends ConsumerWidget {
 
   String _satir(AppLocalizations m, String ad, String? masa) =>
       masa == null ? ad : m.bilesen_celebration_masada(ad, masa);
+
+  /// Oylama kaynağında oylamanın seçenekleri (seçenek kimliği → seçenek).
+  /// Kaynak oylama değilse boş; oylama yalnızca o zaman okunur.
+  Map<String, EventVoteOption> _oylamaSecenekleri(WidgetRef ref) {
+    final kaynak = kutlama.source;
+    if (kaynak == null ||
+        kutlama.sourceKind != EventCelebrationSourceKind.vote ||
+        !kutlama.winners.any((k) => k.voteOptionId != null)) {
+      return const {};
+    }
+    final oylama = ref
+        .watch(
+          oylamaProvider((
+            tayfaId: kimlik.tayfaId,
+            etkinlikId: kimlik.etkinlikId,
+            anahtar: kaynak,
+          )),
+        )
+        .value;
+    return {
+      for (final s in oylama?.options ?? const <EventVoteOption>[]) s.id: s,
+    };
+  }
 
   /// Yazboz kaynağında kazanılan masaların adları (masa kimliği → ad).
   /// Kaynak yazboz değilse ya da masa yoksa boş; yazboz yalnızca o zaman

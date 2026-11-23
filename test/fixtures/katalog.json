@@ -879,6 +879,37 @@
       }
     },
     {
+      "key": "photo_contest",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Fotoğraf yarışması"
+      },
+      "icon": "photo_camera",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "vote",
+            "params": {
+              "source": "album"
+            }
+          },
+          {
+            "kind": "celebration",
+            "params": {
+              "source": "vote"
+            }
+          }
+        ]
+      }
+    },
+    {
       "key": "ornek_alanlar",
       "interest_keys": [
         "general"

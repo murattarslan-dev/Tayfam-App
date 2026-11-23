@@ -64,6 +64,10 @@ const String hedefDegeriYolu = '$hedefYolu/target';
 const String dereceYolu = '$bilesenYolu/ranking';
 const String dereceKaydiYolu = '$dereceYolu/entries/{user_id}';
 const String kutlamaYolu = '$bilesenYolu/celebration';
+const String oylamaYolu = '$bilesenYolu/vote';
+const String oylamaSecenekleriYolu = '$oylamaYolu/options';
+const String oylamaSecenegiYolu = '$oylamaSecenekleriYolu/{option_id}';
+const String oylamaKapatYolu = '$oylamaYolu/close';
 const String sorularYolu = '$bilesenYolu/questions';
 const String soruYolu = '$sorularYolu/{question_id}';
 const String soruOyuYolu = '$soruYolu/vote';
@@ -360,11 +364,69 @@ Map<String, Object?> kutlamaKazananiJson({
   String? takim,
   String? misafir,
   String? masa,
+  String? secenek,
 }) => {
   'user_id': ?kisi,
   'team_id': ?takim,
   'guest_id': ?misafir,
   'table_id': ?masa,
+  'vote_option_id': ?secenek,
+};
+
+/// Örnek `EventVote` JSON'u (oylama bileşeni, #242): varsayılanı serbest,
+/// seçeneksiz, açık oylama; oy veremeyen üye gözüyle. Sonuçlar görünmezken
+/// ([sonucGorunur] `false`) sözleşmedeki gibi seçeneklerin sayıları 0'dır
+/// ve kazanan yoktur. Kimin neye oy verdiği hiçbir zaman yoktur.
+Map<String, Object?> oylamaJson({
+  String kaynak = 'free',
+  List<Map<String, Object?>> secenekler = const [],
+  int oyVeren = 0,
+  String? oyum,
+  bool kapali = false,
+  bool? sonucGorunur,
+  bool oyVerebilir = false,
+  bool duzenleyebilir = false,
+  bool kapatabilir = false,
+  int enCok = 20,
+}) {
+  final gorunur = sonucGorunur ?? kapali;
+  return {
+    'source': kaynak,
+    'options': [
+      for (final s in secenekler)
+        gorunur ? s : {...s, 'vote_count': 0, 'winner': false},
+    ],
+    'voter_count': oyVeren,
+    'caller_option_id': ?oyum,
+    'closed': kapali,
+    if (kapali) 'closed_at': '2026-11-14T12:00:00Z',
+    'results_visible': gorunur,
+    'caller_can_vote': oyVerebilir,
+    'caller_can_edit_options': duzenleyebilir,
+    'caller_can_close': kapatabilir,
+    'max_options': enCok,
+  };
+}
+
+/// Örnek `EventVoteOption` JSON'u: serbest seçenekte [etiket], katılımcıda
+/// [kisi], araçta [arac] (plakasız) ve sahibi [kisi], albümde [yukleme] ve
+/// yükleyen [kisi].
+Map<String, Object?> oylamaSecenegiJson(
+  String id, {
+  String? etiket,
+  String? kisi,
+  Map<String, Object?>? arac,
+  String? yukleme,
+  int oy = 0,
+  bool kazanan = false,
+}) => {
+  'id': id,
+  'label': ?etiket,
+  'user_id': ?kisi,
+  'vehicle': ?arac,
+  'upload_id': ?yukleme,
+  'vote_count': oy,
+  'winner': kazanan,
 };
 
 /// Örnek `EventQuestion` JSON'u (soru toplama bileşeni, #244). Anonim
@@ -909,6 +971,11 @@ SahteTayfaTasima etkinlikTasimasi([Map<String, TayfaYaniti>? yanitlar]) {
       'GET $dereceYolu',
       () =>
           (_) => dereceJson(),
+    )
+    ..putIfAbsent(
+      'GET $oylamaYolu',
+      () =>
+          (_) => oylamaJson(),
     )
     ..putIfAbsent(
       'GET $programYolu',

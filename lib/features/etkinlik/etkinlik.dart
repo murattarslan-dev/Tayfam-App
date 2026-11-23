@@ -40,6 +40,8 @@ export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
     show ListeBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_bileseni.dart'
     show OlcumBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/oylama/oylama_bileseni.dart'
+    show OylamaBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/program/program_bileseni.dart'
     show ProgramBileseni;
 export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'

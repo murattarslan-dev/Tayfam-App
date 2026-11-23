@@ -2187,7 +2187,7 @@ enum CatalogBadgeScope {
 /// | `bracket` | `format` (`elimination`, `league`, `swiss`; seçimli), `best_of` (1, 3, 5; seçimli) |
 /// | `scoreboard` | `side` (`player`, `team`), `tables` (boolean), `presets` (ön ayar anahtarları), `rounds` (`round`, `single`, `first_to`; seçimli), `target` (1–100000), `winner` (`high`, `low`, `first`; seçimli), `result` (`points`, `wdl`), `best_of` (1, 3, 5; seçimli), `guests` (boolean) |
 /// | `ranking` | `source` (kişisel bir ölçümün `key`'i) ya da `metric` (`duration`, `rank`); biri zorunlu, ikisi birlikte olmaz; `direction` (`asc`, `desc`) |
-/// | `vote` | `source` (`free`, `participants`, `vehicles`, `album`, `route_stops`; zorunlu) |
+/// | `vote` | `source` (`free`, `participants`, `vehicles`, `album`; zorunlu). `vehicles` türde `vehicles` bileşeni ister; `participants` hassas katılımlı (`sensitive_attendance`) türde olmaz |
 /// | `celebration` | `source` (bir `scoreboard`, `bracket`, `ranking` ya da `vote` bileşeninin `key`'i) |
 /// | `measure` | `unit`, `scope` (`personal`, `total`), `entered_by` (`self`, `organizer`) zorunlu; `min`, `max`, `decimals` (0–3), `showcase`, `sensitive` (boolean), `prefill_from` (bir alanın `key`'i) |
 /// | `goal` | `measure` (bir ölçümün `key`'i; zorunlu), `default_target` |
@@ -10127,13 +10127,14 @@ enum EventCelebrationSourceKind {
   }
 }
 
-/// Bir kazanan: `user_id`, `team_id` ve `guest_id`'den tam olarak biri vardır.
+/// Bir kazanan: `user_id`, `team_id` ve `guest_id`'den tam olarak biri vardır. Oylama kaynağında `vote_option_id` vardır; `user_id` seçeneğin arkasındaki kişidir (katılımcı, aracın sahibi, fotoğrafı yükleyen), serbest seçenekte yoktur.
 final class EventCelebrationWinner {
   const EventCelebrationWinner({
     this.userId,
     this.teamId,
     this.guestId,
     this.tableId,
+    this.voteOptionId,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -10157,6 +10158,13 @@ final class EventCelebrationWinner {
           null => null,
           final Object v => _readString(v, 'EventCelebrationWinner.table_id'),
         },
+        voteOptionId: switch (json['vote_option_id']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'EventCelebrationWinner.vote_option_id',
+          ),
+        },
       );
 
   final String? userId;
@@ -10170,12 +10178,16 @@ final class EventCelebrationWinner {
   /// Yalnızca yazboz kaynağında; kazanılan masa.
   final String? tableId;
 
+  /// Yalnızca oylama kaynağında; kazanan seçeneğin `id`'si (`EventVoteOption`).
+  final String? voteOptionId;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     if (userId case final value?) 'user_id': value,
     if (teamId case final value?) 'team_id': value,
     if (guestId case final value?) 'guest_id': value,
     if (tableId case final value?) 'table_id': value,
+    if (voteOptionId case final value?) 'vote_option_id': value,
   };
 
   @override
@@ -10185,11 +10197,12 @@ final class EventCelebrationWinner {
           userId == other.userId &&
           teamId == other.teamId &&
           guestId == other.guestId &&
-          tableId == other.tableId;
+          tableId == other.tableId &&
+          voteOptionId == other.voteOptionId;
 
   @override
   int get hashCode =>
-      Object.hashAll(<Object?>[userId, teamId, guestId, tableId]);
+      Object.hashAll(<Object?>[userId, teamId, guestId, tableId, voteOptionId]);
 }
 
 final class EventComponentChoiceState {
@@ -15567,6 +15580,397 @@ final class EventVehicles {
     callerCanParticipate,
     callerCanManage,
   ]);
+}
+
+/// Bir etkinliğin bir oylama bileşeni, isteği yapanın gördüğü haliyle (#254). Kimin neye oy verdiği hiçbir zaman yer almaz.
+final class EventVote {
+  const EventVote({
+    required this.source,
+    required this.options,
+    required this.voterCount,
+    this.callerOptionId,
+    required this.closed,
+    this.closedAt,
+    required this.resultsVisible,
+    required this.callerCanVote,
+    required this.callerCanEditOptions,
+    required this.callerCanClose,
+    required this.maxOptions,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVote.fromJson(Map<String, Object?> json) => EventVote(
+    source: EventVoteSource.fromWire(
+      _readString(json['source'], 'EventVote.source'),
+    ),
+    options: List<EventVoteOption>.unmodifiable(
+      _readList(json['options'], 'EventVote.options').map(
+        (Object? e0) =>
+            EventVoteOption.fromJson(_readObject(e0, 'EventVote.options')),
+      ),
+    ),
+    voterCount: _readInt(json['voter_count'], 'EventVote.voter_count'),
+    callerOptionId: switch (json['caller_option_id']) {
+      null => null,
+      final Object v => _readString(v, 'EventVote.caller_option_id'),
+    },
+    closed: _readBool(json['closed'], 'EventVote.closed'),
+    closedAt: switch (json['closed_at']) {
+      null => null,
+      final Object v => _readDateTime(v, 'EventVote.closed_at'),
+    },
+    resultsVisible: _readBool(
+      json['results_visible'],
+      'EventVote.results_visible',
+    ),
+    callerCanVote: _readBool(
+      json['caller_can_vote'],
+      'EventVote.caller_can_vote',
+    ),
+    callerCanEditOptions: _readBool(
+      json['caller_can_edit_options'],
+      'EventVote.caller_can_edit_options',
+    ),
+    callerCanClose: _readBool(
+      json['caller_can_close'],
+      'EventVote.caller_can_close',
+    ),
+    maxOptions: _readInt(json['max_options'], 'EventVote.max_options'),
+  );
+
+  /// Seçeneklerin kaynağı (tanımdaki `source`).
+  final EventVoteSource source;
+
+  /// `free` yazılış sırasıyla, `participants` kimlik sırasıyla, `vehicles` yazılış sırasıyla, `album` albüm sırasıyla. Kaynakta seçenek yoksa boş.
+  final List<EventVoteOption> options;
+
+  /// Seçeneklerden birine oy veren kişi sayısı; her zaman görünür.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int voterCount;
+
+  /// Kendi oyunuz; oy vermediyseniz (ya da seçeneği artık yoksa) yoktur.
+  final String? callerOptionId;
+
+  /// Organizatör oylamayı kapattı.
+  final bool closed;
+
+  /// Yalnızca kapatıldıysa.
+  final DateTime? closedAt;
+
+  /// Seçenek başına oy sayıları ve kazananlar görünür: oylama kapatıldı ya da bileşen dondu.
+  final bool resultsVisible;
+
+  /// Şu an oy verebilirsiniz (`going` ya da katılımı doğrulanmış, susturulmamış; oylama açık, etkinlik iptal değil, donmamış, tayfa salt okunur değil).
+  final bool callerCanVote;
+
+  /// Şu an seçenek ekleyip kaldırabilirsiniz (yalnızca `free`; organizatör, moderatör, yönetici; oylama açık).
+  final bool callerCanEditOptions;
+
+  /// Şu an oylamayı kapatabilirsiniz (organizatör, moderatör, yönetici; oylama açık).
+  final bool callerCanClose;
+
+  /// Serbest oylamada en fazla seçenek (20).
+  ///
+  /// Kısıtlar: minimum: 1.
+  final int maxOptions;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'source': source.wire,
+    'options': <Object?>[for (final e0 in options) e0.toJson()],
+    'voter_count': voterCount,
+    if (callerOptionId case final value?) 'caller_option_id': value,
+    'closed': closed,
+    if (closedAt case final value?)
+      'closed_at': value.toUtc().toIso8601String(),
+    'results_visible': resultsVisible,
+    'caller_can_vote': callerCanVote,
+    'caller_can_edit_options': callerCanEditOptions,
+    'caller_can_close': callerCanClose,
+    'max_options': maxOptions,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVote &&
+          source == other.source &&
+          _deepEquals(options, other.options) &&
+          voterCount == other.voterCount &&
+          callerOptionId == other.callerOptionId &&
+          closed == other.closed &&
+          closedAt == other.closedAt &&
+          resultsVisible == other.resultsVisible &&
+          callerCanVote == other.callerCanVote &&
+          callerCanEditOptions == other.callerCanEditOptions &&
+          callerCanClose == other.callerCanClose &&
+          maxOptions == other.maxOptions;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    source,
+    _deepHash(options),
+    voterCount,
+    callerOptionId,
+    closed,
+    closedAt,
+    resultsVisible,
+    callerCanVote,
+    callerCanEditOptions,
+    callerCanClose,
+    maxOptions,
+  ]);
+}
+
+final class EventVoteCastRequest {
+  const EventVoteCastRequest({required this.optionId});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVoteCastRequest.fromJson(Map<String, Object?> json) =>
+      EventVoteCastRequest(
+        optionId: _readString(
+          json['option_id'],
+          'EventVoteCastRequest.option_id',
+        ),
+      );
+
+  /// Oylamanın bir seçeneğinin `id`'si.
+  final String optionId;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'option_id': optionId};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVoteCastRequest && optionId == other.optionId;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[optionId]);
+}
+
+/// Bir oylama seçeneği. Kaynağa göre: `free` `label`; `participants` `user_id` (kişi, `id` ile aynı); `vehicles` `vehicle` ve `user_id` (aracın sahibi); `album` `upload_id` ve `user_id` (fotoğrafı yükleyen).
+final class EventVoteOption {
+  const EventVoteOption({
+    required this.id,
+    this.label,
+    this.userId,
+    this.vehicle,
+    this.uploadId,
+    required this.voteCount,
+    required this.winner,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVoteOption.fromJson(Map<String, Object?> json) =>
+      EventVoteOption(
+        id: _readString(json['id'], 'EventVoteOption.id'),
+        label: switch (json['label']) {
+          null => null,
+          final Object v => _readString(v, 'EventVoteOption.label'),
+        },
+        userId: switch (json['user_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventVoteOption.user_id'),
+        },
+        vehicle: switch (json['vehicle']) {
+          null => null,
+          final Object v => EventVoteVehicle.fromJson(
+            _readObject(v, 'EventVoteOption.vehicle'),
+          ),
+        },
+        uploadId: switch (json['upload_id']) {
+          null => null,
+          final Object v => _readString(v, 'EventVoteOption.upload_id'),
+        },
+        voteCount: _readInt(json['vote_count'], 'EventVoteOption.vote_count'),
+        winner: _readBool(json['winner'], 'EventVoteOption.winner'),
+      );
+
+  /// Oy verirken gönderilen değer: serbest seçeneğin, katılımcının, etkinlik aracının ya da albüm fotoğrafının kimliği.
+  final String id;
+
+  /// Yalnızca serbest seçenekte.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 100.
+  final String? label;
+
+  /// Seçeneğin arkasındaki kişi; serbest seçenekte yoktur.
+  final String? userId;
+
+  final EventVoteVehicle? vehicle;
+
+  /// Yalnızca albümde; fotoğrafın dosyası (linkleri `POST /v1/media/urls`).
+  final String? uploadId;
+
+  /// Seçeneğe verilen oy; `results_visible` değilse 0.
+  ///
+  /// Kısıtlar: minimum: 0.
+  final int voteCount;
+
+  /// En çok oy alanlardan (en az bir oy); yalnızca `results_visible` iken.
+  final bool winner;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    if (label case final value?) 'label': value,
+    if (userId case final value?) 'user_id': value,
+    if (vehicle case final value?) 'vehicle': value.toJson(),
+    if (uploadId case final value?) 'upload_id': value,
+    'vote_count': voteCount,
+    'winner': winner,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVoteOption &&
+          id == other.id &&
+          label == other.label &&
+          userId == other.userId &&
+          vehicle == other.vehicle &&
+          uploadId == other.uploadId &&
+          voteCount == other.voteCount &&
+          winner == other.winner;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+    id,
+    label,
+    userId,
+    vehicle,
+    uploadId,
+    voteCount,
+    winner,
+  ]);
+}
+
+final class EventVoteOptionRequest {
+  const EventVoteOptionRequest({required this.label});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVoteOptionRequest.fromJson(Map<String, Object?> json) =>
+      EventVoteOptionRequest(
+        label: _readString(json['label'], 'EventVoteOptionRequest.label'),
+      );
+
+  /// Seçenek; kırpıldıktan ve iç boşluklar teke indirildikten sonra 1–100 karakter.
+  ///
+  /// Kısıtlar: minLength: 1; maxLength: 656.
+  final String label;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{'label': label};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVoteOptionRequest && label == other.label;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[label]);
+}
+
+/// Seçeneklerin kaynağı (tanımdaki `source`).
+enum EventVoteSource {
+  free('free'),
+  participants('participants'),
+  vehicles('vehicles'),
+  album('album'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const EventVoteSource(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('EventVoteSource.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static EventVoteSource fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// Araç kaynaklı seçeneğin aracı; plaka yoktur.
+final class EventVoteVehicle {
+  const EventVoteVehicle({
+    required this.make,
+    this.model,
+    this.modelYear,
+    this.color,
+  });
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory EventVoteVehicle.fromJson(Map<String, Object?> json) =>
+      EventVoteVehicle(
+        make: _readString(json['make'], 'EventVoteVehicle.make'),
+        model: switch (json['model']) {
+          null => null,
+          final Object v => _readString(v, 'EventVoteVehicle.model'),
+        },
+        modelYear: switch (json['model_year']) {
+          null => null,
+          final Object v => _readInt(v, 'EventVoteVehicle.model_year'),
+        },
+        color: switch (json['color']) {
+          null => null,
+          final Object v => _readString(v, 'EventVoteVehicle.color'),
+        },
+      );
+
+  final String make;
+
+  /// Verilmemişse yoktur.
+  final String? model;
+
+  /// Verilmemişse yoktur.
+  final int? modelYear;
+
+  /// Verilmemişse yoktur.
+  final String? color;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'make': make,
+    if (model case final value?) 'model': value,
+    if (modelYear case final value?) 'model_year': value,
+    if (color case final value?) 'color': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is EventVoteVehicle &&
+          make == other.make &&
+          model == other.model &&
+          modelYear == other.modelYear &&
+          color == other.color;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[make, model, modelYear, color]);
 }
 
 final class Friend {
