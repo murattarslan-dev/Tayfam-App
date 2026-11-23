@@ -869,10 +869,7 @@ void main() {
       final once = arkadas.giden('GET', kendiProfilYolu).length;
       await tester.tap(tekrar);
       await tester.pumpAndSettle();
-      expect(
-        arkadas.giden('GET', kendiProfilYolu).length,
-        greaterThan(once),
-      );
+      expect(arkadas.giden('GET', kendiProfilYolu).length, greaterThan(once));
       expect(tekrar, findsNothing);
       await kaydir(tester, find.text('İlk adım'));
       expect(find.text('İlk adım'), findsOneWidget);
