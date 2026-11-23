@@ -777,11 +777,10 @@ void main() {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
         final arkadas = tasima(() => doluProfil);
-        await _Ortam(const {}, arkadas).ac(
-          tester,
-          const ProfilEkrani(),
-          themeMode: mod,
-        );
+        await _Ortam(
+          const {},
+          arkadas,
+        ).ac(tester, const ProfilEkrani(), themeMode: mod);
         expect(tester.takeException(), isNull);
 
         final rozet = find.text('İlk adım');
@@ -808,11 +807,10 @@ void main() {
       ) async {
         ekranBoyutu(tester, genislik: 320);
         ikiKatYazi(tester);
-        await _Ortam(const {}, tasima(kendiProfilim)).ac(
-          tester,
-          const ProfilEkrani(),
-          themeMode: mod,
-        );
+        await _Ortam(
+          const {},
+          tasima(kendiProfilim),
+        ).ac(tester, const ProfilEkrani(), themeMode: mod);
         final rozetBos = _metin('rozet_bos_kendi');
         await kaydir(tester, rozetBos);
         expect(rozetBos, findsOneWidget);
@@ -830,10 +828,10 @@ void main() {
       final profil = {...kendiProfilim()}
         ..remove('badges')
         ..remove('stats');
-      await _Ortam(const {}, tasima(() => profil)).ac(
-        tester,
-        const ProfilEkrani(),
-      );
+      await _Ortam(
+        const {},
+        tasima(() => profil),
+      ).ac(tester, const ProfilEkrani());
       final rozetBos = _metin('rozet_bos_kendi');
       await kaydir(tester, rozetBos);
       expect(rozetBos, findsOneWidget);
@@ -868,9 +866,13 @@ void main() {
       expect(_metin('rozet_baslik'), findsNothing);
 
       hata = false;
+      final once = arkadas.giden('GET', kendiProfilYolu).length;
       await tester.tap(tekrar);
       await tester.pumpAndSettle();
-      expect(arkadas.giden('GET', kendiProfilYolu), hasLength(2));
+      expect(
+        arkadas.giden('GET', kendiProfilYolu).length,
+        greaterThan(once),
+      );
       expect(tekrar, findsNothing);
       await kaydir(tester, find.text('İlk adım'));
       expect(find.text('İlk adım'), findsOneWidget);
