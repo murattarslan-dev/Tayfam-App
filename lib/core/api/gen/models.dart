@@ -11370,7 +11370,7 @@ final class EventGuestPlayer {
 
   final String id;
 
-  /// Takma ad. Etkinliğin bitiminden 30 gün sonra (ya da ekleyen hesabını silince) silinir ve alan yer almaz; istemci adsız misafir gösterir.
+  /// Takma ad. Ekleyen hesabını silince silinir ve alan yer almaz; istemci adsız misafir gösterir. Etkinlik silinince misafir de silinir.
   ///
   /// Kısıtlar: maxLength: 24.
   final String? nickname;
