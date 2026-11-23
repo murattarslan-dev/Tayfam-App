@@ -38,9 +38,14 @@ enum AracHatasi { marka, model, yil, renk, plaka, koltuk }
 /// yalnızca [koltukAcik] ise gönderilir (`seats` parametresi; boşsa 0).
 /// [buYil] yerel takvimdeki yıl; model yılı en çok gelecek yıl olabilir.
 ///
+/// [garajAraci] verilirse araç kendi garajından seçilmiştir (Tayfam-Api
+/// ADR-0040 §4): marka, model, yıl ve renk gönderilmez, sunucu garajdan
+/// kopyalar; yalnızca plaka ve koltuk bu kayda yazılır.
+///
 /// Hata yoksa istek, varsa yalnızca hatalar döner.
 ({EventVehicleRequest? istek, Set<AracHatasi> hatalar}) aracIstegi({
-  required String marka,
+  String? garajAraci,
+  String marka = '',
   String model = '',
   String yil = '',
   String renk = '',
@@ -51,12 +56,19 @@ enum AracHatasi { marka, model, yil, renk, plaka, koltuk }
   required int buYil,
 }) {
   final hatalar = <AracHatasi>{};
-  final m = marka.trim();
-  if (m.isEmpty || _uzunluk(m) > aracMarkaEnCok) hatalar.add(AracHatasi.marka);
-  if (_uzunluk(model.trim()) > aracModelEnCok) hatalar.add(AracHatasi.model);
-  if (_uzunluk(renk.trim()) > aracRenkEnCok) hatalar.add(AracHatasi.renk);
+  final garajdan = garajAraci != null;
+  final m = garajdan ? '' : marka.trim();
+  if (!garajdan && (m.isEmpty || _uzunluk(m) > aracMarkaEnCok)) {
+    hatalar.add(AracHatasi.marka);
+  }
+  if (!garajdan && _uzunluk(model.trim()) > aracModelEnCok) {
+    hatalar.add(AracHatasi.model);
+  }
+  if (!garajdan && _uzunluk(renk.trim()) > aracRenkEnCok) {
+    hatalar.add(AracHatasi.renk);
+  }
   int? modelYili;
-  final yilMetni = yil.trim();
+  final yilMetni = garajdan ? '' : yil.trim();
   if (yilMetni.isNotEmpty) {
     modelYili = int.tryParse(yilMetni);
     if (modelYili == null ||
@@ -85,10 +97,11 @@ enum AracHatasi { marka, model, yil, renk, plaka, koltuk }
   if (hatalar.isNotEmpty) return (istek: null, hatalar: hatalar);
   return (
     istek: EventVehicleRequest(
-      make: m,
-      model: _doluysa(model),
+      garageVehicleId: garajAraci,
+      make: garajdan ? null : m,
+      model: garajdan ? null : _doluysa(model),
       modelYear: modelYili,
-      color: _doluysa(renk),
+      color: garajdan ? null : _doluysa(renk),
       plate: _doluysa(p),
       seats: koltukSayisi,
     ),

@@ -11,6 +11,7 @@ import 'package:tayfam/features/etkinlik/bilesenler/araclar/araclar_durumu.dart'
 import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart';
+import 'package:tayfam/features/garaj/data/garaj_deposu.dart';
 
 import '../../../core/katalog/sahte_katalog.dart';
 import '../../../yardimcilar.dart';
@@ -33,6 +34,30 @@ const String _onayYolu = '$_istekYolu/approval';
 
 const String _aracId = '7f6e5d4c-3b2a-4f1e-8d0c-9b8a7f6e5d4c';
 const String _yolcuId = '8a7f6e5d-4c3b-4a2f-9e1d-0c9b8a7f6e5d';
+const String _garajAraciId = '9b8a7f6e-5d4c-4b3a-8f1e-0d9c8b7a6f5e';
+
+/// Kendi garajında bir araç ("Garajımdan seç").
+GarajDeposu _garaj() => GarajDeposu(
+  SahteTayfaTasima({
+    'GET /v1/me/garage': (_) => {
+      'vehicles': [
+        {
+          'id': _garajAraciId,
+          'owner_user_id': katilimciId,
+          'make': 'Murat',
+          'model': '124',
+          'model_year': 1975,
+          'photo_upload_ids': const <String>[],
+          'created_at': '2026-11-20T10:00:00Z',
+          'updated_at': '2026-11-20T10:00:00Z',
+          'caller_can_edit': true,
+          'caller_can_remove': false,
+        },
+      ],
+      'caller_can_add': true,
+    },
+  }),
+);
 
 const List<EtkinlikBileseni> _kayit = [
   TemelBilesen('meeting_point'),
@@ -109,11 +134,13 @@ Future<void> _detayiAc(
   WidgetTester tester,
   SahteTayfaTasima tasima, {
   ThemeMode themeMode = ThemeMode.light,
+  GarajDeposu? garaj,
 }) async {
   await uygulamayiAc(
     tester,
     themeMode: themeMode,
     tayfa: etkinlikOverridelari(tasima: tasima, bilesenler: _kayit),
+    garaj: garaj,
   );
   yonlendiriciyiAl(tester).go(Adresler.etkinlik(ornekTayfaId, ornekEtkinlikId));
   await tester.pumpAndSettle();
@@ -181,6 +208,30 @@ void main() {
         buYil: 2026,
       );
       expect(kapali.istek!.toJson(), {'make': 'Anadol'});
+    });
+
+    test('garajdan seçilen araç: marka, model, yıl ve renk gönderilmez', () {
+      final sonuc = aracIstegi(
+        garajAraci: _garajAraciId,
+        marka: 'Anadol',
+        model: 'A1',
+        yil: 'yetmiş',
+        plaka: '34 AB 1972',
+        koltuk: '2',
+        plakaAcik: true,
+        koltukAcik: true,
+        buYil: 2026,
+      );
+      expect(sonuc.hatalar, isEmpty);
+      expect(sonuc.istek!.toJson(), {
+        'garage_vehicle_id': _garajAraciId,
+        'plate': '34 AB 1972',
+        'seats': 2,
+      });
+      expect(
+        aracIstegi(garajAraci: _garajAraciId, buYil: 2026).istek!.toJson(),
+        {'garage_vehicle_id': _garajAraciId},
+      );
     });
 
     test('hatalar: marka, yıl, plaka ve koltuk', () {
@@ -378,6 +429,37 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('aracını garajından seçer; plaka yine formda', (tester) async {
+      ekranBoyutu(tester, yukseklik: 1400);
+      final tasima = _tasima({
+        'GET $_araclarYolu': (_) => _araclarJson(const []),
+        'PUT $_aracimYolu': (_) =>
+            _araclarJson([_aracJson(sahip: katilimciId)]),
+      });
+      await _detayiAc(tester, tasima, garaj: _garaj());
+      await _gorunurYap(tester, find.text(arbMetni('bilesen_vehicles_yok')));
+      await _dokun(tester, find.text(arbMetni('bilesen_vehicles_ekle')));
+      expect(find.text(arbMetni('garaj_garajimdan_sec')), findsOneWidget);
+      expect(
+        find.widgetWithText(TextField, arbMetni('etkinlik_arac_marka')),
+        findsOneWidget,
+      );
+
+      await _dokun(tester, find.text('Murat 124'));
+      expect(
+        find.widgetWithText(TextField, arbMetni('etkinlik_arac_marka')),
+        findsNothing,
+      );
+      expect(
+        find.widgetWithText(TextField, arbMetni('etkinlik_arac_plaka')),
+        findsOneWidget,
+      );
+      await _dokun(tester, find.text(arbMetni('etkinlik_ekle')));
+      expect(tasima.giden('PUT', _aracimYolu).single.govde, {
+        'garage_vehicle_id': _garajAraciId,
+      });
+    });
 
     testWidgets('üye ("Geliyorum" değil): bilgi metni, düğme yok', (
       tester,

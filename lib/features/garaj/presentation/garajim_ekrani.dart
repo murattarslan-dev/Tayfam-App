@@ -222,7 +222,7 @@ class GarajGirisi extends ConsumerWidget {
               aciklama: switch (sayi) {
                 null => null,
                 0 => m.garaj_bos_kisa,
-                final n => m.garaj_arac_sayisi(n),
+                final int n => m.garaj_arac_sayisi(n),
               },
               sag: const SatirOku(),
               onTap: () => unawaited(context.push(Adresler.garajim)),
