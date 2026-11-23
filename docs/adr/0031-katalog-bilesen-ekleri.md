@@ -1,7 +1,8 @@
 # ADR-0031: Katalog bileşen ekleri — kronometre, masa, misafir, sözlük ve seçimler (istemci, v3)
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-18, sohbette)
-- **Tarih:** 2026-11-18 (revizyon 2026-11-23: §7 `vote` kaynakları)
+- **Tarih:** 2026-11-18 (revizyon 2026-11-23: §7 `vote` kaynakları;
+  uygulama notu 2026-11-23, Tayfam-Api #323: §7 `vote` etkileşimi)
 - **Karar veren:** Murat Arslan (2026-11-18 katalog oturumu). Ürün kararları
   Notion "Faz 3 — Katalog ayrıntıları ve şema ekleri (2026-11-18)"
   sayfasındadır.
@@ -105,6 +106,15 @@ Onaylanmamış öneri istatistik ve ana sayfa kartlarında gösterilmez.
   sayısı. Seçenek ekleme/kaldırma yalnızca `free`'de; düğmeler
   `caller_can_vote` / `caller_can_edit_options` / `caller_can_close`'a
   göre.
+  Uygulama notu (#242; platform sahibi 2026-11-23'te sohbette onayladı,
+  Tayfam-Api #323): oy satıra dokunarak verilir ve onay istemez
+  (değiştirilebilir); seçili seçeneğe yeniden dokunmak bir şey yapmaz, oy
+  ayrı "Oyumu geri al" bağlantısıyla geri alınır. Seçenek kaldırma ve
+  oylamayı kapatma onaylıdır (kapatma geri alınmaz). Kişinin kendi
+  seçeneği (kendisi, aracı, fotoğrafı) "Sen" etiketiyle gösterilir ve
+  seçilemez (kolaylık; karar sunucuda, `vote-own-option`). Albüm
+  seçeneğinin adı listedeki sırasıyla "Fotoğraf N"dir; tam ekran görüntü
+  yoktur.
 - **`pool_link`:** soru havuzu modülünün ADR'siyle gelir; o zamana kadar
   kayıtta yoktur ("Uygulamayı güncelle" davranışı geçerlidir).
 
