@@ -20895,6 +20895,12 @@ final class Notification {
   /// sayıldığı için `mentions` seviyesinde de gider, `none` durdurur.
   /// Kalem bu arada geri çekildiyse ya da üyeliğiniz bittiyse kalem
   /// ucu `library-item-not-found` ya da tayfa hatası döner.
+  /// `library_queue_turn` (#332, ADR-0040 §1): sıranız geldi, kalemin
+  /// önceki ödüncü bitti ve ödünç isteğiniz açıldı (sahibinin onayını
+  /// bekliyor). Hedef `library_item`, `actor_id` yoktur; kalemin
+  /// sahibiyle aranızda iki yönden engel varsa yazılmaz. Eşyayı ve
+  /// kişileri adlandırmaz; push gider (`push_library_queue_turn_title`
+  /// / `push_library_queue_turn_body`), kişisel sayılır.
   /// Tanınmayan değer `unknown`.
   final NotificationType type;
 
@@ -21466,6 +21472,12 @@ enum NotificationTargetType {
 /// sayıldığı için `mentions` seviyesinde de gider, `none` durdurur.
 /// Kalem bu arada geri çekildiyse ya da üyeliğiniz bittiyse kalem
 /// ucu `library-item-not-found` ya da tayfa hatası döner.
+/// `library_queue_turn` (#332, ADR-0040 §1): sıranız geldi, kalemin
+/// önceki ödüncü bitti ve ödünç isteğiniz açıldı (sahibinin onayını
+/// bekliyor). Hedef `library_item`, `actor_id` yoktur; kalemin
+/// sahibiyle aranızda iki yönden engel varsa yazılmaz. Eşyayı ve
+/// kişileri adlandırmaz; push gider (`push_library_queue_turn_title`
+/// / `push_library_queue_turn_body`), kişisel sayılır.
 /// Tanınmayan değer `unknown`.
 enum NotificationType {
   eventCreated('event_created'),
@@ -21501,6 +21513,7 @@ enum NotificationType {
   libraryLoanApproved('library_loan_approved'),
   libraryLoanDeclined('library_loan_declined'),
   libraryLoanHandedOver('library_loan_handed_over'),
+  libraryQueueTurn('library_queue_turn'),
 
   /// Sözleşmedeki `unknown`; tanınmayan değerler de buna düşer.
   unknown('unknown');
