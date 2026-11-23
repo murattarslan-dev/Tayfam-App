@@ -330,3 +330,28 @@ kapalıdır.
     `caller_can_remove` ile sadeleşir. Donmuş, kapatılmış ya da iptal
     edilmiş günlük ve silinmiş kayıt hatalarında günlük yeniden okunur.
     Fotoğraf mevcut medya akışıyla `log_photo` amacıyla yüklenir.
+- **2026-11-23 (issue #307, uygulama; sözleşme Tayfam-Api #333, PR #336,
+  Tayfam-Api ADR-0043):**
+  - **Alan türü.** §3'teki kapalı alan türü listesine `study_tags`
+    eklendi (`AlanTuru.dersKonu`): ders/konu listesinden (`Catalog.study_tags`)
+    seçim. Değer, seçilen en derin etiketlerin anahtar listesidir; ayarlar
+    `min_depth` (`level` | `subject`), `max_depth` (`level` | `subject` |
+    `topic`) ve `max_selected` (1–10, yoksa 1). Derinlik ayarı tanınmayan
+    alan tanınmayan alan sayılır. Alan yalnızca tür alanıdır: `log`
+    bileşeninin kayıt alanlarında gelirse ekleme kapanır. Uygulama bu
+    alanı tanıdığı için dört Eğitim türünde etkinlik oluşturma açıldı.
+  - **Seçici.** Tek seçimli ders..konu alanı ortak `DersKonuSecici`'yi
+    kullanır; çıktısı `[konu ?? ders]` olarak yazılır. Düzey de seçilebilen
+    alan ve çoklu alanın "Ekle" sayfası seçicinin etiket kipini
+    (`DersKonuSecici.etiket`) kullanır: seçim tek anahtardır, düzey
+    seçilebiliyorsa ders, ders seçilebiliyorsa konu isteğe bağlıdır. Çoklu
+    alanda seçilenler satır satır, "Kaldır" ile; alanda olan etiket yeniden
+    eklenemez.
+  - **Gösterim.** Her etiket üst zinciriyle ("TYT › Matematik › Türev";
+    ayraç çeviri dosyasında); emekli etiket adıyla ve "Artık seçilemez"
+    notuyla. Listede hiç olmayan anahtar gösterilmez.
+  - **Doğrulama ve düzenleme.** Formdaki doğrulama yalnızca biçimdir
+    (anahtar, tekrar, en çok seçim); etiketin seçilebilirliğini seçici
+    sağlar, son söz sunucunundur. Bu yüzden mevcut değerdeki emekli etiket
+    (ve listede bulunmayan anahtar) değişmeden geri gönderilir; kullanıcı
+    kaldırabilir ama seçici onu yeniden sunmaz.
