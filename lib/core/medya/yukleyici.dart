@@ -123,6 +123,7 @@ final class MedyaYukleyici {
     UploadPurpose.avatar,
     UploadPurpose.dmAttachment,
     UploadPurpose.reportEvidence,
+    UploadPurpose.garageVehicle,
   };
 
   Future<String> _yukle({

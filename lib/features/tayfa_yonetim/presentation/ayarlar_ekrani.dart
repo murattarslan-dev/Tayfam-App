@@ -602,6 +602,12 @@ class _ModullerKarti extends ConsumerWidget {
         m.materyal_modul_aciklama,
         moduller.materials == true,
       ),
+      (
+        Module.garage,
+        m.garaj_modul,
+        m.garaj_modul_aciklama,
+        moduller.garage == true,
+      ),
     ];
     return ListeKarti(
       children: [

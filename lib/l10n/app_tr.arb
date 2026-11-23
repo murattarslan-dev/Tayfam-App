@@ -15565,6 +15565,14 @@
   "@hata_material_limit": {
     "description": "Hata kodu `material-limit`. Üye başına materyal sınırı doldu."
   },
+  "hata_garage_vehicle_not_found": "Araç bulunamadı. Silinmiş ya da kaldırılmış olabilir.",
+  "@hata_garage_vehicle_not_found": {
+    "description": "Hata kodu `garage-vehicle-not-found`. Garajdaki araç silinmiş, kaldırılmış, başkasının ya da bu tayfada görünmüyor."
+  },
+  "hata_garage_limit": "Garajında en fazla 10 araç olabilir. Yenisi için önce birini sil.",
+  "@hata_garage_limit": {
+    "description": "Hata kodu `garage-limit`. Kişi başına en fazla 10 araç."
+  },
   "materyal_ad": "Materyaller",
   "@materyal_ad": {
     "description": "Materyal kütüphanesi modülünün ve ana sayfa kartının adı; liste ekranının başlığı."
@@ -15858,5 +15866,319 @@
   "materyal_sikayet_sorusu": "Bu materyalde sorun ne?",
   "@materyal_sikayet_sorusu": {
     "description": "Materyal şikâyet sayfasının sorusu."
+  },
+  "garaj_ad": "Garaj",
+  "@garaj_ad": {
+    "description": "Tayfa garajının (`garage` modülü ve ana sayfa bileşeni) adı."
+  },
+  "garaj_aciklama": "Üyelerin bu tayfada gösterdiği araçlar.",
+  "@garaj_aciklama": {
+    "description": "Ana sayfa bileşenleri düzenleme ekranında garaj bileşeninin açıklaması."
+  },
+  "garaj_modul": "Üye garajı",
+  "@garaj_modul": {
+    "description": "Tayfa ayarlarındaki Modüller kartında garaj modülünün adı."
+  },
+  "garaj_modul_aciklama": "Üyeler garajlarındaki araçları bu tayfada gösterebilir.",
+  "@garaj_modul_aciklama": {
+    "description": "Tayfa ayarlarındaki Modüller kartında garaj modülünün açıklaması."
+  },
+  "garaj_olustur": "Garajına araç ekle",
+  "@garaj_olustur": {
+    "description": "Oluştur menüsünde garaj girişinin başlığı."
+  },
+  "garaj_olustur_aciklama": "Marka, model ve fotoğraflarla; plaka yok.",
+  "@garaj_olustur_aciklama": {
+    "description": "Oluştur menüsünde garaj girişinin açıklaması."
+  },
+  "garaj_tumu": "Tümü",
+  "@garaj_tumu": {
+    "description": "Ana sayfadaki garaj kartında tayfa garajını açan bağlantı."
+  },
+  "garaj_garaji_ac": "Garajı aç",
+  "@garaj_garaji_ac": {
+    "description": "Ana sayfadaki boş garaj kartında tayfa garajını açan bağlantı."
+  },
+  "garaj_bos_tayfa": "Bu tayfada henüz araç gösteren yok.",
+  "@garaj_bos_tayfa": {
+    "description": "Tayfa garajı boşken."
+  },
+  "garaj_bos_kendi": "Garajın boş. Araçlarını ekle; hangi tayfada görüneceğini her tayfanın garaj sayfasından seçersin.",
+  "@garaj_bos_kendi": {
+    "description": "Profildeki Garajım boşken."
+  },
+  "garaj_bos_kisa": "Henüz araç yok",
+  "@garaj_bos_kisa": {
+    "description": "Profildeki Garajım girişinin açıklaması: garaj boş."
+  },
+  "garaj_arac_sayisi": "{sayi, plural, other{{sayi} araç}}",
+  "@garaj_arac_sayisi": {
+    "description": "Profildeki Garajım girişinin açıklaması: araç sayısı.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "garaj_bolum": "Garaj",
+  "@garaj_bolum": {
+    "description": "Profildeki garaj bölümünün başlığı."
+  },
+  "garaj_garajim": "Garajım",
+  "@garaj_garajim": {
+    "description": "Profildeki Garajım girişi ve ekranının başlığı."
+  },
+  "garaj_arac_ekle": "Araç ekle",
+  "@garaj_arac_ekle": {
+    "description": "Garajım ekranında yeni araç ekleme düğmesi."
+  },
+  "garaj_yukleniyor": "Garaj yükleniyor",
+  "@garaj_yukleniyor": {
+    "description": "Garaj okunurken yükleme göstergesinin ekran okuyucu etiketi."
+  },
+  "garaj_gorunurluk_kurali": "Garajın, ilgi alanında Otomobil olan tayfalarda kendiliğinden görünür. Her tayfanın garaj sayfasından gösterip gizleyebilirsin.",
+  "@garaj_gorunurluk_kurali": {
+    "description": "Garajım ekranının üstündeki görünürlük açıklaması."
+  },
+  "garaj_sinir": "En fazla {sayi} araç ekleyebilirsin.",
+  "@garaj_sinir": {
+    "description": "Garajım dolduğunda listenin altındaki not.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "garaj_secenekler": "{arac} seçenekleri",
+  "@garaj_secenekler": {
+    "description": "Araç menüsü düğmesinin ipucu ve ekran okuyucu etiketi.",
+    "placeholders": {
+      "arac": {
+        "type": "String",
+        "example": "Anadol A1"
+      }
+    }
+  },
+  "garaj_duzenle": "Düzenle",
+  "@garaj_duzenle": {
+    "description": "Garajım'da araç menüsünde düzenleme."
+  },
+  "garaj_sil": "Sil",
+  "@garaj_sil": {
+    "description": "Garajım'da araç menüsünde ve onay penceresinde silme."
+  },
+  "garaj_sil_baslik": "Araç silinsin mi?",
+  "@garaj_sil_baslik": {
+    "description": "Garajdaki aracı silme onayının başlığı."
+  },
+  "garaj_sil_metni": "Araç ve fotoğrafları silinir; geri alınamaz. Etkinliklerde daha önce yazdığın araç kayıtları değişmez.",
+  "@garaj_sil_metni": {
+    "description": "Garajdaki aracı silme onayının metni."
+  },
+  "garaj_silindi": "Araç silindi.",
+  "@garaj_silindi": {
+    "description": "Garajdaki araç silinince kısa bildirim."
+  },
+  "garaj_vazgec": "Vazgeç",
+  "@garaj_vazgec": {
+    "description": "Garaj onay pencerelerinde vazgeçme düğmesi."
+  },
+  "garaj_eklendi": "Araç garajına eklendi.",
+  "@garaj_eklendi": {
+    "description": "Araç eklenince kısa bildirim."
+  },
+  "garaj_kaydedildi": "Araç kaydedildi.",
+  "@garaj_kaydedildi": {
+    "description": "Araç düzenlenince kısa bildirim."
+  },
+  "garaj_form_yeni": "Garaja araç ekle",
+  "@garaj_form_yeni": {
+    "description": "Araç formunun başlığı (yeni araç)."
+  },
+  "garaj_form_duzenle": "Aracı düzenle",
+  "@garaj_form_duzenle": {
+    "description": "Araç formunun başlığı (düzenleme)."
+  },
+  "garaj_kaydet": "Kaydet",
+  "@garaj_kaydet": {
+    "description": "Araç formunun sağ üstündeki kaydetme düğmesi."
+  },
+  "garaj_kaydediliyor": "Kaydediliyor",
+  "@garaj_kaydediliyor": {
+    "description": "Araç formu gönderilirken yükleme göstergesinin ekran okuyucu etiketi."
+  },
+  "garaj_marka_alani": "Marka",
+  "@garaj_marka_alani": {
+    "description": "Araç formunda marka alanı (zorunlu)."
+  },
+  "garaj_marka_hata": "Marka yaz (en fazla {sayi} karakter).",
+  "@garaj_marka_hata": {
+    "description": "Marka boş ya da çok uzunken alan hatası.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "40"
+      }
+    }
+  },
+  "garaj_model_alani": "Model (isteğe bağlı)",
+  "@garaj_model_alani": {
+    "description": "Araç formunda model alanı."
+  },
+  "garaj_yil_alani": "Model yılı (isteğe bağlı)",
+  "@garaj_yil_alani": {
+    "description": "Araç formunda model yılı alanı."
+  },
+  "garaj_yil_hata": "{enAz} ile {enCok} arasında bir yıl yaz.",
+  "@garaj_yil_hata": {
+    "description": "Model yılı geçersizken alan hatası.",
+    "placeholders": {
+      "enAz": {
+        "type": "int",
+        "example": "1900"
+      },
+      "enCok": {
+        "type": "int",
+        "example": "2027"
+      }
+    }
+  },
+  "garaj_renk_alani": "Renk (isteğe bağlı)",
+  "@garaj_renk_alani": {
+    "description": "Araç formunda renk alanı."
+  },
+  "garaj_not_alani": "Kısa not (isteğe bağlı)",
+  "@garaj_not_alani": {
+    "description": "Araç formunda kısa not alanı."
+  },
+  "garaj_not_ipucu": "Tek satır; örneğin aracın hikâyesi ya da yapılan işler.",
+  "@garaj_not_ipucu": {
+    "description": "Araç formunda kısa not alanının yardım metni."
+  },
+  "garaj_uzunluk_hata": "En fazla {sayi} karakter yazabilirsin.",
+  "@garaj_uzunluk_hata": {
+    "description": "Araç formunda metin alanı çok uzunken hata.",
+    "placeholders": {
+      "sayi": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "garaj_fotograflar": "Fotoğraflar (en fazla 3)",
+  "@garaj_fotograflar": {
+    "description": "Araç formunda fotoğraf bölümünün başlığı."
+  },
+  "garaj_form_fotograf_etiketi": "Fotoğraf {sira} / {toplam}",
+  "@garaj_form_fotograf_etiketi": {
+    "description": "Araç formundaki fotoğraf alanının etiketi.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "garaj_fotograf_etiketi": "{arac}, fotoğraf {sira} / {toplam}",
+  "@garaj_fotograf_etiketi": {
+    "description": "Garaj aracının fotoğrafının ekran okuyucu etiketi.",
+    "placeholders": {
+      "arac": {
+        "type": "String",
+        "example": "Anadol A1"
+      },
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "garaj_fotograf_sayaci": "{sira} / {toplam}",
+  "@garaj_fotograf_sayaci": {
+    "description": "Tam ekran fotoğrafta sayaç.",
+    "placeholders": {
+      "sira": {
+        "type": "int",
+        "example": "1"
+      },
+      "toplam": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "garaj_plaka_notu": "Plaka garajda tutulmaz. Gerekirse yalnızca etkinliğin araç formunda yazılır ve 30 gün sonra silinir.",
+  "@garaj_plaka_notu": {
+    "description": "Araç formunun altındaki gizlilik notu."
+  },
+  "garaj_bu_tayfada_goster": "Garajımı bu tayfada göster",
+  "@garaj_bu_tayfada_goster": {
+    "description": "Tayfa garajında kişinin görünürlük anahtarı."
+  },
+  "garaj_bu_tayfada_goster_aciklama": "Açıksa bu tayfanın üyeleri araçlarını ve fotoğraflarını görür.",
+  "@garaj_bu_tayfada_goster_aciklama": {
+    "description": "Tayfa garajındaki görünürlük anahtarının açıklaması."
+  },
+  "garaj_gorunur_yapildi": "Garajın bu tayfada görünüyor.",
+  "@garaj_gorunur_yapildi": {
+    "description": "Garaj bu tayfada gösterilince kısa bildirim."
+  },
+  "garaj_gizlendi": "Garajın bu tayfada gizlendi.",
+  "@garaj_gizlendi": {
+    "description": "Garaj bu tayfada gizlenince kısa bildirim."
+  },
+  "garaj_garajimi_duzenle": "Garajımı düzenle",
+  "@garaj_garajimi_duzenle": {
+    "description": "Tayfa garajında kendi garajını açan satır."
+  },
+  "garaj_kaldir": "Kaldır",
+  "@garaj_kaldir": {
+    "description": "Tayfa garajında moderatörün aracı kaldırma seçeneği ve onay düğmesi."
+  },
+  "garaj_kaldir_baslik": "Araç kaldırılsın mı?",
+  "@garaj_kaldir_baslik": {
+    "description": "Moderatör kaldırma onayının başlığı."
+  },
+  "garaj_kaldir_metni": "Araç her yerde gizlenir ve 30 gün sonra kalıcı silinir; geri alınamaz.",
+  "@garaj_kaldir_metni": {
+    "description": "Moderatör kaldırma onayının metni."
+  },
+  "garaj_kaldirildi": "Araç kaldırıldı.",
+  "@garaj_kaldirildi": {
+    "description": "Araç kaldırılınca kısa bildirim."
+  },
+  "garaj_sikayet_et": "Şikâyet et",
+  "@garaj_sikayet_et": {
+    "description": "Tayfa garajında başkasının aracı için şikâyet seçeneği."
+  },
+  "garaj_sikayet_turu": "Garaj aracı",
+  "@garaj_sikayet_turu": {
+    "description": "Şikâyet edilen şeyin türü: garaj aracı."
+  },
+  "garaj_sikayet_sorusu": "Bu araçta sorun ne?",
+  "@garaj_sikayet_sorusu": {
+    "description": "Garaj aracı şikâyet sayfasının sorusu."
+  },
+  "garaj_garajimdan_sec": "Garajımdan seç",
+  "@garaj_garajimdan_sec": {
+    "description": "Etkinliğin araç formunda garaj araçları listesinin başlığı."
+  },
+  "garaj_ya_da_elle_yaz": "Ya da aşağıya elle yaz.",
+  "@garaj_ya_da_elle_yaz": {
+    "description": "Araç formunda garaj listesinin altında: seçim yoksa."
+  },
+  "garaj_secim_notu": "Marka, model, yıl ve renk garajından alınır. Seçimi kaldırmak için araca yeniden dokun.",
+  "@garaj_secim_notu": {
+    "description": "Araç formunda garajdan araç seçiliyken not."
   }
 }

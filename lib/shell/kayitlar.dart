@@ -18,6 +18,7 @@ import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/garaj/garaj.dart';
 import 'package:tayfam/features/gunun_icerigi/gunun_icerigi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
@@ -48,6 +49,8 @@ const List<TayfaModule> tayfaModulKaydi = [
   SoruHavuzuModulu(),
   // materials (#257): kartı ana sayfa bileşenidir; liste ve detay rotaları.
   MateryalModulu(),
+  // garage (#258): kartı ana sayfa bileşenidir; tayfa garajı rotası.
+  GarajModulu(),
   // Soru-cevap son sırada kalır (ADR-0018 Genel).
   SoruCevapModulu(),
 ];
@@ -133,6 +136,7 @@ const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
   // materials (#257)
   MateryalBileseni(),
   // garage (#258)
+  GarajBileseni(),
 ];
 
 /// Kayıt listelerini `core/` ve özelliklerdeki provider'lara veren
