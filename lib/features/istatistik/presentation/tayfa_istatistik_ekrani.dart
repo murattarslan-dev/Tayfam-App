@@ -3,21 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
-import 'package:tayfam/core/katalog/katalog.dart';
 import 'package:tayfam/core/katalog/katalog_bekleyici.dart';
 import 'package:tayfam/core/katalog/katalog_metni.dart';
-import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/istatistik/application/tayfa_istatistikleri.dart';
 import 'package:tayfam/features/istatistik/data/istatistik_deposu.dart';
 import 'package:tayfam/features/istatistik/presentation/istatistik_listesi.dart';
-import 'package:tayfam/features/istatistik/presentation/istatistik_metinleri.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa istatistikleri (`/t/<tayfaId>/istatistik`; Tayfam-Api ADR-0026
 /// §3): dönem seçimi (tüm zamanlar ya da istatistiği olan yıllar), tayfa
-/// toplamları ve kişisel katkılar (ölçüm ve günlük metriklerinde kim ne
-/// kadar). Her etkin üyeye açıktır; yetkiyi sunucu verir (kesin kural 5).
+/// toplamları ve yalnızca çağıranın kendi katkısı ("Senin katkın", #322).
+/// Her etkin üyeye açıktır; yetkiyi sunucu verir (kesin kural 5).
 ///
 /// Grafik yoktur: her değer metin olarak yazılır, anlam renge dayanmaz.
 /// Veriler yalnızca bellektedir (ADR-0006).
@@ -153,8 +150,7 @@ class _Icerik extends StatelessWidget {
           IstatistikNotu(metin: m.istatistik_bos, ikincil: false)
         else
           IstatistikListesi(statlar: veri.totals, bosMetin: m.istatistik_bos),
-        if (veri.contributions.isNotEmpty)
-          KatkiBolumu(katkilar: veri.contributions),
+        KatkiBolumu(katkilar: veri.ownContributions),
         const SizedBox(height: TayfamSpacing.s16),
         IstatistikNotu(metin: m.istatistik_not),
       ],
@@ -162,109 +158,50 @@ class _Icerik extends StatelessWidget {
   }
 }
 
-/// Kişisel katkılar (Tayfam-Api ADR-0026 §3): ölçüm ve günlük
-/// metriklerinde her etkin üyenin katkısı, metriğe göre gruplu ve
-/// sunucunun sırasıyla. Sıra numarası ya da "en çok" vurgusu yoktur. Ad
-/// profil önbelleğinden okunur ([KullaniciAdiMetni]).
+/// "Senin katkın" (Tayfam-Api ADR-0026 §3, #322): çağıranın bu tayfadaki
+/// kendi ölçüm ve günlük katkısı (`TayfaStats.own_contributions`),
+/// sunucunun sırasıyla ve toplamlarla aynı satır biçiminde. Başka üyenin
+/// katkısı sunucudan gelmez; eski `contributions` alanı okunmaz. Sıra
+/// numarası ya da "en çok" vurgusu yoktur. Gösterilebilir satır yoksa
+/// (boş liste ya da katalogda karşılığı olmayan metrik) bölüm çizilmez.
 class KatkiBolumu extends StatelessWidget {
   const KatkiBolumu({super.key, required this.katkilar});
 
-  final List<TayfaStatContribution> katkilar;
+  final List<TayfaStat> katkilar;
 
   @override
   Widget build(BuildContext context) {
+    if (katkilar.isEmpty) return const SizedBox.shrink();
     final m = AppLocalizations.of(context);
     return KatalogBekleyici(
       builder: (context, katalog) {
-        final gruplar = katkiGruplari(
+        final satirlar = istatistikSatirlari(
           m,
           katkilar,
           katalog,
           katalogDili(context),
         );
-        if (gruplar.isEmpty) return const SizedBox.shrink();
-        final r = context.renkler;
+        if (satirlar.isEmpty) return const SizedBox.shrink();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            BolumEtiketi(baslik: m.istatistik_katkilar),
-            for (final (sira, grup) in gruplar.indexed) ...[
-              Padding(
-                padding: EdgeInsetsDirectional.only(
-                  start: TayfamSpacing.s4,
-                  top: sira == 0 ? 0 : TayfamSpacing.s16,
-                  bottom: TayfamSpacing.s8,
-                ),
-                child: Semantics(
-                  header: true,
-                  child: Text(
-                    grup.ad,
-                    style: context.yazi.titleSmall?.copyWith(color: r.metin),
-                  ),
-                ),
-              ),
-              ListeKarti(
-                children: [
-                  for (final s in grup.satirlar)
-                    ListeKartiSatiri(
-                      child: IstatistikSatiri(
-                        gorunum: s.gorunum,
-                        etkinlikSayisi: s.etkinlik,
-                        kisi: KullaniciAdiMetni(kullaniciId: s.kullaniciId),
-                      ),
+            BolumEtiketi(baslik: m.istatistik_kendi_katkin),
+            ListeKarti(
+              children: [
+                for (final s in satirlar)
+                  ListeKartiSatiri(
+                    child: IstatistikSatiri(
+                      gorunum: s.gorunum,
+                      etkinlikSayisi: s.etkinlik,
                     ),
-                ],
-              ),
-            ],
+                  ),
+              ],
+            ),
+            const SizedBox(height: TayfamSpacing.s8),
+            IstatistikNotu(metin: m.istatistik_kendi_katkin_notu),
           ],
         );
       },
     );
   }
-}
-
-/// Bir üyenin bir metrikteki katkı satırı.
-typedef KatkiSatiri = ({
-  String kullaniciId,
-  MetrikGorunumu gorunum,
-  int etkinlik,
-});
-
-/// Bir metriğin katkı grubu: metriğin adı ve üyelerin satırları.
-typedef KatkiGrubu = ({String ad, List<KatkiSatiri> satirlar});
-
-/// [katkilar]'ı metriğe göre gruplar (ilk görünme sırasıyla). Kaynak
-/// anahtardan çıkar: `<tür>.<ölçüm>` ölçüm, `<tür>.<günlük>.<stat>`
-/// günlüktür. Katalogda karşılığı olmayan metrik atlanır.
-List<KatkiGrubu> katkiGruplari(
-  AppLocalizations m,
-  List<TayfaStatContribution> katkilar,
-  Katalog katalog,
-  String dil,
-) {
-  final gruplar = <String, KatkiGrubu>{};
-  for (final k in katkilar) {
-    final kaynak = switch (k.metricKey.split('.').length) {
-      2 => TayfaStatSource.measure,
-      3 => TayfaStatSource.log,
-      _ => TayfaStatSource.unknown,
-    };
-    final gorunum = metrikGorunumuAnahtarla(
-      m,
-      anahtar: k.metricKey,
-      kaynak: kaynak,
-      deger: k.value,
-      katalog: katalog,
-      dil: dil,
-    );
-    if (gorunum == null) continue;
-    gruplar
-        .putIfAbsent(
-          k.metricKey,
-          () => (ad: gorunum.ad, satirlar: <KatkiSatiri>[]),
-        )
-        .satirlar
-        .add((kullaniciId: k.userId, gorunum: gorunum, etkinlik: k.eventCount));
-  }
-  return gruplar.values.toList();
 }

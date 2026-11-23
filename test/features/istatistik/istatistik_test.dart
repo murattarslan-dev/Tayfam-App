@@ -41,8 +41,15 @@ TayfaStat _stat(
   _statJson(anahtar, deger, kaynak: kaynak, etkinlik: etkinlik),
 );
 
-/// `TayfaStats` JSON'u: dolu toplamlar ve bir üyenin katkıları.
-Map<String, Object?> _istatistiklerJson({int? yil, bool bos = false}) => {
+/// `TayfaStats` JSON'u: dolu toplamlar ve çağıranın kendi katkısı.
+/// [eskiKatki] eski sunucunun deprecated `contributions` alanını başka bir
+/// üyenin katkısıyla doldurur (istemci okumamalı).
+Map<String, Object?> _istatistiklerJson({
+  int? yil,
+  bool bos = false,
+  List<Map<String, Object?>>? kendi,
+  bool eskiKatki = false,
+}) => {
   'year': ?yil,
   'years': [2026, 2025],
   'totals': bos
@@ -55,16 +62,21 @@ Map<String, Object?> _istatistiklerJson({int? yil, bool bos = false}) => {
           _statJson('fishing.catches.sum_weight', 3.2, kaynak: 'log'),
           _statJson('olmayan_tur.distance', 1, kaynak: 'measure'),
         ],
-  'contributions': bos
-      ? const <Object?>[]
-      : [
+  'own_contributions':
+      kendi ??
+      (bos
+          ? const <Object?>[]
+          : [_statJson('hike.distance', 12.5, kaynak: 'measure', etkinlik: 2)]),
+  'contributions': eskiKatki
+      ? [
           {
             'user_id': _uyeId,
             'metric_key': 'hike.distance',
-            'value': 12.5,
-            'event_count': 2,
+            'value': 30,
+            'event_count': 3,
           },
-        ],
+        ]
+      : const <Object?>[],
 };
 
 List<Override> _overridelar(SahteTayfaTasima tasima) => [
@@ -209,7 +221,7 @@ void main() {
         expect(find.text(sureMetni(m, 91800)), findsOneWidget);
         // Katalogda olmayan tür satırı gösterilmez.
         expect(find.textContaining('olmayan_tur'), findsNothing);
-        final katki = find.text(m.istatistik_katkilar);
+        final katki = find.text(m.istatistik_kendi_katkin);
         await tester.scrollUntilVisible(
           katki,
           200,
@@ -217,13 +229,55 @@ void main() {
         );
         expect(katki, findsOneWidget);
         await tester.scrollUntilVisible(
-          find.text('Ayşe'),
+          find.text(m.istatistik_kendi_katkin_notu),
           200,
           scrollable: find.byType(Scrollable).first,
         );
+        expect(
+          find.text(m.katalog_birimli_deger('12,5', m.katalog_birim_km)),
+          findsOneWidget,
+        );
+        expect(find.text(m.istatistik_etkinlik_sayisi(2)), findsOneWidget);
+        // Kişi adı yok: satır metriğin adıyla yazılır.
+        expect(find.text('Ayşe'), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('eski contributions dolu gelse de okunmaz', (tester) async {
+      ekranBoyutu(tester);
+      await _ekraniAc(
+        tester,
+        SahteTayfaTasima({
+          'GET $_istatistikYolu': (_) =>
+              _istatistiklerJson(kendi: const [], eskiKatki: true),
+        }),
+      );
+      expect(find.text(m.istatistik_toplamlar), findsOneWidget);
+      expect(find.text(m.istatistik_kendi_katkin), findsNothing);
+      expect(find.text(m.istatistik_kendi_katkin_notu), findsNothing);
+      expect(find.text('Ayşe'), findsNothing);
+      expect(
+        find.text(m.katalog_birimli_deger('30', m.katalog_birim_km)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('katalogda karşılığı olmayan katkı: bölüm çizilmez', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      await _ekraniAc(
+        tester,
+        SahteTayfaTasima({
+          'GET $_istatistikYolu': (_) => _istatistiklerJson(
+            kendi: [_statJson('olmayan_tur.distance', 5, kaynak: 'measure')],
+          ),
+        }),
+      );
+      expect(find.text(m.istatistik_toplamlar), findsOneWidget);
+      expect(find.text(m.istatistik_kendi_katkin), findsNothing);
+    });
 
     testWidgets('yıl seçilince o yılın istatistiği istenir', (tester) async {
       ekranBoyutu(tester);
@@ -251,7 +305,7 @@ void main() {
         }),
       );
       expect(find.text(m.istatistik_bos), findsOneWidget);
-      expect(find.text(m.istatistik_katkilar), findsNothing);
+      expect(find.text(m.istatistik_kendi_katkin), findsNothing);
     });
   });
 
