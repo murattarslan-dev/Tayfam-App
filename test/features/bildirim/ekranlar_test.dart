@@ -135,6 +135,27 @@ Map<String, Object?> _yuruyusUyarisi({bool okundu = false}) => bildirimJson(
   zaman: _zaman(DateTime(2026, 11, 13, 14, 45)),
 );
 
+/// Ortak kütüphanenin beş ödünç adımı bildirimi (Tayfam-Api #321): hedef
+/// kalem, aktör adımı atan üye. İçerik alanı yoktur.
+const List<(String, String)> _oduncAdimlari = [
+  ('library_loan_requested', 'kutuphane_bildirim_istek'),
+  ('library_queue_joined', 'kutuphane_bildirim_sira'),
+  ('library_loan_approved', 'kutuphane_bildirim_onay'),
+  ('library_loan_declined', 'kutuphane_bildirim_ret'),
+  ('library_loan_handed_over', 'kutuphane_bildirim_teslim'),
+];
+
+List<Map<String, Object?>> _oduncBildirimleri() => [
+  for (final (i, (tur, _)) in _oduncAdimlari.indexed)
+    bildirimJson(
+      'cccccccc-0000-4000-8000-00000000000${i + 1}',
+      tur: tur,
+      aktor: kisiId,
+      hedefTuru: 'library_item',
+      zaman: _zaman(DateTime(2026, 11, 13, 14, 50 - i)),
+    ),
+];
+
 void main() {
   group('liste', () {
     testWidgets('metin türden, tayfa adı ve kişi adıyla kuruluyor', (
@@ -567,6 +588,47 @@ void main() {
       );
       expect(find.byType(IzinKarti), findsNothing);
     });
+  });
+
+  group('ödünç adımı bildirimleri', () {
+    testWidgets('içeriksiz metin; adımı atan üyenin adı istenmiyor', (
+      tester,
+    ) async {
+      ekranBoyutu(tester, yukseklik: 1600);
+      final istenen = <String>[];
+      await _ekraniAc(
+        tester,
+        _liste(_oduncBildirimleri(), okunmamis: 5),
+        istenenProfiller: istenen,
+      );
+      expect(find.byType(BildirimSatiri), findsNWidgets(5));
+      for (final (_, anahtar) in _oduncAdimlari) {
+        expect(find.text(arbMetni(anahtar)), findsOneWidget, reason: anahtar);
+      }
+      // Kişi adı yazılmaz (kesin kural 7): aktörün profili okunmaz.
+      expect(istenen, isNot(contains(kisiId)));
+      expect(find.text('Ayşe'), findsNothing);
+      expect(find.text('Klasikçiler'), findsNWidgets(5));
+    });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${mod.name} temada 2× yazıda 320 dp genişlikte taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ekraniAc(
+          tester,
+          _liste(_oduncBildirimleri(), okunmamis: 5),
+          themeMode: mod,
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text(arbMetni('kutuphane_bildirim_istek')), findsOneWidget);
+        await tester.drag(find.byType(ListView), const Offset(0, -4000));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 
   group('tema ve yazı ölçeği', () {

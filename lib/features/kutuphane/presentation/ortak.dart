@@ -22,7 +22,7 @@ String odunclerimAdresi(String tayfaId) =>
 
 /// Bir kalemin detayı.
 String kalemAdresi(String tayfaId, String kalemId) =>
-    '${kutuphaneAdresi(tayfaId)}/$kalemId';
+    Adresler.kutuphaneKalemi(tayfaId, kalemId);
 
 /// Sözleşmedeki üst sınırlar (Tayfam-Api ADR-0040 §1). Kalem ve sıra
 /// sınırlarını (üye başına 100, sırada 20) sunucu uygular.
