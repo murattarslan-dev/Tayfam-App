@@ -13560,9 +13560,15 @@
   "@ders_konu_alan_ekle": {
     "description": "Etkinlik formunda çoklu ders/konu alanının altındaki, yeni etiket seçme sayfasını açan düğme ve o sayfadaki onay düğmesi."
   },
-  "ders_konu_alan_kaldir": "Kaldır",
+  "ders_konu_alan_kaldir": "Kaldır: {ad}",
   "@ders_konu_alan_kaldir": {
-    "description": "Etkinlik formunda çoklu ders/konu alanındaki seçili etiketin yanındaki kaldırma düğmesinin ipucu."
+    "description": "Etkinlik formunda çoklu ders/konu alanındaki seçili etiketin yanındaki kaldırma düğmesinin ipucu ve ekran okuyucu adı; ad, etiketin üst zinciriyle yazımıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "TYT › Matematik › Türev"
+      }
+    }
   },
   "ders_konu_alan_temizle": "Seçimi kaldır",
   "@ders_konu_alan_temizle": {

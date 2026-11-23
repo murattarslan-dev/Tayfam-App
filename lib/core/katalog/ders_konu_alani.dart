@@ -229,7 +229,7 @@ class _SeciliEtiket extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: m.ders_konu_alan_kaldir,
+            tooltip: m.ders_konu_alan_kaldir(metin),
             constraints: const BoxConstraints(
               minWidth: TayfamSizes.dokunmaMin,
               minHeight: TayfamSizes.dokunmaMin,

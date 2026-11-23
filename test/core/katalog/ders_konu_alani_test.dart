@@ -76,7 +76,8 @@ void main() {
   final konuEtiketi = arbMetni('ders_konu_konu');
   final emekli = arbMetni('ders_konu_emekli');
   final ekle = arbMetni('ders_konu_alan_ekle');
-  final kaldir = find.byTooltip(arbMetni('ders_konu_alan_kaldir'));
+  // Kaldırma düğmesi; ipucu etiketin zinciriyle (Kaldır: …).
+  final kaldir = find.byIcon(Icons.close);
 
   // Her iki temada, 320 dp ve 2× yazıda: boş, dolu (emekli dahil) ve
   // hatalı form.
@@ -203,6 +204,14 @@ void main() {
     });
     expect(find.text(_yol(['YKS', 'Fizik'])), findsOneWidget);
     expect(find.text('2 / 2'), findsOneWidget);
+    expect(
+      find.byTooltip(
+        arbMetni(
+          'ders_konu_alan_kaldir',
+        ).replaceAll('{ad}', _yol(['YKS', 'Fizik'])),
+      ),
+      findsOneWidget,
+    );
 
     // Dolu alanda "Ekle" kapalı.
     await tester.tap(find.text(ekle));
