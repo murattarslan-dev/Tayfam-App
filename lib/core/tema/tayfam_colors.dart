@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 ///
 /// Kontrast kuralları: metin yalnızca [metin], [metinGovde],
 /// [metinIkincil] ile ve her zeminin kendi "üstü" token'ıyla yazılır;
-/// vurgu renkleri ([teal], [mango], [nar]) metin rengi olmaz.
+/// vurgu renkleri ([teal], [mango], [nar]) metin rengi olmaz. Tek
+/// istisna alan hata metnidir: kontrastı sağlayan nar tonu [hataMetni]
+/// (ADR-0004 Notlar, 2026-11-23).
 @immutable
 class TayfamColors extends ThemeExtension<TayfamColors> {
   const TayfamColors({
@@ -37,6 +39,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     required this.tintTealUstu,
     required this.tintNar,
     required this.narMetin,
+    required this.hataMetni,
     required this.tintMavi,
     required this.tintMaviUstu,
     required this.okunmamisSatir,
@@ -142,6 +145,14 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
   /// Nar (#FF3D68) metin rengi olmadığı için ayrı token'dır.
   final Color narMetin;
 
+  /// Form alanının hata metni ve ikonu (issue #308; ADR-0004 Notlar,
+  /// 2026-11-23). "Metin rengi yalnızca ink tonları" kuralının istisnası:
+  /// hata metni nar renginde kalır, ama 4.5:1'i sağlayan tonla. Açık:
+  /// koyulaştırılmış nar #E00032 (nar ile aynı ton ve doygunluk; surface
+  /// üzerinde 4.73:1, card üzerinde 4.98:1). Koyu: nar #FF3D68 (ink
+  /// üzerinde 5.21:1, card-dark üzerinde 4.63:1; açıklaştırma gerekmedi).
+  final Color hataMetni;
+
   /// Arkadaşlık ve tayfa davetinin bildirim ikon kutusu (açık: #DCEBFB,
   /// koyu: #1B3350; 2026-11-13, tasarım: Bildirimler).
   final Color tintMavi;
@@ -240,6 +251,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintTealUstu: _Palet.tintTealMetin,
     tintNar: _Palet.tintNar,
     narMetin: _Palet.narMetin,
+    hataMetni: _Palet.narHata,
     tintMavi: _Palet.tintBlue,
     tintMaviUstu: _Palet.tintBlueMetin,
     okunmamisSatir: _Palet.tintBrand,
@@ -284,6 +296,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     tintTealUstu: _Palet.tintTealDarkMetin,
     tintNar: _Palet.tintNarDark,
     narMetin: _Palet.tintNarDarkMetin,
+    hataMetni: _Palet.nar,
     tintMavi: _Palet.tintBlueDark,
     tintMaviUstu: _Palet.tintBlueDarkMetin,
     okunmamisSatir: _Palet.unreadRowDark,
@@ -328,6 +341,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
     Color? tintTealUstu,
     Color? tintNar,
     Color? narMetin,
+    Color? hataMetni,
     Color? tintMavi,
     Color? tintMaviUstu,
     Color? okunmamisSatir,
@@ -370,6 +384,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintTealUstu: tintTealUstu ?? this.tintTealUstu,
       tintNar: tintNar ?? this.tintNar,
       narMetin: narMetin ?? this.narMetin,
+      hataMetni: hataMetni ?? this.hataMetni,
       tintMavi: tintMavi ?? this.tintMavi,
       tintMaviUstu: tintMaviUstu ?? this.tintMaviUstu,
       okunmamisSatir: okunmamisSatir ?? this.okunmamisSatir,
@@ -420,6 +435,7 @@ class TayfamColors extends ThemeExtension<TayfamColors> {
       tintTealUstu: l(tintTealUstu, other.tintTealUstu),
       tintNar: l(tintNar, other.tintNar),
       narMetin: l(narMetin, other.narMetin),
+      hataMetni: l(hataMetni, other.hataMetni),
       tintMavi: l(tintMavi, other.tintMavi),
       tintMaviUstu: l(tintMaviUstu, other.tintMaviUstu),
       okunmamisSatir: l(okunmamisSatir, other.okunmamisSatir),
@@ -462,6 +478,9 @@ abstract final class _Palet {
   static const Color tintTealMetin = Color(0xFF0B6B5D);
   static const Color tintNar = Color(0xFFFFE1E8);
   static const Color narMetin = Color(0xFFB0123A);
+  // 2026-11-23 (issue #308): alan hata metni; nar (H 346.7, S %100) L %62
+  // → %44.
+  static const Color narHata = Color(0xFFE00032);
   // 2026-11-13: bildirimlerde arkadaşlık ve davet (tasarım: Bildirimler).
   static const Color tintBlue = Color(0xFFDCEBFB);
   static const Color tintBlueMetin = Color(0xFF1F5FB0);

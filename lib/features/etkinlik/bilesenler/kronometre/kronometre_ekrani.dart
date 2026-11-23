@@ -298,10 +298,10 @@ class _KronometreSureFormuState extends State<KronometreSureFormu> {
   @override
   Widget build(BuildContext context) {
     final m = AppLocalizations.of(context);
-    // Hata metni ana metin rengindedir (ADR-0004); hatayı kenar rengi ve
-    // metin taşır.
+    // Alan hata metni kontrastı sağlayan nar tonundadır (`hataMetni`,
+    // ADR-0004 Notlar 2026-11-23); hatayı kenar rengi ve metin taşır.
     final hataStili = context.yazi.bodySmall?.copyWith(
-      color: context.renkler.metin,
+      color: context.renkler.hataMetni,
     );
     return AracFormSayfasi(
       baslik: m.bilesen_timer_elle,

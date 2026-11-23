@@ -30,6 +30,8 @@ void main() {
       'narMetin (nar-metin)': (r.narMetin, '#B0123A'),
       'yikiciDolgu (nar-metin)': (r.yikiciDolgu, '#B0123A'),
       'yikiciDolguUstu (beyaz)': (r.yikiciDolguUstu, '#FFFFFF'),
+      // 2026-11-23 (issue #308): alan hata metni, koyulaştırılmış nar.
+      'hataMetni': (r.hataMetni, '#E00032'),
       // 2026-11-13: bildirimler (ADR-0004 Notlar).
       'tintMavi': (r.tintMavi, '#DCEBFB'),
       'tintMaviUstu': (r.tintMaviUstu, '#1F5FB0'),
@@ -69,6 +71,7 @@ void main() {
       'tintTealUstu': (r.tintTealUstu, '#7FE8D6'),
       'tintNar (tint-nar-dark)': (r.tintNar, '#4A1A26'),
       'narMetin': (r.narMetin, '#FF9FB4'),
+      'hataMetni (nar)': (r.hataMetni, '#FF3D68'),
       'yikiciDolgu': (r.yikiciDolgu, '#FF9FB4'),
       'yikiciDolguUstu (ink)': (r.yikiciDolguUstu, '#1B1036'),
       'tintMavi': (r.tintMavi, '#1B3350'),
@@ -116,6 +119,8 @@ void main() {
     expect(son.zemin, TayfamColors.koyu.zemin);
     expect(son.birincilEylem, TayfamColors.koyu.birincilEylem);
     expect(son.odak, TayfamColors.koyu.odak);
+    expect(son.hataMetni, TayfamColors.koyu.hataMetni);
+    expect(TayfamColors.acik.copyWith(hataMetni: yeni).hataMetni, yeni);
     expect(son.markaYuzeyOdak, TayfamColors.koyu.markaYuzeyOdak);
     expect(TayfamColors.acik.lerp(null, .5), same(TayfamColors.acik));
   });

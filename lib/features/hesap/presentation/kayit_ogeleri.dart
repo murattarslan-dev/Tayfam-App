@@ -227,9 +227,9 @@ InputDecoration kayitAlanGorunumu(
     hintText: ipucu,
     helperText: yardim,
     helperMaxLines: 4,
-    // Hata metni ana metin rengindedir (vurgu renkleri metin rengi olmaz);
-    // kenar nar olur.
-    error: hata == null ? null : HataSatiri(metin: hata),
+    // Alan hata metni kontrastı sağlayan nar tonundadır (`hataMetni`,
+    // ADR-0004 Notlar 2026-11-23); kenar nar olur.
+    error: hata == null ? null : HataSatiri(metin: hata, renk: r.hataMetni),
     filled: true,
     fillColor: r.kart,
     contentPadding: const EdgeInsets.symmetric(
