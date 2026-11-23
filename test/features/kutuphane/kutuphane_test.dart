@@ -301,10 +301,7 @@ void main() {
         (NotificationType.libraryQueueJoined, m.kutuphane_bildirim_sira),
         (NotificationType.libraryLoanApproved, m.kutuphane_bildirim_onay),
         (NotificationType.libraryLoanDeclined, m.kutuphane_bildirim_ret),
-        (
-          NotificationType.libraryLoanHandedOver,
-          m.kutuphane_bildirim_teslim,
-        ),
+        (NotificationType.libraryLoanHandedOver, m.kutuphane_bildirim_teslim),
       ]) {
         final bildirim = api.Notification(
           id: _odunc,
@@ -654,10 +651,8 @@ void main() {
     });
 
     SahteTayfaTasima kalemYok() => _tasima(
-      kalem: (_) => const ApiProblem(
-        type: ProblemType.libraryItemNotFound,
-        status: 404,
-      ),
+      kalem: (_) =>
+          const ApiProblem(type: ProblemType.libraryItemNotFound, status: 404),
     );
 
     testWidgets('geri çekilmiş kalem: "artık kütüphanede değil", tekrar yok', (
