@@ -17,6 +17,7 @@ import '../../yardimcilar.dart';
 import '../arkadas/sahteler.dart' show arkadasTasimasi;
 import '../hesap/sahteler.dart';
 import '../kesfet/sahteler.dart' show kesfetTasimasi;
+import '../tayfa/sahteler.dart' show SahteTayfaTasima;
 
 export '../hesap/sahteler.dart';
 export '../tayfa/sahteler.dart' show SahtePaylasici, tayfaOverridelari;
@@ -137,17 +138,22 @@ Map<String, Object? Function()> profilYanitlari([
 
 /// Profil özelliğinin sahte bağımlılıkları. Gerçek ağ ve güvenli depo
 /// yoktur; oturum durumu açık başlar. Paylaşıcı tayfa override'larıyla
-/// (`tayfaOverridelari`) verilir.
+/// (`tayfaOverridelari`) verilir. [arkadas] arkadaşlık uçlarının (kendi
+/// kişi profilin dahil) sahte taşımasıdır; verilmezse boş listeler.
 List<Override> profilOverridelari({
   required SahteTasima tasima,
   required SahteOturum oturum,
+  SahteTayfaTasima? arkadas,
   SahteGoogle? google,
   SahteAcici? acici,
   BellekTemaTercihiDeposu? tema,
 }) => [
   profilDeposuProvider.overrideWithValue(ProfilDeposu(tasima)),
-  // Profildeki arkadaşlar bölümü ve son katılımlar: boş listeler.
-  arkadasDeposuProvider.overrideWithValue(ArkadasDeposu(arkadasTasimasi())),
+  // Profildeki arkadaşlar bölümü, son katılımlar ve kendi rozetlerin /
+  // istatistiklerin (kendi kişi profilin): varsayılanı boş listeler.
+  arkadasDeposuProvider.overrideWithValue(
+    ArkadasDeposu(arkadas ?? arkadasTasimasi()),
+  ),
   // "Güvenlik kişisi olduğun etkinlikler" girişi: boş liste (görünmez).
   kesfetDeposuProvider.overrideWithValue(KesfetDeposu(kesfetTasimasi())),
   hesapDeposuProvider.overrideWithValue(HesapDeposu(tasima)),

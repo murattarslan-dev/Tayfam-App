@@ -24,6 +24,7 @@ import 'package:tayfam/features/profil/application/hesap_ayarlari_notifier.dart'
 import 'package:tayfam/features/profil/application/hukuki_baglantilar.dart';
 import 'package:tayfam/features/profil/application/sosyal_ayarlar_notifier.dart';
 import 'package:tayfam/features/profil/presentation/ad_duzenle_sayfasi.dart';
+import 'package:tayfam/features/profil/presentation/kendi_basarilarin.dart';
 import 'package:tayfam/features/profil/presentation/profil_ortak.dart';
 import 'package:tayfam/features/profil/presentation/profil_sayfalari.dart';
 import 'package:tayfam/features/profil/presentation/profilleme_ayarlari.dart';
@@ -33,7 +34,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// Profil sekmesi (ADR-0018 §2; 2026-11-13 tasarım: Profil-Ana,
 /// Profil-Koyu): "Başkaları nasıl görüyor" (kendi kişi profilin), fotoğraf
 /// (ADR-0021) ve ad, mor referans kodu kartı, arkadaşlar (ADR-0018 §7),
-/// son katılımlar ve görünürlük çipi, Uygulama (bildirimler, tema,
+/// garaj, kendi rozetlerin ve kişisel istatistiklerin (issue #300), son
+/// katılımlar ve görünürlük çipi, Uygulama (bildirimler, tema,
 /// oturumlar), Gizlilik (profilleme ve "Beni önerme" — Tayfam-Api
 /// ADR-0030, verilerimi indir — ADR-0022, engellenenler, hukuki metinler),
 /// çıkış ve hesap silme.
@@ -70,6 +72,9 @@ class ProfilEkrani extends ConsumerWidget {
                 const ArkadaslikGirisleri(),
                 // Üye garajı (App ADR-0033 §2).
                 const GarajGirisi(),
+                // Kendi rozetlerin ve kişisel istatistiklerin (issue #300);
+                // görünürlük ayarından bağımsız.
+                if (hesap != null) KendiBasarilarin(kendiId: hesap.userId),
                 if (hesap != null) _KatilimBolumu(hesap: hesap),
                 const _UygulamaBolumu(),
                 const _GizlilikBolumu(),
