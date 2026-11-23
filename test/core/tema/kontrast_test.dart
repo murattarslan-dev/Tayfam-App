@@ -1,8 +1,9 @@
-import 'package:flutter/painting.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/tema/kontrast.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
+import 'package:tayfam/core/tema/tayfam_theme.dart';
 import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 
 /// Bir ön plan / zemin çifti ve eşiği.
@@ -76,6 +77,9 @@ List<_Cift> _ciftler(TayfamColors r) {
     _Cift('narMetin / tintNar', r.narMetin, r.tintNar, _metin),
     _Cift('narMetin / kart', r.narMetin, r.kart, _metin),
     _Cift('narMetin / zemin', r.narMetin, r.zemin, _metin),
+    // Alan hata metni (issue #308; ADR-0004 Notlar, 2026-11-23).
+    _Cift('hataMetni / zemin', r.hataMetni, r.zemin, _metin),
+    _Cift('hataMetni / kart', r.hataMetni, r.kart, _metin),
     // Sohbet akışı (2026-11-13): gönderilemeyen balonun metni, gelen
     // balondaki gönderen adı.
     _Cift('metin / tintNar', r.metin, r.tintNar, _metin),
@@ -178,6 +182,13 @@ void main() {
       ('beyaz / bubble-in-dark', k.gelenBalonUstu, k.gelenBalon, 13.46),
       ('ink / nar', k.vurguUstu, k.nar, 5.21),
       ('ink / mango', k.vurguUstu, k.mango, 9.76),
+      // ADR-0004 Notlar (2026-11-23, issue #308): alan hata metni. Nar
+      // açık zeminde metin eşiğinin altında kaldığı için koyulaştırıldı.
+      ('nar / surface (eski hata metni)', a.nar, a.zemin, 3.26),
+      ('hata metni #E00032 / surface', a.hataMetni, a.zemin, 4.73),
+      ('hata metni #E00032 / card', a.hataMetni, a.kart, 4.98),
+      ('hata metni nar / ink', k.hataMetni, k.zemin, 5.21),
+      ('hata metni nar / card-dark', k.hataMetni, k.kart, 4.63),
       // ADR-0004 Notlar (2026-11-10): odak çerçevesi.
       ('odak (brand) / surface', a.odak, a.zemin, 6.95),
       ('odak (brand) / card', a.odak, a.kart, 7.33),
@@ -199,6 +210,26 @@ void main() {
         final oran = kontrastOrani(c.on, c.arka);
         test('${c.ad} ≥ ${c.esik} (${oran.toStringAsFixed(2)})', () {
           expect(oran, greaterThanOrEqualTo(c.esik));
+        });
+      }
+    });
+  }
+
+  // Alan hata metni (issue #308): temanın `errorStyle` rengi `hataMetni`
+  // token'ıdır ve sayfa zemininde de kartta da metin eşiğini geçer.
+  final hataTemalari = {'açık': TayfamTheme.acik(), 'koyu': TayfamTheme.koyu()};
+  for (final MapEntry(key: tema, value: t) in hataTemalari.entries) {
+    group('$tema tema alan hata metni', () {
+      final r = t.extension<TayfamColors>()!;
+      final renk = t.inputDecorationTheme.errorStyle?.color;
+
+      test('errorStyle rengi hataMetni', () {
+        expect(renk, r.hataMetni);
+      });
+
+      for (final (ad, zemin) in [('zemin', r.zemin), ('kart', r.kart)]) {
+        test('hata metni / $ad ≥ $_metin', () {
+          expect(kontrastOrani(renk!, zemin), greaterThanOrEqualTo(_metin));
         });
       }
     });

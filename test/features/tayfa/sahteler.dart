@@ -10,6 +10,8 @@ import 'package:tayfam/features/tayfa/application/olusturma_notifier.dart';
 import 'package:tayfam/features/tayfa/data/paylasim.dart';
 import 'package:tayfam/features/tayfa/data/tayfa_deposu.dart';
 
+import '../../core/katalog/sahte_katalog.dart';
+
 /// Sahte istek kimliği (UUID v4 biçiminde).
 const String sahteIstekKimligi = '7d0f3c2a-9b1e-4f6a-8c5d-2e4b6a8c0d1f';
 
@@ -58,6 +60,7 @@ final class SahteTayfaTasima implements ApiTransport {
     required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   }) async {
@@ -92,6 +95,7 @@ Map<String, Object?> tayfaJson({
   String tur = 'standard',
   String? anlikEtkinlikId,
   String? donusum,
+  String simdiRolu = 'member',
 }) => {
   'id': id,
   'name': ad,
@@ -99,7 +103,7 @@ Map<String, Object?> tayfaJson({
   'instant_event_id': ?anlikEtkinlikId,
   'converted_at': ?donusum,
   'description': '',
-  'interests': tur == 'instant' ? <String>[] : ['convoy'],
+  'interests': tur == 'instant' ? <String>[] : ['automotive'],
   'join_policy': 'approval',
   'modules': tur == 'instant'
       ? {'announcements': false, 'events': true, 'qa': false, 'polls': false}
@@ -109,6 +113,7 @@ Map<String, Object?> tayfaJson({
   'deletion_at': ?silinme,
   'member_count': uyeSayisi,
   'members_can_create_events': false,
+  'now_create_min_role': simdiRolu,
   'join_code': ?kod,
   'pending_join_request_count': ?bekleyen,
   'created_at': '2026-11-01T10:00:00Z',
@@ -173,6 +178,8 @@ Map<String, Object?> gorunumJson(
   String tur = 'standard',
   String? anlikEtkinlikId,
   String? donusum,
+  List<Map<String, Object?>> rozetler = const [],
+  List<Map<String, Object?>>? bilesenler,
 }) => {
   'tayfa': tayfaJson(
     id: id,
@@ -188,7 +195,39 @@ Map<String, Object?> gorunumJson(
     donusum: donusum,
   ),
   'caller_role': rol,
+  'badges': rozetler,
+  'home_widgets': bilesenler ?? varsayilanBilesenler(),
 };
+
+/// Ana sayfa bileşeni (`HomeWidget`) JSON'u.
+Map<String, Object?> anaSayfaBileseniJson(
+  String anahtar, {
+  String tur = 'display',
+  String? modul,
+  bool acik = true,
+  int sira = 0,
+  Map<String, Object?>? ayar,
+}) => {
+  'key': anahtar,
+  'kind': tur,
+  'module': ?modul,
+  'enabled': acik,
+  'position': sira,
+  'config': ?ayar,
+};
+
+/// Bugünkü dört bölüm, sırasıyla (Tayfam-Api `home.Widgets()`).
+List<Map<String, Object?>> varsayilanBilesenler() => [
+  anaSayfaBileseniJson('upcoming', tur: 'section', modul: 'events'),
+  anaSayfaBileseniJson(
+    'announcements',
+    tur: 'section',
+    modul: 'announcements',
+    sira: 1,
+  ),
+  anaSayfaBileseniJson('polls', tur: 'section', modul: 'polls', sira: 2),
+  anaSayfaBileseniJson('questions', tur: 'section', modul: 'qa', sira: 3),
+];
 
 /// `Membership` JSON'u.
 Map<String, Object?> uyelikJson(String id, {String durum = 'active'}) => {
@@ -216,11 +255,13 @@ final class SahtePaylasici implements Paylasici {
 
 /// Tayfa özelliğinin sahte bağımlılıkları için override'lar. Yanıt
 /// verilmezse `GET /v1/tayfas` boş, `GET /v1/tayfas/{tayfa_id}` istenen
-/// kimlikle örnek bir tayfa döner.
+/// kimlikle örnek bir tayfa döner. Katalog test kataloğuyla hazır gelir;
+/// başka bir katalog durumu [katalog] ile verilir.
 List<Override> tayfaOverridelari({
   SahteTayfaTasima? tasima,
   SonTayfaDeposu? sonTayfa,
   Paylasici? paylasici,
+  Override? katalog,
 }) {
   final t = tasima ?? SahteTayfaTasima();
   t.yanitlar
@@ -241,6 +282,8 @@ List<Override> tayfaOverridelari({
     ),
     paylasiciProvider.overrideWithValue(paylasici ?? SahtePaylasici()),
     istekKimligiUreticisiProvider.overrideWithValue(() => sahteIstekKimligi),
+    // Tür ve ilgi alanı adları test kataloğundan (ADR-0024 §7).
+    katalog ?? katalogOverride(),
   ];
 }
 

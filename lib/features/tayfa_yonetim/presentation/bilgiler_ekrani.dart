@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/katalog/ilgi_alani_secimi.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
@@ -14,7 +15,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Tayfa bilgileri (`/t/<tayfaId>/ayarlar/bilgiler`; ADR-0018 §1; tasarım:
 /// Ayar-Bilgiler): kapak fotoğrafı (ADR-0021), ad, açıklama, ilgi
-/// alanları, katılım politikası ve üyelerin etkinlik açıp açamayacağı.
+/// alanları, katılım politikası, üyelerin etkinlik açıp açamayacağı ve
+/// Şimdi başlatabilenler (yalnızca yöneticiye; App ADR-0032 §5).
 /// Yalnızca değişen alanlar gönderilir (`PATCH`).
 ///
 /// Alttaki çubukta kaydedilmemiş değişiklik sayısı; değişiklik yoksa
@@ -69,13 +71,14 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
   late final TextEditingController _aciklama = TextEditingController(
     text: widget.tayfa.description,
   );
-  late final Set<EventType> _ilgi = widget.tayfa.interests
-      .where(ilgiAlanlari.contains)
-      .toSet();
+  late final Set<String> _ilgi = widget.tayfa.interests.toSet();
   late JoinPolicy _katilim = widget.tayfa.joinPolicy == JoinPolicy.unknown
       ? JoinPolicy.approval
       : widget.tayfa.joinPolicy;
   late bool _uyeEtkinlikAcar = widget.tayfa.membersCanCreateEvents;
+  late Role _simdiRolu = widget.tayfa.nowCreateMinRole == Role.unknown
+      ? Role.member
+      : widget.tayfa.nowCreateMinRole;
   late String? _kapak = widget.tayfa.coverUploadId;
   BilgiHatasi? _hata;
 
@@ -104,6 +107,7 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
     ilgi: _ilgi,
     katilim: _katilim,
     uyeEtkinlikAcar: _uyeEtkinlikAcar,
+    simdiRolu: _simdiRolu,
     kapak: _kapak,
   );
 
@@ -171,6 +175,8 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
   }) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
+    final yonetici =
+        ref.watch(tayfaOzetiProvider(widget.tayfaId)).rol == Role.admin;
     return ListView(
       padding: const EdgeInsets.all(TayfamSpacing.kenarMobil),
       children: [
@@ -217,21 +223,14 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
         const SizedBox(height: TayfamSpacing.s16),
         BolumBasligi(baslik: m.yonetim_ilgi_baslik),
         const SizedBox(height: TayfamSpacing.s8),
-        Wrap(
-          spacing: TayfamSpacing.s8,
-          runSpacing: TayfamSpacing.s8,
-          children: [
-            for (final tur in ilgiAlanlari)
-              IlgiCipi(
-                tur: tur,
-                secili: _ilgi.contains(tur),
-                onDegisti: mesgul
-                    ? null
-                    : () => setState(() {
-                        if (!_ilgi.remove(tur)) _ilgi.add(tur);
-                      }),
-              ),
-          ],
+        // İlgi alanları katalogdan gelir (ADR-0024 §2).
+        IlgiAlaniSecimi(
+          secili: _ilgi,
+          onDegisti: mesgul
+              ? null
+              : (anahtar) => setState(() {
+                  if (!_ilgi.remove(anahtar)) _ilgi.add(anahtar);
+                }),
         ),
         const SizedBox(height: TayfamSpacing.s24),
         BolumBasligi(baslik: m.yonetim_katilim_baslik),
@@ -276,6 +275,39 @@ class _BilgiFormuState extends ConsumerState<_BilgiFormu> {
                 : (yeni) => setState(() => _uyeEtkinlikAcar = yeni),
           ),
         ),
+        // Şimdi başlatabilenler (App ADR-0032 §5): ayarı yalnızca yönetici
+        // değiştirir; sunucu da yalnızca yöneticiden kabul eder.
+        if (yonetici) ...[
+          const SizedBox(height: TayfamSpacing.s24),
+          BolumBasligi(baslik: m.simdi_ayar_baslik),
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(m.simdi_ayar_aciklama, style: govde),
+          const SizedBox(height: TayfamSpacing.s8),
+          RadioGroup<Role>(
+            groupValue: _simdiRolu,
+            onChanged: (secim) {
+              if (secim != null && !mesgul) {
+                setState(() => _simdiRolu = secim);
+              }
+            },
+            child: Column(
+              children: [
+                for (final (rol, etiket) in [
+                  (Role.member, m.simdi_ayar_uyeler),
+                  (Role.moderator, m.simdi_ayar_moderatorler),
+                  (Role.admin, m.simdi_ayar_yoneticiler),
+                ]) ...[
+                  if (rol != Role.member)
+                    const SizedBox(height: TayfamSpacing.s8),
+                  _SecimKarti(
+                    secili: _simdiRolu == rol,
+                    child: RadioListTile<Role>(value: rol, title: Text(etiket)),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

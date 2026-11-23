@@ -18,6 +18,7 @@ import '../../yardimcilar.dart';
 import '../arkadas/sahteler.dart' as ark;
 import '../tayfa/sahteler.dart';
 import 'anlik_test.dart' show anlikJson, anlikTayfaId, anlikYolu;
+import '../../core/katalog/sahte_katalog.dart';
 import 'sahteler.dart';
 
 const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
@@ -101,7 +102,7 @@ EtkinlikSihirbaziNotifier _n(WidgetTester tester) =>
 /// Sihirbazı arkadaş adımına kadar doldurur (alanlar notifier'dan;
 /// adımlar ekrandaki "İleri" ile).
 Future<void> _davetAdiminaGel(WidgetTester tester) async {
-  _n(tester).turSec(EventType.camp);
+  _n(tester).turSec(testTuru('camp'));
   await tester.pumpAndSettle();
   await _dokun(tester, _metin('etkinlik_ileri'));
   _n(tester)
@@ -120,7 +121,7 @@ void main() {
       '(anlık etkinlik Keşfet\'e çıkmaz; ADR-0027)', (tester) async {
     ekranBoyutu(tester);
     await _ac(tester, _tasima(), tema: ThemeMode.light, davetEdilen: []);
-    _n(tester).turSec(EventType.camp);
+    _n(tester).turSec(testTuru('camp'));
     await tester.pumpAndSettle();
     await _dokun(tester, _metin('etkinlik_ileri'));
     _n(tester)

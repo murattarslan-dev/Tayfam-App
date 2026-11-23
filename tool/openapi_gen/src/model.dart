@@ -66,6 +66,17 @@ final class MapRef extends TypeRef {
   String get dart => 'Map<String, ${value.dart}>';
 }
 
+/// Serbest JSON nesnesi (`additionalProperties: true`): anahtarları ve
+/// değerlerinin tipi sözleşmede sabit değildir (ör. katalog bileşeninin
+/// `params`'ı). Değerler çözülmüş JSON'dur; doğrulamak kullanan katmanın
+/// işidir.
+final class JsonObjectRef extends TypeRef {
+  const JsonObjectRef();
+
+  @override
+  String get dart => 'Map<String, Object?>';
+}
+
 /// Bir string enum'u. [wires] sözleşmedeki sırayla JSON değerleridir.
 final class EnumDef {
   const EnumDef({required this.name, required this.wires, required this.doc});
@@ -107,7 +118,10 @@ final class ClassDef {
   final int? minProperties;
 }
 
-enum ParamLocation { path, query }
+/// [header]: sözleşmenin işleme özel başlığı (ör. `If-None-Match`).
+/// `ApiClient`'ın her isteğe kendisinin eklediği başlıklar parametre
+/// olmaz.
+enum ParamLocation { path, query, header }
 
 final class ParamDef {
   const ParamDef({
@@ -190,6 +204,7 @@ final class OperationDef {
     required this.body,
     required this.response,
     required this.authenticated,
+    required this.conditional,
   });
 
   final String operationId;
@@ -210,6 +225,10 @@ final class OperationDef {
   /// değil: istek erişim token'ıyla gider. `security: []` olan uçlarda
   /// `false`; `ApiClient` bu uçlarda token eklemez ve yenileme denemez.
   final bool authenticated;
+
+  /// Koşullu istek: işlemin `If-None-Match` başlık parametresi vardır.
+  /// Sunucu `304` dönerse gövde yoktur; üretilen metod `null` döner.
+  final bool conditional;
 }
 
 /// Sözleşmenin üretilecek tamamı.

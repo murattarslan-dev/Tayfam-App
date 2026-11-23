@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/ana_sayfa_katilim.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart';
@@ -13,6 +15,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Etkinlik oluşturmayı başlatan geri çağırma ("Etkinlik aç").
@@ -33,7 +36,8 @@ const int anaSayfaYaklasanSayisi = 2;
 /// açılır.
 ///
 /// Boşken kısa bir boş durum gösterilir; "Etkinlik aç" kısayolu bölümde
-/// değil, ana sayfanın "Oluştur" sayfasındadır.
+/// değil, ana sayfanın "Oluştur" sayfasındadır. Şimdi başlatabilene
+/// bölümün altında "Şimdi başlat" (App ADR-0032 §1).
 ///
 /// Elindeki listede bitmiş ve cevabı "Geliyorum" olan bir etkinlik varsa
 /// uygulama değerlendirme penceresi için fırsat denetlenir (ADR-0016;
@@ -109,6 +113,19 @@ class EtkinlikBolumu extends ConsumerWidget {
                   ),
               ],
             ),
+          // Şimdi başlat (App ADR-0032 §1): tayfanın ayarındaki rol ve
+          // üstüne; izni sunucu doğrular.
+          if (ref.watch(tayfaOzetiProvider(tayfaId)).simdiBaslatabilir) ...[
+            const SizedBox(height: TayfamSpacing.s12),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: CerceveliHapEylem(
+                etiket: metinler.simdi_baslat_dugmesi,
+                ikon: Icons.bolt_outlined,
+                onPressed: () => context.go(Adresler.simdi(tayfaId: tayfaId)),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -118,20 +135,33 @@ class EtkinlikBolumu extends ConsumerWidget {
 /// Yaklaşan bölümündeki ve etkinlik listesindeki kısa etkinlik satırı
 /// (tasarım: Ana-Ilk-Ekran, Etkinlikler). İptal edilen etkinliğin başlığı
 /// ikincil renkte ve üstü çizilidir; sağda "İptal edildi" etiketi.
-class YaklasanSatiri extends StatelessWidget {
+class YaklasanSatiri extends ConsumerWidget {
   const YaklasanSatiri({super.key, required this.etkinlik, this.onTap});
 
   final Event etkinlik;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final yazi = context.yazi;
     final iptal = iptalEdildi(etkinlik);
     final yerel = etkinlik.startsAt.toLocal();
-    final tur = etkinlikTuruGirdisi(etkinlik.type).ad(m);
+    // Tür adı katalogdan; katalog gelmediyse "Etkinlik" (ADR-0024 §1).
+    final tur =
+        turGorunumu(
+          etkinlik.type,
+          turTaniminiIzle(
+            ref,
+            etkinlik.type,
+            surum: etkinlik.typeVersion,
+            guncelYeter: true,
+          ),
+          ref.watch(katalogProvider).value,
+          katalogDili(context),
+        ).ad ??
+        m.katalog_tur_bilinmiyor;
     final zaman = m.etkinlik_satir_zaman(yerel, yerel);
     final yer = etkinlikYeri(m, etkinlik);
     final ozet = yer == null

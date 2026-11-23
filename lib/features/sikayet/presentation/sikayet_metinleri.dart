@@ -20,6 +20,7 @@ String gerekceMetni(AppLocalizations m, ReportReason gerekce) =>
       ReportReason.spam => m.sikayet_gerekce_spam,
       ReportReason.copyright => m.sikayet_gerekce_telif,
       ReportReason.staffConduct => m.sikayet_gerekce_yonetim,
+      ReportReason.paidTutoring => m.soru_havuzu_gerekce_ucretli_ders,
       ReportReason.other || ReportReason.unknown => m.sikayet_gerekce_diger,
     };
 
@@ -42,10 +43,15 @@ String hedefTuruMetni(AppLocalizations m, ReportTargetType tur) =>
       ReportTargetType.question => m.sikayet_tur_soru,
       ReportTargetType.answer => m.sikayet_tur_cevap,
       ReportTargetType.poll => m.sikayet_tur_anket,
-      ReportTargetType.fishingCatch => m.sikayet_tur_av_kaydi,
+      ReportTargetType.logEntry => m.sikayet_tur_av_kaydi,
       ReportTargetType.eventPhoto => m.sikayet_tur_album_fotografi,
       ReportTargetType.dmMessage => m.sikayet_tur_mesaj,
       ReportTargetType.channelMessage => m.sikayet_tur_kanal_mesaji,
+      ReportTargetType.eventQuestion => m.bilesen_questions_sikayet_turu,
+      ReportTargetType.dailyItem => m.gunun_icerigi_sikayet_turu,
+      ReportTargetType.libraryItem => m.kutuphane_sikayet_turu,
+      ReportTargetType.material => m.materyal_sikayet_turu,
+      ReportTargetType.garageVehicle => m.garaj_sikayet_turu,
       ReportTargetType.unknown => m.sikayet_tur_bilinmiyor,
     };
 
@@ -58,10 +64,15 @@ String sikayetSorusu(AppLocalizations m, ReportTargetType tur) => switch (tur) {
   ReportTargetType.question => m.sikayet_soru_soru,
   ReportTargetType.answer => m.sikayet_soru_cevap,
   ReportTargetType.poll => m.sikayet_soru_anket,
-  ReportTargetType.fishingCatch => m.sikayet_soru_av_kaydi,
+  ReportTargetType.logEntry => m.sikayet_soru_av_kaydi,
   ReportTargetType.eventPhoto => m.sikayet_soru_album_fotografi,
   ReportTargetType.dmMessage => m.sikayet_soru_mesaj,
   ReportTargetType.channelMessage => m.sikayet_soru_mesaj,
+  ReportTargetType.eventQuestion => m.bilesen_questions_sikayet_sorusu,
+  ReportTargetType.dailyItem => m.gunun_icerigi_sikayet_sorusu,
+  ReportTargetType.libraryItem => m.kutuphane_sikayet_sorusu,
+  ReportTargetType.material => m.materyal_sikayet_sorusu,
+  ReportTargetType.garageVehicle => m.garaj_sikayet_sorusu,
   ReportTargetType.unknown => m.sikayet_soru_genel,
 };
 

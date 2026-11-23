@@ -5,10 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
+import 'package:tayfam/core/katalog/alan_cizici.dart';
+import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/kullanici/kimlik_avatari.dart';
 import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
@@ -16,7 +20,6 @@ import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
 import 'package:tayfam/core/medya/medya_onbellegi.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/core/zaman/goreli_zaman.dart';
 import 'package:tayfam/features/anket/anket.dart';
@@ -24,18 +27,22 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilim_gecisi.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_bolumleri.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_durumu.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_bolumu.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/degerlendirme_firsati.dart';
-import 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/iptal_diyalogu.dart';
 import 'package:tayfam/features/etkinlik/presentation/katilim_dugmeleri.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/qr_dugmesi.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor.dart';
+import 'package:tayfam/features/etkinlik/presentation/simdi/suruyor_bandi.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/features/etkinlik/presentation/varis_bolumu.dart';
-import 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
@@ -116,7 +123,14 @@ class EtkinlikDetayEkrani extends ConsumerWidget {
     if (etkinlik != null) {
       return Scaffold(
         body: TayfamYenile(
-          onRefresh: notifier.yenile,
+          // Bağlantı yokken bileşenler çekip yenilemeyle güncellenir
+          // (ADR-0024 §5); dinleyeni olmayan provider'da etkisizdir.
+          onRefresh: () {
+            ref
+              ..invalidate(etkinlikBilesenleriProvider(anahtar))
+              ..invalidate(etkinlikHakemleriProvider(anahtar));
+            return notifier.yenile();
+          },
           child: DegerlendirmeFirsati(
             etkinlikler: [etkinlik],
             child: _Detay(anahtar: anahtar, etkinlik: etkinlik),
@@ -172,14 +186,19 @@ class _Detay extends ConsumerWidget {
     final iptal = iptalEdildi(etkinlik);
     final gerekce = etkinlik.cancelReason?.trim();
     final aciklama = etkinlik.description.trim();
-    final turler = ref.watch(etkinlikTurleriProvider);
-    final arac = etkinlik.type == EventType.unknown
-        ? null
-        : etkinlikTuruBul(
-            turler,
-            etkinlik.type.wire,
-          )?.aracBolumu(context, etkinlik);
-    final ayrintilar = _ayrintiSatirlari(m, etkinlik);
+    // Etkinlik, oluşturulduğu tür sürümünün tanımıyla gösterilir
+    // (ADR-0024 §1). Tanım gelmeden katalog alanları gösterilmez.
+    final tanim = turTaniminiIzle(
+      ref,
+      etkinlik.type,
+      surum: etkinlik.typeVersion,
+    );
+    final ayrintilar = _alanSatirlari(
+      context,
+      tanim?.version == etkinlik.typeVersion ? tanim : null,
+      etkinlik,
+      ref.watch(katalogProvider).value?.dersKonu,
+    );
     final cevrimici = etkinlik.mode == EventMode.online;
     final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
     final guvenlik = ref.watch(etkinlikGuvenlikYuvasiProvider);
@@ -201,6 +220,11 @@ class _Detay extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _OzetKarti(anahtar: anahtar, etkinlik: etkinlik),
+                // Açık uçlu etkinlik sürerken "Şu an sürüyor" ve Bitir
+                // (App ADR-0032 §3).
+                SuruyorBandi(anahtar: anahtar, etkinlik: etkinlik),
+                // Yüz yüze katılım QR'ı: göster ya da okut (App ADR-0032 §3).
+                QrKatilimDugmesi(anahtar: anahtar, etkinlik: etkinlik),
                 if (iptal && gerekce != null && gerekce.isNotEmpty) ...[
                   const SizedBox(height: TayfamSpacing.s16),
                   _IptalKutusu(gerekce: gerekce),
@@ -234,14 +258,15 @@ class _Detay extends ConsumerWidget {
                   ),
                 ],
                 if (ayrintilar.isNotEmpty) ...[
-                  AracBasligi(
-                    metin: etkinlik.type == EventType.camp
-                        ? m.etkinlik_kamp_yeri
-                        : m.etkinlik_tur_bilgileri,
-                  ),
+                  AracBasligi(metin: m.etkinlik_tur_bilgileri),
                   BilgiIzgarasi(bilgiler: ayrintilar),
                 ],
-                ?arac,
+                // Bileşenler, tür tanımındaki sırayla (ADR-0024 §3).
+                EtkinlikBilesenBolumleri(
+                  anahtar: anahtar,
+                  etkinlik: etkinlik,
+                  tanim: tanim?.version == etkinlik.typeVersion ? tanim : null,
+                ),
                 const SizedBox(height: TayfamSpacing.s16),
                 EtkinlikAnketleriBaglantisi(
                   tayfaId: anahtar.tayfaId,
@@ -292,8 +317,18 @@ class _UstBolum extends ConsumerWidget {
     final r = context.renkler;
     final tema = Theme.of(context);
     final iptal = iptalEdildi(etkinlik);
-    final girdi = etkinlikTuruGirdisi(etkinlik.type);
-    final cift = context.turRenkleri.cift(girdi.renk);
+    final gorunum = turGorunumu(
+      etkinlik.type,
+      turTaniminiIzle(
+        ref,
+        etkinlik.type,
+        surum: etkinlik.typeVersion,
+        guncelYeter: true,
+      ),
+      ref.watch(katalogProvider).value,
+      katalogDili(context),
+    );
+    final cift = context.turRenkleri.cift(gorunum.renk);
     final yukleme = etkinlik.coverUploadId;
     final kapak = !iptal && yukleme != null && yukleme.isNotEmpty
         ? yukleme
@@ -370,8 +405,8 @@ class _UstBolum extends ConsumerWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       _UstCip(
-                        ikon: girdi.ikon,
-                        metin: girdi.ad(m),
+                        ikon: gorunum.ikon,
+                        metin: gorunum.ad ?? m.katalog_tur_bilinmiyor,
                         zemin: r.markaYuzeyKutusu,
                         renk: r.markaYuzeyUstu,
                       ),
@@ -379,6 +414,23 @@ class _UstBolum extends ConsumerWidget {
                         Etiket(
                           metin: m.etkinlik_karti_iptal,
                           ton: EtiketTonu.nar,
+                        )
+                      else if (etkinlik.openEnded)
+                        // Sürerken geri sayım yerine "Sürüyor · 25 dk".
+                        SuruyorIzleyici(
+                          etkinlik: etkinlik,
+                          builder: (context, suruyor, gecen) => suruyor
+                              ? suruyorEtiketi(m, gecen)
+                              : _UstCip(
+                                  metin: detayGeriSayimi(
+                                    m,
+                                    etkinlik.startsAt,
+                                    simdi,
+                                    bitis: etkinlik.endsAt,
+                                  ),
+                                  zemin: katman,
+                                  renk: ust,
+                                ),
                         )
                       else
                         _UstCip(
@@ -626,11 +678,19 @@ class _OzetKarti extends ConsumerWidget {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final eylem = ref.watch(etkinlikEylemProvider(anahtar));
-    final (gun, saat) = etkinlikOzetZamani(
+    final (gun, aralik) = etkinlikOzetZamani(
       m,
       etkinlik.startsAt,
       etkinlik.endsAt,
     );
+    // Açık uçlu etkinlik sürerken bitiş planlanmış değil, en geçtir
+    // (App ADR-0032 §3): "18:30 – en geç 06:30".
+    final saat = acikUcluSuruyor(etkinlik, ref.watch(etkinlikSaatiProvider)())
+        ? m.simdi_en_gec_aralik(
+            enGecSaat(m, etkinlik.startsAt),
+            enGecSaat(m, etkinlik.endsAt),
+          )
+        : aralik;
     final (yer, bolge) = _yerSatiri(m, etkinlik);
     final organizator = etkinlik.createdByUserId;
     final ayirici = Divider(
@@ -1156,73 +1216,29 @@ class _CevrimiciBolumu extends ConsumerWidget {
 
 // --- Türe özel bilgiler ------------------------------------------------------
 
-/// Türe özel bilgiler (yalnızca okunur; ADR-0015 §3). Bilgi ızgarasında
-/// gösterilir (tasarım: Etkinlik-Turler).
-List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
-  final satirlar = <(String, String)>[];
-  void ekle(String etiket, String? deger) {
-    if (deger != null && deger.trim().isNotEmpty) {
-      satirlar.add((etiket, deger.trim()));
-    }
-  }
-
-  final camp = e.camp;
-  if (camp != null) {
-    ekle(m.etkinlik_kamp_yeri, camp.siteName);
-    ekle(m.etkinlik_kamp_su, varYok(m, camp.hasWater));
-    ekle(m.etkinlik_kamp_tuvalet, varYok(m, camp.hasToilet));
-    ekle(m.etkinlik_kamp_notu, camp.notes);
-  }
-  final hike = e.hike;
-  if (hike != null) {
-    final zorluk = hike.difficulty;
-    if (zorluk != null && zorluk > 0) {
-      ekle(m.etkinlik_yuruyus_zorluk, m.etkinlik_zorluk_degeri(zorluk));
-    }
-    final mesafe = hike.distanceKm;
-    if (mesafe != null && mesafe > 0) {
-      ekle(m.etkinlik_yuruyus_mesafe, m.etkinlik_km(etkinlikSayi(m, mesafe)));
-    }
-    final yukselti = hike.elevationM;
-    if (yukselti != null && yukselti > 0) {
-      ekle(
-        m.etkinlik_yuruyus_yukselti,
-        m.etkinlik_metre(etkinlikSayi(m, yukselti)),
-      );
-    }
-    final donus = hike.expectedReturnAt;
-    if (donus != null) {
-      ekle(m.etkinlik_yuruyus_donus, etkinlikZamani(m, donus));
-    }
-    final tolerans = hike.returnGraceMinutes;
-    if (tolerans != null && tolerans > 0) {
-      ekle(
-        m.etkinlik_yuruyus_tolerans,
-        m.etkinlik_dakika(etkinlikSayi(m, tolerans)),
-      );
-    }
-  }
-  final fishing = e.fishing;
-  if (fishing != null) {
-    ekle(
-      m.etkinlik_balik_gizlilik,
-      balikGizliligiAdi(
-        m,
-        fishing.spotVisibility ?? FishingDetailsSpotVisibility.tayfa,
-      ),
-    );
-  }
-  final gaming = e.gaming;
-  if (gaming != null) {
-    ekle(m.etkinlik_oyun, gaming.game);
-    ekle(m.etkinlik_oyun_platform, platformAdi(m, gaming.platform));
-  }
-  final sports = e.sports;
-  if (sports != null) {
-    ekle(m.etkinlik_spor, sporAdi(m, sports.sport));
-    ekle(m.etkinlik_spor_saha, sports.venueName);
-  }
-  return satirlar;
+/// Katalogdaki tür alanlarının değerleri (ADR-0024 §3): alan adı katalog
+/// metni, değer etkinliğin `fields` nesnesinden. Tanınmayan türdeki alan
+/// ve türüne uymayan değer atlanır.
+List<(String, String)> _alanSatirlari(
+  BuildContext context,
+  CatalogEventType? tanim,
+  Event e,
+  DersKonuAgaci? dersKonu,
+) {
+  final degerler = e.fields;
+  if (tanim == null || degerler == null) return const [];
+  final dil = katalogDili(context);
+  return [
+    for (final alan in tanim.definition.fields ?? const <CatalogField>[])
+      if (katalogAlanDegeriMetni(
+            context,
+            alan,
+            degerler[alan.key],
+            dersKonu: dersKonu,
+          )
+          case final deger?)
+        (katalogAlanAdi(alan, dil), deger),
+  ];
 }
 
 // --- Katılımcı özeti ---------------------------------------------------------
@@ -1230,6 +1246,10 @@ List<(String, String)> _ayrintiSatirlari(AppLocalizations m, Event e) {
 /// Katılımcıların özeti (tasarım: Etkinlik-Detay "Katılımcılar"): gelenlerin
 /// ilk beşinin avatarı, "N kişi geliyor" ve "K belki · W bekleme
 /// listesinde"; dokununca Katılımcılar ekranı açılır.
+///
+/// Sunucu listeyi vermezse (`attendees-hidden`, türü `sensitive_attendance`
+/// bayraklı; istemci ADR-0031 §6) yalnızca sayılar ve "Katılımcı listesi
+/// gizli" kalır; avatar yoktur, satır dokunulmaz.
 class _KatilimciOzeti extends ConsumerWidget {
   const _KatilimciOzeti({required this.anahtar, required this.etkinlik});
 
@@ -1239,29 +1259,32 @@ class _KatilimciOzeti extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
-    final gelenler =
-        ref
-            .watch(
-              katilimcilarProvider((
-                tayfaId: anahtar.tayfaId,
-                etkinlikId: anahtar.etkinlikId,
-                durum: ListEventAttendeesStatus.going,
-              )),
-            )
-            .value
-            ?.ogeler ??
-        const <Attendee>[];
+    final liste = ref.watch(
+      katilimcilarProvider((
+        tayfaId: anahtar.tayfaId,
+        etkinlikId: anahtar.etkinlikId,
+        durum: ListEventAttendeesStatus.going,
+      )),
+    );
+    final gizli = katilimcilarGizli(liste.error);
+    final gelenler = liste.value?.ogeler ?? const <Attendee>[];
     final alt = [
       if (etkinlik.maybeCount > 0) m.etkinlik_ozet_belki(etkinlik.maybeCount),
       if (etkinlik.waitlistCount > 0)
         m.etkinlik_ozet_bekleme(etkinlik.waitlistCount),
+      if (gizli) m.bayrak_katilimcilar_gizli_kisa,
     ].join(ozetAyraci);
     return ListeKarti(
       children: [
         ListeKartiSatiri(
-          onTap: () => context.go(
-            Adresler.etkinlikKatilimcilari(anahtar.tayfaId, anahtar.etkinlikId),
-          ),
+          onTap: gizli
+              ? null
+              : () => context.go(
+                  Adresler.etkinlikKatilimcilari(
+                    anahtar.tayfaId,
+                    anahtar.etkinlikId,
+                  ),
+                ),
           child: Row(
             children: [
               if (gelenler.isNotEmpty) ...[
@@ -1285,8 +1308,10 @@ class _KatilimciOzeti extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: TayfamSpacing.s8),
-              const SatirOku(),
+              if (!gizli) ...[
+                const SizedBox(width: TayfamSpacing.s8),
+                const SatirOku(),
+              ],
             ],
           ),
         ),

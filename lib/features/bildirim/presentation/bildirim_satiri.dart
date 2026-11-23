@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/tema/tema.dart';
@@ -58,7 +58,10 @@ class BildirimSatiri extends ConsumerWidget {
     final tayfaAdi = tayfaId == null
         ? null
         : ref.watch(tayfaAdiProvider(tayfaId)) ?? m.tayfa_adi_bilinmiyor;
-    final islem = satirIciIslem(bildirim);
+    final islem = satirIciIslem(
+      bildirim,
+      etkinUyeMi: etkinUyelik(ref.watch(tayfalarimProvider).value),
+    );
 
     final icerik = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +403,10 @@ enum BildirimKategorisi {
 BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.eventCreated ||
   NotificationType.eventUpdated ||
-  NotificationType.rsvpPromoted => BildirimKategorisi.etkinlik,
+  NotificationType.rsvpPromoted ||
+  NotificationType.celebration ||
+  NotificationType.badgeEarned ||
+  NotificationType.nowStarted => BildirimKategorisi.etkinlik,
   NotificationType.dmRequest ||
   NotificationType.dmMessage => BildirimKategorisi.mesaj,
   NotificationType.friendRequest ||
@@ -408,6 +414,7 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.friendSuggestion ||
   NotificationType.tayfaInvitation => BildirimKategorisi.arkadaslik,
   NotificationType.eventCancelled ||
+  NotificationType.libraryLoanOrphaned ||
   NotificationType.hikeOverdue ||
   NotificationType.safetyAlert ||
   NotificationType.tayfaWarned ||
@@ -421,6 +428,13 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.tayfaUnsuspended ||
   NotificationType.reportResolved ||
   NotificationType.dataExportReady ||
+  NotificationType.libraryDue ||
+  NotificationType.libraryLoanRequested ||
+  NotificationType.libraryQueueJoined ||
+  NotificationType.libraryLoanApproved ||
+  NotificationType.libraryLoanDeclined ||
+  NotificationType.libraryLoanHandedOver ||
+  NotificationType.libraryQueueTurn ||
   NotificationType.unknown => BildirimKategorisi.marka,
 };
 
@@ -459,6 +473,26 @@ String bildirimMetni(
   NotificationType.dmRequest => m.bildirim_mesaj_istegi,
   NotificationType.dmMessage => m.bildirim_mesaj,
   NotificationType.dataExportReady => m.bildirim_veri_hazir,
+  // Kazananı adlandırmaz (kesin kural 7); kutlamayı etkinlik gösterir.
+  NotificationType.celebration => m.bilesen_celebration_bildirim,
+  // Rozeti adlandırmaz (kesin kural 7); rozet profilde ya da tayfada.
+  NotificationType.badgeEarned =>
+    bildirim.targetType == NotificationTargetType.tayfa
+        ? m.rozet_bildirim_tayfa
+        : m.rozet_bildirim,
+  // Başlık, tür ve yer yazılmaz (Tayfam-Api ADR-0038 §4).
+  NotificationType.nowStarted => m.simdi_bildirim_satir(kisi),
+  // Kalemi ve karşı tarafı adlandırmaz; ayrıntı "Ödünçlerim"de.
+  NotificationType.libraryDue => m.kutuphane_bildirim_iade,
+  NotificationType.libraryLoanOrphaned => m.kutuphane_bildirim_sahipsiz,
+  // Ödünç adımları (#321): adımı atan üye, eşya ve tarih yazılmaz.
+  NotificationType.libraryLoanRequested => m.kutuphane_bildirim_istek,
+  NotificationType.libraryQueueJoined => m.kutuphane_bildirim_sira,
+  NotificationType.libraryLoanApproved => m.kutuphane_bildirim_onay,
+  NotificationType.libraryLoanDeclined => m.kutuphane_bildirim_ret,
+  NotificationType.libraryLoanHandedOver => m.kutuphane_bildirim_teslim,
+  // Sıra sende (#332): sıranın gelme sebebi olan üye ve eşya yazılmaz.
+  NotificationType.libraryQueueTurn => m.kutuphane_bildirim_sira_sende,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -487,5 +521,16 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.dmRequest ||
   NotificationType.dmMessage => Icons.chat_bubble_outline,
   NotificationType.dataExportReady => Icons.download_outlined,
+  NotificationType.celebration => Icons.emoji_events_outlined,
+  NotificationType.badgeEarned => Icons.military_tech_outlined,
+  NotificationType.nowStarted => Icons.bolt,
+  NotificationType.libraryDue ||
+  NotificationType.libraryLoanOrphaned ||
+  NotificationType.libraryLoanRequested ||
+  NotificationType.libraryQueueJoined ||
+  NotificationType.libraryLoanApproved ||
+  NotificationType.libraryLoanDeclined ||
+  NotificationType.libraryLoanHandedOver ||
+  NotificationType.libraryQueueTurn => Icons.inventory_2_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };

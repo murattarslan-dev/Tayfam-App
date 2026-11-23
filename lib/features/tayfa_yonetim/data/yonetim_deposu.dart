@@ -177,6 +177,21 @@ final class YonetimDeposu {
   /// (`all`) döner.
   Future<void> sessizdenCikar(String tayfaId) =>
       _bildirim.resetTayfaNotificationPreference(tayfaId: tayfaId);
+
+  /// `PUT /v1/notification-preferences/tayfas/{tayfa_id}/now`: tayfanın
+  /// şimdi bildirimlerini süresiz kapatır (`none`; Tayfam-Api ADR-0038 §4).
+  Future<NotificationPreference> simdiBildiriminiKapat(String tayfaId) =>
+      _bildirim.setTayfaNowNotificationPreference(
+        tayfaId: tayfaId,
+        body: const NowNotificationPreferenceRequest(
+          level: NowNotificationPreferenceRequestLevel.none,
+        ),
+      );
+
+  /// `DELETE /v1/notification-preferences/tayfas/{tayfa_id}/now`:
+  /// varsayılana (`all`) döner.
+  Future<void> simdiBildiriminiAc(String tayfaId) =>
+      _bildirim.resetTayfaNowNotificationPreference(tayfaId: tayfaId);
 }
 
 /// Tayfa yönetimi uçlarının deposu.
@@ -202,6 +217,7 @@ const List<ReportReason> banGerekceleri = [
   ReportReason.drugs,
   ReportReason.gambling,
   ReportReason.dangerousActivity,
+  ReportReason.paidTutoring,
   ReportReason.spam,
   ReportReason.copyright,
   ReportReason.other,

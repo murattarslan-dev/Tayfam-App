@@ -2,3 +2,7 @@
 # PR #68'in ilk commit'indeki test sabiti: rastgele görünümlü ama sahte bir
 # davet token'ı; sonraki commit'te açıkça sahte bir değerle değiştirildi.
 beb1c0c018d304846123c099b1e9198344ba9b95:test/shell/derin_link/davet_akisi_test.dart:generic-api-key:19
+# PR #286'nın ikinci commit'indeki test sabiti: açıkça sahte QR katılım
+# değeri (`sahte_qr-…`); sonraki commit'te adı anahtar kelime taşımayan
+# bir sabitle değiştirildi.
+57ad21119a263dc01756479c9f798f73841b322b:test/shell/derin_link/qr_katilim_test.dart:generic-api-key:24

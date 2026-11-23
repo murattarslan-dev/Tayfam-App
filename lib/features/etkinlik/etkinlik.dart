@@ -1,10 +1,13 @@
-/// Etkinlik özelliğinin dışa açık dosyası (ADR-0002): etkinlik türü
-/// kaydı ve türe özel araçları olan türler, etkinlik modülü, yaklaşan
-/// etkinlikler listesi ve etkinlik kartı (ADR-0015 §1, §3, §6). Detaydaki
+/// Etkinlik özelliğinin dışa açık dosyası (ADR-0002): bileşen kaydı
+/// (ADR-0024 §3; her bileşen buraya kendi `export` satırını ekler),
+/// etkinlik modülü, yaklaşan etkinlikler listesi ve etkinlik kartı
+/// (ADR-0015 §1, §3). Faz 1 tür kaydı kalktı: türe özel araçlar
+/// bileşenlerdedir (#231). Detaydaki
 /// sohbet bölümünün yuvası kabukta doldurulur (Tayfam-Api #183).
 ///
 /// Anlık (bireysel) etkinlik (ADR-0026): [anlikEtkinlikRotasi] üst düzeye
 /// eklenir; [anlikArkadasDavetEt] `arkadasDavetiProvider`'a verilir.
+/// Şimdi başlat (App ADR-0032): [simdiRotasi] üst düzeye eklenir.
 library;
 
 export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.dart'
@@ -13,6 +16,46 @@ export 'package:tayfam/features/etkinlik/application/etkinlik_listesi_notifier.d
         anaSayfaEtkinlikSayisi,
         etkinlikListesiProvider,
         etkinlikSirala;
+export 'package:tayfam/features/etkinlik/bilesenler/agac/agac_bileseni.dart'
+    show AgacBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/araclar/araclar_bileseni.dart'
+    show AraclarBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/derece/derece_bileseni.dart'
+    show DereceBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart'
+    show EtkinlikBileseni, TemelBilesen, etkinlikBilesenKaydiProvider;
+export 'package:tayfam/features/etkinlik/bilesenler/gunluk/gunluk_bileseni.dart'
+    show GunlukBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/havuz/havuz_bileseni.dart'
+    show HavuzBaglantisiBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/hedef/hedef_bileseni.dart'
+    show HedefBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/kronometre/kronometre_bileseni.dart'
+    show KronometreBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/kura/kura_bileseni.dart'
+    show KuraBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/kutlama/kutlama_bileseni.dart'
+    show KutlamaBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/liste/liste_bileseni.dart'
+    show ListeBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/olcum/olcum_bileseni.dart'
+    show OlcumBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/oylama/oylama_bileseni.dart'
+    show OylamaBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/program/program_bileseni.dart'
+    show ProgramBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/rota/rota_bileseni.dart'
+    show RotaBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/sorular/sorular_bileseni.dart'
+    show SorularBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/sozluk/sozluk_ekranlari.dart'
+    show sozlukGirisEtiketi, sozlukGirisIkonu, sozlukRotalari, sozluklerAdresi;
+export 'package:tayfam/features/etkinlik/bilesenler/takim/takim_bileseni.dart'
+    show TakimBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_bileseni.dart'
+    show YazbozBileseni;
+export 'package:tayfam/features/etkinlik/bilesenler/yoklama/yoklama_bileseni.dart'
+    show YoklamaBileseni;
 export 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart'
     show EtkinlikDeposu, etkinlikDeposuProvider;
 export 'package:tayfam/features/etkinlik/presentation/anlik/anlik_davet_sayfasi.dart'
@@ -24,12 +67,5 @@ export 'package:tayfam/features/etkinlik/presentation/etkinlik_karti.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_modulu.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlik_sohbeti_yuvasi.dart';
 export 'package:tayfam/features/etkinlik/presentation/etkinlikler_ekrani.dart';
-export 'package:tayfam/features/etkinlik/turler/balik/balik_turu.dart'
-    show BalikTuru;
-export 'package:tayfam/features/etkinlik/turler/etkinlik_turu.dart';
-export 'package:tayfam/features/etkinlik/turler/kamp/kamp_turu.dart'
-    show KampTuru;
-export 'package:tayfam/features/etkinlik/turler/konvoy/konvoy_turu.dart'
-    show KonvoyTuru;
-export 'package:tayfam/features/etkinlik/turler/yuruyus/yuruyus_turu.dart'
-    show YuruyusTuru;
+export 'package:tayfam/features/etkinlik/presentation/simdi/simdi_rotasi.dart'
+    show simdiRotasi;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/profil/application/sosyal_ayarlar_notifier.dart';
@@ -19,6 +20,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   çekilir). Açmak ve "Beni önerme" onaysızdır.
 /// - Profilleme kapalıyken "Beni önerme" pasiftir (sunucu zaten kimseye
 ///   önermez; arayüz sadeleştirmesidir, yetki kararı değildir).
+/// - "Arkadaşlarımdan şimdi bildirimleri" (App ADR-0032 §5): Herkes /
+///   Yakın arkadaşlarım / Kapalı, alttan sayfada; profilleme kapalıyken
+///   "Yakın arkadaşlarım" açıklamayla pasiftir.
 /// - Okunurken satırlar görünmez; okunamazsa hata satırı ve "Tekrar dene".
 ///
 /// [ListeKarti]'nın tek öğesidir; iki satırın arasındaki çizgiyi kendisi
@@ -105,8 +109,33 @@ class ProfillemeAyarlari extends ConsumerWidget {
               ? null
               : (acik) => unawaited(_kesfetAyarla(context, ref, acik)),
         ),
+        Divider(
+          height: TayfamSizes.kenar,
+          thickness: TayfamSizes.kenar,
+          color: r.cizgi,
+        ),
+        _SimdiKimdenSatiri(
+          deger: simdiKimdenGorunen(ayarlar),
+          profilleme: profilleme,
+          onSecildi: mesgul
+              ? null
+              : (deger) => unawaited(_simdiKimdenAyarla(context, ref, deger)),
+        ),
       ],
     );
+  }
+
+  Future<void> _simdiKimdenAyarla(
+    BuildContext context,
+    WidgetRef ref,
+    SocialSettingsUpdateNowFromFriends deger,
+  ) async {
+    final m = AppLocalizations.of(context);
+    final bildirim = ScaffoldMessenger.of(context);
+    final hata = await ref
+        .read(sosyalAyarlarProvider.notifier)
+        .simdiKimdenAyarla(deger);
+    if (hata != null) profilBildirimi(bildirim, profilHatasiMetni(m, hata));
   }
 
   Future<void> _profillemeAyarla(
@@ -190,6 +219,106 @@ class _AnahtarSatiri extends StatelessWidget {
         ),
         value: deger,
         onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+/// "Arkadaşlarımdan şimdi bildirimleri" satırı: başlık, seçili değer ve
+/// alttan sayfada üç seçenek (Tayfam-Api ADR-0038 §4). Profilleme
+/// kapalıyken "Yakın arkadaşlarım" pasiftir (arayüz sadeleştirmesi;
+/// sunucu o durumda `close`'u `all` gibi uygular).
+class _SimdiKimdenSatiri extends StatelessWidget {
+  const _SimdiKimdenSatiri({
+    required this.deger,
+    required this.profilleme,
+    required this.onSecildi,
+  });
+
+  final SocialSettingsUpdateNowFromFriends deger;
+  final bool profilleme;
+  final ValueChanged<SocialSettingsUpdateNowFromFriends>? onSecildi;
+
+  static String _ad(
+    AppLocalizations m,
+    SocialSettingsUpdateNowFromFriends d,
+  ) => switch (d) {
+    SocialSettingsUpdateNowFromFriends.close => m.simdi_bildirim_kimden_yakin,
+    SocialSettingsUpdateNowFromFriends.off => m.simdi_bildirim_kimden_kapali,
+    SocialSettingsUpdateNowFromFriends.all ||
+    SocialSettingsUpdateNowFromFriends.unknown =>
+      m.simdi_bildirim_kimden_herkes,
+  };
+
+  Future<void> _ac(BuildContext context) async {
+    final m = AppLocalizations.of(context);
+    final secim = await altSayfaAc<SocialSettingsUpdateNowFromFriends>(
+      context,
+      builder: (sayfa) => AltSayfaIcerigi(
+        baslik: m.simdi_bildirim_kimden,
+        children: [
+          Text(
+            m.simdi_bildirim_kimden_aciklama,
+            style: sayfa.yazi.bodySmall?.copyWith(
+              color: sayfa.renkler.metinIkincil,
+            ),
+          ),
+          RadioGroup<SocialSettingsUpdateNowFromFriends>(
+            groupValue: deger,
+            onChanged: (d) {
+              if (d != null) Navigator.of(sayfa).pop(d);
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                RadioListTile<SocialSettingsUpdateNowFromFriends>(
+                  value: SocialSettingsUpdateNowFromFriends.all,
+                  title: Text(m.simdi_bildirim_kimden_herkes),
+                ),
+                RadioListTile<SocialSettingsUpdateNowFromFriends>(
+                  value: SocialSettingsUpdateNowFromFriends.close,
+                  enabled: profilleme,
+                  title: Text(m.simdi_bildirim_kimden_yakin),
+                  subtitle: Text(
+                    profilleme
+                        ? m.simdi_bildirim_kimden_yakin_aciklama
+                        : m.simdi_bildirim_kimden_yakin_pasif,
+                  ),
+                ),
+                RadioListTile<SocialSettingsUpdateNowFromFriends>(
+                  value: SocialSettingsUpdateNowFromFriends.off,
+                  title: Text(m.simdi_bildirim_kimden_kapali),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    if (secim == null || secim == deger) return;
+    onSecildi?.call(secim);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: TayfamSizes.menuSatiri),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: TayfamSpacing.s16,
+          vertical: TayfamSpacing.s4,
+        ),
+        enabled: onSecildi != null,
+        title: Text(m.simdi_bildirim_kimden, style: context.yazi.titleMedium),
+        subtitle: Text(
+          _ad(m, deger),
+          style: context.yazi.bodySmall?.copyWith(
+            color: context.renkler.metinIkincil,
+          ),
+        ),
+        trailing: const ExcludeSemantics(child: Icon(Icons.chevron_right)),
+        onTap: () => unawaited(_ac(context)),
       ),
     );
   }

@@ -108,6 +108,10 @@ Question cevapSayisiDegismis(Question soru, int fark) {
     answerCount: sayi < 0 ? 0 : sayi,
     createdAt: soru.createdAt,
     updatedAt: soru.updatedAt,
+    pool: soru.pool,
+    subjectKey: soru.subjectKey,
+    topicKey: soru.topicKey,
+    photoUploadIds: soru.photoUploadIds,
   );
 }
 

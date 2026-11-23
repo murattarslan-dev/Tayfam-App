@@ -49,11 +49,13 @@ Notification? pushBildirimi(PushVerisi veri, {required DateTime simdi}) {
   );
 }
 
-/// Push'a dokununca açılacak adres: bildirimin hedefi ([bildirimAdresi]);
-/// veri doğrulanamazsa ya da hedefin ekranı yoksa Bildirimler sekmesi.
-String pushAdresi(Notification? bildirim) {
+/// Push'a dokununca açılacak adres: bildirimin hedefi ([bildirimAdresi];
+/// [etkinUyeMi] oradaki gibi); veri doğrulanamazsa ya da hedefin ekranı
+/// yoksa Bildirimler sekmesi.
+String pushAdresi(Notification? bildirim, {EtkinUyeMi? etkinUyeMi}) {
   if (bildirim == null) return Adresler.bildirimler;
-  return bildirimAdresi(bildirim) ?? Adresler.bildirimler;
+  return bildirimAdresi(bildirim, etkinUyeMi: etkinUyeMi) ??
+      Adresler.bildirimler;
 }
 
 /// Yoksa geçerli ve `null`; varsa yalnızca UUID biçimindeyse geçerli.

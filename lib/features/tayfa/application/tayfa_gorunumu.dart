@@ -101,6 +101,22 @@ final class TayfaOzeti {
   bool get etkinlikAcabilir =>
       yonetimde || (tayfa?.membersCanCreateEvents ?? false);
 
+  /// "Şimdi başlat" gösterilir (App ADR-0032 §1): kalıcı tayfada rolü
+  /// tayfanın `now_create_min_role` ayarı ve üstü olan etkin üye. Yalnızca
+  /// sadeleştirir; izni sunucu doğrular (kesin kural 5).
+  bool get simdiBaslatabilir {
+    final rol = this.rol;
+    final enAz = tayfa?.nowCreateMinRole;
+    if (anlik || rol == null || enAz == null) return false;
+    int sira(Role r) => switch (r) {
+      Role.member => 0,
+      Role.moderator => 1,
+      Role.admin => 2,
+      Role.unknown => 3,
+    };
+    return rol != Role.unknown && sira(rol) >= sira(enAz);
+  }
+
   /// "Oluştur" sayfasındaki seçenekleri sadeleştirmek için rol ve izinler.
   TayfaYetkisi get yetki => TayfaYetkisi(
     rol: rol,

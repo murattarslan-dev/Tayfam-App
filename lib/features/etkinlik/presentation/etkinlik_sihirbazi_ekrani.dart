@@ -5,19 +5,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/alan_cizici.dart';
+import 'package:tayfam/core/katalog/alanlar.dart';
+import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
+import 'package:tayfam/core/katalog/katalog_notifier.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_sihirbazi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_bolumleri.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_formu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/etkinlik_bileseni.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/etkinlik/presentation/anlik/anlik_acildi_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/anlik/arkadas_secimi.dart';
@@ -25,14 +33,11 @@ import 'package:tayfam/features/etkinlik/presentation/etkinlik_detay_ekrani.dart
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
 import 'package:tayfam/core/harita/harita_secici_ekrani.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
-import 'package:tayfam/features/etkinlik/presentation/rota_secici_ekrani.dart';
 import 'package:tayfam/features/etkinlik/presentation/sihirbaz_ogeleri.dart';
 import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_secici.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
-
-/// Sihirbazdaki rota önizlemesinin yüksekliği.
-const double sihirbazRotaYuksekligi = 120;
 
 /// Etkinlik düzenleme (`/t/<tayfaId>/etkinlikler/<etkinlikId>/duzenle`):
 /// etkinlik okununca sihirbaz o etkinlikle açılır. Sonraki yenilemeler
@@ -172,13 +177,6 @@ class _EtkinlikSihirbaziEkraniState
   late final TextEditingController _ilce;
   late final TextEditingController _baglanti;
   late final TextEditingController _kontenjan;
-  late final TextEditingController _kampYeri;
-  late final TextEditingController _kampNotu;
-  late final TextEditingController _mesafe;
-  late final TextEditingController _yukselti;
-  late final TextEditingController _tolerans;
-  late final TextEditingController _oyun;
-  late final TextEditingController _sahaAdi;
 
   /// "Sınırsız" kapatılınca kontenjanın başladığı değer.
   static const int _varsayilanKontenjan = 10;
@@ -194,13 +192,6 @@ class _EtkinlikSihirbaziEkraniState
     _ilce = TextEditingController(text: t.yer.ilce);
     _baglanti = TextEditingController(text: t.yer.baglanti);
     _kontenjan = TextEditingController(text: t.kontenjan);
-    _kampYeri = TextEditingController(text: t.ayrinti.kampYeri);
-    _kampNotu = TextEditingController(text: t.ayrinti.kampNotu);
-    _mesafe = TextEditingController(text: t.ayrinti.mesafe);
-    _yukselti = TextEditingController(text: t.ayrinti.yukselti);
-    _tolerans = TextEditingController(text: t.ayrinti.tolerans);
-    _oyun = TextEditingController(text: t.ayrinti.oyun);
-    _sahaAdi = TextEditingController(text: t.ayrinti.sahaAdi);
   }
 
   @override
@@ -213,13 +204,6 @@ class _EtkinlikSihirbaziEkraniState
       _ilce,
       _baglanti,
       _kontenjan,
-      _kampYeri,
-      _kampNotu,
-      _mesafe,
-      _yukselti,
-      _tolerans,
-      _oyun,
-      _sahaAdi,
     ]) {
       d.dispose();
     }
@@ -231,9 +215,6 @@ class _EtkinlikSihirbaziEkraniState
   EtkinlikTaslagi get _t => ref.read(_provider);
 
   bool get _duzenleme => _anahtar.duzenlenen != null;
-
-  void _ayrinti(TurAyrintisi Function(TurAyrintisi a) degisim) =>
-      _n.ayrintiAyarla(degisim(_t.ayrinti));
 
   void _yer(YerBilgisi Function(YerBilgisi y) degisim) =>
       _n.yerAyarla(degisim(_t.yer));
@@ -261,17 +242,6 @@ class _EtkinlikSihirbaziEkraniState
           ? Adresler.etkinlikler(tayfaId)
           : Adresler.etkinlik(tayfaId, eski.id),
     );
-  }
-
-  Future<void> _rotaSec() async {
-    final t = _t;
-    final rota = await rotaSeciciAc(
-      context,
-      baslangic: t.ayrinti.rota,
-      merkez: t.yer.nokta,
-    );
-    if (rota == null || !mounted) return;
-    _ayrinti((a) => a.kopya(rota: rota));
   }
 
   Future<void> _noktaSec() async {
@@ -346,6 +316,35 @@ class _EtkinlikSihirbaziEkraniState
       }
     });
     final t = ref.watch(provider);
+    // Düzenlemede katalog alanları etkinliğin kendi tür sürümüyle çizilir;
+    // tanım sonradan gelirse taslağa işlenir.
+    if (_anahtar.duzenlenen case final eski? when t.turTanimi == null) {
+      final tanim = turTaniminiIzle(ref, eski.type, surum: eski.typeVersion);
+      if (tanim != null && tanim.version == eski.typeVersion) {
+        final n = _n;
+        unawaited(Future<void>.microtask(() => n.tanimGeldi(tanim)));
+      }
+    }
+    // Düzenlemede bileşen seçimleri etkinliğin sunucudaki halinden
+    // doldurulur (ADR-0031 §1); yalnızca çizilecek bileşen varsa okunur.
+    if (_anahtar.duzenlenen case final eski?
+        when !t.bilesenlerOkundu && t.turTanimi != null) {
+      final kayit = ref.watch(etkinlikBilesenKaydiProvider);
+      if (bilesenPlani(t.turTanimi, kayit).any((p) => p.bilesen != null)) {
+        final durum = ref
+            .watch(
+              etkinlikBilesenleriProvider((
+                tayfaId: eski.tayfaId,
+                etkinlikId: eski.id,
+              )),
+            )
+            .value;
+        if (durum != null) {
+          final n = _n;
+          unawaited(Future<void>.microtask(() => n.bilesenDurumuGeldi(durum)));
+        }
+      }
+    }
     if (t.anlikSonuc case final sonuc?) {
       return AnlikAcildiEkrani(
         sonuc: sonuc,
@@ -461,27 +460,11 @@ class _EtkinlikSihirbaziEkraniState
   Widget _turAdimi(BuildContext context, EtkinlikTaslagi t) {
     final m = AppLocalizations.of(context);
     final tayfaId = widget.tayfaId;
-    // Anlık etkinlikte tayfa yoktur; türler tek ızgarada.
+    // Anlık etkinlikte tayfa yoktur; ilgi alanı grubu çıkmaz.
     final ilgi = tayfaId == null
-        ? const <EventType>[]
+        ? const <String>[]
         : ref.watch(tayfaOzetiProvider(tayfaId)).tayfa?.interests ??
-              const <EventType>[];
-    final onde = [
-      for (final tur in secilebilirEtkinlikTurleri)
-        if (ilgi.contains(tur)) tur,
-    ];
-    final digerleri = [
-      for (final tur in secilebilirEtkinlikTurleri)
-        if (!onde.contains(tur)) tur,
-    ];
-    List<Widget> kutular(List<EventType> turler) => [
-      for (final tur in turler)
-        _TurKutusu(
-          tur: tur,
-          secili: t.tur == tur,
-          onSecildi: t.gonderiliyor ? null : () => _n.turSec(tur),
-        ),
-    ];
+              const <String>[];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -493,13 +476,11 @@ class _EtkinlikSihirbaziEkraniState
           const SizedBox(height: TayfamSpacing.s12),
           HataSatiri(metin: m.etkinlik_tur_hata),
         ],
-        if (onde.isNotEmpty) ...[
-          BolumEtiketi(baslik: m.etkinlik_tur_ilgi_alanlari),
-          IkiSutunluIzgara(children: kutular(onde)),
-          BolumEtiketi(baslik: m.etkinlik_tur_digerleri),
-        ] else
-          const SizedBox(height: TayfamSpacing.s20),
-        IkiSutunluIzgara(children: kutular(digerleri)),
+        TurSecici(
+          secili: t.tur,
+          ilgiAlanlari: ilgi,
+          onSecildi: t.gonderiliyor ? null : _n.turSec,
+        ),
       ],
     );
   }
@@ -512,6 +493,8 @@ class _EtkinlikSihirbaziEkraniState
     final baslangic = t.baslangic;
     final bitis = t.bitis;
     final kapali = t.gonderiliyor;
+    // Açık uçlu etkinliğin zamanı düzenlenemez (Tayfam-Api ADR-0038 §1).
+    final zamanKilitli = _n.zamanKilitli;
     final baslangicHatasi = h.contains(TaslakHatasi.baslangicYok)
         ? m.etkinlik_baslangic_yok
         : h.contains(TaslakHatasi.baslangicGecmis)
@@ -546,7 +529,7 @@ class _EtkinlikSihirbaziEkraniState
             an: baslangic,
             ayniGun: false,
             hatali: baslangicHatasi != null,
-            onPressed: kapali
+            onPressed: kapali || zamanKilitli
                 ? null
                 : () async {
                     final secilen = await _tarihSaatSec(baslangic);
@@ -561,7 +544,7 @@ class _EtkinlikSihirbaziEkraniState
                 bitis != null &&
                 _ayniGun(baslangic, bitis),
             hatali: bitisHatasi != null,
-            onPressed: kapali
+            onPressed: kapali || zamanKilitli
                 ? null
                 : () async {
                     final secilen = await _tarihSaatSec(bitis ?? baslangic);
@@ -569,6 +552,15 @@ class _EtkinlikSihirbaziEkraniState
                   },
           ),
         ),
+        if (zamanKilitli) ...[
+          const SizedBox(height: TayfamSpacing.s8),
+          Text(
+            m.simdi_zaman_duzenlenemez,
+            style: context.yazi.bodySmall?.copyWith(
+              color: context.renkler.metinIkincil,
+            ),
+          ),
+        ],
         if (baslangicHatasi != null) ...[
           const SizedBox(height: TayfamSpacing.s8),
           HataSatiri(metin: baslangicHatasi),
@@ -622,20 +614,27 @@ class _EtkinlikSihirbaziEkraniState
     final yer = t.yer;
     final cevrimici = yer.mod == EventMode.online;
     final kapali = t.gonderiliyor;
+    // Düzenlemede mod, etkinliğin bugünkü modu tür tanımında olmasa da
+    // değiştirilebilir kalır; son söz sunucunundur.
+    final modlar = _duzenleme
+        ? const [EventMode.inPerson, EventMode.online]
+        : turModlari(t.turTanimi);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AdimBasligi(baslik: m.etkinlik_yer_adim_baslik),
         const SizedBox(height: TayfamSpacing.s20),
-        // İki parçalı seçim; büyük yazıda alt satıra iner.
-        SecimCipleri<EventMode>(
-          secenekler: [
-            (EventMode.inPerson, m.etkinlik_mod_yuz_yuze),
-            (EventMode.online, m.etkinlik_mod_cevrimici),
-          ],
-          secili: cevrimici ? EventMode.online : EventMode.inPerson,
-          onSecildi: kapali ? null : (mod) => _yer((y) => y.kopya(mod: mod)),
-        ),
+        // İki parçalı seçim; büyük yazıda alt satıra iner. Tür tek modda
+        // yapılabiliyorsa (katalog `modes`) seçim gösterilmez.
+        if (modlar.length > 1)
+          SecimCipleri<EventMode>(
+            secenekler: [
+              (EventMode.inPerson, m.etkinlik_mod_yuz_yuze),
+              (EventMode.online, m.etkinlik_mod_cevrimici),
+            ],
+            secili: cevrimici ? EventMode.online : EventMode.inPerson,
+            onSecildi: kapali ? null : (mod) => _yer((y) => y.kopya(mod: mod)),
+          ),
         if (cevrimici) ...[
           const SizedBox(height: TayfamSpacing.s20),
           TextField(
@@ -851,230 +850,34 @@ class _EtkinlikSihirbaziEkraniState
     );
   }
 
+  /// Türe özel alanlar: katalogdaki tür alanları (tek alan çizici,
+  /// ADR-0024 §3) ve bileşenlerin seçimleri.
   List<Widget> _turAlanlari(BuildContext context, EtkinlikTaslagi t) {
-    final m = AppLocalizations.of(context);
-    final h = t.hatalar;
-    final a = t.ayrinti;
-    final kapali = t.gonderiliyor;
-    String? uzunluk(TaslakHatasi hata, int enCok) =>
-        h.contains(hata) ? m.etkinlik_uzunluk_hata(enCok) : null;
-    String? sayi(TaslakHatasi hata, int enCok) =>
-        h.contains(hata) ? m.etkinlik_sayi_hata(enCok) : null;
-    List<(bool?, String)> ucDurum() => [
-      (true, m.etkinlik_var),
-      (false, m.etkinlik_yok),
-      (null, m.etkinlik_bilinmiyor),
+    final alanlar = turAlanlari(t.turTanimi);
+    return [
+      if (alanlar.isNotEmpty)
+        KatalogAlanlari(
+          alanlar: alanlar,
+          degerler: t.alanlar,
+          hatalar: t.hatalar.contains(TaslakHatasi.alanlar)
+              ? alanHatalari(alanlar, t.alanlar)
+              : const {},
+          onDegisti: t.gonderiliyor ? null : _n.alanlariAyarla,
+        ),
+      // Bileşenler: `optional` aç/kapa satırları ve organizatöre bırakılan
+      // seçimler (ADR-0031 §1). Düzenlemede durum okunana kadar çizilmez.
+      if (t.bilesenlerOkundu)
+        BilesenFormBolumleri(
+          tanim: t.turTanimi,
+          secimler: t.bilesenler,
+          tayfaId: widget.tayfaId,
+          etkinlik: _anahtar.duzenlenen,
+          kilitli: t.bilesenlerKilitli,
+          etkin: !t.gonderiliyor,
+          onAcKapa: (bilesen, acik) => _n.bilesenAcKapat(bilesen, acik: acik),
+          onSecim: _n.bilesenSec,
+        ),
     ];
-    switch (t.tur) {
-      case EventType.camp:
-        return [
-          const SizedBox(height: TayfamSpacing.s20),
-          TextField(
-            controller: _kampYeri,
-            enabled: !kapali,
-            maxLength: etkinlikKampYeriEnCok,
-            onChanged: (v) => _ayrinti((a) => a.kopya(kampYeri: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_kamp_yeri_etiketi,
-              errorText: uzunluk(TaslakHatasi.kampYeri, etkinlikKampYeriEnCok),
-            ),
-          ),
-          BolumEtiketi(baslik: m.etkinlik_kamp_su),
-          SecimCipleri<bool?>(
-            secenekler: ucDurum(),
-            secili: a.su,
-            onSecildi: kapali ? null : (v) => _ayrinti((a) => a.kopya(su: v)),
-          ),
-          BolumEtiketi(baslik: m.etkinlik_kamp_tuvalet),
-          SecimCipleri<bool?>(
-            secenekler: ucDurum(),
-            secili: a.tuvalet,
-            onSecildi: kapali
-                ? null
-                : (v) => _ayrinti((a) => a.kopya(tuvalet: v)),
-          ),
-          const SizedBox(height: TayfamSpacing.s20),
-          TextField(
-            controller: _kampNotu,
-            enabled: !kapali,
-            maxLength: etkinlikKampNotuEnCok,
-            minLines: 2,
-            maxLines: 5,
-            onChanged: (v) => _ayrinti((a) => a.kopya(kampNotu: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_kamp_notu_etiketi,
-              alignLabelWithHint: true,
-              errorText: uzunluk(TaslakHatasi.kampNotu, etkinlikKampNotuEnCok),
-            ),
-          ),
-        ];
-      case EventType.hike:
-        final donus = a.donus;
-        return [
-          BolumEtiketi(baslik: m.etkinlik_yuruyus_zorluk),
-          SecimCipleri<int>(
-            secenekler: [
-              for (var z = 1; z <= etkinlikZorlukEnCok; z++) (z, '$z'),
-            ],
-            secili: a.zorluk,
-            // Seçili zorluğa yeniden dokunmak seçimi kaldırır.
-            onSecildi: kapali
-                ? null
-                : (z) =>
-                      _ayrinti((a) => a.kopya(zorluk: a.zorluk == z ? 0 : z)),
-          ),
-          const SizedBox(height: TayfamSpacing.s20),
-          YanYana(
-            sol: TextField(
-              controller: _mesafe,
-              enabled: !kapali,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              onChanged: (v) => _ayrinti((a) => a.kopya(mesafe: v)),
-              decoration: InputDecoration(
-                labelText: m.etkinlik_mesafe_etiketi,
-                errorText: sayi(
-                  TaslakHatasi.mesafe,
-                  etkinlikMesafeEnCok.toInt(),
-                ),
-                errorMaxLines: 3,
-              ),
-            ),
-            sag: TextField(
-              controller: _yukselti,
-              enabled: !kapali,
-              keyboardType: TextInputType.number,
-              onChanged: (v) => _ayrinti((a) => a.kopya(yukselti: v)),
-              decoration: InputDecoration(
-                labelText: m.etkinlik_yukselti_etiketi,
-                errorText: sayi(TaslakHatasi.yukselti, etkinlikYukseltiEnCok),
-                errorMaxLines: 3,
-              ),
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          _ZamanAlani(
-            etiket: m.etkinlik_yuruyus_donus,
-            deger: donus == null ? null : etkinlikTarihSaat(m, donus),
-            hata: h.contains(TaslakHatasi.donus) ? m.etkinlik_donus_hata : null,
-            onPressed: kapali
-                ? null
-                : () async {
-                    final secilen = await _tarihSaatSec(
-                      donus ?? t.bitis ?? t.baslangic,
-                    );
-                    if (secilen != null) {
-                      _ayrinti((a) => a.kopya(donus: secilen));
-                    }
-                  },
-            onTemizle: donus == null || kapali
-                ? null
-                : () => _ayrinti((a) => a.kopya(donus: null)),
-          ),
-          const SizedBox(height: TayfamSpacing.s12),
-          TextField(
-            controller: _tolerans,
-            enabled: !kapali,
-            keyboardType: TextInputType.number,
-            onChanged: (v) => _ayrinti((a) => a.kopya(tolerans: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_tolerans_etiketi,
-              errorText: sayi(TaslakHatasi.tolerans, etkinlikToleransEnCok),
-              errorMaxLines: 3,
-            ),
-          ),
-          const SizedBox(height: TayfamSpacing.s8),
-          Text(m.etkinlik_yuruyus_donus_notu, style: context.yazi.bodySmall),
-        ];
-      case EventType.fishing:
-        return [
-          BolumEtiketi(baslik: m.etkinlik_balik_gizlilik),
-          SecimCipleri<FishingDetailsSpotVisibility>(
-            secenekler: [
-              for (final g in const [
-                FishingDetailsSpotVisibility.tayfa,
-                FishingDetailsSpotVisibility.participants,
-              ])
-                (g, balikGizliligiAdi(m, g)),
-            ],
-            secili: a.balikGizliligi,
-            onSecildi: kapali
-                ? null
-                : (g) => _ayrinti((a) => a.kopya(balikGizliligi: g)),
-          ),
-        ];
-      case EventType.gaming:
-        return [
-          const SizedBox(height: TayfamSpacing.s20),
-          TextField(
-            controller: _oyun,
-            enabled: !kapali,
-            maxLength: etkinlikOyunEnCok,
-            onChanged: (v) => _ayrinti((a) => a.kopya(oyun: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_oyun,
-              errorText: h.contains(TaslakHatasi.oyun)
-                  ? m.etkinlik_oyun_hata
-                  : null,
-            ),
-          ),
-          BolumEtiketi(baslik: m.etkinlik_oyun_platform),
-          SecimCipleri<GamingDetailsPlatform>(
-            secenekler: [
-              for (final p in secilebilirPlatformlar) (p, platformAdi(m, p)),
-            ],
-            secili: a.platform,
-            onSecildi: kapali
-                ? null
-                : (p) => _ayrinti((a) => a.kopya(platform: p)),
-          ),
-          if (h.contains(TaslakHatasi.platform)) ...[
-            const SizedBox(height: TayfamSpacing.s8),
-            HataSatiri(metin: m.etkinlik_secim_hata),
-          ],
-        ];
-      case EventType.sports:
-        return [
-          BolumEtiketi(baslik: m.etkinlik_spor),
-          SecimCipleri<SportsDetailsSport>(
-            secenekler: [
-              for (final s in secilebilirSporlar) (s, sporAdi(m, s)),
-            ],
-            secili: a.spor,
-            onSecildi: kapali ? null : (s) => _ayrinti((a) => a.kopya(spor: s)),
-          ),
-          if (h.contains(TaslakHatasi.spor)) ...[
-            const SizedBox(height: TayfamSpacing.s8),
-            HataSatiri(metin: m.etkinlik_secim_hata),
-          ],
-          const SizedBox(height: TayfamSpacing.s20),
-          TextField(
-            controller: _sahaAdi,
-            enabled: !kapali,
-            maxLength: etkinlikSahaEnCok,
-            onChanged: (v) => _ayrinti((a) => a.kopya(sahaAdi: v)),
-            decoration: InputDecoration(
-              labelText: m.etkinlik_spor_saha_etiketi,
-              errorText: uzunluk(TaslakHatasi.sahaAdi, etkinlikSahaEnCok),
-            ),
-          ),
-        ];
-      case EventType.convoy:
-        return [
-          BolumEtiketi(baslik: m.etkinlik_rota_baslik),
-          _RotaKarti(
-            rota: a.rota,
-            onCiz: kapali ? null : () => unawaited(_rotaSec()),
-          ),
-          if (h.contains(TaslakHatasi.rota)) ...[
-            const SizedBox(height: TayfamSpacing.s8),
-            HataSatiri(metin: m.etkinlik_rota_hata),
-          ],
-        ];
-      case EventType.general || EventType.unknown || null:
-        return const [];
-    }
   }
 }
 
@@ -1110,113 +913,6 @@ Future<bool> _vazgecOnayi(BuildContext context) async {
     ),
   );
   return sonuc ?? false;
-}
-
-/// Tür seçim kutusu (tasarım: Sihirbaz-Tur): türün renginde ikon kutusu,
-/// ad ve kısa açıklama; seçiliyken marka kenar, tint zemin ve işaret.
-/// Renk tek başına bilgi taşımaz: seçim ekran okuyucuda da bildirilir.
-class _TurKutusu extends StatelessWidget {
-  const _TurKutusu({
-    required this.tur,
-    required this.secili,
-    required this.onSecildi,
-  });
-
-  final EventType tur;
-  final bool secili;
-  final VoidCallback? onSecildi;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    final girdi = etkinlikTuruGirdisi(tur);
-    final cift = context.turRenkleri.cift(girdi.renk);
-    return OdakCercevesi(
-      koseler: TayfamRadii.secimKoseleri,
-      child: Material(
-        color: secili ? r.tintMarka : r.kart,
-        shape: RoundedRectangleBorder(
-          borderRadius: TayfamRadii.secimKoseleri,
-          side: BorderSide(
-            color: secili ? r.marka : r.cizgi,
-            width: secili
-                ? TayfamSizes.alanOdakKenari
-                : TayfamSizes.vurguKenari,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Semantics(
-          button: true,
-          selected: secili,
-          inMutuallyExclusiveGroup: true,
-          child: InkWell(
-            onTap: onSecildi,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: TayfamSizes.turKutusu,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(TayfamSpacing.s12),
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ExcludeSemantics(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: cift.dolgu,
-                              borderRadius: TayfamRadii.dugmeKoseleri,
-                            ),
-                            child: SizedBox.square(
-                              dimension: TayfamSizes.menuIkonKutusu,
-                              child: Icon(
-                                girdi.ikon,
-                                size: TayfamSizes.ikon,
-                                color: cift.ustu,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: TayfamSpacing.s8),
-                        Text(girdi.ad(m), style: context.yazi.titleMedium),
-                        Text(
-                          turAciklamasi(m, tur),
-                          style: context.yazi.bodySmall,
-                        ),
-                      ],
-                    ),
-                    if (secili)
-                      PositionedDirectional(
-                        top: 0,
-                        end: 0,
-                        child: ExcludeSemantics(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: r.marka,
-                              shape: BoxShape.circle,
-                            ),
-                            child: SizedBox.square(
-                              dimension: TayfamSizes.seciliIsareti,
-                              child: Icon(
-                                Icons.check,
-                                size: TayfamSizes.ikonKucuk,
-                                color: r.markaUstu,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Başlangıç ya da bitiş kutusu (tasarım: Sihirbaz-Bilgi): üstte etiket ve
@@ -1369,91 +1065,11 @@ class _NoktaKarti extends StatelessWidget {
   }
 }
 
-/// Konvoy rotası kartı (tasarım: Sihirbaz-Ayrinti): çizilmediyse "Rota
-/// çizilmedi." ve "Rota çiz"; çizildiyse küçük önizleme, nokta sayısı ve
-/// "Rotayı düzenle".
-class _RotaKarti extends StatelessWidget {
-  const _RotaKarti({required this.rota, required this.onCiz});
-
-  final List<LatLng> rota;
-  final VoidCallback? onCiz;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final r = context.renkler;
-    final bos = rota.isEmpty;
-    return Material(
-      color: r.kart,
-      shape: RoundedRectangleBorder(
-        borderRadius: TayfamRadii.kartKoseleri,
-        side: BorderSide(color: r.cizgi, width: TayfamSizes.kenar),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (!bos)
-            SizedBox(
-              height: sihirbazRotaYuksekligi,
-              child: OsmHarita(
-                key: ValueKey(rota.length),
-                merkez: rota.first,
-                yakinlik: rotaSeciciYakinligi,
-                rota: rota,
-                etkilesimli: false,
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(TayfamSpacing.s12),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: TayfamSpacing.s8,
-              runSpacing: TayfamSpacing.s8,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ExcludeSemantics(
-                      child: Icon(
-                        Icons.route_outlined,
-                        size: TayfamSizes.ikon,
-                        color: r.tintMarkaUstu,
-                      ),
-                    ),
-                    const SizedBox(width: TayfamSpacing.s8),
-                    Flexible(
-                      child: Text(
-                        bos
-                            ? m.etkinlik_rota_yok
-                            : m.etkinlik_konvoy_rota_noktalari(
-                                etkinlikSayi(m, rota.length),
-                              ),
-                        style: context.yazi.titleSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                CerceveliHapEylem(
-                  etiket: bos ? m.etkinlik_rota_ciz : m.etkinlik_rota_duzenle,
-                  ikon: Icons.route,
-                  onPressed: onCiz,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Önizleme (5. adım; tasarım: Sihirbaz-Onizleme): "Her şey doğru mu?",
 /// türün renginde başlıklı özet kartı ve satırlar (Ne zaman, Nerede,
-/// Kontenjan, Tekrar; konvoyda Rota). Her satırdaki "Değiştir" ilgili
+/// Kontenjan, Tekrar). Her satırdaki "Değiştir" ilgili
 /// adıma götürür. Sunucunun hatası burada gösterilir.
-class _OnizlemeAdimi extends StatelessWidget {
+class _OnizlemeAdimi extends ConsumerWidget {
   const _OnizlemeAdimi({
     required this.taslak,
     required this.duzenlenen,
@@ -1476,14 +1092,20 @@ class _OnizlemeAdimi extends StatelessWidget {
   final ValueChanged<int>? onDegistir;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final m = AppLocalizations.of(context);
     final r = context.renkler;
     final t = taslak;
     final degistir = onDegistir;
-    final tur = t.tur ?? EventType.general;
-    final girdi = etkinlikTuruGirdisi(tur);
-    final cift = context.turRenkleri.cift(girdi.renk);
+    final tur = t.tur ?? '';
+    final gorunum = turGorunumu(
+      tur,
+      t.turTanimi,
+      ref.watch(katalogProvider).value,
+      katalogDili(context),
+    );
+    final turAdi = gorunum.ad ?? m.katalog_tur_bilinmiyor;
+    final cift = context.turRenkleri.cift(gorunum.renk);
     final baslangic = t.baslangic;
     final bitis = t.bitis;
     final yer = t.yer;
@@ -1497,6 +1119,8 @@ class _OnizlemeAdimi extends StatelessWidget {
               yer.il.trim(),
             ].where((p) => p.isNotEmpty).join(', '),
           ].where((p) => p.isNotEmpty).join(ozetAyraci);
+    final alanDegerleri = alanGovdesi(turAlanlari(t.turTanimi), t.alanlar);
+    final dersKonu = ref.watch(katalogProvider).value?.dersKonu;
     final satirlar = <(String, String, int)>[
       (
         m.etkinlik_onizleme_ne_zaman,
@@ -1519,16 +1143,20 @@ class _OnizlemeAdimi extends StatelessWidget {
           tekrarKisaOzeti(m, t.tekrar),
           SihirbazAdimi.ayrinti,
         ),
-      if (tur == EventType.convoy)
-        (
-          m.etkinlik_konvoy_rota,
-          t.ayrinti.rota.isEmpty
-              ? m.etkinlik_rota_yok
-              : m.etkinlik_konvoy_rota_noktalari(
-                  etkinlikSayi(m, t.ayrinti.rota.length),
-                ),
-          SihirbazAdimi.ayrinti,
-        ),
+      // Katalogdaki tür alanlarından değeri girilenler.
+      for (final alan in turAlanlari(t.turTanimi))
+        if (katalogAlanDegeriMetni(
+              context,
+              alan,
+              alanDegerleri[alan.key],
+              dersKonu: dersKonu,
+            )
+            case final deger?)
+          (
+            katalogAlanAdi(alan, katalogDili(context)),
+            deger,
+            SihirbazAdimi.ayrinti,
+          ),
       if (anlik)
         (
           m.anlik_onizleme_davetliler,
@@ -1589,7 +1217,7 @@ class _OnizlemeAdimi extends StatelessWidget {
                             vertical: TayfamSpacing.s4,
                           ),
                           child: Text(
-                            girdi.ad(m),
+                            turAdi,
                             style: context.yazi.labelLarge?.copyWith(
                               color: r.markaYuzeyUstu,
                             ),
@@ -1680,61 +1308,6 @@ class _OnizlemeSatiri extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Tarih ve saat alanı (yürüyüşte beklenen dönüş): etiket, seçilen değer
-/// (yoksa "Seç") ve hata. Dokununca seçici açılır; [onTemizle] verilirse
-/// değer silinebilir.
-class _ZamanAlani extends StatelessWidget {
-  const _ZamanAlani({
-    required this.etiket,
-    required this.deger,
-    required this.hata,
-    required this.onPressed,
-    this.onTemizle,
-  });
-
-  final String etiket;
-  final String? deger;
-  final String? hata;
-  final VoidCallback? onPressed;
-  final VoidCallback? onTemizle;
-
-  @override
-  Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
-    final hata = this.hata;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          etiket,
-          style: context.yazi.labelLarge?.copyWith(
-            color: context.renkler.metinIkincil,
-          ),
-        ),
-        const SizedBox(height: TayfamSpacing.s4),
-        Wrap(
-          spacing: TayfamSpacing.s8,
-          runSpacing: TayfamSpacing.s8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            CerceveliHapEylem(
-              etiket: deger ?? m.etkinlik_zaman_sec,
-              ikon: Icons.schedule,
-              onPressed: onPressed,
-            ),
-            if (onTemizle != null)
-              BaglantiEylemi(etiket: m.etkinlik_temizle, onPressed: onTemizle),
-          ],
-        ),
-        if (hata != null) ...[
-          const SizedBox(height: TayfamSpacing.s4),
-          HataSatiri(metin: hata),
-        ],
-      ],
     );
   }
 }

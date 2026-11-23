@@ -17,7 +17,7 @@ final class MediaApi {
   /// hazır olmayan, silinmiş ve yetkisiz aynıdır). Kurallar: kendi
   /// dosyanız her zaman; avatar oturum açmış herkese (iki taraftan biri
   /// engellediyse ya da hesap silindiyse kimseye); tayfa kapağı aktif
-  /// üyelere; etkinlik kapağı, av fotoğrafı ve albüm fotoğrafı etkinliği
+  /// üyelere; etkinlik kapağı, günlük fotoğrafı ve albüm fotoğrafı etkinliği
   /// görebilen aktif üyelere; kanal fotoğrafı (`chat_photo`) mesajın
   /// kanalının kitlesine (mesaj silinmemişken; chat'e sorulur); birebir
   /// mesaj eki (`dm_attachment`) konuşmanın iki tarafına (mesaj

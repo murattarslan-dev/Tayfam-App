@@ -26,6 +26,20 @@ final class SosyalAyarlarDurumu {
 /// Ayarların etkisini (puanın silinmesi, önerilerin geri çekilmesi)
 /// sunucu uygular; istemci yalnızca değeri gönderir. Yalnızca bellektedir
 /// (ADR-0006); oturum değişince sıfırlanır.
+/// "Şimdi bildirimi kimden"in gösterilen değeri: sunucu tanınmayan bir
+/// değer döndürürse (`unknown`) sözleşmenin varsayılanı `all` gösterilir.
+/// En geniş seçenek gösterilir ki kullanıcı bildirim alacağını sansın ve
+/// gerekirse daraltsın; daha kısıtlı görünüp açık kalmasın.
+SocialSettingsUpdateNowFromFriends simdiKimdenGorunen(
+  SocialSettings a,
+) => switch (a.nowFromFriends) {
+  SocialSettingsNowFromFriends.close =>
+    SocialSettingsUpdateNowFromFriends.close,
+  SocialSettingsNowFromFriends.off => SocialSettingsUpdateNowFromFriends.off,
+  SocialSettingsNowFromFriends.all || SocialSettingsNowFromFriends.unknown =>
+    SocialSettingsUpdateNowFromFriends.all,
+};
+
 class SosyalAyarlarNotifier extends AsyncNotifier<SosyalAyarlarDurumu> {
   @override
   Future<SosyalAyarlarDurumu> build() async {
@@ -52,6 +66,12 @@ class SosyalAyarlarNotifier extends AsyncNotifier<SosyalAyarlarDurumu> {
   /// hata.
   Future<Object?> kesfetGorunurlukAyarla({required bool acik}) =>
       _degistir(SocialSettingsUpdate(discoverVisibleToFriends: acik));
+
+  /// "Arkadaşlarımdan şimdi bildirimleri"ni [deger] yapar (Tayfam-Api
+  /// ADR-0038 §4; App ADR-0032 §5). Onaysızdır. Başarıda `null`, aksi
+  /// halde gösterilecek hata.
+  Future<Object?> simdiKimdenAyarla(SocialSettingsUpdateNowFromFriends deger) =>
+      _degistir(SocialSettingsUpdate(nowFromFriends: deger));
 
   Future<Object?> _degistir(SocialSettingsUpdate degisiklik) async {
     final simdiki = state.value;

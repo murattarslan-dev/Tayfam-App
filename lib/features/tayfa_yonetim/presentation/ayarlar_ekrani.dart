@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
@@ -59,7 +59,16 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
     final ozet = ref.watch(tayfaOzetiProvider(tayfaId));
     final yonetici = ozet.rol == Role.admin;
     final bekleyen = ozet.bekleyenIstekSayisi;
-    final ekGirisler = ref.watch(yonetimEkGirisleriProvider);
+    final tumEkGirisler = ref.watch(yonetimEkGirisleriProvider);
+    final ekGirisler = [
+      for (final g in tumEkGirisler)
+        if (!g.yalnizcaYonetici) g,
+    ];
+    final yoneticiGirisleri = [
+      if (yonetici && !ozet.anlik)
+        for (final g in tumEkGirisler)
+          if (g.yalnizcaYonetici) g,
+    ];
     final ekSayilar = [
       for (final giris in ekGirisler) giris.sayi?.call(ref, tayfaId),
     ];
@@ -198,6 +207,12 @@ class TayfaAyarlariEkrani extends ConsumerWidget {
                     ),
                   ),
                   _KodSatiri(tayfaId: tayfaId, kod: ozet.katilimKodu),
+                  for (final giris in yoneticiGirisleri)
+                    _AyarSatiri(
+                      ikon: giris.ikon,
+                      baslik: giris.etiket(context),
+                      onTap: () => context.go(giris.adres(tayfaId)),
+                    ),
                 ],
               ),
               _BolumBasligi(baslik: m.yonetim_moduller),
@@ -562,6 +577,36 @@ class _ModullerKarti extends ConsumerWidget {
         m.yonetim_modul_soru_cevap,
         m.yonetim_modul_soru_cevap_aciklama,
         moduller.qa == true,
+      ),
+      (
+        Module.daily,
+        m.gunun_icerigi_modul,
+        m.gunun_icerigi_modul_aciklama,
+        moduller.daily == true,
+      ),
+      (
+        Module.library_,
+        m.kutuphane_modul,
+        m.kutuphane_modul_aciklama,
+        moduller.library_ == true,
+      ),
+      (
+        Module.questionPool,
+        m.soru_havuzu_ad,
+        m.soru_havuzu_modul_aciklama,
+        moduller.questionPool == true,
+      ),
+      (
+        Module.materials,
+        m.materyal_modul,
+        m.materyal_modul_aciklama,
+        moduller.materials == true,
+      ),
+      (
+        Module.garage,
+        m.garaj_modul,
+        m.garaj_modul_aciklama,
+        moduller.garage == true,
       ),
     ];
     return ListeKarti(

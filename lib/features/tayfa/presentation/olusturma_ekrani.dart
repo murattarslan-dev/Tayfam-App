@@ -5,12 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/ilgi_alani_secimi.dart';
+import 'package:tayfam/core/katalog/katalog_bekleyici.dart';
+import 'package:tayfam/core/katalog/katalog_gorunumu.dart';
+import 'package:tayfam/core/katalog/katalog_metni.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/tayfa/application/olusturma_notifier.dart';
 import 'package:tayfam/features/tayfa/presentation/kuruldu_ekrani.dart';
@@ -288,7 +291,7 @@ class _IlgiAdimi extends StatelessWidget {
   const _IlgiAdimi({required this.durum, required this.onDegisti});
 
   final OlusturmaDurumu durum;
-  final ValueChanged<EventType>? onDegisti;
+  final ValueChanged<String>? onDegisti;
 
   @override
   Widget build(BuildContext context) {
@@ -302,15 +305,28 @@ class _IlgiAdimi extends StatelessWidget {
           aciklama: m.olusturma_ilgi_aciklama,
         ),
         const SizedBox(height: TayfamSpacing.s20),
-        IkiSutunluIzgara(
-          children: [
-            for (final tur in ilgiAlanlari)
-              IlgiKarti(
-                tur: tur,
-                secili: durum.ilgiler.contains(tur),
-                onDegisti: onDegisti == null ? null : () => onDegisti(tur),
-              ),
-          ],
+        // İlgi alanları katalogdan gelir (ADR-0024); adım geçilebilir
+        // olduğu için katalog okunamazsa da sihirbaz ilerler.
+        KatalogBekleyici(
+          builder: (context, katalog) {
+            final dil = katalogDili(context);
+            final dolu = durum.ilgiler.length >= ilgiAlaniEnCok;
+            return IkiSutunluIzgara(
+              children: [
+                for (final ilgi in katalog.secilebilirIlgiAlanlari)
+                  IlgiKarti(
+                    gorunum: ilgiAlaniGorunumu(ilgi.key, katalog, dil),
+                    yedekAd: ilgi.key,
+                    secili: durum.ilgiler.contains(ilgi.key),
+                    onDegisti:
+                        onDegisti == null ||
+                            (dolu && !durum.ilgiler.contains(ilgi.key))
+                        ? null
+                        : () => onDegisti(ilgi.key),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: TayfamSpacing.s20),
         _Onizleme(
@@ -323,28 +339,30 @@ class _IlgiAdimi extends StatelessWidget {
   }
 }
 
-/// İlgi alanı kartı (tasarım: Tayfa-Kur-Ilgi): türün renginde ikon kutusu,
-/// türün adı ve onay kutusu; seçiliyken marka kenar ve tint zemin. Renk
+/// İlgi alanı kartı (tasarım: Tayfa-Kur-Ilgi): ilgi alanının renginde ikon
+/// kutusu, adı ve onay kutusu; seçiliyken marka kenar ve tint zemin. Renk
 /// tek başına bilgi taşımaz: seçim onay kutusunda ve ekran okuyucuda da
-/// bildirilir. Renk, ikon ve ad etkinlik türü kaydından gelir.
+/// bildirilir. Ad ve ikon katalogdan gelir ([gorunum]; ADR-0024 §2).
 class IlgiKarti extends StatelessWidget {
   const IlgiKarti({
     super.key,
-    required this.tur,
+    required this.gorunum,
+    required this.yedekAd,
     required this.secili,
     required this.onDegisti,
   });
 
-  final EventType tur;
+  final KatalogGorunumu gorunum;
+
+  /// Katalogda adı yoksa gösterilen metin (anahtar).
+  final String yedekAd;
   final bool secili;
   final VoidCallback? onDegisti;
 
   @override
   Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
     final r = context.renkler;
-    final girdi = etkinlikTuruGirdisi(tur);
-    final cift = context.turRenkleri.cift(girdi.renk);
+    final cift = context.turRenkleri.cift(gorunum.renk);
     final onDegisti = this.onDegisti;
     return OdakCercevesi(
       koseler: TayfamRadii.secimKoseleri,
@@ -386,7 +404,7 @@ class IlgiKarti extends StatelessWidget {
                         child: SizedBox.square(
                           dimension: TayfamSizes.maddeKutusu,
                           child: Icon(
-                            girdi.ikon,
+                            gorunum.ikon,
                             size: TayfamSizes.ikon,
                             color: cift.ustu,
                           ),
@@ -395,7 +413,10 @@ class IlgiKarti extends StatelessWidget {
                     ),
                     const SizedBox(width: TayfamSpacing.s8),
                     Expanded(
-                      child: Text(girdi.ad(m), style: context.yazi.titleSmall),
+                      child: Text(
+                        gorunum.ad ?? yedekAd,
+                        style: context.yazi.titleSmall,
+                      ),
                     ),
                     // Dokunma alanı bütün karttır; kutu yalnızca gösterir.
                     ExcludeSemantics(
@@ -415,58 +436,6 @@ class IlgiKarti extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// İlgi alanı çipi (ADR-0004 Notlar, 2026-11-10): türün ikonu ve adı her
-/// zaman görünür. Seçiliyken türün kendi dolgusu, üstünde türün metin
-/// rengi ve onay işareti; seçili değilken kenarlı hap. Renk, ikon ve ad
-/// etkinlik türü kaydından gelir. Tayfa bilgileri ekranında kullanılır.
-class IlgiCipi extends StatelessWidget {
-  const IlgiCipi({
-    super.key,
-    required this.tur,
-    required this.secili,
-    required this.onDegisti,
-  });
-
-  final EventType tur;
-  final bool secili;
-  final VoidCallback? onDegisti;
-
-  @override
-  Widget build(BuildContext context) {
-    final r = context.renkler;
-    final girdi = etkinlikTuruGirdisi(tur);
-    final cift = context.turRenkleri.cift(girdi.renk);
-    final yaziRengi = secili ? cift.ustu : r.metin;
-    final onDegisti = this.onDegisti;
-    return FilterChip(
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ExcludeSemantics(
-            child: Icon(
-              girdi.ikon,
-              size: TayfamSizes.ikonKucuk,
-              color: yaziRengi,
-            ),
-          ),
-          const SizedBox(width: TayfamSpacing.s4),
-          Flexible(child: Text(girdi.ad(AppLocalizations.of(context)))),
-        ],
-      ),
-      selected: secili,
-      onSelected: onDegisti == null ? null : (_) => onDegisti(),
-      showCheckmark: true,
-      checkmarkColor: cift.ustu,
-      selectedColor: cift.dolgu,
-      labelStyle: context.yazi.labelLarge?.copyWith(color: yaziRengi),
-      side: secili
-          ? BorderSide.none
-          : BorderSide(color: r.girisKenari, width: TayfamSizes.kenar),
-      shape: const StadiumBorder(),
     );
   }
 }
@@ -692,7 +661,7 @@ class _Onizleme extends StatelessWidget {
 
   final String etiket;
   final String ad;
-  final List<EventType> ilgiler;
+  final List<String> ilgiler;
 
   @override
   Widget build(BuildContext context) {

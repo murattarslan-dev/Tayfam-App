@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
@@ -770,14 +770,23 @@ Future<void> arkadasBosGunleriniAc(
 class _ArkadasGunleriSayfasi extends ConsumerWidget {
   /// Sayfayı kapatıp anlık etkinlik sihirbazını [gun] için, bu arkadaş
   /// davetli açar. Sihirbaz kabuğun üstünde `go` ile açılır (ADR-0026).
-  void _birSeyYapalim(BuildContext context, DateTime gun) {
+  ///
+  /// Gün bugünse sihirbaz yerine Şimdi başlat ekranı açılır (App ADR-0032
+  /// §1): etkinlik hemen başlar, arkadaş davetli gider.
+  void _birSeyYapalim(BuildContext context, DateTime gun, DateTime bugun) {
     final yonlendirici = GoRouter.of(context);
     Navigator.of(context).pop();
+    final bugunMu =
+        gun.year == bugun.year &&
+        gun.month == bugun.month &&
+        gun.day == bugun.day;
     yonlendirici.go(
-      Adresler.anlikEtkinlik(
-        gun: DateTime(gun.year, gun.month, gun.day),
-        davetli: kullaniciId,
-      ),
+      bugunMu
+          ? Adresler.simdi(davetli: kullaniciId)
+          : Adresler.anlikEtkinlik(
+              gun: DateTime(gun.year, gun.month, gun.day),
+              davetli: kullaniciId,
+            ),
     );
   }
 
@@ -841,7 +850,7 @@ class _ArkadasGunleriSayfasi extends ConsumerWidget {
           : _GunKarti(
               gunler: deger,
               bugun: bugun,
-              onTap: (_, tarih) => _birSeyYapalim(context, tarih),
+              onTap: (_, tarih) => _birSeyYapalim(context, tarih, bugun),
             );
     } else if (hata != null) {
       icerik = Column(
@@ -897,7 +906,7 @@ class _ArkadasGunleriSayfasi extends ConsumerWidget {
           BirincilEylem(
             etiket: m.bosum_bir_sey_yapalim,
             ikon: Icons.bolt_outlined,
-            onPressed: () => _birSeyYapalim(context, ilkGun),
+            onPressed: () => _birSeyYapalim(context, ilkGun, bugun),
           ),
         ],
         for (final eylem in eylemler) ...[

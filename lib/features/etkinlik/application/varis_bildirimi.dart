@@ -12,8 +12,8 @@ import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 import 'package:tayfam/core/konum/konum_servisi.dart';
 
 /// Varış bildirimi penceresi başlangıçtan bu kadar önce açılır; bitişte
-/// kapanır (sözleşme: `check-in-closed`, ADR-0015 §5). Yürüyüşte "Çıktım"
-/// da aynı pencereyi kullanır.
+/// kapanır (sözleşme: `check-in-closed`, ADR-0015 §5). Yoklamadaki
+/// "Çıktım" da aynı pencereyi kullanır.
 const Duration varisPenceresiOncesi = Duration(minutes: 30);
 
 /// Varış bildirimi penceresi açık mı: iptal edilmemiş, başlangıçtan 30
@@ -30,9 +30,10 @@ bool katilimDogrulandi(Event etkinlik) =>
 /// "Geldim" / "Katıldım" düğmesi görünür mü (ADR-0015 §5): pencere açık,
 /// cevap "Geliyorum" ve katılım henüz doğrulanmamış.
 ///
-/// Yürüyüşte katılım "Çıktım" ile doğrulanır; düğme yürüyüş aracındadır.
+/// Yürüyüşte katılım "Çıktım" ile doğrulanır; düğme yoklama bileşenindedir
+/// (`roll_call`, #230).
 bool varisDugmesiGorunur(Event etkinlik, DateTime simdi) =>
-    etkinlik.type != EventType.hike &&
+    etkinlik.type != 'hike' &&
     etkinlik.callerRsvp == RsvpStatus.going &&
     !katilimDogrulandi(etkinlik) &&
     varisPenceresiAcik(etkinlik, simdi);

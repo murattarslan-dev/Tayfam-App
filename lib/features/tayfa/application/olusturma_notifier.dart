@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/istek_kimligi.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/katalog/ilgi_alani_secimi.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/push/bildirim_izni.dart';
@@ -25,18 +27,6 @@ const int tayfaAciklamasiEnCok = 500;
 /// Sihirbazın adım sayısı (ADR-0014 §4): ad, ilgi alanları, katılım ve
 /// açıklama.
 const int olusturmaAdimSayisi = 3;
-
-/// Seçilebilen ilgi alanları: sözleşmedeki yedi etkinlik türü, sözleşmenin
-/// sırasıyla.
-const List<EventType> ilgiAlanlari = [
-  EventType.convoy,
-  EventType.camp,
-  EventType.hike,
-  EventType.fishing,
-  EventType.gaming,
-  EventType.sports,
-  EventType.general,
-];
 
 /// [ad] boşluklar atıldıktan sonra 3–50 karakter mi.
 bool tayfaAdiGecerli(String ad) {
@@ -77,8 +67,9 @@ final class OlusturmaDurumu {
 
   final String ad;
 
-  /// Seçili ilgi alanları, [ilgiAlanlari] sırasıyla.
-  final List<EventType> ilgiler;
+  /// Seçili ilgi alanları (katalog anahtarları), seçim sırasıyla; en çok
+  /// [ilgiAlaniEnCok].
+  final List<String> ilgiler;
 
   /// Katılım biçimi; varsayılan onaylı (sözleşme).
   final JoinPolicy katilim;
@@ -114,7 +105,7 @@ final class OlusturmaDurumu {
   OlusturmaDurumu _degistir({
     int? adim,
     String? ad,
-    List<EventType>? ilgiler,
+    List<String>? ilgiler,
     JoinPolicy? katilim,
     String? aciklama,
     bool? adHatali,
@@ -157,17 +148,18 @@ class OlusturmaNotifier extends Notifier<OlusturmaDurumu> {
     );
   }
 
-  /// [tur] ilgi alanını seçer ya da seçimini kaldırır.
-  void ilgiDegistir(EventType tur) {
-    if (state.gonderiliyor || !ilgiAlanlari.contains(tur)) return;
-    final secili = state.ilgiler.toSet();
-    if (!secili.remove(tur)) secili.add(tur);
-    state = state._degistir(
-      ilgiler: List.unmodifiable([
-        for (final t in ilgiAlanlari)
-          if (secili.contains(t)) t,
-      ]),
-    );
+  /// [anahtar] ilgi alanını (katalog anahtarı) seçer ya da seçimini
+  /// kaldırır. Seçilebilen ilgi alanları katalogdan gelir (ADR-0024);
+  /// anahtar girdi kabul edilir ve biçimi doğrulanır, geçerliliğine sunucu
+  /// karar verir. En çok [ilgiAlaniEnCok] ilgi alanı seçilir.
+  void ilgiDegistir(String anahtar) {
+    if (state.gonderiliyor || !katalogAnahtariMi(anahtar)) return;
+    final secili = [...state.ilgiler];
+    if (!secili.remove(anahtar)) {
+      if (secili.length >= ilgiAlaniEnCok) return;
+      secili.add(anahtar);
+    }
+    state = state._degistir(ilgiler: List.unmodifiable(secili));
   }
 
   /// Katılım biçimini seçer.

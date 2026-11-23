@@ -15,6 +15,7 @@ import 'package:tayfam/features/etkinlik/presentation/tekrar_ekrani.dart';
 
 import '../../yardimcilar.dart';
 import '../tayfa/sahteler.dart';
+import '../../core/katalog/sahte_katalog.dart';
 import 'sahteler.dart';
 
 const List<ThemeMode> _temalar = [ThemeMode.light, ThemeMode.dark];
@@ -218,7 +219,6 @@ void main() {
             kontenjan: 3,
             yonetebilir: true,
             seri: ikinciEtkinlikId,
-            ayrinti: {'site_name': 'Göl kenarı', 'has_water': true},
           ),
         });
         await _git(
@@ -237,7 +237,6 @@ void main() {
           '3/3 kişi geliyor · 1 belki',
           arbMetni('etkinlik_kontenjan_dolu'),
           arbMetni('etkinlik_harita_atif'),
-          'Göl kenarı',
           '3 kişi geliyor',
           arbMetni('etkinlik_seri_notu'),
         ]) {
@@ -598,12 +597,17 @@ void main() {
         );
         expect(find.byType(EtkinlikSihirbaziEkrani), findsOneWidget);
         expect(find.text('Adım 1 / 5'), findsOneWidget);
+        // Türler test kataloğundan: tayfanın ilgi alanındaki tür önde,
+        // hepsi "Tüm türler"de.
         expect(
-          find.text(arbMetni('etkinlik_tur_aciklama_hike')),
+          find.text(arbMetni('etkinlik_tur_ilgi_alanlari')),
           findsOneWidget,
         );
+        expect(find.text(arbMetni('katalog_tum_turler')), findsOneWidget);
+        expect(find.text('Konvoy'), findsNWidgets(2));
+        expect(find.text('Eski tür'), findsNothing);
 
-        await _gorunurDokun(tester, find.text(arbMetni('etkinlik_turu_hike')));
+        await _gorunurDokun(tester, find.text('Doğa yürüyüşü'));
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 2 / 5'), findsOneWidget);
 
@@ -637,7 +641,6 @@ void main() {
         await _yaz(tester, 'https://ornek.tayfam.app/oda');
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_ileri')));
         expect(find.text('Adım 4 / 5'), findsOneWidget);
-        expect(find.text(arbMetni('etkinlik_mesafe_etiketi')), findsOneWidget);
 
         // Tekrar ayrı ekranda; "Tamam" 4. adıma döner.
         await _gorunurDokun(tester, find.text(arbMetni('etkinlik_tekrar_yok')));
@@ -687,7 +690,7 @@ void main() {
         Adresler.etkinlikOlustur(ornekTayfaId),
       );
       final kapat = find.byIcon(Icons.close);
-      await _gorunurDokun(tester, find.text(arbMetni('etkinlik_turu_camp')));
+      await _gorunurDokun(tester, find.text('Kamp'));
       await tester.tap(kapat);
       await tester.pumpAndSettle();
       expect(find.text(arbMetni('etkinlik_vazgec_baslik')), findsOneWidget);
@@ -714,7 +717,7 @@ void main() {
             .notifier,
       );
       n
-        ..turSec(EventType.general)
+        ..turSec(testTuru('general'))
         ..ileri()
         ..baslikAyarla('Buluşma')
         ..baslangicAyarla(ornekBaslangic)

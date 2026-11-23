@@ -92,7 +92,7 @@ final class SikayetHedefi {
   /// Genç Kullanıcı Güvenliği §3). `fake_event` yalnızca etkinlikte,
   /// `staff_conduct` yalnızca tayfa şikâyetinde (`target_type: tayfa`;
   /// platform sahibi kararı, issue #183); üye, içerik ve birebir mesaj
-  /// şikâyetinde gösterilmez.
+  /// şikâyetinde gösterilmez. `paid_tutoring` (#256) her hedefte vardır.
   List<ReportReason> get gerekceler => [
     ReportReason.childSafety,
     ReportReason.harassment,
@@ -106,6 +106,9 @@ final class SikayetHedefi {
     ReportReason.drugs,
     ReportReason.gambling,
     ReportReason.dangerousActivity,
+    // Ücretli özel ders teklifi ya da reklamı (Tayfam-Api ADR-0040 §2);
+    // her hedefte seçilebilir.
+    ReportReason.paidTutoring,
     ReportReason.spam,
     ReportReason.copyright,
     if (tur == ReportTargetType.tayfa) ReportReason.staffConduct,

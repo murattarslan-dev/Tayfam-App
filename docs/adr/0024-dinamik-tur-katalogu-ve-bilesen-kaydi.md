@@ -2,6 +2,12 @@
 
 - **Durum:** Kabul edildi (platform sahibi, 2026-11-15)
 - **Tarih:** 2026-11-15
+- **Revizyon:** 2026-11-18 ([ADR-0033](0033-v3-moduller-rozetler-ve-gecis.md)):
+  geçiş dönemi yok; `EventType` ve `turler/` doğrudan kaldırılır.
+- **Revizyon:** 2026-11-18 (platform sahibi, sohbette;
+  [ADR-0031](0031-katalog-bilesen-ekleri.md)): sihirbazda `optional` ve
+  `organizer_choice` seçimleri, kronometre, yazbozda masa ve misafir, tayfa
+  sözlüğü, tür bayrakları.
 - **Karar veren:** Ürün kararları platform sahibinindir (2026-11-15, Notion
   "Faz 3 (v3) — Dinamik Etkinlik Kataloğu ve Bileşenler"). Bu ADR onların
   istemci mimarisine taşınmasıdır.
@@ -181,3 +187,171 @@ kapalıdır.
 - **Katalogu diske yazmak:** Çevrimdışı ilk açılışta tür adlarını gösterirdi,
   ama ADR-0006'ya istisna açar; kazanç küçük.
 - **Katalog metinlerini ARB'ye üretmek:** Yeni tür yine sürüm isterdi.
+
+## Notlar
+
+- **2026-11-19 (issue #225, uygulama):**
+  - **Okuma.** `katalogProvider` kendiliğinden istek atmaz; kataloğu
+    kabuk katmanı (`KatalogYenileyici`: oturum açıldıktan sonra ve ön plana
+    dönünce, en fazla saatte bir) ve kataloğa ihtiyaç duyan bölümler
+    (`KatalogBekleyici`: tür seçimi, ilgi alanı seçimi) okutur. Çipler ve
+    kartlar yalnızca eldeki kataloğu gösterir. Katalog kişisel veri
+    taşımadığı için oturum değişince sıfırlanmaz.
+  - **İlgi alanları.** Sözleşmede tayfa ve profil ilgi alanları artık
+    etkinlik türü değil, katalogdaki ilgi alanı anahtarıdır
+    (`InterestKey`); seçim listeleri katalogdan gelir, emekli ilgi alanı
+    yalnızca seçiliyse gösterilir.
+  - **Renk.** Katalog renk taşımaz. ADR-0004'teki yedi türün rengi
+    korunur; ilgi alanları en yakın türün rengini alır (otomobil → konvoy,
+    doğa → kamp, su → balık, oyun → oyun, spor → spor), haritada olmayan
+    tür ana ilgi alanının, o da yoksa genel rengi alır
+    (`core/katalog/katalog_renkleri.dart`). Yeni ilgi alanlarının rengi
+    platform sahibinin kararıdır (açık soru; Tasarım Standartları).
+    **2026-11-23:** platform sahibi bu eşlemeyi Faz 3 ayrıntı kararlarıyla
+    birlikte sohbette onayladı (Tayfam-Api #323); Notion Tasarım
+    Standartları'na işlendi.
+  - **Katalogsuz ekranlar.** Giriş, hoş geldin ve karşılamadaki örnek tür
+    hapları katalog gelmeden çizildiği için adları ARB'de kalır
+    (`TanitimTuru`); yalnızca tanıtımdır.
+  - **Geçiş sırası.** `EventType` ve `etkinlik_turu_kaydi.dart` bu iş
+    kaydıyla kalktı. `features/etkinlik/turler/` (konvoy, kamp, yürüyüş,
+    balık araç bölümleri) ve sihirbazdaki bu dört türün Faz 1 alanları,
+    sözleşmede hâlâ ayrı nesne oldukları için (`Event.convoy` …) bileşen
+    kaydı iş kaydına (#226) kadar durur.
+  - **İkon listesi.** `tool/katalog_ikonlari` haritadaki anahtarları yazar
+    ve bir listeyle karşılaştırır; CI adımı Tayfam-Api'de panelin ikon
+    listesi oluşunca eklenir (`.github/`, platform sahibi).
+- **2026-11-19 (issue #226, uygulama; sözleşme Tayfam-Api #238):**
+  - **Kayıt.** `features/etkinlik/bilesenler/etkinlik_bileseni.dart`:
+    `EtkinlikBileseni`, `BilesenBaglami`, `etkinlikBilesenKaydiProvider`;
+    liste `shell/kayitlar.dart`'ta `etkinlikBilesenKaydi`. Arayüze §3'teki
+    üç bölüme ek olarak `ad(m)` girdi: `optional` bileşenin sihirbazdaki
+    aç/kapa satırı ad ister; tanımda `labels` varsa o gösterilir.
+  - **Bağlam.** Rol: `caller_can_manage` → organizatör; hakem ataması
+    (`GET …/referees`; etkinliğin tamamı ya da o bileşen) → hakem;
+    "Geliyorum" → katılımcı; diğerleri üye. Yalnızca arayüzü sadeleştirir.
+    Parametreler `BilesenParametreleri` ile tipli ve sınırlı okunur;
+    organizatöre bırakılan parametre geçerli seçimiyle gelir.
+  - **Temel bileşen.** `meeting_point` etkinliğin temel alanıdır
+    (Tayfam-Api ADR-0025 §4) ve detayda zaten çizilir; kayıtta bölümsüz
+    `TemelBilesen` olarak durur.
+  - **Tanınmayan bileşen.** Bir etkinlikte birden çok tanınmayan bileşen
+    varsa kart her biri için tekrarlanmaz: ilkinin yerinde, sayısını
+    söyleyen **tek** kart gösterilir (§3'ün yorumu; aynı kartın art arda
+    dizilmesi bilgi eklemiyor).
+  - **Bileşen durumu.** Detay, çizilecek bileşeni olan türde
+    `GET …/components`'i okur: kapalı (`optional`, organizatör kapatmış)
+    bileşen çizilmez, uçları da çağrılmaz. Okunamazsa bölümlerin yerinde
+    hata ve "Tekrar dene".
+  - **Canlı (§5).** Tek bağlantıda `event.watch` / `event.unwatch`
+    (bağlantı başına 20; aşılırsa en son istenenler). Abonelik bir
+    provider'dır (`bilesenDegisimiProvider`): okunduğu sürece etkinlik
+    izlenir, çerçeve gelince ve bağlantı yeniden kurulunca sayaç artar,
+    sayacı izleyen bileşen provider'ı REST'ten yeniden okur.
+  - **Sihirbaz (ADR-0031 §1).** Oluşturmada seçimler
+    `EventCreateRequest.components` ile gider (yalnızca dokunulanlar).
+    Düzenlemede sunucudaki durumdan başlar; değişenler kaydederken
+    `PUT …/components/{key}` ile, `PATCH`'ten önce gönderilir. `locked` ya
+    da çağıran yönetemiyorsa seçimler salt okunurdur ve nedeni yazılır.
+    Yalnızca kayıttaki bileşenlerin satırı çizilir.
+  - **Geçiş sırası.** `features/etkinlik/turler/` ve dört türün Faz 1
+    alanları sözleşmede hâlâ ayrı nesne olduğu için durur; bileşenini
+    taşıyan iş kaydı türü kayıttan çıkarır. O zamana kadar, `turler/`
+    kaydı olan bir türde kayıtta olmayan bileşen için güncelle kartı
+    gösterilmez (yerini eski araç bölümü tutar).
+  - **Açık: `ozetSatiri`.** Arayüzde durur ama hiçbir kartta çizilmez:
+    etkinlik listesi yanıtı bileşen verisi ya da seçim taşımıyor; kart
+    başına istek atmak doğru değil. Gerekirse sözleşmeyle birlikte ele
+    alınır (platform sahibinin kararı).
+- **2026-11-19 (issue #228, uygulama; sözleşme Tayfam-Api #240):**
+  - **Araçlar.** `vehicles` bileşeni `bilesenler/araclar/`'dadır; Faz 1'deki
+    konvoy araç bölümü (`turler/konvoy/`, `KonvoyTuru`) ve `Event.convoy`
+    kalktı. Konvoy artık yalnızca katalogdaki tanımdır.
+  - **Kaynak.** Plaka ve koltuk alanlarının görünürlüğü bileşenin
+    `params`'ından değil, yanıtın `plate_enabled` / `seats_enabled`
+    alanlarından okunur; düğmeler `caller_can_participate` /
+    `caller_can_manage` ile sadeleşir (karar sunucunundur). "Geliyorum"
+    cevabı değişince liste yeniden okunur (plaka ve koltuk ona bağlıdır).
+  - **Sihirbaz.** Araç etkinlik oluşturulurken yazılmadığı için form bölümü
+    yoktur. Plaka yalnızca bellekte tutulur, loglanmaz.
+- **2026-11-19 (issue #229, uygulama; sözleşme Tayfam-Api #241, PR #284):**
+  - **Liste.** `checklist` bileşeni `bilesenler/liste/`'dedir; Faz 1 kamp
+    aracı (`turler/kamp/`, `KampTuru`), `Event.camp` ve sihirbazdaki kamp
+    alanları kalktı. Kamp bilgileri katalog alanlarıyla (`fields`), malzeme
+    listesi `gear` anahtarlı listeyle gelir. Bir etkinlikte birden çok
+    liste olabileceği için durum `{component_key}` ile ayrılır.
+  - **Metin.** Düğme ve etiketler yanıttaki `label`'a göre seçilir
+    (`gear` malzeme, `task` görev, `section` bölüm, `duty` nöbet, diğerleri
+    madde); başlık katalogdaki addır. Adet yalnızca `quantity_enabled`,
+    üstlenme yalnızca `assignment_enabled` ise gösterilir.
+  - **Yetki.** Ekleme, çıkarma ve başkasının atamasını kaldırma
+    `caller_can_manage`; "Ben getiririm" / "Vazgeç" `caller_can_take` ile
+    sadeleşir. Bitmiş etkinlikte liste kapalıdır ve bu yazılır.
+    `event-item-taken` gibi bayat liste hatalarında liste yeniden okunur.
+- **2026-11-19 (issue #230, uygulama; sözleşme Tayfam-Api #242, PR #285):**
+  - **Yoklama.** `roll_call` bileşeni `bilesenler/yoklama/`'dadır; Faz 1
+    yürüyüş aracı (`turler/yuruyus/`, `YuruyusTuru`), `Event.hike` ve
+    sihirbazdaki yürüyüş alanları kalktı. Zorluk, planlanan mesafe ve
+    irtifa katalog alanlarıyla (`fields`) gelir; kalan Faz 1 türü yalnızca
+    balık.
+  - **Çıkış ve dönüş.** "Çıktım" varış penceresinde ve "Geliyorum"
+    cevabıyla görünür, katılım sayılır (detay ve katılımcılar yeniden
+    okunur). "Döndüm" güvenlik sinyalidir: çıkılmışsa bitişten sonra,
+    iptal edilmiş etkinlikte ve susturulmuşken de görünür. İkisi de konum
+    göndermez; zaman sunucunundur.
+  - **Plan ve alarm.** Beklenen dönüşü `caller_can_edit` yazar ya da
+    kaldırır (kaldırma onaylı: alarm kurulmaz); seçilen an başlangıçtan
+    sonra değilse gönderilmez. Alarmın durumu (`alarm`, plan, tolerans)
+    kartta yazılır; alarmı sunucu çalar. Yönetene (`caller_can_manage`)
+    herkesin kaydı listelenir; dönmemiş ve beklenen dönüş + tolerans
+    geçmiş kişi metinle ("Dönmedi") işaretlenir.
+  - **Varış.** Yürüyüşte "Geldim" düğmesi gösterilmez (`hike` tür
+    denetimi `varis_bildirimi.dart`'ta durur); yoklamayı isteğe bağlı
+    kullanan diğer türlerde varış bildirimi de açıktır.
+- **2026-11-19 (issue #231, uygulama; sözleşme Tayfam-Api #243, PR #286):**
+  - **Günlük.** `log` bileşeni `bilesenler/gunluk/`'dedir; son Faz 1 türü
+    balığın aracı (`turler/balik/`, `BalikTuru`), `Event.fishing`,
+    sihirbazdaki mera gizliliği ve Faz 1 tür kaydı (`EtkinlikTuru`,
+    `etkinlikTurleriProvider`, `EskiTur`, `TurAyrintisi`) kalktı. Balığın
+    av günlüğü `catches` anahtarlı günlüktür; bir etkinlikte birden çok
+    günlük olabileceği için durum `{component_key}` ile ayrılır.
+  - **Alanlar.** Kaydın alanları bileşenin `fields` parametresinden
+    (`CatalogField`) okunur ve tek alan çiziciyle çizilir; biçimi bozuk
+    alan atlanır. Alanlardan biri tanınmıyorsa ekleme kapanır ve
+    "uygulamayı güncelle" yazılır. Satırda ilk dolu alan başlıktır,
+    diğerleri "Ad: değer" olarak yazılır.
+  - **Konum.** Konumun açık olup olmadığı ve varsayılan görünürlük
+    yanıtın `location_enabled` / `location_default` alanlarından okunur.
+    Yer, kişinin haritada işaretlediği noktadır (içerik; Tayfam-Api
+    ADR-0008); cihazın anlık konumu kullanılmaz. Görünürlük
+    (`self` / `participants` / `tayfa`) kayıt başınadır ve yalnızca yerle
+    gönderilir; bir kaydın yeri yalnızca sunucu döndürdüyse gösterilir.
+  - **Yetki.** Ekleme `caller_can_add`, çıkarma kayıt başına
+    `caller_can_remove` ile sadeleşir. Donmuş, kapatılmış ya da iptal
+    edilmiş günlük ve silinmiş kayıt hatalarında günlük yeniden okunur.
+    Fotoğraf mevcut medya akışıyla `log_photo` amacıyla yüklenir.
+- **2026-11-23 (issue #307, uygulama; sözleşme Tayfam-Api #333, PR #336,
+  Tayfam-Api ADR-0043):**
+  - **Alan türü.** §3'teki kapalı alan türü listesine `study_tags`
+    eklendi (`AlanTuru.dersKonu`): ders/konu listesinden (`Catalog.study_tags`)
+    seçim. Değer, seçilen en derin etiketlerin anahtar listesidir; ayarlar
+    `min_depth` (`level` | `subject`), `max_depth` (`level` | `subject` |
+    `topic`) ve `max_selected` (1–10, yoksa 1). Derinlik ayarı tanınmayan
+    alan tanınmayan alan sayılır. Alan yalnızca tür alanıdır: `log`
+    bileşeninin kayıt alanlarında gelirse ekleme kapanır. Uygulama bu
+    alanı tanıdığı için dört Eğitim türünde etkinlik oluşturma açıldı.
+  - **Seçici.** Tek seçimli ders..konu alanı ortak `DersKonuSecici`'yi
+    kullanır; çıktısı `[konu ?? ders]` olarak yazılır. Düzey de seçilebilen
+    alan ve çoklu alanın "Ekle" sayfası seçicinin etiket kipini
+    (`DersKonuSecici.etiket`) kullanır: seçim tek anahtardır, düzey
+    seçilebiliyorsa ders, ders seçilebiliyorsa konu isteğe bağlıdır. Çoklu
+    alanda seçilenler satır satır, "Kaldır" ile; alanda olan etiket yeniden
+    eklenemez.
+  - **Gösterim.** Her etiket üst zinciriyle ("TYT › Matematik › Türev";
+    ayraç çeviri dosyasında); emekli etiket adıyla ve "Artık seçilemez"
+    notuyla. Listede hiç olmayan anahtar gösterilmez.
+  - **Doğrulama ve düzenleme.** Formdaki doğrulama yalnızca biçimdir
+    (anahtar, tekrar, en çok seçim); etiketin seçilebilirliğini seçici
+    sağlar, son söz sunucunundur. Bu yüzden mevcut değerdeki emekli etiket
+    (ve listede bulunmayan anahtar) değişmeden geri gönderilir; kullanıcı
+    kaldırabilir ama seçici onu yeniden sunmaz.

@@ -124,6 +124,82 @@ final class MeApi {
     );
   }
 
+  /// Kendi garajınız
+  ///
+  /// Silinmemiş araçlarınız, eklenme sırasıyla.
+  ///
+  /// `GET /v1/me/garage`
+  Future<MemberGarage> listMyGarage() async {
+    final response = await _transport.send(
+      method: 'GET',
+      pathTemplate: '/v1/me/garage',
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return MemberGarage.fromJson(jsonObject(response, 'listMyGarage'));
+  }
+
+  /// Garajınıza araç ekler
+  ///
+  /// En fazla 10 araç (`garage-limit`). Fotoğraflar çağıranın hazır
+  /// `garage_vehicle` yüklemeleridir (tayfasız). Aynı
+  /// `client_request_id` ile tekrar gönderim aynı aracı döndürür.
+  ///
+  /// `POST /v1/me/garage`
+  Future<GarageVehicle> createGarageVehicle({
+    required GarageVehicleCreateRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'POST',
+      pathTemplate: '/v1/me/garage',
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return GarageVehicle.fromJson(jsonObject(response, 'createGarageVehicle'));
+  }
+
+  /// Garajınızdaki aracı düzenler
+  ///
+  /// Araç bir bütün olarak yazılır; listede olmayan fotoğraf silinir.
+  /// Aracın getirildiği etkinliklerdeki kopya değişmez. Sizin olmayan
+  /// araç `garage-vehicle-not-found`.
+  ///
+  /// `PUT /v1/me/garage/{garage_vehicle_id}`
+  ///
+  /// [garageVehicleId]: Üye garajındaki aracın kimliği (`GarageVehicle.id`).
+  Future<GarageVehicle> updateGarageVehicle({
+    required String garageVehicleId,
+    required GarageVehicleRequest body,
+  }) async {
+    final response = await _transport.send(
+      method: 'PUT',
+      pathTemplate: '/v1/me/garage/{garage_vehicle_id}',
+      pathParams: {'garage_vehicle_id': garageVehicleId},
+      body: body.toJson(),
+      expect: ResponseKind.json,
+      authenticated: true,
+    );
+    return GarageVehicle.fromJson(jsonObject(response, 'updateGarageVehicle'));
+  }
+
+  /// Garajınızdaki aracı siler
+  ///
+  /// Fotoğrafları hemen silinir; geri alınamaz.
+  ///
+  /// `DELETE /v1/me/garage/{garage_vehicle_id}`
+  ///
+  /// [garageVehicleId]: Üye garajındaki aracın kimliği (`GarageVehicle.id`).
+  Future<void> deleteGarageVehicle({required String garageVehicleId}) async {
+    await _transport.send(
+      method: 'DELETE',
+      pathTemplate: '/v1/me/garage/{garage_vehicle_id}',
+      pathParams: {'garage_vehicle_id': garageVehicleId},
+      expect: ResponseKind.none,
+      authenticated: true,
+    );
+  }
+
   /// Bu oturumun push (FCM) token'ını kaydeder ya da yeniler
   ///
   /// Uygulama her açılışta ve FCM kimliği değiştiğinde (`onRegistered`;
@@ -769,6 +845,11 @@ final class MeApi {
   /// **Keşfet'te arkadaşlarım görebilsin** (`discover_visible_to_friends`,
   /// varsayılan açık): kapatınca etkinliklere katılımınız arkadaşlarınızın
   /// Keşfet akışında gösterilmez ve sayılmaz (hemen).
+  ///
+  /// **Şimdi bildirimi kimden** (`now_from_friends`, varsayılan `all`;
+  /// ADR-0038 §4): `all` bütün arkadaşlarınızdan, `close` yalnızca
+  /// arkadaş listenizin ilk 20'sindekilerden, `off` hiçbirinden.
+  /// Geçersiz değer `invalid-request`.
   ///
   /// Ayarı kapatıp açmak haftalık öneri sınırını ve daha önce kimin
   /// önerildiğini sıfırlamaz; kapattığınız öneriler de hatırlanır.

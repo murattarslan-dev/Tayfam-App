@@ -20,6 +20,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// - Sessize alınan tayfalar ve "Sesi aç" (`GET` ve `DELETE
 ///   /v1/notification-preferences…`); adlar tayfalarım listesinden.
 ///   Sessize alma tayfa menüsündedir.
+/// - Şimdi bildirimleri kapalı tayfalar ve "Aç" (`tayfa_now`; App ADR-0032
+///   §5); kapatma tayfa menüsündedir.
 /// - Birebir konuşmalar için yalnızca sessizdeki sayı ve yönlendirme
 ///   (sesi konuşmanın ⋯ menüsünden açılır).
 /// - Gizlilik notu: bildirimde içerik, isim ve konum yoktur.
@@ -272,6 +274,22 @@ class _SessizBolumu extends ConsumerWidget {
               for (final tayfa in ozet.tayfalar) _SessizTayfaSatiri(tayfa),
             ],
           ),
+        BolumEtiketi(baslik: m.simdi_bildirim_ayar_baslik),
+        ListeKarti(
+          children: [
+            if (ozet.simdiKapali.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(TayfamSpacing.s16),
+                child: Text(
+                  m.simdi_bildirim_ayar_yok,
+                  style: context.yazi.bodyLarge,
+                ),
+              )
+            else
+              for (final tayfa in ozet.simdiKapali)
+                _SessizTayfaSatiri(tayfa, simdi: true),
+          ],
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             TayfamSpacing.s8,
@@ -315,10 +333,14 @@ class _SessizBolumu extends ConsumerWidget {
 
 /// Sessizdeki bir tayfanın satırı: avatar, ad, bitiş ("20 Kas, 18:00
 /// saatine kadar" ya da "Süresiz") ve "Sesi aç".
+///
+/// [simdi] ise satır şimdi bildirimleri kapalı bir tayfadır: düğme "Aç"
+/// ve tayfanın yalnızca şimdi bildirimlerini açar.
 class _SessizTayfaSatiri extends ConsumerStatefulWidget {
-  const _SessizTayfaSatiri(this.tayfa);
+  const _SessizTayfaSatiri(this.tayfa, {this.simdi = false});
 
   final SessizTayfa tayfa;
+  final bool simdi;
 
   @override
   ConsumerState<_SessizTayfaSatiri> createState() => _SessizTayfaSatiriState();
@@ -364,7 +386,7 @@ class _SessizTayfaSatiriState extends ConsumerState<_SessizTayfaSatiri> {
       ),
     );
     final dugme = CerceveliHapEylem(
-      etiket: m.birebir_sessiz_ac,
+      etiket: widget.simdi ? m.simdi_bildirim_ayar_ac : m.birebir_sessiz_ac,
       onPressed: _isleniyor ? null : () => unawaited(_sesiAc(ad)),
     );
     // Büyük yazıda düğme sağa sığmaz; adın altına iner.
@@ -392,11 +414,15 @@ class _SessizTayfaSatiriState extends ConsumerState<_SessizTayfaSatiri> {
   /// için kısa bildirim gösterilir.
   Future<void> _sesiAc(String ad) async {
     final mesajlar = ScaffoldMessenger.of(context);
-    final basari = AppLocalizations.of(context).bildirim_ayar_sesi_acildi(ad);
+    final m = AppLocalizations.of(context);
+    final basari = widget.simdi
+        ? m.simdi_bildirim_ayar_acildi(ad)
+        : m.bildirim_ayar_sesi_acildi(ad);
     setState(() => _isleniyor = true);
-    final hata = await ref
-        .read(sessizOzetiProvider.notifier)
-        .sesiAc(widget.tayfa.tayfaId);
+    final notifier = ref.read(sessizOzetiProvider.notifier);
+    final hata = widget.simdi
+        ? await notifier.simdiAc(widget.tayfa.tayfaId)
+        : await notifier.sesiAc(widget.tayfa.tayfaId);
     if (hata == null) {
       mesajlar
         ..hideCurrentSnackBar()

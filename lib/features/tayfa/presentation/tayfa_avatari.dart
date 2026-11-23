@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/medya/medya_gorseli.dart';
-import 'package:tayfam/core/moduller/etkinlik_turu_kaydi.dart';
+import 'package:tayfam/core/katalog/katalog_renkleri.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -10,9 +10,9 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// yoksa adın ilk harfi. Harf olduğu gibi gösterilir; büyük harfe
 /// çevrilmez (ADR-0008).
 ///
-/// Harf kutusunun rengi tayfanın ilk ilgi alanının etkinlik türü rengidir
-/// (konvoy mango, balık deniz mavisi, spor nar …; ADR-0004 Notlar); ilgi
-/// alanı yoksa "genel". Renk süstür, bilgi taşımaz. [pasif] ise (onay
+/// Harf kutusunun rengi tayfanın ilk ilgi alanının rengidir (otomobil
+/// mango, su deniz mavisi, spor nar …; ADR-0004 Notlar); ilgi alanı yoksa
+/// "genel". Renk süstür, bilgi taşımaz. [pasif] ise (onay
 /// bekleyen tayfa) nötr çizgi zemini ve ikincil metin.
 class TayfaAvatari extends StatelessWidget {
   const TayfaAvatari({
@@ -41,7 +41,9 @@ class TayfaAvatari extends StatelessWidget {
   );
 
   final String ad;
-  final List<EventType> ilgiAlanlari;
+
+  /// Tayfanın ilgi alanları (katalog anahtarları).
+  final List<String> ilgiAlanlari;
   final String? kapakId;
   final double cap;
   final bool pasif;
@@ -57,8 +59,11 @@ class TayfaAvatari extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = context.renkler;
-    final tur = ilgiAlanlari.isEmpty ? EventType.general : ilgiAlanlari.first;
-    final cift = context.turRenkleri.cift(etkinlikTuruGirdisi(tur).renk);
+    // Renk katalog gerektirmez: anahtardan gelir; tanınmayan anahtar
+    // "genel" görünür.
+    final cift = context.turRenkleri.cift(
+      ilgiAlanlari.isEmpty ? TurRengi.genel : katalogRengi(ilgiAlanlari.first),
+    );
     final zemin = pasif ? r.cizgi : cift.dolgu;
     final yazi = pasif ? r.metinIkincil : cift.ustu;
     final temiz = ad.trim();

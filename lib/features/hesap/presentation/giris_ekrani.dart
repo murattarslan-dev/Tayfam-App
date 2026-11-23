@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
+import 'package:tayfam/core/katalog/tanitim_turleri.dart';
 import 'package:tayfam/core/tema/tema.dart';
 import 'package:tayfam/features/hesap/application/giris_notifier.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
@@ -114,13 +114,13 @@ class _Ortala extends StatelessWidget {
 }
 
 /// Giriş ekranında gösterilen etkinlik türleri, tasarımdaki sırayla.
-const List<EventType> girisEkraniTurleri = [
-  EventType.convoy,
-  EventType.camp,
-  EventType.hike,
-  EventType.fishing,
-  EventType.sports,
-  EventType.gaming,
+const List<TanitimTuru> girisEkraniTurleri = [
+  TanitimTuru.konvoy,
+  TanitimTuru.kamp,
+  TanitimTuru.yuruyus,
+  TanitimTuru.balik,
+  TanitimTuru.spor,
+  TanitimTuru.oyun,
 ];
 
 class _UstAlan extends StatelessWidget {
@@ -190,7 +190,7 @@ class _TurCipleri extends StatelessWidget {
           for (final (i, tur) in girisEkraniTurleri.indexed)
             Transform.rotate(
               angle: egimler[i % egimler.length] * math.pi / 180,
-              child: EtkinlikTuruCipi(tur: tur, buyuk: true),
+              child: TanitimTurCipi(tur: tur, buyuk: true),
             ),
         ],
       ),

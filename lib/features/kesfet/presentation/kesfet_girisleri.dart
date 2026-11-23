@@ -78,6 +78,31 @@ class TayfaKesfetBolumu extends ConsumerWidget {
                     : (acik) => unawaited(_ayarla(context, ref, acik)),
               ),
             ),
+            // İstatistik vitrini (#250; Tayfam-Api ADR-0026 §3): Keşfet
+            // isteğinden bağımsız değişir; varsayılan açık.
+            ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: TayfamSizes.menuSatiri,
+              ),
+              child: SwitchListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: TayfamSpacing.s16,
+                  vertical: TayfamSpacing.s4,
+                ),
+                title: Text(
+                  m.istatistik_vitrin_goster,
+                  style: yazi.titleMedium,
+                ),
+                subtitle: Text(
+                  m.istatistik_vitrin_aciklama,
+                  style: yazi.bodySmall?.copyWith(color: r.metinIkincil),
+                ),
+                value: ayar.statsShowcase,
+                onChanged: durum.mesgul
+                    ? null
+                    : (goster) => unawaited(_vitrin(context, ref, goster)),
+              ),
+            ),
           ],
         ),
       ],
@@ -102,6 +127,18 @@ class TayfaKesfetBolumu extends ConsumerWidget {
     bildirici.bildir(
       hata,
       acik ? m.yonetim_kesfet_acildi : m.yonetim_kesfet_kapandi,
+    );
+  }
+
+  Future<void> _vitrin(BuildContext context, WidgetRef ref, bool goster) async {
+    final m = AppLocalizations.of(context);
+    final bildirici = SonucBildirici.al(context);
+    final hata = await ref
+        .read(tayfaKesfetProvider(tayfaId).notifier)
+        .vitriniAyarla(goster: goster);
+    bildirici.bildir(
+      hata,
+      goster ? m.istatistik_vitrin_acildi : m.istatistik_vitrin_kapandi,
     );
   }
 }

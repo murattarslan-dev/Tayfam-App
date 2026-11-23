@@ -17,6 +17,7 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/etkinlik_metinleri.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Katılımcılar sekmelerinin sırası (tasarım: Etkinlik-Katilimcilar).
@@ -36,6 +37,10 @@ const List<ListEventAttendeesStatus> katilimciSekmeleri = [
 /// gün; ADR-0015 §6) açıksa üstte bilgi kutusu ve her satırda ⋯ düğmesi
 /// vardır: alttan sayfada katılımı ekle ya da kaldır. Kendi satırında
 /// düğme yoktur (sunucu: kimse kendi katılımını düzeltemez).
+///
+/// Türü `sensitive_attendance` bayraklı etkinlikte sunucu listeyi yetkisi
+/// olmayana vermez (`attendees-hidden`): çiplerdeki sayılar kalır, liste
+/// yerine sakin bir bilgi kutusu çizilir (istemci ADR-0031 §6).
 ///
 /// Adresteki kimlikler girdi kabul edilir: biçimi bozuk etkinlik kimliği
 /// için istek gönderilmez.
@@ -163,14 +168,18 @@ class _KatilimcilarEkraniState extends ConsumerState<KatilimcilarEkrani> {
                   ),
               ],
               error: (hata, _) => [
-                HataSatiri.hatadan(hata),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: BaglantiEylemi(
-                    etiket: m.etkinlik_tekrar_dene,
-                    onPressed: () => unawaited(notifier.yenile()),
+                if (katilimcilarGizli(hata))
+                  _BilgiKutusu(metin: m.bayrak_katilimcilar_gizli)
+                else ...[
+                  HataSatiri.hatadan(hata),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: BaglantiEylemi(
+                      etiket: m.etkinlik_tekrar_dene,
+                      onPressed: () => unawaited(notifier.yenile()),
+                    ),
                   ),
-                ),
+                ],
               ],
               loading: () => [
                 const Center(child: TayfamYukleniyor(gecikmeli: true)),

@@ -70,8 +70,22 @@ class CihazBaglaGorunumu extends StatelessWidget {
       onPressed: tekrarTara,
     );
     return switch (durum) {
-      QrTaraniyor() => _TaramaGorunumu(kamera: kamera),
-      QrIsleniyor() => const _TaramaGorunumu(isleniyor: true),
+      QrTaraniyor() => TaramaGorunumu(
+        kamera: kamera,
+        baslik: m.cihaz_bagla_baslik,
+        talimatBaslik: m.cihaz_tara_baslik,
+        talimat: m.cihaz_tara_talimat,
+        isleniyorMetni: m.cihaz_tara_isleniyor,
+        gizlilik: m.cihaz_kamera_gizlilik,
+      ),
+      QrIsleniyor() => TaramaGorunumu(
+        isleniyor: true,
+        baslik: m.cihaz_bagla_baslik,
+        talimatBaslik: m.cihaz_tara_baslik,
+        talimat: m.cihaz_tara_talimat,
+        isleniyorMetni: m.cihaz_tara_isleniyor,
+        gizlilik: m.cihaz_kamera_gizlilik,
+      ),
       QrGonderildi() => CihazSonucEkrani(
         ton: CihazSonucTonu.basarili,
         baslik: m.cihaz_tara_basarili,
@@ -124,16 +138,40 @@ class CihazBaglaGorunumu extends StatelessWidget {
 /// Koyu tam ekran tarayıcı: arkada kamera, mango köşeli çerçeve ve tarama
 /// çizgisi, altında talimat ve kamera gizlilik notu. Tema ne olursa olsun
 /// koyu temanın token'larıyla çizilir. [isleniyor] ise kamera kapalıdır ve
-/// çerçevenin içinde yükleniyor gösterilir.
-class _TaramaGorunumu extends StatelessWidget {
-  const _TaramaGorunumu({this.kamera, this.isleniyor = false});
+/// çerçevenin içinde yükleniyor gösterilir. Cihaz bağlama ve QR ile
+/// etkinliğe katılma (App ADR-0032 §3) aynı görünümü kullanır.
+class TaramaGorunumu extends StatelessWidget {
+  const TaramaGorunumu({
+    super.key,
+    required this.baslik,
+    required this.talimatBaslik,
+    required this.talimat,
+    required this.isleniyorMetni,
+    required this.gizlilik,
+    this.kamera,
+    this.isleniyor = false,
+  });
+
+  /// Üst çubuğun başlığı.
+  final String baslik;
+
+  /// Çerçevenin altındaki başlık (taranırken).
+  final String talimatBaslik;
+
+  /// Çerçevenin altındaki açıklama.
+  final String talimat;
+
+  /// İşlenirken başlığın yerine geçen metin (canlı bölge).
+  final String isleniyorMetni;
+
+  /// Kamera gizlilik notu.
+  final String gizlilik;
 
   final Widget? kamera;
   final bool isleniyor;
 
   @override
   Widget build(BuildContext context) {
-    final m = AppLocalizations.of(context);
     return Theme(
       data: TayfamTheme.koyu(),
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -175,7 +213,7 @@ class _TaramaGorunumu extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              _UstCubuk(baslik: m.cihaz_bagla_baslik),
+                              _UstCubuk(baslik: baslik),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: TayfamSpacing.s24,
@@ -183,21 +221,24 @@ class _TaramaGorunumu extends StatelessWidget {
                                 ),
                                 child: Column(
                                   children: [
-                                    TaramaCercevesi(isleniyor: isleniyor),
+                                    TaramaCercevesi(
+                                      isleniyor: isleniyor,
+                                      isleniyorMetni: isleniyorMetni,
+                                    ),
                                     const SizedBox(height: TayfamSpacing.s40),
                                     Semantics(
                                       liveRegion: isleniyor,
                                       child: Text(
                                         isleniyor
-                                            ? m.cihaz_tara_isleniyor
-                                            : m.cihaz_tara_baslik,
+                                            ? isleniyorMetni
+                                            : talimatBaslik,
                                         textAlign: TextAlign.center,
                                         style: context.yazi.titleMedium,
                                       ),
                                     ),
                                     const SizedBox(height: TayfamSpacing.s8),
                                     Text(
-                                      m.cihaz_tara_talimat,
+                                      talimat,
                                       textAlign: TextAlign.center,
                                       style: context.yazi.bodyMedium?.copyWith(
                                         color: r.metinGovde,
@@ -213,9 +254,7 @@ class _TaramaGorunumu extends StatelessWidget {
                                   TayfamSpacing.s20,
                                   TayfamSpacing.s24,
                                 ),
-                                child: _GizlilikNotu(
-                                  metin: m.cihaz_kamera_gizlilik,
-                                ),
+                                child: _GizlilikNotu(metin: gizlilik),
                               ),
                             ],
                           ),
@@ -277,9 +316,16 @@ class _UstCubuk extends StatelessWidget {
 /// çizgisi. "Hareketi azalt" açıkken çizgi ortada durur. [isleniyor] ise
 /// çizgi yerine yükleniyor gösterilir. Süstür; ekran okuyucu atlar.
 class TaramaCercevesi extends StatefulWidget {
-  const TaramaCercevesi({super.key, this.isleniyor = false});
+  const TaramaCercevesi({
+    super.key,
+    this.isleniyor = false,
+    this.isleniyorMetni,
+  });
 
   final bool isleniyor;
+
+  /// Yükleniyor göstergesinin etiketi; verilmezse cihaz bağlamanınki.
+  final String? isleniyorMetni;
 
   @override
   State<TaramaCercevesi> createState() => _TaramaCercevesiState();
@@ -383,7 +429,7 @@ class _TaramaCercevesiState extends State<TaramaCercevesi>
                     child: TayfamYukleniyor(
                       boyut: TayfamSizes.ikonKutusu,
                       zemin: r.zemin,
-                      etiket: m.cihaz_tara_isleniyor,
+                      etiket: widget.isleniyorMetni ?? m.cihaz_tara_isleniyor,
                     ),
                   ),
                 )

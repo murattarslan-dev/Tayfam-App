@@ -22,13 +22,34 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - `data_export` (veri dışa aktarma hazır): "Verilerimi indir" ekranı.
 /// - `safety_alert` (güvenlik kişisi alarmı): güvenlik kişisi olduğun
 ///   etkinlikler ekranı.
+/// - `celebration` (kazanan ilan edildi): hedef etkinliğin detayı; kutlamayı
+///   orada bileşen gösterir, bildirim kazananı adlandırmaz.
+/// - `badge_earned` (rozet kazanıldı): kişisel rozette kendi profilin
+///   (`target_id`), tayfa rozetinde tayfanın ana sayfası; rozet bildirimde
+///   adlandırılmaz.
+/// - `now_started` (Şimdi başlat; Tayfam-Api ADR-0038 §4): etkinliğin
+///   detayı. Anlık etkinlikte bildirim bir davettir: alıcı tayfanın etkin
+///   üyesi değilse ([simdiDavetiMi]) gelen tayfa davetleri açılır.
+/// - `library_due` (iade tarihi geçti) ve `library_loan_orphaned` (ödünçteki
+///   kalemin karşı tarafı ayrıldı; Tayfam-Api ADR-0040 §1): tayfanın ortak
+///   kütüphanesi; bildirim kalemi ve kişiyi adlandırmaz.
+/// - Ödünç adımları ([oduncAdimiMi]: istek, sıra, onay, ret, teslim, sıra
+///   sende; Tayfam-Api ADR-0040 §1 "Uygulama notları (#321, #332)"): hedef
+///   `library_item` ise kalemin detayı (sahibi sırayı ve ödüncü, borç alan
+///   kendi ödüncünü görür), hedef beklenenden farklı ya da kimliği
+///   biçimsizse tayfanın ortak kütüphanesi. Kalem geri çekildiyse detay ekranı bunu söyler.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
-/// Erişim kararı sunucudadır: adres açılır, üyelik ve varlık hatasını
-/// ilgili ekran gösterir (kesin kural 5).
-String? bildirimAdresi(Notification bildirim) {
+/// [etkinUyeMi] tayfalarım listesinden kurulur ([etkinUyelik]); liste
+/// okunmadıysa `null` ve üyelik varsayılır. Erişim kararı sunucudadır:
+/// adres açılır, üyelik ve varlık hatasını ilgili ekran gösterir (kesin
+/// kural 5).
+String? bildirimAdresi(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
   final tayfaId = _gecerli(bildirim.tayfaId);
   final hedefId = _gecerli(bildirim.targetId);
+  if (simdiDavetiMi(bildirim, etkinUyeMi: etkinUyeMi)) {
+    return Adresler.tayfaDavetleri;
+  }
   final arkadaslik = switch ((bildirim.type, bildirim.targetType, hedefId)) {
     (
       NotificationType.friendRequest ||
@@ -42,6 +63,39 @@ String? bildirimAdresi(Notification bildirim) {
     // Güvenlik kişisi alarmı (Tayfam-Api ADR-0033 §10): etkinlik ve tayfa
     // bildirimde yoktur; durum paylaşımlar ekranından okunur.
     (NotificationType.safetyAlert, _, _) => Adresler.guvenlikPaylasimlari,
+    // Rozet kazanıldı (Tayfam-Api ADR-0039 §4): kişisel rozette hedef
+    // kişinin kendisidir (profilinde rozetler), tayfa rozetinde tayfa.
+    (NotificationType.badgeEarned, NotificationTargetType.user, final kisi?) =>
+      Adresler.kisi(kisi),
+    (
+      NotificationType.badgeEarned,
+      NotificationTargetType.tayfa,
+      final tayfa?,
+    ) =>
+      Adresler.tayfa(tayfa),
+    // Ortak kütüphane (Tayfam-Api ADR-0040 §1): hedef tayfadır; bildirim
+    // içeriksizdir, kütüphane açılır.
+    (
+      NotificationType.libraryDue || NotificationType.libraryLoanOrphaned,
+      _,
+      _,
+    ) =>
+      switch (tayfaId ?? _tayfaHedefi(bildirim)) {
+        final tayfa? => Adresler.kutuphane(tayfa),
+        null => null,
+      },
+    // Ödünç adımları (Tayfam-Api ADR-0040 §1, #321): hedef kalemdir;
+    // bildirim içeriksizdir, kalem açılır.
+    (final tur, _, _) when oduncAdimiMi(tur) => switch ((
+      tayfaId,
+      bildirim.targetType,
+      hedefId,
+    )) {
+      (final tayfa?, NotificationTargetType.libraryItem, final kalem?) =>
+        Adresler.kutuphaneKalemi(tayfa, kalem),
+      (final tayfa?, _, _) => Adresler.kutuphane(tayfa),
+      _ => null,
+    },
     // KVKK veri dışa aktarma hazır (ADR-0022): talep listesi açılır.
     (_, NotificationTargetType.dataExport, _?) => Adresler.veriDisaAktarma,
     _ => null,
@@ -73,16 +127,62 @@ String? bildirimKisisi(Notification bildirim) {
     NotificationType.friendSuggestion ||
     NotificationType.safetyAlert => bildirim.targetId,
     NotificationType.hikeOverdue => bildirim.subjectUserId,
-    NotificationType.tayfaInvitation => bildirim.actorId,
+    NotificationType.tayfaInvitation ||
+    NotificationType.nowStarted => bildirim.actorId,
     _ => null,
   };
   return _gecerli(kimlik);
 }
 
+/// [tur] ortak kütüphanede bir ödünç adımı bildirimi mi (Tayfam-Api
+/// ADR-0040 §1, #321; "sıra sende" #332). Hepsi içeriksizdir: eşya, kişi
+/// ve tarih adlandırılmaz (kesin kural 7).
+bool oduncAdimiMi(NotificationType tur) => switch (tur) {
+  NotificationType.libraryLoanRequested ||
+  NotificationType.libraryQueueJoined ||
+  NotificationType.libraryLoanApproved ||
+  NotificationType.libraryLoanDeclined ||
+  NotificationType.libraryLoanHandedOver ||
+  NotificationType.libraryQueueTurn => true,
+  _ => false,
+};
+
+/// Hedefi `tayfa` olan bildirimin tayfası; biçimsizse `null`.
+String? _tayfaHedefi(Notification bildirim) =>
+    bildirim.targetType == NotificationTargetType.tayfa
+    ? _gecerli(bildirim.targetId)
+    : null;
+
+/// Kullanıcı [tayfaId]'nin etkin üyesi mi.
+typedef EtkinUyeMi = bool Function(String tayfaId);
+
+/// Tayfalarım listesinden ([tayfalar]) etkin üyelik sorgusu; liste henüz
+/// okunmadıysa `null`.
+EtkinUyeMi? etkinUyelik(List<MyTayfa>? tayfalar) => tayfalar == null
+    ? null
+    : (tayfaId) => tayfalar.any(
+        (t) => t.tayfaId == tayfaId && t.status == MyTayfaStatus.active,
+      );
+
+/// `now_started` bir davet mi (anlık etkinlik; Tayfam-Api ADR-0038 §4):
+/// tayfası geçerli ve kullanıcı o tayfanın etkin üyesi değil. Üyelik
+/// bilinmiyorsa ([etkinUyeMi] `null`) davet sayılmaz.
+bool simdiDavetiMi(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
+  if (bildirim.type != NotificationType.nowStarted || etkinUyeMi == null) {
+    return false;
+  }
+  final tayfa = _gecerli(bildirim.tayfaId);
+  return tayfa != null && !etkinUyeMi(tayfa);
+}
+
 /// Tayfa davetinin (`tayfa_invitation`) tayfası: bildirimin `tayfa_id`'si,
-/// yoksa hedefi `tayfa` olan `target_id`. Biçimsizse ya da başka türse
-/// `null`.
+/// yoksa hedefi `tayfa` olan `target_id`. Şimdi bildiriminde (`now_started`,
+/// anlık etkinlik daveti) yalnızca `tayfa_id`. Biçimsizse ya da başka
+/// türse `null`.
 String? davetTayfasi(Notification bildirim) {
+  if (bildirim.type == NotificationType.nowStarted) {
+    return _gecerli(bildirim.tayfaId);
+  }
   if (bildirim.type != NotificationType.tayfaInvitation) return null;
   final tayfa = _gecerli(bildirim.tayfaId);
   if (tayfa != null) return tayfa;
@@ -108,14 +208,19 @@ enum SatirIciIslem {
 }
 
 /// [bildirim]'in satır içi işlemi; yoksa ya da gereken kimlik
-/// doğrulanamazsa `null`. Yetki kararı sunucudadır (kesin kural 5):
-/// işlem reddedilirse hata gösterilir.
-SatirIciIslem? satirIciIslem(Notification bildirim) {
+/// doğrulanamazsa `null`. Anlık etkinliğin şimdi bildirimi bir davettir
+/// (Notion Faz 3 §D: bildirimden "Katıl" doğrudan katılım); [etkinUyeMi]
+/// [bildirimAdresi]'ndeki gibidir. Yetki kararı sunucudadır (kesin kural
+/// 5): işlem reddedilirse hata gösterilir.
+SatirIciIslem? satirIciIslem(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
   final tayfa = _gecerli(bildirim.tayfaId);
   return switch (bildirim.type) {
     NotificationType.friendRequest when bildirimKisisi(bildirim) != null =>
       SatirIciIslem.arkadaslik,
     NotificationType.tayfaInvitation when davetTayfasi(bildirim) != null =>
+      SatirIciIslem.davet,
+    NotificationType.nowStarted
+        when simdiDavetiMi(bildirim, etkinUyeMi: etkinUyeMi) =>
       SatirIciIslem.davet,
     NotificationType.joinRequest when tayfa != null =>
       SatirIciIslem.katilimIstegi,

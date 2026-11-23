@@ -52,14 +52,20 @@ Future<void> _dokun(WidgetTester tester, String anahtar) async {
   await tester.pumpAndSettle();
 }
 
-/// [anahtar] türünün ilgi kartındaki onay kutusu.
-Checkbox _onayKutusu(WidgetTester tester, String anahtar) =>
-    tester.widget<Checkbox>(
-      find.descendant(
-        of: find.widgetWithText(IlgiKarti, arbMetni(anahtar)),
-        matching: find.byType(Checkbox),
-      ),
-    );
+/// Katalog metnine ([ad]; test kataloğundaki ilgi alanı adı) dokunur.
+Future<void> _metneDokun(WidgetTester tester, String ad) async {
+  await tester.ensureVisible(find.text(ad));
+  await tester.tap(find.text(ad));
+  await tester.pumpAndSettle();
+}
+
+/// [ad] ilgi alanının kartındaki onay kutusu.
+Checkbox _onayKutusu(WidgetTester tester, String ad) => tester.widget<Checkbox>(
+  find.descendant(
+    of: find.widgetWithText(IlgiKarti, ad),
+    matching: find.byType(Checkbox),
+  ),
+);
 
 /// Başarılı oluşturma ve ardından yeni tayfayı döndüren liste yanıtları.
 Map<String, TayfaYaniti> _basariliYanitlar() {
@@ -103,11 +109,12 @@ void main() {
     await _dokun(tester, 'olusturma_ileri');
 
     expect(find.text('Adım 2 / 3'), findsOneWidget);
-    expect(find.byType(IlgiKarti), findsNWidgets(7));
-    await _dokun(tester, 'etkinlik_turu_convoy');
-    await _dokun(tester, 'etkinlik_turu_camp');
-    expect(_onayKutusu(tester, 'etkinlik_turu_convoy').value, isTrue);
-    expect(_onayKutusu(tester, 'etkinlik_turu_hike').value, isFalse);
+    // Test kataloğundaki aktif ilgi alanları (emekli olan listelenmez).
+    expect(find.byType(IlgiKarti), findsNWidgets(6));
+    await _metneDokun(tester, 'Otomobil ve motor');
+    await _metneDokun(tester, 'Doğa');
+    expect(_onayKutusu(tester, 'Otomobil ve motor').value, isTrue);
+    expect(_onayKutusu(tester, 'Su').value, isFalse);
     expect(find.text(arbMetni('olusturma_onizleme_ilgi')), findsOneWidget);
     await _dokun(tester, 'olusturma_ileri');
 
@@ -125,7 +132,7 @@ void main() {
     expect(govde, {
       'name': 'Klasikçiler',
       'description': 'Hafta sonu turları',
-      'interests': ['convoy', 'camp'],
+      'interests': ['automotive', 'nature'],
       'join_policy': 'open',
       'client_request_id': sahteIstekKimligi,
     });
@@ -196,7 +203,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField), 'Klasikçiler');
     await _dokun(tester, 'olusturma_ileri');
-    await _dokun(tester, 'etkinlik_turu_hike');
+    await _metneDokun(tester, 'Su');
     await _dokun(tester, 'olusturma_ileri');
     await tester.enterText(find.byType(TextField), 'Açıklama');
 
@@ -204,7 +211,7 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.text('Adım 2 / 3'), findsOneWidget);
-    expect(_onayKutusu(tester, 'etkinlik_turu_hike').value, isTrue);
+    expect(_onayKutusu(tester, 'Su').value, isTrue);
 
     await _dokun(tester, 'olusturma_geri');
     expect(find.widgetWithText(TextField, 'Klasikçiler'), findsOneWidget);
@@ -329,10 +336,10 @@ void main() {
 
       await tester.enterText(find.byType(TextField), 'Klasikçiler');
       await _dokun(tester, 'olusturma_ileri');
-      expect(find.byType(IlgiKarti), findsNWidgets(7));
+      expect(find.byType(IlgiKarti), findsNWidgets(6));
       expect(tester.takeException(), isNull);
 
-      await _dokun(tester, 'etkinlik_turu_gaming');
+      await _metneDokun(tester, 'Oyun');
       await _dokun(tester, 'olusturma_ileri');
       expect(find.text(arbMetni('olusturma_onayli')), findsOneWidget);
       expect(tester.takeException(), isNull);

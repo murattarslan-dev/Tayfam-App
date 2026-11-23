@@ -1,0 +1,1614 @@
+{
+  "catalog_version": 7,
+  "interests": [
+    {
+      "key": "automotive",
+      "position": 10,
+      "labels": {
+        "tr": "Otomobil ve motor",
+        "en": "Cars and motorbikes"
+      },
+      "icon": "directions_car",
+      "status": "active",
+      "default_widgets": []
+    },
+    {
+      "key": "nature",
+      "position": 20,
+      "labels": {
+        "tr": "Doğa"
+      },
+      "icon": "forest",
+      "status": "active",
+      "default_widgets": [
+        "stats"
+      ]
+    },
+    {
+      "key": "water",
+      "position": 30,
+      "labels": {
+        "tr": "Su"
+      },
+      "icon": "water",
+      "status": "active",
+      "default_widgets": []
+    },
+    {
+      "key": "sports",
+      "position": 40,
+      "labels": {
+        "tr": "Spor"
+      },
+      "icon": "sports",
+      "status": "active",
+      "default_widgets": []
+    },
+    {
+      "key": "games",
+      "position": 50,
+      "labels": {
+        "tr": "Oyun"
+      },
+      "icon": "casino",
+      "status": "active",
+      "default_widgets": []
+    },
+    {
+      "key": "eski_alan",
+      "position": 60,
+      "labels": {
+        "tr": "Eski ilgi alanı"
+      },
+      "icon": "event",
+      "status": "retired",
+      "default_widgets": []
+    },
+    {
+      "key": "general",
+      "position": 900,
+      "labels": {
+        "tr": "Genel"
+      },
+      "icon": "event",
+      "status": "active",
+      "default_widgets": []
+    }
+  ],
+  "event_types": [
+    {
+      "key": "convoy",
+      "interest_keys": [
+        "automotive"
+      ],
+      "labels": {
+        "tr": "Konvoy",
+        "en": "Convoy"
+      },
+      "icon": "directions_car",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "meeting_point"
+          },
+          {
+            "kind": "route"
+          },
+          {
+            "kind": "vehicles",
+            "params": {
+              "plate": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "auto_show",
+      "interest_keys": [
+        "automotive"
+      ],
+      "labels": {
+        "tr": "Fuar / müze gezisi"
+      },
+      "icon": "museum",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "meeting_point"
+          },
+          {
+            "kind": "schedule",
+            "params": {
+              "max_items": 30
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "hike",
+      "interest_keys": [
+        "nature"
+      ],
+      "labels": {
+        "tr": "Doğa yürüyüşü"
+      },
+      "icon": "hiking",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "roll_call",
+            "params": {
+              "alarm": true,
+              "return_grace_minutes": 30
+            }
+          },
+          {
+            "kind": "measure",
+            "key": "distance",
+            "labels": {
+              "tr": "Mesafe"
+            },
+            "params": {
+              "unit": "km",
+              "scope": "total",
+              "entered_by": "organizer",
+              "min": 0,
+              "max": 1000,
+              "decimals": 2,
+              "showcase": true,
+              "prefill_from": "planned_distance"
+            }
+          },
+          {
+            "kind": "measure",
+            "key": "elevation_gain",
+            "labels": {
+              "tr": "İrtifa kazancı"
+            },
+            "params": {
+              "unit": "m",
+              "scope": "total",
+              "entered_by": "organizer",
+              "min": 0,
+              "max": 9000,
+              "decimals": 0,
+              "showcase": true,
+              "prefill_from": "planned_elevation"
+            }
+          },
+          {
+            "kind": "goal",
+            "params": {
+              "measure": "distance",
+              "default_target": 10
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "camp",
+      "interest_keys": [
+        "nature"
+      ],
+      "labels": {
+        "tr": "Kamp"
+      },
+      "icon": "camping",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "checklist",
+            "key": "gear",
+            "labels": {
+              "tr": "Malzeme listesi"
+            },
+            "params": {
+              "label": "gear",
+              "assignment": true,
+              "quantity": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "fishing",
+      "interest_keys": [
+        "water"
+      ],
+      "labels": {
+        "tr": "Balıkçılık"
+      },
+      "icon": "phishing",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "meeting_point"
+          },
+          {
+            "kind": "log",
+            "key": "catches",
+            "labels": {
+              "tr": "Av günlüğü"
+            },
+            "params": {
+              "fields": [
+                {
+                  "key": "species",
+                  "kind": "text",
+                  "required": true,
+                  "max_length": 60,
+                  "vocabulary": {
+                    "namespace": "fish_species"
+                  },
+                  "labels": {
+                    "tr": "Tür"
+                  }
+                },
+                {
+                  "key": "count",
+                  "kind": "integer",
+                  "min": 1,
+                  "max": 1000,
+                  "unit": "piece",
+                  "labels": {
+                    "tr": "Adet"
+                  }
+                },
+                {
+                  "key": "weight",
+                  "kind": "decimal",
+                  "min": 0.01,
+                  "max": 1000,
+                  "decimals": 2,
+                  "unit": "kg",
+                  "labels": {
+                    "tr": "Ağırlık"
+                  }
+                },
+                {
+                  "key": "length_cm",
+                  "kind": "decimal",
+                  "min": 0.1,
+                  "max": 1000,
+                  "decimals": 1,
+                  "labels": {
+                    "tr": "Boy (cm)"
+                  }
+                }
+              ],
+              "location": true,
+              "location_default": "self",
+              "max_entries": 100,
+              "stat": [
+                "distinct:species",
+                "sum:weight"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "sports",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Spor (diğer)"
+      },
+      "icon": "sports",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "fields": [
+          {
+            "key": "sport",
+            "kind": "choice",
+            "required": true,
+            "options": [
+              "football",
+              "table_football",
+              "basketball",
+              "volleyball",
+              "tennis",
+              "table_tennis",
+              "other"
+            ],
+            "option_labels": {
+              "football": {
+                "tr": "Futbol"
+              },
+              "table_football": {
+                "tr": "Langırt"
+              },
+              "basketball": {
+                "tr": "Basketbol"
+              },
+              "volleyball": {
+                "tr": "Voleybol"
+              },
+              "tennis": {
+                "tr": "Tenis"
+              },
+              "table_tennis": {
+                "tr": "Masa tenisi"
+              },
+              "other": {
+                "tr": "Diğer"
+              }
+            },
+            "labels": {
+              "tr": "Dal"
+            }
+          },
+          {
+            "key": "venue_name",
+            "kind": "text",
+            "max_length": 120,
+            "labels": {
+              "tr": "Saha adı"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "gaming",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Video oyunu"
+      },
+      "icon": "sports_esports",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 2,
+      "definition": {
+        "fields": [
+          {
+            "key": "game",
+            "kind": "text",
+            "required": true,
+            "max_length": 60,
+            "labels": {
+              "tr": "Oyun"
+            }
+          },
+          {
+            "key": "platform",
+            "kind": "choice",
+            "required": true,
+            "options": [
+              "pc",
+              "playstation",
+              "xbox",
+              "switch",
+              "mobile",
+              "other"
+            ],
+            "option_labels": {
+              "pc": {
+                "tr": "PC"
+              },
+              "playstation": {
+                "tr": "PlayStation"
+              },
+              "xbox": {
+                "tr": "Xbox"
+              },
+              "switch": {
+                "tr": "Switch"
+              },
+              "mobile": {
+                "tr": "Mobil"
+              },
+              "other": {
+                "tr": "Diğer"
+              }
+            },
+            "labels": {
+              "tr": "Platform"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "dog_walk",
+      "interest_keys": [
+        "nature",
+        "sports"
+      ],
+      "labels": {
+        "tr": "Köpek yürüyüşü"
+      },
+      "icon": "pets",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "route"
+          }
+        ]
+      }
+    },
+    {
+      "key": "quiz_night",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Bilgi yarışması gecesi"
+      },
+      "icon": "quiz",
+      "modes": [
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "flags": {
+          "album_notice": true
+        },
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": {
+                "organizer_choice": [
+                  "manual",
+                  "random"
+                ],
+                "default": "random"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "esports",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Espor turnuvası"
+      },
+      "icon": "sports_esports",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": "manual"
+            }
+          },
+          {
+            "kind": "draw"
+          }
+        ]
+      }
+    },
+    {
+      "key": "board_game_night",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Masa oyunu gecesi"
+      },
+      "icon": "casino",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "player",
+              "tables": true,
+              "presets": [
+                "batak",
+                "okey_101",
+                "backgammon",
+                "free"
+              ],
+              "guests": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "team_sport",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Takım sporu"
+      },
+      "icon": "sports_soccer",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": "balanced"
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "team",
+              "rounds": "single",
+              "winner": "high",
+              "result": "points"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "chess",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Satranç"
+      },
+      "icon": "casino",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "draw"
+          },
+          {
+            "kind": "bracket",
+            "params": {
+              "format": {
+                "organizer_choice": [
+                  "swiss",
+                  "league",
+                  "elimination"
+                ],
+                "default": "swiss"
+              },
+              "best_of": {
+                "organizer_choice": [
+                  1,
+                  3,
+                  5
+                ],
+                "default": 1
+              }
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "player",
+              "rounds": "single",
+              "result": "wdl",
+              "guests": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "running",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Koşu"
+      },
+      "icon": "directions_run",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "measure",
+            "key": "duration",
+            "labels": {
+              "tr": "Süre"
+            },
+            "params": {
+              "unit": "minute",
+              "scope": "personal",
+              "entered_by": "self",
+              "min": 0,
+              "max": 1440,
+              "decimals": 2,
+              "showcase": true
+            }
+          },
+          {
+            "kind": "ranking",
+            "optional": {
+              "default": true
+            },
+            "params": {
+              "source": "duration",
+              "direction": "asc"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "swimming",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Yüzme"
+      },
+      "icon": "pool",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "ranking",
+            "optional": {
+              "default": true
+            },
+            "params": {
+              "metric": "duration"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "car_meet",
+      "interest_keys": [
+        "automotive"
+      ],
+      "labels": {
+        "tr": "Araç buluşması"
+      },
+      "icon": "directions_car",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "celebration"
+          }
+        ]
+      }
+    },
+    {
+      "key": "games_other",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Oyun (diğer)"
+      },
+      "icon": "sports_esports",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "teams",
+            "params": {
+              "mode": "manual"
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "player",
+              "tables": true,
+              "presets": [
+                "free"
+              ],
+              "guests": true
+            }
+          },
+          {
+            "kind": "celebration",
+            "params": {
+              "source": "scoreboard"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "word_guess",
+      "interest_keys": [
+        "games"
+      ],
+      "labels": {
+        "tr": "Kelime tahmin oyunu"
+      },
+      "icon": "timer",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "timer",
+            "params": {
+              "mode": "countdown",
+              "presets": [
+                60,
+                90,
+                120
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "talk",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Söyleşi / seminer"
+      },
+      "icon": "mic",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "questions",
+            "params": {
+              "anonymous": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "problem_session",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Soru çözüm oturumu"
+      },
+      "icon": "mic",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "pool_link",
+            "params": {
+              "max_links": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "photo_contest",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Fotoğraf yarışması"
+      },
+      "icon": "photo_camera",
+      "modes": [
+        "in_person"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "components": [
+          {
+            "kind": "vote",
+            "params": {
+              "source": "album"
+            }
+          },
+          {
+            "kind": "celebration",
+            "params": {
+              "source": "vote"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "ornek_alanlar",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Örnek alanlar"
+      },
+      "icon": "bilinmeyen_ikon",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "fields": [
+          {
+            "key": "baslik",
+            "kind": "text",
+            "required": true,
+            "max_length": 40,
+            "labels": {
+              "tr": "Kısa ad",
+              "en": "Short name"
+            },
+            "vocabulary": {
+              "namespace": "ornek"
+            }
+          },
+          {
+            "key": "notlar",
+            "kind": "long_text",
+            "max_length": 300,
+            "labels": {
+              "tr": "Notlar"
+            }
+          },
+          {
+            "key": "kisi",
+            "kind": "integer",
+            "min": 1,
+            "max": 50,
+            "unit": "piece",
+            "labels": {
+              "tr": "Kişi sayısı"
+            }
+          },
+          {
+            "key": "mesafe",
+            "kind": "decimal",
+            "min": 0.5,
+            "max": 100,
+            "decimals": 1,
+            "unit": "km",
+            "labels": {
+              "tr": "Planlanan mesafe"
+            }
+          },
+          {
+            "key": "seviye",
+            "kind": "choice",
+            "options": [
+              "baslangic",
+              "ileri",
+              "uzman",
+              "4"
+            ],
+            "option_labels": {
+              "baslangic": {
+                "tr": "Başlangıç",
+                "en": "Beginner"
+              },
+              "ileri": {
+                "tr": "İleri"
+              },
+              "uzman": {
+                "tr": "Uzman"
+              }
+            },
+            "labels": {
+              "tr": "Seviye"
+            }
+          },
+          {
+            "key": "diller",
+            "kind": "multi_choice",
+            "required": true,
+            "options": [
+              "tr",
+              "en",
+              "de",
+              "fr"
+            ],
+            "option_labels": {
+              "tr": {
+                "tr": "Türkçe"
+              },
+              "en": {
+                "tr": "İngilizce"
+              },
+              "de": {
+                "tr": "Almanca"
+              },
+              "fr": {
+                "tr": "Fransızca"
+              }
+            },
+            "max_selected": 2,
+            "labels": {
+              "tr": "Diller"
+            }
+          },
+          {
+            "key": "su_var",
+            "kind": "boolean",
+            "labels": {
+              "tr": "Su var mı"
+            }
+          },
+          {
+            "key": "son_kayit",
+            "kind": "date",
+            "labels": {
+              "tr": "Son kayıt günü"
+            }
+          },
+          {
+            "key": "sure",
+            "kind": "duration",
+            "min": 5,
+            "max": 600,
+            "labels": {
+              "tr": "Tahmini süre"
+            }
+          }
+        ],
+        "flags": {
+          "sensitive_attendance": true,
+          "album_notice": true
+        }
+      }
+    },
+    {
+      "key": "ornek_bilesenler",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Örnek bileşenler"
+      },
+      "icon": "extension",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "fields": [
+          {
+            "key": "mesafe",
+            "kind": "decimal",
+            "unit": "km",
+            "labels": {
+              "tr": "Planlanan mesafe"
+            }
+          }
+        ],
+        "components": [
+          {
+            "kind": "meeting_point"
+          },
+          {
+            "kind": "route"
+          },
+          {
+            "kind": "schedule",
+            "params": {
+              "max_items": 20
+            }
+          },
+          {
+            "kind": "checklist",
+            "key": "gear",
+            "labels": {
+              "tr": "Malzeme listesi"
+            },
+            "params": {
+              "label": "gear",
+              "assignment": true,
+              "quantity": true
+            }
+          },
+          {
+            "kind": "roll_call",
+            "optional": {
+              "default": false
+            },
+            "params": {
+              "alarm": true,
+              "return_grace_minutes": 30
+            }
+          },
+          {
+            "kind": "vehicles",
+            "params": {
+              "plate": true,
+              "seats": true
+            }
+          },
+          {
+            "kind": "teams",
+            "params": {
+              "mode": {
+                "organizer_choice": [
+                  "random",
+                  "balanced",
+                  "manual"
+                ],
+                "default": "balanced"
+              },
+              "team_count": 2
+            }
+          },
+          {
+            "kind": "draw"
+          },
+          {
+            "kind": "bracket",
+            "params": {
+              "format": {
+                "organizer_choice": [
+                  "elimination",
+                  "league",
+                  "swiss"
+                ],
+                "default": "swiss"
+              },
+              "best_of": 1
+            }
+          },
+          {
+            "kind": "scoreboard",
+            "params": {
+              "side": "team",
+              "tables": true,
+              "presets": [
+                "batak",
+                "tavla"
+              ],
+              "guests": true
+            }
+          },
+          {
+            "kind": "measure",
+            "key": "distance",
+            "labels": {
+              "tr": "Mesafe"
+            },
+            "params": {
+              "unit": "km",
+              "scope": "total",
+              "entered_by": "organizer",
+              "showcase": true,
+              "prefill_from": "mesafe"
+            }
+          },
+          {
+            "kind": "ranking",
+            "params": {
+              "source": "distance",
+              "metric": "rank",
+              "direction": "desc"
+            }
+          },
+          {
+            "kind": "vote",
+            "params": {
+              "source": "free"
+            }
+          },
+          {
+            "kind": "celebration",
+            "params": {
+              "source": "scoreboard"
+            }
+          },
+          {
+            "kind": "goal",
+            "params": {
+              "measure": "distance",
+              "default_target": 100
+            }
+          },
+          {
+            "kind": "log",
+            "key": "sightings",
+            "labels": {
+              "tr": "Gözlemler"
+            },
+            "params": {
+              "fields": [
+                {
+                  "key": "species",
+                  "kind": "text",
+                  "required": true,
+                  "max_length": 60,
+                  "labels": {
+                    "tr": "Tür"
+                  },
+                  "vocabulary": {
+                    "namespace": "species"
+                  }
+                },
+                {
+                  "key": "count",
+                  "kind": "integer",
+                  "min": 1,
+                  "max": 999,
+                  "labels": {
+                    "tr": "Adet"
+                  }
+                }
+              ],
+              "location": true,
+              "location_default": "participants",
+              "stat": [
+                "count",
+                "distinct:species"
+              ],
+              "max_entries": 100
+            }
+          },
+          {
+            "kind": "questions",
+            "params": {
+              "anonymous": true
+            }
+          },
+          {
+            "kind": "timer",
+            "params": {
+              "mode": {
+                "organizer_choice": [
+                  "countdown",
+                  "stopwatch",
+                  "chess_clock"
+                ],
+                "default": "countdown"
+              },
+              "presets": [
+                60,
+                300
+              ]
+            }
+          },
+          {
+            "kind": "pool_link",
+            "params": {
+              "max_links": 10
+            }
+          },
+          {
+            "kind": "gelecek_bilesen",
+            "params": {
+              "bilinmeyen": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "gelecek_tur",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Gelecek tür"
+      },
+      "icon": "event",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {
+        "fields": [
+          {
+            "key": "tablo",
+            "kind": "matrix",
+            "labels": {
+              "tr": "Tablo"
+            }
+          },
+          {
+            "key": "ad",
+            "kind": "text",
+            "labels": {
+              "tr": "Ad"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "eski_tur",
+      "interest_keys": [
+        "sports"
+      ],
+      "labels": {
+        "tr": "Eski tür"
+      },
+      "icon": "sports",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "retired",
+      "version": 1,
+      "definition": {}
+    },
+    {
+      "key": "general",
+      "interest_keys": [
+        "general"
+      ],
+      "labels": {
+        "tr": "Genel"
+      },
+      "icon": "event",
+      "modes": [
+        "in_person",
+        "online"
+      ],
+      "status": "active",
+      "version": 1,
+      "definition": {}
+    }
+  ],
+  "study_tags": [
+    {
+      "key": "yks",
+      "position": 10,
+      "labels": {
+        "tr": "YKS"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs",
+      "position": 20,
+      "labels": {
+        "tr": "LGS"
+      },
+      "status": "active"
+    },
+    {
+      "key": "kpss",
+      "position": 30,
+      "labels": {
+        "tr": "KPSS"
+      },
+      "status": "retired"
+    },
+    {
+      "key": "yks_other",
+      "parent_key": "yks",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_fizik",
+      "parent_key": "yks",
+      "position": 20,
+      "labels": {
+        "tr": "Fizik"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_matematik",
+      "parent_key": "yks",
+      "position": 10,
+      "labels": {
+        "tr": "Matematik"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_eski_ders",
+      "parent_key": "yks",
+      "position": 30,
+      "labels": {
+        "tr": "Eski ders"
+      },
+      "status": "retired"
+    },
+    {
+      "key": "yks_matematik_integral",
+      "parent_key": "yks_matematik",
+      "position": 20,
+      "labels": {
+        "tr": "İntegral"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_matematik_turev",
+      "parent_key": "yks_matematik",
+      "position": 10,
+      "labels": {
+        "tr": "Türev"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_matematik_eski",
+      "parent_key": "yks_matematik",
+      "position": 30,
+      "labels": {
+        "tr": "Eski konu"
+      },
+      "status": "retired"
+    },
+    {
+      "key": "yks_matematik_other",
+      "parent_key": "yks_matematik",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_fizik_other",
+      "parent_key": "yks_fizik",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_eski_ders_ozet",
+      "parent_key": "yks_eski_ders",
+      "position": 10,
+      "labels": {
+        "tr": "Eski dersin konusu"
+      },
+      "status": "active"
+    },
+    {
+      "key": "yks_eski_ders_other",
+      "parent_key": "yks_eski_ders",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs_turkce",
+      "parent_key": "lgs",
+      "position": 10,
+      "labels": {
+        "tr": "Türkçe"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs_turkce_other",
+      "parent_key": "lgs_turkce",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "lgs_other",
+      "parent_key": "lgs",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    },
+    {
+      "key": "kpss_tarih",
+      "parent_key": "kpss",
+      "position": 10,
+      "labels": {
+        "tr": "Tarih"
+      },
+      "status": "active"
+    },
+    {
+      "key": "kpss_other",
+      "parent_key": "kpss",
+      "position": 90,
+      "labels": {
+        "tr": "Diğer"
+      },
+      "status": "active"
+    }
+  ],
+  "badges": [
+    {
+      "key": "ilk_adim",
+      "scope": "user",
+      "position": 10,
+      "labels": {
+        "tr": "İlk adım",
+        "en": "First step"
+      },
+      "icon": "stars",
+      "status": "active",
+      "rule": {
+        "kind": "first"
+      }
+    },
+    {
+      "key": "yuruyus_100_km",
+      "scope": "tayfa",
+      "position": 20,
+      "labels": {
+        "tr": "Yüz kilometre"
+      },
+      "icon": "hiking",
+      "status": "active",
+      "rule": {
+        "kind": "threshold",
+        "metric": "hike.distance",
+        "value": 100,
+        "period": "all_time"
+      }
+    },
+    {
+      "key": "yilin_tayfasi",
+      "scope": "tayfa",
+      "position": 30,
+      "labels": {
+        "tr": "Yılın tayfası"
+      },
+      "icon": "workspace_premium",
+      "status": "active",
+      "rule": {
+        "kind": "threshold",
+        "metric": "events",
+        "value": 12,
+        "period": "year"
+      }
+    },
+    {
+      "key": "satranc_sampiyonu",
+      "scope": "user",
+      "position": 40,
+      "labels": {
+        "tr": "Satranç şampiyonu"
+      },
+      "icon": "emoji_events",
+      "status": "active",
+      "rule": {
+        "kind": "champion",
+        "event_type": "chess"
+      }
+    },
+    {
+      "key": "eski_rozet",
+      "scope": "user",
+      "position": 50,
+      "labels": {
+        "tr": "Eski rozet"
+      },
+      "icon": "military_tech",
+      "status": "retired",
+      "rule": {
+        "kind": "threshold",
+        "metric": "duration",
+        "value": 600,
+        "period": "all_time"
+      }
+    },
+    {
+      "key": "gelecek_kural",
+      "scope": "user",
+      "position": 60,
+      "labels": {
+        "tr": "Gelecek kural"
+      },
+      "icon": "bilinmeyen_ikon",
+      "status": "active",
+      "rule": {
+        "kind": "streak"
+      }
+    }
+  ]
+}

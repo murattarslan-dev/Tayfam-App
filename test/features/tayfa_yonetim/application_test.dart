@@ -178,7 +178,7 @@ void main() {
           tayfa,
           ad: ' Klasikçiler ',
           aciklama: '',
-          ilgi: {EventType.convoy},
+          ilgi: {'automotive'},
           katilim: JoinPolicy.approval,
           uyeEtkinlikAcar: false,
         ),
@@ -191,14 +191,31 @@ void main() {
         tayfa,
         ad: 'Klasikçiler',
         aciklama: ' Pazar buluşmaları ',
-        ilgi: {EventType.hike, EventType.convoy},
+        ilgi: {'nature', 'automotive'},
         katilim: JoinPolicy.open,
         uyeEtkinlikAcar: false,
       );
       expect(istek!.toJson(), {
         'description': 'Pazar buluşmaları',
-        'interests': ['convoy', 'hike'],
+        'interests': ['nature', 'automotive'],
         'join_policy': 'open',
+      });
+    });
+
+    test('Şimdi başlatabilenler yalnızca değişince gönderilir', () {
+      TayfaUpdateRequest? istek(Role? rol) => bilgiDegisiklikleri(
+        tayfa,
+        ad: 'Klasikçiler',
+        aciklama: '',
+        ilgi: {'automotive'},
+        katilim: JoinPolicy.approval,
+        uyeEtkinlikAcar: false,
+        simdiRolu: rol,
+      );
+      expect(istek(null), isNull);
+      expect(istek(Role.member), isNull, reason: 'varsayılan üyeler');
+      expect(istek(Role.moderator)!.toJson(), {
+        'now_create_min_role': 'moderator',
       });
     });
 

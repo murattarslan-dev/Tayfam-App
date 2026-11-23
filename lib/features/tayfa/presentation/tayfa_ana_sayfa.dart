@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/gezinme/bildirim_zili.dart';
+import 'package:tayfam/core/moduller/ana_sayfa_bileseni.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/rozet/rozet.dart';
 import 'package:tayfam/features/tayfa/application/kurulum.dart';
 import 'package:tayfam/features/tayfa/application/tayfa_gorunumu.dart';
 import 'package:tayfam/features/tayfa/application/tayfalarim_notifier.dart';
@@ -34,14 +36,16 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// - mor bölüme taşan kartlar: yeni tayfada "Tayfanı birlikte kuralım",
 ///   açık modüllerin öne çıkan kartı ("Sıradaki" etkinlik);
 /// - yöneticiye ve moderatöre bekleyen katılım isteği satırı;
-/// - açık modüllerin bölümleri kayıt sırasıyla (etkinlikler, duyurular,
-///   anketler, sorular); modüllere bölümlerin "Tümü" bağlantılarından
-///   gidilir, ayrı modül gezinmesi yoktur;
+/// - sunucunun `home_widgets` listesindeki bileşenler sırasıyla (App
+///   ADR-0024 §6): bölümler (etkinlikler, duyurular, anketler, sorular),
+///   gösterim kartları ve modül vitrinleri; tanınmayan anahtar atlanır.
+///   Modüllere bölümlerin "Tümü" bağlantılarından gidilir, ayrı modül
+///   gezinmesi yoktur;
 /// - sağ altta "Oluştur" (seçenekleri sunucunun izinleri belirler; istemci
 ///   yalnızca sadeleştirir, kesin kural 5).
 ///
-/// Kapalı modülün bölümü hiç görünmez; görünürlüğe sunucunun `modules`
-/// alanı karar verir (ADR-0002). Aşağı çekince tayfa ve bölümler
+/// Kapalı modülün bölümü hiç görünmez; görünürlüğe sunucunun `modules` ve
+/// `home_widgets` alanları karar verir (ADR-0002, Tayfam-Api ADR-0027). Aşağı çekince tayfa ve bölümler
 /// yenilenir; veri yalnızca bellektedir (ADR-0006).
 class TayfaAnaSayfa extends ConsumerWidget {
   const TayfaAnaSayfa({super.key, required this.tayfaId});
@@ -72,6 +76,18 @@ class TayfaAnaSayfa extends ConsumerWidget {
     final kural = kuralGosterilsin(ozet, simdi: simdi);
     final durum = tayfa == null ? null : tayfaDurumu(tayfa);
     final bekleyen = ozet.bekleyenIstekSayisi;
+    final gorunum = ref.watch(tayfaGorunumuProvider(tayfaId)).value;
+    // Tayfa rozetleri (App ADR-0033 §3); yoksa bölüm çizilmez.
+    final rozetler = gorunum?.badges ?? const <EarnedBadge>[];
+    // Sunucunun gösterdiği bileşenler, sırasıyla (App ADR-0024 §6);
+    // kayıtta olmayan anahtar atlanır.
+    final bilesenler = gorunum == null
+        ? const <(AnaSayfaBileseni, HomeWidget)>[]
+        : gosterilecekBilesenler(
+            ref.watch(anaSayfaBilesenKaydiProvider),
+            gorunum.homeWidgets,
+            acikModuller: {for (final m in moduller) m.sunucuAnahtari},
+          );
     // Anlık tayfada (ADR-0026) "Oluştur" yoktur: tek etkinlik, diğer
     // modüller kapalı; davetler anlık etkinlik kartındadır.
     final anlik = ozet.anlik;
@@ -114,7 +130,7 @@ class TayfaAnaSayfa extends ConsumerWidget {
             )
           : null,
       body: TayfamYenile(
-        onRefresh: () => _yenile(ref, moduller),
+        onRefresh: () => _yenile(ref, [for (final (b, _) in bilesenler) b]),
         // Mor üst bölümün üstünde açılan boşluk da mor, L beyaz.
         zemin: context.renkler.markaYuzey,
         // Üst bölüm içerikle birlikte kayar; büyük yazıda da taşmaz.
@@ -159,42 +175,78 @@ class TayfaAnaSayfa extends ConsumerWidget {
                 ),
                 child: _KuralMetni(),
               ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                TayfamSpacing.kenarMobil,
-                TayfamSpacing.s24,
-                TayfamSpacing.kenarMobil,
-                0,
-              ),
-              child: moduller.isEmpty
-                  ? Text(
-                      metinler.tayfa_ana_sayfa_bos,
-                      style: context.yazi.bodyLarge?.copyWith(
-                        color: context.renkler.metinGovde,
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (final (sira, modul) in moduller.indexed) ...[
-                          if (sira > 0)
-                            const SizedBox(height: TayfamSpacing.s32),
-                          modul.anaSayfaKarti(context, tayfaId),
+            // Anlık tayfada boş metin yoktur: anlık etkinlik kartı yukarıda.
+            if (gorunum != null && !(anlik && bilesenler.isEmpty))
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  TayfamSpacing.kenarMobil,
+                  TayfamSpacing.s24,
+                  TayfamSpacing.kenarMobil,
+                  0,
+                ),
+                child: bilesenler.isEmpty
+                    ? Text(
+                        metinler.tayfa_ana_sayfa_bos,
+                        style: context.yazi.bodyLarge?.copyWith(
+                          color: context.renkler.metinGovde,
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final (sira, (bilesen, veri))
+                              in bilesenler.indexed) ...[
+                            if (sira > 0)
+                              const SizedBox(height: TayfamSpacing.s32),
+                            KeyedSubtree(
+                              key: ValueKey(veri.key),
+                              child: bilesen.kart(context, tayfaId, veri),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
+              ),
+            // Tayfa istatistikleri (#250; Tayfam-Api ADR-0026); anlık
+            // tayfada yoktur.
+            if (!anlik)
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  TayfamSpacing.kenarMobil,
+                  TayfamSpacing.s24,
+                  TayfamSpacing.kenarMobil,
+                  0,
+                ),
+                child: ListeKarti(
+                  children: [
+                    MenuSatiri.kartta(
+                      ikon: Icons.insights_outlined,
+                      baslik: metinler.istatistik_baslik,
+                      aciklama: metinler.istatistik_giris_aciklama,
+                      sag: const SatirOku(),
+                      onTap: () =>
+                          context.go(Adresler.tayfaIstatistikleri(tayfaId)),
                     ),
-            ),
+                  ],
+                ),
+              ),
+            if (rozetler.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: TayfamSpacing.kenarMobil,
+                ),
+                child: RozetBolumu(rozetler: rozetler),
+              ),
           ],
         ),
       ),
     );
   }
 
-  /// Tayfayı ve görünen bölümleri birlikte yeniler; hepsi bitince döner.
-  Future<void> _yenile(WidgetRef ref, List<TayfaModule> moduller) async {
+  /// Tayfayı ve görünen bileşenleri birlikte yeniler; hepsi bitince döner.
+  Future<void> _yenile(WidgetRef ref, List<AnaSayfaBileseni> bilesenler) async {
     await Future.wait([
       ref.read(tayfaGorunumuProvider(tayfaId).notifier).yenile(),
-      for (final modul in moduller) modul.anaSayfayiYenile(ref, tayfaId),
+      for (final bilesen in bilesenler) bilesen.yenile(ref, tayfaId),
     ]);
   }
 }
@@ -853,13 +905,17 @@ Future<void> _olusturmaSayfasiniAc(
   secim(context, tayfaId);
 }
 
+/// Şimdi başlat ekranını tayfasız (anlık) açar; kabuğun üstünde `go` ile.
+void _simdiAnlik(BuildContext context, String _) =>
+    context.go(Adresler.simdi());
+
 void Function(BuildContext, String) _davetEt(TayfaDaveti? davet) =>
     (context, tayfaId) {
       if (davet != null) unawaited(davet(context, tayfaId));
     };
 
 /// "Oluştur" sayfasının içeriği: modül seçenekleri iki sütunlu kartlar
-/// halinde ve altta "Tayfaya davet et".
+/// halinde, "Şimdi başlat (arkadaşlarla)" ve altta "Tayfaya davet et".
 class OlusturmaSayfasi extends StatelessWidget {
   const OlusturmaSayfasi({
     super.key,
@@ -901,11 +957,19 @@ class OlusturmaSayfasi extends StatelessWidget {
             ),
           ),
         ],
+        // Tayfa dışında, arkadaşlarla hemen başlayan etkinlik (App ADR-0032
+        // §1): Şimdi başlat ekranı tayfasız (anlık) açılır.
+        if (secenekler.isNotEmpty) ...[
+          const SizedBox(height: TayfamSpacing.s16),
+          const Divider(),
+        ],
+        MenuSatiri(
+          ikon: Icons.bolt_outlined,
+          baslik: m.simdi_arkadaslarla,
+          aciklama: m.simdi_arkadaslarla_aciklama,
+          onTap: () => onSec(_simdiAnlik),
+        ),
         if (davetVar) ...[
-          if (secenekler.isNotEmpty) ...[
-            const SizedBox(height: TayfamSpacing.s16),
-            const Divider(),
-          ],
           MenuSatiri(
             ikonKutusu: DecoratedBox(
               decoration: BoxDecoration(
@@ -1120,4 +1184,23 @@ class _TayfaAdiDugmesi extends StatelessWidget {
       ),
     );
   }
+}
+
+/// [sunucudakiler]'den kayıtta karşılığı olanlar, sunucunun sırasıyla
+/// (App ADR-0024 §6). Tanınmayan anahtar, aynı anahtarın tekrarı ve
+/// modülü görünür olmayan bölüm ([acikModuller] dışında) atlanır;
+/// sunucudan gelen liste girdidir.
+List<(AnaSayfaBileseni, HomeWidget)> gosterilecekBilesenler(
+  List<AnaSayfaBileseni> kayit,
+  List<HomeWidget> sunucudakiler, {
+  required Set<String> acikModuller,
+}) {
+  final gorulen = <String>{};
+  return [
+    for (final veri in sunucudakiler)
+      if (veri.enabled && gorulen.add(veri.key))
+        if (anaSayfaBileseniBul(kayit, veri.key) case final bilesen?)
+          if (bilesen is! BolumBileseni || acikModuller.contains(bilesen.modul))
+            (bilesen, veri),
+  ];
 }

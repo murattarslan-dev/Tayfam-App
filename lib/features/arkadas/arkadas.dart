@@ -18,6 +18,9 @@ library;
 // Anlık etkinlikte arkadaş seçimi (ADR-0026).
 export 'package:tayfam/features/arkadas/application/arkadaslar_notifier.dart'
     show ArkadaslarNotifier, arkadaslarProvider;
+// Şimdi başlatta arkadaş seçici: bugün "Boşum" diyenler önce (App ADR-0032 §4).
+export 'package:tayfam/features/arkadas/application/bos_vakit.dart'
+    show rozetGunu;
 export 'package:tayfam/features/arkadas/data/arkadas_deposu.dart'
     show ArkadasDeposu, arkadasDeposuProvider;
 export 'package:tayfam/features/arkadas/application/bildirim_yanitlari.dart'
@@ -30,8 +33,10 @@ export 'package:tayfam/features/arkadas/application/kisi_eylemleri.dart'
         katilimGorunurlukSatiriProvider,
         kisiProfiliEylemleriProvider,
         referansPaylasimiProvider;
+// Profil sekmesindeki kendi rozetlerin ve istatistiklerin (issue #300):
+// "Başkaları nasıl görüyor" ile aynı sağlayıcı.
 export 'package:tayfam/features/arkadas/application/kisi_profili_notifier.dart'
-    show sonKatilimlarProvider;
+    show kisiProfiliProvider, sonKatilimlarProvider;
 export 'package:tayfam/features/arkadas/application/oneriler_notifier.dart'
     show OneriEklemeSonucu;
 export 'package:tayfam/features/arkadas/presentation/arkadas_bul_ekrani.dart'

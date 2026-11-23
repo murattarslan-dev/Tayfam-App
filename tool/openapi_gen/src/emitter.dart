@@ -178,7 +178,8 @@ String _models(ApiModel model) {
   return out.toString();
 }
 
-bool _isCollection(TypeRef type) => type is ListRef || type is MapRef;
+bool _isCollection(TypeRef type) =>
+    type is ListRef || type is MapRef || type is JsonObjectRef;
 
 void _class(StringBuffer out, ClassDef def) {
   final name = def.name;
@@ -313,6 +314,8 @@ String _decode(TypeRef type, String expr, String at, int depth) {
       return 'Map<String, ${value.dart}>.unmodifiable(_readObject($expr, $at)'
           '.map((String $k, Object? $e) => '
           'MapEntry($k, ${_decode(value, e, at, depth + 1)})))';
+    case JsonObjectRef():
+      return '_readJsonObject($expr, $at)';
   }
 }
 
@@ -334,6 +337,8 @@ String _encode(TypeRef type, String expr, int depth) {
       final e = 'e$depth';
       return '<String, Object?>{for (final $e in $expr.entries) '
           '$e.key: ${_encode(value, '$e.value', depth + 1)}}';
+    case JsonObjectRef():
+      return expr;
   }
 }
 
@@ -368,6 +373,11 @@ Map<String, Object?> _readObject(Object? value, String at) =>
 
 List<Object?> _readList(Object? value, String at) =>
     value is List<Object?> ? value : _invalid(at);
+
+/// Serbest JSON nesnesi (`additionalProperties: true`): değerler çözülmüş
+/// JSON'dur ve burada doğrulanmaz; kullanan katman girdi kabul eder.
+Map<String, Object?> _readJsonObject(Object? value, String at) =>
+    Map<String, Object?>.unmodifiable(_readObject(value, at));
 
 bool _deepEquals(Object? a, Object? b) {
   if (a is List<Object?> && b is List<Object?>) {
@@ -484,6 +494,10 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
       '',
       'Kimlik doğrulaması gerektirmez (`security: []`).',
     ],
+    if (op.conditional) ...[
+      '',
+      'Koşullu istek: sunucu `304` dönerse (değişmedi) `null` döner.',
+    ],
   ];
   for (final param in op.params) {
     if (param.doc.isEmpty) continue;
@@ -495,10 +509,12 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
   _doc(out, doc, '  ');
 
   final response = op.response;
+  // Koşullu işlemde (If-None-Match) `304` gövdesizdir: metod `null` döner.
+  final maybe = op.conditional ? '?' : '';
   final returnType = switch (response) {
-    JsonResponse(:final type) => type.name,
+    JsonResponse(:final type) => '${type.name}$maybe',
     NoContentResponse() => 'void',
-    TextResponse() => 'String',
+    TextResponse() => 'String$maybe',
   };
   final expect = switch (response) {
     JsonResponse() => 'ResponseKind.json',
@@ -569,6 +585,20 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
         .join(', ');
     args.add('query: {$entries}');
   }
+  final headerParams = op.params.where(
+    (p) => p.location == ParamLocation.header,
+  );
+  if (headerParams.isNotEmpty) {
+    final entries = headerParams
+        .map((p) {
+          final key = dartString(p.jsonName);
+          if (p.isRequired) return '$key: ${_paramValue(p, p.dartName)}';
+          return 'if (${p.dartName} != null) '
+              '$key: ${_paramValue(p, p.dartName)}';
+        })
+        .join(', ');
+    args.add('headers: {$entries}');
+  }
   if (bodyExpr != null) args.add('body: $bodyExpr');
   args
     ..add('expect: $expect')
@@ -578,19 +608,28 @@ void _operation(StringBuffer out, OperationDef op, ApiModel model) {
   final id = dartString(op.operationId);
   switch (response) {
     case JsonResponse(:final type):
-      out
-        ..writeln('    final response = await $call;')
-        ..writeln(
-          '    return ${type.name}.fromJson(jsonObject(response, $id));',
-        );
+      out.writeln('    final response = await $call;');
+      _notModified(out, op);
+      out.writeln(
+        '    return ${type.name}.fromJson(jsonObject(response, $id));',
+      );
     case NoContentResponse():
       out.writeln('    await $call;');
     case TextResponse():
-      out
-        ..writeln('    final response = await $call;')
-        ..writeln('    return textBody(response, $id);');
+      out.writeln('    final response = await $call;');
+      _notModified(out, op);
+      out.writeln('    return textBody(response, $id);');
   }
   out.writeln('  }');
+}
+
+/// Koşullu işlemde taşımanın `null` cevabı `304`'tür.
+void _notModified(StringBuffer out, OperationDef op) {
+  if (!op.conditional) return;
+  out
+    ..writeln('    if (response == null) {')
+    ..writeln('      return null;')
+    ..writeln('    }');
 }
 
 // --------------------------------------------------------------- transport
@@ -629,6 +668,10 @@ abstract interface class ApiTransport {
   /// - [pathParams]: şablondaki adlar → ham değerler; uygulama her değeri
   ///   yüzde kodlamasıyla (`Uri.encodeComponent`) yerleştirir.
   /// - [query]: yalnızca verilen sorgu parametreleri, dize olarak.
+  /// - [headers]: sözleşmenin o işleme özel başlıkları (`If-None-Match`).
+  ///   Uygulamanın her isteğe kendisinin eklediği başlıklar burada
+  ///   verilemez. `If-None-Match` verilen istekte sunucu `304` dönerse
+  ///   gövde yoktur ve sonuç `null`'dır.
   /// - [body]: JSON'a çevrilecek gövde; `null` ise gövde gönderilmez.
   /// - [authenticated]: sözleşmedeki geçerli `security`'den gelir;
   ///   `false` (`security: []`) ise uygulama `Authorization` eklemez ve
@@ -641,6 +684,7 @@ abstract interface class ApiTransport {
     required bool authenticated,
     Map<String, String> pathParams = const {},
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
     Object? body,
     ResponseKind expect = ResponseKind.json,
   });

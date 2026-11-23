@@ -76,6 +76,46 @@ void main() {
       expect(pushAdresi(b), Adresler.veriDisaAktarma);
     });
 
+    const oduncAdimlari = [
+      'library_loan_requested',
+      'library_queue_joined',
+      'library_loan_approved',
+      'library_loan_declined',
+      'library_loan_handed_over',
+      // Sıra sende (#332): aktör yok, hedef yine kalem.
+      'library_queue_turn',
+    ];
+
+    test('ödünç adımı: kalemin detayı açılır (hedef library_item)', () {
+      for (final tur in oduncAdimlari) {
+        final b = pushBildirimi({
+          'notification_id': _bildirim,
+          'type': tur,
+          'target_type': 'library_item',
+          'target_id': _hedef,
+          'tayfa_id': _tayfa,
+        }, simdi: simdi);
+        expect(b, isNotNull, reason: tur);
+        expect(b!.targetType, NotificationTargetType.libraryItem);
+        expect(
+          pushAdresi(b),
+          Adresler.kutuphaneKalemi(_tayfa, _hedef),
+          reason: tur,
+        );
+      }
+    });
+
+    test('ödünç adımı tayfasız: Bildirimler sekmesi', () {
+      final b = pushBildirimi({
+        'notification_id': _bildirim,
+        'type': 'library_loan_approved',
+        'target_type': 'library_item',
+        'target_id': _hedef,
+      }, simdi: simdi);
+      expect(b, isNotNull);
+      expect(pushAdresi(b), Adresler.bildirimler);
+    });
+
     final gecersizler = <String, Map<String, String>>{
       'kimlik UUID değil': {
         'notification_id': '../../profil',
@@ -101,6 +141,20 @@ void main() {
         'type': 'event_created',
         'target_type': 'baska',
         'target_id': _hedef,
+      },
+      'ödünç adımında kalem kimliği biçimsiz': {
+        'notification_id': _bildirim,
+        'type': 'library_loan_requested',
+        'target_type': 'library_item',
+        'target_id': '../../ayarlar',
+        'tayfa_id': _tayfa,
+      },
+      'sıra sende kalem kimliği biçimsiz': {
+        'notification_id': _bildirim,
+        'type': 'library_queue_turn',
+        'target_type': 'library_item',
+        'target_id': 'javascript:alert(1)',
+        'tayfa_id': _tayfa,
       },
       'tayfa kimliği biçimsiz': {
         'notification_id': _bildirim,
@@ -130,6 +184,16 @@ void main() {
         // Arkadaş önerisi yalnızca uygulama içidir, push gitmez
         // (Tayfam-Api ADR-0030 §8).
         if (tur == NotificationType.friendSuggestion) continue;
+        // Kutlama da yalnızca uygulama içidir (Tayfam-Api #255).
+        if (tur == NotificationType.celebration) continue;
+        // Rozet bildirimi de yalnızca uygulama içidir (Tayfam-Api #258).
+        if (tur == NotificationType.badgeEarned) continue;
+        // Kütüphane bildirimleri de yalnızca uygulama içidir (Tayfam-Api
+        // #270).
+        if (tur == NotificationType.libraryDue ||
+            tur == NotificationType.libraryLoanOrphaned) {
+          continue;
+        }
         expect(arb['push_${tur.wire}_title'], isA<String>(), reason: tur.wire);
         expect(arb['push_${tur.wire}_body'], isA<String>(), reason: tur.wire);
       }

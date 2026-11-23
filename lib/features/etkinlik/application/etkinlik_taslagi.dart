@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/katalog/alanlar.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/data/dis_uygulamalar.dart';
 
 /// Sihirbazın adım sayısı (ADR-0015 §3 ve Notlar 2026-11-13): tür;
@@ -42,51 +44,6 @@ const int etkinlikYerAdiEnCok = 120;
 const int etkinlikIlEnCok = 50;
 const int etkinlikBaglantiEnCok = 2048;
 const int etkinlikKontenjanEnCok = 10000;
-const int etkinlikOyunEnCok = 60;
-const int etkinlikSahaEnCok = 120;
-const int etkinlikKampYeriEnCok = 120;
-const int etkinlikKampNotuEnCok = 1000;
-const int etkinlikZorlukEnCok = 5;
-const double etkinlikMesafeEnCok = 1000;
-const int etkinlikYukseltiEnCok = 9000;
-const int etkinlikToleransEnCok = 1440;
-
-/// Konvoy rotası: boş ya da en az 2, en çok 500 nokta
-/// (`ConvoyDetailsInput.route`).
-const int rotaEnAzNokta = 2;
-const int rotaEnCokNokta = 500;
-
-/// Sihirbazda seçilebilen türler, sözleşmenin sırasıyla.
-const List<EventType> secilebilirEtkinlikTurleri = [
-  EventType.convoy,
-  EventType.camp,
-  EventType.hike,
-  EventType.fishing,
-  EventType.gaming,
-  EventType.sports,
-  EventType.general,
-];
-
-/// Seçilebilen oyun platformları (sözleşme sırasıyla).
-const List<GamingDetailsPlatform> secilebilirPlatformlar = [
-  GamingDetailsPlatform.pc,
-  GamingDetailsPlatform.playstation,
-  GamingDetailsPlatform.xbox,
-  GamingDetailsPlatform.switch_,
-  GamingDetailsPlatform.mobile,
-  GamingDetailsPlatform.other,
-];
-
-/// Seçilebilen spor dalları (sözleşme sırasıyla).
-const List<SportsDetailsSport> secilebilirSporlar = [
-  SportsDetailsSport.football,
-  SportsDetailsSport.tableFootball,
-  SportsDetailsSport.basketball,
-  SportsDetailsSport.volleyball,
-  SportsDetailsSport.tennis,
-  SportsDetailsSport.tableTennis,
-  SportsDetailsSport.other,
-];
 
 /// Sihirbazdaki bir alanın hatası.
 enum TaslakHatasi {
@@ -102,20 +59,13 @@ enum TaslakHatasi {
   ilce,
   baglanti,
   kontenjan,
-  oyun,
-  platform,
-  spor,
-  sahaAdi,
-  kampYeri,
-  kampNotu,
-  mesafe,
-  yukselti,
-  donus,
-  tolerans,
+
+  /// Katalogdaki tür alanlarından en az biri geçersiz; alan başına hata
+  /// [alanHatalari] ile hesaplanır.
+  alanlar,
   tekrarAralik,
   tekrarSayi,
   tekrarTarih,
-  rota,
 }
 
 const Object _ayni = Object();
@@ -181,131 +131,6 @@ final class YerBilgisi {
       Object.hash(mod, nokta, noktaAdi, il, ilce, baglanti, halkaAcik);
 }
 
-/// Türe özel alanlar (sözleşmedeki `*DetailsInput`). Sayılar metin olarak
-/// tutulur; gönderilirken okunur. Konvoy rotası, haritada sırayla
-/// işaretlenen noktalardır (ADR-0015 Notlar 4, paket 3); kullanıcının
-/// bilerek paylaştığı içeriktir, log'a yazılmaz.
-@immutable
-final class TurAyrintisi {
-  const TurAyrintisi({
-    this.kampYeri = '',
-    this.su,
-    this.tuvalet,
-    this.kampNotu = '',
-    this.zorluk = 0,
-    this.mesafe = '',
-    this.yukselti = '',
-    this.donus,
-    this.tolerans = '',
-    this.balikGizliligi = FishingDetailsSpotVisibility.tayfa,
-    this.oyun = '',
-    this.platform,
-    this.spor,
-    this.sahaAdi = '',
-    this.rota = const [],
-  });
-
-  /// Konvoy: rota noktaları, sırasıyla.
-  final List<LatLng> rota;
-
-  /// Kamp: yer adı, su ve tuvalet (bilinmiyorsa `null`), not.
-  final String kampYeri;
-  final bool? su;
-  final bool? tuvalet;
-  final String kampNotu;
-
-  /// Yürüyüş: zorluk (0: verilmemiş, 1–5), mesafe (km), yükselti (m),
-  /// beklenen dönüş ve dönüş toleransı (dakika).
-  final int zorluk;
-  final String mesafe;
-  final String yukselti;
-  final DateTime? donus;
-  final String tolerans;
-
-  /// Balık: buluşma noktasını kimin göreceği.
-  final FishingDetailsSpotVisibility balikGizliligi;
-
-  /// Oyun: oyunun adı ve platform (ikisi de zorunlu).
-  final String oyun;
-  final GamingDetailsPlatform? platform;
-
-  /// Spor: dal (zorunlu) ve saha adı.
-  final SportsDetailsSport? spor;
-  final String sahaAdi;
-
-  TurAyrintisi kopya({
-    String? kampYeri,
-    Object? su = _ayni,
-    Object? tuvalet = _ayni,
-    String? kampNotu,
-    int? zorluk,
-    String? mesafe,
-    String? yukselti,
-    Object? donus = _ayni,
-    String? tolerans,
-    FishingDetailsSpotVisibility? balikGizliligi,
-    String? oyun,
-    GamingDetailsPlatform? platform,
-    SportsDetailsSport? spor,
-    String? sahaAdi,
-    List<LatLng>? rota,
-  }) => TurAyrintisi(
-    kampYeri: kampYeri ?? this.kampYeri,
-    su: identical(su, _ayni) ? this.su : su as bool?,
-    tuvalet: identical(tuvalet, _ayni) ? this.tuvalet : tuvalet as bool?,
-    kampNotu: kampNotu ?? this.kampNotu,
-    zorluk: zorluk ?? this.zorluk,
-    mesafe: mesafe ?? this.mesafe,
-    yukselti: yukselti ?? this.yukselti,
-    donus: identical(donus, _ayni) ? this.donus : donus as DateTime?,
-    tolerans: tolerans ?? this.tolerans,
-    balikGizliligi: balikGizliligi ?? this.balikGizliligi,
-    oyun: oyun ?? this.oyun,
-    platform: platform ?? this.platform,
-    spor: spor ?? this.spor,
-    sahaAdi: sahaAdi ?? this.sahaAdi,
-    rota: rota == null ? this.rota : List.unmodifiable(rota),
-  );
-
-  @override
-  bool operator ==(Object other) =>
-      other is TurAyrintisi &&
-      other.kampYeri == kampYeri &&
-      other.su == su &&
-      other.tuvalet == tuvalet &&
-      other.kampNotu == kampNotu &&
-      other.zorluk == zorluk &&
-      other.mesafe == mesafe &&
-      other.yukselti == yukselti &&
-      other.donus == donus &&
-      other.tolerans == tolerans &&
-      other.balikGizliligi == balikGizliligi &&
-      other.oyun == oyun &&
-      other.platform == platform &&
-      other.spor == spor &&
-      other.sahaAdi == sahaAdi &&
-      listEquals(other.rota, rota);
-
-  @override
-  int get hashCode => Object.hash(
-    kampYeri,
-    su,
-    tuvalet,
-    kampNotu,
-    zorluk,
-    mesafe,
-    yukselti,
-    donus,
-    tolerans,
-    balikGizliligi,
-    oyun,
-    platform,
-    spor,
-    sahaAdi,
-    Object.hashAll(rota),
-  );
-}
-
 /// Oluşturma ya da düzenleme sihirbazının durumu. Girilenler adımlar
 /// arasında korunur (ADR-0014 §4, ADR-0015 §3). Zamanlar UTC'dir.
 @immutable
@@ -314,6 +139,12 @@ final class EtkinlikTaslagi {
     required this.istekKimligi,
     this.adim = 0,
     this.tur,
+    this.turTanimi,
+    this.alanlar = const {},
+    this.alanlarDegisti = false,
+    this.bilesenler = const {},
+    this.bilesenlerOkundu = true,
+    this.bilesenlerKilitli = false,
     this.baslik = '',
     this.aciklama = '',
     this.baslangic,
@@ -321,8 +152,6 @@ final class EtkinlikTaslagi {
     this.yer = const YerBilgisi(),
     this.kontenjan = '',
     this.tekrar,
-    this.ayrinti = const TurAyrintisi(),
-    this.ayrintiDegisti = false,
     this.kapak,
     this.onizlemeyeDon = false,
     this.hatalar = const {},
@@ -340,7 +169,36 @@ final class EtkinlikTaslagi {
   /// Gösterilen adım (0–4; [SihirbazAdimi]).
   final int adim;
 
-  final EventType? tur;
+  /// Seçilen türün katalog anahtarı (`EventCreateRequest.type`).
+  final String? tur;
+
+  /// Seçilen türün tanımı: oluşturmada katalogdaki güncel sürüm,
+  /// düzenlemede etkinliğin kendi tür sürümü (`type_version`). Düzenlemede
+  /// tanım henüz okunmadıysa `null`'dır; o zaman katalog alanları
+  /// çizilmez ve gönderilmez.
+  final CatalogEventType? turTanimi;
+
+  /// Türün katalogdaki alanlarının formdaki değerleri ([AlanDegerleri]).
+  final AlanDegerleri alanlar;
+
+  /// Katalog alanlarından biri değişti (düzenlemede `fields` yalnızca o
+  /// zaman gönderilir; sunucu değerlerin tamamını değiştirir).
+  final bool alanlarDegisti;
+
+  /// Organizatörün bileşen seçimleri (ADR-0031 §1): `optional`
+  /// bileşenlerin açık/kapalı hali ve organizatöre bırakılan parametreler.
+  /// Oluşturmada yalnızca dokunulanlar; düzenlemede etkinliğin sunucudaki
+  /// haliyle başlar.
+  final BilesenSecimleri bilesenler;
+
+  /// Düzenlemede etkinliğin bileşen durumu okundu mu; okunana kadar
+  /// seçimler çizilmez. Oluşturmada hep `true`.
+  final bool bilesenlerOkundu;
+
+  /// Seçimler artık değişmez (etkinlik başladı ya da iptal edildi, tayfa
+  /// salt okunur ya da çağıran yönetemiyor): salt okunur gösterilir.
+  final bool bilesenlerKilitli;
+
   final String baslik;
   final String aciklama;
   final DateTime? baslangic;
@@ -352,12 +210,6 @@ final class EtkinlikTaslagi {
 
   /// Tekrar; `null` ise tek seferlik. Yalnızca oluşturmada.
   final TekrarSecimi? tekrar;
-
-  final TurAyrintisi ayrinti;
-
-  /// Türe özel alanlardan biri değişti (düzenlemede ayrıntı yalnızca o
-  /// zaman gönderilir; sunucu ayrıntıyı tamamen değiştirir).
-  final bool ayrintiDegisti;
 
   /// Kapak fotoğrafının yüklemesi (`null`: kapak yok; ADR-0021 §6).
   /// Düzenlemede etkinliğin kapağıyla başlar.
@@ -388,7 +240,13 @@ final class EtkinlikTaslagi {
 
   EtkinlikTaslagi kopya({
     int? adim,
-    EventType? tur,
+    String? tur,
+    Object? turTanimi = _ayni,
+    AlanDegerleri? alanlar,
+    bool? alanlarDegisti,
+    BilesenSecimleri? bilesenler,
+    bool? bilesenlerOkundu,
+    bool? bilesenlerKilitli,
     String? baslik,
     String? aciklama,
     DateTime? baslangic,
@@ -396,8 +254,6 @@ final class EtkinlikTaslagi {
     YerBilgisi? yer,
     String? kontenjan,
     Object? tekrar = _ayni,
-    TurAyrintisi? ayrinti,
-    bool? ayrintiDegisti,
     Object? kapak = _ayni,
     bool? onizlemeyeDon,
     Set<TaslakHatasi>? hatalar,
@@ -410,6 +266,14 @@ final class EtkinlikTaslagi {
     istekKimligi: istekKimligi,
     adim: adim ?? this.adim,
     tur: tur ?? this.tur,
+    turTanimi: identical(turTanimi, _ayni)
+        ? this.turTanimi
+        : turTanimi as CatalogEventType?,
+    alanlar: alanlar ?? this.alanlar,
+    alanlarDegisti: alanlarDegisti ?? this.alanlarDegisti,
+    bilesenler: bilesenler ?? this.bilesenler,
+    bilesenlerOkundu: bilesenlerOkundu ?? this.bilesenlerOkundu,
+    bilesenlerKilitli: bilesenlerKilitli ?? this.bilesenlerKilitli,
     baslik: baslik ?? this.baslik,
     aciklama: aciklama ?? this.aciklama,
     baslangic: baslangic ?? this.baslangic,
@@ -417,8 +281,6 @@ final class EtkinlikTaslagi {
     yer: yer ?? this.yer,
     kontenjan: kontenjan ?? this.kontenjan,
     tekrar: identical(tekrar, _ayni) ? this.tekrar : tekrar as TekrarSecimi?,
-    ayrinti: ayrinti ?? this.ayrinti,
-    ayrintiDegisti: ayrintiDegisti ?? this.ayrintiDegisti,
     kapak: identical(kapak, _ayni) ? this.kapak : kapak as String?,
     onizlemeyeDon: onizlemeyeDon ?? this.onizlemeyeDon,
     hatalar: hatalar ?? this.hatalar,
@@ -435,6 +297,8 @@ final class EtkinlikTaslagi {
 /// sorusu bununla verilir.
 bool ayniGirdi(EtkinlikTaslagi a, EtkinlikTaslagi b) =>
     a.tur == b.tur &&
+    ayniAlanDegerleri(a.alanlar, b.alanlar) &&
+    ayniBilesenSecimleri(a.bilesenler, b.bilesenler) &&
     a.baslik == b.baslik &&
     a.aciklama == b.aciklama &&
     a.baslangic == b.baslangic &&
@@ -442,19 +306,27 @@ bool ayniGirdi(EtkinlikTaslagi a, EtkinlikTaslagi b) =>
     a.yer == b.yer &&
     a.kontenjan == b.kontenjan &&
     a.tekrar == b.tekrar &&
-    a.ayrinti == b.ayrinti &&
     a.kapak == b.kapak &&
     listEquals(a.davetliler, b.davetliler);
 
 /// Düzenlenecek [etkinlik]'ten taslak: tür değişmez, ilk adım başlık ve
-/// zamandır; tekrar düzenlenmez.
-EtkinlikTaslagi duzenlemeTaslagi(Event etkinlik, String istekKimligi) {
-  final hike = etkinlik.hike;
-  final camp = etkinlik.camp;
+/// zamandır; tekrar düzenlenmez. [tanim] etkinliğin tür sürümünün
+/// tanımıdır (biliniyorsa); katalog alanlarının değerleri ona göre okunur.
+EtkinlikTaslagi duzenlemeTaslagi(
+  Event etkinlik,
+  String istekKimligi, {
+  CatalogEventType? tanim,
+}) {
   return EtkinlikTaslagi(
     istekKimligi: istekKimligi,
     adim: 1,
-    tur: etkinlik.type == EventType.unknown ? EventType.general : etkinlik.type,
+    tur: etkinlik.type,
+    turTanimi: tanim,
+    alanlar: tanim == null
+        ? const {}
+        : alanDegerleriOku(turAlanlari(tanim), etkinlik.fields),
+    // Bileşen seçimleri sunucudaki durumdan sonradan doldurulur.
+    bilesenlerOkundu: false,
     baslik: etkinlik.title,
     aciklama: etkinlik.description,
     baslangic: etkinlik.startsAt.toUtc(),
@@ -472,42 +344,21 @@ EtkinlikTaslagi duzenlemeTaslagi(Event etkinlik, String istekKimligi) {
     ),
     kontenjan: etkinlik.capacity > 0 ? '${etkinlik.capacity}' : '',
     kapak: etkinlik.coverUploadId,
-    ayrinti: TurAyrintisi(
-      kampYeri: camp?.siteName ?? '',
-      su: camp?.hasWater,
-      tuvalet: camp?.hasToilet,
-      kampNotu: camp?.notes ?? '',
-      zorluk: hike?.difficulty ?? 0,
-      mesafe: _sayiMetni(hike?.distanceKm),
-      yukselti: _sayiMetni(hike?.elevationM),
-      donus: hike?.expectedReturnAt?.toUtc(),
-      tolerans: _sayiMetni(hike?.returnGraceMinutes),
-      balikGizliligi:
-          etkinlik.fishing?.spotVisibility ==
-              FishingDetailsSpotVisibility.participants
-          ? FishingDetailsSpotVisibility.participants
-          : FishingDetailsSpotVisibility.tayfa,
-      oyun: etkinlik.gaming?.game ?? '',
-      platform: switch (etkinlik.gaming?.platform) {
-        null || GamingDetailsPlatform.unknown => null,
-        final p => p,
-      },
-      spor: switch (etkinlik.sports?.sport) {
-        null || SportsDetailsSport.unknown => null,
-        final s => s,
-      },
-      sahaAdi: etkinlik.sports?.venueName ?? '',
-      rota: List.unmodifiable(etkinlik.convoy?.route ?? const <LatLng>[]),
-    ),
   );
 }
 
-String _sayiMetni(num? sayi) {
-  if (sayi == null || sayi == 0) return '';
-  if (sayi is double && sayi == sayi.roundToDouble()) {
-    return sayi.toInt().toString();
-  }
-  return sayi.toString();
+/// [tanim]'daki tür alanları (yoksa boş).
+List<CatalogField> turAlanlari(CatalogEventType? tanim) =>
+    tanim?.definition.fields ?? const <CatalogField>[];
+
+/// [tanim] türünün izin verdiği modlar; tanım yoksa ya da tanınan mod
+/// taşımıyorsa ikisi de.
+List<EventMode> turModlari(CatalogEventType? tanim) {
+  final modlar = [
+    for (final mod in const [EventMode.inPerson, EventMode.online])
+      if (tanim?.modes.contains(mod) ?? true) mod,
+  ];
+  return modlar.isEmpty ? const [EventMode.inPerson, EventMode.online] : modlar;
 }
 
 int _uzunluk(String metin) => metin.runes.length;
@@ -516,14 +367,6 @@ int _uzunluk(String metin) => metin.runes.length;
 String? _doluysa(String metin) {
   final kirpik = metin.trim();
   return kirpik.isEmpty ? null : kirpik;
-}
-
-/// Ondalık sayı; Türkçe virgül de kabul edilir. Boşsa `null`; geçersizse
-/// `double.nan`.
-double? _ondalik(String metin) {
-  final kirpik = metin.trim();
-  if (kirpik.isEmpty) return null;
-  return double.tryParse(kirpik.replaceAll(',', '.')) ?? double.nan;
 }
 
 /// Tam sayı. Boşsa `null`; geçersizse `-1`.
@@ -550,7 +393,14 @@ Set<TaslakHatasi> adimHatalari(
   final hatalar = <TaslakHatasi>{};
   switch (adim) {
     case 0:
-      if (t.tur == null) hatalar.add(TaslakHatasi.tur);
+      // Oluşturmada tür katalogdan, tanımıyla seçilir; alan türü
+      // tanınmayan türde etkinlik oluşturulmaz (ADR-0024 §3).
+      final tanim = t.turTanimi;
+      if (t.tur == null ||
+          (eski == null &&
+              (tanim == null || !alanlarTaniniyor(turAlanlari(tanim))))) {
+        hatalar.add(TaslakHatasi.tur);
+      }
     case 1:
       final baslik = t.baslik.trim();
       if (baslik.isEmpty || _uzunluk(baslik) > etkinlikBaslikEnCok) {
@@ -600,7 +450,9 @@ Set<TaslakHatasi> adimHatalari(
       if (!_aralikta(kontenjanSayisi(t.kontenjan), etkinlikKontenjanEnCok)) {
         hatalar.add(TaslakHatasi.kontenjan);
       }
-      hatalar.addAll(_ayrintiHatalari(t));
+      if (alanHatalari(turAlanlari(t.turTanimi), t.alanlar).isNotEmpty) {
+        hatalar.add(TaslakHatasi.alanlar);
+      }
       final tekrar = t.tekrar;
       final baslangic = t.baslangic;
       if (eski == null && tekrar != null && baslangic != null) {
@@ -619,128 +471,22 @@ Set<TaslakHatasi> adimHatalari(
   return Set.unmodifiable(hatalar);
 }
 
-Set<TaslakHatasi> _ayrintiHatalari(EtkinlikTaslagi t) {
-  final a = t.ayrinti;
-  final hatalar = <TaslakHatasi>{};
-  switch (t.tur) {
-    case EventType.camp:
-      if (_uzunluk(a.kampYeri.trim()) > etkinlikKampYeriEnCok) {
-        hatalar.add(TaslakHatasi.kampYeri);
-      }
-      if (_uzunluk(a.kampNotu.trim()) > etkinlikKampNotuEnCok) {
-        hatalar.add(TaslakHatasi.kampNotu);
-      }
-    case EventType.hike:
-      if (!_aralikta(_ondalik(a.mesafe), etkinlikMesafeEnCok)) {
-        hatalar.add(TaslakHatasi.mesafe);
-      }
-      if (!_aralikta(_tamSayi(a.yukselti), etkinlikYukseltiEnCok)) {
-        hatalar.add(TaslakHatasi.yukselti);
-      }
-      if (!_aralikta(_tamSayi(a.tolerans), etkinlikToleransEnCok)) {
-        hatalar.add(TaslakHatasi.tolerans);
-      }
-      final donus = a.donus;
-      final baslangic = t.baslangic;
-      if (donus != null && baslangic != null && !donus.isAfter(baslangic)) {
-        hatalar.add(TaslakHatasi.donus);
-      }
-    case EventType.gaming:
-      final oyun = a.oyun.trim();
-      if (oyun.isEmpty || _uzunluk(oyun) > etkinlikOyunEnCok) {
-        hatalar.add(TaslakHatasi.oyun);
-      }
-      if (a.platform == null) hatalar.add(TaslakHatasi.platform);
-    case EventType.sports:
-      if (a.spor == null) hatalar.add(TaslakHatasi.spor);
-      if (_uzunluk(a.sahaAdi.trim()) > etkinlikSahaEnCok) {
-        hatalar.add(TaslakHatasi.sahaAdi);
-      }
-    case EventType.convoy:
-      if (rotaHatali(a.rota)) hatalar.add(TaslakHatasi.rota);
-    case EventType.fishing || EventType.general || EventType.unknown || null:
-      break;
-  }
-  return hatalar;
-}
-
-/// Rotanın nokta sayısı geçersiz mi (boş ya da 2–500 olmalı).
-bool rotaHatali(List<LatLng> rota) =>
-    rota.isNotEmpty &&
-    (rota.length < rotaEnAzNokta || rota.length > rotaEnCokNokta);
-
-/// Türe özel ayrıntı (sözleşme: en fazla bir tane ve türle aynı; `gaming`
-/// ve `sports` için zorunlu, `general` için yok). Boş kalan isteğe bağlı
-/// ayrıntı gönderilmez.
-({
-  ConvoyDetailsInput? convoy,
-  CampDetailsInput? camp,
-  HikeDetails? hike,
-  FishingDetails? fishing,
-  GamingDetails? gaming,
-  SportsDetails? sports,
-})
-turAyrintisi(EventType? tur, TurAyrintisi a) {
-  ConvoyDetailsInput? convoy;
-  CampDetailsInput? camp;
-  HikeDetails? hike;
-  FishingDetails? fishing;
-  GamingDetails? gaming;
-  SportsDetails? sports;
-  switch (tur) {
-    case EventType.camp:
-      final girdi = CampDetailsInput(
-        siteName: _doluysa(a.kampYeri),
-        hasWater: a.su,
-        hasToilet: a.tuvalet,
-        notes: _doluysa(a.kampNotu),
-      );
-      if (girdi.toJson().isNotEmpty) camp = girdi;
-    case EventType.hike:
-      final mesafe = _ondalik(a.mesafe);
-      final girdi = HikeDetails(
-        difficulty: a.zorluk == 0 ? null : a.zorluk,
-        distanceKm: mesafe == null ? null : (mesafe * 100).round() / 100,
-        elevationM: _tamSayi(a.yukselti),
-        expectedReturnAt: a.donus,
-        returnGraceMinutes: _tamSayi(a.tolerans),
-      );
-      if (girdi.toJson().isNotEmpty) hike = girdi;
-    case EventType.fishing:
-      fishing = FishingDetails(spotVisibility: a.balikGizliligi);
-    case EventType.gaming:
-      final platform = a.platform;
-      if (platform != null) {
-        gaming = GamingDetails(game: a.oyun.trim(), platform: platform);
-      }
-    case EventType.sports:
-      final spor = a.spor;
-      if (spor != null) {
-        sports = SportsDetails(sport: spor, venueName: _doluysa(a.sahaAdi));
-      }
-    case EventType.convoy:
-      if (a.rota.isNotEmpty) convoy = ConvoyDetailsInput(route: a.rota);
-    case EventType.general || EventType.unknown || null:
-      break;
-  }
-  return (
-    convoy: convoy,
-    camp: camp,
-    hike: hike,
-    fishing: fishing,
-    gaming: gaming,
-    sports: sports,
-  );
+/// Taslaktaki katalog alanlarının `fields` gövdesi; türün alanı yoksa ya
+/// da hiçbir değer girilmediyse `null` (alan gönderilmez).
+Map<String, Object?>? _alanGovdesi(EtkinlikTaslagi t) {
+  final govde = alanGovdesi(turAlanlari(t.turTanimi), t.alanlar);
+  return govde.isEmpty ? null : govde;
 }
 
 /// Geçerli [t]'den `POST .../events` gövdesi. Yalnızca seçilen moda ait
 /// yer alanları gönderilir.
 EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
   final yuzYuze = t.yer.mod != EventMode.online;
-  final ayrinti = turAyrintisi(t.tur, t.ayrinti);
   final tekrar = t.tekrar;
   return EventCreateRequest(
-    type: t.tur ?? EventType.general,
+    type: t.tur!,
+    fields: _alanGovdesi(t),
+    components: bilesenSecimGovdesi(t.turTanimi, t.bilesenler),
     mode: yuzYuze ? EventMode.inPerson : EventMode.online,
     title: t.baslik.trim(),
     description: _doluysa(t.aciklama),
@@ -754,12 +500,6 @@ EventCreateRequest olusturmaIstegi(EtkinlikTaslagi t) {
     // Yalnızca işaretliyse gönderilir; çevrim içinde anlamı yoktur.
     discoverable: yuzYuze && t.yer.halkaAcik ? true : null,
     capacity: kontenjanSayisi(t.kontenjan),
-    convoy: ayrinti.convoy,
-    camp: ayrinti.camp,
-    hike: ayrinti.hike,
-    fishing: ayrinti.fishing,
-    gaming: ayrinti.gaming,
-    sports: ayrinti.sports,
     recurrence: tekrar == null ? null : tekrarKurali(tekrar),
     coverUploadId: t.kapak,
     clientRequestId: t.istekKimligi,
@@ -776,6 +516,8 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
   return InstantEventCreateRequest(
     event: EventCreateRequest(
       type: etkinlik.type,
+      fields: etkinlik.fields,
+      components: etkinlik.components,
       mode: etkinlik.mode,
       title: etkinlik.title,
       description: etkinlik.description,
@@ -787,12 +529,6 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
       district: etkinlik.district,
       onlineUrl: etkinlik.onlineUrl,
       capacity: etkinlik.capacity,
-      convoy: etkinlik.convoy,
-      camp: etkinlik.camp,
-      hike: etkinlik.hike,
-      fishing: etkinlik.fishing,
-      gaming: etkinlik.gaming,
-      sports: etkinlik.sports,
       clientRequestId: etkinlik.clientRequestId,
     ),
     inviteeUserIds: davetliler.isEmpty ? null : davetliler,
@@ -803,8 +539,7 @@ InstantEventCreateRequest anlikIstegi(EtkinlikTaslagi t) {
 /// [eski]'ye göre değişen alan grupları (sözleşme: zaman ikisi birlikte,
 /// yer alanları mod ile birlikte). Değişiklik yoksa `null`.
 ///
-/// Türe özel ayrıntı yalnızca alanlarına dokunulduysa gönderilir; konvoyda
-/// silinen rota boş listeyle gönderilir. Seriye
+/// Türe özel ayrıntı yalnızca alanlarına dokunulduysa gönderilir. Seriye
 /// ait etkinlikte `apply_to_series` gönderilmez: yalnızca bu etkinlik
 /// değişir (ADR-0015 §3).
 EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
@@ -812,9 +547,11 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
   final aciklama = t.aciklama.trim();
   final baslangic = t.baslangic!;
   final bitis = t.bitis!;
+  // Açık uçlu etkinliğin zamanı düzenlenemez (Tayfam-Api ADR-0038 §1).
   final zamanDegisti =
-      !eski.startsAt.isAtSameMomentAs(baslangic) ||
-      !eski.endsAt.isAtSameMomentAs(bitis);
+      !eski.openEnded &&
+      (!eski.startsAt.isAtSameMomentAs(baslangic) ||
+          !eski.endsAt.isAtSameMomentAs(bitis));
   final yuzYuze = t.yer.mod != EventMode.online;
   final mod = yuzYuze ? EventMode.inPerson : EventMode.online;
   final noktaAdi = yuzYuze ? _doluysa(t.yer.noktaAdi) : null;
@@ -831,22 +568,13 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
       baglanti != eski.onlineUrl;
   final halkaAcik = yuzYuze && t.yer.halkaAcik;
   final kontenjan = kontenjanSayisi(t.kontenjan) ?? 0;
-  final ayrinti = t.ayrintiDegisti
-      ? turAyrintisi(t.tur, t.ayrinti)
-      : (
-          convoy: null,
-          camp: null,
-          hike: null,
-          fishing: null,
-          gaming: null,
-          sports: null,
-        );
-  final rotaSilindi =
-      t.ayrintiDegisti &&
-      t.tur == EventType.convoy &&
-      t.ayrinti.rota.isEmpty &&
-      (eski.convoy?.route?.isNotEmpty ?? false);
+  // `fields` verilirse değerlerin tamamı yerine geçer; boş nesne bütün
+  // değerleri kaldırır (sözleşme). Tanım bilinmiyorsa gönderilmez.
+  final alanlar = t.alanlarDegisti && t.turTanimi != null
+      ? alanGovdesi(turAlanlari(t.turTanimi), t.alanlar)
+      : null;
   final istek = EventUpdateRequest(
+    fields: alanlar,
     // Kaldırılan kapak "" ile gönderilir (sözleşme).
     coverUploadId: t.kapak == eski.coverUploadId ? null : t.kapak ?? '',
     title: baslik == eski.title ? null : baslik,
@@ -861,12 +589,6 @@ EventUpdateRequest? duzenlemeIstegi(EtkinlikTaslagi t, Event eski) {
     onlineUrl: yerDegisti ? baglanti : null,
     discoverable: halkaAcik == eski.discoverable ? null : halkaAcik,
     capacity: kontenjan == eski.capacity ? null : kontenjan,
-    convoy: rotaSilindi ? const ConvoyDetailsInput(route: []) : ayrinti.convoy,
-    camp: ayrinti.camp,
-    hike: ayrinti.hike,
-    fishing: ayrinti.fishing,
-    gaming: ayrinti.gaming,
-    sports: ayrinti.sports,
   );
   return istek.toJson().isEmpty ? null : istek;
 }

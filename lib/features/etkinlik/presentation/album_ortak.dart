@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
-import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/models.dart' hide Material;
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/medya/fotograf_secici.dart';
@@ -14,12 +14,14 @@ import 'package:tayfam/features/etkinlik/application/etkinlik_albumu.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
 import 'package:tayfam/features/etkinlik/presentation/album_ekle_sayfasi.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
+import 'package:tayfam/features/etkinlik/presentation/tur_bayraklari.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// Albüm işlerinin hata metni (istemci ADR-0025 §4).
 ///
 /// Albümü durduran dört kod (`album-closed`, `not-attended`,
-/// `event-limit`, `event-cancelled`) albüme özel metinlerini alır; hazırlama,
+/// `event-limit`, `event-cancelled`) albüme özel metinlerini alır
+/// (`album-consent-required` ortak eşlemedeki metniyle); hazırlama,
 /// ret ve medya hataları [fotografHataMetni]'nden, geri kalanı ortak
 /// eşlemeden gelir. Sunucunun `title`/`detail`'i gösterilmez.
 String albumHataMetni(AppLocalizations m, Object hata) => switch (hata) {
@@ -267,11 +269,16 @@ class _KucukOnizleme extends StatelessWidget {
 /// "Fotoğraf ekle" akışı (istemci ADR-0025 §2): kaynak sorulur, galeride
 /// en çok [albumKisiBasiEnCok] fotoğraf seçilir, "Albüme ekle" sayfası
 /// hazırlar; onaylanınca hazır görüntüler yükleme kuyruğuna girer.
+///
+/// [izinSor] (türü `album_notice` bayraklı; [albumIzniSorulur]) ise
+/// kuyruğa girmeden önce izin onayı sorulur (istemci ADR-0031 §6); "Vazgeç"
+/// derse hiçbir istek gönderilmez.
 Future<void> albumeFotografEkle(
   BuildContext context,
   WidgetRef ref,
-  EtkinlikAnahtari anahtar,
-) async {
+  EtkinlikAnahtari anahtar, {
+  bool izinSor = false,
+}) async {
   final kaynak = await fotografKaynagiSor(context);
   if (kaynak == null || !context.mounted) return;
   final List<SecilenFotograf> secilenler;
@@ -297,7 +304,12 @@ Future<void> albumeFotografEkle(
     (_) => AlbumEkleSayfasi(secilenler: secilenler),
   );
   if (sonuc == null || sonuc.goruntuler.isEmpty) return;
+  if (izinSor) {
+    if (!context.mounted) return;
+    final onay = await albumIzniOnayi(context);
+    if (!onay || !context.mounted) return;
+  }
   ref
       .read(albumYuklemeProvider(anahtar).notifier)
-      .ekle(sonuc.goruntuler, aciklama: sonuc.aciklama);
+      .ekle(sonuc.goruntuler, aciklama: sonuc.aciklama, izinOnayi: izinSor);
 }

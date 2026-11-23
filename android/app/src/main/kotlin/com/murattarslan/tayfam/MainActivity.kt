@@ -3,9 +3,14 @@ package com.murattarslan.tayfam
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
+import android.view.WindowManager
 import com.murattarslan.tayfam.butunluk.ButunlukKoprusu
 import com.murattarslan.tayfam.e2e.SignalKoprusu
 import io.flutter.embedding.android.FlutterActivity
@@ -20,6 +25,12 @@ import io.flutter.plugin.common.MethodChannel
  *   kanaldan geçmez.
  * - `tayfam/e2e/signal` (istemci ADR-0010, ADR-0020): Signal köprüsü.
  * - `tayfam/butunluk` (istemci ADR-0023): Play Integrity köprüsü.
+ * - `tayfam/kronometre` (istemci ADR-0031 §3): kronometre ekranı açıkken
+ *   ekranın kapanmasını engeller (yalnızca bu pencere bayrağı; izin
+ *   gerekmez) ve süre dolunca kısa bir uyarı sesi çalar. QR ile katılım
+ *   ekranı (istemci ADR-0032 §3) aynı kanalla ekranı açık tutar ve
+ *   `parlaklik` ile bu pencerenin parlaklığını en yükseğe çıkarır (sistem
+ *   ayarı değişmez, izin gerekmez).
  */
 class MainActivity : FlutterActivity() {
     private var signalKoprusu: SignalKoprusu? = null
@@ -40,6 +51,62 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "tayfam/kronometre")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "ekraniAcikTut" -> {
+                        ekraniAcikTut(call.arguments == true)
+                        result.success(null)
+                    }
+                    "uyar" -> {
+                        uyariSesi()
+                        result.success(null)
+                    }
+                    "parlaklik" -> {
+                        parlaklik(call.arguments == true)
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    /** Kronometre ekranı açıkken ekran kendiliğinden kapanmaz. */
+    private fun ekraniAcikTut(acik: Boolean) {
+        runOnUiThread {
+            if (acik) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        }
+    }
+
+    /**
+     * QR ekranı açıkken yalnızca bu pencerenin parlaklığı en yükseğe çıkar;
+     * kapanınca sistem ayarına döner.
+     */
+    private fun parlaklik(artir: Boolean) {
+        runOnUiThread {
+            val ayar = window.attributes
+            ayar.screenBrightness = if (artir) {
+                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+            } else {
+                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+            }
+            window.attributes = ayar
+        }
+    }
+
+    /** Kısa uyarı sesi (bildirim ses düzeyinde); ses kullanılamazsa sessiz geçer. */
+    private fun uyariSesi() {
+        val ton = try {
+            ToneGenerator(AudioManager.STREAM_NOTIFICATION, UYARI_SES_DUZEYI)
+        } catch (e: RuntimeException) {
+            return
+        }
+        ton.startTone(ToneGenerator.TONE_PROP_BEEP2, UYARI_SURESI_MS)
+        Handler(Looper.getMainLooper()).postDelayed({ ton.release() }, UYARI_SURESI_MS + 200L)
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
@@ -94,5 +161,9 @@ class MainActivity : FlutterActivity() {
     private companion object {
         /** Sunucunun kullandığı kanallar (Tayfam-Api ADR-0019 §4). */
         val KANALLAR = setOf("tayfam_messages", "tayfam_alerts", "tayfam_general")
+
+        /** Kronometre uyarı sesinin düzeyi (0–100) ve süresi. */
+        const val UYARI_SES_DUZEYI = 80
+        const val UYARI_SURESI_MS = 600
     }
 }

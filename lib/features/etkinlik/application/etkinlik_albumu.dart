@@ -305,11 +305,14 @@ final class AlbumYuklemeDurumu {
 
 /// Bütün albümü durduran hatalar (Tayfam-Api ADR-0028 §2): sıradaki
 /// fotoğraflar da aynı nedenle reddedilir, istek gönderilmez.
+/// `album-consent-required`: aynı partideki fotoğrafların hiçbirinde izin
+/// onayı yoktur (istemci ADR-0031 §6).
 const Set<ProblemType> albumuDurduranHatalar = {
   ProblemType.albumClosed,
   ProblemType.notAttended,
   ProblemType.eventLimit,
   ProblemType.eventCancelled,
+  ProblemType.albumConsentRequired,
 };
 
 /// [hata] aynı istekle tekrar denenebilir mi: bağlantı, zaman aşımı,
@@ -328,6 +331,7 @@ final class _Is {
     required this.aciklama,
     required this.yuklemeKimligi,
     required this.eklemeKimligi,
+    required this.izinOnayi,
   });
 
   final HazirGoruntu goruntu;
@@ -338,6 +342,10 @@ final class _Is {
 
   /// `POST .../photos`'un `client_request_id`'si.
   final String eklemeKimligi;
+
+  /// Kullanıcı bu yüklemede "Evet, izin aldım" dedi mi (`consent_ack`;
+  /// istemci ADR-0031 §6). Yalnızca bu iş için bellekte; saklanmaz.
+  final bool izinOnayi;
 
   /// Yükleme tamamlandıysa dosyanın kimliği (tekrar denemede yalnızca
   /// ekleme yinelenir).
@@ -371,8 +379,13 @@ class AlbumYuklemeNotifier extends Notifier<AlbumYuklemeDurumu> {
   }
 
   /// Hazır görüntüleri kuyruğa ekler; [aciklama] (kırpılmış, boş değilse)
-  /// yalnızca tek fotoğrafta gönderilir.
-  void ekle(List<HazirGoruntu> goruntuler, {String? aciklama}) {
+  /// yalnızca tek fotoğrafta gönderilir. [izinOnayi] bu partinin her
+  /// fotoğrafında `consent_ack: true` olarak gider (`album_notice`).
+  void ekle(
+    List<HazirGoruntu> goruntuler, {
+    String? aciklama,
+    bool izinOnayi = false,
+  }) {
     if (goruntuler.isEmpty) return;
     final kimlikUret = ref.read(etkinlikIstekKimligiProvider);
     final metin = aciklama?.trim();
@@ -386,6 +399,7 @@ class AlbumYuklemeNotifier extends Notifier<AlbumYuklemeDurumu> {
             : null,
         yuklemeKimligi: kimlikUret(),
         eklemeKimligi: kimlikUret(),
+        izinOnayi: izinOnayi,
       );
       yeni.add(
         AlbumYuklemesi(
@@ -504,6 +518,7 @@ class AlbumYuklemeNotifier extends Notifier<AlbumYuklemeDurumu> {
               uploadId: uploadId,
               caption: is_.aciklama,
               clientRequestId: is_.eklemeKimligi,
+              consentAck: is_.izinOnayi ? true : null,
             ),
           );
       if (!ref.mounted) return;

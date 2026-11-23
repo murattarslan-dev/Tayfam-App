@@ -236,7 +236,7 @@ void main() {
         ikiKatYazi(tester);
         await _Ortam({
           hesapYolu: () => _bekleyenHesap(const {
-            'interests': ['convoy', 'camp'],
+            'interests': ['automotive', 'nature'],
             'about': 'Hafta sonları yola çıkarım.',
             'declined_profile_fields': ['team'],
             'languages': ['tr', 'en'],
@@ -390,7 +390,7 @@ void main() {
       ekranBoyutu(tester, yukseklik: 1200);
       final o = _Ortam({
         hesapYolu: () => _bekleyenHesap(const {
-          'interests': ['convoy', 'camp'],
+          'interests': ['automotive', 'nature'],
           'declined_profile_fields': ['team'],
           'languages': ['tr', 'en'],
         }),
@@ -398,7 +398,7 @@ void main() {
       });
       await o.yonlendiriciyleAc(tester, Adresler.tanitimBilgileri);
 
-      expect(find.text('Konvoy, Kamp'), findsOneWidget);
+      expect(find.text('Otomobil ve motor, Doğa'), findsOneWidget);
       expect(find.text('Türkçe, İngilizce'), findsOneWidget);
       expect(_metin('profil_tamamla_paylasmak_istemiyorum'), findsOneWidget);
       // Hakkımda, meslek ve sosyal medya eklenmedi.
@@ -493,5 +493,47 @@ void main() {
       expect(_metin('profil_dogum_gunu_soru'), findsNothing);
       expect(_metin('profil_dogum_gunu_tam_aciklama'), findsOneWidget);
     });
+  });
+
+  testWidgets('kişisel istatistik görünürlüğü seçilip gönderilir (#250)', (
+    tester,
+  ) async {
+    ekranBoyutu(tester);
+    final o = _Ortam({
+      hesapGuncelleYolu: () => hesapJson(istatistikGorunurlugu: 'friends'),
+    });
+    await o.ac(tester, const TanitimBilgileriEkrani());
+    final satir = find.byKey(const ValueKey('tanitim-istatistik'));
+    await tester.scrollUntilVisible(
+      satir,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      find.descendant(
+        of: satir,
+        matching: _metin('istatistik_gorunurluk_none'),
+      ),
+      findsOneWidget,
+    );
+    await _dokun(tester, satir);
+    expect(_metin('istatistik_gorunurluk_soru'), findsOneWidget);
+    await _dokun(
+      tester,
+      find.widgetWithText(
+        RadioListTile<StatsVisibility>,
+        arbMetni('istatistik_gorunurluk_friends'),
+      ),
+    );
+    expect(o.guncellemeler, [
+      {'stats_visibility': 'friends'},
+    ]);
+    expect(
+      find.descendant(
+        of: satir,
+        matching: _metin('istatistik_gorunurluk_friends'),
+      ),
+      findsOneWidget,
+    );
   });
 }

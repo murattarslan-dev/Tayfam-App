@@ -196,3 +196,26 @@ token'lar gövdede gelir ve `Authorization` başlığıyla gönderilir.
   `user-not-found` / `not-found` için tek ortak "Bu profil
   görüntülenemiyor" ekranıdır; engellenme, silinme ve bulunamama hiçbir
   metinde ayrılmaz.
+- **2026-11-19 (issue #225; platform sahibinin kararı: üretici desteği
+  katalog iş kaydının kapsamında):** v3 kataloğu (Tayfam-Api ADR-0025)
+  sözleşmeye dört yeni yapı getirdi; üretici bunları destekler:
+  1. **Takma ad.** Üst düzey şema nesne ya da string enum değilse kendi
+     tipi üretilmez; ona `$ref` veren yerde doğrudan tipi kullanılır:
+     enum'suz ilkel (`EventTypeKey`, `InterestKey` → `String`), dizi,
+     harita (`CatalogLabels` → `Map<String, String>`) ve serbest nesne.
+     Katalog anahtarları kapalı liste olmadığı için enum değildir;
+     biçimlerini kullanan katman doğrular (`katalogAnahtariMi`).
+  2. **Serbest nesne** (`additionalProperties: true`; `EventFieldValues`,
+     `CatalogComponent.params`) → `Map<String, Object?>`: çözülmüş JSON,
+     olduğu gibi yazılır. İçeriği girdidir; kullanan katman doğrular.
+     `properties` ile birlikte kullanımı hâlâ hatadır.
+  3. **Başlık parametresi.** `ApiClient`'ın her isteğe eklediği başlıklar
+     (`Authorization`, `X-Tayfam-Client`, `X-Tayfam-Client-Version`) metoda
+     girmez; işleme özel başlık (`If-None-Match`) string parametre olur ve
+     `ApiTransport.send`'in yeni `headers` argümanıyla gider. `HttpTasima`
+     yalnızca izin verdiği işlem başlıklarını (`If-None-Match`, `ETag`
+     biçiminde değer) kabul eder; ortak başlıklar buradan ezilemez.
+  4. **Koşullu GET.** `If-None-Match` parametreli işlemin dönüş tipi
+     null olabilir: sunucu `304` dönerse taşıma `null` verir ve metod
+     `null` döner. `304` yalnızca bu işlemlerde hata değildir; sözleşmede
+     yazılıysa gövdesiz olmalıdır.

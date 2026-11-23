@@ -64,7 +64,7 @@ final etkinlikDetayProvider = AsyncNotifierProvider.autoDispose
     );
 
 /// Detay ekranında süren işlem.
-enum EtkinlikEylemi { katilim, iptal, takvim }
+enum EtkinlikEylemi { katilim, iptal, takvim, bitir }
 
 /// Detay ekranının işlemleri: katılım cevabı, iptal ve takvime ekleme.
 /// Durum, süren işlemdir (yoksa `null`); aynı anda tek işlem yapılır.
@@ -123,6 +123,20 @@ class EtkinlikEylemNotifier extends Notifier<EtkinlikEylemi?> {
         anahtar.etkinlikId,
         metin,
       );
+      if (!ref.mounted) return;
+      _detay.guncelle(etkinlik);
+      etkinlikListeleriniYenile(ref, anahtar.tayfaId);
+    });
+  }
+
+  /// Açık uçlu (Şimdi başlat) etkinliği bitirir (Tayfam-Api ADR-0038 §1).
+  /// Yalnızca organizatör yapabilir; karar sunucudadır. Yanıttaki etkinlik
+  /// hemen gösterilir ve listeler tazelenir. Bileşenlerin yazma penceresi
+  /// yeni bitişten sayıldığı için bileşen durumunu ekran yeniden okutur.
+  Future<Object?> bitir() async {
+    if (state != null) return null;
+    return _calistir(EtkinlikEylemi.bitir, () async {
+      final etkinlik = await _depo.bitir(anahtar.tayfaId, anahtar.etkinlikId);
       if (!ref.mounted) return;
       _detay.guncelle(etkinlik);
       etkinlikListeleriniYenile(ref, anahtar.tayfaId);

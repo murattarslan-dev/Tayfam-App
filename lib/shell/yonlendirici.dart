@@ -11,13 +11,16 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/realtime/realtime.dart';
 import 'package:tayfam/core/surum/guncelleme.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/features/ana_sayfa/ana_sayfa.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/bildirim.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/cihazlar/cihazlar.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/garaj/garaj.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hosgeldin/hosgeldin.dart';
+import 'package:tayfam/features/istatistik/istatistik.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
@@ -88,6 +91,7 @@ final yonlendiriciProvider = Provider<GoRouter>((ref) {
         tayfalarBekleniyor: ref.read(tayfalarYukleniyorProvider),
         tanitim: ref.read(tanitimProvider),
         davetBekliyor: kutu.davetBekliyor,
+        qrBekliyor: kutu.qrBekliyor,
         kayitKarsilamasi: ref.read(kayitKarsilamasiProvider) != null,
         yasEngeli: ref.read(hesapEngeliProvider) == HesapEngeli.yasSiniri,
       );
@@ -173,9 +177,17 @@ List<RouteBase> rotalariOlustur(
               ),
               routes: [
                 for (final modul in moduller) ...modul.rotalar,
+                // Tayfa istatistikleri her tayfada vardır (#250).
+                ...istatistikRotalari,
                 // Tayfa yönetimi modül değildir; her tayfada vardır
                 // (ADR-0002, ADR-0018 §1).
-                ...tayfaYonetimRotalari(ekRotalar: moderasyonRotalari),
+                ...tayfaYonetimRotalari(
+                  ekRotalar: [
+                    ...moderasyonRotalari,
+                    ...sozlukRotalari,
+                    ...anaSayfaDuzeniRotalari,
+                  ],
+                ),
               ],
             ),
           ],
@@ -196,6 +208,8 @@ List<RouteBase> rotalariOlustur(
                 ...arkadasRotalari,
                 // QR ile cihaz eşleştirme (ADR-0020).
                 ...cihazlarRotalari,
+                // Üye garajı: Garajım (App ADR-0033 §2).
+                ...garajRotalari,
                 // Güvenlik kişisi olduğun etkinlikler (ADR-0027).
                 ...guvenlikPaylasimlariRotalari,
               ],
@@ -257,6 +271,8 @@ List<RouteBase> rotalariOlustur(
     // Anlık etkinlik sihirbazı ve "Bu ekiple tayfa kur" tam ekran açılır
     // (ADR-0026).
     anlikEtkinlikRotasi,
+    // Şimdi başlat tek ekranı (App ADR-0032 §2).
+    simdiRotasi,
     GoRoute(
       path: '${Adresler.tayfaDonusturOneki}/:$tayfaIdParametresi',
       builder: (context, state) =>

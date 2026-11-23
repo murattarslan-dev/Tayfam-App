@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/acilis_logosu.dart';
 import 'package:tayfam/core/bilesenler/birincil_eylem.dart';
-import 'package:tayfam/core/bilesenler/etkinlik_turu_cipi.dart';
+import 'package:tayfam/core/katalog/tanitim_turleri.dart';
 import 'package:tayfam/core/bilesenler/tayfam_logo.dart';
 import 'package:tayfam/core/tema/google_marka.dart';
 import 'package:tayfam/core/tema/tayfam_colors.dart';
@@ -15,7 +14,6 @@ import 'package:tayfam/core/tema/tayfam_logo_renkleri.dart';
 import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
-import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/hesap/presentation/apple_girisi.dart';
 import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
@@ -127,15 +125,15 @@ void main() {
       ) async {
         await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
 
-        // Tasarımdaki altı tür, etkinlik türü kaydından, büyük çip.
+        // Tasarımdaki altı örnek tür (katalogsuz), büyük çip.
         final cipler = tester
-            .widgetList<EtkinlikTuruCipi>(find.byType(EtkinlikTuruCipi))
+            .widgetList<TanitimTurCipi>(find.byType(TanitimTurCipi))
             .toList();
         expect([for (final c in cipler) c.tur], girisEkraniTurleri);
         expect(cipler.every((c) => c.buyuk), isTrue);
         // Mor yüzeyde oyun çipi brand-dark (brand zeminde brand görünmez).
         final oyun = find.byWidgetPredicate(
-          (w) => w is EtkinlikTuruCipi && w.tur == EventType.gaming,
+          (w) => w is TanitimTurCipi && w.tur == TanitimTuru.oyun,
         );
         final oyunZemini = tester.widget<DecoratedBox>(
           find.descendant(of: oyun, matching: find.byType(DecoratedBox)).first,
@@ -187,7 +185,7 @@ void main() {
         expect(_metin('hesap_davet_kart'), findsOneWidget);
         expect(_metin('hesap_davet_giris_baslik'), findsOneWidget);
         expect(_metin('hesap_slogan'), findsNothing);
-        expect(find.byType(EtkinlikTuruCipi), findsNothing);
+        expect(find.byType(TanitimTurCipi), findsNothing);
         expect(find.byType(GoogleIleDevamDugmesi), findsOneWidget);
         expect(tester.takeException(), isNull);
       });

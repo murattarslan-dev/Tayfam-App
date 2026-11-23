@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/istek_kimligi.dart';
 import 'package:tayfam/core/dogrulama/kimlik.dart';
+import 'package:tayfam/core/katalog/alanlar.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_detayi.dart';
@@ -12,6 +14,8 @@ import 'package:tayfam/features/etkinlik/application/katilimcilar.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_taslagi.dart';
 import 'package:tayfam/features/etkinlik/application/etkinlik_zamani.dart';
 import 'package:tayfam/features/etkinlik/application/tekrar_kurali.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/bilesen_parametreleri.dart';
 import 'package:tayfam/features/etkinlik/data/etkinlik_deposu.dart';
 import 'package:tayfam/features/tayfa/tayfa.dart';
 
@@ -55,6 +59,10 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   /// Adım sayısı.
   int get adimSayisi => anlik ? anlikAdimSayisi : etkinlikAdimSayisi;
 
+  /// Düzenlenen etkinlik açık uçlu (Şimdi başlat): zamanı düzenlenemez
+  /// (Tayfam-Api ADR-0038 §1); başlangıç ve bitiş salt okunurdur.
+  bool get zamanKilitli => anahtar.duzenlenen?.openEnded ?? false;
+
   /// Sihirbazın ilk adımı: oluşturmada tür, düzenlemede başlık ve zaman.
   int get ilkAdim => duzenleme ? 1 : 0;
 
@@ -90,10 +98,113 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
 
   bool get _kilitli => state.gonderiliyor || state.sonuc != null;
 
-  /// Türü seçer (yalnızca oluşturmada).
-  void turSec(EventType tur) {
-    if (_kilitli || duzenleme || tur == EventType.unknown) return;
-    _ayarla(state.kopya(tur: tur));
+  /// Türü katalogdaki [tanim]'ıyla seçer (yalnızca oluşturmada). Emekli
+  /// tür ve alan türü tanınmayan tür seçilemez (ADR-0024 §3, §4). Tür
+  /// değişince önceki türün alan değerleri bırakılır ve mod, yeni türün
+  /// izin verdiği modlardan biri değilse ilk izin verilene çekilir.
+  void turSec(CatalogEventType tanim) {
+    if (_kilitli ||
+        duzenleme ||
+        tanim.status != CatalogStatus.active ||
+        !katalogAnahtariMi(tanim.key) ||
+        !alanlarTaniniyor(turAlanlari(tanim))) {
+      return;
+    }
+    if (state.turTanimi == tanim) return;
+    final modlar = turModlari(tanim);
+    final yer = state.yer;
+    _ayarla(
+      state.kopya(
+        tur: tanim.key,
+        turTanimi: tanim,
+        alanlar: state.tur == tanim.key ? null : const {},
+        // Önceki türün bileşen seçimleri yeni türde anlamsızdır.
+        bilesenler: state.tur == tanim.key ? null : const {},
+        yer: modlar.contains(yer.mod) ? null : yer.kopya(mod: modlar.first),
+      ),
+    );
+  }
+
+  /// Düzenlemede etkinliğin tür sürümünün tanımı sonradan okundu: katalog
+  /// alanlarının değerleri etkinlikten doldurulur. Kullanıcının girdisi
+  /// sayılmaz (vazgeç onayı sorulmaz).
+  void tanimGeldi(CatalogEventType tanim) {
+    final eski = anahtar.duzenlenen;
+    if (_kilitli || eski == null || state.turTanimi != null) return;
+    if (tanim.key != eski.type || tanim.version != eski.typeVersion) return;
+    final alanlar = alanDegerleriOku(turAlanlari(tanim), eski.fields);
+    _ilk = _ilk.kopya(turTanimi: tanim, alanlar: alanlar);
+    state = state.kopya(
+      turTanimi: tanim,
+      alanlar: alanlar,
+      hata: state.hata,
+      gonderiliyor: state.gonderiliyor,
+    );
+  }
+
+  /// Düzenlemede etkinliğin bileşen durumu okundu: seçimler sunucudaki
+  /// halden doldurulur; kilitliyse ya da çağıran yönetemiyorsa salt
+  /// okunurdur (ADR-0031 §1). Kullanıcının girdisi sayılmaz. Yalnızca ilk
+  /// okuma işlenir; sonraki (canlı) değişiklikler kullanıcının süren
+  /// düzenlemesini ezmez.
+  void bilesenDurumuGeldi(EventComponentList durum) {
+    final tanim = state.turTanimi;
+    if (_kilitli || !duzenleme || tanim == null || state.bilesenlerOkundu) {
+      return;
+    }
+    final secimler = durumdanSecimler(tanim, durum);
+    final kilitli = durum.locked || !durum.callerCanManage;
+    _ilk = _ilk.kopya(
+      bilesenler: secimler,
+      bilesenlerOkundu: true,
+      bilesenlerKilitli: kilitli,
+    );
+    state = state.kopya(
+      bilesenler: secimler,
+      bilesenlerOkundu: true,
+      bilesenlerKilitli: kilitli,
+      hata: state.hata,
+      gonderiliyor: state.gonderiliyor,
+    );
+  }
+
+  CatalogComponent? _taslaktakiBilesen(CatalogComponent bilesen) {
+    if (_kilitli || state.bilesenlerKilitli || !state.bilesenlerOkundu) {
+      return null;
+    }
+    final aranan = bilesenAnahtari(bilesen);
+    for (final b in turBilesenleri(state.turTanimi)) {
+      if (bilesenAnahtari(b) == aranan) return b;
+    }
+    return null;
+  }
+
+  /// `optional` [bilesen]'i açar ya da kapatır (ADR-0031 §1). Seçimler
+  /// kilitliyse ya da bileşen seçilen türde yoksa bir şey yapmaz.
+  void bilesenAcKapat(CatalogComponent bilesen, {required bool acik}) {
+    final b = _taslaktakiBilesen(bilesen);
+    if (b == null) return;
+    _ayarla(
+      state.kopya(bilesenler: bilesenAcKapa(state.bilesenler, b, acik: acik)),
+    );
+  }
+
+  /// [bilesen]'in organizatöre bırakılan [param] parametresinde [deger]'i
+  /// seçer; tanımda olmayan seçenek yok sayılır.
+  void bilesenSec(CatalogComponent bilesen, String param, String deger) {
+    final b = _taslaktakiBilesen(bilesen);
+    if (b == null) return;
+    _ayarla(
+      state.kopya(
+        bilesenler: bilesenSecimYap(state.bilesenler, b, param, deger),
+      ),
+    );
+  }
+
+  /// Katalogdaki tür alanlarının değerleri.
+  void alanlariAyarla(AlanDegerleri alanlar) {
+    if (_kilitli) return;
+    _ayarla(state.kopya(alanlar: alanlar, alanlarDegisti: true));
   }
 
   void baslikAyarla(String baslik) {
@@ -116,7 +227,7 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   /// Başlangıcı ayarlar. Bitiş yoksa ya da başlangıçtan önceyse bitiş
   /// başlangıçtan iki saat sonraya alınır (kolaylık; kullanıcı değiştirir).
   void baslangicAyarla(DateTime baslangic) {
-    if (_kilitli) return;
+    if (_kilitli || zamanKilitli) return;
     final utc = baslangic.toUtc();
     final bitis = state.bitis;
     _ayarla(
@@ -130,7 +241,7 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   }
 
   void bitisAyarla(DateTime bitis) {
-    if (_kilitli) return;
+    if (_kilitli || zamanKilitli) return;
     _ayarla(state.kopya(bitis: bitis.toUtc()));
   }
 
@@ -171,12 +282,6 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
   void tekrarAyarla(TekrarSecimi? tekrar) {
     if (_kilitli || duzenleme || anlik) return;
     _ayarla(state.kopya(tekrar: tekrar));
-  }
-
-  /// Türe özel alanlar.
-  void ayrintiAyarla(TurAyrintisi ayrinti) {
-    if (_kilitli) return;
-    _ayarla(state.kopya(ayrinti: ayrinti, ayrintiDegisti: true));
   }
 
   /// Anlık etkinlikte [kullaniciId] arkadaşını davetlilere ekler ya da
@@ -261,11 +366,34 @@ class EtkinlikSihirbaziNotifier extends Notifier<EtkinlikTaslagi> {
         etkinlik = await islemler.olustur(tayfaId, olusturmaIstegi(mevcut));
       } else {
         final istek = duzenlemeIstegi(mevcut, eski);
-        if (istek == null) {
+        // Kilitli seçimler gönderilmez (sunucu da `component-locked` der).
+        final secimler = mevcut.bilesenlerKilitli
+            ? const <(String, EventComponentSelectionRequest)>[]
+            : bilesenSecimDegisiklikleri(
+                mevcut.turTanimi,
+                _ilk.bilesenler,
+                mevcut.bilesenler,
+              );
+        if (istek == null && secimler.isEmpty) {
           if (ref.mounted) state = mevcut.kopya(sonuc: eski.id);
           return;
         }
-        etkinlik = await islemler.duzenle(tayfaId, eski.id, istek);
+        // Önce seçimler: etkinlik bu arada başladıysa hiçbir şey
+        // değişmeden hata gösterilir. Tekrar gönderim zararsızdır.
+        for (final (bilesen, secim) in secimler) {
+          await islemler.bilesenSec(tayfaId, eski.id, bilesen, secim);
+        }
+        if (secimler.isNotEmpty && ref.mounted) {
+          ref.invalidate(
+            etkinlikBilesenleriProvider((
+              tayfaId: tayfaId,
+              etkinlikId: eski.id,
+            )),
+          );
+        }
+        etkinlik = istek == null
+            ? eski
+            : await islemler.duzenle(tayfaId, eski.id, istek);
       }
     } on OturumYok {
       if (!ref.mounted) return;

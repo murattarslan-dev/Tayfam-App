@@ -31,6 +31,9 @@ enum BilgiHatasi {
 /// yoksa `null`. Yalnızca değişen alanlar gönderilir (sözleşme:
 /// `PATCH`'te gövdedeki alanlar değişir, en az bir alan gerekir).
 ///
+/// [simdiRolu] Şimdi başlat için gereken en düşük roldür
+/// (`now_create_min_role`; App ADR-0032 §5); verilmezse değişmez.
+///
 /// [kapak] formdaki kapak yüklemesidir (`null`: kapak yok); verilmezse
 /// kapak değişmez. Kaldırılan kapak `""` olarak gönderilir (sözleşme;
 /// ADR-0021 §6).
@@ -38,16 +41,17 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
   Tayfa eski, {
   required String ad,
   required String aciklama,
-  required Set<EventType> ilgi,
+  required Set<String> ilgi,
   required JoinPolicy katilim,
   required bool uyeEtkinlikAcar,
+  Role? simdiRolu,
   Object? kapak = _kapakAyni,
 }) {
   final kapakDegisti =
       !identical(kapak, _kapakAyni) && kapak != eski.coverUploadId;
   final yeniAd = ad.trim();
   final yeniAciklama = aciklama.trim();
-  final eskiIlgi = eski.interests.where(ilgiAlanlari.contains).toSet();
+  final eskiIlgi = eski.interests.toSet();
   final ilgiDegisti =
       eskiIlgi.length != ilgi.length || !eskiIlgi.containsAll(ilgi);
   final istek = TayfaUpdateRequest(
@@ -56,14 +60,20 @@ TayfaUpdateRequest? bilgiDegisiklikleri(
     description: yeniAciklama == eski.description ? null : yeniAciklama,
     interests: ilgiDegisti
         ? [
-            for (final t in ilgiAlanlari)
-              if (ilgi.contains(t)) t,
+            // Formdaki sırayla (katalog sırası; `bilgiler_ekrani`).
+            ...ilgi,
           ]
         : null,
     joinPolicy: katilim == eski.joinPolicy ? null : katilim,
     membersCanCreateEvents: uyeEtkinlikAcar == eski.membersCanCreateEvents
         ? null
         : uyeEtkinlikAcar,
+    nowCreateMinRole:
+        simdiRolu == null ||
+            simdiRolu == Role.unknown ||
+            simdiRolu == eski.nowCreateMinRole
+        ? null
+        : simdiRolu,
   );
   return istek.toJson().isEmpty ? null : istek;
 }
@@ -177,6 +187,45 @@ class TayfaSessizNotifier extends AsyncNotifier<bool> {
         if (ref.mounted) state = AsyncData(sessiz);
       });
 }
+
+/// Kullanıcının bu tayfada şimdi bildirimleri kapalı mı (`tayfa_now`;
+/// App ADR-0032 §5). Tayfanın genel sessizliğinden ayrıdır; genel seviye
+/// `none` ise şimdi bildirimi zaten gitmez (sözleşme).
+class TayfaSimdiKapaliNotifier extends AsyncNotifier<bool> {
+  TayfaSimdiKapaliNotifier(this.tayfaId);
+
+  /// Adresteki tayfa kimliği.
+  final String tayfaId;
+
+  @override
+  Future<bool> build() async {
+    ref.watch(oturumDurumuProvider);
+    final depo = ref.watch(yonetimDeposuProvider);
+    final tercihler = await depo.bildirimTercihleri();
+    return tayfaSimdiKapali(tercihler, tayfaId, ref.read(saatProvider)());
+  }
+
+  /// [kapali] `true` ise şimdi bildirimlerini süresiz kapatır, değilse
+  /// varsayılana (açık) döndürür.
+  Future<Object?> ayarla({required bool kapali}) =>
+      yonetimIslemi(ref, () async {
+        final depo = ref.read(yonetimDeposuProvider);
+        if (kapali) {
+          await depo.simdiBildiriminiKapat(tayfaId);
+        } else {
+          await depo.simdiBildiriminiAc(tayfaId);
+        }
+        if (ref.mounted) state = AsyncData(kapali);
+      });
+}
+
+/// Bir tayfanın şimdi bildirimleri kapalı mı.
+final tayfaSimdiKapaliProvider = AsyncNotifierProvider.autoDispose
+    .family<TayfaSimdiKapaliNotifier, bool, String>(
+      TayfaSimdiKapaliNotifier.new,
+      name: 'tayfaSimdiKapaliProvider',
+      retry: yenidenDenemeYok,
+    );
 
 /// Bir tayfanın bildirimleri sessizde mi.
 final tayfaSessizProvider = AsyncNotifierProvider.autoDispose

@@ -299,3 +299,27 @@ ui-ux-pro-max'in teslim öncesi kontrol listesinden geçer (CLAUDE.md).
   bölge olarak bir kez okunur. Kural betiği `RefreshIndicator` ve
   `CupertinoSliverRefreshControl` kullanımını hata sayar
   (`refresh-indicator`). Yeni paket yok.
+- **2026-11-23 (platform sahibi, sohbette onaylandı; issue #308): alan
+  hata metni nar tonunda.** Form alanının hata metni, Tasarım
+  Standartları'ndaki "metin rengi yalnızca ink tonları" kuralının
+  **istisnasıdır**: nar renginde kalır. Nar (#FF3D68) açık zeminde metin
+  eşiğini tutmadığı için (surface 3.26:1, card 3.43:1) yeni token
+  `TayfamColors.hataMetni` kullanılır:
+  - **Açık tema:** koyulaştırılmış nar **#E00032** (nar ile aynı ton
+    H 346.7° ve doygunluk %100, açıklık %62 → %44); surface 4.73:1,
+    card 4.98:1.
+  - **Koyu tema:** nar **#FF3D68** olduğu gibi; ink 5.21:1, card-dark
+    4.63:1. Açıklaştırma gerekmedi.
+
+  Uygulama: `ThemeData.inputDecorationTheme.errorStyle` (`bodySmall` +
+  `hataMetni`) bütün `errorText`'lerin rengidir. Alan hatasını kendisi
+  çizen yerler (katalog alanları, ölçüm/hedef/derece/kronometre formları,
+  kayıt ve kodla katılma alanlarındaki `HataSatiri`) aynı token'ı
+  kullanır; daha önce bunlar ana metin rengindeydi. Hata kenarı nar
+  kalır (arayüz öğesi, 3:1). `hataMetni` yalnızca alan hata metni ve
+  yanındaki ikon içindir; başka metin rengi olarak kullanılmaz (yıkıcı
+  eylem metni `narMetin`). Renk tek başına bilgi taşımaz: hata metni ve
+  kalın nar kenar birlikte gösterilir. Değerler `kontrast_test.dart` ve
+  `tayfam_colors_test.dart`'ta korunur (iki temada, zemin ve kartta
+  ≥4.5:1). Notion'daki Tasarım Standartları'na istisnanın işlenmesi
+  ayrıca yapılacak.

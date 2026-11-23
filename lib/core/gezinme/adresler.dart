@@ -193,6 +193,41 @@ abstract final class Adresler {
         '${iki(gun.day)}';
   }
 
+  /// Şimdi başlat ekranı (App ADR-0032 §2): kabuğun üstünde tam ekran.
+  /// `tayfa` yoksa anlık etkinlik açılır.
+  static const simdiYolu = '/simdi';
+
+  /// Şimdi ekranının tayfa sorgu parametresi (UUID; girdi kabul edilir).
+  static const simdiTayfaParametresi = 'tayfa';
+
+  /// Şimdi ekranının adresi: [tayfaId] verilirse o tayfada; verilmezse
+  /// anlık etkinlik ("Boşum" rozetinden [davetli] ile).
+  static String simdi({String? tayfaId, String? davetli}) {
+    final sorgu = <String, String>{
+      simdiTayfaParametresi: ?tayfaId,
+      anlikDavetliParametresi: ?davetli,
+    };
+    return Uri(
+      path: simdiYolu,
+      queryParameters: sorgu.isEmpty ? null : sorgu,
+    ).toString();
+  }
+
+  /// QR ile katılım ekranı (App ADR-0032 §3): `https://tayfam.app/q#<token>`
+  /// derin linkinin işlendiği ve uygulama içinden QR okutulan ekran. Bu
+  /// adreste token yoktur; derin linkle gelen token bellekteki kutudadır
+  /// (`shell/derin_link/`, kesin kural 9).
+  static const qrKatilim = '/q';
+
+  /// QR'a çizilen katılım linki: token fragment'tadır, sunucuya URL ile
+  /// gitmez (kesin kural 9). Yalnızca QR'a çizilir; loglanmaz, saklanmaz.
+  static String qrKatilimLinki(String token) => Uri(
+    scheme: 'https',
+    host: 'tayfam.app',
+    path: qrKatilim,
+    fragment: token,
+  ).toString();
+
   /// Anlık tayfayı kalıcı tayfaya dönüştürme sihirbazının yolu
   /// ("Bu ekiple tayfa kur"; ADR-0026). Tam ekran; kimlik girdi kabul
   /// edilir.
@@ -283,6 +318,61 @@ abstract final class Adresler {
       '${tayfa(tayfaId)}/$tayfaAyarlariYolu';
 
   /// Katılım isteklerinin ayarlar altındaki yolu.
+  /// Tayfa istatistiklerinin tayfa altındaki yolu (#250).
+  static const istatistikYolu = 'istatistik';
+
+  /// Tayfa istatistikleri ekranı (Tayfam-Api ADR-0026).
+  static String tayfaIstatistikleri(String tayfaId) =>
+      '${tayfa(tayfaId)}/$istatistikYolu';
+
+  /// Ortak kütüphanenin tayfa altındaki yolu (#255).
+  static const kutuphaneYolu = 'kutuphane';
+
+  /// Ortak kütüphane (ortak eşya) listesi; kütüphane bildirimleri de buraya
+  /// açılır (Tayfam-Api ADR-0040 §1).
+  static String kutuphane(String tayfaId) => '${tayfa(tayfaId)}/$kutuphaneYolu';
+
+  /// Ortak kütüphanedeki bir kalemin detayı; ödünç adımı bildirimleri
+  /// (hedef `library_item`; Tayfam-Api ADR-0040 §1, #321) buraya açılır.
+  static String kutuphaneKalemi(String tayfaId, String kalemId) =>
+      '${kutuphane(tayfaId)}/$kalemId';
+
+  /// Soru havuzunun tayfa altındaki yolu (#256).
+  static const soruHavuzuYolu = 'soru-havuzu';
+
+  /// Soru havuzu (Eğitim; Tayfam-Api ADR-0040 §2): ders/konu süzgeçli
+  /// soru listesi.
+  static String soruHavuzu(String tayfaId) =>
+      '${tayfa(tayfaId)}/$soruHavuzuYolu';
+
+  /// Soru havuzundaki bir soru ve cevapları.
+  static String havuzSorusu(String tayfaId, String soruId) =>
+      '${soruHavuzu(tayfaId)}/$soruId';
+
+  /// Materyal kütüphanesinin tayfa altındaki yolu (#257).
+  static const materyalYolu = 'materyal';
+
+  /// Materyal kütüphanesi (Eğitim; Tayfam-Api ADR-0040 §3): süzgeçli
+  /// materyal listesi.
+  static String materyal(String tayfaId) => '${tayfa(tayfaId)}/$materyalYolu';
+
+  /// Materyal kütüphanesindeki bir materyal.
+  static String materyalDetayi(String tayfaId, String materyalId) =>
+      '${materyal(tayfaId)}/$materyalId';
+
+  /// Profildeki Garajım'ın profil altındaki yolu (#258).
+  static const garajimYolu = 'garaj';
+
+  /// Kişinin kendi garajı (Tayfam-Api ADR-0040 §4).
+  static const garajim = '$profil/$garajimYolu';
+
+  /// Tayfa garajının tayfa altındaki yolu (#258).
+  static const tayfaGarajiYolu = 'garaj';
+
+  /// Tayfanın garajı: üyelerin bu tayfada gösterdiği araçlar.
+  static String tayfaGaraji(String tayfaId) =>
+      '${tayfa(tayfaId)}/$tayfaGarajiYolu';
+
   static const katilimIstekleriYolu = 'istekler';
 
   /// Katılım istekleri ekranı (ana sayfadaki bekleyen istek satırı).

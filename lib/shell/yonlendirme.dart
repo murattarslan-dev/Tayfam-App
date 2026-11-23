@@ -27,7 +27,8 @@ const Set<String> _oturumAdresleri = {
 ///    adres bir sistem adresi değilse yolu [korunacakHedef] ile tanıtım
 ///    adresinde taşınır; tanıtım bitince oraya gidilir. Bekleyen bir
 ///    davet varsa ([davetBekliyor]) hedef davet ekranıdır (`/davet`;
-///    token adreste yoktur).
+///    token adreste yoktur); bekleyen QR linki varsa ([qrBekliyor]) QR
+///    ile katılım ekranıdır (`/q`).
 /// 0b. Kayıtta `age-blocked` döndüyse ([yasEngeli]) oturum kapalıyken
 ///    yalnızca "Hesabını şu an oluşturamıyoruz" ekranı gösterilir; engel
 ///    yokken bu adreste kalınmaz (ADR-0012 §3).
@@ -38,6 +39,9 @@ const Set<String> _oturumAdresleri = {
 ///    ekranına gidilir; bekleyen davet de orada, mevcut davet akışıyla
 ///    işlenir. Ekrandan çıkılırken bayrak kapanır; bayraksız bu adreste
 ///    kalınabilir (ekran kendisi yönlendirir).
+/// 1b. Bekleyen davet varsa davet ekranına, yoksa bekleyen QR linki varsa
+///    QR ile katılım ekranına (`/q`) gidilir; ekran token'ı kutudan alınca
+///    bu kural kalkar (App ADR-0032 §3).
 /// 2. Kök, oturum ekranları, açılış ve karşılama, kullanıcının ana
 ///    adresine çevrilir: aktif tayfa varsa `/t/<tayfaId>`; yoksa tayfa
 ///    listesi ilk kez okunurken ([tayfalarBekleniyor]) açılış ekranı,
@@ -63,6 +67,7 @@ String? yonlendir({
   bool tayfalarBekleniyor = false,
   TanitimDurumu tanitim = TanitimDurumu.gosterildi,
   bool davetBekliyor = false,
+  bool qrBekliyor = false,
   bool kayitKarsilamasi = false,
   bool yasEngeli = false,
 }) {
@@ -87,7 +92,11 @@ String? yonlendir({
       case TanitimDurumu.gosterilmedi:
         if (yol == Adresler.hosGeldin) return null;
         return Adresler.hosGeldinAdresi(
-          davetBekliyor ? davetYolu : korunacakHedef(konum),
+          davetBekliyor
+              ? davetYolu
+              : qrBekliyor
+              ? qrYolu
+              : korunacakHedef(konum),
         );
       case TanitimDurumu.gosterildi:
         break;
@@ -111,6 +120,9 @@ String? yonlendir({
 
   if (davetBekliyor) {
     return yol == davetYolu ? null : davetYolu;
+  }
+  if (qrBekliyor) {
+    return yol == qrYolu ? null : qrYolu;
   }
 
   final anaAdres = aktifTayfaId != null

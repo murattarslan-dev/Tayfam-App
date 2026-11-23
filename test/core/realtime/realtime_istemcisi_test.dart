@@ -551,6 +551,169 @@ void main() {
     });
   });
 
+  group('etkinlik izleme', () {
+    const etkinlik1 = '66666666-6666-4666-8666-666666666666';
+    const EtkinlikRef ref1 = (tayfaId: tayfaA, etkinlikId: etkinlik1);
+
+    Map<String, Object?> veri(Map<String, Object?> c) =>
+        c['data']! as Map<String, Object?>;
+
+    test('ready sonrası izlenir, yeniden bağlanınca yeniden izlenir', () async {
+      final k = _Kurulum();
+      k.istemci.etkinligiIzle(ref1);
+      final soket = await k.baglan();
+      final izleme = soket.tur('event.watch').single;
+      expect(veri(izleme), {'tayfa_id': tayfaA, 'event_id': etkinlik1});
+      expect(k.istemci.izlenenler, {ref1});
+
+      await soket.sunucuKapatti(1006);
+      expect(k.istemci.izlenenler, isEmpty);
+      k.zaman.calistir();
+      await pumpEventQueue();
+      await k.son.ac();
+      expect(k.son.tur('event.watch'), hasLength(1));
+    });
+
+    test('iki ekran izlerse sonuncusu bırakınca izleme biter', () async {
+      final k = _Kurulum();
+      final soket = await k.baglan();
+      k.istemci.etkinligiIzle(ref1);
+      k.istemci.etkinligiIzle(ref1);
+      expect(soket.tur('event.watch'), hasLength(1));
+      k.istemci.etkinlikIzlemeyiBirak(ref1);
+      expect(soket.tur('event.unwatch'), isEmpty);
+      k.istemci.etkinlikIzlemeyiBirak(ref1);
+      expect(veri(soket.tur('event.unwatch').single), {
+        'tayfa_id': tayfaA,
+        'event_id': etkinlik1,
+      });
+      expect(k.istemci.izlenenler, isEmpty);
+      // Fazladan bırakma zararsızdır.
+      k.istemci.etkinlikIzlemeyiBirak(ref1);
+      expect(soket.tur('event.unwatch'), hasLength(1));
+    });
+
+    test('bağlantı başına en fazla 20 izleme; en son istenenler', () async {
+      final k = _Kurulum();
+      final hepsi = <EtkinlikRef>[
+        for (var i = 0; i < 22; i++)
+          (
+            tayfaId: tayfaA,
+            etkinlikId: '77777777-7777-4777-8777-${'$i'.padLeft(12, '7')}',
+          ),
+      ];
+      hepsi.forEach(k.istemci.etkinligiIzle);
+      final soket = await k.baglan();
+      expect(
+        soket.tur('event.watch'),
+        hasLength(RealtimeIstemcisi.enFazlaIzleme),
+      );
+      expect(k.istemci.izlenenler, hepsi.sublist(2).toSet());
+    });
+
+    test('component_changed olayı çözülür; içerik taşımaz', () async {
+      final k = _Kurulum();
+      final olaylar = <RealtimeOlayi>[];
+      k.istemci.olaylar.listen(olaylar.add);
+      k.istemci.etkinligiIzle(ref1);
+      final soket = await k.baglan();
+      soket
+        ..cerceve('event.component_changed', {
+          'tayfa_id': tayfaA,
+          'event_id': etkinlik1,
+          'component_key': 'scoreboard',
+        })
+        ..cerceve('event.component_changed', {
+          'tayfa_id': tayfaA,
+          'event_id': etkinlik1,
+        })
+        // Biçimi bozuk anahtar ve kimlik: çerçeve yok sayılır.
+        ..cerceve('event.component_changed', {
+          'tayfa_id': tayfaA,
+          'event_id': etkinlik1,
+          'component_key': 'Geçersiz Anahtar',
+        })
+        ..cerceve('event.component_changed', {
+          'tayfa_id': tayfaA,
+          'event_id': 'kimlik-degil',
+        });
+      await pumpEventQueue();
+      final degisenler = olaylar.whereType<EtkinlikBileseniDegisti>().toList();
+      expect(degisenler, hasLength(2));
+      expect(degisenler[0].etkinlik, ref1);
+      expect(degisenler[0].bilesenAnahtari, 'scoreboard');
+      expect(degisenler[1].bilesenAnahtari, isNull);
+    });
+
+    test('access_lost: izleme bırakılır, yeniden izlenmez', () async {
+      final k = _Kurulum();
+      final olaylar = <RealtimeOlayi>[];
+      k.istemci.olaylar.listen(olaylar.add);
+      k.istemci.etkinligiIzle(ref1);
+      final soket = await k.baglan();
+      soket.cerceve('event.unwatched', {
+        'tayfa_id': tayfaA,
+        'event_id': etkinlik1,
+        'reason': 'access_lost',
+      });
+      await pumpEventQueue();
+      expect(k.istemci.izlenenler, isEmpty);
+      expect(
+        olaylar.whereType<EtkinlikIzlemeBitti>().single.neden,
+        AbonelikBitisNedeni.erisimKalmadi,
+      );
+      await soket.sunucuKapatti(1006);
+      k.zaman.calistir();
+      await pumpEventQueue();
+      await k.son.ac();
+      expect(k.son.tur('event.watch'), isEmpty);
+    });
+
+    test('recheck_failed: 5 sn sonra bir kez yeniden izlenir', () async {
+      final k = _Kurulum();
+      k.istemci.etkinligiIzle(ref1);
+      final soket = await k.baglan();
+      soket.cerceve('event.unwatched', {
+        'tayfa_id': tayfaA,
+        'event_id': etkinlik1,
+        'reason': 'recheck_failed',
+      });
+      await pumpEventQueue();
+      final bekleme = k.zaman.etkin.where(
+        (t) => t.sure == RealtimeIstemcisi.yenidenDenetimBeklemesi,
+      );
+      expect(bekleme, hasLength(1));
+      bekleme.single.calistir();
+      expect(soket.tur('event.watch'), hasLength(2));
+    });
+
+    test('event_not_found: izlenmez ve yeniden denenmez', () async {
+      final k = _Kurulum();
+      k.istemci.etkinligiIzle(ref1);
+      final soket = await k.baglan();
+      final id = soket.tur('event.watch').single['id']! as String;
+      soket.cerceve('error', {'code': 'event_not_found'}, id: id);
+      await pumpEventQueue();
+      expect(k.istemci.izlenenler, isEmpty);
+      await soket.sunucuKapatti(1006);
+      k.zaman.calistir();
+      await pumpEventQueue();
+      await k.son.ac();
+      expect(k.son.tur('event.watch'), isEmpty);
+    });
+
+    test('oturum kapanınca izleme istekleri bırakılır', () async {
+      final k = _Kurulum();
+      k.istemci.etkinligiIzle(ref1);
+      await k.baglan();
+      k.istemci.durdur();
+      k.istemci.baslat();
+      await pumpEventQueue();
+      await k.son.ac();
+      expect(k.son.tur('event.watch'), isEmpty);
+    });
+  });
+
   test('realtime adresi taban adresin wss karşılığı', () {
     expect(
       realtimeAdresi(Uri.parse('https://api.ornek.test')).toString(),

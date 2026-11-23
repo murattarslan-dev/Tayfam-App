@@ -77,7 +77,8 @@ final class TayfasApi {
   /// Yalnızca gövdede bulunan alanlar değişir; en az bir alan gerekir.
   /// `interests` gönderilirse ilgi alanlarının tamamını değiştirir.
   /// `members_can_create_events` etkinlik açma iznini üyelere açar ya da
-  /// kapatır.
+  /// kapatır. `now_create_min_role` Şimdi başlat için gereken en düşük
+  /// roldür (ADR-0038 §2).
   ///
   /// `PATCH /v1/tayfas/{tayfa_id}`
   Future<Tayfa> updateTayfa({

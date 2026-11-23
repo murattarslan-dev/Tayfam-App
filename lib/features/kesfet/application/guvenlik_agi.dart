@@ -246,6 +246,24 @@ class TayfaKesfetNotifier extends AsyncNotifier<TayfaKesfetDurumu> {
     }
     return hata;
   }
+
+  /// İstatistik vitrinini [goster] yapar (#250; Tayfam-Api ADR-0026 §3).
+  /// Başarıda `null`, aksi halde gösterilecek hata.
+  Future<Object?> vitriniAyarla({required bool goster}) async {
+    final simdiki = state.value;
+    if (simdiki == null || simdiki.mesgul) return null;
+    state = AsyncData(TayfaKesfetDurumu(ayar: simdiki.ayar, mesgul: true));
+    TayfaDiscover? yeni;
+    final hata = await kesfetIslemi(ref, () async {
+      yeni = await ref
+          .read(kesfetDeposuProvider)
+          .vitrinAyariniDegistir(tayfaId, goster: goster);
+    });
+    if (ref.mounted) {
+      state = AsyncData(TayfaKesfetDurumu(ayar: yeni ?? simdiki.ayar));
+    }
+    return hata;
+  }
 }
 
 /// Tayfa ayarlarındaki Keşfet bölümü.

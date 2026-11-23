@@ -4,23 +4,31 @@ import 'package:flutter_riverpod/misc.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/gezinme/bildirim_zili.dart';
+import 'package:tayfam/core/katalog/katalog_yenileyici.dart';
+import 'package:tayfam/core/moduller/ana_sayfa_bileseni.dart';
 import 'package:tayfam/core/moduller/birebir_sikayet.dart';
 import 'package:tayfam/core/moduller/kabuk_katmanlari.dart';
 import 'package:tayfam/core/moduller/kesfet_yuvalari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';
 import 'package:tayfam/core/moduller/uye_islemleri.dart';
+import 'package:tayfam/features/ana_sayfa/ana_sayfa.dart';
 import 'package:tayfam/features/anket/anket.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/birebir/birebir.dart';
 import 'package:tayfam/features/duyuru/duyuru.dart';
 import 'package:tayfam/features/etkinlik/etkinlik.dart';
+import 'package:tayfam/features/garaj/garaj.dart';
+import 'package:tayfam/features/gunun_icerigi/gunun_icerigi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
 import 'package:tayfam/features/kesfet/kesfet.dart';
+import 'package:tayfam/features/kutuphane/kutuphane.dart';
+import 'package:tayfam/features/materyal/materyal.dart';
 import 'package:tayfam/features/profil/profil.dart';
 import 'package:tayfam/features/sikayet/sikayet.dart';
 import 'package:tayfam/features/sohbet/sohbet.dart';
 import 'package:tayfam/features/soru_cevap/soru_cevap.dart';
+import 'package:tayfam/features/soru_havuzu/soru_havuzu.dart';
 import 'package:tayfam/features/tayfa_yonetim/tayfa_yonetim.dart';
 import 'package:tayfam/shell/derin_link/kayit_davet.dart';
 import 'package:tayfam/shell/okunmamis.dart';
@@ -33,25 +41,113 @@ const List<TayfaModule> tayfaModulKaydi = [
   EtkinlikModulu(olustur: etkinlikOlusturmayiAc),
   DuyuruModulu(),
   AnketModulu(),
+  // daily (#253): kartı ana sayfa bileşenidir; rotalar ve "Oluştur".
+  GununIcerigiModulu(),
+  // library (#255): kartı ana sayfa bileşenidir; liste ve ödünç rotaları.
+  KutuphaneModulu(),
+  // question_pool (#256): kartı ana sayfa bileşenidir; liste ve soru rotaları.
+  SoruHavuzuModulu(),
+  // materials (#257): kartı ana sayfa bileşenidir; liste ve detay rotaları.
+  MateryalModulu(),
+  // garage (#258): kartı ana sayfa bileşenidir; tayfa garajı rotası.
+  GarajModulu(),
+  // Soru-cevap son sırada kalır (ADR-0018 Genel).
   SoruCevapModulu(),
 ];
 
-/// Uygulamanın etkinlik türleri (ADR-0002). Türler kendi paketlerinde bu
-/// listeye bir satırla eklenir. Yalnızca türe özel aracı olan türler
-/// kayıtlıdır (ADR-0015 §6); oyun, spor ve genel yalnızca bilgi alanları
-/// gösterir.
-const List<EtkinlikTuru> etkinlikTuruKaydi = [
-  KonvoyTuru(),
-  KampTuru(),
-  YuruyusTuru(),
-  BalikTuru(),
+/// Uygulamanın etkinlik bileşenleri (ADR-0024 §3). Koddaki sabit listedir;
+/// tür tanımı sunucudan gelir ama istemci yalnızca buradaki bileşenleri
+/// çizer (kayıtta olmayan bileşen için "Uygulamayı güncelle" kartı).
+///
+/// Her bileşen `features/etkinlik/bilesenler/<bileşen>/` altındadır ve bu
+/// listeye, kendi `kind` yorumunun hemen altına **tek satırla** eklenir
+/// (yorum satırları yerinde kalır: paralel iş kayıtları çakışmasın). Sıra
+/// çizim sırası değildir; bölümler tür tanımındaki sırayla çizilir.
+const List<EtkinlikBileseni> etkinlikBilesenKaydi = [
+  // meeting_point: buluşma noktası etkinliğin temel alanıdır.
+  TemelBilesen('meeting_point'),
+  // route (#227)
+  RotaBileseni(),
+  // vehicles (#228)
+  AraclarBileseni(),
+  // checklist (#229)
+  ListeBileseni(),
+  // roll_call (#230)
+  YoklamaBileseni(),
+  // log (#231)
+  GunlukBileseni(),
+  // measure (#233)
+  OlcumBileseni(),
+  // goal (#234)
+  HedefBileseni(),
+  // schedule (#235)
+  ProgramBileseni(),
+  // teams (#236)
+  TakimBileseni(),
+  // draw (#237)
+  KuraBileseni(),
+  // scoreboard (#238)
+  YazbozBileseni(),
+  // bracket (#239)
+  AgacBileseni(),
+  // ranking (#241)
+  DereceBileseni(),
+  // vote (#242)
+  OylamaBileseni(),
+  // celebration (#243)
+  KutlamaBileseni(),
+  // questions (#244)
+  SorularBileseni(),
+  // timer (#245)
+  KronometreBileseni(),
+  // pool_link (#256)
+  HavuzBaglantisiBileseni(),
+];
+
+/// Uygulamanın tayfa ana sayfası bileşenleri (App ADR-0024 §6; Tayfam-Api
+/// ADR-0027, ADR-0040). Koddaki sabit listedir; hangi bileşenin hangi
+/// sırayla gösterileceğine sunucunun `home_widgets` alanı karar verir,
+/// istemci yalnızca buradakileri çizer (kayıtta olmayan anahtar atlanır,
+/// düzenleme ekranında "Uygulamayı güncelle" etiketiyle listelenir).
+///
+/// Modül bileşenleri (`kind: module`) kendi paketlerinde
+/// `AnaSayfaBileseni`'ni uygular ve buraya, kendi anahtar yorumunun hemen
+/// altına **tek satırla** eklenir (yorum satırları yerinde kalır: paralel
+/// iş kayıtları çakışmasın). Sıra çizim sırası değildir.
+const List<AnaSayfaBileseni> anaSayfaBilesenKaydi = [
+  // Bölümler (upcoming, announcements, polls, questions): modüllerin ana
+  // sayfa bölümleri (ADR-0015).
+  ...anaSayfaBolumleri,
+  // stats (#252)
+  IstatistikKartiBileseni(),
+  // goal (#252)
+  HedefKartiBileseni(),
+  // countdown (#252)
+  GeriSayimKartiBileseni(),
+  // champions (#252)
+  SampiyonlarKartiBileseni(),
+  // log_summary (#252)
+  GunlukOzetiKartiBileseni(),
+  // daily (#253)
+  GununIcerigiBileseni(),
+  // library (#255)
+  KutuphaneBileseni(),
+  // question_pool (#256)
+  SoruHavuzuBileseni(),
+  // materials (#257)
+  MateryalBileseni(),
+  // garage (#258)
+  GarajBileseni(),
 ];
 
 /// Kayıt listelerini `core/` ve özelliklerdeki provider'lara veren
 /// override'lar; uygulamanın kökündeki `ProviderScope`'a verilir.
 final List<Override> kayitOverridelari = [
   tayfaModulleriProvider.overrideWithValue(tayfaModulKaydi),
-  etkinlikTurleriProvider.overrideWithValue(etkinlikTuruKaydi),
+  etkinlikBilesenKaydiProvider.overrideWithValue(etkinlikBilesenKaydi),
+  anaSayfaBilesenKaydiProvider.overrideWithValue(anaSayfaBilesenKaydi),
+  // Soru havuzu sorusu Soru-Cevap ekranlarında havuz görünümüyle (#256).
+  soruHavuzuGorunumuProvider.overrideWithValue(const HavuzGorunumu()),
   // Tayfa üst menüsü: ayarlar, sessize alma, ayrılma (ADR-0018 §1).
   tayfaUstMenusuProvider.overrideWithValue(tayfaUstMenusu),
   // Ana sayfadan davet linki ve "Silmeyi iptal et" (2026-11-13).
@@ -83,7 +179,11 @@ final List<Override> kayitOverridelari = [
   // (ADR-0012 §3, ADR-0018 §6).
   kayitDavetProvider.overrideWith(KabukKayitDavetNotifier.new),
   // Girişten sonra profil tamamlama formu (issue #186).
-  kabukKatmanlariProvider.overrideWithValue(const [profilTamamlamaKatmani]),
+  // Katalog kabuk açılınca okunur, ön plana dönünce yenilenir (ADR-0024).
+  kabukKatmanlariProvider.overrideWithValue(const [
+    profilTamamlamaKatmani,
+    katalogKatmani,
+  ]),
   // Keşfet ve güvenlik ağı (ADR-0027): girişlerin görünürlüğü, tayfa
   // ayarlarındaki bölüm ve etkinlik detayındaki kartlar.
   kesfetGorunurProvider.overrideWith((ref) => ref.watch(kesfetAcikProvider)),
@@ -108,6 +208,19 @@ const List<YonetimEkGirisi> yonetimEkGirisleri = [
     ozet: moderasyonOzeti,
     bekleyenMetni: moderasyonBekleyenMetni,
     bekleyenEtiketi: moderasyonBekleyenEtiketi,
+  ),
+  // Tayfa sözlükleri: birleştirme ve geri alma (#232, App ADR-0031 §5).
+  YonetimEkGirisi(
+    ikon: sozlukGirisIkonu,
+    etiket: sozlukGirisEtiketi,
+    adres: sozluklerAdresi,
+  ),
+  // Ana sayfa düzeni (#252, App ADR-0024 §6; yalnızca yönetici).
+  YonetimEkGirisi(
+    ikon: anaSayfaGirisIkonu,
+    etiket: anaSayfaGirisEtiketi,
+    adres: anaSayfaDuzeniAdresi,
+    yalnizcaYonetici: true,
   ),
 ];
 

@@ -14,6 +14,7 @@ import 'package:tayfam/features/tayfa/tayfa.dart';
 
 import '../arkadas/sahteler.dart' as ark;
 import '../tayfa/sahteler.dart';
+import '../../core/katalog/sahte_katalog.dart';
 import 'sahteler.dart';
 
 /// Anlık tayfanın örnek kimliği.
@@ -55,7 +56,7 @@ EtkinlikSihirbaziNotifier _doldur(
 ]) {
   c.listen(anlikSihirbazProvider(anahtar), (_, _) {});
   return c.read(anlikSihirbazProvider(anahtar).notifier)
-    ..turSec(EventType.camp)
+    ..turSec(testTuru('camp'))
     ..ileri()
     ..baslikAyarla('  Göl kampı ')
     ..baslangicAyarla(ornekBaslangic)

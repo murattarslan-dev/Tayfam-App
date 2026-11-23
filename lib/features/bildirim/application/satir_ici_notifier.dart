@@ -8,6 +8,7 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/features/arkadas/arkadas.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_hedefi.dart';
 import 'package:tayfam/features/bildirim/application/bildirim_listesi_notifier.dart';
+import 'package:tayfam/features/tayfa/tayfa.dart';
 
 /// Satır içi işlemden sonra düğmelerin yerinde görünen sonuç (karar 2).
 enum SatirIciSonuc {
@@ -73,7 +74,7 @@ class SatirIciNotifier extends Notifier<SatirIciDurumu> {
       _calistir(bildirim, (yanitlar) async {
         final kisi = bildirimKisisi(bildirim);
         final tayfa = davetTayfasi(bildirim);
-        final islem = satirIciIslem(bildirim);
+        final islem = satirIciIslem(bildirim, etkinUyeMi: _etkinUyeMi);
         if (islem == SatirIciIslem.arkadaslik && kisi != null) {
           final hata = await yanitlar.istegiKabulEt(kisi);
           return (hata, SatirIciSonuc.arkadasOldunuz);
@@ -102,7 +103,7 @@ class SatirIciNotifier extends Notifier<SatirIciDurumu> {
       _calistir(bildirim, (yanitlar) async {
         final kisi = bildirimKisisi(bildirim);
         final tayfa = davetTayfasi(bildirim);
-        final islem = satirIciIslem(bildirim);
+        final islem = satirIciIslem(bildirim, etkinUyeMi: _etkinUyeMi);
         if (islem == SatirIciIslem.oneri && kisi != null) {
           final hata = await yanitlar.oneriyiKapat(kisi);
           return (hata, SatirIciSonuc.oneriKapatildi);
@@ -117,6 +118,10 @@ class SatirIciNotifier extends Notifier<SatirIciDurumu> {
         }
         return (hata, SatirIciSonuc.reddedildi);
       });
+
+  /// Tayfalarım listesinden etkin üyelik (şimdi bildirimi daveti için).
+  EtkinUyeMi? get _etkinUyeMi =>
+      etkinUyelik(ref.read(tayfalarimProvider).value);
 
   Future<Object?> _calistir(
     Notification bildirim,
