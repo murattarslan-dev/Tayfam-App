@@ -483,4 +483,62 @@ void main() {
       expect(olusturmaIstegi(isaretli).toJson()['discoverable'], isTrue);
     });
   });
+
+  group('ders/konu alanı (study_tags; Tayfam-Api ADR-0043)', () {
+    final tanim = CatalogEventType.fromJson({
+      ...testTuru('general').toJson(),
+      'key': 'study_group',
+      'definition': {
+        'fields': [
+          dersAlani('subjects', enCok: 5).toJson(),
+          {
+            'key': 'not',
+            'kind': 'text',
+            'labels': {'tr': 'Not'},
+          },
+        ],
+      },
+    });
+
+    test('alanı tanınan türde etkinlik oluşturma açık (ADR-0025 §9)', () {
+      const bos = EtkinlikTaslagi(istekKimligi: sahteEtkinlikIstekKimligi);
+      expect(
+        adimHatalari(
+          0,
+          bos.kopya(tur: tanim.key, turTanimi: tanim),
+          simdi: sabitSimdi,
+        ),
+        isEmpty,
+      );
+
+      final c = _kapsayici(etkinlikTasimasi());
+      c.listen(etkinlikSihirbaziProvider(_olusturma), (_, _) {});
+      c.read(etkinlikSihirbaziProvider(_olusturma).notifier).turSec(tanim);
+      expect(c.read(etkinlikSihirbaziProvider(_olusturma)).tur, 'study_group');
+    });
+
+    test('düzenlemede değişmeyen emekli seçim geri gönderilir', () {
+      final eski = Event.fromJson({
+        ...etkinlikJson(tur: 'study_group'),
+        'fields': {
+          'subjects': ['yks_matematik_eski', 'yks_fizik'],
+        },
+      });
+      final t = duzenlemeTaslagi(eski, sahteEtkinlikIstekKimligi, tanim: tanim);
+      expect(t.alanlar, {
+        'subjects': ['yks_matematik_eski', 'yks_fizik'],
+      });
+      final degisti = t.kopya(
+        alanlar: {...t.alanlar, 'not': 'Kitabını getir'},
+        alanlarDegisti: true,
+      );
+      expect(adimHatalari(3, degisti, simdi: sabitSimdi, eski: eski), isEmpty);
+      expect(duzenlemeIstegi(degisti, eski)?.toJson(), {
+        'fields': {
+          'subjects': ['yks_matematik_eski', 'yks_fizik'],
+          'not': 'Kitabını getir',
+        },
+      });
+    });
+  });
 }

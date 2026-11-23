@@ -2529,6 +2529,16 @@ final class CatalogEventType {
 /// | `boolean` | `true` / `false` | — |
 /// | `date` | `YYYY-MM-DD` | — |
 /// | `duration` | dakika, tam sayı | `min`, `max` |
+/// | `study_tags` | ders/konu etiketi anahtarlarının listesi | `min_depth`, `max_depth`, `max_selected` |
+///
+/// `study_tags` (ADR-0043) ders/konu listesinden (`Catalog.study_tags`)
+/// seçimdir ve yalnızca türün alanı olabilir (`log` kayıt alanı olamaz).
+/// Her öğe seçilen en derin etiketin anahtarıdır (konu, dersini ve
+/// düzeyini belirler); tekrar yoktur, sıra korunur. Yeni seçimde etiket
+/// ve üstleri `active` olmalı, derinliği `min_depth`–`max_depth`
+/// aralığında olmalıdır; etkinliğin o alandaki mevcut değerinde olan
+/// emekli etiket düzenlemede kalabilir. Aykırı değer `validation`
+/// (`fields.<anahtar>`) alır.
 final class CatalogField {
   const CatalogField({
     required this.key,
@@ -2543,6 +2553,8 @@ final class CatalogField {
     this.options,
     this.optionLabels,
     this.maxSelected,
+    this.minDepth,
+    this.maxDepth,
     this.vocabulary,
   });
 
@@ -2611,6 +2623,18 @@ final class CatalogField {
       null => null,
       final Object v => _readInt(v, 'CatalogField.max_selected'),
     },
+    minDepth: switch (json['min_depth']) {
+      null => null,
+      final Object v => CatalogFieldMinDepth.fromWire(
+        _readString(v, 'CatalogField.min_depth'),
+      ),
+    },
+    maxDepth: switch (json['max_depth']) {
+      null => null,
+      final Object v => CatalogFieldMaxDepth.fromWire(
+        _readString(v, 'CatalogField.max_depth'),
+      ),
+    },
     vocabulary: switch (json['vocabulary']) {
       null => null,
       final Object v => CatalogVocabulary.fromJson(
@@ -2622,7 +2646,7 @@ final class CatalogField {
   /// Tür içinde tekil: `^[a-z][a-z0-9_]{1,39}$`.
   final String key;
 
-  /// `text`, `long_text`, `integer`, `decimal`, `choice`, `multi_choice`, `boolean`, `date`, `duration`.
+  /// `text`, `long_text`, `integer`, `decimal`, `choice`, `multi_choice`, `boolean`, `date`, `duration`, `study_tags`.
   final String kind;
 
   /// Etkinlik oluştururken zorunlu mu; yoksa `false`.
@@ -2653,8 +2677,14 @@ final class CatalogField {
   /// Seçenek anahtarı → adlar (dil → metin). Adı olmayan seçenek olduğu gibi gösterilir (`"1"` … `"5"`).
   final Map<String, Map<String, String>>? optionLabels;
 
-  /// `multi_choice`: en fazla seçim; yoksa seçenek sayısı.
+  /// `multi_choice`: en fazla seçim, yoksa seçenek sayısı; `study_tags`: 1–10, yoksa 1.
   final int? maxSelected;
+
+  /// `study_tags`: seçilebilecek en sığ etiket (`level` düzey, `subject` ders); yoksa `subject`.
+  final CatalogFieldMinDepth? minDepth;
+
+  /// `study_tags`: seçilebilecek en derin etiket (`topic` konu); `min_depth`'ten sığ olamaz; yoksa `topic`.
+  final CatalogFieldMaxDepth? maxDepth;
 
   final CatalogVocabulary? vocabulary;
 
@@ -2681,6 +2711,8 @@ final class CatalogField {
           },
       },
     if (maxSelected case final value?) 'max_selected': value,
+    if (minDepth case final value?) 'min_depth': value.wire,
+    if (maxDepth case final value?) 'max_depth': value.wire,
     if (vocabulary case final value?) 'vocabulary': value.toJson(),
   };
 
@@ -2700,6 +2732,8 @@ final class CatalogField {
           _deepEquals(options, other.options) &&
           _deepEquals(optionLabels, other.optionLabels) &&
           maxSelected == other.maxSelected &&
+          minDepth == other.minDepth &&
+          maxDepth == other.maxDepth &&
           vocabulary == other.vocabulary;
 
   @override
@@ -2716,8 +2750,69 @@ final class CatalogField {
     _deepHash(options),
     _deepHash(optionLabels),
     maxSelected,
+    minDepth,
+    maxDepth,
     vocabulary,
   ]);
+}
+
+/// `study_tags`: seçilebilecek en derin etiket (`topic` konu); `min_depth`'ten sığ olamaz; yoksa `topic`.
+enum CatalogFieldMaxDepth {
+  level('level'),
+  subject('subject'),
+  topic('topic'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const CatalogFieldMaxDepth(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('CatalogFieldMaxDepth.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static CatalogFieldMaxDepth fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
+}
+
+/// `study_tags`: seçilebilecek en sığ etiket (`level` düzey, `subject` ders); yoksa `subject`.
+enum CatalogFieldMinDepth {
+  level('level'),
+  subject('subject'),
+
+  /// Sözleşmede yok: okunurken tanınmayan değer.
+  /// Sunucuya hiçbir zaman gönderilmez.
+  unknown(null);
+
+  const CatalogFieldMinDepth(this._wire);
+
+  final String? _wire;
+
+  /// JSON'daki değer. Sözleşmede olmayan [unknown] gönderilemez;
+  /// [StateError] fırlatır.
+  String get wire =>
+      _wire ?? (throw StateError('CatalogFieldMinDepth.unknown gönderilemez'));
+
+  /// [wire] değerinden okur; tanınmayan değer [unknown] olur.
+  static CatalogFieldMinDepth fromWire(String wire) {
+    for (final value in values) {
+      if (value._wire == wire) {
+        return value;
+      }
+    }
+    return unknown;
+  }
 }
 
 final class CatalogInterest {

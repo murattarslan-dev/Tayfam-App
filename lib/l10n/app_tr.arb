@@ -13534,6 +13534,50 @@
   "@ders_konu_liste_bos": {
     "description": "Ortak ders/konu seçicide katalogda hiç seçilebilir ders yokken seçicinin yerindeki sakin not."
   },
+  "ders_konu_ders_istege_bagli": "Ders (isteğe bağlı)",
+  "@ders_konu_ders_istege_bagli": {
+    "description": "Ders/konu seçicide, düzey de seçilebilen alanda (ör. deneme sınavı) isteğe bağlı ders alanının etiketi ve ders listesinin başlığı."
+  },
+  "ders_konu_ders_belirtme": "Ders belirtme",
+  "@ders_konu_ders_belirtme": {
+    "description": "Ders/konu seçicide, düzey de seçilebilen alanda ders listesinin başındaki, dersi boş bırakan (yalnızca düzey) seçenek."
+  },
+  "ders_konu_yol": "{ust} › {alt}",
+  "@ders_konu_yol": {
+    "description": "Ders/konu etiketinin üst zinciriyle yazımı (ör. TYT › Matematik › Türev); zincir bu kalıpla soldan sağa kurulur.",
+    "placeholders": {
+      "ust": {
+        "type": "String",
+        "example": "TYT › Matematik"
+      },
+      "alt": {
+        "type": "String",
+        "example": "Türev"
+      }
+    }
+  },
+  "ders_konu_alan_ekle": "Ekle",
+  "@ders_konu_alan_ekle": {
+    "description": "Etkinlik formunda çoklu ders/konu alanının altındaki, yeni etiket seçme sayfasını açan düğme ve o sayfadaki onay düğmesi."
+  },
+  "ders_konu_alan_kaldir": "Kaldır: {ad}",
+  "@ders_konu_alan_kaldir": {
+    "description": "Etkinlik formunda çoklu ders/konu alanındaki seçili etiketin yanındaki kaldırma düğmesinin ipucu ve ekran okuyucu adı; ad, etiketin üst zinciriyle yazımıdır.",
+    "placeholders": {
+      "ad": {
+        "type": "String",
+        "example": "TYT › Matematik › Türev"
+      }
+    }
+  },
+  "ders_konu_alan_temizle": "Seçimi kaldır",
+  "@ders_konu_alan_temizle": {
+    "description": "Etkinlik formunda isteğe bağlı tek seçimli ders/konu alanının başlığının yanındaki, seçimi boşaltan bağlantı."
+  },
+  "ders_konu_alan_zaten": "Bu zaten seçili.",
+  "@ders_konu_alan_zaten": {
+    "description": "Ders/konu ekleme sayfasında seçilen etiket alanda zaten varken onay düğmesinin üstündeki not."
+  },
   "rozet_baslik": "Rozetler",
   "@rozet_baslik": {
     "description": "Profilde ve tayfa ana sayfasında rozet bölümünün başlığı (App ADR-0033 §3)."

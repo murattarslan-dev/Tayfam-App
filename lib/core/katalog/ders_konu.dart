@@ -144,6 +144,39 @@ final class DersKonuAgaci {
       if (e.key == mevcut || secilebilir(e.key)) e,
   ];
 
+  /// [anahtar]'ın kökten kendisine kadar yolu (düzey, ders, konu
+  /// sırasıyla); listede yoksa boş.
+  List<String> yol(String anahtar) {
+    if (seviye(anahtar) == null) return const <String>[];
+    final yol = <String>[];
+    String? a = anahtar;
+    while (a != null) {
+      yol.insert(0, a);
+      a = ust(a);
+    }
+    return List<String>.unmodifiable(yol);
+  }
+
+  /// [anahtar]'ın seviyesi [enSig]–[enDerin] aralığında mı (tür alanının
+  /// `min_depth` / `max_depth`'i, Tayfam-Api ADR-0043); listede yoksa
+  /// `false`.
+  bool aralikta(
+    String anahtar,
+    DersKonuSeviyesi enSig,
+    DersKonuSeviyesi enDerin,
+  ) {
+    final s = seviye(anahtar);
+    return s != null && s.index >= enSig.index && s.index <= enDerin.index;
+  }
+
+  /// Seçilen en derin etiketten ([anahtar]) ortak seçicinin seçimi: ders
+  /// ya da konu ise seçim, düzey ise ya da listede yoksa `null`.
+  DersKonuSecimi? secimOku(String anahtar) => switch (seviye(anahtar)) {
+    DersKonuSeviyesi.ders => DersKonuSecimi(ders: anahtar),
+    DersKonuSeviyesi.konu => DersKonuSecimi(ders: ust(anahtar)!, konu: anahtar),
+    _ => null,
+  };
+
   /// [secim]'in dersinin düzeyi; ders listede yoksa `null`.
   String? duzeyi(DersKonuSecimi secim) =>
       seviye(secim.ders) == DersKonuSeviyesi.ders ? ust(secim.ders) : null;
@@ -159,6 +192,12 @@ final class DersKonuAgaci {
     return ust(konu) == secim.ders && secilebilir(konu);
   }
 }
+
+/// Ortak seçicinin seçiminden tür alanının (`study_tags`, Tayfam-Api
+/// ADR-0043) değeri: seçilen en derin etiket, yani `[konu ?? ders]`; seçim
+/// yoksa boş liste.
+List<String> dersKonuDegeri(DersKonuSecimi? secim) =>
+    secim == null ? const <String>[] : [secim.konu ?? secim.ders];
 
 /// [anahtar]'ın seviyesi; üst zinciri listede kopuksa ya da üç seviyeden
 /// derinse `null`.

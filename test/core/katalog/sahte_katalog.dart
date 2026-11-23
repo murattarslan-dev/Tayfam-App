@@ -26,6 +26,24 @@ Katalog testKatalogu() => Katalog(testKataloguModeli());
 /// Test kataloğundaki [anahtar] türü.
 CatalogEventType testTuru(String anahtar) => testKatalogu().tur(anahtar)!;
 
+/// Eğitim türlerindeki gibi ders/konu alanı (`study_tags`, Tayfam-Api
+/// ADR-0043 §6); katalog fikstüründe bu türde alan yoktur.
+CatalogField dersAlani(
+  String anahtar, {
+  bool zorunlu = false,
+  String? enSig,
+  String? enDerin,
+  int? enCok,
+}) => CatalogField.fromJson({
+  'key': anahtar,
+  'kind': 'study_tags',
+  'required': zorunlu,
+  'labels': {'tr': anahtar},
+  'min_depth': ?enSig,
+  'max_depth': ?enDerin,
+  'max_selected': ?enCok,
+});
+
 /// Sunucuya gitmeyen, sabit kataloglu notifier: ekran testlerinde katalog
 /// hazır gelir. [katalog] `null` ise katalog hiç gelmemiş gibidir.
 class SabitKatalogNotifier extends KatalogNotifier {

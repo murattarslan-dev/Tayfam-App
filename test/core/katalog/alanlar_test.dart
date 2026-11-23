@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/katalog/alanlar.dart';
+import 'package:tayfam/core/katalog/ders_konu.dart';
 
 import 'sahte_katalog.dart';
 
@@ -21,11 +22,13 @@ void main() {
     'sure': '90',
   };
 
-  test('test kataloğu bütün alan türlerini kullanır (ADR-0024 §7)', () {
-    expect(
-      alanlar.map((a) => AlanTuru.coz(a.kind)).toSet(),
-      AlanTuru.values.toSet(),
-    );
+  test('testler bütün alan türlerini kullanır (ADR-0024 §7)', () {
+    // `study_tags` katalog fikstüründe değil, aşağıdaki ders/konu
+    // testlerinde (Tayfam-Api ADR-0043).
+    final hepsi = [...alanlar, dersAlani('dersler')];
+    expect({
+      for (final a in hepsi) AlanTuru.coz(a.kind),
+    }, AlanTuru.values.toSet());
   });
 
   group('alan türü', () {
@@ -283,5 +286,107 @@ void main() {
     );
     expect(ayniAlanDegerleri(const {'a': 'x'}, const {'a': 'y'}), isFalse);
     expect(ayniAlanDegerleri(const {}, const {'s': false}), isFalse);
+  });
+
+  group('ders/konu alanı (study_tags, Tayfam-Api ADR-0043)', () {
+    final dersler = dersAlani('dersler', enCok: 5);
+    final konu = dersAlani('konu', zorunlu: true);
+    final sinav = dersAlani('sinav', enSig: 'level', enDerin: 'subject');
+    final ders = [dersler, konu, sinav];
+
+    test('tanınır; bilinmeyen derinlik ayarı tanınmaz', () {
+      expect(AlanTuru.coz('study_tags'), AlanTuru.dersKonu);
+      expect(alanlarTaniniyor(ders), isTrue);
+      expect(alanlarTaniniyor([dersAlani('x', enSig: 'topic')]), isFalse);
+      expect(alanlarTaniniyor([dersAlani('x', enDerin: 'unit')]), isFalse);
+    });
+
+    test('günlük kayıt alanında tanınmaz', () {
+      expect(kayitAlanlariTaniniyor(alanlar), isTrue);
+      expect(kayitAlanlariTaniniyor([...alanlar, dersler]), isFalse);
+    });
+
+    test('derinlik ve en çok seçim varsayılanları', () {
+      expect(alanEnSigSeviye(konu), DersKonuSeviyesi.ders);
+      expect(alanEnDerinSeviye(konu), DersKonuSeviyesi.konu);
+      expect(alanEnSigSeviye(sinav), DersKonuSeviyesi.duzey);
+      expect(alanEnDerinSeviye(sinav), DersKonuSeviyesi.ders);
+      // Tutarsız tanım: en derin, en sığa çekilir.
+      final ters = dersAlani('x', enSig: 'subject', enDerin: 'level');
+      expect(alanEnDerinSeviye(ters), DersKonuSeviyesi.ders);
+
+      expect(alanEnCokSecim(konu), 1);
+      expect(alanEnCokSecim(dersler), 5);
+      expect(alanEnCokSecim(dersAlani('x', enCok: 0)), 1);
+      expect(alanEnCokSecim(dersAlani('x', enCok: 40)), alanDersKonuEnCok);
+    });
+
+    test('doğrulama yalnızca biçim: liste, anahtar, tekrar, sayı', () {
+      expect(
+        alanHatalari(ders, const {
+          'dersler': ['yks_fizik', 'yks_matematik_turev'],
+          'konu': ['yks_matematik'],
+          'sinav': ['yks'],
+        }),
+        isEmpty,
+      );
+      expect(alanHatalari(ders, const {}), {'konu': AlanHatasi.zorunlu});
+      expect(alanHatalari(ders, const {'konu': <String>[]}), {
+        'konu': AlanHatasi.zorunlu,
+      });
+      for (final kotu in <Object?>[
+        'yks_fizik',
+        ['Yks Fizik'],
+        ['yks_fizik', 'yks_fizik'],
+        ['yks_fizik', 7],
+      ]) {
+        expect(
+          alanHatalari(ders, {
+            'konu': ['yks_fizik'],
+            'dersler': kotu,
+          }),
+          {'dersler': AlanHatasi.secim},
+          reason: '$kotu',
+        );
+      }
+      expect(
+        alanHatalari(ders, const {
+          'konu': ['yks_fizik', 'yks_matematik'],
+        }),
+        {'konu': AlanHatasi.cokSecim},
+      );
+      // Listede olmayan ya da emekli etiket biçimce geçerlidir: mevcut
+      // emekli seçim değişmeden geri gönderilir, son söz sunucunundur.
+      expect(
+        alanHatalari(ders, const {
+          'konu': ['yks_matematik_eski'],
+        }),
+        isEmpty,
+      );
+    });
+
+    test('gövde: sıra korunur, değer liste; sunucudan aynen okunur', () {
+      const form = {
+        'dersler': ['yks_matematik_turev', 'yks_fizik'],
+        'konu': ['yks_matematik_eski'],
+      };
+      final govde = alanGovdesi(ders, form);
+      expect(govde, {
+        'dersler': ['yks_matematik_turev', 'yks_fizik'],
+        'konu': ['yks_matematik_eski'],
+      });
+      expect(govde.containsKey('sinav'), isFalse);
+      final okunan = alanDegerleriOku(ders, govde);
+      expect(okunan, form);
+      expect(alanGovdesi(ders, okunan), govde);
+      // Türüne uymayan değer okunmaz.
+      expect(
+        alanDegerleriOku(ders, const {
+          'dersler': 'yks_fizik',
+          'konu': ['yks_fizik', 3],
+        }),
+        isEmpty,
+      );
+    });
   });
 }

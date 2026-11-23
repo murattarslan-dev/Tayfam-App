@@ -197,6 +197,7 @@ class _Detay extends ConsumerWidget {
       context,
       tanim?.version == etkinlik.typeVersion ? tanim : null,
       etkinlik,
+      ref.watch(katalogProvider).value?.dersKonu,
     );
     final cevrimici = etkinlik.mode == EventMode.online;
     final sohbet = ref.watch(etkinlikSohbetiYuvasiProvider);
@@ -1222,13 +1223,19 @@ List<(String, String)> _alanSatirlari(
   BuildContext context,
   CatalogEventType? tanim,
   Event e,
+  DersKonuAgaci? dersKonu,
 ) {
   final degerler = e.fields;
   if (tanim == null || degerler == null) return const [];
   final dil = katalogDili(context);
   return [
     for (final alan in tanim.definition.fields ?? const <CatalogField>[])
-      if (katalogAlanDegeriMetni(context, alan, degerler[alan.key])
+      if (katalogAlanDegeriMetni(
+            context,
+            alan,
+            degerler[alan.key],
+            dersKonu: dersKonu,
+          )
           case final deger?)
         (katalogAlanAdi(alan, dil), deger),
   ];

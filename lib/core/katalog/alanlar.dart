@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/katalog/ders_konu.dart';
+import 'package:tayfam/core/katalog/katalog.dart';
 
 /// Katalogdaki alan türleri (sözleşme: `CatalogField.kind`, kapalı liste;
-/// ADR-0024 §3).
+/// ADR-0024 §3, `study_tags` Tayfam-Api ADR-0043).
 enum AlanTuru {
   metin('text'),
   uzunMetin('long_text'),
@@ -13,7 +15,11 @@ enum AlanTuru {
   cokluSecim('multi_choice'),
   evetHayir('boolean'),
   tarih('date'),
-  sure('duration');
+  sure('duration'),
+
+  /// Ders/konu listesinden (`Catalog.study_tags`) seçim; değer seçilen en
+  /// derin etiketlerin anahtarlarıdır.
+  dersKonu('study_tags');
 
   const AlanTuru(this.sunucuDegeri);
 
@@ -36,6 +42,9 @@ const int alanOndalikBasamak = 2;
 const int alanOndalikBasamakEnCok = 3;
 const int alanSecenekEnCok = 50;
 
+/// `study_tags` alanında en çok seçim (sözleşme: 1–10, yoksa 1).
+const int alanDersKonuEnCok = 10;
+
 /// Sayı alanlarının üst sınırı tanımda yoksa kabul edilen en büyük değer
 /// (JSON'da güvenle taşınan tam sayı sınırının içinde).
 const double alanSayiEnCok = 1000000000;
@@ -44,7 +53,44 @@ const double alanSayiEnCok = 1000000000;
 /// türde etkinlik oluşturma kapatılır (ADR-0024 §3); detayda o alan
 /// atlanır.
 bool alanlarTaniniyor(Iterable<CatalogField> alanlar) =>
-    alanlar.every((a) => AlanTuru.coz(a.kind) != null);
+    alanlar.every(alanTaniniyor);
+
+/// [alan]'ın türü (ve `study_tags` ise derinlik ayarları) tanınıyor mu.
+/// Tanınmayan alan çizilmez.
+bool alanTaniniyor(CatalogField alan) => switch (AlanTuru.coz(alan.kind)) {
+  null => false,
+  AlanTuru.dersKonu =>
+    alan.minDepth != CatalogFieldMinDepth.unknown &&
+        alan.maxDepth != CatalogFieldMaxDepth.unknown,
+  _ => true,
+};
+
+/// `log` bileşeninin kayıt alanları tanınıyor mu. `study_tags` yalnızca
+/// tür alanıdır (Tayfam-Api ADR-0043 §1); kayıt alanında gelirse
+/// tanınmayan alan sayılır ve ekleme kapanır.
+bool kayitAlanlariTaniniyor(Iterable<CatalogField> alanlar) => alanlar.every(
+  (a) => alanTaniniyor(a) && AlanTuru.coz(a.kind) != AlanTuru.dersKonu,
+);
+
+/// `study_tags` alanında seçilebilecek en sığ seviye (`min_depth`; yoksa
+/// ders).
+DersKonuSeviyesi alanEnSigSeviye(CatalogField alan) =>
+    alan.minDepth == CatalogFieldMinDepth.level
+    ? DersKonuSeviyesi.duzey
+    : DersKonuSeviyesi.ders;
+
+/// `study_tags` alanında seçilebilecek en derin seviye (`max_depth`; yoksa
+/// konu). Tanım tutarsızsa (en sığdan sığ) en sığ seviyeye çekilir; son
+/// söz sunucunundur.
+DersKonuSeviyesi alanEnDerinSeviye(CatalogField alan) {
+  final enDerin = switch (alan.maxDepth) {
+    CatalogFieldMaxDepth.level => DersKonuSeviyesi.duzey,
+    CatalogFieldMaxDepth.subject => DersKonuSeviyesi.ders,
+    _ => DersKonuSeviyesi.konu,
+  };
+  final enSig = alanEnSigSeviye(alan);
+  return enDerin.index < enSig.index ? enSig : enDerin;
+}
 
 /// Bir alanın formdaki hatası; metni çeviri dosyasındadır.
 enum AlanHatasi {
@@ -124,10 +170,15 @@ List<String> alanSecenekleri(CatalogField alan) {
 
 final RegExp _secenekBicimi = RegExp(r'^[a-z0-9][a-z0-9_]{0,39}$');
 
-/// `multi_choice` alanında en çok seçim (yoksa seçenek sayısı).
+/// `multi_choice` alanında en çok seçim (yoksa seçenek sayısı);
+/// `study_tags` alanında 1–[alanDersKonuEnCok] (yoksa 1).
 int alanEnCokSecim(CatalogField alan) {
-  final secenekSayisi = alanSecenekleri(alan).length;
   final tanim = alan.maxSelected;
+  if (AlanTuru.coz(alan.kind) == AlanTuru.dersKonu) {
+    if (tanim == null || tanim < 1) return 1;
+    return tanim > alanDersKonuEnCok ? alanDersKonuEnCok : tanim;
+  }
+  final secenekSayisi = alanSecenekleri(alan).length;
   return tanim == null || tanim < 1 || tanim > secenekSayisi
       ? secenekSayisi
       : tanim;
@@ -166,6 +217,7 @@ String alanTarihiYaz(DateTime tarih) {
 /// | `integer`, `decimal`, `duration` | `String` (yazılan metin) |
 /// | `choice` | `String` (seçenek anahtarı) |
 /// | `multi_choice` | `List<String>` |
+/// | `study_tags` | `List<String>` (en derin etiket anahtarları, sırayla) |
 /// | `boolean` | `bool` |
 /// | `date` | `String` (`YYYY-MM-DD`) |
 ///
@@ -235,6 +287,21 @@ AlanHatasi? _alanHatasi(CatalogField alan, AlanTuru tur, Object? deger) {
       final secenekler = alanSecenekleri(alan);
       if (!deger.every(secenekler.contains)) return AlanHatasi.secim;
       return deger.length > alanEnCokSecim(alan) ? AlanHatasi.cokSecim : null;
+    case AlanTuru.dersKonu:
+      // Yalnızca biçim (Tayfam-Api ADR-0043 §2.1): anahtar biçimi, tekrar
+      // yok, en çok seçim. Etiketin listede ve seçilebilir olması seçicide
+      // sağlanır; mevcut emekli seçim değişmeden geri gönderilebilsin diye
+      // burada denetlenmez. Son söz sunucunundur.
+      if (deger is! List<Object?>) return AlanHatasi.secim;
+      final gorulen = <String>{};
+      for (final anahtar in deger) {
+        if (anahtar is! String ||
+            !katalogAnahtariMi(anahtar) ||
+            !gorulen.add(anahtar)) {
+          return AlanHatasi.secim;
+        }
+      }
+      return deger.length > alanEnCokSecim(alan) ? AlanHatasi.cokSecim : null;
     case AlanTuru.evetHayir:
       return deger is bool ? null : AlanHatasi.zorunlu;
     case AlanTuru.tarih:
@@ -274,7 +341,7 @@ Map<String, Object?> alanGovdesi(
         (deger as String).trim().replaceAll(',', '.'),
       ),
       AlanTuru.secim || AlanTuru.tarih => deger as String,
-      AlanTuru.cokluSecim => List<String>.unmodifiable(
+      AlanTuru.cokluSecim || AlanTuru.dersKonu => List<String>.unmodifiable(
         (deger as List<Object?>).cast<String>(),
       ),
       AlanTuru.evetHayir => deger as bool,
@@ -303,7 +370,7 @@ AlanDegerleri alanDegerleriOku(
       AlanTuru.tarih => ham is String ? ham : null,
       AlanTuru.tamSayi || AlanTuru.sure => ham is int ? '$ham' : null,
       AlanTuru.ondalik => ham is num && ham.isFinite ? sayiMetni(ham) : null,
-      AlanTuru.cokluSecim =>
+      AlanTuru.cokluSecim || AlanTuru.dersKonu =>
         ham is List<Object?> && ham.every((e) => e is String)
             ? List<String>.unmodifiable(ham.cast<String>())
             : null,
