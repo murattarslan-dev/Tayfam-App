@@ -76,6 +76,44 @@ void main() {
       expect(pushAdresi(b), Adresler.veriDisaAktarma);
     });
 
+    const oduncAdimlari = [
+      'library_loan_requested',
+      'library_queue_joined',
+      'library_loan_approved',
+      'library_loan_declined',
+      'library_loan_handed_over',
+    ];
+
+    test('ödünç adımı: kalemin detayı açılır (hedef library_item)', () {
+      for (final tur in oduncAdimlari) {
+        final b = pushBildirimi({
+          'notification_id': _bildirim,
+          'type': tur,
+          'target_type': 'library_item',
+          'target_id': _hedef,
+          'tayfa_id': _tayfa,
+        }, simdi: simdi);
+        expect(b, isNotNull, reason: tur);
+        expect(b!.targetType, NotificationTargetType.libraryItem);
+        expect(
+          pushAdresi(b),
+          Adresler.kutuphaneKalemi(_tayfa, _hedef),
+          reason: tur,
+        );
+      }
+    });
+
+    test('ödünç adımı tayfasız: Bildirimler sekmesi', () {
+      final b = pushBildirimi({
+        'notification_id': _bildirim,
+        'type': 'library_loan_approved',
+        'target_type': 'library_item',
+        'target_id': _hedef,
+      }, simdi: simdi);
+      expect(b, isNotNull);
+      expect(pushAdresi(b), Adresler.bildirimler);
+    });
+
     final gecersizler = <String, Map<String, String>>{
       'kimlik UUID değil': {
         'notification_id': '../../profil',
@@ -101,6 +139,13 @@ void main() {
         'type': 'event_created',
         'target_type': 'baska',
         'target_id': _hedef,
+      },
+      'ödünç adımında kalem kimliği biçimsiz': {
+        'notification_id': _bildirim,
+        'type': 'library_loan_requested',
+        'target_type': 'library_item',
+        'target_id': '../../ayarlar',
+        'tayfa_id': _tayfa,
       },
       'tayfa kimliği biçimsiz': {
         'notification_id': _bildirim,

@@ -33,6 +33,11 @@ import 'package:tayfam/core/gezinme/adresler.dart';
 /// - `library_due` (iade tarihi geçti) ve `library_loan_orphaned` (ödünçteki
 ///   kalemin karşı tarafı ayrıldı; Tayfam-Api ADR-0040 §1): tayfanın ortak
 ///   kütüphanesi; bildirim kalemi ve kişiyi adlandırmaz.
+/// - Ödünç adımları ([oduncAdimiMi]: istek, sıra, onay, ret, teslim;
+///   Tayfam-Api ADR-0040 §1 "Uygulama notları (#321)"): hedef `library_item`
+///   ise kalemin detayı (sahibi sırayı ve ödüncü, borç alan kendi ödüncünü
+///   görür), hedef beklenenden farklı ya da kimliği biçimsizse tayfanın
+///   ortak kütüphanesi. Kalem geri çekildiyse detay ekranı bunu söyler.
 /// - Tayfaya bağlı değilse `null`: bildirim yalnızca okundu işaretlenir.
 ///
 /// [etkinUyeMi] tayfalarım listesinden kurulur ([etkinUyelik]); liste
@@ -79,6 +84,18 @@ String? bildirimAdresi(Notification bildirim, {EtkinUyeMi? etkinUyeMi}) {
         final tayfa? => Adresler.kutuphane(tayfa),
         null => null,
       },
+    // Ödünç adımları (Tayfam-Api ADR-0040 §1, #321): hedef kalemdir;
+    // bildirim içeriksizdir, kalem açılır.
+    (final tur, _, _) when oduncAdimiMi(tur) => switch ((
+      tayfaId,
+      bildirim.targetType,
+      hedefId,
+    )) {
+      (final tayfa?, NotificationTargetType.libraryItem, final kalem?) =>
+        Adresler.kutuphaneKalemi(tayfa, kalem),
+      (final tayfa?, _, _) => Adresler.kutuphane(tayfa),
+      _ => null,
+    },
     // KVKK veri dışa aktarma hazır (ADR-0022): talep listesi açılır.
     (_, NotificationTargetType.dataExport, _?) => Adresler.veriDisaAktarma,
     _ => null,
@@ -116,6 +133,18 @@ String? bildirimKisisi(Notification bildirim) {
   };
   return _gecerli(kimlik);
 }
+
+/// [tur] ortak kütüphanede bir ödünç adımı bildirimi mi (Tayfam-Api
+/// ADR-0040 §1, #321). Hepsi içeriksizdir: eşya, kişi ve tarih
+/// adlandırılmaz (kesin kural 7).
+bool oduncAdimiMi(NotificationType tur) => switch (tur) {
+  NotificationType.libraryLoanRequested ||
+  NotificationType.libraryQueueJoined ||
+  NotificationType.libraryLoanApproved ||
+  NotificationType.libraryLoanDeclined ||
+  NotificationType.libraryLoanHandedOver => true,
+  _ => false,
+};
 
 /// Hedefi `tayfa` olan bildirimin tayfası; biçimsizse `null`.
 String? _tayfaHedefi(Notification bildirim) =>

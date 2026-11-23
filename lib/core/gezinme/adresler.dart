@@ -332,6 +332,11 @@ abstract final class Adresler {
   /// açılır (Tayfam-Api ADR-0040 §1).
   static String kutuphane(String tayfaId) => '${tayfa(tayfaId)}/$kutuphaneYolu';
 
+  /// Ortak kütüphanedeki bir kalemin detayı; ödünç adımı bildirimleri
+  /// (hedef `library_item`; Tayfam-Api ADR-0040 §1, #321) buraya açılır.
+  static String kutuphaneKalemi(String tayfaId, String kalemId) =>
+      '${kutuphane(tayfaId)}/$kalemId';
+
   /// Soru havuzunun tayfa altındaki yolu (#256).
   static const soruHavuzuYolu = 'soru-havuzu';
 

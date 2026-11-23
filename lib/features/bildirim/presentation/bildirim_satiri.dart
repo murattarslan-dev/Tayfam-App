@@ -429,6 +429,11 @@ BildirimKategorisi bildirimKategorisi(NotificationType tur) => switch (tur) {
   NotificationType.reportResolved ||
   NotificationType.dataExportReady ||
   NotificationType.libraryDue ||
+  NotificationType.libraryLoanRequested ||
+  NotificationType.libraryQueueJoined ||
+  NotificationType.libraryLoanApproved ||
+  NotificationType.libraryLoanDeclined ||
+  NotificationType.libraryLoanHandedOver ||
   NotificationType.unknown => BildirimKategorisi.marka,
 };
 
@@ -479,6 +484,12 @@ String bildirimMetni(
   // Kalemi ve karşı tarafı adlandırmaz; ayrıntı "Ödünçlerim"de.
   NotificationType.libraryDue => m.kutuphane_bildirim_iade,
   NotificationType.libraryLoanOrphaned => m.kutuphane_bildirim_sahipsiz,
+  // Ödünç adımları (#321): adımı atan üye, eşya ve tarih yazılmaz.
+  NotificationType.libraryLoanRequested => m.kutuphane_bildirim_istek,
+  NotificationType.libraryQueueJoined => m.kutuphane_bildirim_sira,
+  NotificationType.libraryLoanApproved => m.kutuphane_bildirim_onay,
+  NotificationType.libraryLoanDeclined => m.kutuphane_bildirim_ret,
+  NotificationType.libraryLoanHandedOver => m.kutuphane_bildirim_teslim,
   NotificationType.unknown => m.bildirim_genel,
 };
 
@@ -511,6 +522,11 @@ IconData bildirimIkonu(NotificationType tur) => switch (tur) {
   NotificationType.badgeEarned => Icons.military_tech_outlined,
   NotificationType.nowStarted => Icons.bolt,
   NotificationType.libraryDue ||
-  NotificationType.libraryLoanOrphaned => Icons.inventory_2_outlined,
+  NotificationType.libraryLoanOrphaned ||
+  NotificationType.libraryLoanRequested ||
+  NotificationType.libraryQueueJoined ||
+  NotificationType.libraryLoanApproved ||
+  NotificationType.libraryLoanDeclined ||
+  NotificationType.libraryLoanHandedOver => Icons.inventory_2_outlined,
   NotificationType.unknown => Icons.notifications_outlined,
 };

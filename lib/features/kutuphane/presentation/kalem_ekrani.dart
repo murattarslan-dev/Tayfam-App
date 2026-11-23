@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
+import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/kullanici/kisiye_dokun.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
@@ -29,6 +32,11 @@ import 'package:tayfam/l10n/app_localizations.dart';
 ///   geri alınamaz).
 /// - Diğer üyeler: "Ödünç iste" (sunucu ödünç açar ya da sıraya koyar),
 ///   sıradaysa yeri ve "Sıradan çık", "Şikâyet et"; moderatöre "Kaldır".
+///
+/// Kalem bulunamazsa (`library-item-not-found`: geri çekilmiş, kaldırılmış
+/// ya da hiç yok; örneğin ödünç adımı bildiriminden gelindi) "Tekrar dene"
+/// yerine "Bu eşya artık kütüphanede değil" ve "Kütüphaneye git" çıkar
+/// ([kalemYokMu]); kalemin adı bilinmez, yazılmaz.
 ///
 /// Sahiplik kendi kimliğinle karşılaştırılarak yalnızca arayüzü
 /// sadeleştirir; yetkiyi sunucu verir (kesin kural 5).
@@ -62,6 +70,19 @@ class _KalemEkraniState extends ConsumerState<KalemEkrani> {
       if (mounted) hataBildir(context, hata);
     } finally {
       if (mounted) setState(() => _mesgul = false);
+    }
+  }
+
+  /// Kalem yoksa kütüphane listesi açılır; liste önbelleği eski kalemi
+  /// göstermesin diye yenilenir. Yönlendirici yoksa (ekran bir sayfanın
+  /// üstünde açıldıysa) geri dönülür.
+  void _kutuphaneyeGit() {
+    ref.invalidate(kalemlerProvider);
+    final yonlendirici = GoRouter.maybeOf(context);
+    if (yonlendirici != null) {
+      yonlendirici.go(kutuphaneAdresi(widget.tayfaId));
+    } else {
+      unawaited(Navigator.of(context).maybePop());
     }
   }
 
@@ -186,6 +207,9 @@ class _KalemEkraniState extends ConsumerState<KalemEkrani> {
             onIste: () => unawaited(_iste()),
             onSiradanCik: () => unawaited(_siradanCik()),
           ),
+          (null, final hata?) when kalemYokMu(hata) => _KalemYok(
+            onKutuphane: _kutuphaneyeGit,
+          ),
           (null, final hata?) => YuklemeHatasi(
             hata: hata,
             onTekrarDene: () => ref.invalidate(saglayici),
@@ -195,6 +219,40 @@ class _KalemEkraniState extends ConsumerState<KalemEkrani> {
           ),
         },
       ),
+    );
+  }
+}
+
+/// Kalem bulunamadı mı (`library-item-not-found`). Geri çekilme,
+/// kaldırılma ve hiç olmama bilerek ayrılmaz; öteki hatalar (bağlantı,
+/// üyelik) "Tekrar dene" ile gösterilir.
+bool kalemYokMu(Object hata) => switch (hata) {
+  ApiProblem(type: ProblemType.libraryItemNotFound) => true,
+  _ => false,
+};
+
+/// "Bu eşya artık kütüphanede değil": ortada ikon, açıklama ve
+/// "Kütüphaneye git".
+class _KalemYok extends StatelessWidget {
+  const _KalemYok({required this.onKutuphane});
+
+  final VoidCallback onKutuphane;
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    return ListView(
+      children: [
+        OrtaDurum(
+          ikon: Icons.inventory_2_outlined,
+          baslik: m.hata_library_item_not_found,
+          aciklama: m.kutuphane_kalem_yok_aciklama,
+          eylem: CerceveliHapEylem(
+            etiket: m.kutuphane_kalem_yok_eylem,
+            onPressed: onKutuphane,
+          ),
+        ),
+      ],
     );
   }
 }

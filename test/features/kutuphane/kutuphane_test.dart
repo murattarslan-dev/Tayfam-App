@@ -294,6 +294,68 @@ void main() {
       );
       expect(bildirimAdresi(hedefli), Adresler.kutuphane(ornekTayfaId));
     });
+
+    test('ödünç adımı bildirimleri içeriksiz ve kalemi açıyor (#321)', () {
+      for (final (tur, metin) in [
+        (NotificationType.libraryLoanRequested, m.kutuphane_bildirim_istek),
+        (NotificationType.libraryQueueJoined, m.kutuphane_bildirim_sira),
+        (NotificationType.libraryLoanApproved, m.kutuphane_bildirim_onay),
+        (NotificationType.libraryLoanDeclined, m.kutuphane_bildirim_ret),
+        (
+          NotificationType.libraryLoanHandedOver,
+          m.kutuphane_bildirim_teslim,
+        ),
+      ]) {
+        final bildirim = api.Notification(
+          id: _odunc,
+          type: tur,
+          tayfaId: ornekTayfaId,
+          actorId: _baskasi,
+          targetType: NotificationTargetType.libraryItem,
+          targetId: _kitap,
+          read: false,
+          createdAt: DateTime.utc(2026, 11, 23),
+        );
+        expect(oduncAdimiMi(tur), isTrue, reason: tur.wire);
+        // Adımı atan üye adlandırılmaz (kesin kural 7).
+        expect(bildirimKisisi(bildirim), isNull, reason: tur.wire);
+        final metni = bildirimMetni(m, bildirim, kisi: 'Ayşe');
+        expect(metni, metin);
+        expect(metni, isNot(contains('Ayşe')));
+        expect(
+          bildirimAdresi(bildirim),
+          Adresler.kutuphaneKalemi(ornekTayfaId, _kitap),
+        );
+        expect(bildirimIkonu(tur), Icons.inventory_2_outlined);
+      }
+      expect(oduncAdimiMi(NotificationType.libraryDue), isFalse);
+    });
+
+    test('ödünç adımı: kalem doğrulanamazsa kütüphane, tayfasız null', () {
+      api.Notification bildirim({
+        String? tayfa = ornekTayfaId,
+        NotificationTargetType hedefTuru = NotificationTargetType.libraryItem,
+        String hedef = _kitap,
+      }) => api.Notification(
+        id: _odunc,
+        type: NotificationType.libraryLoanApproved,
+        tayfaId: tayfa,
+        targetType: hedefTuru,
+        targetId: hedef,
+        read: false,
+        createdAt: DateTime.utc(2026, 11, 23),
+      );
+      expect(
+        bildirimAdresi(bildirim(hedef: '../ayarlar')),
+        Adresler.kutuphane(ornekTayfaId),
+      );
+      expect(
+        bildirimAdresi(bildirim(hedefTuru: NotificationTargetType.tayfa)),
+        Adresler.kutuphane(ornekTayfaId),
+      );
+      expect(bildirimAdresi(bildirim(tayfa: null)), isNull);
+      expect(bildirimAdresi(bildirim(tayfa: 'kotu')), isNull);
+    });
   });
 
   group('form yardımcıları', () {
@@ -591,18 +653,58 @@ void main() {
       expect(find.text(m.kutuphane_kaldir), findsOneWidget);
     });
 
-    testWidgets('bilinmeyen kalem: hata metni ve "Tekrar dene"', (
+    SahteTayfaTasima kalemYok() => _tasima(
+      kalem: (_) => const ApiProblem(
+        type: ProblemType.libraryItemNotFound,
+        status: 404,
+      ),
+    );
+
+    testWidgets('geri çekilmiş kalem: "artık kütüphanede değil", tekrar yok', (
+      tester,
+    ) async {
+      await _ac(tester, kalemYok(), _detay);
+      expect(find.text(m.hata_library_item_not_found), findsOneWidget);
+      expect(find.text(m.kutuphane_kalem_yok_aciklama), findsOneWidget);
+      expect(find.text(m.kutuphane_kalem_yok_eylem), findsOneWidget);
+      expect(find.text(m.yukleme_hatasi_tekrar_dene), findsNothing);
+      // Kalem bilinmediği için menü de yok.
+      expect(find.byTooltip(m.kutuphane_secenekler), findsNothing);
+    });
+
+    testWidgets('"Kütüphaneye git" yönlendiricisiz ekranda geri dönüyor', (
+      tester,
+    ) async {
+      await _acarakAc(tester, kalemYok(), _detay);
+      await tester.tap(find.text(m.kutuphane_kalem_yok_eylem));
+      await tester.pumpAndSettle();
+      expect(find.text(_acDugmesi), findsOneWidget);
+      expect(find.text(m.kutuphane_kalem_yok_eylem), findsNothing);
+    });
+
+    testWidgets('başka hata: ortak yükleme hatası ve "Tekrar dene"', (
       tester,
     ) async {
       final tasima = _tasima(
-        kalem: (_) => const ApiProblem(
-          type: ProblemType.libraryItemNotFound,
-          status: 404,
-        ),
+        kalem: (_) =>
+            const ApiProblem(type: ProblemType.unavailable, status: 503),
       );
       await _ac(tester, tasima, _detay);
-      expect(find.text(m.hata_library_item_not_found), findsOneWidget);
+      expect(find.text(m.yukleme_hatasi_tekrar_dene), findsOneWidget);
+      expect(find.text(m.kutuphane_kalem_yok_eylem), findsNothing);
     });
+
+    for (final mod in [ThemeMode.light, ThemeMode.dark]) {
+      testWidgets('${mod.name} temada 2× yazıda kalem yok durumu taşmıyor', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        await _ac(tester, kalemYok(), _detay, themeMode: mod);
+        expect(tester.takeException(), isNull);
+        expect(find.text(m.kutuphane_kalem_yok_eylem), findsOneWidget);
+      });
+    }
 
     for (final mod in [ThemeMode.light, ThemeMode.dark]) {
       testWidgets('${mod.name} temada 2× yazıda 320 dp taşmıyor', (
