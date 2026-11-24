@@ -2,8 +2,5 @@
 # `#` ile başlayan satırlar gitmez. Her main birleşmesinde bu dosyadaki metin
 # yeni sürümle birlikte gönderilir; kullanıcıya yönelik bir değişiklik olunca
 # güncelleyin. Kişisel veri, iç adres ya da teknik ayrıntı yazmayın.
-• Yeni etkinlik türleri ve etkinliğe göre değişen bölümler: skor tablosu, eşleşme ağacı, oylama, ölçüm, yoklama, liste ve daha fazlası.
-• Şimdi başlat: QR kodla anında katılım.
-• Rozetler ve istatistikler; kendi katkını Profil'de gör.
-• Yeni tayfa modülleri: ortak kütüphane, soru havuzu, materyaller, günün içeriği ve üye garajı.
-• Aydınlatma metni güncellendi.
+• Yazbozda eşli oyun: 101 Okey, Okey, Batak ve Pişti artık eşli de oynanabiliyor.
+• Küçük iyileştirmeler.
