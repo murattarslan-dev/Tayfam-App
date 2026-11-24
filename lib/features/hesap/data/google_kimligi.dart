@@ -15,6 +15,15 @@ const String googleSunucuIstemciKimligi = String.fromEnvironment(
       '.apps.googleusercontent.com',
 );
 
+/// iOS OAuth istemci kimliği (Google Cloud'da `com.murattarslan.tayfam`
+/// için iOS türünde istemci; ADR-0034 §5). Public bir değerdir (CLAUDE.md
+/// kesin kural 6). Dev ve prod aynı iOS uygulamasıdır; değer tektir.
+/// `ios/Runner/Info.plist`'teki geri dönüş URL şeması bu kimliğin ters
+/// yazılışıdır; ikisi birlikte değişir.
+const String googleIosIstemciKimligi =
+    '73439258394-bk26461t68cc7c2f7opa5ata0cv14h54'
+    '.apps.googleusercontent.com';
+
 /// Google girişinin sonucu. Yalnızca bellekte, giriş isteği gönderilene
 /// kadar yaşar; `toString` içerik yazmaz.
 @immutable
@@ -65,7 +74,13 @@ abstract interface class GoogleKimlikSaglayici {
   Future<void> cikisYap();
 }
 
-/// `google_sign_in` ile Google girişi (Android; iOS kapsam dışı, ADR-0012).
+/// `google_sign_in` ile Google girişi (Android ve iOS; ADR-0012, ADR-0034 §5).
+///
+/// iOS'ta istemci kimliği `initialize`'a açıkça verilir: eklenti
+/// (`google_sign_in_ios`) `clientId` verilmezse `serverClientId`'yi de yok
+/// sayar ve yalnızca `Info.plist`'e bakar; o zaman ortama göre değişen
+/// sunucu istemci kimliği (ID token'ın `aud`'u) uygulanmazdı. Android'de
+/// `clientId` verilmez.
 ///
 /// Her giriş denemesi (yeniden giriş dahil) `Random.secure()` ile yeni bir
 /// nonce üretir (ADR-0012 §2, istemci ADR-0023 §2): `google_sign_in` nonce'u
@@ -76,18 +91,32 @@ abstract interface class GoogleKimlikSaglayici {
 /// girişten sonra yapılır ki hesap seçici yeniden açılsın. Nonce loglanmaz,
 /// saklanmaz.
 final class GoogleSignInSaglayici implements GoogleKimlikSaglayici {
-  GoogleSignInSaglayici({GoogleSignIn? google, String Function()? nonce})
-    : _google = google ?? GoogleSignIn.instance,
-      _nonceUret = nonce ?? nonceUret;
+  GoogleSignInSaglayici({
+    GoogleSignIn? google,
+    String Function()? nonce,
+    this.platform,
+  }) : _google = google ?? GoogleSignIn.instance,
+       _nonceUret = nonce ?? nonceUret;
 
   final GoogleSignIn _google;
   final String Function() _nonceUret;
+
+  /// Yalnızca testler verir; verilmezse çalışılan platform.
+  final TargetPlatform? platform;
+
+  String? get _istemciKimligi {
+    if (kIsWeb) return null;
+    return (platform ?? defaultTargetPlatform) == TargetPlatform.iOS
+        ? googleIosIstemciKimligi
+        : null;
+  }
 
   @override
   Future<GoogleKimligi?> girisYap() async {
     final nonce = _nonceUret();
     try {
       await _google.initialize(
+        clientId: _istemciKimligi,
         serverClientId: googleSunucuIstemciKimligi,
         nonce: nonce,
       );
