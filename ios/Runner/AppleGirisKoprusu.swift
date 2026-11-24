@@ -33,6 +33,9 @@ final class AppleGirisKoprusu: NSObject, ASAuthorizationControllerDelegate,
       }
       kopru.cagri(call, result)
     }
+    // Apple'ın kendi düğmesi (Design: Giriş iOS) bir platform görünümüdür.
+    kayitci.register(
+      AppleDugmeFabrikasi(mesajci: kayitci.messenger()), withId: AppleDugmeFabrikasi.gorunumTuru)
     return kopru
   }
 
@@ -102,5 +105,63 @@ final class AppleGirisKoprusu: NSObject, ASAuthorizationControllerDelegate,
     let sahneler = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
     let pencereler = sahneler.flatMap { $0.windows }
     return pencereler.first { $0.isKeyWindow } ?? pencereler.first ?? ASPresentationAnchor()
+  }
+}
+
+/// `tayfam/apple-giris-dugmesi` platform görünümü: Apple'ın kendi düğmesi
+/// (`ASAuthorizationAppleIDButton`, "Apple ile Devam Et"; metni sistem
+/// cihazın diline göre yazar). Dart tarafı `AppleIleDevamDugmesi`'dir.
+///
+/// Düğme yalnızca basıldığını bildirir (`tayfam/apple-giris-dugmesi/<kimlik>`
+/// kanalında `basildi`); girişi Dart başlatır.
+final class AppleDugmeFabrikasi: NSObject, FlutterPlatformViewFactory {
+  static let gorunumTuru = "tayfam/apple-giris-dugmesi"
+
+  private let mesajci: FlutterBinaryMessenger
+
+  init(mesajci: FlutterBinaryMessenger) {
+    self.mesajci = mesajci
+    super.init()
+  }
+
+  func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?)
+    -> FlutterPlatformView
+  {
+    let girdiler = args as? [String: Any]
+    return AppleDugmeGorunumu(
+      frame: frame,
+      kanal: FlutterMethodChannel(
+        name: "\(AppleDugmeFabrikasi.gorunumTuru)/\(viewId)", binaryMessenger: mesajci),
+      koyuTema: (girdiler?["koyuTema"] as? Bool) ?? false,
+      koseYaricapi: (girdiler?["koseYaricapi"] as? Double) ?? 0)
+  }
+
+  func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
+    return FlutterStandardMessageCodec.sharedInstance()
+  }
+}
+
+final class AppleDugmeGorunumu: NSObject, FlutterPlatformView {
+  private let dugme: ASAuthorizationAppleIDButton
+  private let kanal: FlutterMethodChannel
+
+  init(frame: CGRect, kanal: FlutterMethodChannel, koyuTema: Bool, koseYaricapi: Double) {
+    // Açık temada siyah, koyu temada beyaz biçim (Design: Giriş iOS).
+    dugme = ASAuthorizationAppleIDButton(
+      authorizationButtonType: .continue,
+      authorizationButtonStyle: koyuTema ? .white : .black)
+    dugme.frame = frame
+    if koseYaricapi > 0 { dugme.cornerRadius = CGFloat(koseYaricapi) }
+    self.kanal = kanal
+    super.init()
+    dugme.addTarget(self, action: #selector(basildi), for: .touchUpInside)
+  }
+
+  func view() -> UIView {
+    return dugme
+  }
+
+  @objc private func basildi() {
+    kanal.invokeMethod("basildi", arguments: nil)
   }
 }
