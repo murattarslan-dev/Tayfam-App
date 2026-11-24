@@ -3234,6 +3234,96 @@
       }
     }
   },
+  "bilesen_scoreboard_kural_esli": "Eşli",
+  "@bilesen_scoreboard_kural_esli": {
+    "description": "Masa kuralı özeti: eşli oyun (4 kişi, karşılıklı oturanlar eş; Tayfam-Api ADR-0044)."
+  },
+  "bilesen_scoreboard_es_no": "{es}. eş",
+  "@bilesen_scoreboard_es_no": {
+    "description": "Eşli masada eşin numarası.",
+    "placeholders": {
+      "es": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_scoreboard_es_adlari": "{birinci} & {ikinci}",
+  "@bilesen_scoreboard_es_adlari": {
+    "description": "Eşli masada bir eşin iki oyuncusunun adı birlikte (sıralama, eller, kutlama).",
+    "placeholders": {
+      "birinci": {
+        "type": "String",
+        "example": "Ayşe"
+      },
+      "ikinci": {
+        "type": "String",
+        "example": "Mehmet"
+      }
+    }
+  },
+  "bilesen_scoreboard_es_basligi": "{es}. eş: {adlar}",
+  "@bilesen_scoreboard_es_basligi": {
+    "description": "El formunda eşin başlığı: numarası ve oyuncularının adları.",
+    "placeholders": {
+      "es": {
+        "type": "int",
+        "example": "1"
+      },
+      "adlar": {
+        "type": "String",
+        "example": "Ayşe & Mehmet"
+      }
+    }
+  },
+  "bilesen_scoreboard_es_koltuklari": "{es}. eş: {birinci}. ve {ikinci}. koltuk",
+  "@bilesen_scoreboard_es_koltuklari": {
+    "description": "Masa formunda eşli oyunda bir eşin koltukları.",
+    "placeholders": {
+      "es": {
+        "type": "int",
+        "example": "1"
+      },
+      "birinci": {
+        "type": "int",
+        "example": "1"
+      },
+      "ikinci": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "bilesen_scoreboard_koltuk_es": "{koltuk}. koltuk · {es}. eş",
+  "@bilesen_scoreboard_koltuk_es": {
+    "description": "Eşli masa formunda seçilen kişinin koltuğu ve eşi.",
+    "placeholders": {
+      "koltuk": {
+        "type": "int",
+        "example": "3"
+      },
+      "es": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "bilesen_scoreboard_esli_aciklama": "Eşli oyunda 4 kişi oturur; karşılıklı oturanlar eştir. Seçim sırası koltuk sırasıdır. Oyuncuları sonra da ekleyebilirsin.",
+  "@bilesen_scoreboard_esli_aciklama": {
+    "description": "Masa formunda eşli oyunun yer seçimi açıklaması."
+  },
+  "bilesen_scoreboard_esli_sayi": "Eşli oyunda tam 4 oyuncu seçilir.",
+  "@bilesen_scoreboard_esli_sayi": {
+    "description": "Eşli masada seçilen oyuncu sayısı 4 değilken görünen hata."
+  },
+  "bilesen_scoreboard_esli_puan_aciklama": "Her eşin bu eldeki puanını yaz; eksi olabilir. Puan eşin iki oyuncusuna da yazılır. Boş bırakılan eşin bu elde puanı olmaz.",
+  "@bilesen_scoreboard_esli_puan_aciklama": {
+    "description": "Eşli masada el formunun puan modu açıklaması."
+  },
+  "bilesen_scoreboard_esli_sonuc_aciklama": "Her eşin bu eldeki sonucunu seç: bir eş kazanır, diğeri kaybeder ya da iki eş berabere kalır.",
+  "@bilesen_scoreboard_esli_sonuc_aciklama": {
+    "description": "Eşli masada el formunun galibiyet/beraberlik/mağlubiyet modu açıklaması."
+  },
   "bilesen_scoreboard_gelen_yok": "Henüz “Geliyorum” diyen yok.",
   "@bilesen_scoreboard_gelen_yok": {
     "description": "Yer ya da hakem seçiminde seçilecek katılımcı yokken."

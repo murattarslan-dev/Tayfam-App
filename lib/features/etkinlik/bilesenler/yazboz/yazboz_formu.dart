@@ -26,8 +26,10 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// ön ayar sunuyorsa zorunlu), hedef puan ve yerler. [masa] varsa yalnızca
 /// yerlerini (ilk elden önce) değiştirir. Yerler seçim sırasıyla gider;
 /// kişi masasında etkinliğe "Geliyorum" diyenler, takım masasında takım
-/// kurma bileşeninin takımları seçilir. Yerler sonra da verilebilir. Sunucu
-/// hatası formda gösterilir, form açık kalır.
+/// kurma bileşeninin takımları seçilir. Eşli oyunda (`side: pair`) tam 4
+/// kişi seçilir; eşler seçim sırasından çıkar (koltuk 1 ve 3, 2 ve 4) ve
+/// formda açıkça yazılır. Yerler sonra da verilebilir. Sunucu hatası formda
+/// gösterilir, form açık kalır.
 class YazbozMasaFormu extends ConsumerStatefulWidget {
   const YazbozMasaFormu({
     super.key,
@@ -130,6 +132,8 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
 
   bool get _takimMasasi => _kural.side == EventScoreRulesSide.team;
 
+  bool get _esli => yazbozEsli(_kural);
+
   String? get _takimAnahtari => _duzenleme
       ? widget.masa?.teamsKey
       : (widget.takimAnahtarlari.isEmpty
@@ -178,6 +182,7 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
   /// Seçilen yer sayısı ön ayarın sınırları içinde mi (boş: yerler sonra).
   bool _sayiUygun() {
     final adet = _secilenler.length;
+    if (_esli) return yazbozEsliSayiUygun(adet);
     if (adet == 0) return true;
     if (adet > yazbozYerEnCok) return false;
     final on = _on;
@@ -248,8 +253,9 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
     final on = _on;
     final kural = _kural;
     final hata = _hata;
-    final enAz = on?.playersMin;
-    final enCok = on?.playersMax;
+    final esli = _esli;
+    final enAz = esli ? null : on?.playersMin;
+    final enCok = esli ? null : on?.playersMax;
     final ozet = yazbozKuralOzeti(m, kural).join(' · ');
     return AracFormSayfasi(
       baslik: _duzenleme
@@ -316,12 +322,19 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
               : m.bilesen_scoreboard_oyuncular,
           style: context.yazi.titleSmall,
         ),
-        AracBilgisi(metin: m.bilesen_scoreboard_yer_aciklama),
+        AracBilgisi(
+          metin: esli
+              ? m.bilesen_scoreboard_esli_aciklama
+              : m.bilesen_scoreboard_yer_aciklama,
+        ),
+        if (esli) const _EsKoltuklari(),
         if (enAz != null && enCok != null)
           AracBilgisi(metin: m.bilesen_scoreboard_yer_siniri(enAz, enCok)),
         if (_sayiHatali)
           HataSatiri(
-            metin: enAz != null && enCok != null
+            metin: esli
+                ? m.bilesen_scoreboard_esli_sayi
+                : enAz != null && enCok != null
                 ? m.bilesen_scoreboard_yer_siniri(enAz, enCok)
                 : m.bilesen_scoreboard_yer_cok(yazbozYerEnCok),
           ),
@@ -340,6 +353,7 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
                 ?yer.userId,
             ],
             secilenler: _secilenler,
+            esli: esli,
             onSecildi: _mesgul ? null : _sec,
           ),
         if (!_takimMasasi)
@@ -348,6 +362,7 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
               kimlik: misafirler,
               masaId: widget.masa?.id,
               secilenler: _secilenler,
+              esli: esli,
               onSecildi: _mesgul ? null : _misafirSec,
               onSilindi: (id) {
                 if (_secilenler.remove(id)) _degisti();
@@ -372,13 +387,45 @@ class _YazbozMasaFormuState extends ConsumerState<YazbozMasaFormu> {
   }
 }
 
-/// Seçimdeki bir satır: onay kutusu, ad ve seçildiyse yerin sırası.
+/// Eşli oyunda eşlerin koltukları: "1. eş: 1. ve 3. koltuk", "2. eş: 2. ve
+/// 4. koltuk".
+class _EsKoltuklari extends StatelessWidget {
+  const _EsKoltuklari();
+
+  @override
+  Widget build(BuildContext context) {
+    final m = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: TayfamSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final es in const [1, 2])
+            Text(
+              m.bilesen_scoreboard_es_koltuklari(
+                es,
+                yazbozEsKoltuklari(es).$1,
+                yazbozEsKoltuklari(es).$2,
+              ),
+              style: context.yazi.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Seçimdeki bir satır: onay kutusu, ad ve seçildiyse yerin sırası (eşli
+/// oyunda koltuk ve eş: "3. koltuk · 1. eş").
 class _YerSatiri extends StatelessWidget {
   const _YerSatiri({
     super.key,
     required this.ad,
     required this.sira,
     required this.onSecildi,
+    this.esli = false,
     this.sag,
   });
 
@@ -389,6 +436,9 @@ class _YerSatiri extends StatelessWidget {
 
   /// Seçildiyse 1'den sıra; değilse `null`.
   final int? sira;
+
+  /// Eşli oyun: sıra koltuktur, eşi de yazılır.
+  final bool esli;
 
   final ValueChanged<bool>? onSecildi;
 
@@ -405,7 +455,13 @@ class _YerSatiri extends StatelessWidget {
           ? null
           : (deger) => onSecildi(deger ?? false),
       title: ad,
-      subtitle: sira == null ? null : Text(m.bilesen_scoreboard_yer_no(sira)),
+      subtitle: sira == null
+          ? null
+          : Text(
+              esli && sira <= yazbozEsliYer
+                  ? m.bilesen_scoreboard_koltuk_es(sira, yazbozEsNo(sira))
+                  : m.bilesen_scoreboard_yer_no(sira),
+            ),
       secondary: sag,
     );
   }
@@ -418,12 +474,14 @@ class _KisiSecimi extends ConsumerWidget {
     required this.anahtar,
     required this.ekler,
     required this.secilenler,
+    required this.esli,
     required this.onSecildi,
   });
 
   final KatilimcilarAnahtari anahtar;
   final List<String> ekler;
   final List<String> secilenler;
+  final bool esli;
   final void Function(String kimlik, bool secili)? onSecildi;
 
   @override
@@ -450,6 +508,7 @@ class _KisiSecimi extends ConsumerWidget {
           _YerSatiri(
             key: ValueKey('yazboz-kisi-$kisi'),
             ad: KullaniciAdiMetni(kullaniciId: kisi),
+            esli: esli,
             sira: secilenler.contains(kisi)
                 ? secilenler.indexOf(kisi) + 1
                 : null,
@@ -484,6 +543,7 @@ class _MisafirSecimi extends ConsumerStatefulWidget {
     required this.kimlik,
     required this.masaId,
     required this.secilenler,
+    required this.esli,
     required this.onSecildi,
     required this.onSilindi,
   });
@@ -493,6 +553,7 @@ class _MisafirSecimi extends ConsumerStatefulWidget {
   /// Yerleri değiştirilen masa: masanın hakemi misafiri bununla ekler.
   final String? masaId;
   final List<String> secilenler;
+  final bool esli;
   final void Function(String kimlik, bool secili)? onSecildi;
 
   /// Silinen misafir seçimden çıkar.
@@ -588,6 +649,7 @@ class _MisafirSecimiState extends ConsumerState<_MisafirSecimi> {
           _YerSatiri(
             key: ValueKey('yazboz-misafir-${g.id}'),
             ad: MisafirAdi(kimlik: widget.kimlik, misafirId: g.id),
+            esli: widget.esli,
             sira: widget.secilenler.contains(g.id)
                 ? widget.secilenler.indexOf(g.id) + 1
                 : null,
@@ -680,8 +742,10 @@ class _TakimSecimi extends ConsumerWidget {
 
 /// El formu (alttan sayfa): masanın her yeri için puan (sayı klavyesi,
 /// eksi olabilir) ya da sonuç (galibiyet, beraberlik, mağlubiyet). Boş
-/// bırakılan yer o elde skorsuzdur. [duzeltilen] verilirse son el
-/// düzeltilir ve alanlar onun skorlarıyla dolar.
+/// bırakılan yer o elde skorsuzdur. Eşli masada her eş için tek alan
+/// vardır ("1. eş: Ayşe & Mehmet"); skor eşin ilk koltuğuyla gider, sunucu
+/// eşin iki koltuğuna da yazar. [duzeltilen] verilirse son el düzeltilir ve
+/// alanlar onun skorlarıyla dolar.
 class YazbozElFormu extends StatefulWidget {
   const YazbozElFormu({
     super.key,
@@ -723,6 +787,16 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
 
   List<EventScorePlayer> get _yerler => yazbozYerleri(widget.masa);
 
+  bool get _esli => yazbozEsli(widget.masa.rules);
+
+  List<YazbozEsi> get _esler => yazbozEsleri(widget.masa);
+
+  /// Skor girilen kimlikler sırasıyla: yerler ya da eşli masada eşlerin
+  /// ilk koltukları.
+  List<String> get _sira => _esli
+      ? [for (final es in _esler) yazbozTemsilci(es)]
+      : [for (final yer in _yerler) yer.id];
+
   @override
   void initState() {
     super.initState();
@@ -730,15 +804,29 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
       for (final s in widget.duzeltilen?.scores ?? <EventScoreEntry>[])
         s.playerId: s,
     };
-    for (final yer in _yerler) {
-      final skor = onceki[yer.id];
-      _puanlar[yer.id] = TextEditingController(
-        text: skor?.points?.toString() ?? '',
-      );
-      final sonuc = skor?.outcome;
-      if (sonuc != null && sonuc != EventScoreEntryOutcome.unknown) {
-        _sonuclar[yer.id] = sonuc;
+    if (_esli) {
+      for (final es in _esler) {
+        EventScoreEntry? skor;
+        for (final yer in es.yerler) {
+          skor ??= onceki[yer.id];
+        }
+        _doldur(yazbozTemsilci(es), skor);
       }
+    } else {
+      for (final yer in _yerler) {
+        _doldur(yer.id, onceki[yer.id]);
+      }
+    }
+  }
+
+  /// [kimlik]in alanını düzeltilen elin [skor]uyla doldurur.
+  void _doldur(String kimlik, EventScoreEntry? skor) {
+    _puanlar[kimlik] = TextEditingController(
+      text: skor?.points?.toString() ?? '',
+    );
+    final sonuc = skor?.outcome;
+    if (sonuc != null && sonuc != EventScoreEntryOutcome.unknown) {
+      _sonuclar[kimlik] = sonuc;
     }
   }
 
@@ -758,7 +846,7 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
 
   Future<void> _kaydet() async {
     if (_mesgul) return;
-    final sira = [for (final yer in _yerler) yer.id];
+    final sira = _sira;
     final sonuc = _sonucModu
         ? yazbozSonucIstegi(sira, _sonuclar)
         : yazbozPuanIstegi(sira, {
@@ -794,6 +882,38 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
     final m = AppLocalizations.of(context);
     final hata = _hata;
     final takimlar = widget.masa.teamsKey;
+    final esli = _esli;
+    final adStili = context.yazi.bodyLarge;
+    final girisler = <(String, Widget)>[
+      if (esli)
+        for (final es in _esler)
+          (
+            yazbozTemsilci(es),
+            YazbozEsAdi(
+              es: es,
+              misafirler: widget.misafirler,
+              numarali: true,
+              style: adStili,
+            ),
+          )
+      else
+        for (final yer in _yerler)
+          (
+            yer.id,
+            YazbozYerAdi(
+              yer: yer,
+              takimlar: takimlar == null
+                  ? null
+                  : (
+                      tayfaId: widget.kimlik.tayfaId,
+                      etkinlikId: widget.kimlik.etkinlikId,
+                      anahtar: takimlar,
+                    ),
+              misafirler: widget.misafirler,
+              style: adStili,
+            ),
+          ),
+    ];
     return AracFormSayfasi(
       baslik: widget.duzeltilen == null
           ? m.bilesen_scoreboard_el_baslik(widget.el)
@@ -802,49 +922,41 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
       onOnay: _mesgul ? null : () => unawaited(_kaydet()),
       alanlar: [
         AracBilgisi(
-          metin: _sonucModu
-              ? m.bilesen_scoreboard_sonuc_aciklama
-              : m.bilesen_scoreboard_puan_aciklama,
+          metin: switch ((_sonucModu, esli)) {
+            (true, true) => m.bilesen_scoreboard_esli_sonuc_aciklama,
+            (true, false) => m.bilesen_scoreboard_sonuc_aciklama,
+            (false, true) => m.bilesen_scoreboard_esli_puan_aciklama,
+            (false, false) => m.bilesen_scoreboard_puan_aciklama,
+          },
         ),
         const SizedBox(height: TayfamSpacing.s8),
-        for (final yer in _yerler)
+        for (final (id, ad) in girisler)
           Padding(
-            key: ValueKey('yazboz-el-yer-${yer.id}'),
+            key: ValueKey('yazboz-el-yer-$id'),
             padding: const EdgeInsets.only(bottom: TayfamSpacing.s8),
             child: MergeSemantics(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  YazbozYerAdi(
-                    yer: yer,
-                    takimlar: takimlar == null
-                        ? null
-                        : (
-                            tayfaId: widget.kimlik.tayfaId,
-                            etkinlikId: widget.kimlik.etkinlikId,
-                            anahtar: takimlar,
-                          ),
-                    misafirler: widget.misafirler,
-                    style: context.yazi.bodyLarge,
-                  ),
+                  ad,
                   if (_sonucModu)
                     _SonucSecimi(
-                      secili: _sonuclar[yer.id],
+                      secili: _sonuclar[id],
                       onSecildi: _mesgul
                           ? null
                           : (sonuc) {
                               if (sonuc == null) {
-                                _sonuclar.remove(yer.id);
+                                _sonuclar.remove(id);
                               } else {
-                                _sonuclar[yer.id] = sonuc;
+                                _sonuclar[id] = sonuc;
                               }
                               _degisti();
                             },
                     )
                   else
                     TextField(
-                      key: ValueKey('yazboz-puan-${yer.id}'),
-                      controller: _puanlar[yer.id],
+                      key: ValueKey('yazboz-puan-$id'),
+                      controller: _puanlar[id],
                       enabled: !_mesgul,
                       keyboardType: const TextInputType.numberWithOptions(
                         signed: true,
@@ -856,7 +968,7 @@ class _YazbozElFormuState extends State<YazbozElFormu> {
                       onChanged: (_) => _degisti(),
                       decoration: InputDecoration(
                         labelText: m.bilesen_scoreboard_puan_alani,
-                        errorText: _hatalilar.contains(yer.id)
+                        errorText: _hatalilar.contains(id)
                             ? m.bilesen_scoreboard_puan_hatali
                             : null,
                       ),

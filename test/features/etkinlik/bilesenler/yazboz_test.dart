@@ -39,9 +39,11 @@ const String _masa = '01970000-0000-7000-8000-000000000301';
 const String _yer1 = '01970000-0000-7000-8000-000000000311';
 const String _yer2 = '01970000-0000-7000-8000-000000000312';
 const String _yer3 = '01970000-0000-7000-8000-000000000313';
+const String _yer4 = '01970000-0000-7000-8000-000000000314';
 const String _takim1 = '01970000-0000-7000-8000-000000000201';
 const String _takim2 = '01970000-0000-7000-8000-000000000202';
 const String _ucuncuId = '7f6e5d4c-3b2a-4f1e-8d0c-9b8a7f6e5d4c';
+const String _dorduncuId = '8a7f6e5d-4c3b-4a2f-9e1d-0c9b8a7f6e5d';
 
 const YazbozKimligi _kimlik = (
   tayfaId: ornekTayfaId,
@@ -71,6 +73,80 @@ List<Map<String, Object?>> _ucYer() => [
   yazbozYeriJson(_yer2, 2, kisi: organizatorId),
   yazbozYeriJson(_yer3, 3, kisi: _ucuncuId),
 ];
+
+/// Eşli oyun kuralları (Tayfam-Api ADR-0044): 4 yer, el el, yüksek kazanır.
+const Map<String, Object?> _esliKural = {
+  'side': 'pair',
+  'rounds': 'round',
+  'winner': 'high',
+  'result': 'points',
+};
+
+/// Bireysel ve eşli Batak (katalogdan adıyla gelir).
+List<Map<String, Object?>> _esliOnAyarlar() => [
+  yazbozOnAyariJson(
+    'batak',
+    'Batak',
+    enAz: 3,
+    enCok: 4,
+    kurallar: {'side': 'player', 'rounds': 'round', 'winner': 'high'},
+  ),
+  yazbozOnAyariJson(
+    'pair_batak',
+    'Batak (eşli)',
+    enAz: 4,
+    enCok: 4,
+    kurallar: _esliKural,
+  ),
+];
+
+/// Eşli masanın yerleri seçim sırasıyla: Ayşe, Mert, Mehmet, Deniz; eş 1
+/// Ayşe & Mehmet (koltuk 1 ve 3), eş 2 Mert & Deniz (koltuk 2 ve 4).
+/// [esli] `false` ise sunucu `pair` alanını göndermez (eş koltuktan
+/// türetilir).
+List<Map<String, Object?>> _esliYerler({bool esli = true}) => [
+  for (final (i, (yer, kisi)) in const [
+    (_yer1, organizatorId),
+    (_yer2, katilimciId),
+    (_yer3, _ucuncuId),
+    (_yer4, _dorduncuId),
+  ].indexed)
+    {...yazbozYeriJson(yer, i + 1, kisi: kisi), if (esli) 'pair': i % 2 + 1},
+];
+
+/// Organizatör "Ayşe", katılımcı "Mert", üçüncü "Mehmet", dördüncü "Deniz".
+Map<String, Object?> _esliProfil(TayfaIstegi i, String ben) {
+  final id = i.yolParametreleri['user_id']!;
+  final ad = switch (id) {
+    organizatorId => 'Ayşe',
+    katilimciId => 'Mert',
+    _ucuncuId => 'Mehmet',
+    _ => 'Deniz',
+  };
+  return profilJson(id, ad, ben: id == ben);
+}
+
+/// Biten eşli Batak: eş 1 (Ayşe & Mehmet) 150 ile kazandı, eş 2 (Mert &
+/// Deniz) 90. Sunucu skoru ve sıralamayı yer başına, eşin iki koltuğunda
+/// aynı değerle verir.
+Map<String, Object?> _bitenEsliMasa({bool esli = true}) => yazbozMasasiJson(
+  id: _masa,
+  onAyar: 'pair_batak',
+  kurallar: _esliKural,
+  bitti: true,
+  yerler: _esliYerler(esli: esli),
+  eller: [
+    _el(1, {_yer1: 80, _yer3: 80, _yer2: 40, _yer4: 40}),
+    _el(2, {_yer1: 70, _yer3: 70, _yer2: 50, _yer4: 50}),
+  ],
+  siralama: [
+    _sira(_yer1, 1, 150),
+    _sira(_yer3, 1, 150),
+    _sira(_yer2, 2, 90),
+    _sira(_yer4, 2, 90),
+  ],
+  kazananlar: [_yer1, _yer3],
+);
 
 Map<String, Object?> _sira(String yer, int sira, num toplam, [int el = 0]) => {
   'player_id': yer,
@@ -233,6 +309,102 @@ void main() {
         m.bilesen_scoreboard_kural_wdl,
       ]);
       expect(yazbozSayisi(m, 2.5), '2,5');
+    });
+  });
+
+  group('eşli kip yardımcıları', () {
+    test('eşler seçim sırasından: 1–3 ve 2–4', () {
+      expect([1, 2, 3, 4].map(yazbozEsNo), [1, 2, 1, 2]);
+      expect(yazbozEsKoltuklari(1), (1, 3));
+      expect(yazbozEsKoltuklari(2), (2, 4));
+      expect(yazbozEsliYer, 4);
+      expect(yazbozEsliSayiUygun(0), isTrue);
+      expect(yazbozEsliSayiUygun(4), isTrue);
+      expect(yazbozEsliSayiUygun(3), isFalse);
+      expect(yazbozEsliSayiUygun(5), isFalse);
+      expect(
+        yazbozEsli(const EventScoreRules(side: EventScoreRulesSide.pair)),
+        isTrue,
+      );
+      expect(
+        yazbozEsli(const EventScoreRules(side: EventScoreRulesSide.player)),
+        isFalse,
+      );
+    });
+
+    test('masanın eşleri: sunucunun pair alanından, yoksa koltuktan', () {
+      for (final esli in [true, false]) {
+        final masa = EventScoreTable.fromJson(_bitenEsliMasa(esli: esli));
+        final esler = yazbozEsleri(masa);
+        expect(esler.map((e) => e.es), [1, 2]);
+        expect(esler.first.yerler.map((y) => y.id), [_yer1, _yer3]);
+        expect(esler.last.yerler.map((y) => y.id), [_yer2, _yer4]);
+        expect(esler.map(yazbozTemsilci), [_yer1, _yer2]);
+      }
+      // Seçim sırası değişirse eşler de değişir (yerin numarası esastır).
+      final ters = EventScoreTable.fromJson(
+        yazbozMasasiJson(
+          id: _masa,
+          kurallar: _esliKural,
+          yerler: [
+            yazbozYeriJson(_yer4, 1, kisi: _dorduncuId),
+            yazbozYeriJson(_yer3, 2, kisi: _ucuncuId),
+            yazbozYeriJson(_yer2, 3, kisi: katilimciId),
+            yazbozYeriJson(_yer1, 4, kisi: organizatorId),
+          ],
+        ),
+      );
+      expect(yazbozEsleri(ters).first.yerler.map((y) => y.id), [_yer4, _yer2]);
+    });
+
+    test('eşin toplamı bir kez sayılır; sıra ve kazanan eş başına', () {
+      final masa = EventScoreTable.fromJson(_bitenEsliMasa());
+      final satirlar = yazbozEsSiralamasi(masa);
+      expect(satirlar, hasLength(2));
+      expect(satirlar.map((s) => s.es.es), [1, 2]);
+      expect(satirlar.map((s) => s.sira.total), [150, 90]);
+      expect(satirlar.map((s) => s.sira.rank), [1, 2]);
+      expect(satirlar.map((s) => s.kazanan), [true, false]);
+      // Açık masada kazanan yok.
+      final acik = EventScoreTable.fromJson({
+        ..._bitenEsliMasa(),
+        'status': 'open',
+      });
+      expect(yazbozEsSiralamasi(acik).where((s) => s.kazanan), isEmpty);
+    });
+
+    test('bir elde eşin skoru herhangi bir koltuğundan okunur', () {
+      final masa = EventScoreTable.fromJson(_bitenEsliMasa());
+      final esler = yazbozEsleri(masa);
+      final el = yazbozElleri(masa).first;
+      expect(yazbozEsSkoru(el, esler.first)?.points, 80);
+      expect(yazbozEsSkoru(el, esler.last)?.points, 40);
+      // Yalnızca karşı koltukta skor varsa da bulunur.
+      final tek = EventScoreRound.fromJson(_el(3, {_yer3: 25}));
+      expect(yazbozEsSkoru(tek, esler.first)?.points, 25);
+      expect(yazbozEsSkoru(tek, esler.last), isNull);
+    });
+
+    test('el isteği eş başına tek skor: eşin ilk koltuğuyla', () {
+      final masa = EventScoreTable.fromJson(_bitenEsliMasa());
+      final sira = yazbozEsleri(masa).map(yazbozTemsilci).toList();
+      final istek = yazbozPuanIstegi(sira, {_yer1: '120', _yer2: '-30'});
+      expect(istek.istek?.scores.map((s) => (s.playerId, s.points)), [
+        (_yer1, 120),
+        (_yer2, -30),
+      ]);
+    });
+
+    test('eş adları ve kural özeti', () {
+      expect(yazbozEsAdlariMetni(m, ['Ayşe', 'Mehmet']), 'Ayşe & Mehmet');
+      expect(yazbozEsAdlariMetni(m, ['Ayşe']), 'Ayşe');
+      expect(
+        yazbozKuralOzeti(
+          m,
+          const EventScoreRules(side: EventScoreRulesSide.pair),
+        ),
+        [m.bilesen_scoreboard_kural_esli],
+      );
     });
   });
 
@@ -670,6 +842,291 @@ void main() {
       expect(tasima.giden('POST', yazbozBitirYolu), hasLength(1));
       expect(find.text(m.hata_score_not_started), findsOneWidget);
       expect(tasima.giden('GET', yazbozYolu).length, greaterThan(1));
+    });
+
+    for (final tema in _temalar) {
+      testWidgets('eşli masa: eşler birlikte, toplam bir kez, kazanan eş, '
+          '"Sen" (${tema.name}, 2× yazı, 320 dp)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final anlam = tester.ensureSemantics();
+        final tasima = _tasima(
+          yazboz: (_) => yazbozJson(
+            masalar: [_bitenEsliMasa()],
+            onAyarlar: _esliOnAyarlar(),
+          ),
+          yanitlar: {'GET $profilYolu': (i) => _esliProfil(i, katilimciId)},
+        );
+        await _detayiAc(tester, tasima, themeMode: tema);
+
+        final ikinci = _bolumde(find.text('Mert & Deniz'));
+        await _gorunurYap(tester, ikinci);
+        expect(ikinci, findsOneWidget);
+        expect(_bolumde(find.text('Ayşe & Mehmet')), findsOneWidget);
+        // Toplam eş başına bir kez yazılır.
+        expect(
+          _bolumde(
+            find.text(
+              '${m.bilesen_scoreboard_es_no(1)} · '
+              '${m.bilesen_scoreboard_puan('150')}',
+            ),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          _bolumde(find.textContaining(m.bilesen_scoreboard_puan('90'))),
+          findsOneWidget,
+        );
+        expect(
+          _bolumde(find.textContaining(m.bilesen_scoreboard_kazanan)),
+          findsOneWidget,
+        );
+        expect(_bolumde(find.text(m.bilesen_scoreboard_sen)), findsOneWidget);
+        expect(
+          _bolumde(find.text(m.bilesen_scoreboard_sira(1))),
+          findsOneWidget,
+        );
+        expect(
+          _bolumde(find.text(m.bilesen_scoreboard_sira(2))),
+          findsOneWidget,
+        );
+        expect(_bolumde(find.textContaining('Batak (eşli)')), findsOneWidget);
+        expect(
+          _bolumde(find.textContaining(m.bilesen_scoreboard_kural_esli)),
+          findsOneWidget,
+        );
+        // Satır ekran okuyucuda tek öğe: sıra, eşler ve toplam birlikte.
+        expect(
+          find.bySemanticsLabel(RegExp(r'1\.[\s\S]*Ayşe & Mehmet[\s\S]*150')),
+          findsOneWidget,
+        );
+
+        await _dokun(
+          tester,
+          _bolumde(find.text(m.bilesen_scoreboard_elleri_goster(2))),
+        );
+        // Ellerde de eş başına tek skor.
+        expect(_bolumde(find.text('Ayşe & Mehmet')), findsNWidgets(3));
+        expect(_bolumde(find.text('80')), findsOneWidget);
+        expect(_bolumde(find.text('40')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        anlam.dispose();
+      });
+    }
+
+    for (final tema in _temalar) {
+      testWidgets('eşli masa açılır: eşli ön ayar listede, koltuklar ve '
+          'eşler açık, tam 4 kişi (${tema.name}, 2× yazı, 320 dp)', (
+        tester,
+      ) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        final tasima = _tasima(
+          ben: organizatorId,
+          yazboz: (_) =>
+              yazbozJson(onAyarlar: _esliOnAyarlar(), yonetebilir: true),
+          yanitlar: {
+            'GET $katilimcilarYolu': (_) => katilimcilarJson([
+              organizatorId,
+              katilimciId,
+              _ucuncuId,
+              _dorduncuId,
+            ]),
+            'GET $profilYolu': (i) => _esliProfil(i, organizatorId),
+            'POST $yazbozMasalariYolu': (_) => yazbozJson(
+              onAyarlar: _esliOnAyarlar(),
+              yonetebilir: true,
+              masalar: [
+                yazbozMasasiJson(
+                  id: _masa,
+                  onAyar: 'pair_batak',
+                  kurallar: _esliKural,
+                  yerler: _esliYerler(),
+                  siralama: [
+                    _sira(_yer1, 1, 0),
+                    _sira(_yer3, 1, 0),
+                    _sira(_yer2, 1, 0),
+                    _sira(_yer4, 1, 0),
+                  ],
+                ),
+              ],
+            ),
+          },
+        );
+        await _detayiAc(tester, tasima, themeMode: tema);
+        Finder formda(Finder f) =>
+            find.descendant(of: find.byType(YazbozMasaFormu), matching: f);
+
+        final ac = _bolumde(find.text(m.bilesen_scoreboard_masa_ac));
+        await _gorunurYap(tester, ac);
+        await _dokun(tester, ac);
+        // Bireysel ve eşli ön ayar ikisi de seçilebilir.
+        expect(formda(find.text('Batak')), findsOneWidget);
+        final birinciEs = m.bilesen_scoreboard_es_koltuklari(1, 1, 3);
+        expect(formda(find.text(birinciEs)), findsNothing);
+        await _dokun(tester, formda(find.text('Batak (eşli)')));
+        expect(formda(find.text(birinciEs)), findsOneWidget);
+        expect(
+          formda(find.text(m.bilesen_scoreboard_es_koltuklari(2, 2, 4))),
+          findsOneWidget,
+        );
+        expect(
+          formda(find.text(m.bilesen_scoreboard_esli_aciklama)),
+          findsOneWidget,
+        );
+
+        for (final kisi in [organizatorId, katilimciId, _ucuncuId]) {
+          await _dokun(tester, find.byKey(ValueKey('yazboz-kisi-$kisi')));
+        }
+        expect(
+          formda(find.text(m.bilesen_scoreboard_koltuk_es(3, 1))),
+          findsOneWidget,
+        );
+        // Üç kişiyle istek gitmez.
+        await _dokun(tester, formda(find.text(m.etkinlik_kaydet)));
+        expect(tasima.giden('POST', yazbozMasalariYolu), isEmpty);
+        expect(
+          formda(find.text(m.bilesen_scoreboard_esli_sayi)),
+          findsOneWidget,
+        );
+
+        await _dokun(
+          tester,
+          find.byKey(const ValueKey('yazboz-kisi-$_dorduncuId')),
+        );
+        expect(
+          formda(find.text(m.bilesen_scoreboard_koltuk_es(4, 2))),
+          findsOneWidget,
+        );
+        await _dokun(tester, formda(find.text(m.etkinlik_kaydet)));
+        expect(tasima.giden('POST', yazbozMasalariYolu).single.govde, {
+          'label': m.bilesen_scoreboard_ad_varsayilan(1),
+          'preset_key': 'pair_batak',
+          'players': [
+            {'user_id': organizatorId},
+            {'user_id': katilimciId},
+            {'user_id': _ucuncuId},
+            {'user_id': _dorduncuId},
+          ],
+        });
+        expect(find.byType(YazbozMasaFormu), findsNothing);
+        expect(_bolumde(find.text('Ayşe & Mehmet')), findsOneWidget);
+        expect(_bolumde(find.text('Mert & Deniz')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    for (final tema in _temalar) {
+      testWidgets('eşli masada el eş başına tek kutuyla girilir '
+          '(${tema.name}, 2× yazı, 320 dp)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        Map<String, Object?> masa({bool elli = false}) => yazbozMasasiJson(
+          id: _masa,
+          onAyar: 'pair_batak',
+          kurallar: _esliKural,
+          yerler: _esliYerler(),
+          eller: [
+            if (elli) _el(1, {_yer1: 120, _yer3: 120, _yer2: -30, _yer4: -30}),
+          ],
+          siralama: [
+            _sira(_yer1, 1, elli ? 120 : 0),
+            _sira(_yer3, 1, elli ? 120 : 0),
+            _sira(_yer2, elli ? 2 : 1, elli ? -30 : 0),
+            _sira(_yer4, elli ? 2 : 1, elli ? -30 : 0),
+          ],
+          skorGirebilir: true,
+        );
+        final tasima = _tasima(
+          yazboz: (_) =>
+              yazbozJson(onAyarlar: _esliOnAyarlar(), masalar: [masa()]),
+          yanitlar: {
+            'GET $profilYolu': (i) => _esliProfil(i, katilimciId),
+            'POST $yazbozElleriYolu': (_) => yazbozJson(
+              onAyarlar: _esliOnAyarlar(),
+              masalar: [masa(elli: true)],
+            ),
+          },
+        );
+        await _detayiAc(tester, tasima, themeMode: tema);
+
+        final gir = _bolumde(find.text(m.bilesen_scoreboard_el_gir));
+        await _gorunurYap(tester, gir);
+        await _dokun(tester, gir);
+        Finder formda(Finder f) =>
+            find.descendant(of: find.byType(YazbozElFormu), matching: f);
+        final birinciEs = m.bilesen_scoreboard_es_basligi(1, 'Ayşe & Mehmet');
+        final ikinciEs = m.bilesen_scoreboard_es_basligi(2, 'Mert & Deniz');
+        expect(formda(find.text(birinciEs)), findsOneWidget);
+        expect(formda(find.text(ikinciEs)), findsOneWidget);
+        expect(
+          formda(find.text(m.bilesen_scoreboard_esli_puan_aciklama)),
+          findsOneWidget,
+        );
+        expect(formda(find.byType(TextField)), findsNWidgets(2));
+        expect(find.byKey(const ValueKey('yazboz-puan-$_yer3')), findsNothing);
+        expect(find.byKey(const ValueKey('yazboz-puan-$_yer4')), findsNothing);
+
+        await tester.enterText(
+          find.byKey(const ValueKey('yazboz-puan-$_yer1')),
+          '120',
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('yazboz-puan-$_yer2')),
+          '-30',
+        );
+        await tester.pumpAndSettle();
+        await _dokun(tester, formda(find.text(m.etkinlik_kaydet)));
+        expect(tasima.giden('POST', yazbozElleriYolu).single.govde, {
+          'scores': [
+            {'player_id': _yer1, 'points': 120},
+            {'player_id': _yer2, 'points': -30},
+          ],
+        });
+        expect(find.byType(YazbozElFormu), findsNothing);
+        expect(
+          _bolumde(
+            find.text(
+              '${m.bilesen_scoreboard_es_no(1)} · '
+              '${m.bilesen_scoreboard_puan('120')}',
+            ),
+          ),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('eşli masada son el düzeltilirken eşin skoru dolu gelir', (
+      tester,
+    ) async {
+      ekranBoyutu(tester);
+      final tasima = _tasima(
+        ben: organizatorId,
+        yazboz: (_) => yazbozJson(
+          masalar: [
+            {..._bitenEsliMasa(), 'status': 'open', 'winner_ids': <String>[]},
+          ],
+          onAyarlar: _esliOnAyarlar(),
+          yonetebilir: true,
+        ),
+        yanitlar: {'GET $profilYolu': (i) => _esliProfil(i, organizatorId)},
+      );
+      await _detayiAc(tester, tasima);
+      final menu = find.byTooltip(m.bilesen_scoreboard_islemler('Masa 1'));
+      await _gorunurYap(tester, menu);
+      await _dokun(tester, menu);
+      await _dokun(tester, find.text(m.bilesen_scoreboard_son_eli_duzelt).last);
+      expect(find.byType(YazbozElFormu), findsOneWidget);
+      final birinci = tester.widget<TextField>(
+        find.byKey(const ValueKey('yazboz-puan-$_yer1')),
+      );
+      final ikinci = tester.widget<TextField>(
+        find.byKey(const ValueKey('yazboz-puan-$_yer2')),
+      );
+      expect(birinci.controller?.text, '70');
+      expect(ikinci.controller?.text, '50');
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('okunamazsa hata ve "Tekrar dene"', (tester) async {
