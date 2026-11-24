@@ -1924,7 +1924,8 @@ final class EventsApi {
   /// `first_to` ya da `first` kuralında hedef puan yoksa, etiket 1–30
   /// karakter değilse, yer tam olarak bir kişi ya da takım değilse, bir
   /// kişi ya da takım iki kez geçerse, ön ayarın oyuncu sayısı dışındaysa,
-  /// oyuncu masasına takım ya da takım masasına kişi verilirse, takım
+  /// oyuncu ya da eşli masaya takım ya da takım masasına kişi verilirse,
+  /// eşli masada yer sayısı 4 değilse, takım
   /// masasında `teams_key` etkinliğin türündeki bir `teams` bileşeni
   /// değilse `invalid-request`. Katılımcı olmayan kişi ya da takım
   /// bileşeninde olmayan takım `score-player-not-participant`; masalar
@@ -2076,7 +2077,10 @@ final class EventsApi {
   /// en fazla bir kez; `points` modunda `points` (−1000000…1000000),
   /// `wdl` modunda `outcome` verilir ve el en az iki yerde ya birinin
   /// galibiyeti ile diğerlerinin mağlubiyeti ya da herkesin
-  /// beraberliğidir (aksi `invalid-request`). Biten masada
+  /// beraberliğidir (aksi `invalid-request`). Eşli masada skor eş
+  /// başınadır: eşin herhangi bir yeriyle verilir, iki yeri birlikte
+  /// verilirse değerleri aynı olmalıdır; kurallar eş düzeyinde geçerlidir
+  /// (`wdl` modunda iki eş) ve skor eşin iki yerine de yazılır. Biten masada
   /// `score-table-finished`; 200 elden sonra `event-limit`; etkinlik
   /// başlamadıysa `score-not-started`. Bileşen uçlarının ortak kuralları
   /// geçerlidir.

@@ -2185,7 +2185,7 @@ enum CatalogBadgeScope {
 /// | `teams` | `mode` (`random`, `balanced`, `manual`; seçimli), `team_size` (1–50), `team_count` (2–50) |
 /// | `draw` | — |
 /// | `bracket` | `format` (`elimination`, `league`, `swiss`; seçimli), `best_of` (1, 3, 5; seçimli) |
-/// | `scoreboard` | `side` (`player`, `team`), `tables` (boolean), `presets` (ön ayar anahtarları), `rounds` (`round`, `single`, `first_to`; seçimli), `target` (1–100000), `winner` (`high`, `low`, `first`; seçimli), `result` (`points`, `wdl`), `best_of` (1, 3, 5; seçimli), `guests` (boolean) |
+/// | `scoreboard` | `side` (`player`, `team`, `pair`), `tables` (boolean), `presets` (ön ayar anahtarları), `rounds` (`round`, `single`, `first_to`; seçimli), `target` (1–100000), `winner` (`high`, `low`, `first`; seçimli), `result` (`points`, `wdl`), `best_of` (1, 3, 5; seçimli), `guests` (boolean) |
 /// | `ranking` | `source` (kişisel bir ölçümün `key`'i) ya da `metric` (`duration`, `rank`); biri zorunlu, ikisi birlikte olmaz; `direction` (`asc`, `desc`) |
 /// | `vote` | `source` (`free`, `participants`, `vehicles`, `album`; zorunlu). `vehicles` türde `vehicles` bileşeni ister; `participants` hassas katılımlı (`sensitive_attendance`) türde olmaz |
 /// | `celebration` | `source` (bir `scoreboard`, `bracket`, `ranking` ya da `vote` bileşeninin `key`'i) |
@@ -13617,6 +13617,7 @@ final class EventScorePlayer {
     this.userId,
     this.teamId,
     this.guestId,
+    this.pair,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -13638,6 +13639,10 @@ final class EventScorePlayer {
           null => null,
           final Object v => _readString(v, 'EventScorePlayer.guest_id'),
         },
+        pair: switch (json['pair']) {
+          null => null,
+          final Object v => _readInt(v, 'EventScorePlayer.pair'),
+        },
       );
 
   final String id;
@@ -13653,6 +13658,11 @@ final class EventScorePlayer {
   /// Misafir oyuncunun kimliği (`EventGuestPlayer.id`).
   final String? guestId;
 
+  /// Yalnızca eşli masada eş numarası; koltuk 1 ve 3 eş 1, koltuk 2 ve 4 eş 2.
+  ///
+  /// Kısıtlar: minimum: 1; maximum: 2.
+  final int? pair;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'id': id,
@@ -13660,6 +13670,7 @@ final class EventScorePlayer {
     if (userId case final value?) 'user_id': value,
     if (teamId case final value?) 'team_id': value,
     if (guestId case final value?) 'guest_id': value,
+    if (pair case final value?) 'pair': value,
   };
 
   @override
@@ -13670,11 +13681,12 @@ final class EventScorePlayer {
           position == other.position &&
           userId == other.userId &&
           teamId == other.teamId &&
-          guestId == other.guestId;
+          guestId == other.guestId &&
+          pair == other.pair;
 
   @override
   int get hashCode =>
-      Object.hashAll(<Object?>[id, position, userId, teamId, guestId]);
+      Object.hashAll(<Object?>[id, position, userId, teamId, guestId, pair]);
 }
 
 /// Bir yer; `user_id`, `team_id` ve `guest_id`'den tam olarak biri.
@@ -13974,7 +13986,7 @@ final class EventScoreRules {
         },
       );
 
-  /// Oyuncular kişiler (`player`) ya da takımlar (`team`).
+  /// Oyuncular kişiler (`player`), takımlar (`team`) ya da eşler (`pair`; 4 yer, karşılıklı oturanlar eş, ADR-0044).
   final EventScoreRulesSide? side;
 
   /// El el, tek maç ya da hedefe ilk ulaşana kadar.
@@ -14079,10 +14091,11 @@ enum EventScoreRulesRounds {
   }
 }
 
-/// Oyuncular kişiler (`player`) ya da takımlar (`team`).
+/// Oyuncular kişiler (`player`), takımlar (`team`) ya da eşler (`pair`; 4 yer, karşılıklı oturanlar eş, ADR-0044).
 enum EventScoreRulesSide {
   player('player'),
   team('team'),
+  pair('pair'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.
@@ -14138,6 +14151,7 @@ enum EventScoreRulesWinner {
   }
 }
 
+/// Bir yerin masadaki sırası. Eşli masada her yer eşinin toplamını, el sayısını ve sırasını taşır.
 final class EventScoreStanding {
   const EventScoreStanding({
     required this.playerId,
@@ -14301,7 +14315,7 @@ final class EventScoreTable {
   /// Sıralamaya, sonra yer sırasına göre.
   final List<EventScoreStanding> standings;
 
-  /// Biten masada birinci sıradaki yerler (beraberlikte birden çok); açık masada boş.
+  /// Biten masada birinci sıradaki yerler (beraberlikte birden çok; eşli masada kazanan eşin iki yeri); açık masada boş.
   final List<String> winnerIds;
 
   /// Şu an el girebilir ve masayı bitirebilirsiniz (organizatör, moderatör, yönetici ya da masanın hakemi; susturulmamış; masa açık; etkinlik başlamış, iptal değil, donmamış; tayfa salt okunur değil).
