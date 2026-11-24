@@ -148,7 +148,13 @@ açılan bir uygulama, sonra tek tek yetenekler.
 - **Google (2. aşama):** `google_sign_in` iOS'ta da kullanılır. Google
   Cloud'da iOS OAuth istemcisi açılır; ters istemci kimliği URL şeması
   `Info.plist`'e girer. Sunucu istemci kimliği Android ile aynıdır.
-- **Apple (3. aşama):** önce sunucu. Tayfam-Api'de iş kaydı açılır:
+- **Sunucu, Google için değişmez:** identity ID token'da yalnızca `iss`,
+  `aud`, `exp` ve `nonce`'u denetler (Tayfam-Api `internal/identity/app/oidc`,
+  2026-11-24'te okundu); iOS'tan gelen token'ın `aud`'u aynı sunucu
+  istemcisidir, `azp` denetlenmez.
+- **Apple (3. aşama):** önce sunucu. Sözleşmede `provider` bugün yalnızca
+  `google`'dır; veritabanı ve proto `apple`'a yer açmıştır, doğrulayıcı
+  yoktur (Tayfam-Api ADR-0004). Tayfam-Api'de iş kaydı açılır:
   giriş ucunda Apple kimlik token'ı (nonce zorunlu, Google ile aynı kural),
   ad bilgisinin yalnızca ilk yetkilendirmede gelmesi, e-postanın gizlenmiş
   olabilmesi, hesap silmede Apple token'ının iptali ve hesap silme öncesi
@@ -241,17 +247,22 @@ açılan bir uygulama, sonra tek tek yetenekler.
    iPhone. iPad desteği ayrı ekran görüntüleri ve geniş düzen denetimi
    ister.
 2. **Apple ile giriş yapan kullanıcı Android'de:** Apple ile kayıt olan
-   biri Android'e geçerse nasıl girer? Seçenekler: Android'de de Apple ile
-   giriş; hesaba ikinci giriş yöntemi bağlama; şimdilik desteklememe.
-   Tayfam-Api kararıdır, 3. aşamadan önce verilmelidir.
+   biri Android'e geçerse nasıl girer? Tayfam-Api ADR-0004 yönü çizmiş:
+   farklı sağlayıcı hesapları otomatik birleştirilmez, hesaba ikinci
+   sağlayıcı bağlama oturum açmış kullanıcının açık işlemi olacak; ama
+   bağlama henüz yazılmadı. Soru: hesap bağlama Apple girişiyle birlikte mi
+   gelsin, yoksa ilk sürümde Apple ile kayıt olan kullanıcı Android'de
+   giremesin mi (ekranda açıkça söylenerek)? 3. aşamadan önce verilmelidir.
 3. **Signal ve AGPL:** 7. aşama hukukçu görüşünü mü bekler, yoksa risk
    kabul edilip dahili testte açılır mı?
 4. **İhracat uyumu beyanı:** App Store Connect her derlemede şifreleme
    kullanımını sorar. Cevap platform sahibinin beyanıdır; hukukçu listesine
    eklenmesi önerilir.
 5. **Apple incelemesi için giriş:** harici test ve mağaza incelemesi bir
-   test hesabı ister. Play için açık olan "inceleme ekibi için demo tayfa"
-   maddesiyle birlikte çözülmesi önerilir.
+   test hesabı ister. Sıra Notion'da yazılı (Mağaza Sayfası, Yapılacaklar:
+   pilot öncesi sıfırlama → demo verisi → inceleme Google hesabı →
+   bilgilerin Play Console ve App Store Connect'e girilmesi); iOS için ayrı
+   bir karar gerekmiyor, yalnızca 8. aşamadan önce yapılmış olmalı.
 
 ## Değerlendirilen alternatifler
 
