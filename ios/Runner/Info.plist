@@ -41,6 +41,8 @@
 	<!-- Kamera iki yerde kullanılır: fotoğraf çekme (ADR-0021) ve QR ile cihaz bağlama (ADR-0020). -->
 	<key>NSCameraUsageDescription</key>
 	<string>Profil, kapak ya da av fotoğrafı çekmek ve başka bir cihazını bağlamak için QR kod okutmak üzere kamerana erişilir. QR okutulurken görüntü kaydedilmez; çektiğin fotoğrafın konum bilgisi gönderilmeden silinir.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Yüz yüze bir etkinlikte "Geldim" dediğinde buluşma noktasına yakın olduğunu doğrulamak için konumun yalnızca o an kullanılır; saklanmaz.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Profil, kapak ya da av fotoğrafı seçmek için yalnızca seçtiğin fotoğrafa erişilir. Fotoğrafın konum bilgisi gönderilmeden silinir.</string>
 	<key>UIApplicationSceneManifest</key>
