@@ -2,5 +2,4 @@
 # `#` ile başlayan satırlar gitmez. Her main birleşmesinde bu dosyadaki metin
 # yeni sürümle birlikte gönderilir; kullanıcıya yönelik bir değişiklik olunca
 # güncelleyin. Kişisel veri, iç adres ya da teknik ayrıntı yazmayın.
-• Yazbozda eşli oyun: 101 Okey, Okey, Batak ve Pişti artık eşli de oynanabiliyor.
 • Küçük iyileştirmeler.
