@@ -94,20 +94,19 @@ final class GoogleSignInSaglayici implements GoogleKimlikSaglayici {
   GoogleSignInSaglayici({
     GoogleSignIn? google,
     String Function()? nonce,
-    TargetPlatform? platform,
+    this.platform,
   }) : _google = google ?? GoogleSignIn.instance,
-       _nonceUret = nonce ?? nonceUret,
-       _platform = platform;
+       _nonceUret = nonce ?? nonceUret;
 
   final GoogleSignIn _google;
   final String Function() _nonceUret;
 
   /// Yalnızca testler verir; verilmezse çalışılan platform.
-  final TargetPlatform? _platform;
+  final TargetPlatform? platform;
 
   String? get _istemciKimligi {
     if (kIsWeb) return null;
-    return (_platform ?? defaultTargetPlatform) == TargetPlatform.iOS
+    return (platform ?? defaultTargetPlatform) == TargetPlatform.iOS
         ? googleIosIstemciKimligi
         : null;
   }
