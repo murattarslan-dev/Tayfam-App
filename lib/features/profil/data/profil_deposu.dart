@@ -71,9 +71,20 @@ final class ProfilDeposu {
   Future<SocialSettings> sosyalAyarlariDegistir(SocialSettingsUpdate d) =>
       _me.updateSocialSettings(body: d);
 
-  /// `DELETE /v1/me` (204). Son 10 dakikada Google ile giriş yapılmamışsa
-  /// `reauthentication-required`.
-  Future<void> hesabiSil() => _me.deleteAccount();
+  /// `DELETE /v1/me` (204). Son 10 dakikada sağlayıcıyla giriş
+  /// yapılmamışsa `reauthentication-required`.
+  ///
+  /// [appleKodu], silmeden önceki Apple girişinin yetkilendirme kodudur ve
+  /// yalnızca gövdede gider (Tayfam-Api ADR-0045 §4): sunucu onunla
+  /// kullanıcının Apple token'larını iptal eder, sonra hesabı siler. Apple
+  /// hesabında kod yoksa ya da reddedilirse yine
+  /// `reauthentication-required`. Google hesabında verilmez; gövde
+  /// gönderilmez.
+  Future<void> hesabiSil({String? appleKodu}) => _me.deleteAccount(
+    body: appleKodu == null
+        ? null
+        : DeleteAccountRequest(appleAuthorizationCode: appleKodu),
+  );
 }
 
 /// Profil uçlarının deposu.

@@ -2,8 +2,8 @@
 /// gerekli, giriş, kayıt sihirbazı, kayıt sonrası hoş geldin, yaş engeli
 /// ve yeniden onay ekranları (ADR-0012). Yönlendirici hoş geldin ve yaş
 /// engeli durumunu, kabuk kayıt sonrası davet işlemini
-/// ([KayitDavetNotifier]) buradan alır. Google
-/// kimlik sağlayıcısı, giriş ucu, hukuki metin sürümleri ve dış bağlantı
+/// ([KayitDavetNotifier]) buradan alır. Google ve Apple
+/// kimlik sağlayıcıları, giriş ucu, hukuki metin sürümleri ve dış bağlantı
 /// açıcısı profildeki hesap silme ve hukuki bağlantılar için dışa açıktır
 /// (ADR-0018 §2).
 library;
@@ -17,6 +17,12 @@ export 'package:tayfam/features/hesap/application/kayit_karsilamasi.dart'
         KayitDavetSonucu,
         kayitDavetProvider,
         kayitKarsilamasiProvider;
+export 'package:tayfam/features/hesap/data/apple_kimligi.dart'
+    show
+        AppleGirisHatasi,
+        AppleKimligi,
+        AppleKimlikSaglayici,
+        appleKimlikSaglayiciProvider;
 export 'package:tayfam/features/hesap/data/dis_baglanti.dart'
     show DisBaglantiAcici, disBaglantiAciciProvider, playMagazaAdresi;
 export 'package:tayfam/features/hesap/data/google_kimligi.dart'
