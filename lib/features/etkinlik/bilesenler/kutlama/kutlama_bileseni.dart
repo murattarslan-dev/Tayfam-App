@@ -23,6 +23,7 @@ import 'package:tayfam/features/etkinlik/bilesenler/oylama/oylama_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_durumu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_ortak.dart';
 import 'package:tayfam/features/etkinlik/presentation/arac_ortak.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
@@ -284,7 +285,8 @@ class _KutlamaBolumuState extends ConsumerState<KutlamaBolumu> {
 }
 
 /// Kazanan kartı: kupa simgesi, "Kazanan" / "Kazananlar", her kazananın
-/// adı (yazboz kaynağında kazanılan masa da) ve ilan edildiyse ilan
+/// adı (yazboz kaynağında kazanılan masa da; eşli masada kazanan eşin iki
+/// kişisi tek satırda: "Ayşe & Mehmet · Masa 1") ve ilan edildiyse ilan
 /// zamanı. Kart ekran okuyucuda tek öğe okunur; simge süstür.
 ///
 /// Kart ilk göründüğünde [TayfamMotion.uzun] süren tek seferlik bir
@@ -312,22 +314,31 @@ class KutlamaKarti extends ConsumerWidget {
     final misafirler = misafirVar
         ? etkinlikMisafirleri(ref, kimlik.tayfaId, kimlik.etkinlikId)
         : null;
-    final masalar = _masaAdlari(ref);
+    final masalar = _yazbozMasalari(ref);
     final oylamaSecenekleri = _oylamaSecenekleri(ref);
-    final adlar = [
-      for (final k in kutlama.winners)
-        _satir(
+    // Satır anahtarı → adlar; eşli masada kazanan eşin kişileri aynı
+    // satırda birleşir, diğer kazananlar kendi satırındadır.
+    final satirlar = <Object, List<String>>{};
+    final satirMasalari = <Object, String?>{};
+    for (final (i, k) in kutlama.winners.indexed) {
+      final masa = masalar[k.tableId];
+      final es = masa == null ? null : kutlamaKazananEsi(masa, k);
+      final anahtar = es == null ? i : (masa?.id, es);
+      (satirlar[anahtar] ??= []).add(
+        kutlamaKazananAdi(
+          ref,
           m,
-          kutlamaKazananAdi(
-            ref,
-            m,
-            k,
-            takimlar: takimlar,
-            misafirler: misafirler,
-            oylamaSecenekleri: oylamaSecenekleri,
-          ),
-          masalar[k.tableId],
+          k,
+          takimlar: takimlar,
+          misafirler: misafirler,
+          oylamaSecenekleri: oylamaSecenekleri,
         ),
+      );
+      satirMasalari[anahtar] = masa?.label;
+    }
+    final adlar = [
+      for (final MapEntry(key: anahtar, value: kisiler) in satirlar.entries)
+        _satir(m, yazbozEsAdlariMetni(m, kisiler), satirMasalari[anahtar]),
     ];
     final ilanZamani = kutlama.announcedAt;
     final hareketsiz = MediaQuery.disableAnimationsOf(context);
@@ -351,7 +362,7 @@ class KutlamaKarti extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      adlar.length == 1
+                      kutlama.winners.length == 1
                           ? m.bilesen_celebration_kazanan
                           : m.bilesen_celebration_kazananlar,
                       style: yazi.labelLarge?.copyWith(color: r.tintMangoUstu),
@@ -423,10 +434,9 @@ class KutlamaKarti extends ConsumerWidget {
     };
   }
 
-  /// Yazboz kaynağında kazanılan masaların adları (masa kimliği → ad).
-  /// Kaynak yazboz değilse ya da masa yoksa boş; yazboz yalnızca o zaman
-  /// okunur.
-  Map<String?, String> _masaAdlari(WidgetRef ref) {
+  /// Yazboz kaynağında kazanılan masalar (masa kimliği → masa). Kaynak
+  /// yazboz değilse ya da masa yoksa boş; yazboz yalnızca o zaman okunur.
+  Map<String?, EventScoreTable> _yazbozMasalari(WidgetRef ref) {
     final kaynak = kutlama.source;
     if (kaynak == null ||
         kutlama.sourceKind != EventCelebrationSourceKind.scoreboard ||
@@ -443,8 +453,24 @@ class KutlamaKarti extends ConsumerWidget {
         )
         .value;
     return {
-      for (final t in yazboz?.tables ?? const <EventScoreTable>[])
-        t.id: t.label,
+      for (final t in yazboz?.tables ?? const <EventScoreTable>[]) t.id: t,
     };
   }
+}
+
+/// Eşli masada kazananın eşi (1 ya da 2): kazanan kişi ya da misafirin
+/// masadaki yerinden. Masa eşli değilse ya da yer bulunamazsa (hesabı
+/// silinmiş kişi) `null`.
+int? kutlamaKazananEsi(EventScoreTable masa, EventCelebrationWinner kazanan) {
+  if (!yazbozEsli(masa.rules)) return null;
+  final kisi = kazanan.userId;
+  final misafir = kazanan.guestId;
+  if (kisi == null && misafir == null) return null;
+  for (final yer in masa.players) {
+    if ((kisi != null && yer.userId == kisi) ||
+        (misafir != null && yer.guestId == misafir)) {
+      return yer.pair ?? yazbozEsNo(yer.position);
+    }
+  }
+  return null;
 }

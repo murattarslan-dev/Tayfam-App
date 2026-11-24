@@ -217,6 +217,96 @@ void main() {
       });
     }
 
+    for (final tema in _temalar) {
+      testWidgets('eşli masada kazanan eşin iki kişisi tek satırda '
+          '(${tema.name}, 2× yazı, 320 dp)', (tester) async {
+        ekranBoyutu(tester, genislik: 320);
+        ikiKatYazi(tester);
+        const esliKural = {
+          'side': 'pair',
+          'rounds': 'round',
+          'winner': 'high',
+          'result': 'points',
+        };
+        // Eş 1: Ayşe (koltuk 1) ve misafir Deniz (koltuk 3); eş 2: Mert ve
+        // hesabı silinmiş kişi.
+        final masa = yazbozMasasiJson(
+          id: _masaId,
+          kurallar: esliKural,
+          bitti: true,
+          yerler: [
+            {...yazbozYeriJson('y1', 1, kisi: organizatorId), 'pair': 1},
+            {...yazbozYeriJson('y2', 2, kisi: katilimciId), 'pair': 2},
+            {...yazbozYeriJson('y3', 3, misafir: _misafirId), 'pair': 1},
+            {...yazbozYeriJson('y4', 4), 'pair': 2},
+          ],
+          kazananlar: ['y1', 'y3'],
+        );
+        final tasima = _tasima(
+          tur: 'games_other',
+          ben: katilimciId,
+          kutlama: (_) => kutlamaJson(
+            kaynak: 'scoreboard',
+            kazananlar: [
+              kutlamaKazananiJson(kisi: organizatorId, masa: _masaId),
+              kutlamaKazananiJson(misafir: _misafirId, masa: _masaId),
+            ],
+          ),
+          yanitlar: {
+            ..._kaynakYanitlari,
+            'GET $yazbozYolu': (_) => yazbozJson(masalar: [masa]),
+          },
+        );
+        await _detayiAc(tester, tasima, themeMode: tema);
+
+        final kart = _bolumde(find.byType(KutlamaKarti));
+        await _gorunurYap(tester, kart);
+        expect(
+          _bolumde(find.text(m.bilesen_celebration_kazananlar)),
+          findsOneWidget,
+        );
+        final esler = m.bilesen_scoreboard_es_adlari(
+          'Ayşe',
+          m.bilesen_guest_ad_metni('Deniz'),
+        );
+        expect(
+          _bolumde(find.text(m.bilesen_celebration_masada(esler, 'Masa 1'))),
+          findsOneWidget,
+        );
+        expect(_bolumde(find.textContaining('Mert')), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    test('kazananın eşi masadaki yerinden bulunur', () {
+      final masa = EventScoreTable.fromJson(
+        yazbozMasasiJson(
+          id: _masaId,
+          kurallar: const {'side': 'pair'},
+          yerler: [
+            yazbozYeriJson('y1', 1, kisi: organizatorId),
+            yazbozYeriJson('y2', 2, kisi: katilimciId),
+            yazbozYeriJson('y3', 3, misafir: _misafirId),
+          ],
+        ),
+      );
+      EventCelebrationWinner kazanan({String? kisi, String? misafir}) =>
+          EventCelebrationWinner.fromJson(
+            kutlamaKazananiJson(kisi: kisi, misafir: misafir, masa: _masaId),
+          );
+      expect(kutlamaKazananEsi(masa, kazanan(kisi: organizatorId)), 1);
+      expect(kutlamaKazananEsi(masa, kazanan(kisi: katilimciId)), 2);
+      expect(kutlamaKazananEsi(masa, kazanan(misafir: _misafirId)), 1);
+      expect(kutlamaKazananEsi(masa, kazanan()), isNull);
+      final bireysel = EventScoreTable.fromJson(
+        yazbozMasasiJson(
+          id: _masaId,
+          yerler: [yazbozYeriJson('y1', 1, kisi: organizatorId)],
+        ),
+      );
+      expect(kutlamaKazananEsi(bireysel, kazanan(kisi: organizatorId)), isNull);
+    });
+
     testWidgets('organizatör onayla ilan eder; vazgeçerse istek gitmez', (
       tester,
     ) async {

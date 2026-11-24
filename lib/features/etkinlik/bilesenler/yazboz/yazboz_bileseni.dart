@@ -345,7 +345,11 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
     final ozet = [?oyun, ...yazbozKuralOzeti(m, masa.rules)].join(' · ');
     final eller = yazbozElleri(masa);
     final yonetebilir = widget.yazboz.callerCanManage;
-    final siralama = yazbozSiralamasi(masa);
+    final esli = yazbozEsli(masa.rules);
+    final siralama = esli ? const <YazbozSirasi>[] : yazbozSiralamasi(masa);
+    final esSiralamasi = esli
+        ? yazbozEsSiralamasi(masa)
+        : const <YazbozEsSirasi>[];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -437,6 +441,13 @@ class _YazbozMasasiState extends ConsumerState<YazbozMasasi> {
               satir: satir,
               kural: masa.rules,
               takimlar: _takimKimligi(widget.kimlik, masa),
+              misafirler: widget.misafirler,
+            ),
+          for (final satir in esSiralamasi)
+            YazbozEsSiraSatiri(
+              key: ValueKey('yazboz-es-sira-${masa.id}-${satir.es.es}'),
+              satir: satir,
+              kural: masa.rules,
               misafirler: widget.misafirler,
             ),
         ],
@@ -591,7 +602,93 @@ class YazbozSiraSatiri extends ConsumerWidget {
   }
 }
 
-/// Bir el: başlık ("El 3") ve her yerin skoru, yer sırasıyla. El ekran
+/// Eşli masada sıralamanın bir satırı: eşin sırası, iki oyuncusu birlikte
+/// ("Ayşe & Mehmet"), eşin numarası ve toplamı (iki koltukta aynı; bir kez
+/// yazılır) ve etiketler. Kazanan eşte "Kazanan", çağıranın eşinde "Sen".
+/// Satır ekran okuyucuda tek öğe okunur ("1., Ayşe & Mehmet, 1. eş,
+/// 120 puan, Kazanan").
+class YazbozEsSiraSatiri extends ConsumerWidget {
+  const YazbozEsSiraSatiri({
+    super.key,
+    required this.satir,
+    required this.kural,
+    this.misafirler,
+  });
+
+  final YazbozEsSirasi satir;
+  final EventScoreRules kural;
+  final MisafirKimligi? misafirler;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    final yazi = context.yazi;
+    final r = context.renkler;
+    final sira = satir.sira;
+    var benim = false;
+    for (final yer in satir.es.yerler) {
+      if (_benimYerim(ref, yer, null)) benim = true;
+    }
+    final rakam = yazi.bodyMedium?.copyWith(
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+    final bo = kural.bestOf;
+    final toplam = [
+      m.bilesen_scoreboard_es_no(satir.es.es),
+      m.bilesen_scoreboard_puan(yazbozSayisi(m, sira.total)),
+      if (bo != null && bo > 1) m.bilesen_scoreboard_el_kazandi(sira.roundsWon),
+    ].join(' · ');
+    return MergeSemantics(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: TayfamSizes.dokunmaMin),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              m.bilesen_scoreboard_sira(sira.rank),
+              style: rakam?.copyWith(color: r.metinGovde),
+            ),
+            const SizedBox(width: TayfamSpacing.s8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: TayfamSpacing.s8,
+                    runSpacing: TayfamSpacing.s4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      YazbozEsAdi(
+                        es: satir.es,
+                        misafirler: misafirler,
+                        style: satir.kazanan
+                            ? yazi.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              )
+                            : yazi.bodyMedium,
+                      ),
+                      if (satir.kazanan)
+                        Etiket(
+                          metin: m.bilesen_scoreboard_kazanan,
+                          ton: EtiketTonu.mango,
+                          ikon: Icons.emoji_events_outlined,
+                        ),
+                      if (benim) Etiket(metin: m.bilesen_scoreboard_sen),
+                    ],
+                  ),
+                  Text(toplam, style: rakam?.copyWith(color: r.metinGovde)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Bir el: başlık ("El 3") ve her yerin skoru, yer sırasıyla; eşli masada
+/// her eşin skoru eş başına bir kez ("Ayşe & Mehmet 120"). El ekran
 /// okuyucuda tek öğe okunur ("El 3, Ayşe, 120, Can, 80").
 class YazbozElSatiri extends StatelessWidget {
   const YazbozElSatiri({
@@ -612,6 +709,10 @@ class YazbozElSatiri extends StatelessWidget {
     final m = AppLocalizations.of(context);
     final yazi = context.yazi;
     final skorlar = {for (final s in el.scores) s.playerId: s};
+    final rakam = yazi.bodySmall?.copyWith(
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+    final esli = yazbozEsli(masa.rules);
     return Padding(
       padding: const EdgeInsets.only(bottom: TayfamSpacing.s8),
       child: MergeSemantics(
@@ -619,26 +720,40 @@ class YazbozElSatiri extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(m.bilesen_scoreboard_el(el.number), style: yazi.labelLarge),
-            for (final yer in yazbozYerleri(masa))
-              Row(
-                children: [
-                  Expanded(
-                    child: YazbozYerAdi(
-                      yer: yer,
-                      takimlar: takimlar,
-                      misafirler: misafirler,
-                      style: yazi.bodySmall,
+            if (esli)
+              for (final es in yazbozEsleri(masa))
+                Row(
+                  children: [
+                    Expanded(
+                      child: YazbozEsAdi(
+                        es: es,
+                        misafirler: misafirler,
+                        style: yazi.bodySmall,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: TayfamSpacing.s8),
-                  Text(
-                    yazbozSkorMetni(m, skorlar[yer.id]),
-                    style: yazi.bodySmall?.copyWith(
-                      fontFeatures: const [FontFeature.tabularFigures()],
+                    const SizedBox(width: TayfamSpacing.s8),
+                    Text(
+                      yazbozSkorMetni(m, yazbozEsSkoru(el, es)),
+                      style: rakam,
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                )
+            else
+              for (final yer in yazbozYerleri(masa))
+                Row(
+                  children: [
+                    Expanded(
+                      child: YazbozYerAdi(
+                        yer: yer,
+                        takimlar: takimlar,
+                        misafirler: misafirler,
+                        style: yazi.bodySmall,
+                      ),
+                    ),
+                    const SizedBox(width: TayfamSpacing.s8),
+                    Text(yazbozSkorMetni(m, skorlar[yer.id]), style: rakam),
+                  ],
+                ),
           ],
         ),
       ),
