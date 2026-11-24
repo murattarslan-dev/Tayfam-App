@@ -57,7 +57,7 @@ env:
   # ci.yml ile aynı Flutter sürümü (ADR-0009).
   FLUTTER_VERSION: 3.47.9
   # ci.yml'deki ios işiyle aynı Xcode (ADR-0034 §2).
-  XCODE_UYGULAMASI: /Applications/Xcode_26.app
+  XCODE_UYGULAMASI: /Applications/Xcode_26.6.app
   TAYFAM_API: https://api.tayfam.app
   PAKET: com.murattarslan.tayfam
   # play-dahili.yml ile aynı taban; değiştirilmez.

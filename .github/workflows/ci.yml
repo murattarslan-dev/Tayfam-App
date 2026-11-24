@@ -568,7 +568,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 45
     env:
-      XCODE_UYGULAMASI: /Applications/Xcode_26.app
+      XCODE_UYGULAMASI: /Applications/Xcode_26.6.app
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -577,11 +577,11 @@ jobs:
         run: |
           set -euo pipefail
           ls -d /Applications/Xcode*.app
-          if [ -d "$XCODE_UYGULAMASI" ]; then
-            sudo xcode-select -s "$XCODE_UYGULAMASI"
-          else
-            echo "::warning title=Xcode::$XCODE_UYGULAMASI yok; imajın varsayılan Xcode'u kullanılıyor."
+          if [ ! -d "$XCODE_UYGULAMASI" ]; then
+            echo "::error title=Xcode::$XCODE_UYGULAMASI imajda yok; XCODE_UYGULAMASI (burada ve testflight.yml'de) güncellenmeli."
+            exit 1
           fi
+          sudo xcode-select -s "$XCODE_UYGULAMASI"
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-version
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -613,6 +613,11 @@ jobs:
           git ls-files --others --exclude-standard -z -- ios \
             | xargs -0 -I{} rsync -R {} "$RUNNER_TEMP/ios-fark/"
           cp "$RUNNER_TEMP/ios-durum.txt" "$RUNNER_TEMP/ios-fark/durum.txt"
+          # Fark log'a da yazılır (kilit dosyaları public'tir): artefakt
+          # indirilemeyen ortamlardan da commit edilebilsin.
+          git diff -- ios
+          git ls-files --others --exclude-standard -z -- ios \
+            | xargs -0 -I{} sh -c 'echo "=== {} ==="; cat "{}"; echo; echo "=== son ==="'
           if [ -s "$RUNNER_TEMP/ios-durum.txt" ]; then
             echo "::error title=iOS proje dosyaları::Derleme ios/ altında repoda olmayan değişiklik üretti; ios-fark artefaktındaki dosyalar commit edilmeli."
             exit 1
