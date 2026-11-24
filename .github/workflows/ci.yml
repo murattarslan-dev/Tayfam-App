@@ -599,6 +599,34 @@ jobs:
           echo "TAYFAM_SURUM=$surum" >> "$GITHUB_ENV"
       - name: iOS simülatör derlemesi (imzasız)
         run: flutter build ios --simulator --debug --dart-define=TAYFAM_SURUM="$TAYFAM_SURUM"
+      - name: Yetkiler arşive işlenebiliyor mu
+        # testflight.yml'deki `arsiv` işi uygulamayı sertifikasız (ad-hoc)
+        # imzalayıp Runner.entitlements'ı arşive işler. O iş yalnızca main'de
+        # çalıştığı için aynı komutlar burada, simülatör derlemesinin bir
+        # kopyasında denenir: yetki dosyası geçerli mi, imzadan geri
+        # okunabiliyor mu. Secret yok.
+        run: |
+          set -euo pipefail
+          yetkiler=ios/Runner/Runner.entitlements
+          plutil -lint "$yetkiler"
+          kopya="$RUNNER_TEMP/Runner.app"
+          cp -R build/ios/iphonesimulator/Runner.app "$kopya"
+          if [ -d "$kopya/Frameworks" ]; then
+            find "$kopya/Frameworks" -maxdepth 1 \( -name '*.framework' -o -name '*.dylib' \) -print0 \
+              | xargs -0 -n 1 codesign --force --sign -
+          fi
+          codesign --force --sign - --entitlements "$yetkiler" "$kopya"
+          codesign --display --entitlements - --xml "$kopya" > "$RUNNER_TEMP/okunan-yetkiler.plist"
+          python3 - "$yetkiler" "$RUNNER_TEMP/okunan-yetkiler.plist" <<'PY'
+          import plistlib, sys
+          beklenen = plistlib.load(open(sys.argv[1], "rb"))
+          okunan = plistlib.load(open(sys.argv[2], "rb"))
+          eksik = [k for k, v in beklenen.items() if okunan.get(k) != v]
+          print("İmzadan okunan yetkiler:", ", ".join(sorted(okunan)))
+          if eksik:
+              print("::error title=Yetki eksik::" + ", ".join(sorted(eksik)))
+              sys.exit(1)
+          PY
       - name: iOS proje dosyaları güncel mi
         # Kesin kural 8: iOS bağımlılık kilidi ve Flutter'ın proje dosyalarına
         # yazdığı değişiklikler repoda olmalı. Derleme repoda olmayan bir

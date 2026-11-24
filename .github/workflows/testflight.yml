@@ -20,6 +20,13 @@ name: Yayın (TestFlight)
 #           iştedir ve `testflight` ortamından gelir (ortam yalnızca main'e
 #           açıktır).
 #
+# Yetkiler (entitlements, ADR-0034 §2 "doğrulanacak varsayım"): imzasız
+# arşivde yetki bulunmaz ve dışa aktarım onları kendiliğinden eklemez.
+# `arsiv` işi bu yüzden uygulamayı sertifikasız (ad-hoc, `codesign -s -`)
+# imzalayıp ios/Runner/Runner.entitlements'ı arşive işler; `yukle` işi
+# yüklemeden önce dağıtım imzasıyla dışa aktarılan uygulamada aynı yetkilerin
+# bulunduğunu denetler. Eksikse yükleme yapılmaz.
+#
 # vX.Y.Z etiketini play-dahili.yml atar; bu iş akışı etiket atmaz.
 #
 # Sürüm (ADR-0029 §4, ADR-0034 §2):
@@ -179,9 +186,24 @@ jobs:
           [ "$kimlik" = "$PAKET" ] || { echo "::error::Bundle kimliği $PAKET değil: $kimlik"; exit 1; }
           [ "$ad" = "$SURUM_ADI" ] || { echo "::error::Sürüm adı $SURUM_ADI değil: $ad"; exit 1; }
           [ "$kod" = "$SURUM_KODU" ] || { echo "::error::Derleme numarası $SURUM_KODU değil: $kod"; exit 1; }
+          # Yetkiler arşive işlenir (yukarıda "Yetkiler"). Önce iç
+          # framework'ler, sonra uygulama; ad-hoc imza sertifika ve secret
+          # gerektirmez, dağıtım imzası `yukle` işinde bunun yerine geçer.
+          uygulama="$arsiv/Products/Applications/Runner.app"
+          yetkiler=ios/Runner/Runner.entitlements
+          plutil -lint "$yetkiler"
+          if [ -d "$uygulama/Frameworks" ]; then
+            find "$uygulama/Frameworks" -maxdepth 1 \( -name '*.framework' -o -name '*.dylib' \) -print0 \
+              | xargs -0 -n 1 codesign --force --sign -
+          fi
+          codesign --force --sign - --entitlements "$yetkiler" "$uygulama"
+          codesign --display --entitlements - --xml "$uygulama" > "$RUNNER_TEMP/arsiv-yetkiler.plist"
+          plutil -p "$RUNNER_TEMP/arsiv-yetkiler.plist"
+          # `yukle` işi kod indirmediği için beklenen yetkiler arşivle gider.
+          cp "$yetkiler" build/ios/archive/beklenen-yetkiler.plist
           # Arşivdeki sembolik bağlar (framework'ler) artefaktta bozulmasın
           # diye tar ile paketlenir.
-          tar -C build/ios/archive -cf "$RUNNER_TEMP/Runner.xcarchive.tar" Runner.xcarchive
+          tar -C build/ios/archive -cf "$RUNNER_TEMP/Runner.xcarchive.tar" Runner.xcarchive beklenen-yetkiler.plist
           {
             echo "## Tayfam $SURUM_ADI ($SURUM_KODU) — iOS arşivi"
             echo
@@ -273,7 +295,8 @@ jobs:
           dosya="$RUNNER_TEMP/anahtar/AuthKey_${ANAHTAR_KIMLIGI}.p8"
           trap 'rm -rf "$RUNNER_TEMP/anahtar"' EXIT
           printf '%s\n' "$ANAHTAR" | tr -d '\r' > "$dosya"
-          cat > DisaAktarma.plist <<PLIST
+          secenekler() { # secenekler <dosya> <hedef: export | upload>
+            cat > "$1" <<PLIST
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -281,7 +304,7 @@ jobs:
             <key>method</key>
             <string>app-store-connect</string>
             <key>destination</key>
-            <string>upload</string>
+            <string>$2</string>
             <key>teamID</key>
             <string>${TAKIM}</string>
             <key>signingStyle</key>
@@ -293,14 +316,46 @@ jobs:
           </dict>
           </plist>
           PLIST
-          xcodebuild -exportArchive \
-            -archivePath Runner.xcarchive \
-            -exportOptionsPlist DisaAktarma.plist \
-            -exportPath disa-aktarma \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$dosya" \
-            -authenticationKeyID "$ANAHTAR_KIMLIGI" \
-            -authenticationKeyIssuerID "$YAYINCI"
+          }
+          disa_aktar() { # disa_aktar <seçenek dosyası> <çıktı klasörü>
+            xcodebuild -exportArchive \
+              -archivePath Runner.xcarchive \
+              -exportOptionsPlist "$1" \
+              -exportPath "$2" \
+              -allowProvisioningUpdates \
+              -authenticationKeyPath "$dosya" \
+              -authenticationKeyID "$ANAHTAR_KIMLIGI" \
+              -authenticationKeyIssuerID "$YAYINCI"
+          }
+          # 1) Yerel dışa aktarım: dağıtım imzasıyla imzalanmış .ipa. Hiçbir
+          #    şey yüklenmez.
+          secenekler Yerel.plist export
+          disa_aktar Yerel.plist yerel
+          # 2) Yetki denetimi: Runner.entitlements'taki her yetki, imzalı
+          #    uygulamada aynı değerle bulunmalı (yetkisiz bir derleme
+          #    TestFlight'a gitmesin; ör. Apple ile giriş çalışmazdı).
+          ipa=$(find yerel -maxdepth 1 -name '*.ipa' | head -n 1)
+          [ -n "$ipa" ] || { echo "::error title=Dışa aktarım::.ipa üretilmedi."; exit 1; }
+          mkdir -p acik
+          unzip -q "$ipa" -d acik
+          imzali=$(find acik/Payload -maxdepth 1 -name '*.app' | head -n 1)
+          codesign --verify --strict "$imzali"
+          codesign --display --entitlements - --xml "$imzali" > imzali-yetkiler.plist
+          python3 - beklenen-yetkiler.plist imzali-yetkiler.plist <<'PY'
+          import plistlib, sys
+          beklenen = plistlib.load(open(sys.argv[1], "rb"))
+          imzali = plistlib.load(open(sys.argv[2], "rb"))
+          eksik = [k for k, v in beklenen.items() if imzali.get(k) != v]
+          print("İmzalı uygulamadaki yetkiler:", ", ".join(sorted(imzali)))
+          if eksik:
+              print("::error title=Yetki eksik::İmzalı uygulamada eksik ya da farklı: " + ", ".join(sorted(eksik)))
+              sys.exit(1)
+          print("Beklenen yetkilerin hepsi var:", ", ".join(sorted(beklenen)))
+          PY
+          # 3) Aynı arşiv, aynı imza yöntemi; bu kez App Store Connect'e
+          #    yüklenir.
+          secenekler Yukleme.plist upload
+          disa_aktar Yukleme.plist disa-aktarma
           {
             echo "## TestFlight"
             echo
