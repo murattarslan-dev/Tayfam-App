@@ -104,6 +104,85 @@ List<YazbozSirasi> yazbozSiralamasi(EventScoreTable masa) {
   ];
 }
 
+/// Eşli masadaki yer sayısı (Tayfam-Api ADR-0044 §2).
+const int yazbozEsliYer = 4;
+
+/// Kural eşli oyun mu (`side: pair`): 4 kişi, karşılıklı oturanlar eş.
+bool yazbozEsli(EventScoreRules kural) =>
+    kural.side == EventScoreRulesSide.pair;
+
+/// Eşli masada [koltuk]un (1'den, seçim sırası) eşi: koltuk 1 ve 3 eş 1,
+/// koltuk 2 ve 4 eş 2 (karşılıklı oturanlar).
+int yazbozEsNo(int koltuk) => (koltuk - 1) % 2 + 1;
+
+/// Eşli masada [es] numaralı eşin koltukları: eş 1 → (1, 3), eş 2 → (2, 4).
+(int, int) yazbozEsKoltuklari(int es) => (es, es + 2);
+
+/// Eşli masada seçilen yer sayısı uygun mu: tam 4 ya da hiç (yerler sonra
+/// verilir).
+bool yazbozEsliSayiUygun(int adet) => adet == 0 || adet == yazbozEsliYer;
+
+/// Eşli masada bir eş: numarası ve yerleri koltuk sırasıyla. Skor eşin
+/// herhangi bir yeriyle gönderilir; istemci ilk yeri ([temsilci]) kullanır.
+typedef YazbozEsi = ({int es, List<EventScorePlayer> yerler});
+
+/// Eşin skor girişinde kullanılan yeri: koltuk sırasıyla ilki.
+String yazbozTemsilci(YazbozEsi es) => es.yerler.first.id;
+
+/// Eşli masanın eşleri numara sırasıyla. Yerin eşi sunucunun `pair`
+/// alanıdır; alan yoksa koltuk numarasından türetilir. Yeri olmayan eş
+/// listede yoktur.
+List<YazbozEsi> yazbozEsleri(EventScoreTable masa) {
+  final gruplar = <int, List<EventScorePlayer>>{};
+  for (final yer in yazbozYerleri(masa)) {
+    final es = yer.pair ?? yazbozEsNo(yer.position);
+    (gruplar[es] ??= []).add(yer);
+  }
+  final numaralar = gruplar.keys.toList()..sort();
+  return [for (final n in numaralar) (es: n, yerler: gruplar[n]!)];
+}
+
+/// Bir elde eşin skoru: eşin yerlerinden birindeki skor (sunucu ikisine de
+/// aynı değeri yazar); yoksa `null`.
+EventScoreEntry? yazbozEsSkoru(EventScoreRound el, YazbozEsi es) {
+  final yerler = {for (final y in es.yerler) y.id};
+  for (final s in el.scores) {
+    if (yerler.contains(s.playerId)) return s;
+  }
+  return null;
+}
+
+/// Eşli masanın sıralamasının bir satırı: eş, eşin sırası ve toplamı
+/// (iki yerde aynı; bir kez sayılır) ve kazanan mı.
+typedef YazbozEsSirasi = ({
+  YazbozEsi es,
+  EventScoreStanding sira,
+  bool kazanan,
+});
+
+/// Eşli masanın sıralaması eş başına: sunucu sıralamayı yer başına verir
+/// ve eşin iki yeri aynı sırayı ve toplamı taşır; satırlar eşte birleşir,
+/// toplam toplanmaz. Biten masada eşin yerlerinden biri `winner_ids`'te ise
+/// eş kazanandır.
+List<YazbozEsSirasi> yazbozEsSiralamasi(EventScoreTable masa) {
+  final esler = {
+    for (final es in yazbozEsleri(masa))
+      for (final y in es.yerler) y.id: es,
+  };
+  final satirlar = <int, YazbozEsSirasi>{};
+  for (final satir in yazbozSiralamasi(masa)) {
+    final es = esler[satir.sira.playerId];
+    if (es == null) continue;
+    final onceki = satirlar[es.es];
+    if (onceki == null) {
+      satirlar[es.es] = (es: es, sira: satir.sira, kazanan: satir.kazanan);
+    } else if (satir.kazanan && !onceki.kazanan) {
+      satirlar[es.es] = (es: es, sira: onceki.sira, kazanan: true);
+    }
+  }
+  return satirlar.values.toList();
+}
+
 /// El formunun sonucu: istek ya da hatalı alanların yerleri.
 typedef YazbozElSonucu = ({EventScoreRoundRequest? istek, Set<String> hatali});
 

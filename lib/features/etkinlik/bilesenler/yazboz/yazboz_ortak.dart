@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/kullanici/kullanici_adi_metni.dart';
+import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/misafir/misafir_ortak.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_durumu.dart';
 import 'package:tayfam/features/etkinlik/bilesenler/takim/takim_formu.dart';
+import 'package:tayfam/features/etkinlik/bilesenler/yazboz/yazboz_durumu.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 // Yazboz bölümünün ve formlarının ortak metin ve ad yardımcıları.
@@ -16,8 +18,8 @@ import 'package:tayfam/l10n/app_localizations.dart';
 String yazbozSayisi(AppLocalizations m, num sayi) =>
     NumberFormat.decimalPattern(m.localeName).format(sayi);
 
-/// Masanın kurallarının yazıyla özeti: tek maç, kazanan, hedef, BO, sonuç
-/// modu. Tanınmayan kural atlanır.
+/// Masanın kurallarının yazıyla özeti: eşli, tek maç, kazanan, hedef, BO,
+/// sonuç modu. Tanınmayan kural atlanır.
 List<String> yazbozKuralOzeti(AppLocalizations m, EventScoreRules kural) {
   final hedef = kural.target;
   final bo = kural.bestOf;
@@ -28,6 +30,7 @@ List<String> yazbozKuralOzeti(AppLocalizations m, EventScoreRules kural) {
     _ => null,
   };
   return [
+    if (yazbozEsli(kural)) m.bilesen_scoreboard_kural_esli,
     if (kural.rounds == EventScoreRulesRounds.single)
       m.bilesen_scoreboard_kural_single,
     ?kazanan,
@@ -115,4 +118,68 @@ EventTeam? yazbozTakimi(
     if (t.id == takimId) return t;
   }
   return null;
+}
+
+/// Eşli masada bir kişinin metin olarak adı: misafirin takma adı ("Deniz
+/// (misafir)"), kişinin adı ya da hesabını silmişse "Silinmiş kullanıcı".
+/// Ad gelene kadar genel metin.
+String yazbozKisiAdiMetni(
+  WidgetRef ref,
+  AppLocalizations m,
+  EventScorePlayer yer,
+  MisafirKimligi? misafirler,
+) {
+  final misafir = yer.guestId;
+  if (misafir != null) return misafirAdiMetni(ref, m, misafirler, misafir);
+  final kisi = yer.userId;
+  if (kisi == null) return m.kullanici_silinmis;
+  ref.read(kullaniciAdlariProvider.notifier).iste(kisi);
+  final bilinen = ref.watch(
+    kullaniciAdlariProvider.select((adlar) => adlar[kisi]),
+  );
+  return switch (bilinen) {
+    null => m.kullanici_genel,
+    KullaniciAdi(:final ad?) => ad,
+    KullaniciAdi() => m.kullanici_silinmis,
+  };
+}
+
+/// Adları eş biçiminde birleştirir ("Ayşe & Mehmet"); tek ad olduğu gibi.
+String yazbozEsAdlariMetni(AppLocalizations m, List<String> adlar) {
+  if (adlar.isEmpty) return m.kullanici_silinmis;
+  return adlar.skip(1).fold<String>(
+    adlar.first,
+    m.bilesen_scoreboard_es_adlari,
+  );
+}
+
+/// Eşli masada bir eşin oyuncuları birlikte ("Ayşe & Mehmet");
+/// [numarali] ise eşin numarasıyla ("1. eş: Ayşe & Mehmet").
+class YazbozEsAdi extends ConsumerWidget {
+  const YazbozEsAdi({
+    super.key,
+    required this.es,
+    this.misafirler,
+    this.numarali = false,
+    this.style,
+  });
+
+  final YazbozEsi es;
+
+  /// Misafirlerin okunduğu bileşen (misafir alan yazbozda kendisi).
+  final MisafirKimligi? misafirler;
+  final bool numarali;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final m = AppLocalizations.of(context);
+    final adlar = yazbozEsAdlariMetni(m, [
+      for (final yer in es.yerler) yazbozKisiAdiMetni(ref, m, yer, misafirler),
+    ]);
+    return Text(
+      numarali ? m.bilesen_scoreboard_es_basligi(es.es, adlar) : adlar,
+      style: style,
+    );
+  }
 }
