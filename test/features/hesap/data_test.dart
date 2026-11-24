@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/butunluk/butunluk_baglama.dart';
 import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
 import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
+import 'package:tayfam/features/hesap/data/apple_kimligi.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
@@ -100,6 +101,27 @@ void main() {
         'id_token': sahteIdToken,
         'nonce': sahteNonce,
         'platform': 'android',
+      });
+    });
+
+    test('Apple ile giriş: provider apple; kod gövdede yok', () async {
+      final tasima = SahteTasima({
+        'POST /v1/auth/sign-in': () => oturum(kayitBekliyor: true).toJson(),
+      });
+      final depo = HesapDeposu(tasima);
+      const kimlik = AppleKimligi(
+        idToken: sahteIdToken,
+        nonce: sahteNonce,
+        yetkilendirmeKodu: 'sahte-kod',
+        ad: null,
+      );
+      final yanit = await depo.appleIleGirisYap(kimlik, platform: 'ios');
+      expect(yanit.registrationPending, isTrue);
+      expect(tasima.istekler.single.govde, {
+        'provider': 'apple',
+        'id_token': sahteIdToken,
+        'nonce': sahteNonce,
+        'platform': 'ios',
       });
     });
 

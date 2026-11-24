@@ -28,11 +28,21 @@ final class MeApi {
   /// fazla 15 dakika) hesap uçları onu reddeder, tayfa uçları üyelik
   /// kalmadığı için reddeder.
   ///
+  /// **Apple hesabı (ADR-0045):** yeniden girişte Apple'ın verdiği tek
+  /// kullanımlık yetkilendirme kodu gövdede `apple_authorization_code`
+  /// ile gönderilir. Sunucu, hiçbir şeyi silmeden önce kullanıcının Apple
+  /// token'larını iptal eder; kod ve token'lar saklanmaz. Kod yoksa,
+  /// geçersizse, kullanılmışsa ya da başka bir Apple hesabına aitse
+  /// `403 reauthentication-required` (kullanıcı Apple ile yeniden giriş
+  /// yapar); Apple'a ulaşılamıyorsa `503`. İki durumda da hesap silinmez.
+  /// Google hesabında gövde gerekmez; gönderilirse kod yok sayılır.
+  ///
   /// `DELETE /v1/me`
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount({DeleteAccountRequest? body}) async {
     await _transport.send(
       method: 'DELETE',
       pathTemplate: '/v1/me',
+      body: body?.toJson(),
       expect: ResponseKind.none,
       authenticated: true,
     );

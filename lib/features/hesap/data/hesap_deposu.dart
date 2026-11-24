@@ -9,6 +9,7 @@ import 'package:tayfam/core/api/gen/apis/registration_api.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
+import 'package:tayfam/features/hesap/data/apple_kimligi.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
 
@@ -71,6 +72,26 @@ final class HesapDeposu {
     return _auth.signIn(
       body: SignInRequest(
         provider: SignInRequestProvider.google,
+        idToken: kimlik.idToken,
+        nonce: kimlik.nonce,
+        platform: SignInRequestPlatform.fromWire(platform),
+        integrityToken: butunlukTokeni,
+      ),
+    );
+  }
+
+  /// `POST /v1/auth/sign-in`, `provider: apple` (Tayfam-Api ADR-0045).
+  /// Kimlik token'ı ve nonce yalnızca gövdeye gider; yetkilendirme kodu bu
+  /// istekle gönderilmez. Sunucu Apple girişini yalnızca `platform: ios`
+  /// ile kabul eder.
+  Future<Session> appleIleGirisYap(
+    AppleKimligi kimlik, {
+    required String platform,
+  }) async {
+    final butunlukTokeni = await _butunluk?.giris(kimlik.nonce);
+    return _auth.signIn(
+      body: SignInRequest(
+        provider: SignInRequestProvider.apple,
         idToken: kimlik.idToken,
         nonce: kimlik.nonce,
         platform: SignInRequestPlatform.fromWire(platform),

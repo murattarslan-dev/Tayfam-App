@@ -9,8 +9,13 @@ final class AuthApi {
 
   final ApiTransport _transport;
 
-  /// Google (ileride Apple) ID token'ı ile giriş
+  /// Google veya Apple ID token'ı ile giriş
   ///
+  /// `provider: apple` yalnızca iOS uygulamasından (`platform: ios`) kabul
+  /// edilir; başka platformla `invalid-request` (400). Apple girişi
+  /// sunucuda açık değilse `unsupported-provider` (400) (ADR-0045).
+  /// Apple kimlik token'ında ad yoktur; istemci adı kayıtta
+  /// `display_name` ile gönderir.
   /// Kullanıcı yoksa oluşturulur ve kayıt bekler (`registration_pending`).
   /// Bu durumdaki erişim token'ı yalnızca `/v1/registration` uçlarına
   /// geçer (ADR-0012). Token'lar gövdede döner; çerez yazılmaz.
