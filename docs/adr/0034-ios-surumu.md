@@ -164,6 +164,23 @@ açılan bir uygulama, sonra tek tek yetenekler.
   üzerinde ince bir Swift köprüsüyle yapılır; yeni Flutter paketi eklenmez.
   Düğme ADR-0012'deki yerindedir ve `TAYFAM_APPLE_GIRIS` bayrağı 3. aşamada
   iOS yayın derlemesinde açılır.
+- **Uygulama notu (2026-11-24, Tayfam-Api ADR-0045 ile):**
+  - Düğme Apple'ın yerel düğmesidir (`ASAuthorizationAppleIDButton`,
+    platform görünümü): açık temada siyah, koyu temada beyaz, Google
+    düğmesinin üstünde ve aynı yükseklikte.
+  - **Sağlayıcı cihazda hatırlanır (platform sahibi kararı, 2026-11-24).**
+    Hesap silme ve veri indirme öncesindeki yeniden giriş, girişte
+    kullanılan sağlayıcıyla yapılmak zorundadır. Kullanıcıya sormamak için
+    son girişin sağlayıcısı güvenli depoda tek bir bayrak olarak tutulur
+    (`appleIleGirildi`; kimlik, e-posta ya da token değil) ve her girişte
+    yeniden yazılır. Kayıt yoksa ya da okunamıyorsa Google açılır; yanlış
+    hesap seçilirse akış "farklı hesap" hatasıyla durur, hiçbir şey
+    silinmez. Sunucudan sağlayıcıyı sormak sözleşmeye yeni alan gerektirirdi.
+  - Hesap silmede Apple'ın yeniden girişte verdiği tek kullanımlık
+    yetkilendirme kodu yalnızca `DELETE /v1/me` gövdesinde gider; saklanmaz,
+    loglanmaz. Sunucu onunla Apple'daki yetkiyi iptal eder.
+  - Apple ile kayıt olan kullanıcı şimdilik Android'de giremez (açık soru
+    2'nin cevabı; hesap bağlama sonraya kaldı).
 
 ### 6. Push, linkler, izinler
 

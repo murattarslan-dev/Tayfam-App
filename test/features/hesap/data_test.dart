@@ -236,6 +236,8 @@ void main() {
       problem(ProblemType.unknown, 500): m.hata_genel,
       problem(ProblemType.internal, 500): m.hata_internal,
       const GoogleGirisHatasi(): m.hesap_hata_google,
+      const AppleGirisHatasi(): m.hesap_hata_apple,
+      const AppleGirisHatasi(desteklenmiyor: true): m.hesap_hata_apple,
       const GoogleGirisHatasi(desteklenmiyor: true): m.hesap_hata_web,
       const FormatException('x'): m.hata_genel,
     };

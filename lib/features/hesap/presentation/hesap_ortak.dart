@@ -4,18 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tayfam/core/api/problem_messages.dart';
 import 'package:tayfam/core/bilesenler/bilesenler.dart';
 import 'package:tayfam/core/tema/tema.dart';
+import 'package:tayfam/features/hesap/data/apple_kimligi.dart';
 import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/l10n/app_localizations.dart';
 
 /// [hata]'nın giriş, kayıt ve onay ekranlarındaki metni.
 ///
-/// Google girişinin istemcideki hataları bu özelliğin kendi metinleriyle;
-/// API ve bağlantı hataları ortak eşlemeyle ([hataMetni], ADR-0005 §4)
-/// gösterilir. Sunucunun `title` / `detail` metni gösterilmez.
+/// Google ve Apple girişinin istemcideki hataları bu özelliğin kendi
+/// metinleriyle; API ve bağlantı hataları ortak eşlemeyle ([hataMetni],
+/// ADR-0005 §4) gösterilir. Sunucunun `title` / `detail` metni gösterilmez.
 String hesapHatasiMetni(AppLocalizations m, Object hata) => switch (hata) {
   GoogleGirisHatasi(desteklenmiyor: true) => m.hesap_hata_web,
   GoogleGirisHatasi() => m.hesap_hata_google,
+  AppleGirisHatasi() => m.hesap_hata_apple,
   _ => hataMetni(m, hata),
 };
 

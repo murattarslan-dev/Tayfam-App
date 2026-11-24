@@ -22,7 +22,13 @@ enum CihazBayragi {
 
   /// Bildirim izni için açıklama kartı gösterildi (kabul ya da ret;
   /// istemci ADR-0019 §3). Konmuşsa izin bir daha kendiliğinden sorulmaz.
-  bildirimIzniSoruldu('tayfam.cihaz.bildirim_izni_soruldu');
+  bildirimIzniSoruldu('tayfam.cihaz.bildirim_izni_soruldu'),
+
+  /// Bu cihazdaki son giriş Apple ile yapıldı (ADR-0034 §5). Yeniden
+  /// girişin hangi sağlayıcıyla açılacağını belirler; her girişte yeniden
+  /// yazılır (Google ile girişte kaldırılır). Kim olduğunu değil, yalnızca
+  /// hangi giriş düğmesinin kullanıldığını söyler.
+  appleIleGirildi('tayfam.cihaz.apple_ile_girildi');
 
   const CihazBayragi(this.anahtar);
 

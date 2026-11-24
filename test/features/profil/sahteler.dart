@@ -4,6 +4,7 @@ import 'package:http/testing.dart';
 
 import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/e2e/cihaz/e2e_cihaz.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
@@ -145,9 +146,16 @@ List<Override> profilOverridelari({
   required SahteOturum oturum,
   SahteTayfaTasima? arkadas,
   SahteGoogle? google,
+  SahteApple? apple,
   SahteAcici? acici,
   BellekTemaTercihiDeposu? tema,
+  CihazAyarlariDeposu? cihaz,
 }) => [
+  appleKimlikSaglayiciProvider.overrideWithValue(apple ?? SahteApple()),
+  // Son girişin sağlayıcısı bellekte; gerçek güvenli depo yok.
+  girisSaglayicisiHafizasiProvider.overrideWithValue(
+    GirisSaglayicisiHafizasi(cihaz ?? BellekCihazAyarlariDeposu()),
+  ),
   profilDeposuProvider.overrideWithValue(ProfilDeposu(tasima)),
   // Profildeki arkadaşlar bölümü, son katılımlar ve kendi rozetlerin /
   // istatistiklerin (kendi kişi profilin): varsayılanı boş listeler.

@@ -25,6 +25,11 @@ export 'package:tayfam/features/hesap/data/apple_kimligi.dart'
         appleKimlikSaglayiciProvider;
 export 'package:tayfam/features/hesap/data/dis_baglanti.dart'
     show DisBaglantiAcici, disBaglantiAciciProvider, playMagazaAdresi;
+export 'package:tayfam/features/hesap/data/giris_saglayicisi.dart'
+    show
+        GirisSaglayicisi,
+        GirisSaglayicisiHafizasi,
+        girisSaglayicisiHafizasiProvider;
 export 'package:tayfam/features/hesap/data/google_kimligi.dart'
     show
         GoogleGirisHatasi,
