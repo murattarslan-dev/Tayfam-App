@@ -111,10 +111,7 @@ List<Map<String, Object?>> _esliYerler({bool esli = true}) => [
     (_yer3, _ucuncuId),
     (_yer4, _dorduncuId),
   ].indexed)
-    {
-      ...yazbozYeriJson(yer, i + 1, kisi: kisi),
-      if (esli) 'pair': i % 2 + 1,
-    },
+    {...yazbozYeriJson(yer, i + 1, kisi: kisi), if (esli) 'pair': i % 2 + 1},
 ];
 
 /// Organizatör "Ayşe", katılımcı "Mert", üçüncü "Mehmet", dördüncü "Deniz".
@@ -357,10 +354,7 @@ void main() {
           ],
         ),
       );
-      expect(yazbozEsleri(ters).first.yerler.map((y) => y.id), [
-        _yer4,
-        _yer2,
-      ]);
+      expect(yazbozEsleri(ters).first.yerler.map((y) => y.id), [_yer4, _yer2]);
     });
 
     test('eşin toplamı bir kez sayılır; sıra ve kazanan eş başına', () {

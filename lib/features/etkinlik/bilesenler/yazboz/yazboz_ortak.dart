@@ -147,10 +147,9 @@ String yazbozKisiAdiMetni(
 /// Adları eş biçiminde birleştirir ("Ayşe & Mehmet"); tek ad olduğu gibi.
 String yazbozEsAdlariMetni(AppLocalizations m, List<String> adlar) {
   if (adlar.isEmpty) return m.kullanici_silinmis;
-  return adlar.skip(1).fold<String>(
-    adlar.first,
-    m.bilesen_scoreboard_es_adlari,
-  );
+  return adlar
+      .skip(1)
+      .fold<String>(adlar.first, m.bilesen_scoreboard_es_adlari);
 }
 
 /// Eşli masada bir eşin oyuncuları birlikte ("Ayşe & Mehmet");
