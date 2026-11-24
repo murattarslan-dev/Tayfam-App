@@ -31,13 +31,14 @@ final class HesapSilmeDurumu {
 }
 
 /// Hesap silme (ADR-0018 §2; CLAUDE.md "Hesap silme"): açıklama ve onay
-/// ekranda verildikten sonra yeniden Google girişi → `DELETE /v1/me`.
+/// ekranda verildikten sonra yeniden giriş → `DELETE /v1/me`.
 ///
-/// 1. Yeniden Google girişi ([YenidenGiris]; kullanıcı pencereyi kapatırsa
-///    akış sessizce biter). Başka bir hesap seçildiyse
+/// 1. Son girişin sağlayıcısıyla yeniden giriş ([YenidenGiris]; kullanıcı
+///    pencereyi kapatırsa akış sessizce biter). Başka bir hesap seçildiyse
 ///    ([FarkliHesapHatasi]) ya da yeni bir (kaydı bekleyen) hesap açıldıysa
 ///    yeni oturum kullanılmaz, hiçbir hesap silinmez.
-/// 2. Yeni oturumla `DELETE /v1/me` çağrılır.
+/// 2. Yeni oturumla `DELETE /v1/me` çağrılır; Apple hesabında gövdede
+///    Apple'ın yetkilendirme kodu gider.
 ///    Başarıda yerel oturum kapanır (giriş ekranına dönülür).
 ///    `reauthentication-required` gelirse kullanıcıdan yeniden giriş
 ///    istenir (akış tekrar başlatılır).
@@ -56,12 +57,15 @@ class HesapSilmeNotifier extends Notifier<HesapSilmeDurumu> {
     final oturum = ref.read(sessionStoreProvider);
     final durum = ref.read(oturumDurumuProvider.notifier);
     try {
-      if (!await yenidenGiris.yap()) {
-        // Kullanıcı Google penceresini kapattı: hata gösterilmez.
+      final giris = await yenidenGiris.yap();
+      if (giris == null) {
+        // Kullanıcı giriş penceresini kapattı: hata gösterilmez.
         _bitir(const HesapSilmeDurumu());
         return;
       }
-      await profil.hesabiSil();
+      // Apple hesabında sunucu, silmeden önce bu kodla Apple'daki yetkiyi
+      // iptal eder (Tayfam-Api ADR-0045 §4).
+      await profil.hesabiSil(appleKodu: giris.appleKodu);
       await oturum.kapat(OturumKapanisNedeni.hesapSilindi);
       _bitir(const HesapSilmeDurumu());
     } on OturumYok catch (hata) {

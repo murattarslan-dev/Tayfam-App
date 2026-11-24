@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/tema/tema_tercihi.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
@@ -22,19 +23,28 @@ final class _Kurulum {
   _Kurulum({
     Map<String, Object? Function()> yanitlar = const {},
     SahteGoogle? google,
+    SahteApple? apple,
     BellekTemaTercihiDeposu? tema,
+    bool appleIleGirildi = false,
   }) : tasima = SahteTasima(profilYanitlari(yanitlar)),
        google = google ?? SahteGoogle(sonuc: ornekKimlik),
+       apple = apple ?? SahteApple(sonuc: ornekAppleKimligi),
        tema = tema ?? BellekTemaTercihiDeposu() {
     kap = ProviderContainer.test(
       overrides: profilOverridelari(
         tasima: tasima,
         oturum: oturum,
         google: this.google,
+        apple: this.apple,
         tema: this.tema,
+        cihaz: BellekCihazAyarlariDeposu({
+          if (appleIleGirildi) CihazBayragi.appleIleGirildi,
+        }),
       ),
     );
   }
+
+  final SahteApple apple;
 
   final SahteTasima tasima;
   final SahteGoogle google;
@@ -306,6 +316,58 @@ void main() {
 
       await k.kap.read(hesapSilmeProvider.notifier).sil();
       expect(k.google.cagri, 2);
+    });
+
+    test('Apple ile girildiyse yeniden giriş Apple ile; kod yalnızca silme '
+        'gövdesinde', () async {
+      final k = _Kurulum(appleIleGirildi: true);
+      await k.oturumuAc();
+      final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
+      addTearDown(sub.close);
+
+      await k.kap.read(hesapSilmeProvider.notifier).sil();
+      await _bekle();
+
+      expect(k.apple.cagri, 1);
+      expect(k.google.cagri, 0);
+      expect(k.tasima.istekler.map((i) => '${i.method} ${i.yol}'), [
+        girisYolu,
+        hesapYolu,
+        hesapSilYolu,
+      ]);
+      final giris = k.tasima.istekler.first.govde! as Map<String, Object?>;
+      expect(giris['provider'], 'apple');
+      expect(giris.values, isNot(contains(sahteAppleKodu)));
+      expect(k.tasima.istekler.last.govde, {
+        'apple_authorization_code': sahteAppleKodu,
+      });
+      expect(await k.oturum.store.durum(), const OturumKapali());
+    });
+
+    test('Google ile girildiyse silme isteğinde gövde yok', () async {
+      final k = _Kurulum();
+      await k.oturumuAc();
+      final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
+      addTearDown(sub.close);
+
+      await k.kap.read(hesapSilmeProvider.notifier).sil();
+      await _bekle();
+
+      expect(k.apple.cagri, 0);
+      expect(k.tasima.istekler.last.govde, isNull);
+    });
+
+    test('Apple penceresi kapatılırsa hiçbir istek yok', () async {
+      final k = _Kurulum(apple: SahteApple(), appleIleGirildi: true);
+      await k.oturumuAc();
+      final sub = k.kap.listen(hesapSilmeProvider, (_, _) {});
+      addTearDown(sub.close);
+
+      await k.kap.read(hesapSilmeProvider.notifier).sil();
+
+      expect(k.tasima.istekler, isEmpty);
+      expect(k.kap.read(hesapSilmeProvider), const HesapSilmeDurumu());
+      expect(await k.oturum.store.durum(), isA<OturumAcik>());
     });
 
     test('Google girişi hata verirse hata gösteriliyor', () async {

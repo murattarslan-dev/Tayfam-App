@@ -11,9 +11,12 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/gen/transport.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/oturum/token_deposu.dart';
+import 'package:tayfam/features/hesap/data/apple_kimligi.dart';
 import 'package:tayfam/features/hesap/data/dis_baglanti.dart';
+import 'package:tayfam/features/hesap/data/giris_saglayicisi.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 
@@ -138,6 +141,32 @@ const GoogleKimligi ornekKimlik = GoogleKimligi(
   ad: 'Deniz Örnek',
 );
 
+/// Sahte Apple kimlik sağlayıcısı: [sonuc] döner ya da [hata] fırlatır.
+final class SahteApple implements AppleKimlikSaglayici {
+  SahteApple({this.sonuc, this.hata});
+
+  AppleKimligi? sonuc;
+  Exception? hata;
+  int cagri = 0;
+
+  @override
+  Future<AppleKimligi?> girisYap() async {
+    cagri++;
+    final h = hata;
+    if (h != null) throw h;
+    return sonuc;
+  }
+}
+
+/// Örnek Apple kimliği (sahte değerler).
+const String sahteAppleKodu = 'sahte-apple-kodu';
+const AppleKimligi ornekAppleKimligi = AppleKimligi(
+  idToken: sahteIdToken,
+  nonce: sahteNonce,
+  yetkilendirmeKodu: sahteAppleKodu,
+  ad: 'Deniz Örnek',
+);
+
 /// Açılan adresleri kaydeden sahte dış bağlantı açıcısı.
 final class SahteAcici implements DisBaglantiAcici {
   SahteAcici({this.basarili = true});
@@ -176,8 +205,15 @@ List<Override> hesapOverridelari({
   required SahteTasima tasima,
   required SahteOturum oturum,
   SahteGoogle? google,
+  SahteApple? apple,
   SahteAcici? acici,
+  CihazAyarlariDeposu? cihaz,
 }) => [
+  appleKimlikSaglayiciProvider.overrideWithValue(apple ?? SahteApple()),
+  // Son girişin sağlayıcısı bellekte; gerçek güvenli depo yok.
+  girisSaglayicisiHafizasiProvider.overrideWithValue(
+    GirisSaglayicisiHafizasi(cihaz ?? BellekCihazAyarlariDeposu()),
+  ),
   hesapDeposuProvider.overrideWithValue(HesapDeposu(tasima)),
   hesapPlatformuProvider.overrideWithValue('android'),
   sessionStoreProvider.overrideWithValue(oturum.store),
