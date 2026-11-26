@@ -46,7 +46,7 @@ olarak anar.
 | [0031](0031-katalog-bilesen-ekleri.md) | Katalog bileşen ekleri: kronometre, masa, misafir, sözlük ve seçimler (v3) | Kabul edildi |
 | [0032](0032-simdi-baslat-istemci.md) | Şimdi başlat (istemci, v3) | Kabul edildi |
 | [0033](0033-v3-moduller-rozetler-ve-gecis.md) | v3 modülleri, rozetler ve tek seferde geçiş (istemci) | Kabul edildi |
-| [0034](0034-ios-surumu.md) | iOS sürümü: Mac'siz derleme, TestFlight ve platform köprüleri | Önerildi |
+| [0034](0034-ios-surumu.md) | iOS sürümü: Mac'siz derleme, TestFlight ve platform köprüleri | Kabul edildi (Signal köprüsü beklemede) |
 
 ## Şablon
 

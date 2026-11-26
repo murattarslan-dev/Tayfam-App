@@ -1,8 +1,8 @@
 # ADR-0034: iOS sürümü: Mac'siz derleme, TestFlight ve platform köprüleri
 
-- **Durum:** Önerildi (çerçeve kararları platform sahibinin 2026-11-24
-  sohbetinden; ayrıntılar bu ADR'de seçildi ve PR'da onaya sunulur. Platform
-  sahibine sorular: "Açık sorular")
+- **Durum:** Kabul edildi (2026-11-26; açık soruların cevapları
+  "Kararlar (2026-11-26)" bölümünde. 7. aşama, Signal köprüsü, lisans
+  nedeniyle beklemede)
 - **Tarih:** 2026-11-24
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0009](0009-test-ci-ve-ios.md),
@@ -283,6 +283,51 @@ açılan bir uygulama, sonra tek tek yetenekler.
    pilot öncesi sıfırlama → demo verisi → inceleme Google hesabı →
    bilgilerin Play Console ve App Store Connect'e girilmesi); iOS için ayrı
    bir karar gerekmiyor, yalnızca 8. aşamadan önce yapılmış olmalı.
+
+## Kararlar (2026-11-26)
+
+Platform sahibi açık soruları 2026-11-26 sohbetinde cevapladı:
+
+1. **Yalnızca iPhone.** `TARGETED_DEVICE_FAMILY = 1`; `Info.plist`'teki iPad
+   yönlendirme anahtarı kaldırıldı. iPad ekran görüntüsü ve geniş düzen
+   denetimi gerekmez.
+2. **Apple ile giriş yapan kullanıcı Android'de:** Tayfam-Api ADR-0045 ile
+   kapandı (ilk sürümde hesaplar birleştirilmez, bağlama sonra ayrı kararla).
+3. **Signal ve AGPL:** Platform sahibinin talimatı "sorun yoksa geliştir"
+   idi. Araştırma sonucu (2026-11-26):
+   - libsignal (Rust; Swift paketi `LibSignalClient` dahil) yalnızca
+     AGPL-3.0'dır ve App Store için ek izin (AGPL §7 istisnası) içermez.
+     Signal böyle bir izni 2016'da eski `libsignal-protocol-c` (GPLv3) için
+     vermişti; o kütüphane bakımsızdır ve PQXDH/Kyber desteklemediği için
+     sunucumuzla (ADR-0018) uyumlu değildir.
+   - libsignal deposunda tam bu izni isteyen bir talep var
+     (signalapp/libsignal#677); birden çok geliştirici destekliyor, Signal'den
+     cevap yok.
+   - AGPL'nin App Store'un kullanım koşulları ve DRM'siyle çeliştiği yaygın
+     görüştür; TestFlight da Apple dağıtım kanalıdır. Hak sahibi (Signal
+     Messenger LLC) bir dağıtımı Apple'a bildirip kaldırtabilir.
+   - **Karar:** 7. aşama (Signal köprüsü) **beklemede**. iOS'ta birebir mesaj
+     satırı ADR-0020'deki "bu cihazda henüz açık değil" davranışını sürdürür;
+     başka geçici davranış eklenmez. Devam yolları platform sahibinin
+     seçimidir: (a) #677'ye/Signal'e izin talebi, (b) hukukçu görüşü,
+     (c) App Store'la uyumlu lisanslı başka bir E2E kütüphanesine geçiş
+     (iki platformda birden; yeni ADR gerekir).
+   - Bağlı yan etki: KVKK dışa aktarma dosyasının çözülmesi de Signal
+     motorundan (`aes256GcmCoz`) geçtiği için iOS'ta yoktur (ADR-0022).
+4. **İhracat uyumu beyanı:** `Info.plist`'e `ITSAppUsesNonExemptEncryption =
+   false` yazıldı; App Store Connect her derlemede sormaz. Gerekçe: bu
+   derlemede şifreleme yalnızca iOS'un kendisindedir (HTTPS/TLS, Keychain);
+   uygulama kodundaki tek kripto, şifreleme olmayan özet fonksiyonlarıdır
+   (`package:crypto`). Apple'ın tablosunda bu durum belge gerektirmez.
+   Signal köprüsü (ya da başka bir şifreleme kütüphanesi) eklendiğinde
+   uygulama "Apple'ın işletim sisteminde olmayan standart algoritma"
+   sınıfına geçer: ABD tarafında belge gerekmez, ama **Fransa'da satış
+   için Fransız şifreleme beyanı** gerekir. O PR bu anahtarı yeniden
+   değerlendirir; Fransa, beyan verilmeden App Store'da satışa açılmaz
+   (hedef pazar Türkiye). Bu bir hukuki görüş değildir; hukukçu listesine
+   eklenmiştir.
+5. **Apple incelemesi için giriş:** karar gerektirmez; 8. aşamadan önce
+   inceleme hesabı hazırlanır (proje dokümanı `tayfam/12-magaza-ve-yayin.md`).
 
 ## Değerlendirilen alternatifler
 
