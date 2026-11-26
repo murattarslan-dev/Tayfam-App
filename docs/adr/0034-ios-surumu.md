@@ -96,9 +96,11 @@ açılan bir uygulama, sonra tek tek yetenekler.
   Codemagic gerekçesiyle aynı: ek tedarik zinciri halkası).
 - **Kimlik:** Apple'da Play'deki anahtarsız kimliğin (Workload Identity
   Federation) karşılığı yoktur; App Store Connect API anahtarı uzun ömürlü
-  bir secret'tır. Hasarı sınırlamak için: anahtar ekip anahtarıdır ve rolü
-  yüklemeye yeten en düşük roldür (App Manager; daha düşüğü yetiyorsa 2.
-  aşamada düşürülür); yalnızca `testflight` GitHub ortamındadır ve ortam
+  bir secret'tır. Anahtar ekip anahtarıdır ve rolü **Admin**'dir: bulutta
+  yönetilen dağıtım sertifikasıyla imzalama Admin ister (düzeltme,
+  2026-11-26: ilk yüklemede App Manager anahtarı `Cloud signing permission
+  error` verdi; Admin anahtarla 0.3.2 yüklendi). Geniş yetkinin hasarını
+  sınırlamak için anahtar yalnızca `testflight` GitHub ortamındadır ve ortam
   yalnızca `main` dalına açıktır; anahtarı gören iş üçüncü taraf kodu
   çalıştırmaz; yenileme adımları `docs/runbooks/` altına yazılır.
   Secret adları: `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`.
