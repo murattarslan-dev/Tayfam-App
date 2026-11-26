@@ -7,11 +7,13 @@ Sunucu tarafı ayrı repodadır:
 [murattarslan-dev/Tayfam-Api](https://github.com/murattarslan-dev/Tayfam-Api).
 İstemcinin konuştuğu tek sözleşme oradaki `api/openapi/gateway.yaml`'dır.
 
-> **Durum:** Mimari karar aşaması. Kararlar `docs/adr/` altına yazıldıkça
-> kod eklenecek. İlk hedef platform Android.
+> **Durum:** Android sürümü Google Play kapalı testte; iOS sürümü TestFlight
+> hazırlığında ([ADR-0034](docs/adr/0034-ios-surumu.md)).
 
 - Kodlama kuralları ve iş akışı: [CLAUDE.md](CLAUDE.md)
+- Mimari özet: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Kararlar: [docs/adr/](docs/adr/README.md)
+- Ekran tasarımları: [docs/tasarim/](docs/tasarim/README.md)
 - Birebir mesajlar Signal protokolüyle uçtan uca şifrelidir
   ([ADR-0010](docs/adr/0010-signal-kutuphanesi.md),
   [ADR-0020](docs/adr/0020-birebir-uctan-uca-sifreleme-istemci.md)).

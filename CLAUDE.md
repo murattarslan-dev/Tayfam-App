@@ -192,7 +192,8 @@ test/              lib/ ile aynı yapı
   her provider sıfırlanır; `ProviderObserver` yalnızca provider adı ve hata
   türünü loglar.
 - **Gezinme (ADR-0003):** `go_router`, dört sabit sekme (Tayfa, Sohbet,
-  Bildirimler, Profil) `StatefulShellRoute` ile; tayfaya bağlı adresler
+  Keşfet, Profil; ADR-0030) `StatefulShellRoute` ile; bildirimler üst
+  çubuktaki zilden açılır; tayfaya bağlı adresler
   `/t/<tayfaId>/…`; adresteki kimlik girdi kabul edilir.
 - **Tema (ADR-0004):** Material 3 + `TayfamColors` / `TayfamSpacing` /
   `TayfamRadii` / `TayfamMotion` token'ları; ekranlarda sabit renk, boşluk,
@@ -292,4 +293,12 @@ Ayrıntı ADR-0009'da. Özet:
 
 ## Komutlar
 
-Flutter projesi oluşturulunca eklenir.
+```sh
+flutter pub get --enforce-lockfile   # bağımlılıklar (pubspec.lock'a birebir)
+flutter gen-l10n                     # çeviri kodu
+dart format lib test tool            # biçim (CI farkı reddeder)
+flutter analyze --fatal-infos        # analiz
+flutter test                         # testler
+# Sözleşme değişince API istemcisini yeniden üret (SOURCE'taki commit'le):
+dart run tool/openapi_gen/bin/openapi_gen.dart --spec <gateway.yaml> --out lib/core/api/gen
+```
