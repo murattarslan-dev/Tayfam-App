@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/cihaz/cihaz_ayarlari.dart';
 import 'package:tayfam/core/oturum/oturum_durumu.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/features/hesap/application/giris_notifier.dart';
@@ -12,6 +13,7 @@ import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/application/kayit_karsilamasi.dart';
 import 'package:tayfam/features/hesap/application/kayit_notifier.dart';
 import 'package:tayfam/features/hesap/application/onay_notifier.dart';
+import 'package:tayfam/features/hesap/data/apple_kimligi.dart';
 import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 import 'package:tayfam/features/hesap/data/hesap_deposu.dart';
 import 'package:tayfam/features/hesap/data/hukuki_metinler.dart';
@@ -25,14 +27,22 @@ Matcher _problemOlan(ProblemType type) =>
     isA<ApiProblem>().having((p) => p.type, 'type', type);
 
 final class _Kurulum {
-  _Kurulum({Map<String, Object? Function()>? yanitlar, SahteGoogle? google})
-    : tasima = SahteTasima(yanitlar),
-      google = google ?? SahteGoogle(sonuc: ornekKimlik) {
+  _Kurulum({
+    Map<String, Object? Function()>? yanitlar,
+    SahteGoogle? google,
+    SahteApple? apple,
+    Set<CihazBayragi> bayraklar = const {},
+  }) : tasima = SahteTasima(yanitlar),
+       google = google ?? SahteGoogle(sonuc: ornekKimlik),
+       apple = apple ?? SahteApple(sonuc: ornekAppleKimligi),
+       cihaz = BellekCihazAyarlariDeposu(bayraklar) {
     kap = ProviderContainer.test(
       overrides: hesapOverridelari(
         tasima: tasima,
         oturum: oturum,
         google: this.google,
+        apple: this.apple,
+        cihaz: cihaz,
       ),
     );
     // Kalıcı provider'lar; testte dinlenerek canlı tutulur.
@@ -42,6 +52,8 @@ final class _Kurulum {
 
   final SahteTasima tasima;
   final SahteGoogle google;
+  final SahteApple apple;
+  final BellekCihazAyarlariDeposu cihaz;
   final SahteOturum oturum = SahteOturum();
   late final ProviderContainer kap;
 
@@ -87,6 +99,70 @@ void main() {
 
       expect(k.tasima.istekler, isEmpty);
       expect(k.kap.read(girisProvider), const GirisDurumu());
+    });
+
+    test('Apple kimliğiyle oturum açılıyor; sağlayıcı hatırlanıyor', () async {
+      final k = _Kurulum(
+        yanitlar: {
+          'POST /v1/auth/sign-in': () => oturum(kayitBekliyor: true).toJson(),
+        },
+      );
+      final sub = k.kap.listen(girisProvider, (_, _) {});
+      addTearDown(sub.close);
+      await _bekle();
+
+      await k.kap.read(girisProvider.notifier).appleIleGirisYap();
+      await _bekle();
+
+      expect(k.apple.cagri, 1);
+      expect(k.google.cagri, 0);
+      final govde = k.tasima.istekler.single.govde! as Map<String, Object?>;
+      expect(govde['provider'], 'apple');
+      expect(govde['id_token'], sahteIdToken);
+      expect(govde['nonce'], sahteNonce);
+      // Yetkilendirme kodu girişte gönderilmez.
+      expect(govde.values, isNot(contains(sahteAppleKodu)));
+      expect(k.durum, OturumDurumu.kayitBekliyor);
+      expect(k.kap.read(googleAdiProvider), 'Deniz Örnek');
+      expect(k.cihaz.konmuslar, {CihazBayragi.appleIleGirildi});
+    });
+
+    test('Google ile girince Apple kaydı kalkıyor', () async {
+      final k = _Kurulum(
+        yanitlar: {'POST /v1/auth/sign-in': () => oturum().toJson()},
+        bayraklar: {CihazBayragi.appleIleGirildi},
+      );
+      final sub = k.kap.listen(girisProvider, (_, _) {});
+      addTearDown(sub.close);
+
+      await k.kap.read(girisProvider.notifier).girisYap();
+      await _bekle();
+
+      expect(k.cihaz.konmuslar, isEmpty);
+    });
+
+    test('Apple penceresi kapatılırsa hata yok, istek yok', () async {
+      final k = _Kurulum(apple: SahteApple());
+      final sub = k.kap.listen(girisProvider, (_, _) {});
+      addTearDown(sub.close);
+
+      await k.kap.read(girisProvider.notifier).appleIleGirisYap();
+
+      expect(k.tasima.istekler, isEmpty);
+      expect(k.kap.read(girisProvider), const GirisDurumu());
+      expect(k.cihaz.konmuslar, isEmpty);
+    });
+
+    test('Apple girişi hata verirse hata gösteriliyor, kayıt yok', () async {
+      final k = _Kurulum(apple: SahteApple(hata: const AppleGirisHatasi()));
+      final sub = k.kap.listen(girisProvider, (_, _) {});
+      addTearDown(sub.close);
+
+      await k.kap.read(girisProvider.notifier).appleIleGirisYap();
+
+      expect(k.kap.read(girisProvider).hata, isA<AppleGirisHatasi>());
+      expect(k.tasima.istekler, isEmpty);
+      expect(k.cihaz.konmuslar, isEmpty);
     });
 
     test('account-sanctioned kalıcı engel; tekrar deneme yok', () async {

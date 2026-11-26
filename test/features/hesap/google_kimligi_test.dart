@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -7,6 +10,8 @@ import 'package:tayfam/features/hesap/data/google_kimligi.dart';
 /// `GoogleSignIn`'in sahtesi: `initialize`'a verilen nonce'ları kaydeder.
 final class _SahteGoogleSignIn extends Fake implements GoogleSignIn {
   final List<String?> nonceler = [];
+  final List<String?> istemciler = [];
+  final List<String?> sunucuIstemciler = [];
   int cikis = 0;
   Object? cikisHatasi;
 
@@ -18,6 +23,8 @@ final class _SahteGoogleSignIn extends Fake implements GoogleSignIn {
     String? hostedDomain,
   }) async {
     nonceler.add(nonce);
+    istemciler.add(clientId);
+    sunucuIstemciler.add(serverClientId);
   }
 
   @override
@@ -65,6 +72,42 @@ void main() {
     // Google'a verilen nonce, aynı denemenin giriş isteğindeki nonce'tur.
     expect(google.nonceler, [ilk.nonce, ikinci.nonce]);
     expect(google.cikis, 2);
+  });
+
+  test('istemci kimliği yalnızca iOS için verilir', () async {
+    // google_sign_in_ios, clientId verilmezse serverClientId'yi de uygulamaz
+    // (ADR-0034 §5); ID token'ın aud'u sunucu istemcisi olmazdı.
+    final ios = _SahteGoogleSignIn();
+    await GoogleSignInSaglayici(
+      google: ios,
+      platform: TargetPlatform.iOS,
+    ).girisYap();
+    expect(ios.istemciler, [googleIosIstemciKimligi]);
+    expect(ios.sunucuIstemciler, [googleSunucuIstemciKimligi]);
+
+    final android = _SahteGoogleSignIn();
+    await GoogleSignInSaglayici(
+      google: android,
+      platform: TargetPlatform.android,
+    ).girisYap();
+    expect(android.istemciler, [null]);
+    expect(android.sunucuIstemciler, [googleSunucuIstemciKimligi]);
+  });
+
+  test('Info.plist geri dönüş şeması iOS istemci kimliğinin tersidir', () {
+    // İkisi ayrı dosyalarda durur; biri değişip öbürü unutulursa Google
+    // girişi iOS'ta uygulamaya geri dönemez.
+    const sonEk = '.apps.googleusercontent.com';
+    expect(googleIosIstemciKimligi.endsWith(sonEk), isTrue);
+    final govde = googleIosIstemciKimligi.substring(
+      0,
+      googleIosIstemciKimligi.length - sonEk.length,
+    );
+    final plist = File('ios/Runner/Info.plist').readAsStringSync();
+    expect(
+      plist.contains('<string>com.googleusercontent.apps.$govde</string>'),
+      isTrue,
+    );
   });
 
   test('nonce verilen üreteçten gelir (Random.secure varsayılanı)', () async {

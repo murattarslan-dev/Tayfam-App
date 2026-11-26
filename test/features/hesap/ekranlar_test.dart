@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,6 +16,7 @@ import 'package:tayfam/core/tema/tayfam_sizes.dart';
 import 'package:tayfam/core/tema/tayfam_tur_renkleri.dart';
 import 'package:tayfam/features/hesap/application/hesap_engeli.dart';
 import 'package:tayfam/features/hesap/hesap.dart';
+import 'package:tayfam/features/hesap/presentation/apple_dugmesi.dart';
 import 'package:tayfam/features/hesap/presentation/apple_girisi.dart';
 import 'package:tayfam/features/hesap/presentation/google_dugmesi.dart';
 import 'package:tayfam/features/hesap/presentation/hesap_durum_duzeni.dart';
@@ -33,6 +35,8 @@ final class _Kurulum {
   }) : tasima = SahteTasima(yanitlar),
        google = google ?? SahteGoogle(sonuc: ornekKimlik);
 
+  final SahteApple appleSaglayici = SahteApple(sonuc: ornekAppleKimligi);
+
   final SahteTasima tasima;
   final SahteGoogle google;
   final SahteOturum oturum = SahteOturum();
@@ -44,6 +48,7 @@ final class _Kurulum {
       tasima: tasima,
       oturum: oturum,
       google: google,
+      apple: appleSaglayici,
       acici: acici,
     ),
     googleAdiProvider.overrideWith(() => _SabitAd(null)),
@@ -68,6 +73,25 @@ class _SabitEngel extends HesapEngeliNotifier {
 
   @override
   HesapEngeli? build() => _engel;
+}
+
+/// Platform görünümü kanalını sahteler ve oluşturulan görünümlerin
+/// girdilerini toplar (yerel düğme testte çizilmez).
+List<Map<Object?, Object?>> _platformGorunumleri(WidgetTester tester) {
+  final gorunumler = <Map<Object?, Object?>>[];
+  final mesajci = tester.binding.defaultBinaryMessenger;
+  mesajci.setMockMethodCallHandler(SystemChannels.platform_views, (
+    cagri,
+  ) async {
+    if (cagri.method == 'create') {
+      gorunumler.add(cagri.arguments as Map<Object?, Object?>);
+    }
+    return null;
+  });
+  addTearDown(
+    () => mesajci.setMockMethodCallHandler(SystemChannels.platform_views, null),
+  );
+  return gorunumler;
 }
 
 Future<void> _ac(
@@ -218,55 +242,92 @@ void main() {
       kulp.dispose();
     });
 
-    testWidgets('iOS: Apple girişi uygulanmadığı için Apple düğmesi yok', (
+    testWidgets('Android: Apple düğmesi yok', (tester) async {
+      await _ac(tester, const GirisEkrani(), _Kurulum());
+
+      expect(find.byType(AppleIleDevamDugmesi), findsNothing);
+      expect(_metin('hesap_giris_aciklama'), findsOneWidget);
+      expect(_metin('hesap_giris_aciklama_apple'), findsNothing);
+    });
+
+    for (final tema in _temalar) {
+      testWidgets('iOS: ${tema.name} temada Apple düğmesi '
+          "Google'ın üstünde, 2× yazıda taşmıyor", (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        final gorunumler = _platformGorunumleri(tester);
+        ikiKatYazi(tester);
+        await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
+
+        final apple = find.byType(AppleIleDevamDugmesi);
+        final google = find.byType(GoogleIleDevamDugmesi);
+        expect(apple, findsOneWidget);
+        expect(_metin('hesap_giris_aciklama_apple'), findsOneWidget);
+        expect(tester.getSize(apple).height, TayfamSizes.girisDugmesi);
+        expect(
+          tester.getTopLeft(apple).dy,
+          lessThan(tester.getTopLeft(google).dy),
+        );
+        // Açık temada siyah, koyu temada beyaz biçim (Design: Giriş iOS).
+        final gorunum = gorunumler.single;
+        expect(gorunum['viewType'], AppleIleDevamDugmesi.gorunumTuru);
+        final ham = gorunum['params']! as Uint8List;
+        final girdiler = const StandardMessageCodec().decodeMessage(
+          ByteData.sublistView(ham),
+        );
+        expect(girdiler, {
+          'koyuTema': tema == ThemeMode.dark,
+          'koseYaricapi': TayfamSizes.girisDugmesi / 2,
+        });
+        expect(tester.takeException(), isNull);
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+
+    testWidgets('iOS: Apple düğmesine dokununca Apple girişi ve giriş isteği', (
       tester,
     ) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
-      await _ac(tester, const GirisEkrani(), _Kurulum());
+      final gorunumler = _platformGorunumleri(tester);
+      final k = _Kurulum(
+        yanitlar: {
+          'POST /v1/auth/sign-in': () => oturum(kayitBekliyor: true).toJson(),
+        },
+      );
+      await _ac(tester, const GirisEkrani(), k);
 
-      expect(find.byType(OutlinedButton), findsOneWidget);
-      expect(_metin('hesap_giris_aciklama'), findsOneWidget);
-      expect(_metin('hesap_giris_aciklama_apple'), findsNothing);
+      // Yerel düğmenin dokunuşu kendi kanalından gelir.
+      final kimlik = gorunumler.single['id']! as int;
+      await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+        '${AppleIleDevamDugmesi.gorunumTuru}/$kimlik',
+        const StandardMethodCodec().encodeMethodCall(
+          const MethodCall(AppleIleDevamDugmesi.basildiMetodu),
+        ),
+        (_) {},
+      );
+      await tester.pumpAndSettle();
+
+      expect(k.appleSaglayici.cagri, 1);
+      expect(k.google.cagri, 0);
+      expect(k.tasima.sayi('POST', '/v1/auth/sign-in'), 1);
       debugDefaultTargetPlatformOverride = null;
     });
 
-    test('Apple düğmesi yalnızca iOS + bayrak + düğme varken', () {
+    test("Apple düğmesi yalnızca iOS'ta ve düğme varken", () {
       Widget dugme(BuildContext context) => const SizedBox.shrink();
       expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.iOS,
-          bayrak: true,
-          dugme: dugme,
-        ),
+        appleGirisiGorunur(platform: TargetPlatform.iOS, dugme: dugme),
         isTrue,
       );
       expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.iOS,
-          bayrak: false,
-          dugme: dugme,
-        ),
+        appleGirisiGorunur(platform: TargetPlatform.android, dugme: dugme),
         isFalse,
       );
       expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.android,
-          bayrak: true,
-          dugme: dugme,
-        ),
+        appleGirisiGorunur(platform: TargetPlatform.iOS, dugme: null),
         isFalse,
       );
-      expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.iOS,
-          bayrak: true,
-          dugme: null,
-        ),
-        isFalse,
-      );
-      // Varsayılan derlemede bayrak kapalı.
-      expect(AppleGirisi.bayrak, isFalse);
     });
 
     testWidgets('Google düğmesi resmi işaretle ve 48 dp', (tester) async {

@@ -18,6 +18,17 @@
 	<string>tayfam</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.73439258394-bk26461t68cc7c2f7opa5ata0cv14h54</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
@@ -30,6 +41,8 @@
 	<!-- Kamera iki yerde kullanılır: fotoğraf çekme (ADR-0021) ve QR ile cihaz bağlama (ADR-0020). -->
 	<key>NSCameraUsageDescription</key>
 	<string>Profil, kapak ya da av fotoğrafı çekmek ve başka bir cihazını bağlamak için QR kod okutmak üzere kamerana erişilir. QR okutulurken görüntü kaydedilmez; çektiğin fotoğrafın konum bilgisi gönderilmeden silinir.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Yüz yüze bir etkinlikte "Geldim" dediğinde buluşma noktasına yakın olduğunu doğrulamak için konumun yalnızca o an kullanılır; saklanmaz.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Profil, kapak ya da av fotoğrafı seçmek için yalnızca seçtiğin fotoğrafa erişilir. Fotoğrafın konum bilgisi gönderilmeden silinir.</string>
 	<key>UIApplicationSceneManifest</key>

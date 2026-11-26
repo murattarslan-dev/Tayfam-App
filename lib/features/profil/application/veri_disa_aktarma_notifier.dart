@@ -257,7 +257,7 @@ class DisaAktarmaEylemNotifier extends Notifier<DisaAktarmaEylemDurumu> {
     } on ApiProblem catch (problem) {
       if (problem.type != ProblemType.reauthenticationRequired) rethrow;
     }
-    if (!await yenidenGiris.yap()) return null;
+    if (await yenidenGiris.yap() == null) return null;
     return depo.indirmeBilgisi(talepId);
   }
 

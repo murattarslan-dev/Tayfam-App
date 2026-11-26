@@ -6331,6 +6331,10 @@
   "@hesap_hata_google": {
     "description": "Giriş ekranında Google giriş penceresi başlatılamadığında ya da tamamlanamadığında görünen hata (sunucuya gitmeden önce)."
   },
+  "hesap_hata_apple": "Apple ile giriş tamamlanamadı. Tekrar dene.",
+  "@hesap_hata_apple": {
+    "description": "Giriş ekranında ve hesap silmede Apple giriş penceresi başlatılamadığında ya da tamamlanamadığında görünen hata (sunucuya gitmeden önce)."
+  },
   "hesap_kayit_ad": "Adın",
   "@hesap_kayit_ad": {
     "description": "Kayıt formundaki ad alanının etiketi; Google hesabındaki adla önceden doludur."

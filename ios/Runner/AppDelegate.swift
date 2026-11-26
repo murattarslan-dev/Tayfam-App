@@ -6,6 +6,8 @@ import UIKit
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   /// QR ekranı açılmadan önceki parlaklık; ekran kapanınca geri verilir.
   private var oncekiParlaklik: CGFloat?
+  /// `tayfam/apple-giris` köprüsü; kanal onu zayıf tuttuğu için burada durur.
+  private var appleGiris: AppleGirisKoprusu?
 
   override func application(
     _ application: UIApplication,
@@ -17,6 +19,7 @@ import UIKit
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     kronometreKanaliniKur(engineBridge.pluginRegistry)
+    appleGiris = AppleGirisKoprusu.kur(engineBridge.pluginRegistry)
   }
 
   /// `tayfam/kronometre` (istemci ADR-0031 §3): kronometre ekranı açıkken

@@ -6108,6 +6108,46 @@ final class DeclinedRequestList {
       Object.hashAll(<Object?>[_deepHash(declinedRequests), nextPageToken]);
 }
 
+final class DeleteAccountRequest {
+  const DeleteAccountRequest({this.appleAuthorizationCode});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory DeleteAccountRequest.fromJson(Map<String, Object?> json) =>
+      DeleteAccountRequest(
+        appleAuthorizationCode: switch (json['apple_authorization_code']) {
+          null => null,
+          final Object v => _readString(
+            v,
+            'DeleteAccountRequest.apple_authorization_code',
+          ),
+        },
+      );
+
+  /// Yalnızca Apple hesabında: hesap silmeden önceki Apple girişinin
+  /// yetkilendirme kodu (tek kullanımlık, yaklaşık 5 dakika geçerli;
+  /// ADR-0045).
+  ///
+  /// Kısıtlar: maxLength: 1024.
+  final String? appleAuthorizationCode;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    if (appleAuthorizationCode case final value?)
+      'apple_authorization_code': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DeleteAccountRequest &&
+          appleAuthorizationCode == other.appleAuthorizationCode;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[appleAuthorizationCode]);
+}
+
 final class Deletion {
   const Deletion({required this.deletionAt});
 
@@ -24540,11 +24580,15 @@ final class SignInRequest {
     },
   );
 
+  /// `apple` yalnızca `platform: ios` ile (ADR-0045).
   final SignInRequestProvider provider;
 
   /// Kısıtlar: maxLength: 8192.
   final String idToken;
 
+  /// Sağlayıcıya verilen nonce'un aynısı; token'daki `nonce` ile
+  /// karşılaştırılır (Google ve Apple için aynı kural).
+  ///
   /// Kısıtlar: minLength: 16; maxLength: 256.
   final String nonce;
 
@@ -24617,8 +24661,10 @@ enum SignInRequestPlatform {
   }
 }
 
+/// `apple` yalnızca `platform: ios` ile (ADR-0045).
 enum SignInRequestProvider {
   google('google'),
+  apple('apple'),
 
   /// Sözleşmede yok: okunurken tanınmayan değer.
   /// Sunucuya hiçbir zaman gönderilmez.

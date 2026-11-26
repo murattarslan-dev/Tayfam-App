@@ -557,3 +557,105 @@ jobs:
     # sürdüğü için her PR'da çalışır; site/ değişmeyen PR'da da yeşil
     # kalması, ileride zorunlu kontrol yapılmasını kolaylaştırır.
     uses: ./.github/workflows/site-denetimi.yml
+
+  ios:
+    name: ios
+    # ADR-0034 §2: imzasız simülatör derlemesi. Secret görmez; imza ve
+    # TestFlight yüklemesi yalnızca testflight.yml'dedir. Mac ve cihaz
+    # olmadığı için iOS'un derlendiğinin tek kanıtı bu iştir.
+    # macOS imajı ve Xcode sürümü sabittir (latest kullanılmaz); App Store
+    # Connect, Xcode 26 ve iOS 26 SDK'sından eskisini kabul etmez.
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      XCODE_UYGULAMASI: /Applications/Xcode_26.6.app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Xcode sürümü
+        run: |
+          set -euo pipefail
+          ls -d /Applications/Xcode*.app
+          if [ ! -d "$XCODE_UYGULAMASI" ]; then
+            echo "::error title=Xcode::$XCODE_UYGULAMASI imajda yok; XCODE_UYGULAMASI (burada ve testflight.yml'de) güncellenmeli."
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE_UYGULAMASI"
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Uygulama sürümü (pubspec.yaml)
+        run: |
+          set -euo pipefail
+          surum=$(sed -n 's/^version: *//p' pubspec.yaml)
+          [[ "$surum" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.+-]+)?$ ]]
+          echo "TAYFAM_SURUM=$surum" >> "$GITHUB_ENV"
+      - name: iOS simülatör derlemesi (imzasız)
+        run: flutter build ios --simulator --debug --dart-define=TAYFAM_SURUM="$TAYFAM_SURUM"
+      - name: Yetkiler arşive işlenebiliyor mu
+        # testflight.yml'deki `arsiv` işi uygulamayı sertifikasız (ad-hoc)
+        # imzalayıp Runner.entitlements'ı arşive işler. O iş yalnızca main'de
+        # çalıştığı için aynı komutlar burada, simülatör derlemesinin bir
+        # kopyasında denenir: yetki dosyası geçerli mi, imzadan geri
+        # okunabiliyor mu. Secret yok.
+        run: |
+          set -euo pipefail
+          yetkiler=ios/Runner/Runner.entitlements
+          plutil -lint "$yetkiler"
+          kopya="$RUNNER_TEMP/Runner.app"
+          cp -R build/ios/iphonesimulator/Runner.app "$kopya"
+          if [ -d "$kopya/Frameworks" ]; then
+            find "$kopya/Frameworks" -maxdepth 1 \( -name '*.framework' -o -name '*.dylib' \) -print0 \
+              | xargs -0 -n 1 codesign --force --sign -
+          fi
+          codesign --force --sign - --entitlements "$yetkiler" "$kopya"
+          codesign --display --entitlements - --xml "$kopya" > "$RUNNER_TEMP/okunan-yetkiler.plist"
+          python3 - "$yetkiler" "$RUNNER_TEMP/okunan-yetkiler.plist" <<'PY'
+          import plistlib, sys
+          beklenen = plistlib.load(open(sys.argv[1], "rb"))
+          okunan = plistlib.load(open(sys.argv[2], "rb"))
+          eksik = [k for k, v in beklenen.items() if okunan.get(k) != v]
+          print("İmzadan okunan yetkiler:", ", ".join(sorted(okunan)))
+          if eksik:
+              print("::error title=Yetki eksik::" + ", ".join(sorted(eksik)))
+              sys.exit(1)
+          PY
+      - name: iOS proje dosyaları güncel mi
+        # Kesin kural 8: iOS bağımlılık kilidi ve Flutter'ın proje dosyalarına
+        # yazdığı değişiklikler repoda olmalı. Derleme repoda olmayan bir
+        # dosya üretiyor ya da olanı değiştiriyorsa iş kırılır; fark
+        # artefaktta, Mac olmadan commit edilebilsin diye.
+        if: always()
+        run: |
+          set -euo pipefail
+          git status --porcelain -- ios | tee "$RUNNER_TEMP/ios-durum.txt"
+          mkdir -p "$RUNNER_TEMP/ios-fark"
+          git diff -- ios > "$RUNNER_TEMP/ios-fark/degisen.diff"
+          git ls-files --others --exclude-standard -z -- ios \
+            | xargs -0 -I{} rsync -R {} "$RUNNER_TEMP/ios-fark/"
+          cp "$RUNNER_TEMP/ios-durum.txt" "$RUNNER_TEMP/ios-fark/durum.txt"
+          # Fark log'a da yazılır (kilit dosyaları public'tir): artefakt
+          # indirilemeyen ortamlardan da commit edilebilsin.
+          git diff -- ios
+          git ls-files --others --exclude-standard -z -- ios \
+            | xargs -0 -I{} sh -c 'echo "=== {} ==="; cat "{}"; echo; echo "=== son ==="'
+          if [ -s "$RUNNER_TEMP/ios-durum.txt" ]; then
+            echo "::error title=iOS proje dosyaları::Derleme ios/ altında repoda olmayan değişiklik üretti; ios-fark artefaktındaki dosyalar commit edilmeli."
+            exit 1
+          fi
+      - name: iOS farkı (artefakt)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ios-fark
+          path: ${{ runner.temp }}/ios-fark
+          if-no-files-found: ignore
+          retention-days: 7
+
