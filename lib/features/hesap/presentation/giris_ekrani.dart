@@ -27,8 +27,7 @@ import 'package:tayfam/l10n/app_localizations.dart';
 /// - **Alt bölüm** (sayfa zemini): başlık, açıklama, "Google ile devam et"
 ///   (Google'ın marka kurallarına göre, temaya göre açık/koyu biçim) ve
 ///   aydınlatma metni ile kullanım koşullarının bağlantıları. iOS'ta Apple
-///   düğmesi Google'ın üstündedir; derleme bayrağı kapalıyken
-///   gösterilmez ([appleGirisiGorunur]).
+///   düğmesi Google'ın üstündedir ([appleGirisiGorunur]).
 /// - **Davet:** [davetBekliyor] ise (davet linkiyle gelen, henüz giriş
 ///   yapmamış kullanıcı) mor alanda "Bir tayfaya davet edildin." ve onun
 ///   üstüne taşan bir kart gösterilir. Davet önizlemesi
@@ -55,7 +54,6 @@ class GirisEkrani extends ConsumerWidget {
     final appleDugmesi = ref.watch(appleGirisDugmesiProvider);
     final apple = appleGirisiGorunur(
       platform: defaultTargetPlatform,
-      bayrak: ref.watch(appleGirisBayragiProvider),
       dugme: appleDugmesi,
     );
 

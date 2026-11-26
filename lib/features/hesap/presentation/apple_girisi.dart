@@ -9,25 +9,9 @@ import 'package:tayfam/features/hesap/presentation/apple_dugmesi.dart';
 /// "Apple ile devam et" (Design: Giriş iOS; ADR-0034 §5, Tayfam-Api
 /// ADR-0045).
 ///
-/// Giriş ekranı iOS'ta Apple düğmesini Google'ın üstünde gösterir; düğme
-/// yalnızca üç koşul birlikte sağlanınca görünür ([appleGirisiGorunur]):
-///
-/// 1. Platform iOS.
-/// 2. Derleme bayrağı açık: `--dart-define=TAYFAM_APPLE_GIRIS=true`
-///    ([AppleGirisi.bayrak]; varsayılan kapalı). Sunucuda Apple ile giriş
-///    açılmadan bayrak açılmaz.
-/// 3. Düğme verilmiş ([appleGirisDugmesiProvider]): Apple'ın yerel düğmesi
-///    ([AppleIleDevamDugmesi]).
-abstract final class AppleGirisi {
-  /// Derleme bayrağı.
-  static const bool bayrak = bool.fromEnvironment('TAYFAM_APPLE_GIRIS');
-}
-
-/// Derleme bayrağı; testler açık halini bununla dener.
-final appleGirisBayragiProvider = Provider<bool>(
-  (ref) => AppleGirisi.bayrak,
-  name: 'appleGirisBayragiProvider',
-);
+/// Giriş ekranı iOS'ta Apple düğmesini Google'ın üstünde gösterir
+/// ([appleGirisiGorunur]); başka platformda düğme yoktur. Düğme Apple'ın
+/// yerel düğmesidir ([AppleIleDevamDugmesi]).
 
 /// Apple ile giriş düğmesini çizen fonksiyon: dokununca Apple ile girişi
 /// başlatır ([GirisNotifier.appleIleGirisYap]).
@@ -40,11 +24,10 @@ final appleGirisDugmesiProvider = Provider<WidgetBuilder?>(
   name: 'appleGirisDugmesiProvider',
 );
 
-/// Apple düğmesi gösterilsin mi.
+/// Apple düğmesi gösterilsin mi: yalnızca iOS'ta ve düğme verilmişse.
 bool appleGirisiGorunur({
   required TargetPlatform platform,
-  required bool bayrak,
   required WidgetBuilder? dugme,
 }) {
-  return platform == TargetPlatform.iOS && bayrak && dugme != null;
+  return platform == TargetPlatform.iOS && dugme != null;
 }

@@ -41,11 +41,6 @@ name: Yayın (TestFlight)
 # Değişkenler (`testflight` ortamı ya da repo; public değerlerdir):
 #   APPLE_TEAM_ID                      Apple Developer Team ID (10 karakter)
 #   TAYFAM_GOOGLE_SUNUCU_ISTEMCI_PROD  isteğe bağlı; play-dahili.yml ile aynı
-#   TAYFAM_APPLE_GIRIS                 isteğe bağlı: `true` ise derleme Apple ile
-#                                      giriş düğmesini gösterir (ADR-0012,
-#                                      ADR-0034 §5). Prod API'de Apple girişi
-#                                      açılmadan `true` yapılmaz; varsayılan
-#                                      kapalı.
 # Secret ya da Team ID yoksa arşiv yine üretilir; yükleme uyarıyla atlanır.
 #
 # Semboller: Dart karartması yoktur (ADR-0034 §3). dSYM dosyaları yüklemeyle
@@ -168,7 +163,6 @@ jobs:
       - name: İmzasız arşiv
         env:
           ISTEMCI: ${{ steps.istemci.outputs.kimlik }}
-          APPLE_GIRIS: ${{ vars.TAYFAM_APPLE_GIRIS == 'true' && 'true' || 'false' }}
         run: |
           set -euo pipefail
           flutter build ipa --release --no-codesign \
@@ -176,9 +170,7 @@ jobs:
             --build-number="$SURUM_KODU" \
             --dart-define=TAYFAM_API="$TAYFAM_API" \
             --dart-define=TAYFAM_GOOGLE_SUNUCU_ISTEMCI="$ISTEMCI" \
-            --dart-define=TAYFAM_APPLE_GIRIS="$APPLE_GIRIS" \
             --dart-define=TAYFAM_SURUM="$SURUM_ADI+$SURUM_KODU"
-          echo "Apple ile giriş düğmesi: $APPLE_GIRIS"
       - name: Arşiv denetimi
         # Yanlış uygulamayı ya da yanlış sürümü yüklememek için arşivin
         # kendi Info.plist'i okunur.
