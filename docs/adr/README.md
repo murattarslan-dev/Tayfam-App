@@ -65,5 +65,6 @@ olarak anar.
 ## Değerlendirilen alternatifler
 ```
 
-Ürün kararları (kavram modeli, özellikler, veri modeli, tasarım standartları,
-marka) Notion'daki "Tayfam — Proje Planı" sayfasındadır.
+Ürün kararları (kavram modeli, özellikler, tasarım standartları, marka)
+claude.ai "Tayfam" projesinin `tayfam/` dokümanlarındadır (2026-11-26'ya kadar
+Notion'daydı; ADR'lerdeki Notion atıfları tarihçedir).

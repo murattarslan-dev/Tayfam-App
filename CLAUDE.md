@@ -25,33 +25,38 @@ platform Android.
 - Mimari özet: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - Kararlar ve gerekçeleri: [`docs/adr/`](docs/adr/README.md)
 - Sunucu sözleşmesi: Tayfam-Api reposunda `api/openapi/gateway.yaml`
-- Ürün kararları, veri modeli, tasarım standartları ve marka: Notion'daki
-  "Tayfam — Proje Planı" ve alt sayfaları. İstemciye geçiş özeti:
-  "İstemci Geçiş Özeti (API → Flutter)".
+- Ürün kararları, tasarım standartları ve marka: claude.ai "Tayfam"
+  projesinin `tayfam/` dokümanları (aşağıda); ekran tasarımları
+  [`docs/tasarim/`](docs/tasarim/README.md).
 
-## Kararlar ve Notion
+## Kararlar ve proje dokümanları
 
-Ürün kararlarının kaynağı Notion'daki **"Tayfam — Proje Planı"** sayfası ve alt
-sayfalarıdır (özellik haritası, veri modeli, tasarım standartları, marka, KVKK
-aydınlatma metni, topluluk kuralları, kötüye kullanım ve genç kullanıcı
-güvenliği). İstemcinin mimari kararlarının kaynağı bu repodaki `docs/adr/`,
-sunucunun kararlarınınki Tayfam-Api'deki `docs/adr/`'dir.
+Ürün kararlarının kaynağı claude.ai'deki **"Tayfam" projesinin `tayfam/`
+dokümanlarıdır** (2026-11-26'dan beri; Notion bırakıldı, son içeriği bu
+dokümanlara aktarıldı): genel bakış, ürün kavramları, özellik haritası,
+sohbet ve E2E, mimari, güvenlik, moderasyon, platform paneli, veri modeli
+özeti, Faz 2–3, marka ve tasarım, mağaza, yasal/KVKK. İstemcinin mimari kararlarının kaynağı bu repodaki `docs/adr/`, sunucununki Tayfam-Api'deki `docs/adr/`'dir.
+Ortak görev listesi `tayfam/yapilacaklar.md`'dir; iş durumunun kaynağı
+GitHub'dır (PR'lar, CI çalışmaları).
 
-- **Karar almadan önce oku.** Bir ekran, akış veya modül tasarlamadan, bir
-  kuralı yorumlamadan ya da seçenek önermeden önce Notion'daki ilgili sayfayı,
-  ilgili ADR'leri ve OpenAPI sözleşmesini oku (Notion MCP bağlantısıyla).
-  Notion'da zaten verilmiş bir kararı yeniden tasarlama.
-- **Çelişkiyi sakla değil, söyle.** Notion, ADR, OpenAPI veya kod çelişiyorsa
-  ya da bir karardan sapmak gerekiyorsa bunu açıkça belirt ve platform
-  sahibine sor. Sapma kabul edilirse hem ADR'ye hem Notion'daki ilgili sayfaya
-  yazılır.
-- **Yeni kararı yaz.** Platform sahibiyle birlikte yeni bir karar alınırsa
-  aynı oturumda Notion'daki ilgili sayfaya işlenir (ürün kararı) ve gerekiyorsa
-  ADR eklenir veya güncellenir (mimari karar). Proje planının yol haritası
-  tamamlanan işlerle güncel tutulur.
-- **Erişim yoksa varsayma.** Notion'a ulaşılamıyorsa bunu söyle; Notion'da ne
-  yazdığını tahmin ederek ilerleme.
-- Notion'a gerçek kullanıcı verisi, secret veya iç adres/parola yazılmaz.
+- **Karar almadan önce oku.** Bir özellik tasarlamadan, kural yorumlamadan ya
+  da seçenek önermeden önce ilgili proje dokümanını ve ADR'leri oku. Zaten
+  verilmiş bir kararı yeniden tasarlama.
+- **Görevi listeden al.** Oturum işini `tayfam/yapilacaklar.md`'den seçer,
+  sahiplenir ve bitirince durumunu yazar (kurallar listenin başında). Bir
+  görevi açık saymadan önce PR ve CI durumunu GitHub'dan doğrula.
+- **Çelişkiyi sakla değil, söyle.** Proje dokümanı ile ADR, sözleşme veya kod
+  çelişiyorsa ya da bir karardan sapmak gerekiyorsa bunu açıkça belirt ve
+  platform sahibine sor. Sapma kabul edilirse hem ADR'ye hem ilgili proje
+  dokümanına yazılır.
+- **Yeni kararı yaz.** Platform sahibiyle birlikte alınan yeni bir ürün
+  kararı aynı oturumda ilgili proje dokümanına, mimari karar ADR'ye işlenir.
+- **Erişim yoksa varsayma.** Proje dokümanlarına ulaşılamıyorsa bunu söyle;
+  ne yazdığını tahmin ederek ilerleme.
+- Proje dokümanlarına gerçek kullanıcı verisi, secret veya iç adres/parola
+  yazılmaz; repoyla aynı kural geçerlidir.
+- ADR'lerdeki ve eski belgelerdeki "Notion" atıfları tarihçedir; o kararların
+  güncel hali proje dokümanlarındadır.
 
 ## Güvenlik ilkesi
 
@@ -222,12 +227,12 @@ Karar verilmemiş bir konuda kod yazılmaz; önce ADR.
 UI/UX işi mimarinin parçasıdır; ekran akışları, bileşenler ve tasarım
 kuralları da soru-cevapla alınır ve ADR'ye yazılır.
 
-- **Kaynak sırası.** Notion'daki **Marka** ve **Tasarım Standartları**
-  sayfaları (Tropik palet, tipografi, logo, ton) ve bu repodaki ADR'ler
+- **Kaynak sırası.** Proje dokümanı `tayfam/11-marka-ve-tasarim.md` (Tropik
+  palet, tipografi, logo, ton), `docs/tasarim/` ve bu repodaki ADR'ler
   bağlayıcıdır. `ui-ux-pro-max` skill'i (`.claude/skills/ui-ux-pro-max/`)
   erişilebilirlik, dokunma, düzen, hareket ve Flutter'a özgü uygulama için
-  **danışma kaynağıdır**; önerisi Notion'daki bir kararla çelişirse Notion
-  geçerlidir, çelişki platform sahibine söylenir. Skill'in ürettiği palet veya
+  **danışma kaynağıdır**; önerisi bu kaynaklardaki bir kararla çelişirse
+  onlar geçerlidir, çelişki platform sahibine söylenir. Skill'in ürettiği palet veya
   font önerisi onaysız uygulanmaz.
 - **Ne zaman kullanılır.** Ekran, bileşen, akış veya tema işinde; arama
   yaparken `--stack flutter` ve ilgili `--domain` kullanılır. Bir arayüz
