@@ -1,7 +1,6 @@
 # ADR-0029: Dal modeli (`dev` / `main`), sürüm numarası ve otomatik etiket
 
-- **Durum:** Önerildi (kararlar platform sahibinin 2026-11-16 sohbetinden;
-  sürüm numarası kuralı ve ayrıntılar bu ADR'de seçildi, PR'da onaya sunulur)
+- **Durum:** Kabul edildi (uygulandı ve birleşti; durum satırı 2026-11-26'da düzeltildi)
 - **Tarih:** 2026-11-16
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0009](0009-test-ci-ve-ios.md), [ADR-0013](0013-tanitim-sitesi.md),
