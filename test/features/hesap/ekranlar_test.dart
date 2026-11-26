@@ -257,12 +257,7 @@ void main() {
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
         final gorunumler = _platformGorunumleri(tester);
         ikiKatYazi(tester);
-        await _ac(
-          tester,
-          const GirisEkrani(),
-          _Kurulum(),
-          tema: tema,
-        );
+        await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
 
         final apple = find.byType(AppleIleDevamDugmesi);
         final google = find.byType(GoogleIleDevamDugmesi);
