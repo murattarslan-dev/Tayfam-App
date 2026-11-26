@@ -5,7 +5,7 @@ Bu klasör, platform sahibiyle birlikte hazırlanan ekran tasarımlarının kayn
 - Ekranlardaki kişi, tayfa ve içerik adları örnektir; gerçek veri değildir.
 - Renk, boşluk ve yarıçap değerlerini kodda `TayfamColors` / `TayfamSpacing` / `TayfamRadii` / `TayfamSizes` token'larıyla karşılayın (ADR-0004); HTML'deki hex değerleri yalnızca referanstır.
 - Metinler `app_tr.arb`'deki mevcut anahtarlarla eşleştirilir; HTML'deki metin örnek ise mevcut çeviri geçerlidir.
-- Her bölümün README'sindeki "Kararlar" platform sahibinin onayladığı kullanıcı deneyimi kararlarıdır; kod yazarken bağlayıcıdır. ADR ve Notion'la çelişki görürseniz durun ve sorun.
+- Her bölümün README'sindeki "Kararlar" platform sahibinin onayladığı kullanıcı deneyimi kararlarıdır; kod yazarken bağlayıcıdır. ADR ve proje dokümanlarıyla (`tayfam/`) çelişki görürseniz durun ve sorun.
 - 08 ve 10 numaralı bölümler ile `Etkinlik-Sohbet` Tayfam-Api PR #188'deki sözleşmeye dayanır; PR birleşip istemci modelleri yeniden üretilmeden kodlanmaz.
 
 | Bölüm | Klasör | Ekran sayısı |
