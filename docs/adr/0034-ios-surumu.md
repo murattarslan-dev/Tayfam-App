@@ -162,8 +162,9 @@ açılan bir uygulama, sonra tek tek yetenekler.
   yazılmaz (kesin kural 1).
 - İstemcide Apple girişi, Apple'ın kendi çerçevesi (AuthenticationServices)
   üzerinde ince bir Swift köprüsüyle yapılır; yeni Flutter paketi eklenmez.
-  Düğme ADR-0012'deki yerindedir ve `TAYFAM_APPLE_GIRIS` bayrağı 3. aşamada
-  iOS yayın derlemesinde açılır.
+  Düğme ADR-0012'deki yerindedir. `TAYFAM_APPLE_GIRIS` derleme bayrağı
+  2026-11-26'da kaldırıldı (platform sahibi kararı): sunucu Apple ile girişi
+  istemciden önce açtığı için düğme iOS'ta her zaman görünür.
 - **Uygulama notu (2026-11-24, Tayfam-Api ADR-0045 ile):**
   - Düğme Apple'ın yerel düğmesidir (`ASAuthorizationAppleIDButton`,
     platform görünümü): açık temada siyah, koyu temada beyaz, Google

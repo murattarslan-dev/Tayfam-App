@@ -32,12 +32,9 @@ final class _Kurulum {
     Map<String, Object? Function()>? yanitlar,
     SahteGoogle? google,
     this.engel,
-    this.apple = false,
   }) : tasima = SahteTasima(yanitlar),
        google = google ?? SahteGoogle(sonuc: ornekKimlik);
 
-  /// Apple ile giriş derleme bayrağı açık mı.
-  final bool apple;
   final SahteApple appleSaglayici = SahteApple(sonuc: ornekAppleKimligi);
 
   final SahteTasima tasima;
@@ -54,7 +51,6 @@ final class _Kurulum {
       apple: appleSaglayici,
       acici: acici,
     ),
-    if (apple) appleGirisBayragiProvider.overrideWithValue(true),
     googleAdiProvider.overrideWith(() => _SabitAd(null)),
     if (engel case final engel?)
       hesapEngeliProvider.overrideWith(() => _SabitEngel(engel)),
@@ -246,32 +242,22 @@ void main() {
       kulp.dispose();
     });
 
-    testWidgets('iOS: derleme bayrağı kapalıyken Apple düğmesi yok', (
-      tester,
-    ) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    testWidgets('Android: Apple düğmesi yok', (tester) async {
       await _ac(tester, const GirisEkrani(), _Kurulum());
 
-      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.byType(AppleIleDevamDugmesi), findsNothing);
       expect(_metin('hesap_giris_aciklama'), findsOneWidget);
       expect(_metin('hesap_giris_aciklama_apple'), findsNothing);
-      debugDefaultTargetPlatformOverride = null;
     });
 
     for (final tema in _temalar) {
-      testWidgets('iOS, bayrak açık: ${tema.name} temada Apple düğmesi '
+      testWidgets('iOS: ${tema.name} temada Apple düğmesi '
           "Google'ın üstünde, 2× yazıda taşmıyor", (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
         final gorunumler = _platformGorunumleri(tester);
         ikiKatYazi(tester);
-        await _ac(
-          tester,
-          const GirisEkrani(),
-          _Kurulum(apple: true),
-          tema: tema,
-        );
+        await _ac(tester, const GirisEkrani(), _Kurulum(), tema: tema);
 
         final apple = find.byType(AppleIleDevamDugmesi);
         final google = find.byType(GoogleIleDevamDugmesi);
@@ -305,7 +291,6 @@ void main() {
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       final gorunumler = _platformGorunumleri(tester);
       final k = _Kurulum(
-        apple: true,
         yanitlar: {
           'POST /v1/auth/sign-in': () => oturum(kayitBekliyor: true).toJson(),
         },
@@ -329,42 +314,20 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    test('Apple düğmesi yalnızca iOS + bayrak + düğme varken', () {
+    test("Apple düğmesi yalnızca iOS'ta ve düğme varken", () {
       Widget dugme(BuildContext context) => const SizedBox.shrink();
       expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.iOS,
-          bayrak: true,
-          dugme: dugme,
-        ),
+        appleGirisiGorunur(platform: TargetPlatform.iOS, dugme: dugme),
         isTrue,
       );
       expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.iOS,
-          bayrak: false,
-          dugme: dugme,
-        ),
+        appleGirisiGorunur(platform: TargetPlatform.android, dugme: dugme),
         isFalse,
       );
       expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.android,
-          bayrak: true,
-          dugme: dugme,
-        ),
+        appleGirisiGorunur(platform: TargetPlatform.iOS, dugme: null),
         isFalse,
       );
-      expect(
-        appleGirisiGorunur(
-          platform: TargetPlatform.iOS,
-          bayrak: true,
-          dugme: null,
-        ),
-        isFalse,
-      );
-      // Varsayılan derlemede bayrak kapalı.
-      expect(AppleGirisi.bayrak, isFalse);
     });
 
     testWidgets('Google düğmesi resmi işaretle ve 48 dp', (tester) async {
