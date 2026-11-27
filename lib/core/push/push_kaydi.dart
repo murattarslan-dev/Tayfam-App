@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/widgets.dart' show Locale;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,15 +51,22 @@ final class ApiPushTokenDeposu implements PushTokenDeposu {
   Future<void> sil() => _me.deletePushToken();
 }
 
-/// Uygulamanın push token deposu. Bugün yalnızca Android hedefidir
-/// (ADR-0011); iOS derlemesinde push açılınca platform `ios` olur.
+/// Uygulamanın push token deposu. Platform derlemenin hedefidir
+/// ([pushPlatformu]; ADR-0011: yalnızca Android ve iOS).
 final pushTokenDeposuProvider = Provider<PushTokenDeposu>(
   (ref) => ApiPushTokenDeposu(
     ref.watch(apiClientProvider),
-    platform: PushTokenRegistrationPlatform.android,
+    platform: pushPlatformu(defaultTargetPlatform),
   ),
   name: 'pushTokenDeposuProvider',
 );
+
+/// Sunucuya bildirilen push platformu: iOS'ta `ios`, diğer her yerde
+/// `android` (web geliştirme derlemesinde push kapalıdır, kayıt yapılmaz).
+PushTokenRegistrationPlatform pushPlatformu(TargetPlatform hedef) =>
+    hedef == TargetPlatform.iOS
+    ? PushTokenRegistrationPlatform.ios
+    : PushTokenRegistrationPlatform.android;
 
 /// Üç Android bildirim kanalı (Tayfam-Api ADR-0019 §4). Ad ve açıklama
 /// çeviri dosyasındadır; kimlikler sunucunun gönderdikleridir.

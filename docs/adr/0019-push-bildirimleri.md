@@ -164,7 +164,8 @@ iznidir.
   çeviri anahtarları); ADR-0006'nın "diske içerik yok" ilkesi korunur.
 - iOS'ta push bu sürümde yoktur: `GoogleService-Info.plist` ve APNs
   anahtarı eklenince açılır (platform `ios`); o zamana kadar başlatma
-  başarısız sayılır ve push kapalı kalır.
+  başarısız sayılır ve push kapalı kalır. (2026-11-27'den beri iOS
+  kurulumu Notlar'daki "iOS" notundadır; dosya artık zorunludur.)
 - Platform sahibinin işi: Firebase projesinde Android uygulaması
   (`com.murattarslan.tayfam`) ve SHA parmak izleri; API tarafında FCM
   servis hesabının prod'a verilmesi (Tayfam-Api ADR-0019 §7–§8).
@@ -199,3 +200,67 @@ iznidir.
   **Platform sahibi kararı, 2026-11-17:** Android `minSdk` açıkça 26
   (Android 8.0); 17.x en az 24 ister. Firebase iOS SDK 13'ün istediği iOS
   15 zaten hedefti. Yeni izin eklenmedi.
+- **2026-11-27 — iOS (APNs üzerinden FCM; ADR-0034 §1 4. aşama, §6):**
+  Bu ADR'deki kararlar iOS'ta aynen geçerlidir; yalnızca platforma özgü
+  karşılıkları yazılıdır. Yeni paket ve yeni izin metni yoktur.
+  - **Yapılandırma:** aynı Firebase projesinde tek iOS uygulaması,
+    paket kimliği `com.murattarslan.tayfam` (Android ile aynı model: geliştirme
+    ve prod aynı uygulama). `ios/Runner/GoogleService-Info.plist` **repodadır**
+    ve Runner hedefinin kaynaklarındadır; değerleri her IPA'da açıkça bulunan
+    istemci tanımlayıcılarıdır (kesin kural 6). Dosya yoksa Xcode derlemesi
+    ilk adımdaki "Firebase yapılandırması" betiğiyle anlaşılır bir hatayla
+    durur (Android'deki Gradle `check` karşılığı). gitleaks istisnası bu
+    dosya yolunu da kapsar. APNs kimlik doğrulama anahtarını (`.p8`) platform
+    sahibi Firebase'e yükler; repoya ve GitHub'a girmez (ADR-0034 §6).
+  - **Yetki:** `Runner.entitlements`'ta `aps-environment` = `production`
+    (TestFlight ve App Store dağıtım imzası; ADR-0034 §2). App ID'de Push
+    Notifications yeteneği açık olmalıdır; değilse `testflight.yml`'deki
+    imza ya da yetki denetimi düşer.
+  - **`UIBackgroundModes` yok:** sunucu yalnızca görünür bildirim yollar
+    (`apns-push-type: alert`, `content-available` yok) ve uygulama arka
+    plan mesaj işleyicisi (`onBackgroundMessage`) kullanmaz. Görünür
+    bildirimin gösterilmesi ve dokunmanın (`getInitialMessage`,
+    `onMessageOpenedApp`) işlenmesi arka plan kipi istemez. Sessiz push
+    gerekirse ayrı karar.
+  - **Otomatik kayıt kapalı:** `Info.plist`'te
+    `FirebaseMessagingAutoInitEnabled = false` (Android manifestinin
+    karşılığı). firebase_messaging, otomatik kayıt kapalıyken APNs kaydını
+    da istemez; APNs ve FCM kaydı yalnızca §2'deki `kaydol`
+    (`setAutoInitEnabled(true)` + `register()`) ile, oturum açık ve izin
+    verilmişken yapılır. Analytics paketi bağlı olmadığı için iOS'ta ayrıca
+    analitik anahtarı gerekmez.
+  - **AppDelegate'te push kodu yok:** firebase_messaging 17.1 APNs token'ını
+    ve bildirim merkezi temsilcisini kendisi bağlar (Firebase'in uygulama
+    temsilcisi vekili açık); UIScene ve örtük motorla (`SceneDelegate`,
+    `FlutterImplicitEngineDelegate`) eklentinin geç kaydı ve açılıştaki
+    bildirim de eklentide ele alınır.
+  - **İzin (§3):** aynı anlar, aynı kart, aynı bayrak; iOS'ta sistem
+    penceresi uyarı + rozet + ses ister. Reddedildikten sonra iOS pencereyi
+    bir daha göstermez; Profil → Bildirimler'deki "Bildirimleri aç"
+    uygulamanın sistem bildirim ayarını açar: `tayfam/bildirim` kanalının
+    iOS karşılığı yalnızca `ayarlariAc`'tır (`AppDelegate.swift`; iOS 16+
+    bildirim ayarı, iOS 15'te uygulama ayarı). `kanallariKur` Android'e
+    özgüdür, Dart iOS'ta çağırmaz.
+  - **Metinler (§4):** APNs yükü `title-loc-key` / `loc-key` =
+    `push_<tür>_title|body` taşır (Tayfam-Api ADR-0019 §4); iOS bunları
+    paketteki `Localizable.strings`'ten okur. Tek kaynak yine ARB'dir:
+    `ios/Runner/tr.lproj/Localizable.strings` `tool/kurallar/bin/ios_metinleri.dart`
+    ile üretilir, kural betiği (`ios-metinleri`) CI'da aynılığı denetler.
+    Projenin geliştirme bölgesi `tr`'dir: cihaz dili ne olursa olsun
+    tablo bulunur (uygulamanın tek dili Türkçe; ADR-0008). Metinler
+    `%` içermez (iOS biçim belirteci sayar; testle sabit). Metinler
+    Android'dekilerle aynıdır: içeriksiz, birebir mesajda gönderen yok
+    (kesin kural 7).
+  - **Ön plan ve dokunma (§5):** eklentinin varsayılanı ön planda bildirim
+    göstermemektir; ayarı değiştirilmez. `data` iOS'ta da aynı alanları
+    taşır ve aynı doğrulamadan geçer.
+  - **Kayıt:** `PUT /v1/me/push-token`'da `platform: ios`, `token_type: fid`.
+    Sunucu iOS kaydına yalnızca `apns` bloğunu yollar.
+  - **Doğrulama (ADR-0034 §4):** simülatörde APNs yoktur; ilk deneme
+    TestFlight'ta. Dahili test kontrol listesi: (1) ilk tayfaya katılınca
+    açıklama kartı, "İzin ver" → sistem penceresi; (2) uygulama kapalıyken
+    birebir mesaj → kilit ekranında "Yeni mesaj" / "Okunmamış birebir
+    mesajın var.", gönderen adı yok; (3) bildirime dokununca ilgili ekran
+    açılır; (4) uygulama açıkken bildirim görünmez, zil rozeti artar;
+    (5) çıkış yapınca bildirim gelmez; (6) izni ayarlardan kapatıp Profil →
+    Bildirimler → "Bildirimleri aç" sistem ayarını açar.

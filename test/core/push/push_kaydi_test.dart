@@ -222,6 +222,17 @@ void main() {
       });
       expect(tasima.istekler.last.$2, isNull);
     });
+
+    test('platform derlemenin hedefidir: iOS ios, Android android', () {
+      expect(
+        pushPlatformu(TargetPlatform.iOS),
+        PushTokenRegistrationPlatform.ios,
+      );
+      expect(
+        pushPlatformu(TargetPlatform.android),
+        PushTokenRegistrationPlatform.android,
+      );
+    });
   });
 
   group('pushKaydiProvider', () {

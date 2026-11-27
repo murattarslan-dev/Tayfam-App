@@ -241,6 +241,14 @@ abstract final class Kurallar {
         'push_<tür>_title|body anahtarlarından üretilenle aynıdır.',
   );
 
+  static const iosMetinleri = KuralTanimi(
+    ad: 'ios-metinleri',
+    dayanak: 'ADR-0019 iOS notu (istemci); ADR-0008',
+    aciklama:
+        'ios/Runner/tr.lproj/Localizable.strings, ARB\'deki '
+        'push_<tür>_title|body anahtarlarından üretilenle aynıdır.',
+  );
+
   static const istisnaBicimi = KuralTanimi(
     ad: 'istisna-bicimi',
     dayanak: 'tool/kurallar (istisna biçimi)',
@@ -282,6 +290,7 @@ abstract final class Kurallar {
     arbAnahtarAdi,
     arbKullanilmayan,
     androidMetinleri,
+    iosMetinleri,
     istisnaBicimi,
     istisnaKullanilmayan,
   ];

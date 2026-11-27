@@ -21,6 +21,7 @@ import UIKit
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     kronometreKanaliniKur(engineBridge.pluginRegistry)
+    bildirimKanaliniKur(engineBridge.pluginRegistry)
     appleGiris = AppleGirisKoprusu.kur(engineBridge.pluginRegistry)
     signal = SignalKoprusu.kur(engineBridge.pluginRegistry)
   }
@@ -48,6 +49,33 @@ import UIKit
       default:
         result(FlutterMethodNotImplemented)
       }
+    }
+  }
+
+  /// `tayfam/bildirim` (istemci ADR-0019, iOS notu): yalnızca `ayarlariAc`.
+  /// İzin reddedildikten sonra iOS izin penceresini bir daha göstermez;
+  /// Profil → Bildirimler uygulamanın sistem bildirim ayarını açar. Kanal
+  /// kurulumu (`kanallariKur`) Android'e özgüdür, Dart iOS'ta çağırmaz.
+  private func bildirimKanaliniKur(_ kayit: FlutterPluginRegistry) {
+    guard let kayitci = kayit.registrar(forPlugin: "TayfamBildirim") else { return }
+    let kanal = FlutterMethodChannel(
+      name: "tayfam/bildirim", binaryMessenger: kayitci.messenger())
+    kanal.setMethodCallHandler { call, result in
+      guard call.method == "ayarlariAc" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      let adres: String
+      if #available(iOS 16.0, *) {
+        adres = UIApplication.openNotificationSettingsURLString
+      } else {
+        adres = UIApplication.openSettingsURLString
+      }
+      guard let url = URL(string: adres) else {
+        result(false)
+        return
+      }
+      UIApplication.shared.open(url) { acildi in result(acildi) }
     }
   }
 
