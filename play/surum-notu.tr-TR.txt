@@ -2,8 +2,6 @@
 # `#` ile başlayan satırlar gitmez. Her main birleşmesinde bu dosyadaki metin
 # yeni sürümle birlikte gönderilir; kullanıcıya yönelik bir değişiklik olunca
 # güncelleyin. Kişisel veri, iç adres ya da teknik ayrıntı yazmayın.
-Tayfam 0.4.1
-• Yeni: iPhone'da birebir mesajlar uçtan uca şifreli.
-• Yeni: iPhone'da bildirimler ve tayfam.app linkleriyle doğrudan açılış.
-• İyileştirme: iPhone'da cihaz güvenliği kontrolü.
+Tayfam 0.4.2
+• Aydınlatma Metni ve Kullanım Koşulları güncellendi: Apple ile giriş ve iPhone'da cihaz güvenliği kontrolü eklendi.
 Geri bildirimini test grubuna iletebilirsin.
