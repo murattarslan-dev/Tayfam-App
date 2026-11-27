@@ -615,7 +615,19 @@ jobs:
             -scheme TayfamSignal \
             -destination "id=$cihaz" \
             -onlyUsePackageVersionsFromResolvedFile \
+            -resultBundlePath "$RUNNER_TEMP/signal-testleri.xcresult" \
             -quiet
+          # Testlerin gerçekten koştuğunun kanıtı: sayı yazılır, sıfırsa düşer.
+          xcrun xcresulttool get test-results summary \
+            --path "$RUNNER_TEMP/signal-testleri.xcresult" > "$RUNNER_TEMP/ozet.json"
+          python3 - "$RUNNER_TEMP/ozet.json" <<'PY'
+          import json, sys
+          o = json.load(open(sys.argv[1]))
+          toplam, gecen = o.get("totalTestCount", 0), o.get("passedTests", 0)
+          print(f"Signal köprüsü testleri: {gecen}/{toplam} geçti ({o.get('result')})")
+          if toplam == 0 or gecen != toplam:
+              sys.exit(1)
+          PY
       - name: iOS simülatör derlemesi (imzasız)
         run: flutter build ios --simulator --debug --dart-define=TAYFAM_SURUM="$TAYFAM_SURUM"
       - name: Yetkiler arşive işlenebiliyor mu
