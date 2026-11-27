@@ -1,13 +1,14 @@
 /// Gelen adresi derin link olarak ayrıştırır (ADR-0018 §6, kesin kural 9).
 ///
-/// Uygulama linkleri (Android App Links) yalnızca
+/// Uygulama linkleri (Android App Links, iOS Universal Links) yalnızca
 /// `https://tayfam.app/davet#<token>`, `https://tayfam.app/r/<KOD>` ve QR
 /// ile katılım için `https://tayfam.app/q#<token>` (App ADR-0032 §3)
 /// biçimindedir. Platform adresi yönlendiriciye tam adres olarak verir
-/// (Flutter Android gömücüsü `Intent.getData().toString()`); eski
-/// sürümlerdeki gibi yalnızca yol + fragment olarak da gelebilir. İkisi de
-/// kabul edilir. Adres girdi kabul edilir ve doğrulanır: yalnızca beklenen
-/// şema, alan adı ve yol geçer.
+/// (Flutter Android gömücüsü `Intent.getData().toString()`, iOS gömücüsü
+/// `NSUserActivity.webpageURL.absoluteString`; ikisi de fragment'ı korur);
+/// eski sürümlerdeki gibi yalnızca yol + fragment olarak da gelebilir.
+/// İkisi de kabul edilir. Adres girdi kabul edilir ve doğrulanır: yalnızca
+/// beklenen şema, alan adı ve yol geçer.
 ///
 /// Davet ve QR token'ı fragment'tadır; sunucuya URL ile gitmez, yalnızca
 /// istek gövdesinde gider ve hiçbir yere yazılmaz, loglanmaz. Bu dosyadaki
