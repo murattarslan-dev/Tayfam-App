@@ -10,6 +10,8 @@ import UIKit
   private var appleGiris: AppleGirisKoprusu?
   /// `tayfam/e2e/signal` köprüsü (birebir mesaj şifrelemesi, ADR-0034 §7).
   private var signal: SignalKoprusu?
+  /// `tayfam/butunluk` köprüsü (App Attest, ADR-0034 §7).
+  private var butunluk: ButunlukKoprusu?
 
   override func application(
     _ application: UIApplication,
@@ -24,6 +26,7 @@ import UIKit
     bildirimKanaliniKur(engineBridge.pluginRegistry)
     appleGiris = AppleGirisKoprusu.kur(engineBridge.pluginRegistry)
     signal = SignalKoprusu.kur(engineBridge.pluginRegistry)
+    butunluk = ButunlukKoprusu.kur(engineBridge.pluginRegistry)
   }
 
   /// `tayfam/kronometre` (istemci ADR-0031 §3): kronometre ekranı açıkken

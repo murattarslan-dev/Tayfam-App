@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/api/api_hatalari.dart';
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/butunluk/butunluk_baglama.dart';
 import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
@@ -140,6 +141,49 @@ void main() {
       expect(govde['integrity_token'], 'kanit');
     });
 
+    test('giriş (iOS): App Attest kanıtı app_attest olarak gider', () async {
+      final tasima = SahteTasima({
+        'POST /v1/auth/sign-in': () => oturum().toJson(),
+      });
+      final anahtar = '${'A' * 43}=';
+      final saglayici = _SahteButunluk(
+        null,
+        appAttest: AppAttestProof(keyId: anahtar, attestation: 'YXR0'),
+      );
+      final depo = HesapDeposu(
+        tasima,
+        butunluk: ButunlukKaniti(saglayici, gunluk: (_) {}),
+      );
+      await depo.girisYap(ornekKimlik, platform: 'ios');
+      expect(saglayici.ozetler, [girisBaglamasi(sahteNonce)]);
+      expect(saglayici.istekler, [ButunlukIstegi.giris]);
+      final govde = tasima.istekler.single.govde as Map<String, Object?>;
+      expect(govde.containsKey('integrity_token'), isFalse);
+      expect(govde['app_attest'], {'key_id': anahtar, 'attestation': 'YXR0'});
+      // Sunucu girişi kabul etti: anahtar kimliği ancak şimdi kaydedilir.
+      expect(saglayici.kaydedilen.single.appAttest?.keyId, anahtar);
+    });
+
+    test('giriş (iOS) başarısızsa anahtar kaydedilmez', () async {
+      final tasima = SahteTasima({
+        'POST /v1/auth/sign-in': () =>
+            const ApiProblem(type: ProblemType.invalidCredentials, status: 401),
+      });
+      final saglayici = _SahteButunluk(
+        null,
+        appAttest: AppAttestProof(keyId: '${'A' * 43}=', attestation: 'YXR0'),
+      );
+      final depo = HesapDeposu(
+        tasima,
+        butunluk: ButunlukKaniti(saglayici, gunluk: (_) {}),
+      );
+      await expectLater(
+        depo.girisYap(ornekKimlik, platform: 'ios'),
+        throwsA(isA<ApiProblem>()),
+      );
+      expect(saglayici.kaydedilen, isEmpty);
+    });
+
     test('giriş: kanıt alınamazsa alan gönderilmez', () async {
       final tasima = SahteTasima({
         'POST /v1/auth/sign-in': () => oturum().toJson(),
@@ -151,6 +195,7 @@ void main() {
       await depo.girisYap(ornekKimlik, platform: 'android');
       final govde = tasima.istekler.single.govde as Map<String, Object?>;
       expect(govde.containsKey('integrity_token'), isFalse);
+      expect(govde.containsKey('app_attest'), isFalse);
     });
 
     test('kayıt gövdesi sözleşmedeki alanlarla', () async {
@@ -260,18 +305,33 @@ final class _SabitRastgele implements Random {
 }
 
 /// Sabit sonuç dönen bütünlük sağlayıcısı; istenen özetleri kaydeder.
+/// [sonuc] bir Play token'ıdır; [appAttest] verilirse iOS kanıtı döner.
 final class _SahteButunluk implements ButunlukSaglayici {
-  _SahteButunluk(this.sonuc);
+  _SahteButunluk(this.sonuc, {this.appAttest});
 
   final String? sonuc;
+  final AppAttestProof? appAttest;
   final List<String> ozetler = [];
+  final List<ButunlukIstegi> istekler = [];
 
   @override
   Future<void> hazirla() async {}
 
   @override
-  Future<String?> token(String istekOzeti) async {
+  Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async {
     ozetler.add(istekOzeti);
-    return sonuc;
+    istekler.add(istek);
+    if (appAttest case final a?) return IstekKaniti.appAttest(a);
+    final s = sonuc;
+    return s == null ? null : IstekKaniti.play(s);
   }
+
+  /// Giriş başarıyla dönünce kaydedilen kanıtlar.
+  final List<IstekKaniti> kaydedilen = [];
+
+  @override
+  Future<void> kaydet(IstekKaniti kanit) async => kaydedilen.add(kanit);
+
+  @override
+  Future<void> unut() async {}
 }

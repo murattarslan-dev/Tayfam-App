@@ -206,3 +206,44 @@ iki oturum bayrağı" listesine eklenen üçüncü değerdir; gerekçe:
   ve olay akışı yoktur, bu yüzden tekrar çağrı güvenlidir. Paket
   yükseltmelerinde bu varsayım yeniden doğrulanır; iOS girişinde (#122 ile
   birlikte) ayrıca bakılır.
+- **2026-11-27 (iOS App Attest, #122; Tayfam-Api #195, ADR-0034 §7):**
+  §1'deki iOS kısmı uygulandı. Aynı `tayfam/butunluk` kanalı, Swift
+  köprüsü `ios/Runner/ButunlukKoprusu.swift` (`DCAppAttestService`):
+  - Sağlayıcı arayüzü kanıtın hangi istek için alındığını bilir
+    (`ButunlukIstegi.giris` / `yenileme`) ve `IstekKaniti` döner: Android'de
+    `integrity_token`, iOS'ta `app_attest` (`key_id` + `attestation` ya da
+    `assertion`). Android akışı değişmedi.
+  - **Girişte her seferinde yeni anahtar** üretilir ve onaylatılır
+    (attestation); **yenilemede** o anahtarla imza (assertion) üretilir.
+    Sunucu bir anahtarı ikinci kez bağlamaz (Tayfam-Api ADR-0022 uygulama
+    notu); bu yüzden anahtar girişler arasında yeniden kullanılmaz. Sunucu
+    yenilemede yalnızca assertion kabul eder; girişte onaylanmamış cihaz bir
+    sonraki girişe kadar App Attest'le geçemez (`enforce`'a geçmeden önce
+    yeniden bakılacak). **PS onayladı, 2026-11-27.**
+  - `clientDataHash` = SHA-256(bağlama metni), Swift'te CryptoKit ile;
+    bağlama değeri Dart'ta hesaplanmaya devam eder, yenileme token'ı
+    köprüye gelmez. **PS onayladı, 2026-11-27.**
+  - **Anahtar kimliği Keychain'de** (`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`,
+    yedeğe ve başka cihaza geçmez; ADR-0006'nın güvenli depo listesine
+    eklenen değer). Anahtarın kendisi Secure Enclave'dedir, uygulama onu
+    hiç görmez. Kimlik **giriş isteği başarıyla dönünce** ayrı bir kanal
+    çağrısıyla (`appAttestKaydet`) yazılır; zaman aşımına uğrayan ya da
+    başarısız girişin anahtarı yazılmaz, böylece sunucunun bağlamadığı bir
+    anahtarla yenileme `binding` sayılmaz. iOS giriş kanıtının süresi 20
+    saniyedir (`attestKey` Apple'ın sunucusuna tam tur gider; yenileme 5 sn
+    kalır). Geçersiz anahtarda
+    (`invalidKey`, ör. yeniden kurulum) silinir, sonraki giriş yenisini
+    üretir. **Oturum hangi nedenle kapanırsa kapansın** (çıkış, sunucunun
+    sonlandırması/iptal, yenilemenin reddi, hesap silme) `SessionStore`
+    kimliği de siler (`KanitUnutucu` → köprüde `appAttestUnut`); silinemezse
+    kapanış yine tamamlanır, günlüğe yalnızca tür yazılır (PS kararı,
+    2026-11-27).
+  - Simülatörde ve App Attest'i desteklemeyen cihazda köprü `nil` döner:
+    istek kanıtsız gider (`missing`), hata günlüğü yoktur. Yeni hata türü:
+    `anahtarYok`.
+  - Entitlement: `com.apple.developer.devicecheck.appattest-environment` =
+    `production` (TestFlight/App Store anahtarları production ortamındadır;
+    sunucuda `INTEGRITY_IOS_ENVIRONMENT=production`). App ID'de App Attest
+    yeteneği açık olmalıdır (platform sahibi, T-38).
+  - Yeni paket yoktur (CryptoKit, DeviceCheck ve Security sistem
+    çerçeveleridir).

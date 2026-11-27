@@ -62,22 +62,27 @@ final class HesapDeposu {
   final MeApi _me;
 
   /// `POST /v1/auth/sign-in`. ID token ve nonce yalnızca gövdeye gider.
-  /// Nonce'a bağlı bütünlük kanıtı alınabilirse `integrity_token` olarak
-  /// eklenir, alınamazsa alan gönderilmez (istemci ADR-0023 §3).
+  /// Nonce'a bağlı bütünlük kanıtı alınabilirse `integrity_token`
+  /// (Android) ya da `app_attest` (iOS) olarak eklenir, alınamazsa alan
+  /// gönderilmez (istemci ADR-0023 §3). iOS'ta anahtar kimliği ancak giriş
+  /// başarıyla dönünce kaydedilir.
   Future<Session> girisYap(
     GoogleKimligi kimlik, {
     required String platform,
   }) async {
-    final butunlukTokeni = await _butunluk?.giris(kimlik.nonce);
-    return _auth.signIn(
+    final kanit = await _butunluk?.giris(kimlik.nonce);
+    final oturum = await _auth.signIn(
       body: SignInRequest(
         provider: SignInRequestProvider.google,
         idToken: kimlik.idToken,
         nonce: kimlik.nonce,
         platform: SignInRequestPlatform.fromWire(platform),
-        integrityToken: butunlukTokeni,
+        integrityToken: kanit?.integrityToken,
+        appAttest: kanit?.appAttest,
       ),
     );
+    await _butunluk?.girisBasarili(kanit);
+    return oturum;
   }
 
   /// `POST /v1/auth/sign-in`, `provider: apple` (Tayfam-Api ADR-0045).
@@ -88,16 +93,19 @@ final class HesapDeposu {
     AppleKimligi kimlik, {
     required String platform,
   }) async {
-    final butunlukTokeni = await _butunluk?.giris(kimlik.nonce);
-    return _auth.signIn(
+    final kanit = await _butunluk?.giris(kimlik.nonce);
+    final oturum = await _auth.signIn(
       body: SignInRequest(
         provider: SignInRequestProvider.apple,
         idToken: kimlik.idToken,
         nonce: kimlik.nonce,
         platform: SignInRequestPlatform.fromWire(platform),
-        integrityToken: butunlukTokeni,
+        integrityToken: kanit?.integrityToken,
+        appAttest: kanit?.appAttest,
       ),
     );
+    await _butunluk?.girisBasarili(kanit);
+    return oturum;
   }
 
   /// `GET /v1/registration/requirements`. Sürümler geçersizse
