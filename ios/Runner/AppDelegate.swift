@@ -8,6 +8,8 @@ import UIKit
   private var oncekiParlaklik: CGFloat?
   /// `tayfam/apple-giris` köprüsü; kanal onu zayıf tuttuğu için burada durur.
   private var appleGiris: AppleGirisKoprusu?
+  /// `tayfam/e2e/signal` köprüsü (birebir mesaj şifrelemesi, ADR-0034 §7).
+  private var signal: SignalKoprusu?
 
   override func application(
     _ application: UIApplication,
@@ -20,6 +22,7 @@ import UIKit
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     kronometreKanaliniKur(engineBridge.pluginRegistry)
     appleGiris = AppleGirisKoprusu.kur(engineBridge.pluginRegistry)
+    signal = SignalKoprusu.kur(engineBridge.pluginRegistry)
   }
 
   /// `tayfam/kronometre` (istemci ADR-0031 §3): kronometre ekranı açıkken

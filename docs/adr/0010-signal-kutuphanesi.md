@@ -118,8 +118,12 @@ Android paketi, Signal'in kendi derlediği aynı çekirdektir.
   paketin kendi `META-INF/proguard/libsignal.pro` dosyasından gelir.
   libsignal `java.time` kullandığı için çekirdek kütüphane desugaring'i
   açıktır.
-- Web geliştirme derlemesinde ve iOS köprüsü yazılana kadar iOS'ta motor
-  `DesteklenmeyenSignalMotoru`'dur (her çağrı `UnsupportedError`).
+- Web geliştirme derlemesinde motor `DesteklenmeyenSignalMotoru`'dur (her
+  çağrı `UnsupportedError`).
+- **iOS (2026-11-27, ADR-0034 "Kararlar (2026-11-27)"):** aynı kanal ve
+  sözleşme; `ios/TayfamSignal` yerel Swift paketi (Signal'in resmi
+  `LibSignalClient` 0.108.1 + Signal'in hazır XCFramework'ü, sağlama
+  toplamıyla) ve `ios/Runner/SignalKoprusu.swift`.
 - **Test:** köprü, Signal'in masaüstü JVM paketiyle (`libsignal-client`,
   aynı sürüm) gerçek libsignal üzerinde JVM birim testleriyle sınanır
   (CI android işi, JDK 21); Dart tarafı sahte kanal ve `SahteSignalMotoru`
