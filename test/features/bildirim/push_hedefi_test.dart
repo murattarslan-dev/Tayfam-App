@@ -215,6 +215,19 @@ void main() {
       expect(mevcut, androidMetinleriniUret(arbMetni));
     });
 
+    test('Localizable.strings ARB\'den üretilenle aynı', () {
+      final arbMetni = File('lib/l10n/app_tr.arb').readAsStringSync();
+      final mevcut = File(iosMetinDosyasi).readAsStringSync();
+      expect(mevcut, iosMetinleriniUret(arbMetni));
+    });
+
+    test('push metinlerinde % yok (iOS biçim belirteci sayar)', () {
+      for (final anahtar in arb.keys) {
+        if (!androidMetinAnahtari.hasMatch(anahtar)) continue;
+        expect(arb[anahtar], isNot(contains('%')), reason: anahtar);
+      }
+    });
+
     test('Android kaçırması', () {
       expect(
         androidKacir("Ali'nin \"x\" & <y>"),
