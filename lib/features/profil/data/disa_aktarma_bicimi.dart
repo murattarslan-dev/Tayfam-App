@@ -22,7 +22,7 @@ enum DisaAktarmaHataTuru {
   cokBuyuk,
 
   /// Bu derlemede Signal köprüsü, dolayısıyla indirme yok (web geliştirme
-  /// derlemesi, ADR-0011; iOS köprüsü yazılana kadar iOS).
+  /// derlemesi, ADR-0011).
   desteklenmiyor,
 }
 

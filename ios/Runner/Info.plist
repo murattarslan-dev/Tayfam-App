@@ -39,11 +39,12 @@
 	<true/>
 	<!-- ADR-0021: fotoğraf seçici (PHPicker) izin istemez; metin yine de gerekli. Kamera yalnızca "Fotoğraf çek"e basınca sorulur. -->
 	<!-- Kamera iki yerde kullanılır: fotoğraf çekme (ADR-0021) ve QR ile cihaz bağlama (ADR-0020). -->
-	<!-- İhracat uyumu (ADR-0034, 2026-11-26): bu derlemede şifreleme yalnızca
-	     iOS'un kendisinde (HTTPS, Keychain). Signal köprüsü eklenince yeniden
-	     değerlendirilir; Fransa satışa açılmadan önce Fransız beyanı gerekir. -->
+	<!-- İhracat uyumu (ADR-0034, Kararlar 2026-11-27): uygulama birebir
+	     mesaj için işletim sisteminde olmayan standart algoritmalar taşır
+	     (libsignal). App Store Connect her derlemede algoritma türünü sorar;
+	     cevap "standart algoritmalar", Fransa beyansız satışa açılmaz. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Profil, kapak ya da av fotoğrafı çekmek ve başka bir cihazını bağlamak için QR kod okutmak üzere kamerana erişilir. QR okutulurken görüntü kaydedilmez; çektiğin fotoğrafın konum bilgisi gönderilmeden silinir.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -11405,7 +11405,7 @@
   },
   "e2e_bu_cihazda_kapali": "Birebir mesajlaşma bu cihazda henüz açık değil.",
   "@e2e_bu_cihazda_kapali": {
-    "description": "Uçtan uca şifrelemenin olmadığı yapılandırmada (iOS köprüsü gelene kadar iOS, web geliştirme derlemesi) birebir konuşmada yazma alanının yerinde gösterilen satır; boş konuşmada da. Platform adı geçmez (platform sahibi kararı, issue #125)."
+    "description": "Uçtan uca şifrelemenin olmadığı yapılandırmada (web geliştirme derlemesi) birebir konuşmada yazma alanının yerinde gösterilen satır; boş konuşmada da. Platform adı geçmez (platform sahibi kararı, issue #125)."
   },
   "e2e_sifreli_mesaj": "Şifreli mesaj",
   "@e2e_sifreli_mesaj": {
@@ -12126,7 +12126,7 @@
   },
   "disa_aktarma_hata_desteklenmiyor": "Verilerini şimdilik yalnızca Android uygulamasında indirebilirsin.",
   "@disa_aktarma_hata_desteklenmiyor": {
-    "description": "Signal köprüsü olmayan derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS) indirmeye basılınca görünen hata."
+    "description": "Signal köprüsü olmayan derlemede (web geliştirme derlemesi) indirmeye basılınca görünen hata."
   },
   "medya_fotograf_ekle": "Fotoğraf ekle",
   "@medya_fotograf_ekle": {

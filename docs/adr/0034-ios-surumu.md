@@ -1,8 +1,8 @@
 # ADR-0034: iOS sürümü: Mac'siz derleme, TestFlight ve platform köprüleri
 
 - **Durum:** Kabul edildi (2026-11-26; açık soruların cevapları
-  "Kararlar (2026-11-26)" bölümünde. 7. aşama, Signal köprüsü, lisans
-  nedeniyle beklemede)
+  "Kararlar (2026-11-26)" bölümünde. Signal köprüsü 2026-11-27'de platform
+  sahibinin lisans riskini kabul etmesiyle yapıldı: "Kararlar (2026-11-27)")
 - **Tarih:** 2026-11-24
 - **Karar veren:** Murat Arslan
 - **İlgili:** [ADR-0009](0009-test-ci-ve-ios.md),
@@ -221,9 +221,10 @@ açılan bir uygulama, sonra tek tek yetenekler.
 - Paketin nasıl alınacağı (sabit sürüm, sağlama toplamı, önceden derlenmiş
   çekirdek) köprü işinde ADR-0010'a notla yazılır.
 - **Ön koşul:** AGPL-3.0 lisanslı kütüphanenin App Store dağıtımıyla uyumu
-  hukukçu listesinde açık bir maddedir (Notion, Açık Kararlar). TestFlight
-  da aynı dağıtım kanalıdır. Bu aşama, platform sahibi o maddeyi kapatana
-  ya da riski bilerek kabul edene kadar başlamaz.
+  hukukçu listesinde açık bir maddedir. TestFlight da aynı dağıtım
+  kanalıdır. Bu aşama, platform sahibi o maddeyi kapatana ya da riski
+  bilerek kabul edene kadar başlamaz. **Güncelleme (2026-11-27):** platform
+  sahibi riski kabul etti; uygulama "Kararlar (2026-11-27)" bölümünde.
 
 ## Gerekçe
 
@@ -328,6 +329,55 @@ Platform sahibi açık soruları 2026-11-26 sohbetinde cevapladı:
    eklenmiştir.
 5. **Apple incelemesi için giriş:** karar gerektirmez; 8. aşamadan önce
    inceleme hesabı hazırlanır (proje dokümanı `tayfam/12-magaza-ve-yayin.md`).
+
+## Kararlar (2026-11-27)
+
+1. **Signal köprüsü (7. aşama) yapıldı.** Platform sahibi 2026-11-27
+   sohbetinde AGPL / App Store riskini bilerek kabul etti ("kütüphane GitHub'da
+   açık kaynak dağıtılıyor, sorun olmayacaktır"). Not: kaynak kodun açık
+   olması App Store dağıtımına izin anlamına gelmez; belirleyici AGPL-3.0'ın
+   koşullarıdır ve libsignal'de App Store için §7 istisnası yoktur
+   (signalapp/libsignal#677 cevapsız). Hak sahibi Signal Messenger LLC
+   itiraz ederse iOS sürümü App Store'dan kaldırılabilir; bu durumda iOS'ta
+   birebir mesaj yeniden "bu cihazda henüz açık değil" davranışına döner
+   (`signalMotoruProvider` tek noktadır). Madde hukukçu listesinde kalır.
+2. **Yapı:** Android'deki düzenin aynısı.
+   - `ios/TayfamSignal/` yerel Swift paketi: saf Swift `SignalIslemleri`
+     (Flutter'a bağlı değil) ve `TekCagriDeposu`. Yöntem ve alan adları
+     `SignalIslemleri.kt` ile aynıdır.
+   - `ios/Runner/SignalKoprusu.swift`: `tayfam/e2e/signal` kanalı, Flutter'ın
+     arka plan görev kuyruğunda; yalnızca kanal türlerini çevirir.
+   - Dart'ta `signalMotoruProvider` iOS'ta da `KanalSignalMotoru`'dur.
+3. **Paket:** `LibSignalClient` **0.108.1** (`exact`), Rust çekirdeği
+   Signal'in yayımladığı hazır XCFramework (`binaryTarget`, sağlama toplamı
+   Signal-iOS'un `BinaryDependencies` manifestinden; SPM indirmeyi
+   doğrular). Sürüm Android'den (0.106.1) farklıdır: iki platformun
+   libsignal'i yalnızca kendi çekirdeğiyle aynı sürümde olmak zorundadır,
+   protokol iki sürüm arasında uyumludur. Bir sonraki libsignal
+   yükseltmesinde iki platform aynı sürüme getirilir. `Package.resolved`
+   (paket ve çalışma alanı) sabitlenmiş commit'leri taşır; CI
+   `-onlyUsePackageVersionsFromResolvedFile` ile çözer.
+4. **Hata eşlemesi:** Swift paketi bozuk baytları tek türle
+   (`protobufError`) bildirir; Android'de bozuk mesaj `InvalidMessage`,
+   bozuk anahtar `InvalidKey`'dir. Aynı Dart sonucu için ayrım yönteme göre
+   yapılır (`coz`, `onAnahtarMesajiIncele` → `gecersizMesaj`; diğerleri →
+   `gecersizAnahtar`). Swift paketinde `SessionRecord`'un karşı kimliğine
+   erişim yoktur; karşı kimlik libsignal'in her başarılı çözmeden sonra
+   depoya bildirdiği kimliktir (`saveIdentity` / `recordReceivedIdentity`),
+   Android'deki `remoteIdentityKey` ile aynı değerdir.
+5. **Test:** `ios/TayfamSignal/Tests` Android testlerinin aynı senaryo ve
+   bilinen vektörleriyle (RFC 5869 HKDF, AES-GCM-SIV, NIST GCM, libsignal
+   güvenlik kodu) CI'ın iOS işinde, iOS simülatöründe gerçek libsignal ile
+   koşar (çekirdek macOS için yayımlanmadığından `swift test` kullanılmaz).
+6. **İhracat uyumu (4. maddenin güncellemesi):** uygulama artık işletim
+   sisteminde olmayan standart algoritmalar taşıdığı için
+   `ITSAppUsesNonExemptEncryption = true`. App Store Connect her derlemede
+   algoritma türünü sorar; cevap **standart algoritmalar**, Fransa için
+   beyan verilmediğinden **Fransa satışa açılmaz** (Fiyatlandırma ve
+   Uygunluk). Bu sorunun TestFlight işinde App Store Connect API'siyle
+   cevaplanması ayrı iştir. Hukuki görüş değildir.
+7. **Yan etki:** KVKK veri dışa aktarma dosyasının çözülmesi (`aes256GcmCoz`)
+   iOS'ta da çalışır.
 
 ## Değerlendirilen alternatifler
 

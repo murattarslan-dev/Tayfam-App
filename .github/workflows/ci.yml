@@ -597,6 +597,25 @@ jobs:
           surum=$(sed -n 's/^version: *//p' pubspec.yaml)
           [[ "$surum" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.+-]+)?$ ]]
           echo "TAYFAM_SURUM=$surum" >> "$GITHUB_ENV"
+      - name: Signal köprüsü testleri (iOS simülatörü, gerçek libsignal)
+        # ios/TayfamSignal: Android'deki SignalIslemleriTest.kt'nin karşılığı
+        # (ADR-0034 §7). libsignal'in Rust çekirdeği yalnızca iOS ve
+        # simülatör için yayımlandığından testler macOS'ta değil, iOS
+        # simülatöründe koşar. Paket sürümleri Package.resolved'dan.
+        working-directory: ios/TayfamSignal
+        run: |
+          set -euo pipefail
+          cihaz=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          d = json.load(sys.stdin)["devices"]
+          ios = sorted((k for k in d if "iOS" in k), reverse=True)
+          print(next(x["udid"] for k in ios for x in d[k] if x["name"].startswith("iPhone")))
+          ')
+          xcodebuild test \
+            -scheme TayfamSignal \
+            -destination "id=$cihaz" \
+            -onlyUsePackageVersionsFromResolvedFile \
+            -quiet
       - name: iOS simülatör derlemesi (imzasız)
         run: flutter build ios --simulator --debug --dart-define=TAYFAM_SURUM="$TAYFAM_SURUM"
       - name: Yetkiler arşive işlenebiliyor mu
