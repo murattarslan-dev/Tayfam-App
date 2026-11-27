@@ -1,0 +1,23 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["UV3QH53Y8A.com.murattarslan.tayfam"],
+        "components": [
+          {
+            "/": "/davet",
+            "comment": "Davet linki: /davet#<token>. Token fragment'tadır, sunucuya gitmez (kesin kural 9)."
+          },
+          {
+            "/": "/q",
+            "comment": "QR ile katılım: /q#<token> (App ADR-0032 §3)."
+          },
+          {
+            "/": "/r/*",
+            "comment": "Referans linki: /r/<KOD>."
+          }
+        ]
+      }
+    ]
+  }
+}
