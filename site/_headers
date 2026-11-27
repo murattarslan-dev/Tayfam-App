@@ -17,3 +17,8 @@
   X-Robots-Tag: noindex
 /q/
   X-Robots-Tag: noindex
+
+# iOS Universal Links (ADR-0034 §6): Apple uzantısız dosyayı yalnızca
+# application/json olarak kabul eder; Pages uzantıdan tür çıkaramaz.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
