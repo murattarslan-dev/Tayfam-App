@@ -166,10 +166,8 @@ void main() {
 
     test('giriş (iOS) başarısızsa anahtar kaydedilmez', () async {
       final tasima = SahteTasima({
-        'POST /v1/auth/sign-in': () => const ApiProblem(
-          type: ProblemType.invalidCredentials,
-          status: 401,
-        ),
+        'POST /v1/auth/sign-in': () =>
+            const ApiProblem(type: ProblemType.invalidCredentials, status: 401),
       });
       final saglayici = _SahteButunluk(
         null,
