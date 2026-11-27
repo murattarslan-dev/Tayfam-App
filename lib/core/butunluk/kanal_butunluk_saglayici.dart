@@ -88,6 +88,20 @@ final class KanalButunlukSaglayici implements ButunlukSaglayici {
     }
   }
 
+  /// iOS: Keychain'deki App Attest anahtar kimliğini siler. Android'de
+  /// Play Integrity'nin cihazda tuttuğu bir kayıt yoktur.
+  @override
+  Future<void> unut() async {
+    if (!appAttest) return;
+    try {
+      await _kanal.invokeMethod<void>('appAttestUnut');
+    } on PlatformException catch (e) {
+      throw ButunlukHatasi(_tur(e.code));
+    } on MissingPluginException {
+      // Köprü yok (test ortamı).
+    }
+  }
+
   /// Android: [istekOzeti]'ne bağlı Play Integrity token'ı.
   Future<String?> token(String istekOzeti) async {
     final Object? sonuc;

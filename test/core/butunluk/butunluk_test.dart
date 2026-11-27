@@ -26,6 +26,16 @@ final class _SahteSaglayici implements ButunlukSaglayici {
     final token = await sonuc();
     return token == null ? null : IstekKaniti.play(token);
   }
+
+  /// Kaç kez unutulduğu; [unutmaHatasi] verilirse fırlatılır.
+  int unutma = 0;
+  Exception? unutmaHatasi;
+
+  @override
+  Future<void> unut() async {
+    unutma++;
+    if (unutmaHatasi case final hata?) throw hata;
+  }
 }
 
 /// Sabit bir App Attest kanıtı dönen sağlayıcı.
@@ -40,6 +50,9 @@ final class _SahteAppAttest implements ButunlukSaglayici {
   @override
   Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async =>
       IstekKaniti.appAttest(kanitDegeri);
+
+  @override
+  Future<void> unut() async {}
 }
 
 /// 32 baytlık anahtar kimliğinin base64 metni (44 karakter).
@@ -164,6 +177,18 @@ void main() {
       // Yanlış aşamanın kanıtı gönderilmez.
       expect(await g.yenileme('t'), isNull);
       expect(await y.giris('n'), isNull);
+    });
+
+    test('unut sağlayıcıya gider; hata yutulur', () async {
+      final saglayici = _SahteSaglayici(() async => null);
+      final gunluk = <String>[];
+      final kanit = ButunlukKaniti(saglayici, gunluk: gunluk.add);
+      await kanit.unut();
+      expect(saglayici.unutma, 1);
+      saglayici.unutmaHatasi = const ButunlukHatasi(ButunlukHatasiTuru.ag);
+      await kanit.unut();
+      expect(saglayici.unutma, 2);
+      expect(gunluk, ['bütünlük: unutulamadı']);
     });
 
     test('App Attest: sınır dışı kanıt gönderilmez', () async {
@@ -299,6 +324,15 @@ void main() {
       await saglayici.hazirla();
       expect(cagrilar, isEmpty);
       expect(await saglayici.kanit('ozet', ButunlukIstegi.giris), isNull);
+    });
+
+    test('unut: iOS köprüye gider, Android gitmez', () async {
+      yanitla((_) => null);
+      await KanalButunlukSaglayici(kanal: kanal).unut();
+      expect(cagrilar, isEmpty);
+      await KanalButunlukSaglayici(kanal: kanal, appAttest: true).unut();
+      expect(cagrilar.single.method, 'appAttestUnut');
+      expect(cagrilar.single.arguments, isNull);
     });
 
     test('iOS: hata kodu türe, bozuk sonuç bilinmeyene eşlenir', () async {

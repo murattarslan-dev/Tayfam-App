@@ -216,16 +216,23 @@ iki oturum bayrağı" listesine eklenen üçüncü değerdir; gerekçe:
   - **Girişte her seferinde yeni anahtar** üretilir ve onaylatılır
     (attestation); **yenilemede** o anahtarla imza (assertion) üretilir.
     Sunucu bir anahtarı ikinci kez bağlamaz (Tayfam-Api ADR-0022 uygulama
-    notu); bu yüzden anahtar girişler arasında yeniden kullanılmaz.
+    notu); bu yüzden anahtar girişler arasında yeniden kullanılmaz. Sunucu
+    yenilemede yalnızca assertion kabul eder; girişte onaylanmamış cihaz bir
+    sonraki girişe kadar App Attest'le geçemez (`enforce`'a geçmeden önce
+    yeniden bakılacak). **PS onayladı, 2026-11-27.**
   - `clientDataHash` = SHA-256(bağlama metni), Swift'te CryptoKit ile;
     bağlama değeri Dart'ta hesaplanmaya devam eder, yenileme token'ı
-    köprüye gelmez.
+    köprüye gelmez. **PS onayladı, 2026-11-27.**
   - **Anahtar kimliği Keychain'de** (`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`,
     yedeğe ve başka cihaza geçmez; ADR-0006'nın güvenli depo listesine
     eklenen değer). Anahtarın kendisi Secure Enclave'dedir, uygulama onu
     hiç görmez. Kimlik yalnızca onaydan sonra yazılır; geçersiz anahtarda
     (`invalidKey`, ör. yeniden kurulum) silinir, sonraki giriş yenisini
-    üretir. Çıkışta silinmez: bir sonraki giriş üzerine yazar.
+    üretir. **Oturum hangi nedenle kapanırsa kapansın** (çıkış, sunucunun
+    sonlandırması/iptal, yenilemenin reddi, hesap silme) `SessionStore`
+    kimliği de siler (`KanitUnutucu` → köprüde `appAttestUnut`); silinemezse
+    kapanış yine tamamlanır, günlüğe yalnızca tür yazılır (PS kararı,
+    2026-11-27).
   - Simülatörde ve App Attest'i desteklemeyen cihazda köprü `nil` döner:
     istek kanıtsız gider (`missing`), hata günlüğü yoktur. Yeni hata türü:
     `anahtarYok`.

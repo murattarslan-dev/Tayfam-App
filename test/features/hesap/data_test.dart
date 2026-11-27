@@ -303,4 +303,7 @@ final class _SahteButunluk implements ButunlukSaglayici {
     final s = sonuc;
     return s == null ? null : IstekKaniti.play(s);
   }
+
+  @override
+  Future<void> unut() async {}
 }

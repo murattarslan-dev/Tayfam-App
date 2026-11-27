@@ -50,6 +50,18 @@ final class ButunlukKaniti {
   Future<IstekKaniti?> yenileme(String yenilemeTokeni) =>
       _al(yenilemeBaglamasi(yenilemeTokeni), ButunlukIstegi.yenileme);
 
+  /// Oturum kapandı: cihazdaki kanıt anahtarının kaydı silinir (iOS'ta App
+  /// Attest anahtar kimliği). Hata fırlatmaz; günlüğe yalnızca tür yazılır.
+  Future<void> unut() async {
+    try {
+      await _saglayici.unut().timeout(zamanAsimi);
+    } on TimeoutException {
+      _gunluk('bütünlük: unutma zaman aşımı');
+    } on Exception {
+      _gunluk('bütünlük: unutulamadı');
+    }
+  }
+
   Future<IstekKaniti?> _al(String istekOzeti, ButunlukIstegi istek) async {
     final IstekKaniti? kanit;
     try {

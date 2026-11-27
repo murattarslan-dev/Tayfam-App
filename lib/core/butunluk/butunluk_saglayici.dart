@@ -32,6 +32,11 @@ abstract interface class ButunlukSaglayici {
   /// [istekOzeti]'ne (base64url, dolgusuz, 43 karakter) bağlı bütünlük
   /// kanıtı. Platform desteklemiyorsa `null`; alınamazsa [ButunlukHatasi].
   Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek);
+
+  /// Oturum kapanınca cihazdaki kanıt anahtarının kaydını siler (iOS: App
+  /// Attest anahtar kimliği; Android'de yapacak bir şey yoktur). Hata
+  /// fırlatabilir; çağıran yutar.
+  Future<void> unut();
 }
 
 /// Bütünlük token'ı alınamamasının türü. Kotlin köprüsündeki
@@ -91,4 +96,7 @@ final class OlmayanButunlukSaglayici implements ButunlukSaglayici {
   @override
   Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async =>
       null;
+
+  @override
+  Future<void> unut() async {}
 }

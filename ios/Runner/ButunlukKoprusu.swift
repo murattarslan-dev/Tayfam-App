@@ -8,7 +8,8 @@ import Security
 /// iOS karşılığı, App Attest (istemci ADR-0023, ADR-0034 §7; Tayfam-Api
 /// ADR-0022 §4).
 ///
-/// Yöntem: `appAttest` {istek: `giris` | `yenileme`, istekOzeti}.
+/// Yöntemler: `appAttestUnut` (oturum kapandı: Keychain'deki anahtar
+/// kimliğini siler) ve `appAttest` {istek: `giris` | `yenileme`, istekOzeti}.
 /// - `giris`: yeni bir anahtar üretir, `clientDataHash` =
 ///   SHA-256(istekOzeti metni) ile Apple'a onaylatır ve anahtar kimliğini
 ///   Keychain'e yazar (öncekinin yerine).
@@ -47,6 +48,11 @@ final class ButunlukKoprusu {
   }
 
   private func cagri(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+    if call.method == "appAttestUnut" {
+      AnahtarDeposu.sil()
+      result(nil)
+      return
+    }
     guard call.method == "appAttest" else {
       result(FlutterMethodNotImplemented)
       return

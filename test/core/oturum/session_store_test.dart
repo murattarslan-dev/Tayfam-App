@@ -87,12 +87,14 @@ final class _SahteSunucu {
 }
 
 final class _Kurulum {
-  _Kurulum({DateTime? saat, YenilemeKaniti? kanit}) : saat = saat ?? _simdi {
+  _Kurulum({DateTime? saat, YenilemeKaniti? kanit, KanitUnutucu? kanitUnut})
+    : saat = saat ?? _simdi {
     oturum = SessionStore(
       depo: depo,
       yenileyici: sunucu.yenile,
       yoklayici: sunucu.yokla,
       kanit: kanit,
+      kanitUnut: kanitUnut ?? () async => unutma++,
       saat: () => this.saat,
       bekle: (sure) async => beklemeler.add(sure),
       gunluk: gunluk.add,
@@ -107,6 +109,9 @@ final class _Kurulum {
   final List<Duration> beklemeler = [];
   final List<OturumOlayi> olaylar = [];
   final List<String> gunluk = [];
+
+  /// Bütünlük anahtarının kaç kez unutulduğu (oturum kapanışı).
+  int unutma = 0;
   late final SessionStore oturum;
 
   Future<String?> depodakiYenileme() async {
@@ -479,6 +484,50 @@ void main() {
         expect(satir, isNot(contains('erisim-')));
         expect(satir, isNot(contains('yenileme-')));
       }
+    });
+  });
+
+  group('bütünlük anahtarı oturumla gider (istemci ADR-0023 iOS notu)', () {
+    for (final neden in [
+      OturumKapanisNedeni.cikis,
+      OturumKapanisNedeni.hesapSilindi,
+      OturumKapanisNedeni.sunucuSonlandirdi,
+      OturumKapanisNedeni.yetkisiz,
+    ]) {
+      test('kapanışta unutulur: ${neden.name}', () async {
+        final k = _Kurulum();
+        await k.oturum.oturumAc(_oturum(1));
+        await k.oturum.kapat(neden);
+        expect(k.unutma, 1);
+        // Zaten kapalı oturum yeniden kapatılınca bir şey olmaz.
+        await k.oturum.kapat(neden);
+        expect(k.unutma, 1);
+      });
+    }
+
+    test('yenileme reddedilince de unutulur', () async {
+      final k = _Kurulum();
+      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+      k.sunucu.yanit = (_) async =>
+          throw const ApiProblem(type: ProblemType.invalidRefresh, status: 401);
+      await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
+      expect(k.unutma, 1);
+    });
+
+    test('oturum yokken ve yenilemede unutulmaz', () async {
+      final k = _Kurulum();
+      await k.oturum.kapat(OturumKapanisNedeni.cikis);
+      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+      expect(await k.oturum.erisimTokeni(), 'erisim-2');
+      expect(k.unutma, 0);
+    });
+
+    test('unutma hatası kapanışı engellemez', () async {
+      final k = _Kurulum(kanitUnut: () async => throw const FormatException());
+      await k.oturum.oturumAc(_oturum(1));
+      await k.oturum.kapat(OturumKapanisNedeni.cikis);
+      expect(await k.oturum.durum(), isA<OturumKapali>());
+      expect(k.gunluk, contains('oturum: bütünlük anahtarı silinemedi'));
     });
   });
 

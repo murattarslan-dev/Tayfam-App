@@ -96,6 +96,10 @@ typedef TokenYenileyici = Future<Session> Function(
 /// Alınamazsa `null`; hata fırlatmaz ve süresi sınırlıdır.
 typedef YenilemeKaniti = Future<IstekKaniti?> Function(String yenilemeTokeni);
 
+/// Oturum kapanınca cihazdaki bütünlük anahtarının kaydını siler (iOS: App
+/// Attest anahtar kimliği, istemci ADR-0023 iOS notu). Hata fırlatmaz.
+typedef KanitUnutucu = Future<void> Function();
+
 /// Yenilemeden önce sunucuya ulaşılabildiğini doğrulayan kimliksiz istek
 /// (`GET /v1/status`).
 typedef BaglantiYoklayici = Future<void> Function();
@@ -119,12 +123,15 @@ typedef BaglantiYoklayici = Future<void> Function();
 ///   `integrity_check_after` geçtiyse yenileme isteğine, bağlantı
 ///   yoklandıktan sonra ve token harcanmadan önce, [YenilemeKaniti]'nin
 ///   verdiği kanıt eklenir. Kanıt alınamazsa yenileme kanıtsız gider.
+///   Oturum hangi nedenle kapanırsa kapansın (çıkış, iptal, hesap silme)
+///   [KanitUnutucu] çağrılır.
 final class SessionStore {
   SessionStore({
     required this._depo,
     required this._yenileyici,
     required this._yoklayici,
     this._kanit,
+    this._kanitUnut,
     DateTime Function()? saat,
     Future<void> Function(Duration sure)? bekle,
     this._gunluk = varsayilanApiGunlugu,
@@ -141,6 +148,7 @@ final class SessionStore {
   final TokenYenileyici _yenileyici;
   final BaglantiYoklayici _yoklayici;
   final YenilemeKaniti? _kanit;
+  final KanitUnutucu? _kanitUnut;
   final DateTime Function() _saat;
   final Future<void> Function(Duration sure) _bekle;
   final ApiGunlugu _gunluk;
@@ -344,6 +352,14 @@ final class SessionStore {
     }
   }
 
+  Future<void> _kanitUnutSessiz() async {
+    try {
+      await _kanitUnut?.call();
+    } on Exception {
+      _gunluk('oturum: bütünlük anahtarı silinemedi');
+    }
+  }
+
   /// Yalnızca [nesil] hâlâ geçerliyse kapatır.
   Future<void> _kapat(OturumKapanisNedeni neden, int nesil) async {
     if (nesil != _nesil) return;
@@ -356,6 +372,7 @@ final class SessionStore {
     _butunlukIcinYenilenen = null;
     await _depodanSilSessiz();
     if (acikti) {
+      await _kanitUnutSessiz();
       _gunluk('oturum: kapandı (${neden.name})');
       _yay(OturumKapali(neden));
     }
@@ -495,6 +512,7 @@ SessionStore _sessionStoreOlustur(Ref ref) {
       await status.getStatus();
     },
     kanit: butunluk.yenileme,
+    kanitUnut: butunluk.unut,
   );
   ref.onDispose(oturum.dispose);
   return oturum;
