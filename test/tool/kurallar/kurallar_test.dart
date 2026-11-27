@@ -242,9 +242,7 @@ void main() {
               iosMetinleri: mevcut,
             ),
           );
-          expect(_say(bulgular), {
-            'ios-metinleri': 1,
-          }, reason: _ozet(bulgular));
+          expect(_say(bulgular), {'ios-metinleri': 1}, reason: _ozet(bulgular));
         }
       });
 
