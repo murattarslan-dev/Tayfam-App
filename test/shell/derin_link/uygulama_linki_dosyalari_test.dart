@@ -18,8 +18,8 @@ const String _manifestDosyasi = 'android/app/src/main/AndroidManifest.xml';
 const String _projeDosyasi = 'ios/Runner.xcodeproj/project.pbxproj';
 
 /// Biçimi geçerli, açıkça sahte değerler (gerçek değil).
-const String _davetToken = 'sahte_davet-sahte_davet';
-const String _qrToken = 'sahte_qr-sahte_qr-0123';
+const String _davetDegeri = 'sahte_davet-sahte_davet';
+const String _qrDegeri = 'sahte_qr-sahte_qr-0123';
 const String _referansKodu = 'TYF-8K2M4Q';
 
 final RegExp _bundleSatiri = RegExp(r'PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);');
@@ -99,12 +99,12 @@ void main() {
     test('her yol ayrıştırıcıda bir derin linke düşer', () {
       const kok = 'https://$uygulamaLinkiAlanAdi';
       expect(
-        _ayristir('$kok$davetYolu#$_davetToken'),
-        const DavetLinki(_davetToken),
+        _ayristir('$kok$davetYolu#$_davetDegeri'),
+        const DavetLinki(_davetDegeri),
       );
       expect(
-        _ayristir('$kok$qrYolu#$_qrToken'),
-        const QrKatilimLinki(_qrToken),
+        _ayristir('$kok$qrYolu#$_qrDegeri'),
+        const QrKatilimLinki(_qrDegeri),
       );
       expect(
         _ayristir('$kok/$referansOneki/$_referansKodu'),
