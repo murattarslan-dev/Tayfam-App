@@ -370,12 +370,20 @@ Platform sahibi açık soruları 2026-11-26 sohbetinde cevapladı:
    güvenlik kodu) CI'ın iOS işinde, iOS simülatöründe gerçek libsignal ile
    koşar (çekirdek macOS için yayımlanmadığından `swift test` kullanılmaz).
 6. **İhracat uyumu (4. maddenin güncellemesi):** uygulama artık işletim
-   sisteminde olmayan standart algoritmalar taşıdığı için
-   `ITSAppUsesNonExemptEncryption = true`. App Store Connect her derlemede
-   algoritma türünü sorar; cevap **standart algoritmalar**, Fransa için
-   beyan verilmediğinden **Fransa satışa açılmaz** (Fiyatlandırma ve
-   Uygunluk). Bu sorunun TestFlight işinde App Store Connect API'siyle
-   cevaplanması ayrı iştir. Hukuki görüş değildir.
+   sisteminde olmayan standart algoritmalar taşır (libsignal; birebir
+   mesaj, DM ekleri, KVKK dışa aktarma). Herkese açık, ücretsiz bir
+   tüketici uygulaması olduğundan ABD EAR kitlesel pazar (mass market)
+   muafiyetine dayanır ve `ITSAppUsesNonExemptEncryption = false` kalır.
+   Signal'in iOS uygulaması aynı kütüphaneyle aynı beyanı kullanır.
+   Fransa için beyan verilmediğinden **Fransa satışa açılmaz**
+   (Fiyatlandırma ve Uygunluk). Hukuki görüş değildir; hukukçu listesinde.
+
+   *Düzeltme (2026-11-27, platform sahibinin onayıyla):* ilk halinde
+   anahtar `true` yapılmıştı. 0.4.0'ın TestFlight dışa aktarımı Apple'ın
+   "Invalid Export Compliance Code" hatasıyla düştü: `true`, App Store
+   Connect'te onaylanmış bir ihracat belgesi ve onun
+   `ITSEncryptionExportComplianceCode` değerini ister. Bu yüzden 0.4.1 ile
+   `false`'a dönüldü; derleme başına şifreleme sorusu da kalktı.
 7. **Yan etki:** KVKK veri dışa aktarma dosyasının çözülmesi (`aes256GcmCoz`)
    iOS'ta da çalışır.
 
