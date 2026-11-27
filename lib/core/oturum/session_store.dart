@@ -10,6 +10,7 @@ import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
 import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
+import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 import 'package:tayfam/core/oturum/token_deposu.dart';
 
 /// Oturumun neden kapandığı. Yalnızca yönlendirme ve günlük içindir.
@@ -83,16 +84,17 @@ final class OturumYok implements Exception {
   String toString() => 'OturumYok';
 }
 
-/// `POST /v1/auth/refresh` çağrısı. [butunlukTokeni] varsa istekte
-/// `integrity_token` olarak gider (istemci ADR-0023).
+/// `POST /v1/auth/refresh` çağrısı. [butunlukKaniti] varsa istekte
+/// `integrity_token` (Android) ya da `app_attest` (iOS) olarak gider
+/// (istemci ADR-0023).
 typedef TokenYenileyici = Future<Session> Function(
   String yenilemeTokeni, {
-  String? butunlukTokeni,
+  IstekKaniti? butunlukKaniti,
 });
 
 /// Yenileme token'ının özetine bağlı bütünlük kanıtı (istemci ADR-0023).
 /// Alınamazsa `null`; hata fırlatmaz ve süresi sınırlıdır.
-typedef YenilemeKaniti = Future<String?> Function(String yenilemeTokeni);
+typedef YenilemeKaniti = Future<IstekKaniti?> Function(String yenilemeTokeni);
 
 /// Yenilemeden önce sunucuya ulaşılabildiğini doğrulayan kimliksiz istek
 /// (`GET /v1/status`).
@@ -386,7 +388,7 @@ final class SessionStore {
 
     // Kanıt token harcanmadan önce alınır: süresi sınırlıdır ve bu sırada
     // yenileme token'ı henüz gönderilmemiştir (10 sn tolerans etkilenmez).
-    final butunlukTokeni = await _butunlukKaniti(oturum);
+    final butunlukKaniti = await _butunlukKaniti(oturum);
     if (nesil != _nesil) throw const OturumYok();
 
     _harcanan = oturum.yenilemeTokeni;
@@ -395,7 +397,7 @@ final class SessionStore {
     try {
       yeni = await _yenileyici(
         oturum.yenilemeTokeni,
-        butunlukTokeni: butunlukTokeni,
+        butunlukKaniti: butunlukKaniti,
       );
     } on Exception catch (hata) {
       if (hata is ApiProblem && hata.type == ProblemType.refreshConflict) {
@@ -418,7 +420,7 @@ final class SessionStore {
 
   /// Zamanı geldiyse (ya da `integrity-required` alındıysa) yenileme
   /// token'ının özetine bağlı kanıt; gerekmiyorsa ya da alınamazsa `null`.
-  Future<String?> _butunlukKaniti(KayitliOturum oturum) async {
+  Future<IstekKaniti?> _butunlukKaniti(KayitliOturum oturum) async {
     final kanit = _kanit;
     if (kanit == null) return null;
     final sonrasi = oturum.butunlukSonrasi;
@@ -482,8 +484,12 @@ SessionStore _sessionStoreOlustur(Ref ref) {
   final butunluk = ref.watch(butunlukKanitiProvider);
   final oturum = SessionStore(
     depo: ref.watch(tokenDeposuProvider),
-    yenileyici: (token, {butunlukTokeni}) => auth.refresh(
-      body: RefreshRequest(refreshToken: token, integrityToken: butunlukTokeni),
+    yenileyici: (token, {butunlukKaniti}) => auth.refresh(
+      body: RefreshRequest(
+        refreshToken: token,
+        integrityToken: butunlukKaniti?.integrityToken,
+        appAttest: butunlukKaniti?.appAttest,
+      ),
     ),
     yoklayici: () async {
       await status.getStatus();

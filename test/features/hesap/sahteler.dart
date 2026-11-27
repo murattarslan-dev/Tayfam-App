@@ -187,7 +187,7 @@ final class SahteOturum {
     : _yenileme = yenileme ?? (() => oturum(n: 2)) {
     store = SessionStore(
       depo: BellekTokenDeposu(),
-      yenileyici: (_, {butunlukTokeni}) async {
+      yenileyici: (_, {butunlukKaniti}) async {
         yenilemeSayisi++;
         return _yenileme();
       },

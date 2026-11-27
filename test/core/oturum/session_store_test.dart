@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/oturum/token_deposu.dart';
 
@@ -69,9 +70,9 @@ final class _SahteSunucu {
   Future<Session> Function(String token)? yanit;
   int _sayac = 1;
 
-  Future<Session> yenile(String token, {String? butunlukTokeni}) {
+  Future<Session> yenile(String token, {IstekKaniti? butunlukKaniti}) {
     gonderilen.add(token);
-    kanitlar.add(butunlukTokeni);
+    kanitlar.add(butunlukKaniti?.integrityToken);
     final ozel = yanit;
     if (ozel != null) return ozel(token);
     _sayac++;
@@ -495,7 +496,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(
@@ -515,7 +516,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
@@ -529,7 +530,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(
@@ -570,7 +571,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(
@@ -589,7 +590,7 @@ void main() {
     });
 
     test('kanıt beklenirken eşzamanlı istekler tek yenileme yapar', () async {
-      final kapi = Completer<String?>();
+      final kapi = Completer<IstekKaniti?>();
       var istek = 0;
       final k = _Kurulum(
         kanit: (_) {
@@ -607,7 +608,7 @@ void main() {
       // Kanıt beklenirken yenileme token'ı henüz gönderilmedi.
       expect(k.sunucu.gonderilen, isEmpty);
       expect(await k.depodakiYenileme(), 'yenileme-1');
-      kapi.complete('kanit');
+      kapi.complete(const IstekKaniti.play('kanit'));
       expect(await tokenler, List.filled(4, 'erisim-2'));
       expect(istek, 1);
       expect(k.sunucu.gonderilen, ['yenileme-1']);
@@ -615,7 +616,7 @@ void main() {
     });
 
     test('integrity-required: kanıtla bir kez yenilenir', () async {
-      final k = _Kurulum(kanit: (_) async => 'kanit');
+      final k = _Kurulum(kanit: (_) async => const IstekKaniti.play('kanit'));
       await k.oturum.oturumAc(
         _oturum(1, butunlukSonrasi: _simdi.add(const Duration(hours: 5))),
       );
@@ -628,14 +629,14 @@ void main() {
     });
 
     test('integrity-required: token zaten değiştiyse yenilemez', () async {
-      final k = _Kurulum(kanit: (_) async => 'kanit');
+      final k = _Kurulum(kanit: (_) async => const IstekKaniti.play('kanit'));
       await k.oturum.oturumAc(_oturum(1));
       expect(await k.oturum.butunlukGerekti('eski'), 'erisim-1');
       expect(k.sunucu.gonderilen, isEmpty);
     });
 
     test('integrity-required zorlaması sonraki yenilemeye taşmaz', () async {
-      final k = _Kurulum(kanit: (_) async => 'kanit');
+      final k = _Kurulum(kanit: (_) async => const IstekKaniti.play('kanit'));
       await k.oturum.oturumAc(_oturum(1));
       await k.oturum.butunlukGerekti('erisim-1');
       await k.oturum.yenile();

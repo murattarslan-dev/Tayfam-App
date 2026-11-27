@@ -11,6 +11,7 @@ import 'package:tayfam/core/api/api_client.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/api.dart';
 import 'package:tayfam/core/api/http_tasima.dart';
+import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/oturum/token_deposu.dart';
 
@@ -135,16 +136,16 @@ final class _Kurulum {
     final status = StatusApi(tasima);
     oturum = SessionStore(
       depo: depo,
-      yenileyici: (token, {butunlukTokeni}) => auth.refresh(
+      yenileyici: (token, {butunlukKaniti}) => auth.refresh(
         body: RefreshRequest(
           refreshToken: token,
-          integrityToken: butunlukTokeni,
+          integrityToken: butunlukKaniti?.integrityToken,
         ),
       ),
       yoklayici: () async {
         await status.getStatus();
       },
-      kanit: (_) async => 'kanit',
+      kanit: (_) async => const IstekKaniti.play('kanit'),
       bekle: (_) async {},
       gunluk: gunluk.add,
     );

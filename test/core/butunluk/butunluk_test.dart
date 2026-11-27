@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/butunluk/butunluk_baglama.dart';
 import 'package:tayfam/core/butunluk/butunluk_kaniti.dart';
 import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 import 'package:tayfam/core/butunluk/kanal_butunluk_saglayici.dart';
 
-/// İsteği kaydeden, sonucu testin belirlediği sağlayıcı.
+/// İsteği kaydeden, sonucu testin belirlediği sağlayıcı. [sonuc] bir Play
+/// token'ı döner.
 final class _SahteSaglayici implements ButunlukSaglayici {
   _SahteSaglayici(this.sonuc);
 
@@ -19,11 +21,29 @@ final class _SahteSaglayici implements ButunlukSaglayici {
   Future<void> hazirla() async {}
 
   @override
-  Future<String?> token(String istekOzeti) {
+  Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async {
     ozetler.add(istekOzeti);
-    return sonuc();
+    final token = await sonuc();
+    return token == null ? null : IstekKaniti.play(token);
   }
 }
+
+/// Sabit bir App Attest kanıtı dönen sağlayıcı.
+final class _SahteAppAttest implements ButunlukSaglayici {
+  _SahteAppAttest(this.kanitDegeri);
+
+  final AppAttestProof kanitDegeri;
+
+  @override
+  Future<void> hazirla() async {}
+
+  @override
+  Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async =>
+      IstekKaniti.appAttest(kanitDegeri);
+}
+
+/// 32 baytlık anahtar kimliğinin base64 metni (44 karakter).
+final String _anahtar = '${'A' * 43}=';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -72,14 +92,14 @@ void main() {
     test('giriş kanıtı nonce\'un bağlama değeriyle istenir', () async {
       final saglayici = _SahteSaglayici(() async => 'kanit');
       final kanit = ButunlukKaniti(saglayici, gunluk: (_) {});
-      expect(await kanit.giris('n'), 'kanit');
+      expect((await kanit.giris('n'))?.integrityToken, 'kanit');
       expect(saglayici.ozetler, [girisBaglamasi('n')]);
     });
 
     test('yenileme kanıtına token değil özetin özeti gider', () async {
       final saglayici = _SahteSaglayici(() async => 'kanit');
       final kanit = ButunlukKaniti(saglayici, gunluk: (_) {});
-      expect(await kanit.yenileme('yenileme-1'), 'kanit');
+      expect((await kanit.yenileme('yenileme-1'))?.integrityToken, 'kanit');
       expect(saglayici.ozetler, [yenilemeBaglamasi('yenileme-1')]);
     });
 
@@ -132,6 +152,38 @@ void main() {
         );
         expect(await kanit.giris('n'), isNull);
       }
+    });
+
+    test('App Attest: girişte attestation, yenilemede assertion', () async {
+      final giris = AppAttestProof(keyId: _anahtar, attestation: 'YXR0');
+      final yenileme = AppAttestProof(keyId: _anahtar, assertion: 'YXM=');
+      final g = ButunlukKaniti(_SahteAppAttest(giris), gunluk: (_) {});
+      final y = ButunlukKaniti(_SahteAppAttest(yenileme), gunluk: (_) {});
+      expect((await g.giris('n'))?.appAttest, giris);
+      expect((await y.yenileme('t'))?.appAttest, yenileme);
+      // Yanlış aşamanın kanıtı gönderilmez.
+      expect(await g.yenileme('t'), isNull);
+      expect(await y.giris('n'), isNull);
+    });
+
+    test('App Attest: sınır dışı kanıt gönderilmez', () async {
+      final gunluk = <String>[];
+      for (final kanitDegeri in [
+        AppAttestProof(keyId: 'kisa', attestation: 'YXR0'),
+        AppAttestProof(keyId: _anahtar, attestation: ''),
+        AppAttestProof(
+          keyId: _anahtar,
+          attestation: 'A' * (ButunlukKaniti.enUzunAttestation + 1),
+        ),
+        AppAttestProof(keyId: _anahtar, attestation: 'YXR0', assertion: 'YXM='),
+      ]) {
+        final kanit = ButunlukKaniti(
+          _SahteAppAttest(kanitDegeri),
+          gunluk: gunluk.add,
+        );
+        expect(await kanit.giris('n'), isNull);
+      }
+      expect(gunluk.toSet(), {'bütünlük: geçersiz token'});
     });
   });
 
@@ -207,6 +259,73 @@ void main() {
       final saglayici = KanalButunlukSaglayici(kanal: kanal);
       expect(await saglayici.token('ozet'), isNull);
       await saglayici.hazirla();
+      final ios = KanalButunlukSaglayici(kanal: kanal, appAttest: true);
+      expect(await ios.kanit('ozet', ButunlukIstegi.giris), isNull);
+    });
+
+    test('Android: kanit Play token\'ıdır', () async {
+      yanitla((_) => 'kanit');
+      final saglayici = KanalButunlukSaglayici(kanal: kanal, projeNumarasi: 7);
+      final k = await saglayici.kanit('ozet', ButunlukIstegi.yenileme);
+      expect(k?.integrityToken, 'kanit');
+      expect(k?.appAttest, isNull);
+      expect(cagrilar.single.method, 'token');
+    });
+
+    test('iOS: istek ve istek özeti gider, kanıt aşamaya göre', () async {
+      yanitla((_) => {'keyId': _anahtar, 'veri': 'YXR0'});
+      final saglayici = KanalButunlukSaglayici(kanal: kanal, appAttest: true);
+      final g = await saglayici.kanit('ozet', ButunlukIstegi.giris);
+      expect(
+        g?.appAttest,
+        AppAttestProof(keyId: _anahtar, attestation: 'YXR0'),
+      );
+      final y = await saglayici.kanit('ozet', ButunlukIstegi.yenileme);
+      expect(y?.appAttest, AppAttestProof(keyId: _anahtar, assertion: 'YXR0'));
+      expect(cagrilar.map((c) => c.method), ['appAttest', 'appAttest']);
+      expect(cagrilar.first.arguments, {
+        'istek': 'giris',
+        'istekOzeti': 'ozet',
+      });
+      expect(cagrilar.last.arguments, {
+        'istek': 'yenileme',
+        'istekOzeti': 'ozet',
+      });
+    });
+
+    test('iOS: hazırlık köprüye gitmez; desteklenmeyen cihazda null', () async {
+      yanitla((_) => null);
+      final saglayici = KanalButunlukSaglayici(kanal: kanal, appAttest: true);
+      await saglayici.hazirla();
+      expect(cagrilar, isEmpty);
+      expect(await saglayici.kanit('ozet', ButunlukIstegi.giris), isNull);
+    });
+
+    test('iOS: hata kodu türe, bozuk sonuç bilinmeyene eşlenir', () async {
+      final saglayici = KanalButunlukSaglayici(kanal: kanal, appAttest: true);
+      yanitla((_) => throw PlatformException(code: 'anahtarYok'));
+      await expectLater(
+        saglayici.kanit('ozet', ButunlukIstegi.yenileme),
+        throwsA(
+          isA<ButunlukHatasi>().having(
+            (h) => h.tur,
+            'tur',
+            ButunlukHatasiTuru.anahtarYok,
+          ),
+        ),
+      );
+      for (final bozuk in <Object>[
+        'metin',
+        {'keyId': _anahtar},
+        {'keyId': '', 'veri': 'YXR0'},
+        {'keyId': _anahtar, 'veri': ''},
+      ]) {
+        yanitla((_) => bozuk);
+        await expectLater(
+          saglayici.kanit('ozet', ButunlukIstegi.giris),
+          throwsA(isA<ButunlukHatasi>()),
+        );
+      }
     });
 
     test('hata metninde değer yok', () {

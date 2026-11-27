@@ -13,6 +13,7 @@
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		A7F0C1D22F14B00100A11E01 /* AppleGirisKoprusu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C1D32F14B00100A11E01 /* AppleGirisKoprusu.swift */; };
 		A7F0C1D42F2A000100A11E01 /* SignalKoprusu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C1D52F2A000100A11E01 /* SignalKoprusu.swift */; };
+		B3A7A77E2F3C000100A11E01 /* ButunlukKoprusu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A7A77F2F3C000100A11E01 /* ButunlukKoprusu.swift */; };
 		A7F0C1D82F2A000100A11E01 /* TayfamSignal in Frameworks */ = {isa = PBXBuildFile; productRef = A7F0C1D72F2A000100A11E01 /* TayfamSignal */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
@@ -54,6 +55,7 @@
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A7F0C1D32F14B00100A11E01 /* AppleGirisKoprusu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleGirisKoprusu.swift; sourceTree = "<group>"; };
 		A7F0C1D52F2A000100A11E01 /* SignalKoprusu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalKoprusu.swift; sourceTree = "<group>"; };
+		B3A7A77F2F3C000100A11E01 /* ButunlukKoprusu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButunlukKoprusu.swift; sourceTree = "<group>"; };
 		A7F0C1D42F14B00100A11E01 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				A7F0C1D32F14B00100A11E01 /* AppleGirisKoprusu.swift */,
 				A7F0C1D52F2A000100A11E01 /* SignalKoprusu.swift */,
+				B3A7A77F2F3C000100A11E01 /* ButunlukKoprusu.swift */,
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				A7F0C1D42F14B00100A11E01 /* Runner.entitlements */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
@@ -296,6 +299,7 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				A7F0C1D22F14B00100A11E01 /* AppleGirisKoprusu.swift in Sources */,
 				A7F0C1D42F2A000100A11E01 /* SignalKoprusu.swift in Sources */,
+				B3A7A77E2F3C000100A11E01 /* ButunlukKoprusu.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 			);

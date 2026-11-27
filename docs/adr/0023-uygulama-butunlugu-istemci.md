@@ -206,3 +206,32 @@ iki oturum bayrağı" listesine eklenen üçüncü değerdir; gerekçe:
   ve olay akışı yoktur, bu yüzden tekrar çağrı güvenlidir. Paket
   yükseltmelerinde bu varsayım yeniden doğrulanır; iOS girişinde (#122 ile
   birlikte) ayrıca bakılır.
+- **2026-11-27 (iOS App Attest, #122; Tayfam-Api #195, ADR-0034 §7):**
+  §1'deki iOS kısmı uygulandı. Aynı `tayfam/butunluk` kanalı, Swift
+  köprüsü `ios/Runner/ButunlukKoprusu.swift` (`DCAppAttestService`):
+  - Sağlayıcı arayüzü kanıtın hangi istek için alındığını bilir
+    (`ButunlukIstegi.giris` / `yenileme`) ve `IstekKaniti` döner: Android'de
+    `integrity_token`, iOS'ta `app_attest` (`key_id` + `attestation` ya da
+    `assertion`). Android akışı değişmedi.
+  - **Girişte her seferinde yeni anahtar** üretilir ve onaylatılır
+    (attestation); **yenilemede** o anahtarla imza (assertion) üretilir.
+    Sunucu bir anahtarı ikinci kez bağlamaz (Tayfam-Api ADR-0022 uygulama
+    notu); bu yüzden anahtar girişler arasında yeniden kullanılmaz.
+  - `clientDataHash` = SHA-256(bağlama metni), Swift'te CryptoKit ile;
+    bağlama değeri Dart'ta hesaplanmaya devam eder, yenileme token'ı
+    köprüye gelmez.
+  - **Anahtar kimliği Keychain'de** (`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`,
+    yedeğe ve başka cihaza geçmez; ADR-0006'nın güvenli depo listesine
+    eklenen değer). Anahtarın kendisi Secure Enclave'dedir, uygulama onu
+    hiç görmez. Kimlik yalnızca onaydan sonra yazılır; geçersiz anahtarda
+    (`invalidKey`, ör. yeniden kurulum) silinir, sonraki giriş yenisini
+    üretir. Çıkışta silinmez: bir sonraki giriş üzerine yazar.
+  - Simülatörde ve App Attest'i desteklemeyen cihazda köprü `nil` döner:
+    istek kanıtsız gider (`missing`), hata günlüğü yoktur. Yeni hata türü:
+    `anahtarYok`.
+  - Entitlement: `com.apple.developer.devicecheck.appattest-environment` =
+    `production` (TestFlight/App Store anahtarları production ortamındadır;
+    sunucuda `INTEGRITY_IOS_ENVIRONMENT=production`). App ID'de App Attest
+    yeteneği açık olmalıdır (platform sahibi, T-38).
+  - Yeni paket yoktur (CryptoKit, DeviceCheck ve Security sistem
+    çerçeveleridir).

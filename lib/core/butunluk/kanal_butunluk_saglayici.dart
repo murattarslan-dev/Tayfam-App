@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 
 /// Play Integrity'nin bağlı olduğu Google Cloud projesinin numarası
@@ -11,27 +12,73 @@ const int butunlukBulutProjeNumarasi = int.fromEnvironment(
   defaultValue: 73439258394,
 );
 
-/// [ButunlukSaglayici]'nın Android uygulaması: `tayfam/butunluk` platform
-/// kanalı üzerinden Kotlin köprüsü (`ButunlukKoprusu.kt`) ve Google'ın
-/// `com.google.android.play:integrity` kütüphanesi (standard request).
+/// [ButunlukSaglayici]'nın platform kanalı uygulaması (`tayfam/butunluk`).
 ///
-/// Token sağlayıcısını köprü bellekte tutar. Kanal hata kodu
-/// [ButunlukHatasiTuru] adıdır; mesaj ve ayrıntı taşınmaz. Hiçbir şey
-/// loglanmaz.
+/// - Android: Kotlin köprüsü (`ButunlukKoprusu.kt`) ve Google'ın
+///   `com.google.android.play:integrity` kütüphanesi (standard request).
+///   Token sağlayıcısını köprü bellekte tutar.
+/// - iOS ([appAttest]): Swift köprüsü (`ButunlukKoprusu.swift`) ve
+///   `DCAppAttestService`. Girişte yeni anahtar üretilip onaylatılır,
+///   yenilemede o anahtarla imza üretilir; anahtar kimliği Keychain'dedir
+///   (ADR-0023 iOS notu). `clientDataHash` = SHA-256(istek özeti metni)
+///   köprüde hesaplanır. Desteklemeyen cihazda (simülatör) köprü `null`
+///   döner.
+///
+/// Kanal hata kodu [ButunlukHatasiTuru] adıdır; mesaj ve ayrıntı taşınmaz.
+/// Hiçbir şey loglanmaz.
 final class KanalButunlukSaglayici implements ButunlukSaglayici {
   KanalButunlukSaglayici({
     MethodChannel? kanal,
     this._projeNumarasi = butunlukBulutProjeNumarasi,
+    this.appAttest = false,
   }) : _kanal = kanal ?? const MethodChannel(kanalAdi);
 
-  /// Platform kanalının adı (Kotlin tarafıyla aynı).
+  /// Platform kanalının adı (Kotlin ve Swift tarafıyla aynı).
   static const String kanalAdi = 'tayfam/butunluk';
 
   final MethodChannel _kanal;
   final int _projeNumarasi;
 
+  /// iOS köprüsü (App Attest) mı.
+  final bool appAttest;
+
+  @override
+  Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async {
+    if (!appAttest) {
+      final t = await token(istekOzeti);
+      return t == null ? null : IstekKaniti.play(t);
+    }
+    final Object? sonuc;
+    try {
+      sonuc = await _kanal.invokeMethod<Object?>('appAttest', {
+        'istek': istek.name,
+        'istekOzeti': istekOzeti,
+      });
+    } on PlatformException catch (e) {
+      throw ButunlukHatasi(_tur(e.code));
+    } on MissingPluginException {
+      return null;
+    }
+    if (sonuc == null) return null;
+    if (sonuc is! Map<Object?, Object?>) {
+      throw const ButunlukHatasi(ButunlukHatasiTuru.bilinmeyen);
+    }
+    final keyId = sonuc['keyId'];
+    final veri = sonuc['veri'];
+    if (keyId is String && keyId.isNotEmpty && veri is String) {
+      if (veri.isNotEmpty) {
+        final kanit = istek == ButunlukIstegi.giris
+            ? AppAttestProof(keyId: keyId, attestation: veri)
+            : AppAttestProof(keyId: keyId, assertion: veri);
+        return IstekKaniti.appAttest(kanit);
+      }
+    }
+    throw const ButunlukHatasi(ButunlukHatasiTuru.bilinmeyen);
+  }
+
   @override
   Future<void> hazirla() async {
+    if (appAttest) return; // App Attest'in hazırlığı yok.
     try {
       await _kanal.invokeMethod<void>('hazirla', {'proje': _projeNumarasi});
     } on PlatformException {
@@ -41,7 +88,7 @@ final class KanalButunlukSaglayici implements ButunlukSaglayici {
     }
   }
 
-  @override
+  /// Android: [istekOzeti]'ne bağlı Play Integrity token'ı.
   Future<String?> token(String istekOzeti) async {
     final Object? sonuc;
     try {

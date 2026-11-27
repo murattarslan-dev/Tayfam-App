@@ -1175,6 +1175,49 @@ final class AnswerUpdateRequest {
 /// çevrimiçi etkinlikte "Katıldım". `hike_start`: yoklamada çıkış (`roll_call`).
 /// `organizer`: organizatör düzeltmesi. `qr`: üye organizatörün
 /// QR'ını okuttu (ADR-0038 §3).
+final class AppAttestProof {
+  const AppAttestProof({required this.keyId, this.attestation, this.assertion});
+
+  /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
+  /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
+  /// fırlatır (mesajda değer değil, yalnızca alan adı vardır).
+  factory AppAttestProof.fromJson(Map<String, Object?> json) => AppAttestProof(
+    keyId: _readString(json['key_id'], 'AppAttestProof.key_id'),
+    attestation: switch (json['attestation']) {
+      null => null,
+      final Object v => _readString(v, 'AppAttestProof.attestation'),
+    },
+    assertion: switch (json['assertion']) {
+      null => null,
+      final Object v => _readString(v, 'AppAttestProof.assertion'),
+    },
+  );
+
+  final String keyId;
+
+  final String? attestation;
+
+  final String? assertion;
+
+  /// JSON nesnesine yazar; `null` alanlar yazılmaz.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'key_id': keyId,
+    if (attestation case final value?) 'attestation': value,
+    if (assertion case final value?) 'assertion': value,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppAttestProof &&
+          keyId == other.keyId &&
+          attestation == other.attestation &&
+          assertion == other.assertion;
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[keyId, attestation, assertion]);
+}
+
 enum AttendanceMethod {
   location('location'),
   online('online'),
@@ -23394,7 +23437,11 @@ final class ReferredUser {
 }
 
 final class RefreshRequest {
-  const RefreshRequest({required this.refreshToken, this.integrityToken});
+  const RefreshRequest({
+    required this.refreshToken,
+    this.integrityToken,
+    this.appAttest,
+  });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
   /// Eksik ya da yanlış tipte zorunlu alan [FormatException]
@@ -23407,6 +23454,12 @@ final class RefreshRequest {
     integrityToken: switch (json['integrity_token']) {
       null => null,
       final Object v => _readString(v, 'RefreshRequest.integrity_token'),
+    },
+    appAttest: switch (json['app_attest']) {
+      null => null,
+      final Object v => AppAttestProof.fromJson(
+        _readObject(v, 'RefreshRequest.app_attest'),
+      ),
     },
   );
 
@@ -23422,10 +23475,13 @@ final class RefreshRequest {
   /// Kısıtlar: maxLength: 16384.
   final String? integrityToken;
 
+  final AppAttestProof? appAttest;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'refresh_token': refreshToken,
     if (integrityToken case final value?) 'integrity_token': value,
+    if (appAttest case final value?) 'app_attest': value.toJson(),
   };
 
   @override
@@ -23433,10 +23489,12 @@ final class RefreshRequest {
       identical(this, other) ||
       other is RefreshRequest &&
           refreshToken == other.refreshToken &&
-          integrityToken == other.integrityToken;
+          integrityToken == other.integrityToken &&
+          appAttest == other.appAttest;
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[refreshToken, integrityToken]);
+  int get hashCode =>
+      Object.hashAll(<Object?>[refreshToken, integrityToken, appAttest]);
 }
 
 final class RegistrationRequest {
@@ -24560,6 +24618,7 @@ final class SignInRequest {
     required this.nonce,
     required this.platform,
     this.integrityToken,
+    this.appAttest,
   });
 
   /// JSON nesnesinden okur; tanınmayan alanlar yok sayılır.
@@ -24577,6 +24636,12 @@ final class SignInRequest {
     integrityToken: switch (json['integrity_token']) {
       null => null,
       final Object v => _readString(v, 'SignInRequest.integrity_token'),
+    },
+    appAttest: switch (json['app_attest']) {
+      null => null,
+      final Object v => AppAttestProof.fromJson(
+        _readObject(v, 'SignInRequest.app_attest'),
+      ),
     },
   );
 
@@ -24602,6 +24667,8 @@ final class SignInRequest {
   /// Kısıtlar: maxLength: 16384.
   final String? integrityToken;
 
+  final AppAttestProof? appAttest;
+
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
   Map<String, Object?> toJson() => <String, Object?>{
     'provider': provider.wire,
@@ -24609,6 +24676,7 @@ final class SignInRequest {
     'nonce': nonce,
     'platform': platform.wire,
     if (integrityToken case final value?) 'integrity_token': value,
+    if (appAttest case final value?) 'app_attest': value.toJson(),
   };
 
   @override
@@ -24619,7 +24687,8 @@ final class SignInRequest {
           idToken == other.idToken &&
           nonce == other.nonce &&
           platform == other.platform &&
-          integrityToken == other.integrityToken;
+          integrityToken == other.integrityToken &&
+          appAttest == other.appAttest;
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
@@ -24628,6 +24697,7 @@ final class SignInRequest {
     nonce,
     platform,
     integrityToken,
+    appAttest,
   ]);
 }
 
