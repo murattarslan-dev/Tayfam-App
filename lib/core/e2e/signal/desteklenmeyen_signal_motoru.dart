@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
 /// E2E'nin olmadığı platformlar için [SignalMotoru]: web geliştirme
-/// derlemesi (ADR-0011) ve iOS köprüsü yazılana kadar iOS. Her çağrı
+/// derlemesi (ADR-0011). Her çağrı
 /// [UnsupportedError] fırlatır; arayüz E2E konuşmalarını "yalnızca mobil
 /// uygulamada" boş durumuyla gösterir.
 final class DesteklenmeyenSignalMotoru implements SignalMotoru {

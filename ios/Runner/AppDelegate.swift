@@ -8,6 +8,10 @@ import UIKit
   private var oncekiParlaklik: CGFloat?
   /// `tayfam/apple-giris` köprüsü; kanal onu zayıf tuttuğu için burada durur.
   private var appleGiris: AppleGirisKoprusu?
+  /// `tayfam/e2e/signal` köprüsü (birebir mesaj şifrelemesi, ADR-0034 §7).
+  private var signal: SignalKoprusu?
+  /// `tayfam/butunluk` köprüsü (App Attest, ADR-0034 §7).
+  private var butunluk: ButunlukKoprusu?
 
   override func application(
     _ application: UIApplication,
@@ -19,7 +23,10 @@ import UIKit
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     kronometreKanaliniKur(engineBridge.pluginRegistry)
+    bildirimKanaliniKur(engineBridge.pluginRegistry)
     appleGiris = AppleGirisKoprusu.kur(engineBridge.pluginRegistry)
+    signal = SignalKoprusu.kur(engineBridge.pluginRegistry)
+    butunluk = ButunlukKoprusu.kur(engineBridge.pluginRegistry)
   }
 
   /// `tayfam/kronometre` (istemci ADR-0031 §3): kronometre ekranı açıkken
@@ -45,6 +52,33 @@ import UIKit
       default:
         result(FlutterMethodNotImplemented)
       }
+    }
+  }
+
+  /// `tayfam/bildirim` (istemci ADR-0019, iOS notu): yalnızca `ayarlariAc`.
+  /// İzin reddedildikten sonra iOS izin penceresini bir daha göstermez;
+  /// Profil → Bildirimler uygulamanın sistem bildirim ayarını açar. Kanal
+  /// kurulumu (`kanallariKur`) Android'e özgüdür, Dart iOS'ta çağırmaz.
+  private func bildirimKanaliniKur(_ kayit: FlutterPluginRegistry) {
+    guard let kayitci = kayit.registrar(forPlugin: "TayfamBildirim") else { return }
+    let kanal = FlutterMethodChannel(
+      name: "tayfam/bildirim", binaryMessenger: kayitci.messenger())
+    kanal.setMethodCallHandler { call, result in
+      guard call.method == "ayarlariAc" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      let adres: String
+      if #available(iOS 16.0, *) {
+        adres = UIApplication.openNotificationSettingsURLString
+      } else {
+        adres = UIApplication.openSettingsURLString
+      }
+      guard let url = URL(string: adres) else {
+        result(false)
+        return
+      }
+      UIApplication.shared.open(url) { acildi in result(acildi) }
     }
   }
 

@@ -14,9 +14,8 @@ import 'package:tayfam/core/oturum/oturum_durumu.dart';
 export 'package:tayfam/core/e2e/cihaz/e2e_cihaz_yoneticisi.dart'
     show E2eCihazBilgisi, E2eCihazDurumu;
 
-/// Bu derlemede uçtan uca şifreleme var mı: Android'de evet; web
-/// geliştirme derlemesinde (ADR-0011) ve iOS köprüsü yazılana kadar
-/// iOS'ta hayır. Testler override eder.
+/// Bu derlemede uçtan uca şifreleme var mı: Android ve iOS'ta evet; web
+/// geliştirme derlemesinde (ADR-0011) hayır. Testler override eder.
 final e2eEtkinProvider = Provider<bool>(
   (ref) => ref.watch(signalDestekleniyorProvider),
   name: 'e2eEtkinProvider',

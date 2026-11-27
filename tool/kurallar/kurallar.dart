@@ -8,5 +8,6 @@ export 'src/bagimlilik.dart';
 export 'src/bulgu.dart';
 export 'src/denetci.dart';
 export 'src/dosya_toplayici.dart';
+export 'src/ios_metinleri.dart';
 export 'src/import_kurallari.dart' show hedefYolu, katman, Katman;
 export 'src/tarayici.dart';

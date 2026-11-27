@@ -41,7 +41,7 @@ final class _Kurulum {
     );
     final oturum = SessionStore(
       depo: BellekTokenDeposu(),
-      yenileyici: (_, {butunlukTokeni}) => throw const ApiOffline(),
+      yenileyici: (_, {butunlukKaniti}) => throw const ApiOffline(),
       yoklayici: () async {},
       gunluk: gunluk.add,
     );

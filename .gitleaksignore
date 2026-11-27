@@ -6,3 +6,7 @@ beb1c0c018d304846123c099b1e9198344ba9b95:test/shell/derin_link/davet_akisi_test.
 # değeri (`sahte_qr-…`); sonraki commit'te adı anahtar kelime taşımayan
 # bir sabitle değiştirildi.
 57ad21119a263dc01756479c9f798f73841b322b:test/shell/derin_link/qr_katilim_test.dart:generic-api-key:24
+# PR #344'ün ilk commit'indeki test sabiti: açıkça sahte QR katılım değeri
+# (`sahte_qr-…`); sonraki commit'te adı anahtar kelime taşımayan bir
+# sabitle değiştirildi.
+dc80447827ba9de1a865659c946049e79ff3682c:test/shell/derin_link/uygulama_linki_dosyalari_test.dart:generic-api-key:22

@@ -7,23 +7,25 @@ import 'package:flutter/services.dart';
 
 import 'package:tayfam/core/push/push_platformu.dart';
 
-/// Android tarafındaki küçük platform kanalı (`MainActivity.kt`): bildirim
-/// kanallarını kurar ve uygulamanın bildirim ayarlarını açar. Ek paket
-/// gerekmez (istemci ADR-0019 §4).
+/// Yerel taraftaki küçük platform kanalı: Android'de (`MainActivity.kt`)
+/// bildirim kanallarını kurar ve uygulamanın bildirim ayarlarını açar;
+/// iOS'ta (`AppDelegate.swift`) yalnızca ayarları açar. Ek paket gerekmez
+/// (istemci ADR-0019 §4, iOS notu).
 const MethodChannel bildirimKanali = MethodChannel('tayfam/bildirim');
 
 /// FCM ile push (istemci ADR-0019). Firebase'e dokunan tek sınıftır.
 ///
-/// - Firebase yapılandırması `android/app/google-services.json`'dan gelir
-///   (değerler public; kesin kural 6). Analitik ve otomatik FCM kaydı
-///   manifestte kapalıdır: FCM kaydı yalnızca [kaydol] çağrılınca, yani
-///   oturum açık ve izin verilmişken yapılır.
+/// - Firebase yapılandırması `android/app/google-services.json`'dan ve
+///   `ios/Runner/GoogleService-Info.plist`'ten gelir (değerler public; kesin
+///   kural 6). Otomatik FCM kaydı manifestte ve `Info.plist`'te kapalıdır:
+///   FCM (iOS'ta APNs) kaydı yalnızca [kaydol] çağrılınca, yani oturum açık
+///   ve izin verilmişken yapılır.
 /// - firebase_messaging 17'nin FID API'si (`register` / `unregister` /
 ///   `onRegistered`) kullanılır; kullanımdan kalkan kayıt token'ı API'si
 ///   (`getToken` / `deleteToken` / `onTokenRefresh`) Firebase'in uyarısına
 ///   uygun olarak hiç çağrılmaz (Tayfam-Api ADR-0036).
-/// - Başlatma başarısız olursa (ör. iOS'ta yapılandırma yok) push o
-///   çalışmada kapalıdır; hiçbir çağrı hata fırlatmaz.
+/// - Başlatma başarısız olursa push o çalışmada kapalıdır; hiçbir çağrı
+///   hata fırlatmaz.
 /// - Kimlik (FID), mesaj verisi ve bildirim içeriği loglanmaz.
 final class FirebasePushPlatformu implements PushPlatformu {
   FirebasePushPlatformu({this._kanal = bildirimKanali});
@@ -145,7 +147,10 @@ final class FirebasePushPlatformu implements PushPlatformu {
 
   @override
   Future<bool> ayarlariAc() async {
-    if (defaultTargetPlatform != TargetPlatform.android) return false;
+    if (defaultTargetPlatform != TargetPlatform.android &&
+        defaultTargetPlatform != TargetPlatform.iOS) {
+      return false;
+    }
     try {
       return await _kanal.invokeMethod<bool>('ayarlariAc') ?? false;
     } on PlatformException {

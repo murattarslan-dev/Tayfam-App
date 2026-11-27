@@ -338,8 +338,16 @@ void main() {
       expect(kap.read(signalDestekleniyorProvider), isTrue);
     });
 
-    test('iOS\'ta (köprü yazılana kadar) desteklenmiyor', () async {
+    test('iOS\'ta da platform kanalı (Swift köprüsü)', () {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      final kap = ProviderContainer.test();
+      expect(kap.read(signalMotoruProvider), isA<KanalSignalMotoru>());
+      expect(kap.read(signalDestekleniyorProvider), isTrue);
+    });
+
+    test('diğer platformlarda desteklenmiyor', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       final kap = ProviderContainer.test();
       final motor = kap.read(signalMotoruProvider);

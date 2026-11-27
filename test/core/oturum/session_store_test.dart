@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tayfam/core/api/api_hatalari.dart';
 import 'package:tayfam/core/api/gen/models.dart';
 import 'package:tayfam/core/api/gen/problem_type.dart';
+import 'package:tayfam/core/butunluk/butunluk_saglayici.dart';
 import 'package:tayfam/core/oturum/session_store.dart';
 import 'package:tayfam/core/oturum/token_deposu.dart';
 
@@ -69,9 +70,9 @@ final class _SahteSunucu {
   Future<Session> Function(String token)? yanit;
   int _sayac = 1;
 
-  Future<Session> yenile(String token, {String? butunlukTokeni}) {
+  Future<Session> yenile(String token, {IstekKaniti? butunlukKaniti}) {
     gonderilen.add(token);
-    kanitlar.add(butunlukTokeni);
+    kanitlar.add(butunlukKaniti?.integrityToken);
     final ozel = yanit;
     if (ozel != null) return ozel(token);
     _sayac++;
@@ -86,12 +87,14 @@ final class _SahteSunucu {
 }
 
 final class _Kurulum {
-  _Kurulum({DateTime? saat, YenilemeKaniti? kanit}) : saat = saat ?? _simdi {
+  _Kurulum({DateTime? saat, YenilemeKaniti? kanit, KanitUnutucu? kanitUnut})
+    : saat = saat ?? _simdi {
     oturum = SessionStore(
       depo: depo,
       yenileyici: sunucu.yenile,
       yoklayici: sunucu.yokla,
       kanit: kanit,
+      kanitUnut: kanitUnut ?? () async => unutma++,
       saat: () => this.saat,
       bekle: (sure) async => beklemeler.add(sure),
       gunluk: gunluk.add,
@@ -106,6 +109,9 @@ final class _Kurulum {
   final List<Duration> beklemeler = [];
   final List<OturumOlayi> olaylar = [];
   final List<String> gunluk = [];
+
+  /// Bütünlük anahtarının kaç kez unutulduğu (oturum kapanışı).
+  int unutma = 0;
   late final SessionStore oturum;
 
   Future<String?> depodakiYenileme() async {
@@ -481,6 +487,50 @@ void main() {
     });
   });
 
+  group('bütünlük anahtarı oturumla gider (istemci ADR-0023 iOS notu)', () {
+    for (final neden in [
+      OturumKapanisNedeni.cikis,
+      OturumKapanisNedeni.hesapSilindi,
+      OturumKapanisNedeni.sunucuSonlandirdi,
+      OturumKapanisNedeni.yetkisiz,
+    ]) {
+      test('kapanışta unutulur: ${neden.name}', () async {
+        final k = _Kurulum();
+        await k.oturum.oturumAc(_oturum(1));
+        await k.oturum.kapat(neden);
+        expect(k.unutma, 1);
+        // Zaten kapalı oturum yeniden kapatılınca bir şey olmaz.
+        await k.oturum.kapat(neden);
+        expect(k.unutma, 1);
+      });
+    }
+
+    test('yenileme reddedilince de unutulur', () async {
+      final k = _Kurulum();
+      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+      k.sunucu.yanit = (_) async =>
+          throw const ApiProblem(type: ProblemType.invalidRefresh, status: 401);
+      await expectLater(k.oturum.erisimTokeni(), throwsA(isA<OturumYok>()));
+      expect(k.unutma, 1);
+    });
+
+    test('oturum yokken ve yenilemede unutulmaz', () async {
+      final k = _Kurulum();
+      await k.oturum.kapat(OturumKapanisNedeni.cikis);
+      await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
+      expect(await k.oturum.erisimTokeni(), 'erisim-2');
+      expect(k.unutma, 0);
+    });
+
+    test('unutma hatası kapanışı engellemez', () async {
+      final k = _Kurulum(kanitUnut: () async => throw const FormatException());
+      await k.oturum.oturumAc(_oturum(1));
+      await k.oturum.kapat(OturumKapanisNedeni.cikis);
+      expect(await k.oturum.durum(), isA<OturumKapali>());
+      expect(k.gunluk, contains('oturum: bütünlük anahtarı silinemedi'));
+    });
+  });
+
   group('bütünlük kanıtı (istemci ADR-0023)', () {
     test('integrity_check_after depoya yazılır ve okunur', () async {
       final k = _Kurulum();
@@ -495,7 +545,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(
@@ -515,7 +565,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(_oturum(1, erisimOmru: Duration.zero));
@@ -529,7 +579,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(
@@ -570,7 +620,7 @@ void main() {
       final k = _Kurulum(
         kanit: (token) async {
           istenen.add(token);
-          return 'kanit';
+          return const IstekKaniti.play('kanit');
         },
       );
       await k.oturum.oturumAc(
@@ -589,7 +639,7 @@ void main() {
     });
 
     test('kanıt beklenirken eşzamanlı istekler tek yenileme yapar', () async {
-      final kapi = Completer<String?>();
+      final kapi = Completer<IstekKaniti?>();
       var istek = 0;
       final k = _Kurulum(
         kanit: (_) {
@@ -607,7 +657,7 @@ void main() {
       // Kanıt beklenirken yenileme token'ı henüz gönderilmedi.
       expect(k.sunucu.gonderilen, isEmpty);
       expect(await k.depodakiYenileme(), 'yenileme-1');
-      kapi.complete('kanit');
+      kapi.complete(const IstekKaniti.play('kanit'));
       expect(await tokenler, List.filled(4, 'erisim-2'));
       expect(istek, 1);
       expect(k.sunucu.gonderilen, ['yenileme-1']);
@@ -615,7 +665,7 @@ void main() {
     });
 
     test('integrity-required: kanıtla bir kez yenilenir', () async {
-      final k = _Kurulum(kanit: (_) async => 'kanit');
+      final k = _Kurulum(kanit: (_) async => const IstekKaniti.play('kanit'));
       await k.oturum.oturumAc(
         _oturum(1, butunlukSonrasi: _simdi.add(const Duration(hours: 5))),
       );
@@ -628,14 +678,14 @@ void main() {
     });
 
     test('integrity-required: token zaten değiştiyse yenilemez', () async {
-      final k = _Kurulum(kanit: (_) async => 'kanit');
+      final k = _Kurulum(kanit: (_) async => const IstekKaniti.play('kanit'));
       await k.oturum.oturumAc(_oturum(1));
       expect(await k.oturum.butunlukGerekti('eski'), 'erisim-1');
       expect(k.sunucu.gonderilen, isEmpty);
     });
 
     test('integrity-required zorlaması sonraki yenilemeye taşmaz', () async {
-      final k = _Kurulum(kanit: (_) async => 'kanit');
+      final k = _Kurulum(kanit: (_) async => const IstekKaniti.play('kanit'));
       await k.oturum.oturumAc(_oturum(1));
       await k.oturum.butunlukGerekti('erisim-1');
       await k.oturum.yenile();

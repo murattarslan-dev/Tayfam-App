@@ -135,3 +135,16 @@ Platform sahibi site için ayrı bir repo istemiyor.
   betiği engellediği için adres görünmüyordu). İletişim adresi her yerde
   `support@tayfam.app`; `kvkk@` yönlendirmesi yoktur. Ön inceleme ve
   hukukçuya kalanlar: Notion "Yasal Metinler Ön İncelemesi (2026-11-13)".
+- **2026-11-27 (T-09, ADR-0034 §6):** iOS Universal Links için
+  `/.well-known/apple-app-site-association` eklendi. Kapsam yalnızca
+  `/davet`, `/q` ve `/r/*`; sorgu ve fragment kuralı yoktur, doğrulama
+  uygulamadaki ayrıştırıcıdadır. Uzantısız dosya `_headers` ile
+  `application/json` sunulur. `appIDs`'deki Team ID dosyaya doğrudan
+  yazıldı (yayında yerine koyma yok): değer public'tir (AASA zaten herkese
+  açık sunulur; ADR-0034 §2 "Public değerler repoda"), yerine koyma
+  `.github/` değişikliği ve yayın işine ek bir adım isterdi. Team ID
+  değişirse bu dosya ve GitHub'daki `APPLE_TEAM_ID` birlikte değişir.
+  AASA, `Runner.entitlements` ve Android manifest'in aynı yolları
+  kapsadığı `test/shell/derin_link/uygulama_linki_dosyalari_test.dart`
+  ile sabitlenir. Uygulama kurulu değilken iOS'ta da şimdilik Play'e
+  gidilir (yukarıdaki App Store ayrımı ayrı iş).

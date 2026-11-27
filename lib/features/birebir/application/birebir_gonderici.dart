@@ -73,7 +73,7 @@ final class _UygulamaEkIslemleri implements BirebirEkIslemleri {
 /// zaman [E2eBirebir] üzerinden, yalnızca REST'ten (`envelopes`);
 /// WebSocket'ten birebir mesaj gönderilmez ve düz metne geri düşülmez.
 /// Tekrar gönderimde aynı istek kimliği kullanılır. E2E'nin olmadığı
-/// derlemede (web geliştirme derlemesi, iOS köprüsü yazılana kadar iOS)
+/// derlemede (web geliştirme derlemesi)
 /// cihaz hazır olmadığı için gönderim hata fırlatır ve genel hata yolundan
 /// "gönderilemedi" olur. İçerik hiçbir yere yazılmaz ve loglanmaz.
 final class BirebirGonderici {

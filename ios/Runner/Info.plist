@@ -37,8 +37,19 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Push (istemci ADR-0019 §1, iOS notu): otomatik FCM kaydı kapalı;
+	     kayıt yalnızca oturum açık ve izin verilmişken yapılır (Android
+	     manifestindeki firebase_messaging_auto_init_enabled=false). -->
+	<key>FirebaseMessagingAutoInitEnabled</key>
+	<false/>
 	<!-- ADR-0021: fotoğraf seçici (PHPicker) izin istemez; metin yine de gerekli. Kamera yalnızca "Fotoğraf çek"e basınca sorulur. -->
 	<!-- Kamera iki yerde kullanılır: fotoğraf çekme (ADR-0021) ve QR ile cihaz bağlama (ADR-0020). -->
+	<!-- İhracat uyumu (ADR-0034, Kararlar 2026-11-27): uygulama birebir
+	     mesaj için işletim sisteminde olmayan standart algoritmalar taşır
+	     (libsignal). App Store Connect her derlemede algoritma türünü sorar;
+	     cevap "standart algoritmalar", Fransa beyansız satışa açılmaz. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Profil, kapak ya da av fotoğrafı çekmek ve başka bir cihazını bağlamak için QR kod okutmak üzere kamerana erişilir. QR okutulurken görüntü kaydedilmez; çektiğin fotoğrafın konum bilgisi gönderilmeden silinir.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -75,13 +86,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>

@@ -171,7 +171,7 @@ void main() {
     });
   });
 
-  group('E2E kapalı yapılandırma (iOS köprüsü öncesi, web) — issue #125', () {
+  group('E2E kapalı yapılandırma (web) — issue #125', () {
     for (final tema in [ThemeMode.light, ThemeMode.dark]) {
       testWidgets('şifreli konuşmada yazma alanı yerine bilgi satırı '
           '(${tema.name}, 2×, 320 dp)', (tester) async {
@@ -301,7 +301,7 @@ void main() {
     });
 
     test('E2E yoksa gönderim düz yola düşmüyor, hata veriyor', () async {
-      // Web geliştirme derlemesi ve iOS köprüsü yazılana kadar iOS: cihaz
+      // Web geliştirme derlemesi: cihaz
       // kaydı yok; mesaj ne REST'ten ne WebSocket'ten düz gider.
       final tasima = birebirTasimasi();
       final kap = ProviderContainer.test(

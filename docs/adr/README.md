@@ -41,12 +41,12 @@ olarak anar.
 | [0026](0026-anlik-etkinlik-istemci.md) | Anlık (bireysel) etkinlik (istemci) | Kabul edildi; kısmen 0032 |
 | [0027](0027-kesfet-ve-guvenlik-agi.md) | Keşfet ilk aşama ve güvenlik ağı (istemci): yuvalar, cevaba bakan bayrak, güvenlik kişisi, geri bildirim | Kabul edildi (`/kesfet` sekme: ADR-0030) |
 | [0028](0028-sohbet-ekleri-fotograf-ve-yer.md) | Sohbet ekleri: fotoğraf (kanal ve uçtan uca birebir), yer, kanal mesajı şikâyeti | Kabul edildi |
-| [0029](0029-dal-modeli-dev-main-ve-surum.md) | Dal modeli (`dev` / `main`), sürüm numarası ve otomatik etiket | Önerildi |
+| [0029](0029-dal-modeli-dev-main-ve-surum.md) | Dal modeli (`dev` / `main`), sürüm numarası ve otomatik etiket | Kabul edildi |
 | [0030](0030-kesfet-sekmesi-ve-bildirim-zili.md) | Keşfet sekmesi, bildirim zili ve herkese açık Keşfet akışı | Kabul edildi |
 | [0031](0031-katalog-bilesen-ekleri.md) | Katalog bileşen ekleri: kronometre, masa, misafir, sözlük ve seçimler (v3) | Kabul edildi |
 | [0032](0032-simdi-baslat-istemci.md) | Şimdi başlat (istemci, v3) | Kabul edildi |
 | [0033](0033-v3-moduller-rozetler-ve-gecis.md) | v3 modülleri, rozetler ve tek seferde geçiş (istemci) | Kabul edildi |
-| [0034](0034-ios-surumu.md) | iOS sürümü: Mac'siz derleme, TestFlight ve platform köprüleri | Önerildi |
+| [0034](0034-ios-surumu.md) | iOS sürümü: Mac'siz derleme, TestFlight ve platform köprüleri | Kabul edildi |
 
 ## Şablon
 
@@ -65,5 +65,6 @@ olarak anar.
 ## Değerlendirilen alternatifler
 ```
 
-Ürün kararları (kavram modeli, özellikler, veri modeli, tasarım standartları,
-marka) Notion'daki "Tayfam — Proje Planı" sayfasındadır.
+Ürün kararları (kavram modeli, özellikler, tasarım standartları, marka)
+claude.ai "Tayfam" projesinin `tayfam/` dokümanlarındadır (2026-11-26'ya kadar
+Notion'daydı; ADR'lerdeki Notion atıfları tarihçedir).
