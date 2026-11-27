@@ -32,3 +32,7 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# ios/TayfamSignal yerel Swift paketinin derleme çıktıları
+TayfamSignal/.build/
+TayfamSignal/.swiftpm/

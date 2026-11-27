@@ -127,6 +127,15 @@
       }
     },
     {
+      "identity" : "libsignal",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/signalapp/libsignal",
+      "state" : {
+        "revision" : "8bb22ec0bd236fb1ab8efc0f90392373662fcc93",
+        "version" : "0.108.1"
+      }
+    },
+    {
       "identity" : "libwebp-xcode",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/libwebp-Xcode.git",

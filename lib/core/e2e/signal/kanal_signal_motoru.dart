@@ -2,10 +2,11 @@ import 'package:flutter/services.dart';
 
 import 'package:tayfam/core/e2e/signal/signal_motoru.dart';
 
-/// [SignalMotoru]'nun Android uygulaması: `tayfam/e2e/signal` platform
-/// kanalı üzerinden Kotlin köprüsü (`SignalKoprusu.kt`) ve Signal'in resmi
+/// [SignalMotoru]'nun mobil uygulaması: `tayfam/e2e/signal` platform
+/// kanalı. Android'de Kotlin köprüsü (`SignalKoprusu.kt`) ve Signal'in resmi
 /// `org.signal:libsignal-android` paketi (ADR-0010, güncelleme
-/// 2026-11-11).
+/// 2026-11-11); iOS'ta Swift köprüsü (`SignalKoprusu.swift`) ve Signal'in
+/// resmi `LibSignalClient` paketi (ADR-0034 §7).
 ///
 /// Köprü durumsuzdur; bu sınıf da durum tutmaz. Kanal hata kodu
 /// [SignalHatasiTuru] adıdır; mesaj ve ayrıntı taşınmaz. Hiçbir şey
