@@ -64,13 +64,14 @@ final class HesapDeposu {
   /// `POST /v1/auth/sign-in`. ID token ve nonce yalnızca gövdeye gider.
   /// Nonce'a bağlı bütünlük kanıtı alınabilirse `integrity_token`
   /// (Android) ya da `app_attest` (iOS) olarak eklenir, alınamazsa alan
-  /// gönderilmez (istemci ADR-0023 §3).
+  /// gönderilmez (istemci ADR-0023 §3). iOS'ta anahtar kimliği ancak giriş
+  /// başarıyla dönünce kaydedilir.
   Future<Session> girisYap(
     GoogleKimligi kimlik, {
     required String platform,
   }) async {
     final kanit = await _butunluk?.giris(kimlik.nonce);
-    return _auth.signIn(
+    final oturum = await _auth.signIn(
       body: SignInRequest(
         provider: SignInRequestProvider.google,
         idToken: kimlik.idToken,
@@ -80,6 +81,8 @@ final class HesapDeposu {
         appAttest: kanit?.appAttest,
       ),
     );
+    await _butunluk?.girisBasarili(kanit);
+    return oturum;
   }
 
   /// `POST /v1/auth/sign-in`, `provider: apple` (Tayfam-Api ADR-0045).
@@ -91,7 +94,7 @@ final class HesapDeposu {
     required String platform,
   }) async {
     final kanit = await _butunluk?.giris(kimlik.nonce);
-    return _auth.signIn(
+    final oturum = await _auth.signIn(
       body: SignInRequest(
         provider: SignInRequestProvider.apple,
         idToken: kimlik.idToken,
@@ -101,6 +104,8 @@ final class HesapDeposu {
         appAttest: kanit?.appAttest,
       ),
     );
+    await _butunluk?.girisBasarili(kanit);
+    return oturum;
   }
 
   /// `GET /v1/registration/requirements`. Sürümler geçersizse

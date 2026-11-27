@@ -8,11 +8,16 @@ import Security
 /// iOS karşılığı, App Attest (istemci ADR-0023, ADR-0034 §7; Tayfam-Api
 /// ADR-0022 §4).
 ///
-/// Yöntemler: `appAttestUnut` (oturum kapandı: Keychain'deki anahtar
-/// kimliğini siler) ve `appAttest` {istek: `giris` | `yenileme`, istekOzeti}.
-/// - `giris`: yeni bir anahtar üretir, `clientDataHash` =
-///   SHA-256(istekOzeti metni) ile Apple'a onaylatır ve anahtar kimliğini
-///   Keychain'e yazar (öncekinin yerine).
+/// Yöntemler:
+/// - `appAttest` {istek: `giris` | `yenileme`, istekOzeti}: aşağıda.
+/// - `appAttestKaydet` {keyId}: giriş başarıyla döndü; onaylanan anahtarın
+///   kimliğini Keychain'e yazar (öncekinin yerine).
+/// - `appAttestUnut`: oturum kapandı; Keychain'deki kimliği siler.
+///
+/// - `giris`: yeni bir anahtar üretir ve `clientDataHash` =
+///   SHA-256(istekOzeti metni) ile Apple'a onaylatır. Kimlik burada
+///   yazılmaz: Dart zaman aşımına uğrayıp kanıtsız giriş yaptıysa ya da
+///   giriş başarısızsa sunucu bu anahtarı bağlamamıştır.
 /// - `yenileme`: Keychain'deki anahtarla aynı biçimde imza (assertion)
 ///   üretir.
 /// Sonuç `{keyId, veri}` (ikisi de base64 metin) ya da cihaz App Attest'i
@@ -53,13 +58,22 @@ final class ButunlukKoprusu {
       result(nil)
       return
     }
+    if call.method == "appAttestKaydet" {
+      let anahtar = (call.arguments as? [String: Any])?["keyId"] as? String
+      guard let anahtar, Self.anahtarBicimi(anahtar) else {
+        result(Self.hata(.yapilandirma))
+        return
+      }
+      result(AnahtarDeposu.yaz(anahtar) ? nil : Self.hata(.bilinmeyen))
+      return
+    }
     guard call.method == "appAttest" else {
       result(FlutterMethodNotImplemented)
       return
     }
     let arg = call.arguments as? [String: Any]
     guard let istek = arg?["istek"] as? String,
-      let ozet = arg?["istekOzeti"] as? String, !ozet.isEmpty
+      let ozet = arg?["istekOzeti"] as? String, Self.ozetBicimi(ozet)
     else {
       result(Self.hata(.yapilandirma))
       return
@@ -78,8 +92,8 @@ final class ButunlukKoprusu {
     }
   }
 
-  /// Girişte: yeni anahtar ve attestation. Anahtar kimliği yalnızca
-  /// onaydan sonra Keychain'e yazılır.
+  /// Girişte: yeni anahtar ve attestation. Kimlik `appAttestKaydet` ile,
+  /// giriş başarıyla dönünce yazılır.
   private func onaylat(_ clientDataHash: Data, _ bitir: @escaping (Any?) -> Void) {
     servis.generateKey { anahtar, hata in
       guard let anahtar, hata == nil else {
@@ -89,10 +103,6 @@ final class ButunlukKoprusu {
       self.servis.attestKey(anahtar, clientDataHash: clientDataHash) { nesne, hata in
         guard let nesne, hata == nil else {
           bitir(Self.eslenmis(hata))
-          return
-        }
-        guard AnahtarDeposu.yaz(anahtar) else {
-          bitir(Self.hata(.bilinmeyen))
           return
         }
         bitir(["keyId": anahtar, "veri": nesne.base64EncodedString()])
@@ -127,6 +137,20 @@ final class ButunlukKoprusu {
     case .serverUnavailable: return Self.hata(.gecici)
     default: return Self.hata(.bilinmeyen)
     }
+  }
+
+  /// İstek özeti: Dart'taki bağlama değeri, dolgusuz base64url, 43 karakter.
+  static func ozetBicimi(_ ozet: String) -> Bool {
+    ozet.utf8.count == 43
+      && ozet.utf8.allSatisfy { c in
+        (c >= 0x41 && c <= 0x5A) || (c >= 0x61 && c <= 0x7A) || (c >= 0x30 && c <= 0x39)
+          || c == 0x2D || c == 0x5F
+      }
+  }
+
+  /// Anahtar kimliği: 32 baytın standart base64'ü (44 karakter).
+  static func anahtarBicimi(_ anahtar: String) -> Bool {
+    anahtar.utf8.count == 44 && Data(base64Encoded: anahtar)?.count == 32
   }
 
   private static func hata(_ tur: ButunlukHatasiTuru) -> FlutterError {

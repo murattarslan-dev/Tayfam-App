@@ -160,6 +160,30 @@ void main() {
       final govde = tasima.istekler.single.govde as Map<String, Object?>;
       expect(govde.containsKey('integrity_token'), isFalse);
       expect(govde['app_attest'], {'key_id': anahtar, 'attestation': 'YXR0'});
+      // Sunucu girişi kabul etti: anahtar kimliği ancak şimdi kaydedilir.
+      expect(saglayici.kaydedilen.single.appAttest?.keyId, anahtar);
+    });
+
+    test('giriş (iOS) başarısızsa anahtar kaydedilmez', () async {
+      final tasima = SahteTasima({
+        'POST /v1/auth/sign-in': () => const ApiProblem(
+          type: ProblemType.invalidCredentials,
+          status: 401,
+        ),
+      });
+      final saglayici = _SahteButunluk(
+        null,
+        appAttest: AppAttestProof(keyId: '${'A' * 43}=', attestation: 'YXR0'),
+      );
+      final depo = HesapDeposu(
+        tasima,
+        butunluk: ButunlukKaniti(saglayici, gunluk: (_) {}),
+      );
+      await expectLater(
+        depo.girisYap(ornekKimlik, platform: 'ios'),
+        throwsA(isA<ApiProblem>()),
+      );
+      expect(saglayici.kaydedilen, isEmpty);
     });
 
     test('giriş: kanıt alınamazsa alan gönderilmez', () async {
@@ -303,6 +327,12 @@ final class _SahteButunluk implements ButunlukSaglayici {
     final s = sonuc;
     return s == null ? null : IstekKaniti.play(s);
   }
+
+  /// Giriş başarıyla dönünce kaydedilen kanıtlar.
+  final List<IstekKaniti> kaydedilen = [];
+
+  @override
+  Future<void> kaydet(IstekKaniti kanit) async => kaydedilen.add(kanit);
 
   @override
   Future<void> unut() async {}

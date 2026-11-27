@@ -33,6 +33,12 @@ abstract interface class ButunlukSaglayici {
   /// kanıtı. Platform desteklemiyorsa `null`; alınamazsa [ButunlukHatasi].
   Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek);
 
+  /// Giriş [kanit]'la başarıyla döndü: iOS'ta onaylanan anahtarın
+  /// kimliği ancak şimdi kalıcı yazılır (sunucu anahtarı bu girişle
+  /// bağladı). Android'de yapacak bir şey yoktur. Hata fırlatabilir; çağıran
+  /// yutar.
+  Future<void> kaydet(IstekKaniti kanit);
+
   /// Oturum kapanınca cihazdaki kanıt anahtarının kaydını siler (iOS: App
   /// Attest anahtar kimliği; Android'de yapacak bir şey yoktur). Hata
   /// fırlatabilir; çağıran yutar.
@@ -96,6 +102,9 @@ final class OlmayanButunlukSaglayici implements ButunlukSaglayici {
   @override
   Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async =>
       null;
+
+  @override
+  Future<void> kaydet(IstekKaniti kanit) async {}
 
   @override
   Future<void> unut() async {}

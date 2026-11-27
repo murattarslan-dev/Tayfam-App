@@ -19,11 +19,20 @@ final class ButunlukKaniti {
   ButunlukKaniti(
     this._saglayici, {
     this.zamanAsimi = varsayilanZamanAsimi,
+    Duration? girisZamanAsimi,
     this._gunluk = varsayilanApiGunlugu,
-  });
+  }) : girisZamanAsimi = girisZamanAsimi ?? zamanAsimi;
 
   /// Kanıt alma bu süreyi aşarsa istek kanıtsız gider.
   static const Duration varsayilanZamanAsimi = Duration(seconds: 5);
+
+  /// iOS'ta giriş kanıtının süresi. `attestKey` Secure Enclave'de anahtar
+  /// üretip Apple'ın onay sunucusuna tam bir tur gider; mobil ağda 5
+  /// saniyeyi aşabilir. Giriş kullanıcının başlattığı, zaten Google ya da
+  /// Apple girişini beklediği bir adımdır; 20 saniye hâlâ sınırlıdır.
+  /// Süre aşılırsa giriş kanıtsız gider ve geç gelen anahtar hiçbir yere
+  /// yazılmaz (kimlik ancak [girisBasarili] ile kaydedilir).
+  static const Duration appAttestGirisZamanAsimi = Duration(seconds: 20);
 
   /// Sözleşmedeki `integrity_token` üst sınırı (`maxLength: 16384`).
   static const int enUzunToken = 16384;
@@ -41,6 +50,9 @@ final class ButunlukKaniti {
   /// Kanıt alma süresinin üst sınırı.
   final Duration zamanAsimi;
 
+  /// Giriş kanıtı alma süresinin üst sınırı (iOS'ta daha uzun).
+  final Duration girisZamanAsimi;
+
   /// `POST /v1/auth/sign-in` için, [nonce]'a bağlı kanıt.
   Future<IstekKaniti?> giris(String nonce) =>
       _al(girisBaglamasi(nonce), ButunlukIstegi.giris);
@@ -49,6 +61,21 @@ final class ButunlukKaniti {
   /// kanıt. Yenileme token'ı sağlayıcıya gitmez.
   Future<IstekKaniti?> yenileme(String yenilemeTokeni) =>
       _al(yenilemeBaglamasi(yenilemeTokeni), ButunlukIstegi.yenileme);
+
+  /// Giriş isteği [kanit]'la başarıyla döndü. iOS'ta App Attest anahtar
+  /// kimliği ancak şimdi Keychain'e yazılır: zaman aşımına uğramış ya da
+  /// başarısız bir girişin anahtarı sonraki yenilemelerde kullanılmaz.
+  /// Hata fırlatmaz.
+  Future<void> girisBasarili(IstekKaniti? kanit) async {
+    if (kanit == null || kanit.appAttest?.attestation == null) return;
+    try {
+      await _saglayici.kaydet(kanit).timeout(zamanAsimi);
+    } on TimeoutException {
+      _gunluk('bütünlük: kayıt zaman aşımı');
+    } on Exception {
+      _gunluk('bütünlük: kaydedilemedi');
+    }
+  }
 
   /// Oturum kapandı: cihazdaki kanıt anahtarının kaydı silinir (iOS'ta App
   /// Attest anahtar kimliği). Hata fırlatmaz; günlüğe yalnızca tür yazılır.
@@ -65,7 +92,8 @@ final class ButunlukKaniti {
   Future<IstekKaniti?> _al(String istekOzeti, ButunlukIstegi istek) async {
     final IstekKaniti? kanit;
     try {
-      kanit = await _saglayici.kanit(istekOzeti, istek).timeout(zamanAsimi);
+      final sure = istek == ButunlukIstegi.giris ? girisZamanAsimi : zamanAsimi;
+      kanit = await _saglayici.kanit(istekOzeti, istek).timeout(sure);
     } on TimeoutException {
       _gunluk('bütünlük: zaman aşımı');
       return null;
@@ -129,6 +157,11 @@ final butunlukHazirligiProvider = Provider<void>((ref) {
 
 /// Giriş ve yenilemenin kullandığı [ButunlukKaniti] (kalıcı).
 final butunlukKanitiProvider = Provider<ButunlukKaniti>(
-  (ref) => ButunlukKaniti(ref.watch(butunlukSaglayiciProvider)),
+  (ref) => ButunlukKaniti(
+    ref.watch(butunlukSaglayiciProvider),
+    girisZamanAsimi: !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+        ? ButunlukKaniti.appAttestGirisZamanAsimi
+        : null,
+  ),
   name: 'butunlukKanitiProvider',
 );

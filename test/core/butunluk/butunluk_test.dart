@@ -31,6 +31,12 @@ final class _SahteSaglayici implements ButunlukSaglayici {
   int unutma = 0;
   Exception? unutmaHatasi;
 
+  /// Kaydedilen kanıtlar.
+  final List<IstekKaniti> kaydedilen = [];
+
+  @override
+  Future<void> kaydet(IstekKaniti kanit) async => kaydedilen.add(kanit);
+
   @override
   Future<void> unut() async {
     unutma++;
@@ -50,6 +56,9 @@ final class _SahteAppAttest implements ButunlukSaglayici {
   @override
   Future<IstekKaniti?> kanit(String istekOzeti, ButunlukIstegi istek) async =>
       IstekKaniti.appAttest(kanitDegeri);
+
+  @override
+  Future<void> kaydet(IstekKaniti kanit) async {}
 
   @override
   Future<void> unut() async {}
@@ -177,6 +186,44 @@ void main() {
       // Yanlış aşamanın kanıtı gönderilmez.
       expect(await g.yenileme('t'), isNull);
       expect(await y.giris('n'), isNull);
+    });
+
+    test('iOS girişi daha uzun bekler; yenileme süresi değişmez', () async {
+      final saglayici = _SahteSaglayici(
+        () => Future.delayed(const Duration(milliseconds: 50), () => 'kanit'),
+      );
+      final kanit = ButunlukKaniti(
+        saglayici,
+        zamanAsimi: const Duration(milliseconds: 10),
+        girisZamanAsimi: const Duration(seconds: 5),
+        gunluk: (_) {},
+      );
+      expect((await kanit.giris('n'))?.integrityToken, 'kanit');
+      expect(await kanit.yenileme('t'), isNull);
+      expect(
+        ButunlukKaniti(saglayici).girisZamanAsimi,
+        ButunlukKaniti.varsayilanZamanAsimi,
+      );
+      expect(
+        ButunlukKaniti.appAttestGirisZamanAsimi,
+        const Duration(seconds: 20),
+      );
+    });
+
+    test('anahtar yalnızca başarılı App Attest girişinde kaydedilir', () async {
+      final saglayici = _SahteSaglayici(() async => null);
+      final kanit = ButunlukKaniti(saglayici, gunluk: (_) {});
+      final giris = IstekKaniti.appAttest(
+        AppAttestProof(keyId: _anahtar, attestation: 'YXR0'),
+      );
+      await kanit.girisBasarili(null);
+      await kanit.girisBasarili(const IstekKaniti.play('kanit'));
+      await kanit.girisBasarili(
+        IstekKaniti.appAttest(AppAttestProof(keyId: _anahtar, assertion: 'x')),
+      );
+      expect(saglayici.kaydedilen, isEmpty);
+      await kanit.girisBasarili(giris);
+      expect(saglayici.kaydedilen, [giris]);
     });
 
     test('unut sağlayıcıya gider; hata yutulur', () async {
@@ -324,6 +371,18 @@ void main() {
       await saglayici.hazirla();
       expect(cagrilar, isEmpty);
       expect(await saglayici.kanit('ozet', ButunlukIstegi.giris), isNull);
+    });
+
+    test('kaydet: iOS kimliği köprüye verir, Android vermez', () async {
+      yanitla((_) => null);
+      final kanit = IstekKaniti.appAttest(
+        AppAttestProof(keyId: _anahtar, attestation: 'YXR0'),
+      );
+      await KanalButunlukSaglayici(kanal: kanal).kaydet(kanit);
+      expect(cagrilar, isEmpty);
+      await KanalButunlukSaglayici(kanal: kanal, appAttest: true).kaydet(kanit);
+      expect(cagrilar.single.method, 'appAttestKaydet');
+      expect(cagrilar.single.arguments, {'keyId': _anahtar});
     });
 
     test('unut: iOS köprüye gider, Android gitmez', () async {

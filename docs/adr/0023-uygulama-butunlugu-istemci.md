@@ -226,7 +226,12 @@ iki oturum bayrağı" listesine eklenen üçüncü değerdir; gerekçe:
   - **Anahtar kimliği Keychain'de** (`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`,
     yedeğe ve başka cihaza geçmez; ADR-0006'nın güvenli depo listesine
     eklenen değer). Anahtarın kendisi Secure Enclave'dedir, uygulama onu
-    hiç görmez. Kimlik yalnızca onaydan sonra yazılır; geçersiz anahtarda
+    hiç görmez. Kimlik **giriş isteği başarıyla dönünce** ayrı bir kanal
+    çağrısıyla (`appAttestKaydet`) yazılır; zaman aşımına uğrayan ya da
+    başarısız girişin anahtarı yazılmaz, böylece sunucunun bağlamadığı bir
+    anahtarla yenileme `binding` sayılmaz. iOS giriş kanıtının süresi 20
+    saniyedir (`attestKey` Apple'ın sunucusuna tam tur gider; yenileme 5 sn
+    kalır). Geçersiz anahtarda
     (`invalidKey`, ör. yeniden kurulum) silinir, sonraki giriş yenisini
     üretir. **Oturum hangi nedenle kapanırsa kapansın** (çıkış, sunucunun
     sonlandırması/iptal, yenilemenin reddi, hesap silme) `SessionStore`

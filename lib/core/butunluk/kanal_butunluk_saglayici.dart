@@ -19,8 +19,9 @@ const int butunlukBulutProjeNumarasi = int.fromEnvironment(
 ///   Token sağlayıcısını köprü bellekte tutar.
 /// - iOS ([appAttest]): Swift köprüsü (`ButunlukKoprusu.swift`) ve
 ///   `DCAppAttestService`. Girişte yeni anahtar üretilip onaylatılır,
-///   yenilemede o anahtarla imza üretilir; anahtar kimliği Keychain'dedir
-///   (ADR-0023 iOS notu). `clientDataHash` = SHA-256(istek özeti metni)
+///   yenilemede o anahtarla imza üretilir; anahtar kimliği giriş başarıyla
+///   dönünce ([kaydet]) Keychain'e yazılır (ADR-0023 iOS notu).
+///   `clientDataHash` = SHA-256(istek özeti metni)
 ///   köprüde hesaplanır. Desteklemeyen cihazda (simülatör) köprü `null`
 ///   döner.
 ///
@@ -83,6 +84,20 @@ final class KanalButunlukSaglayici implements ButunlukSaglayici {
       await _kanal.invokeMethod<void>('hazirla', {'proje': _projeNumarasi});
     } on PlatformException {
       // İlk token isteği yeniden hazırlar.
+    } on MissingPluginException {
+      // Köprü yok (test ortamı).
+    }
+  }
+
+  /// iOS: girişte onaylanan anahtarın kimliğini Keychain'e yazar.
+  @override
+  Future<void> kaydet(IstekKaniti kanit) async {
+    final keyId = kanit.appAttest?.keyId;
+    if (!appAttest || keyId == null) return;
+    try {
+      await _kanal.invokeMethod<void>('appAttestKaydet', {'keyId': keyId});
+    } on PlatformException catch (e) {
+      throw ButunlukHatasi(_tur(e.code));
     } on MissingPluginException {
       // Köprü yok (test ortamı).
     }
