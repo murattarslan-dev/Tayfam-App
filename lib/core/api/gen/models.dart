@@ -1171,10 +1171,11 @@ final class AnswerUpdateRequest {
       Object.hashAll(<Object?>[body, _deepHash(photoUploadIds)]);
 }
 
-/// `location`: buluşma noktasına 300 m içinde check-in. `online`:
-/// çevrimiçi etkinlikte "Katıldım". `hike_start`: yoklamada çıkış (`roll_call`).
-/// `organizer`: organizatör düzeltmesi. `qr`: üye organizatörün
-/// QR'ını okuttu (ADR-0038 §3).
+/// iOS App Attest kanıtı (ADR-0022 §4). `attestation` ve `assertion`'dan
+/// tam olarak biri bulunur: girişte `attestation`, yenilemede
+/// `assertion`. Bayt alanları standart base64'tür. Kanıt loglanmaz;
+/// sunucu açık anahtarı ve sayacı cihaza yazar, Apple'ın nesnesini ve
+/// receipt'i saklamaz.
 final class AppAttestProof {
   const AppAttestProof({required this.keyId, this.attestation, this.assertion});
 
@@ -1193,10 +1194,20 @@ final class AppAttestProof {
     },
   );
 
+  /// `DCAppAttestService.generateKey`'in verdiği anahtar kimliği
+  /// (açık anahtarın SHA-256'sı, 32 bayt).
+  ///
+  /// Kısıtlar: biçim: standart base64.
   final String keyId;
 
+  /// `attestKey` çıktısı (CBOR), en fazla 16 KiB.
+  ///
+  /// Kısıtlar: biçim: standart base64.
   final String? attestation;
 
+  /// `generateAssertion` çıktısı (CBOR), en fazla 1 KiB.
+  ///
+  /// Kısıtlar: biçim: standart base64.
   final String? assertion;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -1218,6 +1229,10 @@ final class AppAttestProof {
   int get hashCode => Object.hashAll(<Object?>[keyId, attestation, assertion]);
 }
 
+/// `location`: buluşma noktasına 300 m içinde check-in. `online`:
+/// çevrimiçi etkinlikte "Katıldım". `hike_start`: yoklamada çıkış (`roll_call`).
+/// `organizer`: organizatör düzeltmesi. `qr`: üye organizatörün
+/// QR'ını okuttu (ADR-0038 §3).
 enum AttendanceMethod {
   location('location'),
   online('online'),
@@ -23475,6 +23490,10 @@ final class RefreshRequest {
   /// Kısıtlar: maxLength: 16384.
   final String? integrityToken;
 
+  /// İsteğe bağlı, iOS: girişte onaylanan anahtarın `assertion`'ı;
+  /// `integrity_token` ile aynı kural (yalnızca
+  /// `integrity_check_after` geçtiyse). `clientDataHash` =
+  /// SHA-256(yenileme bağlaması metni).
   final AppAttestProof? appAttest;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -24565,8 +24584,8 @@ final class Session {
   /// yeni metinleri gösterip onay alır.
   final bool? consentRequired;
 
-  /// Bu zamandan sonraki ilk yenilemede `integrity_token` gönderilir
-  /// (ADR-0022). Bütünlük denetimi kapalıyken alan yoktur.
+  /// Bu zamandan sonraki ilk yenilemede `integrity_token` (Android)
+  /// ya da `app_attest` (iOS) gönderilir (ADR-0022). Bütünlük denetimi kapalıyken alan yoktur.
   final DateTime? integrityCheckAfter;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.
@@ -24667,6 +24686,10 @@ final class SignInRequest {
   /// Kısıtlar: maxLength: 16384.
   final String? integrityToken;
 
+  /// İsteğe bağlı, iOS: yeni bir App Attest anahtarının
+  /// `attestation`'ı (ADR-0022 §4). `clientDataHash` =
+  /// SHA-256(bağlama), bağlama `integrity_token`'daki `requestHash`
+  /// ile aynı 43 karakterlik metindir (UTF-8 baytları).
   final AppAttestProof? appAttest;
 
   /// JSON nesnesine yazar; `null` alanlar yazılmaz.

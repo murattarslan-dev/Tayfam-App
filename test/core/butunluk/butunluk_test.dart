@@ -169,7 +169,7 @@ void main() {
     test('App Attest: sınır dışı kanıt gönderilmez', () async {
       final gunluk = <String>[];
       for (final kanitDegeri in [
-        AppAttestProof(keyId: 'kisa', attestation: 'YXR0'),
+        const AppAttestProof(keyId: 'kisa', attestation: 'YXR0'),
         AppAttestProof(keyId: _anahtar, attestation: ''),
         AppAttestProof(
           keyId: _anahtar,
