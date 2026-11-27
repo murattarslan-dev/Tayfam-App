@@ -111,6 +111,7 @@ void main() {
       Kurallar.arbAnahtarAdi.ad,
       Kurallar.arbKullanilmayan.ad,
       Kurallar.androidMetinleri.ad,
+      Kurallar.iosMetinleri.ad,
     };
     final eksik = [
       for (final k in Kurallar.hepsi)
@@ -179,25 +180,26 @@ void main() {
       expect(bulgular, isEmpty, reason: _ozet(bulgular));
     });
 
-    group('push metinleri (android-metinleri)', () {
+    group('push metinleri (android-metinleri, ios-metinleri)', () {
       const arb = '''
 {
   "etkinlik_baslik": "Etkinlikler",
   "@etkinlik_baslik": {"description": "Etkinlik listesinin başlığı."},
   "push_event_created_title": "Yeni etkinlik",
   "@push_event_created_title": {"description": "Push başlığı."},
-  "push_event_created_body": "Tayfa'nda & yeni",
+  "push_event_created_body": "Tayfa'nda & \\"yeni\\"",
   "@push_event_created_body": {"description": "Push gövdesi."}
 }
 ''';
       const kodPush = 'String a(AppLocalizations m) => m.etkinlik_baslik;\n';
 
-      test('güncel strings.xml: bulgu yok, push anahtarı kullanılmış', () {
+      test('güncel dosyalar: bulgu yok, push anahtarı kullanılmış', () {
         final bulgular = denetle(
           DenetimGirdisi(
             dartDosyalari: {'lib/shell/ornek.dart': kodPush},
             arbDosyalari: {sablonArb: arb},
             androidMetinleri: androidMetinleriniUret(arb),
+            iosMetinleri: iosMetinleriniUret(arb),
           ),
         );
         expect(bulgular, isEmpty, reason: _ozet(bulgular));
@@ -205,8 +207,12 @@ void main() {
           androidMetinleriniUret(arb),
           contains(
             '<string name="push_event_created_body">'
-            "Tayfa\\'nda &amp; yeni</string>",
+            "Tayfa\\'nda &amp; \\\"yeni\\\"</string>",
           ),
+        );
+        expect(
+          iosMetinleriniUret(arb),
+          contains('"push_event_created_body" = "Tayfa\'nda & \\"yeni\\"";\n'),
         );
       });
 
@@ -217,11 +223,26 @@ void main() {
               dartDosyalari: {'lib/shell/ornek.dart': kodPush},
               arbDosyalari: {sablonArb: arb},
               androidMetinleri: mevcut,
+              iosMetinleri: iosMetinleriniUret(arb),
             ),
           );
           expect(_say(bulgular), {
             'android-metinleri': 1,
           }, reason: _ozet(bulgular));
+        }
+      });
+
+      test('eski ya da eksik Localizable.strings hatadır', () {
+        for (final mevcut in [null, '/* boş */\n']) {
+          final bulgular = denetle(
+            DenetimGirdisi(
+              dartDosyalari: {'lib/shell/ornek.dart': kodPush},
+              arbDosyalari: {sablonArb: arb},
+              androidMetinleri: androidMetinleriniUret(arb),
+              iosMetinleri: mevcut,
+            ),
+          );
+          expect(_say(bulgular), {'ios-metinleri': 1}, reason: _ozet(bulgular));
         }
       });
 

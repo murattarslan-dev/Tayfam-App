@@ -14,6 +14,7 @@ import 'android_metinleri.dart';
 import 'arb_pubspec_kurallari.dart';
 import 'bulgu.dart';
 import 'import_kurallari.dart';
+import 'ios_metinleri.dart';
 import 'kod_kurallari.dart';
 import 'tarayici.dart';
 
@@ -24,6 +25,7 @@ final class DenetimGirdisi {
     this.pubspec,
     this.arbDosyalari = const {},
     this.androidMetinleri,
+    this.iosMetinleri,
     this.paketAdi = 'tayfam',
   });
 
@@ -38,6 +40,9 @@ final class DenetimGirdisi {
 
   /// [androidMetinDosyasi]'nın içeriği; yoksa `null`.
   final String? androidMetinleri;
+
+  /// [iosMetinDosyasi]'nın içeriği; yoksa `null`.
+  final String? iosMetinleri;
 
   /// pubspec.yaml'daki paket adı.
   final String paketAdi;
@@ -147,6 +152,9 @@ List<Bulgu> denetle(DenetimGirdisi girdi) {
   if (sablon != null) {
     bulgular.addAll(
       androidMetinKurallari(arbMetni: sablon, mevcut: girdi.androidMetinleri),
+    );
+    bulgular.addAll(
+      iosMetinKurallari(arbMetni: sablon, mevcut: girdi.iosMetinleri),
     );
   }
 
