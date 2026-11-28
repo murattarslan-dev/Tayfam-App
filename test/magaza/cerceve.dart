@@ -309,9 +309,7 @@ class _DurumCubugu extends StatelessWidget {
               ),
             Align(
               alignment: ios ? const Alignment(-1, 0.25) : Alignment.center,
-              child: Row(
-                children: [saat, const Spacer(), simgeler],
-              ),
+              child: Row(children: [saat, const Spacer(), simgeler]),
             ),
           ],
         ),
@@ -326,9 +324,9 @@ class _DurumCubugu extends StatelessWidget {
 /// fontlar gerekir. Font listesi Flutter'ın ürettiği `FontManifest.json`'dan
 /// okunur (pubspec.yaml'daki fontlar ve `uses-material-design`).
 Future<void> uygulamaFontlariniYukle() async {
-  final manifest =
-      jsonDecode(await rootBundle.loadString('FontManifest.json'))
-          as List<Object?>;
+  final manifest = jsonDecode(
+    await rootBundle.loadString('FontManifest.json'),
+  ) as List<Object?>;
   for (final aile in manifest.cast<Map<String, Object?>>()) {
     final yukleyici = FontLoader(aile['family']! as String);
     for (final font

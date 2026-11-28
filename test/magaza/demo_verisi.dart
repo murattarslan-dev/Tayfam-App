@@ -184,86 +184,82 @@ DateTime _aralik(int gun, int saat, [int dakika = 0]) =>
 Map<String, Object?> _etkinlik(String id) {
   if (id == konvoyId) {
     return etkinlikJson(
-        id: konvoyId,
-        tur: 'convoy',
-        baslik: 'Bozdağ sonbahar konvoyu',
-        aciklama:
-            "Kemalpaşa'dan Bozdağ'a sakin tempoda bir tur. Öğle yemeği "
-            'yaylada, dönüş gün batımından önce.',
-        baslangic: _aralik(5, 8, 30),
-        sure: const Duration(hours: 9),
-        gelen: 5,
-        belki: 1,
-        cevap: 'going',
-        yonetebilir: true,
-        ayrinti: {'vehicles': const <Object?>[]},
-      )
-      ..addAll({
-        'tayfa_id': egeId,
-        'created_by_user_id': benId,
-        'meeting_point_name': 'Kemalpaşa çıkışı dinlenme tesisi',
-        'meeting_point': {'lat': 38.4262, 'lng': 27.4171},
-        'city': 'İzmir',
-        'district': 'Kemalpaşa',
-      });
+      id: konvoyId,
+      tur: 'convoy',
+      baslik: 'Bozdağ sonbahar konvoyu',
+      aciklama:
+          "Kemalpaşa'dan Bozdağ'a sakin tempoda bir tur. Öğle yemeği "
+          'yaylada, dönüş gün batımından önce.',
+      baslangic: _aralik(5, 8, 30),
+      sure: const Duration(hours: 9),
+      gelen: 5,
+      belki: 1,
+      cevap: 'going',
+      yonetebilir: true,
+      ayrinti: {'vehicles': const <Object?>[]},
+    )..addAll({
+      'tayfa_id': egeId,
+      'created_by_user_id': benId,
+      'meeting_point_name': 'Kemalpaşa çıkışı dinlenme tesisi',
+      'meeting_point': {'lat': 38.4262, 'lng': 27.4171},
+      'city': 'İzmir',
+      'district': 'Kemalpaşa',
+    });
   }
   if (id == restorasyonId) {
     return etkinlikJson(
-        id: restorasyonId,
-        tur: 'general',
-        mod: 'online',
-        baslik: 'Restorasyon sohbeti',
-        aciklama:
-            'Kış bakımı öncesi parça tedariki ve usta önerileri üzerine bir '
-            'saatlik sohbet.',
-        baslangic: _aralik(9, 21),
-        sure: const Duration(hours: 1),
-        gelen: 3,
-        belki: 1,
-      )
-      ..addAll({'tayfa_id': egeId, 'created_by_user_id': benId});
+      id: restorasyonId,
+      tur: 'general',
+      mod: 'online',
+      baslik: 'Restorasyon sohbeti',
+      aciklama:
+          'Kış bakımı öncesi parça tedariki ve usta önerileri üzerine bir '
+          'saatlik sohbet.',
+      baslangic: _aralik(9, 21),
+      sure: const Duration(hours: 1),
+      gelen: 3,
+      belki: 1,
+    )..addAll({'tayfa_id': egeId, 'created_by_user_id': benId});
   }
   if (id == kampId) {
     return etkinlikJson(
-        id: kampId,
-        tur: 'camp',
-        baslik: 'Kazdağı hafta sonu kampı',
-        aciklama:
-            'Cuma akşamı kurulum, cumartesi kısa yürüyüş ve şelale, pazar '
-            'öğlen toplanma.',
-        baslangic: _aralik(11, 18),
-        sure: const Duration(hours: 42),
-        gelen: 6,
-        belki: 1,
-        cevap: 'going',
-      )
-      ..addAll({
-        'tayfa_id': kazdagiId,
-        'created_by_user_id': burakId,
-        'meeting_point_name': 'Milli park girişine yakın kamp alanı',
-        'meeting_point': {'lat': 39.7031, 'lng': 26.8542},
-        'city': 'Balıkesir',
-        'district': 'Edremit',
-      });
-  }
-  return etkinlikJson(
-      id: balikId,
-      tur: 'fishing',
-      baslik: 'Akçay sahilinde akşam balığı',
-      aciklama: 'Gün batımına doğru kıyıdan olta.',
-      baslangic: _aralik(3, 17, 30),
-      sure: const Duration(hours: 4),
-      gelen: 3,
+      id: kampId,
+      tur: 'camp',
+      baslik: 'Kazdağı hafta sonu kampı',
+      aciklama:
+          'Cuma akşamı kurulum, cumartesi kısa yürüyüş ve şelale, pazar '
+          'öğlen toplanma.',
+      baslangic: _aralik(11, 18),
+      sure: const Duration(hours: 42),
+      gelen: 6,
       belki: 1,
-    )
-    ..addAll({
+      cevap: 'going',
+    )..addAll({
       'tayfa_id': kazdagiId,
       'created_by_user_id': burakId,
-      'meeting_point_name': 'Akçay sahil yolu',
-      'meeting_point': {'lat': 39.5838, 'lng': 26.9265},
+      'meeting_point_name': 'Milli park girişine yakın kamp alanı',
+      'meeting_point': {'lat': 39.7031, 'lng': 26.8542},
       'city': 'Balıkesir',
       'district': 'Edremit',
     });
+  }
+  return etkinlikJson(
+    id: balikId,
+    tur: 'fishing',
+    baslik: 'Akçay sahilinde akşam balığı',
+    aciklama: 'Gün batımına doğru kıyıdan olta.',
+    baslangic: _aralik(3, 17, 30),
+    sure: const Duration(hours: 4),
+    gelen: 3,
+    belki: 1,
+  )..addAll({
+    'tayfa_id': kazdagiId,
+    'created_by_user_id': burakId,
+    'meeting_point_name': 'Akçay sahil yolu',
+    'meeting_point': {'lat': 39.5838, 'lng': 26.9265},
+    'city': 'Balıkesir',
+    'district': 'Edremit',
+  });
 }
 
 List<String> _gelenler(String etkinlikId) {
@@ -419,7 +415,8 @@ Map<String, Object?> _anketOyVerenleri(String secenekId) {
   };
   return {
     'voters': [
-      for (final id in kimler) {'user_id': id, 'voted_at': '2026-11-26T10:00:00Z'},
+      for (final id in kimler)
+        {'user_id': id, 'voted_at': '2026-11-26T10:00:00Z'},
     ],
   };
 }
@@ -441,17 +438,15 @@ Map<String, Object?> _soru(
   List<Map<String, Object?>> etiketler,
   int cevap,
   String zaman,
-) =>
-    soruJson(
-        id,
-        baslik: baslik,
-        govde: govde,
-        yazar: yazar,
-        etiketler: etiketler,
-        cevapSayisi: cevap,
-        zaman: zaman,
-      )
-      ..['tayfa_id'] = egeId;
+) => soruJson(
+  id,
+  baslik: baslik,
+  govde: govde,
+  yazar: yazar,
+  etiketler: etiketler,
+  cevapSayisi: cevap,
+  zaman: zaman,
+)..['tayfa_id'] = egeId;
 
 List<Map<String, Object?>> _karburatorSorulari() => [
   _soru(
@@ -569,8 +564,9 @@ SahteTayfaTasima demoTasimasi() {
     },
     'GET /v1/tayfas/{tayfa_id}/polls/{poll_id}': (i) =>
         _anket(i.yolParametreleri['poll_id']!),
-    'GET /v1/tayfas/{tayfa_id}/polls/{poll_id}/options/{option_id}/voters':
-        (i) => _anketOyVerenleri(i.yolParametreleri['option_id']!),
+    'GET /v1/tayfas/{tayfa_id}/polls/{poll_id}/options/{option_id}/voters': (
+      i,
+    ) => _anketOyVerenleri(i.yolParametreleri['option_id']!),
     'GET /v1/tayfas/{tayfa_id}/questions': _sorular,
     'GET /v1/tayfas/{tayfa_id}/questions/{question_id}/answers': (i) =>
         _cevaplar(i.yolParametreleri['question_id']!),
