@@ -72,15 +72,20 @@ Future<void> _tayfaSec(WidgetTester tester, String tayfaId) async {
 }
 
 /// [bulucu]'yu ekranın üstüne (durum çubuğunun hemen altına) kaydırır.
+/// Konumlar tuval birimindedir; telefon ekranı [FittedBox] ile ölçeklendiği
+/// için kaydırma miktarı ekran birimine çevrilir.
 Future<void> _basaKaydir(
   WidgetTester tester,
   MagazaHedefi hedef,
   Finder bulucu,
 ) async {
-  final hizalama = (hedef.ustBosluk + 8) / hedef.ekran.height;
-  await Scrollable.ensureVisible(
-    tester.element(bulucu.first),
-    alignment: hizalama,
+  final ekranAlani = tester.getRect(find.byKey(telefonEkraniAnahtari));
+  final olcek = ekranAlani.height / hedef.ekran.height;
+  final ust = tester.getRect(bulucu.first).top;
+  final konum = Scrollable.of(tester.element(bulucu.first)).position;
+  final kayma = (ust - ekranAlani.top) / olcek - hedef.ustBosluk - 8;
+  konum.jumpTo(
+    (konum.pixels + kayma).clamp(konum.minScrollExtent, konum.maxScrollExtent),
   );
   await tester.pumpAndSettle();
 }
@@ -88,11 +93,7 @@ Future<void> _basaKaydir(
 final List<MagazaEkrani> magazaEkranlari = [
   MagazaEkrani(
     ad: '01-tayfa-ana-sayfa',
-    gorunmeli: [
-      'Ege Klasikleri Demo',
-      'Bozdağ sonbahar konvoyu',
-      'Konvoy kuralları',
-    ],
+    gorunmeli: ['Ege Klasikleri Demo', 'Bozdağ sonbahar konvoyu'],
     baslik: 'Kulübün tek bir yerde',
     durumCubuguAcik: true,
     hazirla: (tester, _) async {
@@ -276,6 +277,30 @@ void main() {
               '${(ust * 100).round()}–${(alt * 100).round()}%',
             );
             if (ust < 0 || alt > 1) gorunmeyen.add('$metin (ekran dışı)');
+          }
+
+          // Ekrandaki bütün metinler yukarıdan aşağıya (yalnızca demo
+          // verisi): görüntüyü açmadan düzeni okumak için.
+          if (cikti != null) {
+            final satirlar = <(double, String)>[];
+            for (final e in find.byType(RichText).evaluate()) {
+              final kutu = e.renderObject;
+              if (kutu is! RenderBox || !kutu.hasSize) continue;
+              final alan = kutu.localToGlobal(Offset.zero) & kutu.size;
+              if (!alan.overlaps(ekranAlani)) continue;
+              final metin = (e.widget as RichText).text.toPlainText();
+              satirlar.add((
+                (alan.top - ekranAlani.top) / ekranAlani.height * 100,
+                metin.replaceAll('\n', ' '),
+              ));
+            }
+            satirlar.sort((a, b) => a.$1.compareTo(b.$1));
+            for (final (ust, metin) in satirlar) {
+              debugPrint(
+                '[${hedef.klasor}/${ekran.ad}] '
+                '${ust.toStringAsFixed(0).padLeft(4)}% $metin',
+              );
+            }
           }
 
           final tanimsiz = tanimsizIstekler(tasima);
