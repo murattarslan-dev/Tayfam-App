@@ -12,14 +12,17 @@ import 'package:tayfam/core/tema/tayfam_typography.dart';
 
 const TayfamColors _r = TayfamColors.acik;
 
-TextStyle _yazi(double punto, {FontWeight agirlik = FontWeight.w600, Color? renk}) =>
-    TextStyle(
-      fontFamily: TayfamTypography.aile,
-      fontSize: punto,
-      fontWeight: agirlik,
-      height: 1.25,
-      color: renk ?? _r.metin,
-    );
+TextStyle _yazi(
+  double punto, {
+  FontWeight agirlik = FontWeight.w600,
+  Color? renk,
+}) => TextStyle(
+  fontFamily: TayfamTypography.aile,
+  fontSize: punto,
+  fontWeight: agirlik,
+  height: 1.25,
+  color: renk ?? _r.metin,
+);
 
 // --- 02: Rota, buluşma noktası, araçlar -------------------------------------
 
@@ -50,12 +53,16 @@ final class RotaYerlesimi {
   late final List<Offset> araclar;
 
   /// Testteki döküm için: adı ve alanın yüzdesi olarak konumu.
-  Map<String, Offset> get noktalar => {
-    'başlangıç': baslangic,
-    'buluşma iğnesi': bulusma,
-    'varış iğnesi': varis,
-    for (final (i, a) in araclar.indexed) 'araç ${i + 1}': a,
-  }.map((ad, n) => MapEntry(ad, Offset(n.dx / boyut.width, n.dy / boyut.height)));
+  Map<String, Offset> get noktalar =>
+      {
+        'başlangıç': baslangic,
+        'buluşma iğnesi': bulusma,
+        'varış iğnesi': varis,
+        for (final (i, a) in araclar.indexed) 'araç ${i + 1}': a,
+      }.map(
+        (ad, n) =>
+            MapEntry(ad, Offset(n.dx / boyut.width, n.dy / boyut.height)),
+      );
 }
 
 /// 02 – sade, stilize harita üzerinde mor rota, iğneler ve klasik araçlar.
@@ -225,7 +232,11 @@ class _HaritaBoyaci extends CustomPainter {
       ..drawCircle(y.baslangic, 9, Paint()..color = _r.marka)
       ..drawCircle(y.baslangic, 4, Paint()..color = _r.kart);
 
-    for (final (nokta, renk) in [(y.araclar[0], _r.mango), (y.araclar[1], _r.teal), (y.araclar[2], _r.nar)]) {
+    for (final (nokta, renk) in [
+      (y.araclar[0], _r.mango),
+      (y.araclar[1], _r.teal),
+      (y.araclar[2], _r.nar),
+    ]) {
       _klasikArac(canvas, nokta, renk);
     }
 
@@ -239,9 +250,22 @@ class _HaritaBoyaci extends CustomPainter {
     final merkez = uc.translate(0, -r * 2.1);
     final damla = Path()
       ..moveTo(uc.dx, uc.dy)
-      ..quadraticBezierTo(merkez.dx - r * 1.35, merkez.dy + r * 0.6, merkez.dx - r, merkez.dy)
-      ..arcToPoint(Offset(merkez.dx + r, merkez.dy), radius: const Radius.circular(r))
-      ..quadraticBezierTo(merkez.dx + r * 1.35, merkez.dy + r * 0.6, uc.dx, uc.dy)
+      ..quadraticBezierTo(
+        merkez.dx - r * 1.35,
+        merkez.dy + r * 0.6,
+        merkez.dx - r,
+        merkez.dy,
+      )
+      ..arcToPoint(
+        Offset(merkez.dx + r, merkez.dy),
+        radius: const Radius.circular(r),
+      )
+      ..quadraticBezierTo(
+        merkez.dx + r * 1.35,
+        merkez.dy + r * 0.6,
+        uc.dx,
+        uc.dy,
+      )
       ..close();
     canvas
       ..drawPath(
@@ -328,7 +352,11 @@ class SohbetTanitimi extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         child: Text(
           ad,
-          style: _yazi(16, agirlik: FontWeight.w700, renk: secili ? _r.vurguUstu : _r.markaYuzeyUstu),
+          style: _yazi(
+            16,
+            agirlik: FontWeight.w700,
+            renk: secili ? _r.vurguUstu : _r.markaYuzeyUstu,
+          ),
         ),
       ),
     );
@@ -341,7 +369,12 @@ class SohbetTanitimi extends StatelessWidget {
       child: Text(harf, style: _yazi(15, agirlik: FontWeight.w700)),
     );
 
-    Widget balon(String metin, {required bool giden, String? harf, Color? renk}) {
+    Widget balon(
+      String metin, {
+      required bool giden,
+      String? harf,
+      Color? renk,
+    }) {
       final kutu = Flexible(
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -362,7 +395,9 @@ class SohbetTanitimi extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Row(
-          mainAxisAlignment: giden ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: giden
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!giden) ...[avatar(harf!, renk!), const SizedBox(width: 8)],
@@ -427,9 +462,19 @@ class SohbetTanitimi extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 28),
-        balon('Cumartesi kaçta çıkıyoruz?', giden: false, harf: 'K', renk: _r.teal),
+        balon(
+          'Cumartesi kaçta çıkıyoruz?',
+          giden: false,
+          harf: 'K',
+          renk: _r.teal,
+        ),
         balon("08:30'da buluşmada!", giden: true),
-        balon('Yaylada çay molası şart.', giden: false, harf: 'C', renk: _r.tintNar),
+        balon(
+          'Yaylada çay molası şart.',
+          giden: false,
+          harf: 'C',
+          renk: _r.tintNar,
+        ),
         const SizedBox(height: 30),
         kilitli,
         const SizedBox(height: 18),
@@ -441,7 +486,11 @@ class SohbetTanitimi extends StatelessWidget {
             Flexible(
               child: Text(
                 'Birebir mesajlar uçtan uca şifreli',
-                style: _yazi(17, agirlik: FontWeight.w700, renk: _r.markaYuzeyUstu),
+                style: _yazi(
+                  17,
+                  agirlik: FontWeight.w700,
+                  renk: _r.markaYuzeyUstu,
+                ),
               ),
             ),
           ],

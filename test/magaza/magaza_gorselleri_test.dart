@@ -58,8 +58,7 @@ final class MagazaEkrani {
   final String baslik;
 
   /// Uygulama açıldıktan sonra ekrana gitme ve kaydırma.
-  final Future<void> Function(WidgetTester tester, MagazaHedefi hedef)?
-  hazirla;
+  final Future<void> Function(WidgetTester tester, MagazaHedefi hedef)? hazirla;
 
   /// Verilirse gerçek ekran yerine bu tanıtım illüstrasyonu çizilir
   /// (platform sahibi, 2026-11-28: 02 ve 06).
@@ -336,8 +335,9 @@ void main() {
 
           if (ekran.tanitim is RotaTanitimi) {
             final alan = tester.getSize(find.byKey(icerikAlaniAnahtari));
-            for (final MapEntry(key: ad, value: n)
-                in RotaYerlesimi(alan).noktalar.entries) {
+            for (final MapEntry(key: ad, value: n) in RotaYerlesimi(
+              alan,
+            ).noktalar.entries) {
               debugPrint(
                 '[${hedef.klasor}/${ekran.ad}] çizim "$ad": '
                 'x ${(n.dx * 100).round()}%, y ${(n.dy * 100).round()}%',
