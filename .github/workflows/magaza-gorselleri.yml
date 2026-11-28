@@ -1,0 +1,59 @@
+name: Mağaza görselleri
+
+# T-22 (Play) ve T-11 (App Store) ekran görüntüleri: uygulamanın gerçek
+# ekranları demo verisiyle `flutter test` içinde çizilir
+# (test/magaza/magaza_gorselleri_test.dart) ve PNG'ler artifact olarak
+# yüklenir; repoya girmez. Cihaz, ağ ve secret yok.
+#
+# Tetikleme: Actions sekmesinden elle (workflow_dispatch, varsayılan dalda
+# bu dosya varken) ya da bir PR'a `magaza-gorselleri` etiketi eklenince;
+# etiket duruyorsa o PR'a her push'ta yeniden üretilir. Action'lar
+# ci.yml'deki SHA'larla sabittir; Flutter sürümü ci.yml ile aynı olmalı.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magaza-gorselleri-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gorseller:
+    name: gorseller
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'magaza-gorselleri')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+      - name: Bağımlılıklar (pubspec.lock'a birebir)
+        run: flutter pub get --enforce-lockfile
+      - name: Çeviri kodu (gen_l10n)
+        run: flutter gen-l10n
+      - name: Görselleri üret
+        # Etkinlik saatleri Türkiye saatiyle görünsün.
+        env:
+          TZ: Europe/Istanbul
+          MAGAZA_CIKTI: ${{ runner.temp }}/magaza
+        run: flutter test test/magaza/magaza_gorselleri_test.dart
+      - name: Görseller (artefakt)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: magaza-gorselleri
+          path: ${{ runner.temp }}/magaza
+          if-no-files-found: warn
+          retention-days: 14
