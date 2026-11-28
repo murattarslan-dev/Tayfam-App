@@ -78,11 +78,16 @@ enum MagazaHedefi {
   bool get iosMu => this == MagazaHedefi.ios;
 }
 
-/// Telefon ekranının (uygulamanın çizildiği alanın) anahtarı.
-const Key telefonEkraniAnahtari = ValueKey('magaza-telefon-ekrani');
+/// İçerik alanının anahtarı: telefon ekranı (uygulamanın çizildiği alan)
+/// ya da tanıtım illüstrasyonu.
+const Key icerikAlaniAnahtari = ValueKey('magaza-icerik-alani');
 
 /// Mağaza görseli: marka morunda zemin, üstte logo ve kısa başlık, altında
 /// telefon çerçevesi içinde uygulamanın gerçek ekranı ([uygulama]).
+///
+/// [uygulama] yerine [tanitim] verilirse telefon çerçevesi yoktur; aynı
+/// alana marka paletiyle çizilmiş illüstrasyon gelir (02 ve 06, platform
+/// sahibi 2026-11-28).
 ///
 /// Uygulama, telefon ekranının boyutunda ([MagazaHedefi.ekran]) ve kendi
 /// `MediaQuery`'siyle çizilir; çerçeve onu tuvale sığacak kadar ölçekler.
@@ -91,7 +96,8 @@ class MagazaCercevesi extends StatelessWidget {
     super.key,
     required this.hedef,
     required this.baslik,
-    required this.uygulama,
+    this.uygulama,
+    this.tanitim,
     this.durumCubuguAcik = false,
     this.durumCubuguZemini = false,
   });
@@ -102,7 +108,10 @@ class MagazaCercevesi extends StatelessWidget {
   final String baslik;
 
   /// Telefonun içindeki uygulama.
-  final Widget uygulama;
+  final Widget? uygulama;
+
+  /// Telefon çerçevesi yerine gösterilen tanıtım illüstrasyonu.
+  final Widget? tanitim;
 
   /// Durum çubuğu yazısı beyaz mı (ekranın üstü mor olduğunda).
   final bool durumCubuguAcik;
@@ -151,14 +160,25 @@ class MagazaCercevesi extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.only(bottom: tuval.height * 0.035),
-                    child: FittedBox(
-                      child: _Telefon(
-                        hedef: hedef,
-                        durumCubuguAcik: durumCubuguAcik,
-                        durumCubuguZemini: durumCubuguZemini,
-                        child: uygulama,
+                    child: switch (tanitim) {
+                      final tanitim? => Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: tuval.width * 0.07,
+                        ),
+                        child: SizedBox.expand(
+                          key: icerikAlaniAnahtari,
+                          child: tanitim,
+                        ),
                       ),
-                    ),
+                      null => FittedBox(
+                        child: _Telefon(
+                          hedef: hedef,
+                          durumCubuguAcik: durumCubuguAcik,
+                          durumCubuguZemini: durumCubuguZemini,
+                          child: uygulama!,
+                        ),
+                      ),
+                    },
                   ),
                 ),
               ],
@@ -201,7 +221,7 @@ class _Telefon extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(hedef.kose),
           child: SizedBox.fromSize(
-            key: telefonEkraniAnahtari,
+            key: icerikAlaniAnahtari,
             size: ekran,
             child: Stack(
               children: [

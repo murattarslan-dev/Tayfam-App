@@ -26,19 +26,22 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tayfam/core/gezinme/adresler.dart';
 import 'package:tayfam/core/tayfa/aktif_tayfa.dart';
+import 'package:tayfam/core/tema/tayfam_typography.dart';
 
 import '../features/tayfa/sahteler.dart' show SahteTayfaTasima;
 import '../yardimcilar.dart';
 import 'cerceve.dart';
 import 'demo_verisi.dart';
 import 'png.dart';
+import 'tanitim.dart';
 
 /// Bir mağaza görseli: dosya adı, üst başlık ve ekranı hazırlayan adımlar.
 final class MagazaEkrani {
   const MagazaEkrani({
     required this.ad,
     required this.baslik,
-    required this.hazirla,
+    this.hazirla,
+    this.tanitim,
     this.gorunmeli = const [],
     this.durumCubuguAcik = false,
     this.durumCubuguZemini = false,
@@ -55,7 +58,12 @@ final class MagazaEkrani {
   final String baslik;
 
   /// Uygulama açıldıktan sonra ekrana gitme ve kaydırma.
-  final Future<void> Function(WidgetTester tester, MagazaHedefi hedef) hazirla;
+  final Future<void> Function(WidgetTester tester, MagazaHedefi hedef)?
+  hazirla;
+
+  /// Verilirse gerçek ekran yerine bu tanıtım illüstrasyonu çizilir
+  /// (platform sahibi, 2026-11-28: 02 ve 06).
+  final Widget? tanitim;
 
   final bool durumCubuguAcik;
   final bool durumCubuguZemini;
@@ -79,7 +87,7 @@ Future<void> _basaKaydir(
   MagazaHedefi hedef,
   Finder bulucu,
 ) async {
-  final ekranAlani = tester.getRect(find.byKey(telefonEkraniAnahtari));
+  final ekranAlani = tester.getRect(find.byKey(icerikAlaniAnahtari));
   final olcek = ekranAlani.height / hedef.ekran.height;
   final ust = tester.getRect(bulucu.first).top;
   final konum = Scrollable.of(tester.element(bulucu.first)).position;
@@ -101,27 +109,13 @@ final List<MagazaEkrani> magazaEkranlari = [
       await _git(tester, Adresler.tayfa(egeId));
     },
   ),
-  MagazaEkrani(
-    ad: '02-konvoy-detayi',
-    gorunmeli: [
-      'Kemalpaşa çıkışı dinlenme tesisi',
-      'Rota',
-      'Araçlar',
-      'Volkswagen Kaplumbağa',
-    ],
+  // Tanıtım görseli: gerçek ekranda rota, buluşma noktası ve araçlar
+  // aynı anda sığmıyordu, harita karoları da çizilmiyordu.
+  const MagazaEkrani(
+    ad: '02-konvoy-rotasi',
     baslik: 'Rota, buluşma noktası, katılan araçlar',
-    durumCubuguZemini: true,
-    hazirla: (tester, hedef) async {
-      await _tayfaSec(tester, egeId);
-      await _git(tester, Adresler.etkinlik(egeId, konvoyId));
-      // Buluşma noktasının adı (özet kartındaki değil, yer kartındaki),
-      // altında rota ve araçlar.
-      await _basaKaydir(
-        tester,
-        hedef,
-        find.text('Kemalpaşa çıkışı dinlenme tesisi').last,
-      );
-    },
+    tanitim: RotaTanitimi(),
+    gorunmeli: ['Buluşma noktası', 'Varış', 'Konvoy · 5 araç'],
   ),
   MagazaEkrani(
     ad: '03-kamp-malzeme-listesi',
@@ -170,14 +164,18 @@ final List<MagazaEkrani> magazaEkranlari = [
       await tester.pumpAndSettle();
     },
   ),
-  MagazaEkrani(
-    ad: '06-sohbet-kanallari',
-    gorunmeli: ['genel', 'Bozdağ sonbahar konvoyu', 'yönetim'],
+  // Tanıtım görseli: kanal listesinde önizleme yok, demo setinde birebir
+  // mesaj yok; şifreli birebir mesaj gerçek ekranda gösterilemiyordu.
+  const MagazaEkrani(
+    ad: '06-sohbet',
     baslik: 'Kanallar ve şifreli birebir mesaj',
-    hazirla: (tester, _) async {
-      await _tayfaSec(tester, egeId);
-      await _git(tester, Adresler.sohbet);
-    },
+    tanitim: SohbetTanitimi(),
+    gorunmeli: [
+      '#genel',
+      '#bakım-onarım',
+      'Cumartesi kaçta çıkıyoruz?',
+      'Birebir mesajlar uçtan uca şifreli',
+    ],
   ),
 ];
 
@@ -220,6 +218,34 @@ void main() {
 
   setUpAll(uygulamaFontlariniYukle);
 
+  test('App Store: görsellerin yarısından fazlası uygulamayı kullanımda '
+      'gösterir (tanıtım görseli yarıdan az)', () {
+    final tanitim = magazaEkranlari.where((e) => e.tanitim != null).length;
+    expect(tanitim * 2, lessThan(magazaEkranlari.length));
+    expect(magazaEkranlari.map((e) => e.ad.substring(0, 2)), [
+      '01',
+      '02',
+      '03',
+      '04',
+      '05',
+      '06',
+    ]);
+  });
+
+  test('gömülü font yüklendi', () {
+    // Test fontunda (Ahem) her karakter puntosu kadar geniştir: "9:41"
+    // 17 pt'de 68 px olurdu.
+    final olcu = TextPainter(
+      text: const TextSpan(
+        text: '9:41',
+        style: TextStyle(fontFamily: TayfamTypography.aile, fontSize: 17),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    expect(olcu.width, lessThan(17 * 3));
+    olcu.dispose();
+  });
+
   for (final hedef in MagazaHedefi.values) {
     for (final ekran in magazaEkranlari) {
       testWidgets(
@@ -235,34 +261,36 @@ void main() {
           final SahteTayfaTasima tasima = demoTasimasi();
           final hatalar = <String>[];
           final anahtar = GlobalKey();
-          await uygulamayiAc(
-            tester,
-            tayfa: demoOverridelari(tasima),
-            bildirim: demoBildirimOverridelari(tasima),
-            birebir: demoBirebirOverridelari(tasima),
-            gozlemciler: [_HataGozlemcisi(hatalar)],
-            sarmala: (uygulama) => RepaintBoundary(
-              key: anahtar,
-              child: MagazaCercevesi(
-                hedef: hedef,
-                baslik: ekran.baslik,
-                durumCubuguAcik: ekran.durumCubuguAcik,
-                durumCubuguZemini: ekran.durumCubuguZemini,
-                uygulama: uygulama,
-              ),
+          Widget cerceve({Widget? uygulama}) => RepaintBoundary(
+            key: anahtar,
+            child: MagazaCercevesi(
+              hedef: hedef,
+              baslik: ekran.baslik,
+              durumCubuguAcik: ekran.durumCubuguAcik,
+              durumCubuguZemini: ekran.durumCubuguZemini,
+              uygulama: uygulama,
+              tanitim: ekran.tanitim,
             ),
           );
-          await ekran.hazirla(tester, hedef);
-          await tester.pumpAndSettle();
-
-          // Gömülü font gerçekten yüklendi mi: test fontunda (Ahem) her
-          // karakter puntosu kadar geniştir; "9:41" 17 pt'de 68 px olurdu.
-          final saat = tester.getSize(find.text('9:41'));
-          expect(saat.width, lessThan(saat.height * 3), reason: 'font');
+          if (ekran.tanitim != null) {
+            await tester.pumpWidget(cerceve());
+            await tester.pumpAndSettle();
+          } else {
+            await uygulamayiAc(
+              tester,
+              tayfa: demoOverridelari(tasima),
+              bildirim: demoBildirimOverridelari(tasima),
+              birebir: demoBirebirOverridelari(tasima),
+              gozlemciler: [_HataGozlemcisi(hatalar)],
+              sarmala: (uygulama) => cerceve(uygulama: uygulama),
+            );
+            await ekran.hazirla!(tester, hedef);
+            await tester.pumpAndSettle();
+          }
 
           // Ekranın asıl içeriği telefonda görünüyor mu. Konumlar log'a
           // yazılır: düzeni görüntüyü açmadan izlemek için.
-          final ekranAlani = tester.getRect(find.byKey(telefonEkraniAnahtari));
+          final ekranAlani = tester.getRect(find.byKey(icerikAlaniAnahtari));
           final gorunmeyen = <String>[];
           for (final metin in ekran.gorunmeli) {
             final alanlar = [
@@ -302,6 +330,17 @@ void main() {
               debugPrint(
                 '[${hedef.klasor}/${ekran.ad}] '
                 '${ust.toStringAsFixed(0).padLeft(4)}% $metin',
+              );
+            }
+          }
+
+          if (ekran.tanitim is RotaTanitimi) {
+            final alan = tester.getSize(find.byKey(icerikAlaniAnahtari));
+            for (final MapEntry(key: ad, value: n)
+                in RotaYerlesimi(alan).noktalar.entries) {
+              debugPrint(
+                '[${hedef.klasor}/${ekran.ad}] çizim "$ad": '
+                'x ${(n.dx * 100).round()}%, y ${(n.dy * 100).round()}%',
               );
             }
           }
