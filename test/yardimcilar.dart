@@ -103,7 +103,9 @@ final class SahteSurumDenetleyici implements SurumDenetleyici {
 /// (verilmezse konuşma yok). Hoş geldin tanıtımı [tanitim] ile başlar
 /// (`null` ise override edilmez; varsayılan: gösterildi); cihaz ayarları
 /// [cihazAyarlari] deposundadır (verilmezse boş bellek deposu); kendi
-/// garajın [garaj] deposundan (verilmezse boş garaj). Gerçek
+/// garajın [garaj] deposundan (verilmezse boş garaj). [sarmala] verilirse
+/// uygulama onun döndürdüğü widget'ın içinde çizilir (mağaza görselleri:
+/// telefon çerçevesi); [gozlemciler] provider gözlemcileridir. Gerçek
 /// güvenli depo ve ağ kullanılmaz.
 Future<void> uygulamayiAc(
   WidgetTester tester, {
@@ -118,54 +120,56 @@ Future<void> uygulamayiAc(
   TanitimDurumu? tanitim = TanitimDurumu.gosterildi,
   CihazAyarlariDeposu? cihazAyarlari,
   GarajDeposu? garaj,
+  Widget Function(Widget uygulama)? sarmala,
+  List<ProviderObserver>? gozlemciler,
 }) async {
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        ...tayfa ?? tayfaOverridelari(),
-        ...bildirim ?? bildirimOverridelari(),
-        ...birebir ?? birebirOverridelari(),
-        if (oturum != null)
-          oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
-        if (tanitim != null)
-          tanitimProvider.overrideWith(() => SabitTanitimDurumu(tanitim)),
-        cihazAyarlariDeposuProvider.overrideWithValue(
-          cihazAyarlari ?? BellekCihazAyarlariDeposu(),
-        ),
-        surumDenetleyiciProvider.overrideWithValue(
-          surumDenetleyici ?? SahteSurumDenetleyici(),
-        ),
-        // Keşfet sekmesi (ADR-0030): boş akış; gerçek ağ yok.
-        kesfetDeposuProvider.overrideWithValue(
-          kesfet ??
-              KesfetDeposu(
-                SahteTayfaTasima({
-                  'GET /v1/discover/events': (_) => {'items': <Object?>[]},
-                }),
-              ),
-        ),
-        // Profildeki Garajım ve araç formundaki "Garajımdan seç": boş
-        // garaj; gerçek ağ yok.
-        garajDeposuProvider.overrideWithValue(
-          garaj ??
-              GarajDeposu(
-                SahteTayfaTasima({
-                  'GET /v1/me/garage': (_) => {
-                    'vehicles': <Object?>[],
-                    'caller_can_add': true,
-                  },
-                }),
-              ),
-        ),
-        // Bildirim zilinin rozeti (`shell/kayitlar.dart` ile aynı; ADR-0030).
-        okunmamisBildirimYuvasiProvider.overrideWith(
-          (ref) => ref.watch(okunmamisBildirimSayisiProvider),
-        ),
-        ...overrides,
-      ],
-      child: TayfamApp(themeMode: themeMode),
-    ),
+  final uygulama = ProviderScope(
+    observers: gozlemciler,
+    overrides: [
+      ...tayfa ?? tayfaOverridelari(),
+      ...bildirim ?? bildirimOverridelari(),
+      ...birebir ?? birebirOverridelari(),
+      if (oturum != null)
+        oturumDurumuProvider.overrideWith(() => SabitOturumDurumu(oturum)),
+      if (tanitim != null)
+        tanitimProvider.overrideWith(() => SabitTanitimDurumu(tanitim)),
+      cihazAyarlariDeposuProvider.overrideWithValue(
+        cihazAyarlari ?? BellekCihazAyarlariDeposu(),
+      ),
+      surumDenetleyiciProvider.overrideWithValue(
+        surumDenetleyici ?? SahteSurumDenetleyici(),
+      ),
+      // Keşfet sekmesi (ADR-0030): boş akış; gerçek ağ yok.
+      kesfetDeposuProvider.overrideWithValue(
+        kesfet ??
+            KesfetDeposu(
+              SahteTayfaTasima({
+                'GET /v1/discover/events': (_) => {'items': <Object?>[]},
+              }),
+            ),
+      ),
+      // Profildeki Garajım ve araç formundaki "Garajımdan seç": boş
+      // garaj; gerçek ağ yok.
+      garajDeposuProvider.overrideWithValue(
+        garaj ??
+            GarajDeposu(
+              SahteTayfaTasima({
+                'GET /v1/me/garage': (_) => {
+                  'vehicles': <Object?>[],
+                  'caller_can_add': true,
+                },
+              }),
+            ),
+      ),
+      // Bildirim zilinin rozeti (`shell/kayitlar.dart` ile aynı; ADR-0030).
+      okunmamisBildirimYuvasiProvider.overrideWith(
+        (ref) => ref.watch(okunmamisBildirimSayisiProvider),
+      ),
+      ...overrides,
+    ],
+    child: TayfamApp(themeMode: themeMode),
   );
+  await tester.pumpWidget(sarmala?.call(uygulama) ?? uygulama);
   await tester.pumpAndSettle();
 }
 
