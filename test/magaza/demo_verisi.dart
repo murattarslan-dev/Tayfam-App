@@ -547,6 +547,7 @@ SahteTayfaTasima demoTasimasi() {
     'GET $etkinlikYolu': (i) => _etkinlik(i.yolParametreleri['event_id']!),
     'GET $katilimcilarYolu': (i) =>
         katilimcilarJson(_gelenler(i.yolParametreleri['event_id']!)),
+    'GET $etkinlikYolu/photos': (_) => {'photos': const <Object?>[]},
     'GET $bilesenYolu/route': (_) => _rota(),
     'GET $bilesenYolu/vehicles': (_) => _araclar(),
     'GET $listeYolu': (_) => _malzemeListesi(),
