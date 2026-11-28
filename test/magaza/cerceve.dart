@@ -78,6 +78,9 @@ enum MagazaHedefi {
   bool get iosMu => this == MagazaHedefi.ios;
 }
 
+/// Telefon ekranının (uygulamanın çizildiği alanın) anahtarı.
+const Key telefonEkraniAnahtari = ValueKey('magaza-telefon-ekrani');
+
 /// Mağaza görseli: marka morunda zemin, üstte logo ve kısa başlık, altında
 /// telefon çerçevesi içinde uygulamanın gerçek ekranı ([uygulama]).
 ///
@@ -198,6 +201,7 @@ class _Telefon extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(hedef.kose),
           child: SizedBox.fromSize(
+            key: telefonEkraniAnahtari,
             size: ekran,
             child: Stack(
               children: [

@@ -13,7 +13,6 @@ import 'package:tayfam/core/degerlendirme/magaza_degerlendirmesi.dart';
 import 'package:tayfam/core/harita/osm_harita.dart';
 import 'package:tayfam/core/api/yer_arama.dart';
 import 'package:tayfam/core/konum/konum_servisi.dart';
-import 'package:tayfam/core/kullanici/kendi_kimligim.dart';
 import 'package:tayfam/core/kullanici/kullanici_adlari.dart';
 import 'package:tayfam/core/moduller/tayfa_module.dart';
 import 'package:tayfam/core/moduller/tayfa_ust_menusu.dart';

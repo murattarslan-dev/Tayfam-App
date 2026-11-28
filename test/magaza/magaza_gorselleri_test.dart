@@ -39,9 +39,13 @@ final class MagazaEkrani {
     required this.ad,
     required this.baslik,
     required this.hazirla,
+    this.gorunmeli = const [],
     this.durumCubuguAcik = false,
     this.durumCubuguZemini = false,
   });
+
+  /// Telefon ekranında tamamen görünmesi gereken metinler (parçası yeter).
+  final List<String> gorunmeli;
 
   /// Dosya adı (sıra numarasıyla birlikte).
   final String ad;
@@ -84,6 +88,11 @@ Future<void> _basaKaydir(
 final List<MagazaEkrani> magazaEkranlari = [
   MagazaEkrani(
     ad: '01-tayfa-ana-sayfa',
+    gorunmeli: [
+      'Ege Klasikleri Demo',
+      'Bozdağ sonbahar konvoyu',
+      'Konvoy kuralları',
+    ],
     baslik: 'Kulübün tek bir yerde',
     durumCubuguAcik: true,
     hazirla: (tester, _) async {
@@ -93,6 +102,13 @@ final List<MagazaEkrani> magazaEkranlari = [
   ),
   MagazaEkrani(
     ad: '02-konvoy-detayi',
+    gorunmeli: [
+      'Kemalpaşa çıkışı dinlenme tesisi',
+      'Rota',
+      'Araçlar',
+      'Mustang',
+      'Renault',
+    ],
     baslik: 'Rota, buluşma noktası, katılan araçlar',
     durumCubuguZemini: true,
     hazirla: (tester, hedef) async {
@@ -107,6 +123,12 @@ final List<MagazaEkrani> magazaEkranlari = [
   ),
   MagazaEkrani(
     ad: '03-kamp-malzeme-listesi',
+    gorunmeli: [
+      'Malzeme listesi',
+      'Çadır (4 kişilik)',
+      'Kahvaltılık',
+      'Fener ve yedek pil',
+    ],
     baslik: 'Kim ne getiriyor, belli olsun',
     durumCubuguZemini: true,
     hazirla: (tester, hedef) async {
@@ -117,6 +139,11 @@ final List<MagazaEkrani> magazaEkranlari = [
   ),
   MagazaEkrani(
     ad: '04-anket',
+    gorunmeli: [
+      'Bir sonraki konvoy rotası nereye olsun?',
+      'Şirince',
+      'Kozak Yaylası',
+    ],
     baslik: 'Kararı tayfa versin',
     hazirla: (tester, _) async {
       await _tayfaSec(tester, egeId);
@@ -125,6 +152,11 @@ final List<MagazaEkrani> magazaEkranlari = [
   ),
   MagazaEkrani(
     ad: '05-soru-cevap-aramasi',
+    gorunmeli: [
+      'Çift gövdeli karbüratör ayarını kim yapıyor?',
+      'Weber karbüratör için conta takımı nereden bulunur?',
+      'Soğuk sabahlarda karbüratörlü motor zor çalışıyor',
+    ],
     baslik: 'Sorulan soru kaybolmasın',
     hazirla: (tester, _) async {
       await _tayfaSec(tester, egeId);
@@ -138,6 +170,7 @@ final List<MagazaEkrani> magazaEkranlari = [
   ),
   MagazaEkrani(
     ad: '06-sohbet-kanallari',
+    gorunmeli: ['genel', 'Bozdağ sonbahar konvoyu', 'yönetim'],
     baslik: 'Kanallar ve şifreli birebir mesaj',
     hazirla: (tester, _) async {
       await _tayfaSec(tester, egeId);
@@ -220,6 +253,31 @@ void main() {
           await ekran.hazirla(tester, hedef);
           await tester.pumpAndSettle();
 
+          // Gömülü font gerçekten yüklendi mi: test fontunda (Ahem) her
+          // karakter puntosu kadar geniştir; "9:41" 17 pt'de 68 px olurdu.
+          final saat = tester.getSize(find.text('9:41'));
+          expect(saat.width, lessThan(saat.height * 3), reason: 'font');
+
+          // Ekranın asıl içeriği telefonda görünüyor mu. Konumlar log'a
+          // yazılır: düzeni görüntüyü açmadan izlemek için.
+          final ekranAlani = tester.getRect(find.byKey(telefonEkraniAnahtari));
+          final gorunmeyen = <String>[];
+          for (final metin in ekran.gorunmeli) {
+            final bulunan = find.textContaining(metin);
+            if (bulunan.evaluate().isEmpty) {
+              gorunmeyen.add('$metin (yok)');
+              continue;
+            }
+            final alan = tester.getRect(bulunan.first);
+            final ust = (alan.top - ekranAlani.top) / ekranAlani.height;
+            final alt = (alan.bottom - ekranAlani.top) / ekranAlani.height;
+            debugPrint(
+              '[${hedef.klasor}/${ekran.ad}] "$metin": '
+              '${(ust * 100).round()}–${(alt * 100).round()}%',
+            );
+            if (ust < 0 || alt > 1) gorunmeyen.add('$metin (ekran dışı)');
+          }
+
           final tanimsiz = tanimsizIstekler(tasima);
           for (final satir in [...tanimsiz, ...hatalar]) {
             debugPrint('[${hedef.klasor}/${ekran.ad}] $satir');
@@ -239,6 +297,7 @@ void main() {
             debugPrint('${dosya.path}: ${png.length} bayt');
           }
 
+          expect(gorunmeyen, isEmpty, reason: 'görünmeyen içerik');
           expect(tanimsiz, isEmpty, reason: 'tanımsız istek');
           expect(hatalar, isEmpty, reason: 'provider hatası');
         },
