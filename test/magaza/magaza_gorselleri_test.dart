@@ -115,10 +115,12 @@ final List<MagazaEkrani> magazaEkranlari = [
     hazirla: (tester, hedef) async {
       await _tayfaSec(tester, egeId);
       await _git(tester, Adresler.etkinlik(egeId, konvoyId));
+      // Buluşma noktasının adı (özet kartındaki değil, yer kartındaki),
+      // altında rota ve araçlar.
       await _basaKaydir(
         tester,
         hedef,
-        find.text(arbMetni('etkinlik_yer_baslik')),
+        find.text('Kemalpaşa çıkışı dinlenme tesisi').last,
       );
     },
   ),
@@ -264,19 +266,21 @@ void main() {
           final ekranAlani = tester.getRect(find.byKey(telefonEkraniAnahtari));
           final gorunmeyen = <String>[];
           for (final metin in ekran.gorunmeli) {
-            final bulunan = find.textContaining(metin);
-            if (bulunan.evaluate().isEmpty) {
-              gorunmeyen.add('$metin (yok)');
-              continue;
-            }
-            final alan = tester.getRect(bulunan.first);
-            final ust = (alan.top - ekranAlani.top) / ekranAlani.height;
-            final alt = (alan.bottom - ekranAlani.top) / ekranAlani.height;
-            debugPrint(
-              '[${hedef.klasor}/${ekran.ad}] "$metin": '
-              '${(ust * 100).round()}–${(alt * 100).round()}%',
+            final alanlar = [
+              for (final e in find.textContaining(metin).evaluate())
+                tester.getRect(find.byElementPredicate((x) => x == e)),
+            ];
+            final icerde = alanlar.where(
+              (a) => a.top >= ekranAlani.top && a.bottom <= ekranAlani.bottom,
             );
-            if (ust < 0 || alt > 1) gorunmeyen.add('$metin (ekran dışı)');
+            for (final alan in alanlar) {
+              final ust = (alan.top - ekranAlani.top) / ekranAlani.height;
+              debugPrint(
+                '[${hedef.klasor}/${ekran.ad}] "$metin": '
+                '${(ust * 100).round()}%',
+              );
+            }
+            if (icerde.isEmpty) gorunmeyen.add(metin);
           }
 
           // Ekrandaki bütün metinler yukarıdan aşağıya (yalnızca demo

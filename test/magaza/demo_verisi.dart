@@ -142,6 +142,7 @@ final String karburatorSoruId = _kimlik(5, 1);
 final String contaSoruId = _kimlik(5, 2);
 final String jikleSoruId = _kimlik(5, 3);
 final String antifrizSoruId = _kimlik(5, 4);
+final String temizlikSoruId = _kimlik(5, 5);
 
 final String genelKanalId = _kimlik(6, 1);
 final String yonetimKanalId = _kimlik(6, 2);
@@ -186,9 +187,8 @@ Map<String, Object?> _etkinlik(String id) {
       id: konvoyId,
       tur: 'convoy',
       baslik: 'Bozdağ sonbahar konvoyu',
-      aciklama:
-          "Kemalpaşa'dan Bozdağ'a sakin tempoda bir tur. Öğle yemeği "
-          'yaylada, dönüş gün batımından önce.',
+      // Açıklama yok: görselde rota ve araçlar aynı ekrana sığsın.
+      aciklama: '',
       baslangic: _aralik(5, 8, 30),
       sure: const Duration(hours: 9),
       gelen: 5,
@@ -475,6 +475,15 @@ List<Map<String, Object?>> _karburatorSorulari() => [
     [_bakim, _karburator],
     1,
     '2026-11-14T07:40:00Z',
+  ),
+  _soru(
+    temizlikSoruId,
+    'Karbüratör temizliğinde hangi spreyi kullanıyorsunuz?',
+    'Sökmeden temizlemek mümkün mü, yoksa her seferinde sökmek mi gerek?',
+    tolgaId,
+    [_bakim, _karburator],
+    4,
+    '2026-11-03T15:30:00Z',
   ),
 ];
 
